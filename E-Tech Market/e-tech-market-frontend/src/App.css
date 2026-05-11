@@ -1,0 +1,12 @@
+.app-container {
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Nội dung giữa header & footer chiếm phần còn lại */
+.app-container > :nth-child(2) {
+  flex: 1 0 auto;
+}
+

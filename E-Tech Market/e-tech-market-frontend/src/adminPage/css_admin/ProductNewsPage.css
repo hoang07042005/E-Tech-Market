@@ -1,0 +1,500 @@
+.pnRoot {
+  animation: fadeIn 0.35s ease-out;
+}
+
+.pnHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 18px;
+  gap: 14px;
+}
+
+.pnTitle {
+  font-size: 24px;
+  font-weight: 600;
+  margin: 0 0 6px;
+}
+
+.pnSub {
+  color: var(--admin-text-s);
+  margin: 0;
+  font-size: 13px;
+}
+
+.pnError {
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  margin-bottom: 16px;
+  font-weight: 600;
+}
+
+.pnGrid {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 22px;
+  align-items: start;
+}
+
+.pnLeft,
+.pnRight {
+  background: none;
+  border-right: 1px solid var(--admin-border);
+  
+  overflow: hidden;
+}
+
+.pnLeftHead,
+.pnRightHead {
+  padding: 16px 18px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.pnLeftTitle,
+.pnRightTitle {
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-size: 11px;
+  color: var(--admin-text-s);
+}
+
+.pnRightTitleMain{
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  margin: 0 0 4px;
+  color: #0f172a;
+}
+
+.pnRightSub {
+  margin-top: 6px;
+  font-size: 13px;
+  color: var(--admin-text-s);
+}
+
+.pnRightSubAccent{
+  position: relative;
+  padding-left: 12px;
+  color: var(--admin-text-p);
+  font-weight: 600;
+}
+
+.pnRightSubAccent::before{
+  content:'';
+  position:absolute;
+  left:0;
+  top: 2px;
+  bottom: 2px;
+  width: 3px;
+  border-radius: 999px;
+  background: var(--admin-accent);
+}
+
+.pnTiny {
+  font-size: 12px;
+  color: var(--admin-text-s);
+}
+
+.pnProductList {
+  max-height: 68vh;
+  overflow: auto;
+}
+
+/* Hide scrollbars (keep scroll) */
+.pnProductList,
+.pnHtmlPreview {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE/Edge legacy */
+}
+
+.pnProductList::-webkit-scrollbar,
+.pnHtmlPreview::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+
+.pnProdItem {
+  width: 100%;
+  border: none;
+  background: transparent;
+  text-align: left;
+  padding: 12px 12px;
+  display: flex;
+  gap: 12px;
+  cursor: pointer;
+  border-bottom: 1px solid #f1f5f9;
+  color: var(--admin-text-p);
+}
+
+.pnProdItem:hover {
+  background: #f5f5f5;
+}
+
+.pnProdItem.active {
+  background-color: rgb(255 247 237 / var(--tw-bg-opacity, 1));
+  border-right: 4px solid var(--admin-accent);
+  color: var(--admin-accent);
+}
+
+.pnProdThumb {
+  width: 44px;
+  height: 44px;
+  overflow: hidden;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pnProdThumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.pnProdThumbPh {
+  width: 60%;
+  height: 60%;
+  background: var(--admin-border);
+}
+
+.pnProdInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.pnProdName {
+  font-weight: 600;
+  font-size: 13px;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pnProdMeta {
+  margin-top: 4px;
+  font-size: 12px;
+  color: var(--admin-text-s);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pnAddBtn {
+  background-color: rgb(255 140 0 / var(--tw-bg-opacity, 1));
+  color: #ffffff;
+  border: none;
+  padding:  5px 14px 5px 5px;
+  border-radius: 999px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 0 18px rgba(249, 115, 22, 0.28);
+  display: inline-flex;
+  align-items: center;
+  gap: 1px;
+}
+
+.pnAddIcon{
+  width: 26px;
+  height: 26px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background: none;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.pnAddLabel{
+  font-weight: 600;
+  font-size: 13px;
+}
+
+.pnAddProductName{
+  font-weight: 600;
+  font-size: 13px;
+  max-width: 240px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pnAddBtn:hover:enabled{
+  filter: brightness(0.98);
+  box-shadow: 0 0 22px rgba(249, 115, 22, 0.35);
+}
+
+.pnAddBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.pnNewsWrap {
+  padding: 18px 18px;
+  border-top: 1px solid var(--admin-border);
+}
+
+.pnEmpty {
+  padding: 30px 12px;
+  text-align: center;
+  color: var(--admin-text-s);
+  font-weight: 600;
+}
+
+.pnNewsList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.pnNewsCard {
+  background: none;
+  border: 1px solid var(--admin-border);
+  border-radius: 5px;
+  padding: 14px 14px;
+}
+
+.pnNewsTop {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.pnNewsTitle {
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 1.25;
+}
+
+.pnNewsActions {
+  display: flex;
+  gap: 8px;
+}
+
+.pnBtn {
+  background: #f3f4f6;
+  border: 1px solid rgba(15, 23, 42, 0.10);
+  color: var(--admin-text-p);
+  padding: 8px 12px;
+  border-radius: 5px;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.pnBtn:hover {
+  background: #eef2f7;
+}
+
+.pnBtn.danger {
+  border-color: rgba(239, 68, 68, 0.30);
+  color: #ef4444;
+  background: rgba(239, 68, 68, 0.08);
+}
+
+.pnBtn.danger:hover{
+  background: rgba(239, 68, 68, 0.12);
+}
+
+.pnNewsMeta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 10px;
+  align-items: center;
+}
+
+.pnPill {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 4px 8px;
+  border-radius: 999px;
+  border: 1px solid var(--admin-border);
+}
+
+.pnPill.on {
+  color: var(--admin-accent);
+  background: rgba(249, 115, 22, 0.14);
+}
+
+.pnPill.off {
+  color: #fca5a5;
+  background: rgba(239, 68, 68, 0.08);
+  border-color: rgba(239, 68, 68, 0.25);
+}
+
+.pnMetaText {
+  font-size: 12px;
+  color: var(--admin-text-s);
+}
+
+.pnExcerpt {
+  margin-top: 10px;
+  color: var(--admin-text-s);
+  font-size: 12.5px;
+  line-height: 1.5;
+}
+
+.pnHtmlHint {
+  margin-top: 10px;
+  font-size: 11px;
+  color: var(--admin-text-s);
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.pnHtmlPreview {
+  margin-top: 8px;
+  background: none;
+  padding: 10px 12px;
+  color: var(--admin-text-p);
+  font-size: 12.5px;
+  line-height: 1.55;
+  max-height: 520px;
+  overflow: auto;
+}
+
+.pnHtmlPreview img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Modal */
+.pnModalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.45);
+  backdrop-filter: blur(10px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 4000;
+  padding: 24px;
+}
+
+.pnModal {
+  width: 100%;
+  max-width: 860px;
+  background: #ffffff;
+  border: 1px solid var(--admin-border);
+  border-radius: 18px;
+  box-shadow: 0 30px 80px rgba(15, 23, 42, 0.12);
+  overflow: hidden;
+}
+
+.pnModalHead {
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--admin-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.pnModalTitle {
+  font-weight: 600;
+}
+
+.pnModalClose {
+  border: none;
+  background: transparent;
+  color: var(--admin-text-s);
+  font-size: 26px;
+  cursor: pointer;
+}
+
+.pnModalBody {
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.pnField label {
+  display: block;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--admin-text-s);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+.pnField input,
+.pnField textarea {
+  width: 100%;
+  border-radius: 12px;
+  border: 1px solid var(--admin-border);
+  background: #ffffff;
+  color: var(--admin-text-p);
+  padding: 10px 12px;
+  font-size: 13px;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.pnField textarea {
+  resize: vertical;
+}
+
+.pnRow {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+
+.pnUploadRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.pnThumbPreview {
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.pnThumbPreview img {
+  width: 88px;
+  height: 64px;
+  object-fit: cover;
+  border-radius: 12px;
+  border: 1px solid var(--admin-border);
+}
+
+.pnCheck {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--admin-text-p);
+  font-weight: 600;
+}
+
+.pnModalFoot {
+  padding: 14px 16px;
+  border-top: 1px solid var(--admin-border);
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+@media (max-width: 1100px) {
+  .pnGrid {
+    grid-template-columns: 1fr;
+  }
+  .pnProductList {
+    max-height: 40vh;
+  }
+}
+

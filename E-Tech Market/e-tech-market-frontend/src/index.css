@@ -1,0 +1,53 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Storefront — chủ đạo trắng, nhấn cam */
+:root {
+  --et-bg: #ffffff;
+  --et-surface: #ffffff;
+  --et-primary: #f97316;
+  --et-primary-hover: #ea580c;
+  --et-primary-soft: rgba(249, 115, 22, 0.14);
+  --et-promo: #f97316;
+  --et-promo-hover: #ea580c;
+  --et-promo-soft: #fff7ed;
+  --et-text: #171717;
+  --et-text-muted: #737373;
+  --et-border: #e5e5e5;
+  --et-footer-band: #fffaf5;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  width: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--et-bg);
+  color: var(--et-text);
+  font-family: 'Outfit', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/* Hide scrollbars globally */
+html, body {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+}
+
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  display: none; /* Chrome, Safari and Opera */
+}
+

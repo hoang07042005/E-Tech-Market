@@ -1,0 +1,359 @@
+.secRoot{
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.secTopCard{
+  border: 1px solid var(--et-border);
+  background: #fff;
+  border-radius: 16px;
+  padding: 16px 18px;
+}
+
+.secTopTitle{
+  font-weight: 600;
+  font-size: 14px;
+  color: #0f172a;
+  margin-bottom: 6px;
+}
+
+.secTopDesc{
+  color: var(--et-text-muted);
+  font-weight: 600;
+  font-size: 12.5px;
+  line-height: 1.6;
+}
+
+.secSectionCard{
+  border: 1px solid var(--et-border);
+  border-radius: 5px;
+  padding: 30px 30px;
+}
+ 
+.secSectionHead{
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.secSectionHeadLeft{
+  display:flex;
+  align-items:flex-start;
+  gap: 10px;
+}
+
+.secSectionTitle{
+  font-weight: 600;
+  font-size: 13px;
+  letter-spacing: -0.01em;
+  color: #0f172a;
+}
+
+.secSectionSub{
+  color: var(--et-text-muted);
+  font-weight: 600;
+  font-size: 12.5px;
+  line-height: 1.6;
+}
+
+.secIconOrange{
+  color: var(--et-primary-hover);
+  background: rgba(249,115,22,.10);
+  border: 1px solid rgba(249,115,22,.20);
+  width: 36px;
+  height: 36px;
+  border-radius: 12px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex: 0 0 auto;
+}
+
+.secFormGrid{
+  margin-top: 12px;
+  display:grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.secField{
+  display:flex;
+  flex-direction:column;
+  gap: 8px;
+}
+
+.secField label{
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--et-text-muted);
+}
+
+.secField input{
+  border: 1px solid rgba(15, 23, 42, 0.008);
+  background: #e0e1e263;
+  border-radius: 5px;
+  padding: 12px 14px;
+  font-weight: 600;
+  outline: none;
+}
+
+.secField input:focus{
+  border-color: rgba(249,115,22,.55);
+  box-shadow: 0 0 0 3px rgba(249,115,22,.14);
+}
+
+.secInlineError{
+  margin-top: 12px;
+  color: #b91c1c;
+  background: rgba(239,68,68,.06);
+  border: 1px solid rgba(239,68,68,.22);
+  border-radius: 12px;
+  padding: 10px 12px;
+  font-weight: 600;
+}
+
+.secInlineSuccess{
+  margin-top: 12px;
+  color: #166534;
+  background: rgba(34,197,94,.10);
+  border: 1px solid rgba(34,197,94,.22);
+  border-radius: 12px;
+  padding: 10px 12px;
+  font-weight: 700;
+}
+
+.secBtnRow{
+  margin-top: 14px;
+  display:flex;
+  justify-content:right;
+}
+
+.secPrimaryBtn{
+  border:none;
+  background: var(--et-primary);
+  color:#fff;
+  font-weight: 600;
+  padding: 12px 16px;
+  border-radius: 12px;
+  cursor:pointer;
+  min-width: 240px;
+}
+.secPrimaryBtn:disabled{
+  opacity:.6;
+  cursor:not-allowed;
+}
+.secPrimaryBtn:hover:enabled{
+  background: var(--et-primary-hover);
+}
+
+.secSwitchHead{
+  display:flex;
+  justify-content: space-between;
+  align-items:flex-start;
+  gap: 12px;
+}
+
+.sec2faBody{
+  margin-top: 12px;
+}
+
+.sec2faText{
+  display:flex;
+  flex-direction:column;
+  gap: 8px;
+}
+
+.sec2faBadge{
+  color: #166534;
+  background: rgba(34,197,94,.12);
+  border: 1px solid rgba(34,197,94,.25);
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  width: fit-content;
+}
+.sec2faBadgeOff{
+  color: #9a3412;
+  background: rgba(249,115,22,.12);
+  border-color: rgba(249,115,22,.25);
+}
+
+.sec2faHint{
+  color: var(--et-text-muted);
+  font-weight: 600;
+  font-size: 12.5px;
+  line-height: 1.6;
+}
+
+.secBackupBlock{
+  margin-top: 14px;
+  border-top: 1px dashed rgba(249,115,22,.25);
+  padding-top: 12px;
+}
+.secBackupTitle{
+  font-weight: 600;
+  font-size: 12.5px;
+  margin-bottom: 10px;
+}
+.secBackupGrid{
+  display:grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+.secBackupCode{
+  background: #f8fafc;
+  border: 1px solid rgba(15,23,42,.08);
+  border-radius: 12px;
+  padding: 10px 12px;
+  font-weight: 600;
+  color: #0f172a;
+  font-size: 12px;
+  overflow:hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.secSessionHead{
+  display:flex;
+  justify-content: space-between;
+  align-items:flex-start;
+  gap: 12px;
+}
+
+.secSessionsGrid{
+  margin-top: 12px;
+  display:flex;
+  flex-direction:column;
+  gap: 12px;
+}
+
+.secSessionCard{
+  border: 1px solid rgba(15,23,42,.08);
+  border-radius: 14px;
+  padding: 12px 12px;
+  background: #fff;
+}
+.secSessionCard.current{
+  border-color: rgba(249,115,22,.35);
+  box-shadow: 0 0 0 3px rgba(249,115,22,.10);
+}
+
+.secSessionTop{
+  display:flex;
+  justify-content: space-between;
+  align-items:flex-start;
+  gap: 12px;
+}
+.secSessionDevice{
+  font-weight: 600;
+  color: #0f172a;
+}
+.secSessionMeta{
+  color: var(--et-text-muted);
+  font-weight: 600;
+  font-size: 12.5px;
+  margin-top: 4px;
+}
+.secSessionLoc{
+  color: var(--et-text-muted);
+  font-weight: 600;
+  font-size: 12px;
+  margin-top: 4px;
+}
+.secRevokeBtn{
+  border: 1px solid rgba(15,23,42,.10);
+  background: #fff;
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  cursor:pointer;
+  color: #dc2626;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.secRevokeBtn:hover{
+  border-color: rgba(220,38,38,.25);
+  background: rgba(220,38,38,.06);
+}
+
+.secSessionBottom{
+  margin-top: 10px;
+  display:flex;
+  gap: 10px;
+  align-items:center;
+  flex-wrap: wrap;
+}
+
+.secChip{
+  border: 1px solid rgba(15,23,42,.10);
+  background: #f8fafc;
+  color: #0f172a;
+  border-radius: 999px;
+  padding: 6px 10px;
+  font-weight: 600;
+  font-size: 11px;
+}
+
+.secChipOn{
+  border-color: rgba(249,115,22,.28);
+  color: var(--et-primary-hover);
+  background: rgba(249,115,22,.10);
+}
+
+.secEmpty{
+  padding: 16px 0;
+  color: var(--et-text-muted);
+  font-weight: 600;
+  text-align:center;
+}
+
+.secDangerZone{
+  border-color: rgba(239,68,68,.22);
+  background: #fff;
+}
+
+.secDangerTitle{
+  font-weight: 600;
+  color: #b91c1c;
+  letter-spacing: -0.01em;
+}
+
+.secDangerOutlineBtn{
+  border: 1px solid rgba(239,68,68,.35);
+  background: #fff;
+  color: #ef4444;
+  font-weight: 600;
+  padding: 10px 12px;
+  border-radius: 12px;
+  cursor:pointer;
+  white-space: nowrap;
+}
+.secDangerOutlineBtn:disabled{
+  opacity:.55;
+  cursor:not-allowed;
+}
+.secDangerOutlineBtn:hover:enabled{
+  background: rgba(239,68,68,.06);
+}
+
+@media (max-width: 980px) {
+  .secFormGrid{
+    grid-template-columns: 1fr;
+  }
+  .secBackupGrid{
+    grid-template-columns: 1fr;
+  }
+  .secSessionHead{
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
