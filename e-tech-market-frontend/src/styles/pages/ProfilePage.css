@@ -1,0 +1,684 @@
+.pfPage {
+  background: linear-gradient(180deg, #fffaf5 0%, #fff 30%, #fff 100%);
+  min-height: 100vh;
+  padding: 28px 0 80px;
+  color: var(--et-text);
+  font-family: 'Outfit', system-ui, sans-serif;
+  overflow-x: hidden;
+  width: 100%;
+  position: relative;
+}
+
+.pfInner {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 0 12px;
+}
+
+.pfTopCard {
+  border: 1px solid var(--et-border);
+  background: none;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 14px 40px rgba(15, 23, 42, 0.06);
+  padding: 18px 18px;
+}
+
+.pfTopRow {
+  display: grid;
+  grid-template-columns: 84px 1fr auto;
+  gap: 18px;
+  align-items: center;
+}
+
+.pfAvatarWrap {
+  position: relative;
+  width: 84px;
+  height: 84px;
+}
+
+.pfAvatar {
+  width: 84px;
+  height: 84px;
+  border-radius: 999px;
+  object-fit: cover;
+  border: 3px solid #fff;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.12);
+  background: #f3f4f6;
+}
+
+.pfAvatarEdit {
+  position: absolute;
+  right: -4px;
+  bottom: -4px;
+  width: 30px;
+  height: 30px;
+  border-radius: 999px;
+  border: 1px solid var(--et-border);
+  background: #fff;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.12);
+}
+
+.pfName {
+  margin: 0 0 6px;
+  font-size: 22px;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  word-break: break-word;
+}
+
+.pfBadges {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.pfBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 10px;
+  border-radius: 999px;
+  background: rgba(249, 115, 22, 0.12);
+  color: var(--et-primary-hover);
+  font-weight: 900;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+}
+
+.pfBadgeMuted {
+  background: #f4f4f5;
+  color: #52525b;
+}
+
+.pfStats {
+  display: grid;
+  grid-template-columns: 92px 92px;
+  gap: 10px;
+}
+
+.pfStat {
+  border: 1px solid var(--et-border);
+  border-radius: 12px;
+  padding: 10px 12px;
+  background: #fffaf5;
+  text-align: center;
+}
+
+.pfStatNum {
+  margin: 0;
+  font-weight: 900;
+  color: var(--et-text);
+  font-size: 16px;
+}
+
+.pfStatLabel {
+  margin: 4px 0 0;
+  color: var(--et-text-muted);
+  font-size: 11px;
+  line-height: 1.2;
+}
+
+.pfGrid {
+  margin-top: 18px;
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  gap: 18px;
+  align-items: start;
+}
+
+.pfSidebar {
+  position: sticky;
+  top: 92px;
+  border: 1px solid var(--et-border);
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 14px 40px rgba(15, 23, 42, 0.04);
+  padding: 14px;
+}
+
+.pfNavBtn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 12px;
+  padding: 12px 12px;
+  border-radius: 12px;
+  border: 1px solid transparent;
+  background: transparent;
+  cursor: pointer;
+  color: var(--et-text);
+  font-weight: 900;
+  font-size: 12px;
+}
+
+.pfNavBtn:hover {
+  background: #fffaf5;
+  border-color: rgba(249, 115, 22, 0.15);
+}
+
+.pfNavBtnActive {
+  background: var(--et-primary-soft, #fff7ed);
+  border-color: var(--et-primary);
+  color: var(--et-primary-hover);
+  box-shadow: 0 8px 20px rgba(249, 115, 22, 0.1);
+}
+
+.pfNavBtnActive .pfSideIcon {
+  background: var(--et-primary);
+  color: #fff;
+}
+
+.pfSideIcon {
+  width: 26px;
+  height: 26px;
+  border-radius: 10px;
+  background: rgba(249, 115, 22, 0.12);
+  color: var(--et-primary-hover);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  transition: background 0.18s ease, color 0.18s ease;
+}
+
+.pfNavBtnActive .pfSideIcon {
+  background: var(--et-primary);
+  color: #fff;
+}
+
+.pfNavSep {
+  height: 1px;
+  background: var(--et-border);
+  margin: 10px 0;
+}
+
+.pfLogoutBtn {
+  color: #dc2626;
+}
+
+.pfLogoutBtnMobile {
+  display: none;
+}
+
+.pfContent {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.pfCard {
+  border: 1px solid var(--et-border);
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 14px 40px rgba(15, 23, 42, 0.06);
+  padding: 16px;
+}
+
+.pfCardHead {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.pfCardTitle {
+  margin: 0;
+  font-weight: 900;
+  font-size: 16px;
+  letter-spacing: -0.01em;
+}
+
+.pfSaveBtn {
+  border: none;
+  background: #a16207;
+  color: #fff;
+  padding: 10px 14px;
+  border-radius: 10px;
+  font-weight: 900;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.pfSaveBtn:hover {
+  opacity: 0.92;
+}
+
+.pfFormGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.pfField {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.pfLabel {
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--et-text-muted);
+}
+
+.pfInput {
+  border: 1px solid var(--et-border);
+  border-radius: 10px;
+  padding: 12px 12px;
+  background: #f4f4f5;
+  color: var(--et-text);
+  font-size: 14px;
+}
+
+.pfRowGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+  align-items: stretch;
+}
+
+.pfOrdersWrapper {
+  margin-top: 12px;
+}
+
+.pfTable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.pfTable th,
+.pfTable td {
+  text-align: left;
+  padding: 12px 10px;
+  border-bottom: 1px solid #eee;
+}
+
+.pfTable th {
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--et-text-muted);
+  background: #fafafa;
+  white-space: nowrap;
+}
+
+.pfOrderMetaMobile {
+  display: none;
+}
+
+.pfStatusPill {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-weight: 900;
+  font-size: 11px;
+  background: rgba(34, 197, 94, 0.14);
+  color: #166534;
+}
+
+.pfStatusPillWarn {
+  background: rgba(249, 115, 22, 0.14);
+  color: #9a3412;
+}
+
+.pfMiniCard {
+  border: 1px solid var(--et-border);
+  border-radius: 16px;
+  padding: 50px;
+  background: #fff;
+  box-shadow: 0 14px 40px rgba(15, 23, 42, 0.04);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.pfMiniTitle {
+  margin: 0 0 12px;
+  font-weight: 900;
+  font-size: 14px;
+}
+
+.pfMiniTopRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  border-bottom: 1px solid var(--et-border);
+  padding-bottom: 30px;
+}
+
+.pfToggleRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding-top: 10px;
+  border-top: 1px solid var(--et-border);
+}
+
+.pfToggleRowBtn {
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 12px 0 0;
+}
+
+.pfToggleRowBtn:hover .pfChevron {
+  transform: translateX(2px);
+  color: var(--et-text);
+}
+
+.pfChevron {
+  font-weight: 900;
+  color: var(--et-text-muted);
+  transition: transform 0.15s ease, color 0.15s ease;
+}
+
+.pfToggleText {
+  color: var(--et-text-muted);
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.pfSwitch {
+  width: 46px;
+  height: 26px;
+  border-radius: 999px;
+  background: #e5e7eb;
+  position: relative;
+  border: none;
+  cursor: pointer;
+}
+
+.pfSwitchOn {
+  background: #d97706;
+}
+
+.pfSwitchKnob {
+  width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  background: #fff;
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  transition: transform 0.2s ease;
+}
+
+.pfSwitchOn .pfSwitchKnob {
+  transform: translateX(20px);
+}
+
+.pfPromo {
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid var(--et-border);
+  background: #111827;
+  position: relative;
+  height: 100%;
+}
+
+.pfPromoImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.88;
+  display: block;
+}
+
+.pfPromoTint {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(110deg, rgb(216 148 1 / 39%) 0%, rgb(220 158 87 / 29%) 60%, #c27e0857 100%);
+}
+
+.pfPromoContent {
+  position: absolute;
+  inset: 0;
+  padding: 57px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: 10px;
+  color: #fff;
+  margin-top: 28px;
+}
+
+.pfPromoTitle {
+  margin: 0;
+  font-weight: 900;
+  font-size: 14px;
+}
+
+.pfPromoSub {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 12px;
+  line-height: 1.45;
+  max-width: 340px;
+}
+
+.pfPromoBtn {
+  align-self: flex-start;
+  border: 1px solid rgba(255, 255, 255, 0.85);
+  background: rgba(255, 255, 255, 0.92);
+  color: #b45309;
+  padding: 10px 12px;
+  border-radius: 999px;
+  font-weight: 900;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.pfPromoBtn:hover {
+  opacity: 0.92;
+}
+
+@media (max-width: 980px) {
+  .pfInner, .pfTopCard, .pfGrid, .pfSidebar, .pfContent, .pfCard, .pfMiniCard, .pfPromo {
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    overflow: hidden;
+  }
+  
+  .pfPage {
+    padding: 15px 0 60px;
+  }
+  .pfTopCard {
+    padding: 30px 20px;
+    text-align: center;
+    border: none;
+    box-shadow: none;
+    
+  }
+  .pfTopRow {
+    display: grid;
+    grid-template-columns: max-content max-content;
+    justify-content: center;
+    align-items: center;
+    gap: 12px 16px;
+  }
+  .pfTopInfo {
+    display: contents;
+  }
+  .pfAvatarWrap, .pfAvatar {
+    width: 100px;
+    height: 100px;
+  }
+  .pfAvatarWrap {
+    grid-column: 1 / -1;
+    margin: 0 auto;
+  }
+  .pfName {
+    grid-column: 1 / -1;
+    margin: 0;
+    text-align: center;
+  }
+  .pfBadges {
+    justify-content: flex-end;
+  }
+  .pfStats {
+    width: auto;
+    margin: 0;
+    display: flex;
+  }
+  .pfStat {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+  }
+  .pfStatLabel {
+    margin: 0;
+    font-size: 11px;
+  }
+  
+  .pfGrid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  
+  .pfSidebar {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    padding: 0;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    position: static;
+  }
+  
+  .pfNavBtn {
+    flex-direction: column;
+    justify-content: center;
+    padding: 16px 8px;
+    background: #fff;
+    border: 1px solid var(--et-border);
+    border-radius: 16px;
+    height: 100%;
+    text-align: center;
+    gap: 8px;
+    font-size: 11px;
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.03);
+    min-width: 0;
+    white-space: normal;
+    word-break: break-word;
+    line-height: 1.3;
+  }
+  
+  .pfSideIcon {
+    width: 36px;
+    height: 36px;
+    margin: 0 auto;
+  }
+  
+  .pfNavSep { display: none; }
+  
+  .pfLogoutBtnDesktop {
+    display: none !important;
+  }
+  
+  .pfLogoutBtnMobile {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    height: 52px;
+    margin-top: 10px;
+    padding: 0 20px;
+    background: #fff;
+    border: 1px solid var(--et-border);
+    border-radius: 14px;
+    color: #dc2626;
+    font-weight: 900;
+    font-size: 15px;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.03);
+    width: 100%;
+    gap: 12px;
+  }
+  
+  .pfLogoutBtnMobile .pfSideIcon {
+    margin: 0;
+    background: rgba(220, 38, 38, 0.1);
+    color: #dc2626;
+  }
+
+  .pfFormGrid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  
+  .pfCard {
+    padding: 15px;
+  }
+  
+  .pfRowGrid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  
+  .pfMiniCard, .pfPromoContent {
+    padding: 20px;
+  }
+  
+  .pfTable {
+    display: table;
+    table-layout: fixed;
+    overflow-x: visible;
+  }
+  
+  .pfHideMobile {
+    display: none !important;
+  }
+  
+  .pfOrderNameCell {
+    width: 45%;
+  }
+
+  .pfOrderName {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-weight: 900;
+  }
+
+  .pfOrderMetaMobile {
+    display: block;
+    font-size: 10px;
+    color: var(--et-text-muted);
+    margin-top: 2px;
+  }
+
+  .pfTable th, .pfTable td {
+    padding: 10px 5px;
+    font-size: 11px;
+  }
+}
+
+@media (max-width: 360px) {
+  .pfSidebar {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .pfLogoutBtn {
+    grid-column: span 2;
+  }
+}
+

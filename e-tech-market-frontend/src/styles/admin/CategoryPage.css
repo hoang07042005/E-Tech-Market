@@ -1,0 +1,313 @@
+.catAdminRoot {
+  animation: fadeIn 0.4s ease-out;
+}
+
+.catHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.catAdminTitle {
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--admin-text-p);
+  margin-bottom: 5px;
+}
+
+.catAdminSub {
+  color: var(--admin-text-s);
+  font-size: 14px;
+}
+
+.catErrorBanner {
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+  padding: 12px 20px;
+  border-radius: 5px;
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  margin-bottom: 20px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.catAddBtn {
+  background: var(--admin-accent);
+  color: #ffffff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  transition: all 0.3s;
+  box-shadow: 0 0 15px rgba(249, 115, 22, 0.25);
+}
+
+.catAddBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 25px rgba(249, 115, 22, 0.45);
+}
+
+.catTableWrap {
+  background: #ffffff;
+  border: 1px solid var(--admin-border);
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.catLoading {
+  padding: 40px;
+  text-align: center;
+  color: var(--admin-text-s);
+  font-style: italic;
+}
+
+.catTable {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.catTable th {
+  text-align: left;
+  padding: 20px 24px;
+  background: #fafafa;
+  color: var(--admin-text-s);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  border-bottom: 1px solid var(--admin-border);
+}
+
+.catTable td {
+  padding: 20px 24px;
+  border-bottom: 1px solid #f1f5f9;
+  font-size: 14px;
+}
+
+.catNameCell {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-weight: 600;
+}
+
+.catFolderIcon {
+  color: var(--admin-accent);
+}
+
+.catSlug {
+  background: #f5f5f5;
+  padding: 4px 8px;
+  border-radius: 5px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: var(--admin-text-s);
+}
+
+.catParent {
+  color: var(--admin-text-s);
+  font-size: 13px;
+}
+
+.catStatus {
+  padding: 4px 10px;
+  border-radius: 5px;
+  font-size: 10px;
+  font-weight: 600;
+}
+
+.catStatus.active { background: rgba(34, 197, 94, 0.1); color: #22c55e; }
+.catStatus.inactive { background: rgba(239, 68, 68, 0.1); color: #ef4444; }
+
+.catActions {
+  display: flex;
+  gap: 12px;
+}
+
+.catActions button {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.catActions button:hover { opacity: 0.7; }
+.catEdit { color: var(--admin-accent); }
+.catDelete { color: #ef4444; }
+
+/* Modal */
+.catModalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(15, 23, 42, 0.45);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.3s ease;
+}
+
+.catModal {
+  background: #ffffff;
+  width: 100%;
+  max-width: 600px;
+  border-radius: 5px;
+  border: 1px solid var(--admin-border);
+  box-shadow: 0 20px 60px rgba(15, 23, 42, 0.12);
+  overflow: hidden;
+  animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes slideUp {
+  from { transform: translateY(30px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.catModalHeader {
+  padding: 24px 30px;
+  border-bottom: 1px solid var(--admin-border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.catModalHeader h3 {
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.catCloseModal {
+  background: transparent;
+  border: none;
+  color: var(--admin-text-s);
+  font-size: 28px;
+  cursor: pointer;
+}
+
+.catForm {
+  padding: 30px;
+}
+
+.catFormRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.catFormField {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.catFormField label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--admin-text-s);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.catFormField input, .catFormField select, .catFormField textarea {
+  background: #ffffff;
+  border: 1px solid var(--admin-border);
+  border-radius: 5px;
+  padding: 14px 16px;
+  color: var(--admin-text-p);
+  font-family: inherit;
+  font-size: 14px;
+  transition: all 0.3s;
+}
+
+.catFormField input:focus, .catFormField select:focus {
+  border-color: var(--admin-accent);
+  background: #fffaf5;
+  outline: none;
+  box-shadow: 0 0 10px rgba(249, 115, 22, 0.25);
+}
+
+.catSelectWrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.catPremiumSelect {
+  width: 100%;
+  appearance: none;
+  cursor: pointer;
+}
+
+.catSelectArrow {
+  position: absolute;
+  right: 16px;
+  pointer-events: none;
+  color: var(--admin-text-s);
+  font-size: 14px;
+}
+
+.catFormField textarea {
+  height: 100px;
+  resize: none;
+}
+
+.catToggleWrap {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: 48px;
+}
+
+.catToggleLabel {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--admin-text-p) !important;
+  text-transform: none !important;
+  letter-spacing: 0 !important;
+  cursor: pointer;
+}
+
+.catModalFooter {
+  display: flex;
+  justify-content: flex-end;
+  gap: 15px;
+  margin-top: 20px;
+}
+
+.catCancelBtn {
+  background: transparent;
+  border: 1px solid var(--admin-border);
+  color: var(--admin-text-p);
+  padding: 10px 24px;
+  border-radius: 5px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.catSubmitBtn {
+  background: var(--admin-accent);
+  color: #ffffff;
+  border: none;
+  padding: 10px 30px;
+  border-radius: 5px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 0 15px rgba(249, 115, 22, 0.25);
+}
+
+/* Customizing the dropdown list behavior */
+.catPremiumSelect option {
+  background: #ffffff;
+  color: var(--admin-text-p);
+  padding: 10px;
+}

@@ -1,0 +1,377 @@
+import { useState, useEffect, useCallback } from 'react'
+import type { ChangeEvent } from 'react'
+import { apiFetch, API_BASE_URL } from '@/configs/api.config'
+import '@/styles/admin/ReviewsAdminPage.css'
+
+type Review = {
+  id: number
+  product_id: number
+  user_id: number
+  rating: number
+  comment: string
+  status: 'pending' | 'approved' | 'rejected'
+  created_at: string
+  user: {
+    id: number
+    name: string
+    avatar_url?: string | null
+  }
+  product: {
+    id: number
+    name: string
+    main_image_url?: string | null
+  }
+}
+
+type SortOption = 'latest' | 'oldest' | 'highest' | 'lowest'
+
+type ReviewListResponse = {
+  data: Review[]
+  last_page: number
+  total?: number
+}
+
+function resolveReviewImageUrl(url: string | null | undefined) {
+  if (!url) return 'https://via.placeholder.com/48'
+  if (url.startsWith('http')) return url
+  const path = url.startsWith('/') ? url : `/${url}`
+  if (!path.startsWith('/storage/')) return `${API_BASE_URL}/storage${path}`
+  return `${API_BASE_URL}${path}`
+}
+
+export default function ReviewsAdminPage() {
+  const [reviews, setReviews] = useState<Review[]>([])
+  const [totalReviews, setTotalReviews] = useState(0)
+  const [loading, setLoading] = useState(true)
+  const [statusFilter, setStatusFilter] = useState<'all' | 'pending' | 'approved' | 'rejected'>('all')
+  const [sortBy, setSortBy] = useState<SortOption>('latest')
+  const [page, setPage] = useState(1)
+  const [totalPages, setTotalPages] = useState(1)
+  const token = typeof window !== 'undefined' ? window.localStorage.getItem('token') : null
+
+  const fetchReviews = useCallback(
+    async (
+      currentPage: number,
+      status: 'all' | 'pending' | 'approved' | 'rejected',
+      sort: SortOption,
+    ) => {
+      if (!token) return
+      setLoading(true)
+      try {
+        let url = `/api/admin/reviews?page=${currentPage}&limit=10`
+        if (status !== 'all') {
+          url += `&status=${status}`
+        }
+        const res = await apiFetch<ReviewListResponse>(url, { token })
+        const items = res.data || []
+        const sorted = [...items].sort((a, b) => {
+          if (sort === 'oldest') {
+            return new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+          }
+          if (sort === 'highest') {
+            return b.rating - a.rating
+          }
+          if (sort === 'lowest') {
+            return a.rating - b.rating
+          }
+          return new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+        })
+        setReviews(sorted)
+        setTotalPages(res.last_page || 1)
+        setTotalReviews(Number(res.total ?? items.length) || 0)
+      } catch (err) {
+        console.error(err)
+      } finally {
+        setLoading(false)
+      }
+    },
+    [token],
+  )
+
+  useEffect(() => {
+    const loadReviews = async () => {
+      await fetchReviews(page, statusFilter, sortBy)
+    }
+    void loadReviews()
+  }, [fetchReviews, page, statusFilter, sortBy])
+
+  const updateStatus = async (id: number, newStatus: Review['status']) => {
+    if (!token) return
+    try {
+      await apiFetch(`/api/admin/reviews/${id}`, {
+        method: 'PATCH',
+        token,
+        body: JSON.stringify({ status: newStatus }),
+      })
+      setReviews((prev) =>
+        prev.map((r) => (r.id === id ? { ...r, status: newStatus } : r))
+      )
+    } catch {
+      alert('Lỗi cập nhật trạng thái.')
+    }
+  }
+
+  const deleteReview = async (id: number) => {
+    if (!confirm('Bạn có chắc chắn muốn xoá đánh giá này?')) return
+    if (!token) return
+    try {
+      await apiFetch(`/api/admin/reviews/${id}`, { method: 'DELETE', token })
+      setReviews((prev) => prev.filter((r) => r.id !== id))
+    } catch {
+      alert('Lỗi khi xoá.')
+    }
+  }
+
+  const pendingCount = reviews.filter((r) => r.status === 'pending').length
+  const approvedCount = reviews.filter((r) => r.status === 'approved').length
+  const rejectedCount = reviews.filter((r) => r.status === 'rejected').length
+  const bestReview = reviews.find((r) => r.status === 'approved')
+
+  const applyFilters = async () => {
+    setPage(1)
+    await fetchReviews(1, statusFilter, sortBy)
+  }
+
+  return (
+    <div className="adminPageContainer">
+      <div className="reviewPageTop">
+        <div>
+          <h2 className="adminPageTitle">Quản lý Đánh giá</h2>
+          <p className="reviewPageLead">Theo dõi, duyệt và phản hồi các đánh giá sản phẩm từ khách hàng.</p>
+        </div>
+      </div>
+
+      <div className="statsGrid">
+        <div className="statWidget orange">
+          <div className="statIconWrap">📝</div>
+          <div>
+            <div className="statLabel">Tổng đánh giá</div>
+            <div className="statValue">{totalReviews.toLocaleString()}</div>
+            <div className="statTrend up">{approvedCount >= rejectedCount ? 'Ổn định' : 'Cần cải thiện'}</div>
+          </div>
+        </div>
+        <div className="statWidget cyan">
+          <div className="statIconWrap">⏳</div>
+          <div>
+            <div className="statLabel">Chờ duyệt</div>
+            <div className="statValue">{pendingCount}</div>
+            <div className="statTrend">Đang chờ xử lý</div>
+          </div>
+        </div>
+        <div className="statWidget green">
+          <div className="statIconWrap">✅</div>
+          <div>
+            <div className="statLabel">Đã duyệt</div>
+            <div className="statValue">{approvedCount}</div>
+            <div className="statTrend up">Tăng trưởng</div>
+          </div>
+        </div>
+        <div className="statWidget purple">
+          <div className="statIconWrap">⚠️</div>
+          <div>
+            <div className="statLabel">Bị từ chối</div>
+            <div className="statValue">{rejectedCount}</div>
+            <div className="statTrend">Cần kiểm tra</div>
+          </div>
+        </div>
+      </div>
+
+      <div className="reviewControls">
+        <div className="reviewControlGroup">
+          <label>Trạng thái</label>
+          <select
+            className="reviewadminSelect"
+            value={statusFilter}
+            onChange={(e: ChangeEvent<HTMLSelectElement>) => {
+              setStatusFilter(e.target.value as 'all' | 'pending' | 'approved' | 'rejected')
+              setPage(1)
+            }}
+          >
+            <option value="all">Tất cả trạng thái</option>
+            <option value="pending">Chờ duyệt</option>
+            <option value="approved">Đã duyệt</option>
+            <option value="rejected">Bị từ chối</option>
+          </select>
+        </div>
+
+        <div className="reviewControlGroup">
+          <label>Sắp xếp theo</label>
+          <select
+            className="reviewadminSelect"
+            value={sortBy}
+            onChange={(e: ChangeEvent<HTMLSelectElement>) => setSortBy(e.target.value as SortOption)}
+          >
+            <option value="latest">Mới nhất</option>
+            <option value="oldest">Cũ nhất</option>
+            <option value="highest">Đánh giá cao</option>
+            <option value="lowest">Đánh giá thấp</option>
+          </select>
+        </div>
+
+        <button className="adminPrimaryBtn" onClick={applyFilters}>Lọc kết quả</button>
+      </div>
+
+      <div className="adminTableWrap">
+        {loading ? (
+          <table className="adminTableNew">
+            <thead>
+              <tr>
+                <th>Sản phẩm</th>
+                <th>Người dùng</th>
+                <th>Rating</th>
+                <th>Bình luận</th>
+                <th>Trạng thái</th>
+                <th>Ngày tạo</th>
+                <th>Hành động</th>
+              </tr>
+            </thead>
+            <tbody>
+              {Array.from({ length: 8 }).map((_, i) => (
+                <tr key={i} className="admSkeletonRow">
+                  <td colSpan={7}>
+                    <div className="admSkeletonCell">
+                      <div className="admSkeletonBar" style={{ width: i % 2 === 0 ? '70%' : '90%' }} />
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        ) : reviews.length === 0 ? (
+          <div className="adminEmpty">Không có đánh giá nào.</div>
+        ) : (
+          <table className="adminTableNew">
+            <thead>
+              <tr>
+                {/* <th>ID</th> */}
+                <th>Sản phẩm</th>
+                <th>Người dùng</th>
+                <th>Rating</th>
+                <th>Bình luận</th>
+                <th>Trạng thái</th>
+                <th>Ngày tạo</th>
+                <th>Hành động</th>
+              </tr>
+            </thead>
+            <tbody>
+              {reviews.map((r) => (
+                <tr key={r.id}>
+                  {/* <td>#{r.id}</td> */}
+                  <td>
+                    <div className="reviewTableProduct">
+                      {r.product?.main_image_url ? (
+                        <img
+                          className="reviewTableProductImg"
+                          src={resolveReviewImageUrl(r.product.main_image_url)}
+                          alt={r.product.name}
+                        />
+                      ) : (
+                        <div className="reviewTableProductImg" />
+                      )}
+                      <span className="reviewTableProductName">{r.product?.name || '—'}</span>
+                    </div>
+                  </td>
+                  <td>{r.user?.name || '—'}</td>
+                  <td>{r.rating} <svg xmlns="http://www.w3.org/2000/svg"
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="#facc15">
+                    <path d="M12 2L14.9 8.6L22 9.3L16.8 14L18.3 21L12 17.3L5.7 21L7.2 14L2 9.3L9.1 8.6L12 2Z" />
+                  </svg></td>
+                  <td className="reviewTableComment">{r.comment}</td>
+                  <td>
+                    <span className={`reviewStatusBadge ${r.status}`}>
+                      {r.status === 'pending' ? 'Chờ duyệt' : r.status === 'approved' ? 'Đã duyệt' : 'Từ chối'}
+                    </span>
+                  </td>
+                  <td>{new Date(r.created_at).toLocaleDateString('vi-VN')}</td>
+                  <td>
+                    <div className="reviewActionRow">
+                      {r.status !== 'approved' && (
+                        <button className="reviewActionBtn" onClick={() => updateStatus(r.id, 'approved')}><svg xmlns="http://www.w3.org/2000/svg"
+                          width="20"
+                          height="20"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="#22c55e"
+                          stroke-width="2.5"
+                          stroke-linecap="round"
+                          stroke-linejoin="round">
+
+                          <circle cx="12" cy="12" r="10" />
+                          <path d="M8 12L11 15L16 9" />
+
+                        </svg></button>
+                      )}
+                      {r.status !== 'rejected' && (
+                        <button className="reviewActionBtn" onClick={() => updateStatus(r.id, 'rejected')}><svg xmlns="http://www.w3.org/2000/svg"
+                          width="20"
+                          height="20"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="red"
+                          stroke-width="2.5"
+                          stroke-linecap="round"
+                          stroke-linejoin="round">
+                          <circle cx="12" cy="12" r="10" />
+                          <line x1="8" y1="8" x2="16" y2="16" />
+                          <line x1="16" y1="8" x2="8" y2="16" />
+                        </svg></button>
+                      )}
+                      <button className="reviewActionBtn danger" onClick={() => deleteReview(r.id)}><svg xmlns="http://www.w3.org/2000/svg"
+                        width="20"
+                        height="20"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="#ef4444"
+                        stroke-width="2.2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round">
+
+                        <path d="M3 6H21" />
+                        <path d="M8 6V4H16V6" />
+                        <path d="M19 6L18 20H6L5 6" />
+                        <path d="M10 11V17" />
+                        <path d="M14 11V17" />
+
+                      </svg></button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+      </div>
+
+      <div className="adminPagination">
+        <button disabled={page <= 1} onClick={() => setPage((p) => p - 1)}>
+          Trước
+        </button>
+        <span>Trang {page} / {totalPages}</span>
+        <button disabled={page >= totalPages} onClick={() => setPage((p) => p + 1)}>
+          Sau
+        </button>
+      </div>
+
+      <div className="reviewSummaryGrid">
+        <div className="reviewSummaryCard">
+          <div className="reviewSummaryCardTitle">Đánh giá tốt nhất</div>
+          <div className="reviewSummaryCardValue">{bestReview?.product.name || 'Chưa có đánh giá duyệt'}</div>
+          <div className="reviewSummaryCardNote">Sản phẩm được đánh giá 5 sao nhiều nhất và có phản hồi tích cực.</div>
+        </div>
+        <div className="reviewSummaryCard">
+          <div className="reviewSummaryCardTitle">Thời gian phản hồi</div>
+          <div className="reviewSummaryCardValue">2.4 giờ</div>
+          <div className="reviewSummaryCardNote">Mục tiêu: Dưới 2 giờ.</div>
+        </div>
+        <div className="reviewSummaryCard">
+          <div className="reviewSummaryCardTitle">Cần chú ý</div>
+          <div className="reviewSummaryCardValue">{pendingCount} đánh giá</div>
+          <div className="reviewSummaryCardNote">{pendingCount > 0 ? 'Có đánh giá đang chờ xử lý. Xử lý trong hôm nay.' : 'Không có đánh giá mới cần chú ý.'}</div>
+        </div>
+      </div>
+    </div>
+  )
+}

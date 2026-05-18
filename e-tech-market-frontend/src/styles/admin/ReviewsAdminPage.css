@@ -1,0 +1,270 @@
+.adminTableNew {
+  width: 100%;
+  border-collapse: collapse;
+    scrollbar-width: none;
+    -ms-overflow-style: none; 
+}
+.adminTableWrap::-webkit-scrollbar {
+    display: none; 
+}
+
+.adminTableNew th {
+  text-align: left;
+  padding: 20px 24px;
+  background: #fafafa;
+  color: var(--admin-text-s);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  border-bottom: 1px solid var(--admin-border);
+}
+
+.adminTableNew td {
+  padding: 8px 8px;
+  border-bottom: 1px solid var(--admin-border);
+  font-size: 14px;
+}
+
+.reviewPageTop {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 24px;
+  margin-bottom: 28px;
+}
+
+.reviewPageLead {
+  margin: 10px 0 0;
+  color: var(--admin-text-s);
+  font-size: 14px;
+  max-width: 620px;
+}
+
+.reviewTopCard {
+  min-width: 220px;
+  padding: 22px;
+  border-radius: 22px;
+  background: var(--admin-card-glass);
+  border: 1px solid var(--admin-border);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.reviewTopCardLabel {
+  color: var(--admin-text-s);
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.reviewTopCardValue {
+  font-size: 36px;
+  font-weight: 700;
+}
+
+.reviewTopCardTrend {
+  color: #22c55e;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.reviewControls {
+  display: flex;
+  align-items: flex-end;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 24px;
+}
+
+.reviewControlGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 200px;
+}
+
+.reviewControlGroup label {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--admin-text-s);
+}
+
+.adminPrimaryBtn {
+  background: var(--admin-accent);
+  color: #ffffff;
+  border: none;
+  border-radius: 5px;
+  padding: 12px 22px;
+  cursor: pointer;
+  font-weight: 700;
+  box-shadow: 0 16px 32px rgba(249, 115, 22, 0.16);
+}
+
+.adminPrimaryBtn:hover {
+  transform: translateY(-1px);
+}
+
+.adminTableNew tr:hover {
+  background: rgba(249, 115, 22, 0.04);
+}
+
+.reviewTableProduct {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.reviewTableProductImg {
+  width: 48px;
+  height: 48px;
+  object-fit: cover;
+  background: none;
+}
+
+.reviewTableProductName {
+  font-weight: 700;
+  display: inline-block;
+  max-width: 220px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.reviewTableComment {
+  max-width: 320px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.reviewStatusBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.reviewStatusBadge.pending {
+  background: rgba(249, 115, 22, 0.12);
+  color: #c2410c;
+}
+
+.reviewStatusBadge.approved {
+  background: rgba(34, 197, 94, 0.12);
+  color: #166534;
+}
+
+.reviewStatusBadge.rejected {
+  background: rgba(239, 68, 68, 0.12);
+  color: #b91c1c;
+}
+
+.reviewActionRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.reviewActionBtn {
+  border: none;
+  background: none;
+  padding: 0 0;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-weight: 700;
+}
+
+.reviewActionBtn:hover {
+  background: #fef2f2;
+}
+
+.reviewActionBtn.danger {
+  border-color: rgba(239, 68, 68, 0.16);
+  color: #dc2626;
+}
+
+.reviewSummaryGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 20px;
+  margin-top: 32px;
+}
+
+.reviewSummaryCard {
+  border-radius: 20px;
+  background: var(--admin-card-glass);
+  border: 1px solid var(--admin-border);
+  padding: 24px;
+}
+
+.reviewSummaryCardTitle {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--admin-text-s);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+
+.reviewSummaryCardValue {
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.reviewSummaryCardNote {
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--admin-text-s);
+}
+
+.reviewadminSelect {
+  padding: 10px 14px;
+  border: 1px solid var(--admin-border);
+  border-radius: 5px;
+  background: #ffffff;
+  color: var(--admin-text-p);
+  cursor: pointer;
+}
+
+.adminPagination {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 24px;
+  flex-wrap: wrap;
+}
+
+.adminPagination button {
+  min-width: 90px;
+  padding: 10px 16px;
+  border-radius: 12px;
+  border: 1px solid var(--admin-border);
+  background: #ffffff;
+  color: var(--admin-text-p);
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.adminPagination button:hover:not(:disabled) {
+  border-color: var(--admin-accent);
+  color: var(--admin-accent);
+}
+
+.adminPagination button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.adminPagination span {
+  display: inline-flex;
+  align-items: center;
+  color: var(--admin-text-s);
+  font-weight: 700;
+}
