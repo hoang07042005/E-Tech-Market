@@ -8,19 +8,21 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('product_shop_qnas', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('product_id')->constrained('products')->cascadeOnDelete();
-            $table->foreignId('user_id')->nullable()->constrained('users')->nullOnDelete();
-            $table->string('asker_display_name', 120);
-            $table->text('question');
-            $table->text('answer')->nullable();
-            $table->timestamp('answered_at')->nullable();
-            $table->boolean('is_visible')->default(true);
-            $table->timestamps();
+        if (!Schema::hasTable('product_shop_qnas')) {
+            Schema::create('product_shop_qnas', function (Blueprint $table) {
+                $table->id();
+                $table->foreignId('product_id')->constrained('products')->cascadeOnDelete();
+                $table->foreignId('user_id')->nullable()->constrained('users')->nullOnDelete();
+                $table->string('asker_display_name', 120);
+                $table->text('question');
+                $table->text('answer')->nullable();
+                $table->timestamp('answered_at')->nullable();
+                $table->boolean('is_visible')->default(true);
+                $table->timestamps();
 
-            $table->index(['product_id', 'answered_at']);
-        });
+                $table->index(['product_id', 'answered_at']);
+            });
+        }
     }
 
     public function down(): void

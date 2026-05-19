@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Auth\PasswordResetController;
+use App\Http\Controllers\Auth\VerificationController;
 use App\Http\Controllers\Client\CartController;
 use App\Http\Controllers\Client\CategoriesController;
 use App\Http\Controllers\Client\ProductsController;
@@ -45,12 +46,21 @@ use Illuminate\Http\Request;
 |
 */
 
-Route::post('/auth/register', [AuthController::class, 'register']);
-Route::post('/auth/login', [AuthController::class, 'login']);
-Route::post('/auth/google-login', [AuthController::class, 'googleLogin']);
-Route::post('/auth/forgot-password', [PasswordResetController::class, 'forgot']);
-Route::post('/auth/reset-password', [PasswordResetController::class, 'reset']);
-Route::post('/contact/messages', [ContactMessagesController::class, 'store']);
+Route::middleware('throttle:5,1')->group(function () {
+    Route::post('/auth/register', [AuthController::class, 'register']);
+    Route::post('/auth/login', [AuthController::class, 'login']);
+    Route::post('/auth/google-login', [AuthController::class, 'googleLogin']);
+    Route::post('/auth/forgot-password', [PasswordResetController::class, 'forgot']);
+    Route::post('/auth/reset-password', [PasswordResetController::class, 'reset']);
+    
+    Route::get('/auth/email/verify/{id}/{hash}', [VerificationController::class, 'verify'])
+        ->middleware(['signed'])
+        ->name('verification.verify');
+});
+
+Route::middleware('throttle:10,1')->group(function () {
+    Route::post('/contact/messages', [ContactMessagesController::class, 'store']);
+});
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/me', [AuthController::class, 'me']);
@@ -59,6 +69,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::patch('/me/password', [AuthController::class, 'changePassword']);
     Route::get('/me/sessions', [AuthController::class, 'sessions']);
     Route::post('/auth/logout', [AuthController::class, 'logout']);
+
+    Route::post('/auth/email/verification-notification', [VerificationController::class, 'resend'])
+        ->middleware(['throttle:6,1'])
+        ->name('verification.send');
 
     Route::get('/cart', [CartController::class, 'show']);
     Route::post('/cart/items', [CartController::class, 'addItem']);
@@ -176,14 +190,12 @@ Route::get('/products', [ProductsController::class, 'index']);
 Route::get('/products/{product:slug}', [ProductsController::class, 'show']);
 Route::get('/products/{product:slug}/related', [ProductsController::class, 'related']);
 Route::get('/products/{product:slug}/shop-qna', [ClientProductShopQnaController::class, 'index']);
-Route::post('/products/{product:slug}/shop-qna', [ClientProductShopQnaController::class, 'store']);
 Route::get('/product-news/{news:slug}', [ProductNewsController::class, 'show']);
 Route::get('/reviews', [ReviewsController::class, 'index']);
 
 Route::get('/blog/categories', [App\Http\Controllers\Client\ClientBlogPostsController::class, 'categories']);
 Route::get('/blog/posts', [App\Http\Controllers\Client\ClientBlogPostsController::class, 'index']);
 Route::get('/blog/posts/{slug}', [App\Http\Controllers\Client\ClientBlogPostsController::class, 'show']);
-Route::post('/blog/posts/{slug}/comments', [App\Http\Controllers\Client\ClientBlogPostsController::class, 'storeComment']);
 Route::post('/newsletter/subscriptions', [NewsletterController::class, 'store']);
 
 Route::get('/store/config', [StoreProfileController::class, 'config']);
@@ -198,4 +210,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/products/{product}/reviews', [ReviewsController::class, 'store']);
     Route::get('/me/coupons', [ClientCouponsController::class, 'saved']);
     Route::post('/me/coupons/save', [ClientCouponsController::class, 'save']);
+    
+    // Moved from public routes
+    Route::post('/products/{product:slug}/shop-qna', [ClientProductShopQnaController::class, 'store']);
+    Route::post('/blog/posts/{slug}/comments', [App\Http\Controllers\Client\ClientBlogPostsController::class, 'storeComment']);
 });

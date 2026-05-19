@@ -22,11 +22,11 @@ $allowedOrigins = $allowedOrigins
     ->all();
 
 /*
-| When no explicit origins were configured via env/local defaults, fall back to "*"
-| but keep credentials false (required for "*" to be valid).
+| When no explicit origins were configured via env/local defaults, fall back to false 
+| instead of '*' to prevent wild-card origin attacks.
 */
 if ($allowedOrigins === []) {
-    $allowedOrigins = ['*'];
+    $allowedOrigins = ['http://localhost:5173']; // default safe fallback
 }
 
 return [

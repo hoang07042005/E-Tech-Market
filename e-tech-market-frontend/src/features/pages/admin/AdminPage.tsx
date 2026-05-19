@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import '@/styles/admin/AdminPage.css'
 import CategoryPage from './categories/CategoryPage'
 import ProductPage from './products/ProductPage'
@@ -150,7 +150,14 @@ function hasPermissionForTab(tab: AdminTab): boolean {
 }
 
 export default function AdminPage() {
-  const [activeTab, setActiveTab] = useState<AdminTab>('dashboard')
+  const { tab } = useParams<{ tab: string }>()
+  const activeTab = (tab || 'dashboard') as AdminTab
+  const navigate = useNavigate()
+  
+  const setActiveTab = (newTab: AdminTab) => {
+    navigate(`/admin/${newTab}`)
+  }
+
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false)
   const [createProductTick, setCreateProductTick] = useState(0)
   const [openEditProductId, setOpenEditProductId] = useState<number | null>(null)
@@ -160,7 +167,6 @@ export default function AdminPage() {
   const [userEmail] = useState(readUserEmailFromStorage)
   const [userAvatarUrl] = useState(readUserAvatarFromStorage)
   const [logoSrc, setLogoSrc] = useState('/logo.png')
-  const navigate = useNavigate()
   const token = typeof window !== 'undefined' ? window.localStorage.getItem('token') : null
 
   type QuickProduct = {

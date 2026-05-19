@@ -17,26 +17,30 @@ return new class extends Migration
             }
         });
 
-        Schema::create('blog_comments', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('blog_post_id')->constrained('blog_posts')->cascadeOnDelete();
-            $table->foreignId('user_id')->nullable()->constrained('users')->nullOnDelete();
-            $table->string('author_name', 120);
-            $table->string('author_email')->nullable();
-            $table->text('content');
-            $table->string('status', 30)->default('approved');
-            $table->timestamps();
-            $table->softDeletes();
-        });
+        if (!Schema::hasTable('blog_comments')) {
+            Schema::create('blog_comments', function (Blueprint $table) {
+                $table->id();
+                $table->foreignId('blog_post_id')->constrained('blog_posts')->cascadeOnDelete();
+                $table->foreignId('user_id')->nullable()->constrained('users')->nullOnDelete();
+                $table->string('author_name', 120);
+                $table->string('author_email')->nullable();
+                $table->text('content');
+                $table->string('status', 30)->default('approved');
+                $table->timestamps();
+                $table->softDeletes();
+            });
+        }
 
-        Schema::create('newsletter_subscriptions', function (Blueprint $table) {
-            $table->id();
-            $table->string('email')->unique();
-            $table->string('source', 80)->nullable();
-            $table->timestamp('subscribed_at')->nullable();
-            $table->timestamp('unsubscribed_at')->nullable();
-            $table->timestamps();
-        });
+        if (!Schema::hasTable('newsletter_subscriptions')) {
+            Schema::create('newsletter_subscriptions', function (Blueprint $table) {
+                $table->id();
+                $table->string('email')->unique();
+                $table->string('source', 80)->nullable();
+                $table->timestamp('subscribed_at')->nullable();
+                $table->timestamp('unsubscribed_at')->nullable();
+                $table->timestamps();
+            });
+        }
     }
 
     public function down(): void

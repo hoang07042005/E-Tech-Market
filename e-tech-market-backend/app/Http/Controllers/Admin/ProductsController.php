@@ -35,9 +35,26 @@ class ProductsController extends Controller
 
         return response()->json($variant->fresh());
     }
-    public function index(): JsonResponse
+    public function index(Request $request): JsonResponse
     {
-        $products = Product::with(['category', 'images', 'specs', 'variants', 'faqs', 'inventoryItems'])->orderBy('created_at', 'desc')->get();
+        $query = Product::with(['category', 'images', 'specs', 'variants', 'faqs', 'inventoryItems']);
+
+        if ($request->filled('search')) {
+            $search = $request->query('search');
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('brand', 'like', "%{$search}%")
+                  ->orWhereHas('category', function ($catQ) use ($search) {
+                      $catQ->where('name', 'like', "%{$search}%");
+                  });
+            });
+        }
+
+        if ($request->filled('per_page')) {
+            $query->limit((int)$request->query('per_page'));
+        }
+
+        $products = $query->orderBy('created_at', 'desc')->get();
         return response()->json($this->cleanUtf8($products->toArray()));
     }
 

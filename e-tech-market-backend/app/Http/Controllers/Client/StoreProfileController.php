@@ -107,18 +107,22 @@ class StoreProfileController extends Controller
      */
     public function config(): JsonResponse
     {
-        $raw = (array) $this->getSetting('store_profile', []);
-        $chat = (array) $this->getSetting('chat', [
-            'service' => 'none',
-            'facebook_page_id' => '',
-            'zalo_oa_id' => '',
-            'tawkto_property_id' => '',
-            'tawkto_widget_id' => '',
-        ]);
+        $config = \Illuminate\Support\Facades\Cache::remember('store_config', 300, function () {
+            $raw = (array) $this->getSetting('store_profile', []);
+            $chat = (array) $this->getSetting('chat', [
+                'service' => 'none',
+                'facebook_page_id' => '',
+                'zalo_oa_id' => '',
+                'tawkto_property_id' => '',
+                'tawkto_widget_id' => '',
+            ]);
 
-        return response()->json([
-            'maintenance_mode' => (bool) ($raw['maintenance_mode'] ?? false),
-            'chat' => $chat,
-        ]);
+            return [
+                'maintenance_mode' => (bool) ($raw['maintenance_mode'] ?? false),
+                'chat' => $chat,
+            ];
+        });
+
+        return response()->json($config);
     }
 }

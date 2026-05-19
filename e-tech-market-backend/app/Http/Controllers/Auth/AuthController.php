@@ -13,23 +13,17 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Validation\Rule;
+use Illuminate\Auth\Events\Registered;
 use Laravel\Sanctum\PersonalAccessToken;
-use Illuminate\Support\Facades\Http;
+use App\Http\Requests\Auth\LoginRequest;
+use App\Http\Requests\Auth\RegisterRequest;
+use App\Http\Resources\UserResource;
 
 class AuthController extends Controller
 {
-    public function register(Request $request): JsonResponse
+    public function register(RegisterRequest $request): JsonResponse
     {
-        $data = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'email', 'max:255', 'unique:users,email'],
-            'password' => ['required', 'string', 'min:8'],
-            'phone' => ['nullable', 'string', 'max:30'],
-            'address_line' => ['nullable', 'string'],
-            'province' => ['nullable', 'string', 'max:100'],
-            'district' => ['nullable', 'string', 'max:100'],
-            'ward' => ['nullable', 'string', 'max:100'],
-        ]);
+        $data = $request->validated();
 
         $user = User::create([
             'name' => $data['name'],
@@ -52,19 +46,18 @@ class AuthController extends Controller
         $expiresAt = Carbon::now()->addHours(24);
         $token = $user->createToken('auth_token', ['*'], $expiresAt)->plainTextToken;
 
+        event(new Registered($user));
+
         $user->load('roles');
         return response()->json([
             'token' => $token,
-            'user' => $user,
+            'user' => new UserResource($user),
         ]);
     }
 
-    public function login(Request $request): JsonResponse
+    public function login(LoginRequest $request): JsonResponse
     {
-        $data = $request->validate([
-            'email' => ['required', 'email', 'max:255'],
-            'password' => ['required', 'string'],
-        ]);
+        $data = $request->validated();
 
         $user = User::where('email', $data['email'])->first();
         if (!$user || !Hash::check($data['password'], $user->password) || !$user->is_active) {
@@ -78,13 +71,13 @@ class AuthController extends Controller
         $user->load('roles');
         return response()->json([
             'token' => $token,
-            'user' => $user,
+            'user' => new UserResource($user),
         ]);
     }
 
     public function me(Request $request): JsonResponse
     {
-        return response()->json($request->user()->load('roles'));
+        return response()->json(new UserResource($request->user()->load('roles')));
     }
 
     public function updateMe(Request $request): JsonResponse
@@ -115,7 +108,7 @@ class AuthController extends Controller
         }
         $user->save();
 
-        return response()->json($user->fresh()->load('roles'));
+        return response()->json(new UserResource($user->fresh()->load('roles')));
     }
 
     public function updateAvatar(Request $request): JsonResponse
@@ -134,7 +127,7 @@ class AuthController extends Controller
         $user->avatar_url = URL::to($disk->url($path));
         $user->save();
 
-        return response()->json($user->fresh()->load('roles'));
+        return response()->json(new UserResource($user->fresh()->load('roles')));
     }
 
     public function changePassword(Request $request): JsonResponse
@@ -280,7 +273,7 @@ class AuthController extends Controller
 
         return response()->json([
             'token' => $token,
-            'user' => $user,
+            'user' => new UserResource($user),
         ]);
     }
 }

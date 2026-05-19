@@ -243,6 +243,14 @@ function AppFrame() {
               </ProtectedRoute>
             } 
           />
+          <Route 
+            path="/admin/:tab" 
+            element={
+              <ProtectedRoute>
+                <AdminPage />
+              </ProtectedRoute>
+            } 
+          />
         </Routes>
       </Suspense>
       {!hideChrome && <FooterPage />}

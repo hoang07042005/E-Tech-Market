@@ -94,6 +94,7 @@ VITE_API_BASE_URL=http://localhost:8000
 
 ### 3. Start the Vite Dev Server
 ```bash
+cd e-tech-market-frontend
 npm run dev
 ```
 The frontend application will be hosted at `http://localhost:5173`.
@@ -116,6 +117,66 @@ cd e-tech-market-frontend
 npm run lint
 npm run build
 ```
+
+---
+
+## 🐳 Docker & CI/CD Setup
+
+The project provides built-in configuration for containerized deployment and automated testing.
+
+### Local Docker Deployment
+You can spin up the entire application stack (Frontend, Backend, PostgreSQL, Redis, and Queue Worker) with a single command:
+```bash
+docker-compose up -d --build
+```
+- **Frontend SPA**: `http://localhost:5173`
+- **Backend API**: `http://localhost:8000`
+
+### CI/CD Pipeline
+GitHub Actions are configured in `.github/workflows/ci.yml`. The pipeline automatically executes:
+- PHPUnit testing for the Laravel Backend (using SQLite in-memory).
+- Node.js dependency installation, TypeScript Type Checking, and React Production Builds for the Frontend.
+
+---
+
+## 🔄 Queue Worker (Production Setup)
+
+The application utilizes background queues (`database` connection) to handle asynchronous tasks like sending Order Confirmation emails and Email Verification links.
+
+For **Local Development**, you can run:
+```bash
+cd e-tech-market-backend
+php artisan queue:work
+```
+
+For **Production Environments**, it is highly recommended to use **Supervisor** to keep the queue worker processes running persistently.
+
+### Supervisor Configuration (Linux)
+1. Install Supervisor:
+   ```bash
+   sudo apt-get install supervisor
+   ```
+2. Create a configuration file `/etc/supervisor/conf.d/etech-worker.conf`:
+   ```ini
+   [program:etech-worker]
+   process_name=%(program_name)s_%(process_num)02d
+   command=php /var/www/etech/e-tech-market-backend/artisan queue:work --sleep=3 --tries=3 --max-time=3600
+   autostart=true
+   autorestart=true
+   stopasgroup=true
+   killasgroup=true
+   user=www-data
+   numprocs=2
+   redirect_stderr=true
+   stdout_logfile=/var/www/etech/e-tech-market-backend/storage/logs/worker.log
+   stopwaitsecs=3600
+   ```
+3. Start the Supervisor service:
+   ```bash
+   sudo supervisorctl reread
+   sudo supervisorctl update
+   sudo supervisorctl start etech-worker:*
+   ```
 
 ---
 

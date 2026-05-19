@@ -351,7 +351,7 @@ export default function OrdersAdminPage() {
       const fd = new FormData()
       if (rrNote.trim()) fd.set('admin_note', rrNote.trim())
       rrRefundFiles.forEach((f) => fd.append('refund_proof[]', f))
-      const updated = await processOrderReturn<OrderDetail>(detail.id, 'refunded', fd, token)
+      const updated = await processOrderReturn<OrderDetail>(detail.id, 'refunded', fd as any, token)
       setDetail(updated)
       updateRowReturnRequest(updated)
       setRrRefundFiles([])

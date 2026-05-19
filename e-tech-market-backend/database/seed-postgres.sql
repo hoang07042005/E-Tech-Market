@@ -20,8 +20,9 @@ TRUNCATE TABLE
   coupons,
   shipping_methods,
   products,
+  product_variants,
   categories,
-  user_roles,
+  model_has_roles,
   roles,
   users
 RESTART IDENTITY CASCADE;
@@ -29,10 +30,10 @@ RESTART IDENTITY CASCADE;
 -- ------------------------------------------------------------
 -- Roles
 -- ------------------------------------------------------------
-INSERT INTO roles (id, name, slug, description, created_at, updated_at) VALUES
-  (1, 'admin', 'admin', 'Quản trị hệ thống', now(), now()),
-  (2, 'staff', 'staff', 'Nhân viên bán hàng/CSKH', now(), now()),
-  (3, 'customer', 'customer', 'Khách hàng', now(), now());
+INSERT INTO roles (id, name, slug, description, guard_name, created_at, updated_at) VALUES
+  (1, 'admin', 'admin', 'Quản trị hệ thống', 'api', now(), now()),
+  (2, 'staff', 'staff', 'Nhân viên bán hàng/CSKH', 'api', now(), now()),
+  (3, 'customer', 'customer', 'Khách hàng', 'api', now(), now());
 
 -- ------------------------------------------------------------
 -- Users (password hash for "123456")
@@ -51,10 +52,10 @@ INSERT INTO users (
    '$2y$10$8f8JuFJ..PD0vYPTMMnxeOpq3QRUNz/5xi6Wtt82nZ6xcXHgEorIm',
    '0901000003', '56 Đường C', 'Đà Nẵng', 'Hải Châu', 'Thạch Thang', true, now(), NULL, now(), now());
 
-INSERT INTO user_roles (user_id, role_id, created_at) VALUES
-  (1, 1, now()),
-  (2, 2, now()),
-  (3, 3, now());
+INSERT INTO model_has_roles (role_id, model_type, model_id) VALUES
+  (1, 'App\Models\User', 1),
+  (2, 'App\Models\User', 2),
+  (3, 'App\Models\User', 3);
 
 -- ------------------------------------------------------------
 -- Categories
@@ -69,20 +70,31 @@ INSERT INTO categories (id, parent_id, name, slug, description, sort_order, is_a
 -- Products
 -- ------------------------------------------------------------
 INSERT INTO products (
-  id, category_id, name, slug, brand, description, price, main_image_url, is_active, created_at, updated_at, deleted_at
+  id, category_id, name, slug, brand, description, main_image_url, is_active, created_at, updated_at, deleted_at
 ) VALUES
   (1, 2, 'iPhone 15 Pro 256GB', 'iphone-15-pro-256gb', 'Apple',
    'Thiết kế cao cấp, hiệu năng mạnh mẽ.',
-   8000000.00, '/uploads/products/iphone15pro-main.jpg', true, now(), now(), NULL),
+   '/uploads/products/iphone15pro-main.jpg', true, now(), now(), NULL),
   (2, 3, 'MacBook Air M3 13-inch 16GB/512GB', 'macbook-air-m3-13-16gb-512gb', 'Apple',
    'M3 mạnh mẽ, mỏng nhẹ, pin tốt.',
-   15000000.00, '/uploads/products/macbookair-m3-main.jpg', true, now(), now(), NULL),
+   '/uploads/products/macbookair-m3-main.jpg', true, now(), now(), NULL),
   (3, 4, 'Ốp lưng chống sốc iPhone 15 Pro', 'op-lung-chong-soc-iphone-15-pro', 'Generic',
    'Chống sốc, chống trầy, ôm máy chắc chắn.',
-   200000.00, '/uploads/products/case-iphone15pro-main.jpg', true, now(), now(), NULL),
+   '/uploads/products/case-iphone15pro-main.jpg', true, now(), now(), NULL),
   (4, 2, 'Samsung Galaxy S24 Ultra 256GB', 'galaxy-s24-ultra-256gb', 'Samsung',
    'Camera ấn tượng, màn hình lớn, bền bỉ.',
-   12000000.00, '/uploads/products/s24ultra-main.jpg', true, now(), now(), NULL);
+   '/uploads/products/s24ultra-main.jpg', true, now(), now(), NULL);
+
+-- ------------------------------------------------------------
+-- Product variants
+-- ------------------------------------------------------------
+INSERT INTO product_variants (
+  id, product_id, variant_name, color, configuration, sku, price, stock_quantity, image_url, is_active, created_at, updated_at
+) VALUES
+  (1, 1, 'iPhone 15 Pro 256GB - Titan Tự Nhiên', 'Titan Tự Nhiên', '256GB', 'IP15P-256-NAT', 8000000.00, 50, '/uploads/products/iphone15pro-main.jpg', true, now(), now()),
+  (2, 2, 'MacBook Air M3 - Midnight', 'Midnight', '16GB RAM, 512GB SSD', 'MBA-M3-16-512-MID', 15000000.00, 20, '/uploads/products/macbookair-m3-main.jpg', true, now(), now()),
+  (3, 3, 'Ốp lưng chống sốc iPhone 15 Pro - Đen', 'Đen', 'Tiêu chuẩn', 'OP-IP15P-BLK', 200000.00, 200, '/uploads/products/case-iphone15pro-main.jpg', true, now(), now()),
+  (4, 4, 'Samsung Galaxy S24 Ultra 256GB - Xám', 'Xám', '256GB', 'S24U-256-GRY', 12000000.00, 30, '/uploads/products/s24ultra-main.jpg', true, now(), now());
 
 -- ------------------------------------------------------------
 -- Product images
@@ -155,9 +167,9 @@ INSERT INTO coupons (
 INSERT INTO carts (id, user_id, status, created_at, updated_at) VALUES
   (1, 3, 'active', now(), now());
 
-INSERT INTO cart_items (cart_id, product_id, quantity, unit_price, added_at) VALUES
-  (1, 1, 1, 8000000.00, now()),
-  (1, 3, 2, 200000.00, now());
+INSERT INTO cart_items (cart_id, product_id, variant_id, quantity, unit_price, added_at) VALUES
+  (1, 1, 1, 1, 8000000.00, now()),
+  (1, 3, 3, 2, 200000.00, now());
 
 -- ------------------------------------------------------------
 -- Orders (customer)
@@ -181,9 +193,9 @@ INSERT INTO orders (
    'Đà Nẵng', 'Hải Châu', 'Thạch Thang',
    'Giao đúng giờ giúp em!', now(), now());
 
-INSERT INTO order_items (id, order_id, product_id, product_name_snapshot, quantity, unit_price, total_price) VALUES
-  (1, 1, 1, 'iPhone 15 Pro 256GB', 1, 8000000.00, 8000000.00),
-  (2, 1, 3, 'Ốp lưng chống sốc iPhone 15 Pro', 2, 200000.00, 400000.00);
+INSERT INTO order_items (id, order_id, product_id, variant_id, product_name_snapshot, quantity, unit_price, total_price) VALUES
+  (1, 1, 1, 1, 'iPhone 15 Pro 256GB', 1, 8000000.00, 8000000.00),
+  (2, 1, 3, 3, 'Ốp lưng chống sốc iPhone 15 Pro', 2, 200000.00, 400000.00);
 
 -- ------------------------------------------------------------
 -- Payments + Transactions
@@ -208,10 +220,10 @@ INSERT INTO coupon_usage (
 -- ------------------------------------------------------------
 INSERT INTO reviews (
   id, product_id, user_id, order_id,
-  rating, title, comment, status, created_at, updated_at, deleted_at
+  rating, comment, status, created_at, updated_at, deleted_at
 ) VALUES
-  (1, 1, 3, 1, 5, 'Sản phẩm rất tốt', 'Đúng như mô tả, giao nhanh.', 'approved', now(), now(), NULL),
-  (2, 3, 3, 1, 4, 'Ốp ổn', 'Chống sốc ổn, dùng được lâu.', 'approved', now(), now(), NULL);
+  (1, 1, 3, 1, 5, 'Đúng như mô tả, giao nhanh.', 'approved', now(), now(), NULL),
+  (2, 3, 3, 1, 4, 'Chống sốc ổn, dùng được lâu.', 'approved', now(), now(), NULL);
 
 -- ------------------------------------------------------------
 -- Wishlist (customer)
@@ -238,6 +250,7 @@ SELECT setval(pg_get_serial_sequence('users', 'id'), (SELECT COALESCE(MAX(id), 1
 SELECT setval(pg_get_serial_sequence('roles', 'id'), (SELECT COALESCE(MAX(id), 1) FROM roles), true);
 SELECT setval(pg_get_serial_sequence('categories', 'id'), (SELECT COALESCE(MAX(id), 1) FROM categories), true);
 SELECT setval(pg_get_serial_sequence('products', 'id'), (SELECT COALESCE(MAX(id), 1) FROM products), true);
+SELECT setval(pg_get_serial_sequence('product_variants', 'id'), (SELECT COALESCE(MAX(id), 1) FROM product_variants), true);
 SELECT setval(pg_get_serial_sequence('product_images', 'id'), (SELECT COALESCE(MAX(id), 1) FROM product_images), true);
 SELECT setval(pg_get_serial_sequence('product_specs', 'id'), (SELECT COALESCE(MAX(id), 1) FROM product_specs), true);
 SELECT setval(pg_get_serial_sequence('carts', 'id'), (SELECT COALESCE(MAX(id), 1) FROM carts), true);

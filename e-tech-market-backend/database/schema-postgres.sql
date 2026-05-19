@@ -53,6 +53,24 @@ CREATE TABLE IF NOT EXISTS products (
 CREATE INDEX IF NOT EXISTS idx_products_category_id ON products(category_id);
 CREATE INDEX IF NOT EXISTS idx_products_is_active ON products(is_active);
 
+CREATE TABLE IF NOT EXISTS product_variants (
+  id BIGSERIAL PRIMARY KEY,
+  product_id BIGINT NOT NULL REFERENCES products(id) ON DELETE CASCADE,
+  variant_name VARCHAR(255) NOT NULL,
+  color VARCHAR(255) NULL,
+  configuration VARCHAR(255) NULL,
+  sku VARCHAR(255) NULL UNIQUE,
+  price NUMERIC(15,2) NOT NULL,
+  stock_quantity INT NOT NULL DEFAULT 0,
+  image_url TEXT NULL,
+  is_active BOOLEAN NOT NULL DEFAULT TRUE,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  deleted_at TIMESTAMPTZ NULL
+);
+
+CREATE INDEX IF NOT EXISTS idx_product_variants_product_id ON product_variants(product_id);
+
 CREATE TABLE IF NOT EXISTS product_images (
   id BIGSERIAL PRIMARY KEY,
   product_id BIGINT NOT NULL REFERENCES products(id) ON DELETE CASCADE,

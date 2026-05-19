@@ -22,78 +22,18 @@ use App\Notifications\OrderConfirmationNotification;
 use Illuminate\Support\Facades\Notification as NotificationFacade;
 use App\Models\Notification;
 use App\Models\User;
+use App\Services\OrderService;
 use App\Support\ProductInventorySync;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Http\Requests\Client\StoreOrderRequest;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Str;
 
 class OrdersController extends Controller
 {
-    private function getAdminSetting(string $key, mixed $default = null): mixed
-    {
-        $row = AdminSetting::query()->where('key', $key)->first();
-        return $row ? ($row->value ?? $default) : $default;
-    }
-
-    private function findPurchasableVariant(Product $product, ?int $variantId): ProductVariant
-    {
-        $query = ProductVariant::query()
-            ->where('product_id', $product->id)
-            ->where('is_active', true);
-
-        if ($variantId) {
-            $query->where('id', $variantId);
-        } else {
-            $query->orderBy('id');
-        }
-
-        $variant = $query->first();
-        if (!$variant) {
-            throw ValidationException::withMessages([
-                'items' => "Phiên bản của sản phẩm {$product->name} không hợp lệ.",
-            ]);
-        }
-
-        return $variant;
-    }
-
-    private function reserveVariantStock(Product $product, ?int $variantId, int $qty): ProductVariant
-    {
-        $query = ProductVariant::query()
-            ->where('product_id', $product->id)
-            ->where('is_active', true)
-            ->lockForUpdate();
-
-        if ($variantId) {
-            $query->where('id', $variantId);
-        } else {
-            $query->orderBy('id');
-        }
-
-        $variant = $query->first();
-        if (!$variant) {
-            throw ValidationException::withMessages([
-                'items' => "Phiên bản của sản phẩm {$product->name} không hợp lệ.",
-            ]);
-        }
-
-        $stock = (int) ($variant->stock_quantity ?? 0);
-        if ($stock < $qty) {
-            throw ValidationException::withMessages([
-                'items' => "Sản phẩm {$product->name} chỉ còn {$stock} sản phẩm.",
-            ]);
-        }
-
-        $variant->stock_quantity = $stock - $qty;
-        $variant->save();
-
-        ProductInventorySync::syncFromVariants($product->fresh(), 'order_checkout');
-
-        return $variant;
-    }
 
     public function index(Request $request): JsonResponse
     {
@@ -166,6 +106,26 @@ class OrdersController extends Controller
         $prevStatus = $cur;
         $order->status = 'cancelled';
         $order->save();
+
+        // Restore stock
+        $order->loadMissing('items');
+        $productIdsToSync = [];
+        foreach ($order->items as $item) {
+            if ($item->variant_id) {
+                $variant = ProductVariant::find($item->variant_id);
+                if ($variant) {
+                    $variant->stock_quantity = (int) ($variant->stock_quantity ?? 0) + (int) $item->quantity;
+                    $variant->save();
+                    $productIdsToSync[$variant->product_id] = true;
+                }
+            }
+        }
+        foreach (array_keys($productIdsToSync) as $pid) {
+            $p = Product::find($pid);
+            if ($p) {
+                ProductInventorySync::syncFromVariants($p, 'order_cancelled');
+            }
+        }
 
         OrderStatusHistory::create([
             'order_id' => (int) $order->id,
@@ -355,27 +315,14 @@ class OrdersController extends Controller
         return $this->show($order, $request);
     }
 
-    public function store(Request $request): JsonResponse
+    public function store(StoreOrderRequest $request, OrderService $orderService): JsonResponse
     {
         $user = $request->user();
-
-        $data = $request->validate([
-            'shipping_name' => ['required', 'string', 'max:255'],
-            'shipping_phone' => ['required', 'string', 'max:30'],
-            'shipping_address_line' => ['required', 'string'],
-            'shipping_province' => ['nullable', 'string', 'max:100'],
-            'shipping_district' => ['nullable', 'string', 'max:100'],
-            'shipping_ward' => ['nullable', 'string', 'max:100'],
-            'shipping_method_id' => ['nullable', 'integer', 'min:1'],
-            'shipping_zone_id' => ['nullable', 'integer', 'min:1'],
-            'coupon_code' => ['nullable', 'string', 'max:100'],
-            'notes' => ['nullable', 'string'],
-            'payment_method' => ['nullable', 'string', 'max:50'], // cod | vnpay | momo
-        ]);
+        $data = $request->validated();
 
         $cart = Cart::query()->where('user_id', $user->id)->first();
         if (!$cart) {
-            return response()->json(['message' => 'Cart not found'], 422);
+            return response()->json(['message' => 'Không tìm thấy giỏ hàng'], 422);
         }
 
         $items = CartItem::query()
@@ -384,418 +331,48 @@ class OrdersController extends Controller
             ->get();
 
         if ($items->isEmpty()) {
-            return response()->json(['message' => 'Cart is empty'], 422);
+            return response()->json(['message' => 'Giỏ hàng của bạn đang trống'], 422);
         }
 
-        return DB::transaction(function () use ($user, $cart, $items, $data) {
-            $subtotal = 0.0;
-            $pricedItems = [];
-            foreach ($items as $it) {
-                /** @var Product $product */
-                $product = $it->product;
-                $variant = $this->findPurchasableVariant($product, $it->variant_id ? (int) $it->variant_id : null);
-                $unitPrice = (float) $variant->effective_price;
-                $pricedItems[$it->id] = ['variant' => $variant, 'unit_price' => $unitPrice];
-                $subtotal += $unitPrice * (int) $it->quantity;
-            }
-            
-            $flashSaleDiscount = 0;
-            foreach ($items as $it) {
-                $productId = $it->product_id;
-                $variantId = $it->variant_id;
+        $itemsInput = $items->map(function ($it) {
+            return [
+                'product_id' => clone $it->product_id,
+                'variant_id' => clone $it->variant_id,
+                'quantity' => clone $it->quantity,
+            ];
+        })->toArray();
 
-                // Priority: Specific Variant Sale -> Product-wide Sale
-                $activeFlashSale = FlashSaleItem::query()
-                    ->where('product_id', $productId)
-                    ->where(function($q) use ($variantId) {
-                        $q->where('variant_id', $variantId)
-                          ->orWhereNull('variant_id');
-                    })
-                    ->whereHas('flashSale', function($q) {
-                        $q->where('status', \App\Models\FlashSale::STATUS_ACTIVE)
-                          ->where('start_at', '<=', now())
-                          ->where('end_at', '>=', now());
-                    })
-                    ->orderByRaw('variant_id IS NULL ASC') // Variant-specific first
-                    ->first();
+        // Pass actual array of values without relying on eloquent mapping clone issues
+        $cleanItemsInput = [];
+        foreach($itemsInput as $it) {
+            $cleanItemsInput[] = [
+                'product_id' => (int) $it['product_id'],
+                'variant_id' => $it['variant_id'] ? (int) $it['variant_id'] : null,
+                'quantity' => (int) $it['quantity'],
+            ];
+        }
 
-                if ($activeFlashSale) {
-                    // Check limit
-                    if ($activeFlashSale->quantity_limit !== null && $activeFlashSale->sold_quantity + $it->quantity > $activeFlashSale->quantity_limit) {
-                        throw new \Exception("Sản phẩm {$it->product->name} đã hết suất Flash Sale.");
-                    }
+        $order = $orderService->createOrder($user, $data, $cleanItemsInput, $cart);
 
-                    $unitPrice = (float) ($pricedItems[$it->id]['unit_price'] ?? 0);
-                    $saving = ($unitPrice - (float)$activeFlashSale->flash_sale_price) * $it->quantity;
-                    $flashSaleDiscount += max(0, $saving);
-                    
-                    // Increment sold quantity
-                    $activeFlashSale->increment('sold_quantity', $it->quantity);
-                }
-            }
-
-            $discount = $flashSaleDiscount;
-            $coupon = null;
-            if (!empty($data['coupon_code'])) {
-                $coupon = Coupon::query()->where('code', $data['coupon_code'])->first();
-                if (!$coupon || !$coupon->isValidNow()) {
-                    return response()->json(['message' => 'Coupon invalid'], 422);
-                }
-                
-                $calcBase = max(0, $subtotal - $flashSaleDiscount);
-                
-                if ($calcBase < (float) $coupon->min_order_amount) {
-                    return response()->json(['message' => 'Coupon min order not met'], 422);
-                }
-
-                $usageCount = CouponUsage::query()->where('coupon_id', $coupon->id)->count();
-                if ($coupon->max_uses !== null && $usageCount >= $coupon->max_uses) {
-                    return response()->json(['message' => 'Coupon usage limit reached'], 422);
-                }
-
-                $userUsageCount = CouponUsage::query()
-                    ->where('coupon_id', $coupon->id)
-                    ->where('user_id', $user->id)
-                    ->count();
-                if ($coupon->max_uses_per_user !== null && $userUsageCount >= $coupon->max_uses_per_user) {
-                    return response()->json(['message' => 'Coupon usage per user limit reached'], 422);
-                }
-
-                $couponDiscount = 0;
-                if ($coupon->coupon_type === 'percentage') {
-                    $couponDiscount = $calcBase * ((float) $coupon->value / 100);
-                } else {
-                    $couponDiscount = (float) $coupon->value;
-                }
-                $discount += min($couponDiscount, $calcBase);
-            }
-
-            $shippingFee = 0;
-            $shippingMethodId = null;
-            $shippingZoneId = null;
-            if (!empty($data['shipping_method_id'])) {
-                $shippingMethodId = (int) $data['shipping_method_id'];
-                $shippingMethod = ShippingMethod::query()->find($shippingMethodId);
-                if (!$shippingMethod || !$shippingMethod->is_active) {
-                    return response()->json(['message' => 'Shipping method invalid'], 422);
-                }
-                $shippingFee = (float) $shippingMethod->base_fee;
-            }
-            if (!empty($data['shipping_zone_id'])) {
-                $shippingZoneId = (int) $data['shipping_zone_id'];
-                $zone = ShippingZone::query()->find($shippingZoneId);
-                if (!$zone || !$zone->is_active) {
-                    return response()->json(['message' => 'Shipping zone invalid'], 422);
-                }
-                $shippingFee += (float) $zone->fee;
-            }
-
-            $shippingPolicy = (array) $this->getAdminSetting('shipping_policy', [
-                'free_shipping_min' => 0,
-                'apply_global' => true,
-            ]);
-            $freeMin = (float) ($shippingPolicy['free_shipping_min'] ?? 0);
-            $applyGlobal = (bool) ($shippingPolicy['apply_global'] ?? true);
-            if ($applyGlobal && $freeMin > 0 && $subtotal >= $freeMin) {
-                $shippingFee = 0;
-            }
-
-            $orderCode = $this->generateOrderCode();
-
-            $order = Order::query()->create([
-                'order_code' => $orderCode,
-                'user_id' => $user->id,
-                'cart_id' => $cart->id,
-                'coupon_id' => $coupon?->id,
-                'shipping_method_id' => $shippingMethodId,
-                'shipping_zone_id' => $shippingZoneId,
-                'status' => 'pending',
-                'payment_status' => 'pending',
-                'currency' => 'VND',
-                'subtotal_amount' => $subtotal,
-                'discount_amount' => $discount,
-                'shipping_fee' => $shippingFee,
-                'total_amount' => max(0, $subtotal - $discount + $shippingFee),
-                'shipping_name' => $data['shipping_name'],
-                'shipping_phone' => $data['shipping_phone'],
-                'shipping_address_line' => $data['shipping_address_line'],
-                'shipping_province' => $data['shipping_province'] ?? null,
-                'shipping_district' => $data['shipping_district'] ?? null,
-                'shipping_ward' => $data['shipping_ward'] ?? null,
-                'notes' => $data['notes'] ?? null,
-            ]);
-
-            $paymentMethod = (string) ($data['payment_method'] ?? 'cod');
-            if (!in_array($paymentMethod, ['cod', 'vnpay', 'momo'], true)) {
-                $paymentMethod = 'cod';
-            }
-
-            Payment::query()->create([
-                'order_id' => $order->id,
-                'method' => $paymentMethod,
-                'amount' => $order->total_amount,
-                'currency' => $order->currency ?? 'VND',
-                'status' => 'pending',
-            ]);
-
-            foreach ($items as $it) {
-                /** @var Product $product */
-                $product = $it->product;
-                $reservedVariant = $this->reserveVariantStock($product, $it->variant_id ? (int) $it->variant_id : null, (int) $it->quantity);
-                $unitPrice = (float) ($pricedItems[$it->id]['unit_price'] ?? $reservedVariant->effective_price);
-                OrderItem::query()->create([
-                    'order_id' => $order->id,
-                    'product_id' => $product->id,
-                    'variant_id' => $reservedVariant->id,
-                    'product_name_snapshot' => $product->name,
-                    'quantity' => $it->quantity,
-                    'unit_price' => $unitPrice,
-                    'total_price' => $unitPrice * $it->quantity,
-                ]);
-            }
-
-            if ($coupon) {
-                CouponUsage::query()->create([
-                    'coupon_id' => $coupon->id,
-                    'user_id' => $user->id,
-                    'order_id' => $order->id,
-                    'discount_amount' => $discount,
-                ]);
-            }
-
-            // Clear cart after checkout.
-            CartItem::query()->where('cart_id', $cart->id)->delete();
-            $cart->status = 'active';
-            $cart->save();
-
-            $order->load(['items.product', 'items.variant']);
-            return response()->json($order, 201);
-        });
+        return response()->json($order, 201);
     }
 
     /**
      * Create order directly from frontend-provided items (localStorage cart).
      * This avoids creating multiple orders by allowing the client to retry payment for the same order id.
      */
-    public function storeFromItems(Request $request): JsonResponse
+    public function storeFromItems(StoreOrderRequest $request, OrderService $orderService): JsonResponse
     {
         $user = $request->user();
-
-        $data = $request->validate([
-            'shipping_name' => ['required', 'string', 'max:255'],
-            'shipping_phone' => ['required', 'string', 'max:30'],
-            'shipping_address_line' => ['required', 'string'],
-            'shipping_province' => ['nullable', 'string', 'max:100'],
-            'shipping_district' => ['nullable', 'string', 'max:100'],
-            'shipping_ward' => ['nullable', 'string', 'max:100'],
-            'shipping_method_id' => ['nullable', 'integer', 'min:1'],
-            'shipping_zone_id' => ['nullable', 'integer', 'min:1'],
-            'coupon_code' => ['nullable', 'string', 'max:100'],
-            'notes' => ['nullable', 'string'],
-            'payment_method' => ['required', 'string', 'max:50'], // cod | vnpay | momo
-            'items' => ['required', 'array', 'min:1'],
-            'items.*.product_id' => ['required', 'integer', 'min:1'],
-            'items.*.variant_id' => ['nullable', 'integer', 'min:1'],
-            'items.*.quantity' => ['required', 'integer', 'min:1'],
-        ]);
+        $data = $request->validated();
 
         $paymentMethod = (string) $data['payment_method'];
         if (!in_array($paymentMethod, ['cod', 'vnpay', 'momo'], true)) {
-            return response()->json(['message' => 'Payment method invalid'], 422);
+            return response()->json(['message' => 'Phương thức thanh toán không hợp lệ'], 422);
         }
 
-        $itemsInput = $data['items'];
+        $order = $orderService->createOrder($user, $data, $data['items'], null);
 
-        return DB::transaction(function () use ($user, $data, $itemsInput, $paymentMethod) {
-            $subtotal = 0.0;
-            
-            // Tính subtotal trước
-            foreach ($itemsInput as $it) {
-                $productId = (int) $it['product_id'];
-                $variantId = isset($it['variant_id']) ? (int) $it['variant_id'] : null;
-                $qty = (int) $it['quantity'];
-
-                $product = Product::query()->where('id', $productId)->where('is_active', true)->first();
-                if (!$product) {
-                    return response()->json(['message' => 'Product invalid'], 422);
-                }
-
-                $variant = $this->findPurchasableVariant($product, $variantId);
-                $originalPrice = (float) $variant->effective_price;
-                $subtotal += ($originalPrice * $qty);
-            }
-
-            $flashSaleDiscount = 0;
-            foreach ($itemsInput as $it) {
-                $productId = (int) $it['product_id'];
-                $variantId = isset($it['variant_id']) ? (int) $it['variant_id'] : null;
-                $product = Product::find($productId);
-                if (!$product) continue;
-
-                // Priority: Specific Variant Sale -> Product-wide Sale
-                $activeFlashSale = FlashSaleItem::query()
-                    ->where('product_id', $productId)
-                    ->where(function($q) use ($variantId) {
-                        $q->where('variant_id', $variantId)
-                          ->orWhereNull('variant_id');
-                    })
-                    ->whereHas('flashSale', function($q) {
-                        $q->where('status', \App\Models\FlashSale::STATUS_ACTIVE)
-                          ->where('start_at', '<=', now())
-                          ->where('end_at', '>=', now());
-                    })
-                    ->orderByRaw('variant_id IS NULL ASC') // Variant-specific first
-                    ->first();
-
-                if ($activeFlashSale) {
-                    $qty = (int)$it['quantity'];
-                    
-                    // Check limit
-                    if ($activeFlashSale->quantity_limit !== null && $activeFlashSale->sold_quantity + $qty > $activeFlashSale->quantity_limit) {
-                        throw new \Exception("Sản phẩm {$product->name} đã hết suất Flash Sale.");
-                    }
-
-                    $variant = $this->findPurchasableVariant($product, $variantId);
-                    $originalPrice = (float) $variant->effective_price;
-                    $saving = ($originalPrice - (float)$activeFlashSale->flash_sale_price) * $qty;
-                    $flashSaleDiscount += max(0, $saving);
-
-                    // Increment sold quantity
-                    $activeFlashSale->increment('sold_quantity', $qty);
-                }
-            }
-
-            $discount = $flashSaleDiscount;
-            $coupon = null;
-            if (!empty($data['coupon_code'])) {
-                $coupon = Coupon::query()->where('code', $data['coupon_code'])->first();
-                if ($coupon && $coupon->isValidNow()) {
-                    $calcBase = max(0, $subtotal - $flashSaleDiscount);
-                    if ($calcBase >= (float) $coupon->min_order_amount) {
-                        $couponDiscount = 0;
-                        if ($coupon->coupon_type === 'percentage') {
-                            $couponDiscount = $calcBase * ((float) $coupon->value / 100);
-                        } else {
-                            $couponDiscount = (float) $coupon->value;
-                        }
-                        $discount += min($couponDiscount, $calcBase);
-                    }
-                }
-            }
-
-            $orderCode = $this->generateOrderCode();
-
-            $shippingFee = 0.0;
-            $shippingMethodId = null;
-            $shippingZoneId = null;
-            if (!empty($data['shipping_method_id'])) {
-                $shippingMethodId = (int) $data['shipping_method_id'];
-                $shippingMethod = ShippingMethod::query()->find($shippingMethodId);
-                if (!$shippingMethod || !$shippingMethod->is_active) {
-                    return response()->json(['message' => 'Shipping method invalid'], 422);
-                }
-                $shippingFee = (float) $shippingMethod->base_fee;
-            }
-            if (!empty($data['shipping_zone_id'])) {
-                $shippingZoneId = (int) $data['shipping_zone_id'];
-                $zone = ShippingZone::query()->find($shippingZoneId);
-                if (!$zone || !$zone->is_active) {
-                    return response()->json(['message' => 'Shipping zone invalid'], 422);
-                }
-                $shippingFee += (float) $zone->fee;
-            }
-
-            $order = Order::query()->create([
-                'order_code' => $orderCode,
-                'user_id' => $user->id,
-                'cart_id' => null,
-                'coupon_id' => $coupon?->id,
-                'shipping_method_id' => $shippingMethodId,
-                'shipping_zone_id' => $shippingZoneId,
-                'status' => 'pending',
-                'payment_status' => 'pending',
-                'currency' => 'VND',
-                'subtotal_amount' => $subtotal,
-                'discount_amount' => $discount,
-                'shipping_fee' => $shippingFee,
-                'total_amount' => 0,
-                'shipping_name' => $data['shipping_name'],
-                'shipping_phone' => $data['shipping_phone'],
-                'shipping_address_line' => $data['shipping_address_line'],
-                'shipping_province' => $data['shipping_province'] ?? null,
-                'shipping_district' => $data['shipping_district'] ?? null,
-                'shipping_ward' => $data['shipping_ward'] ?? null,
-                'notes' => $data['notes'] ?? null,
-            ]);
-
-            foreach ($itemsInput as $it) {
-                // We already calculated subtotal above, just create items
-                $productId = (int) $it['product_id'];
-                $variantId = isset($it['variant_id']) ? (int) $it['variant_id'] : null;
-                $qty = (int) $it['quantity'];
-
-                $product = Product::find($productId);
-                $variant = $this->reserveVariantStock($product, $variantId, $qty);
-                $unitPrice = (float) $variant->effective_price;
-                $lineTotal = $unitPrice * $qty;
-
-                OrderItem::query()->create([
-                    'order_id' => $order->id,
-                    'product_id' => $product->id,
-                    'variant_id' => $variant->id,
-                    'product_name_snapshot' => $product->name,
-                    'quantity' => $qty,
-                    'unit_price' => $unitPrice,
-                    'total_price' => $lineTotal,
-                ]);
-            }
-
-            $order->subtotal_amount = $subtotal;
-            $shippingPolicy = (array) $this->getAdminSetting('shipping_policy', [
-                'free_shipping_min' => 0,
-                'apply_global' => true,
-            ]);
-            $freeMin = (float) ($shippingPolicy['free_shipping_min'] ?? 0);
-            $applyGlobal = (bool) ($shippingPolicy['apply_global'] ?? true);
-            if ($applyGlobal && $freeMin > 0 && $subtotal >= $freeMin) {
-                $order->shipping_fee = 0;
-            }
-            $order->total_amount = max(0, $subtotal - $discount + (float) ($order->shipping_fee ?? 0));
-            $order->save();
-
-            if ($coupon) {
-                CouponUsage::query()->create([
-                    'coupon_id' => $coupon->id,
-                    'user_id' => $user->id,
-                    'order_id' => $order->id,
-                    'discount_amount' => $discount,
-                ]);
-            }
-
-            Payment::query()->create([
-                'order_id' => $order->id,
-                'method' => $paymentMethod,
-                'amount' => $order->total_amount,
-                'currency' => $order->currency ?? 'VND',
-                'status' => 'pending',
-            ]);
-
-            $order->load(['items.product', 'items.variant', 'payment']);
-
-            if ($paymentMethod === 'cod') {
-                $email = $user->email ?? null;
-                if ($email) {
-                    NotificationFacade::route('mail', $email)->notify(new OrderConfirmationNotification($order));
-                }
-            }
-
-            return response()->json($order, 201);
-        });
-    }
-
-    private function generateOrderCode(): string
-    {
-        // Keep it simple; collisions are extremely unlikely.
-        return 'OD-' . Str::upper(Str::random(10));
+        return response()->json($order, 201);
     }
 }

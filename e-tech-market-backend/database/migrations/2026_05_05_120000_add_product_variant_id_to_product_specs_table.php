@@ -22,7 +22,7 @@ return new class extends Migration
         });
 
         DB::statement(
-            'CREATE UNIQUE INDEX uq_product_specs_variant_scope ON product_specs '
+            'CREATE UNIQUE INDEX IF NOT EXISTS uq_product_specs_variant_scope ON product_specs '
             .'(product_id, spec_group, spec_key, (COALESCE(product_variant_id, (-1)::bigint)))'
         );
     }

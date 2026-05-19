@@ -251,6 +251,8 @@ class SettingsController extends Controller
                 $current = (array) $this->getSetting('chat', []);
                 $this->setSetting('chat', array_merge($current, $data['chat']), (int) $user->id);
             }
+
+            \Illuminate\Support\Facades\Cache::forget('store_config');
         });
 
         return $this->show($request);

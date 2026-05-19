@@ -30,6 +30,7 @@ class FlashSaleController extends Controller
             'status' => 'required|string|in:active,paused,waiting,ended',
         ]);
 
+        \Illuminate\Support\Facades\Cache::forget('active_flash_sale');
         $sale = FlashSale::create($validated);
         return response()->json($sale, 201);
     }
@@ -49,12 +50,14 @@ class FlashSaleController extends Controller
             'status' => 'sometimes|required|string|in:active,paused,waiting,ended',
         ]);
 
+        \Illuminate\Support\Facades\Cache::forget('active_flash_sale');
         $flashSale->update($validated);
         return response()->json($flashSale);
     }
 
     public function destroy(FlashSale $flashSale): JsonResponse
     {
+        \Illuminate\Support\Facades\Cache::forget('active_flash_sale');
         $flashSale->delete();
         return response()->json(['message' => 'Flash Sale deleted successfully']);
     }
@@ -69,6 +72,7 @@ class FlashSaleController extends Controller
             'quantity_limit' => 'nullable|integer|min:1',
         ]);
 
+        \Illuminate\Support\Facades\Cache::forget('active_flash_sale');
         $item = $flashSale->items()->create($validated);
         return response()->json($item, 201);
     }
@@ -78,6 +82,7 @@ class FlashSaleController extends Controller
         if ($item->flash_sale_id !== $flashSale->id) {
             return response()->json(['message' => 'Item does not belong to this sale'], 403);
         }
+        \Illuminate\Support\Facades\Cache::forget('active_flash_sale');
         $item->delete();
         return response()->json(['message' => 'Item removed successfully']);
     }

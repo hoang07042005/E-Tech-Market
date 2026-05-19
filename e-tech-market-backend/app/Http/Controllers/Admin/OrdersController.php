@@ -5,9 +5,11 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Models\OrderReturnRequest;
+use App\Models\Product;
+use App\Models\ProductVariant;
+use App\Support\ProductInventorySync;
 use App\Models\OrderStatusHistory;
 use App\Models\Notification;
-use App\Models\Product;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -155,6 +157,26 @@ class OrdersController extends Controller
         if ($prevStatus !== 'returned') {
             $order->status = 'returned';
             $order->save();
+
+            // Restore stock for returned items
+            $order->loadMissing('items');
+            $productIdsToSync = [];
+            foreach ($order->items as $item) {
+                if ($item->variant_id) {
+                    $variant = ProductVariant::find($item->variant_id);
+                    if ($variant) {
+                        $variant->stock_quantity = (int) ($variant->stock_quantity ?? 0) + (int) $item->quantity;
+                        $variant->save();
+                        $productIdsToSync[$variant->product_id] = true;
+                    }
+                }
+            }
+            foreach (array_keys($productIdsToSync) as $pid) {
+                $p = Product::find($pid);
+                if ($p) {
+                    ProductInventorySync::syncFromVariants($p, 'order_returned');
+                }
+            }
 
             OrderStatusHistory::create([
                 'order_id' => (int) $order->id,
