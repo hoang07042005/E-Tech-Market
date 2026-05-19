@@ -311,7 +311,7 @@
 .odhCode{ font-weight: 600; color:#f97316; text-decoration: none; }
 .odhCode:hover{ text-decoration: underline; }
 .odhDateMobile{ display:none; }
-.odhDate{ color:#64748b; font-weight: 700; }
+.odhDate{ color:#64748b; font-weight: 600; }
 .odhMoney{ text-align:right; font-weight: 600; white-space:nowrap; }
 .odhActionCell{ text-align:right; }
 .odhAction{

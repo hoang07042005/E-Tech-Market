@@ -54,20 +54,20 @@
 .reviewTopCardLabel {
   color: var(--admin-text-s);
   font-size: 13px;
-  font-weight: 700;
+  font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.08em;
 }
 
 .reviewTopCardValue {
   font-size: 36px;
-  font-weight: 700;
+  font-weight: 600;
 }
 
 .reviewTopCardTrend {
   color: #22c55e;
   font-size: 13px;
-  font-weight: 700;
+  font-weight: 600;
 }
 
 .reviewControls {
@@ -87,7 +87,7 @@
 
 .reviewControlGroup label {
   font-size: 13px;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--admin-text-s);
 }
 
@@ -98,7 +98,7 @@
   border-radius: 5px;
   padding: 12px 22px;
   cursor: pointer;
-  font-weight: 700;
+  font-weight: 600;
   box-shadow: 0 16px 32px rgba(249, 115, 22, 0.16);
 }
 
@@ -124,7 +124,7 @@
 }
 
 .reviewTableProductName {
-  font-weight: 700;
+  font-weight: 600;
   display: inline-block;
   max-width: 220px;
   white-space: nowrap;
@@ -146,7 +146,7 @@
   padding: 6px 14px;
   border-radius: 999px;
   font-size: 12px;
-  font-weight: 700;
+  font-weight: 600;
 }
 
 .reviewStatusBadge.pending {
@@ -176,7 +176,7 @@
   padding: 0 0;
   cursor: pointer;
   transition: all 0.2s ease;
-  font-weight: 700;
+  font-weight: 600;
 }
 
 .reviewActionBtn:hover {
@@ -204,7 +204,7 @@
 
 .reviewSummaryCardTitle {
   font-size: 12px;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--admin-text-s);
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -213,7 +213,7 @@
 
 .reviewSummaryCardValue {
   font-size: 24px;
-  font-weight: 700;
+  font-weight: 600;
   margin-bottom: 10px;
 }
 
@@ -247,7 +247,7 @@
   border: 1px solid var(--admin-border);
   background: #ffffff;
   color: var(--admin-text-p);
-  font-weight: 700;
+  font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
 }
@@ -266,5 +266,5 @@
   display: inline-flex;
   align-items: center;
   color: var(--admin-text-s);
-  font-weight: 700;
+  font-weight: 600;
 }

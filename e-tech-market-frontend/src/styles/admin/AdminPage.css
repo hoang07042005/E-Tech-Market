@@ -51,7 +51,7 @@
 
 .adminBrandName {
   font-size: 16px;
- font-weight: 700;
+ font-weight: 600;
   color: var(--admin-accent);
   letter-spacing: 0.01em;
   white-space: nowrap;
@@ -99,7 +99,7 @@
   margin-top: 14px;
   padding: 0 12px;
   font-size: 10px;
- font-weight: 700;
+ font-weight: 600;
   letter-spacing: 0.16em;
   color: #b6b8c3;
 }
@@ -153,7 +153,7 @@
   background: var(--admin-accent);
   color: #ffffff;
   font-size: 10px;
- font-weight: 700;
+ font-weight: 600;
   padding: 2px 6px;
   border-radius: 20px;
 }
@@ -181,7 +181,7 @@
   border-radius: 12px;
   background: rgba(249, 115, 22, 0.12);
   color: var(--admin-accent);
- font-weight: 700;
+ font-weight: 600;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -204,7 +204,7 @@
 }
 
 .adminSidebarUserName {
- font-weight: 700;
+ font-weight: 600;
   font-size: 13px;
   color: var(--admin-text-p);
   white-space: nowrap;
@@ -214,7 +214,7 @@
 
 .adminSidebarUserEmail {
   font-size: 11px;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--admin-text-s);
   white-space: nowrap;
   overflow: hidden;
@@ -353,7 +353,7 @@
 .adminQuickEmpty{
   padding: 14px;
   color: rgba(100,116,139,.9);
-  font-weight: 700;
+  font-weight: 600;
   font-size: 13px;
 }
 .adminQuickList{
@@ -418,7 +418,7 @@
 }
 .adminQuickBody{ flex: 1; min-width: 0; }
 .adminQuickTitle{
-  font-weight: 900;
+  font-weight: 600;
   color: rgba(17,24,39,.90);
   font-size: 13px;
   white-space: nowrap;
@@ -426,7 +426,7 @@
   text-overflow: ellipsis;
 }
 .adminQuickSub{
-  font-weight: 700;
+  font-weight: 600;
   font-size: 12px;
   color: rgba(100,116,139,.9);
   white-space: nowrap;
@@ -439,7 +439,7 @@
   border: 1px solid rgba(249,115,22,.22);
   background: rgba(249,115,22,.10);
   color: rgba(249,115,22,.95);
-  font-weight: 900;
+  font-weight: 600;
   font-size: 12px;
 }
 
@@ -494,7 +494,7 @@
   border-bottom: 1px solid rgba(15,23,42,.08);
 }
 .adminNotifTitle{
-  font-weight: 900;
+  font-weight: 600;
   font-size: 13px;
   color:#0f172a;
 }
@@ -502,14 +502,14 @@
   border:none;
   background: transparent;
   cursor: pointer;
-  font-weight: 900;
+  font-weight: 600;
   font-size: 12px;
   color: var(--admin-accent);
 }
 .adminNotifMarkAll:hover{ text-decoration: underline; }
 .adminNotifEmpty{
   padding: 12px;
-  font-weight: 700;
+  font-weight: 600;
   font-size: 12px;
   color: #64748b;
 }
@@ -530,13 +530,13 @@
 .adminNotifRow:hover{ background: rgba(249,115,22,.06); }
 .adminNotifRow.unread{ background: rgba(37,99,235,.06); }
 .adminNotifRowTitle{
-  font-weight: 900;
+  font-weight: 600;
   font-size: 12px;
   color:#0f172a;
 }
 .adminNotifRowBody{
   margin-top: 3px;
-  font-weight: 700;
+  font-weight: 600;
   font-size: 12px;
   color: #64748b;
   display:-webkit-box;
@@ -624,7 +624,7 @@
 .adminFooterBrandDesc {
   margin-top: 8px;
   font-size: 12px;
-  font-weight: 700;
+  font-weight: 600;
   color: #64748b;
   max-width: 360px;
   line-height: 1.55;
@@ -632,7 +632,7 @@
 
 .adminFooterCopy {
   font-size: 12px;
-  font-weight: 700;
+  font-weight: 600;
   color: #0f172a;
   text-align: right;
   padding-top: 2px;
@@ -722,7 +722,7 @@
 
 .admMaintenanceTitle {
   color: inherit;
-  font-weight: 700;
+  font-weight: 600;
 }
 
 .admMaintenanceTitle.isActive {
@@ -739,12 +739,12 @@
 .admPayGrid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-bottom: 12px; }
 .admPayCard { background: #fff; border: 1px solid rgba(15,23,42,.08); border-radius: 5px; padding: 12px; }
 .admPayTop { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
-.admPayIcon { width: 36px; height: 36px; display: inline-flex; align-items: center; justify-content: center; font-weight: 900; color: #0f172a; background: #fff; flex-shrink: 0; }
+.admPayIcon { width: 36px; height: 36px; display: inline-flex; align-items: center; justify-content: center; font-weight: 600; color: #0f172a; background: #fff; flex-shrink: 0; }
 .admPayIcon--logo { width: 48px; height: 48px; padding: 6px; background: #fff; }
 .admPayIconImg { width: 100%; height: 100%; object-fit: contain; display: block; }
 .admPayName { margin-top: 10px; font-weight: 600; color: #0f172a; }
 .admPayDesc { margin-top: 4px; font-weight: 600; font-size: 12px; color: #64748b; }
-/* .admPayField { margin-top: 10px; display: flex; flex-direction: column; gap: 6px; font-weight: 900; font-size: 11px; color: #64748b; }
+/* .admPayField { margin-top: 10px; display: flex; flex-direction: column; gap: 6px; font-weight: 600; font-size: 11px; color: #64748b; }
 .admPayField input { border: 1px solid rgba(15,23,42,.10); border-radius: 10px; padding: 10px 10px; font-size: 12px; font-weight: 600; outline: none; } */
 .admPayCodNote { margin: 0; font-weight: 600; font-size: 12px; line-height: 1.45; color: #94a3b8; }
 
@@ -780,7 +780,7 @@
 .admShipPartnerActive { font-size: 10px; font-weight: 600; padding: 4px 8px; border-radius: 999px; background: rgba(34,197,94,.14); color: #16a34a; border: 1px solid rgba(34,197,94,.18); }
 .admShipPartnerName { margin-top: 10px; font-weight: 600; color: #0f172a; }
 .admShipPartnerDesc { margin-top: 4px; font-weight: 600; font-size: 12px; color: #64748b; }
-.admShipPartnerFee { margin-top: 8px; font-weight: 900; font-size: 12px; color: #0f172a; }
+.admShipPartnerFee { margin-top: 8px; font-weight: 600; font-size: 12px; color: #0f172a; }
 .admShipPartnerCfg { position: absolute; right: 12px; bottom: 12px; border: none; background: transparent; font-weight: 600; color: #f97316; cursor: pointer; }
 .admShipPartnerCfg:hover { text-decoration: underline; }
 .admShipAddCard { background: #fff; border: 1px dashed rgba(15,23,42,.18); border-radius: 14px; padding: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; min-height: 130px; }
@@ -789,7 +789,7 @@
 .admShipAddHint { font-weight: 600; font-size: 12px; color: #94a3b8; text-align: center; line-height: 1.35; }
 .admShipPolicyCard { background: #fff; border: 1px solid rgba(15,23,42,.08); border-radius: 5px; padding: 12px; }
 .admShipPolicyTitle { font-weight: 600; color: #0f172a; margin-bottom: 8px; }
-.admShipCheck { margin-top: 8px; display: flex; align-items: center; gap: 8px; font-weight: 900; font-size: 12px; color: #0f172a; }
+.admShipCheck { margin-top: 8px; display: flex; align-items: center; gap: 8px; font-weight: 600; font-size: 12px; color: #0f172a; }
 .admShipPolicyBtn { margin-top: 10px; width: 100%; border: 1px solid rgba(15,23,42,.10); background: #fff; border-radius: 12px; padding: 10px 12px; font-weight: 600; cursor: pointer; }
 .admShipPolicyBtn:hover { background: rgba(249,115,22,.08); border-color: rgba(249,115,22,.18); }
 .admShipAddZoneBtn { border: 1px solid rgba(249,115,22,.40); background: rgba(249,115,22,.08); color: #ea580c; border-radius: 5px; padding: 8px 10px; font-weight: 600; cursor: pointer; }
@@ -826,9 +826,9 @@
 .admShipMethodTop { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
 .admShipMethodIcon { width: 36px; height: 36px; border-radius: 14px; background: rgba(249,115,22,.12); display: inline-flex; align-items: center; justify-content: center; font-weight: 600; color: #ea580c; }
 .admShipMethodName { margin-top: 10px; font-weight: 600; color: #0f172a; }
-.admShipMethodSub { margin-top: 2px; font-weight: 900; font-size: 12px; color: #94a3b8; }
+.admShipMethodSub { margin-top: 2px; font-weight: 600; font-size: 12px; color: #94a3b8; }
 .admShipMethodSub.ok { color: #16a34a; }
-.admShipMethodFee { margin-top: 10px; font-weight: 900; font-size: 12px; color: #0f172a; }
+.admShipMethodFee { margin-top: 10px; font-weight: 600; font-size: 12px; color: #0f172a; }
 .admShipMethodCfg { position: absolute; right: 12px; bottom: 12px; border: none; background: transparent; font-weight: 600; color: #f97316; cursor: pointer; }
 .admShipMethodCfg:hover { text-decoration: underline; }
 .admShipMethodAddTile { border: 1px dashed rgba(15,23,42,.18); border-radius: 5px; padding: 12px; background: #fff; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; min-height: 150px; }
@@ -858,7 +858,7 @@
 .admSecOptionName { font-weight: 600; color: #0f172a; }
 .admSecCard.strong { background: rgba(249,115,22,.08); }
 .admSecShield { width: 44px; height: 44px; border-radius: 16px; background: rgba(249,115,22,.16); display: inline-flex; align-items: center; justify-content: center; font-size: 18px; }
-.admSecStrongLabel { margin-top: 10px; font-weight: 900; font-size: 12px; color: #64748b; }
+.admSecStrongLabel { margin-top: 10px; font-weight: 600; font-size: 12px; color: #64748b; }
 .admSecStrongValue { margin-top: 4px; font-weight: 600; font-size: 22px; color: #9a3412; }
 .admSecLogTitle { margin-top: 10px; font-weight: 600; color: #0f172a; }
 .admSecLogSub { margin-top: 4px; font-weight: 600; font-size: 12px; color: #64748b; line-height: 1.5; }
@@ -904,20 +904,20 @@
 
 .admOrdersKpis { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 12px; margin: 10px 0 14px; }
 .admOrdersKpi { background: #fff; border: 1px solid rgba(15, 23, 42, 0.08); border-radius: 5px; padding: 12px; }
-.admOrdersKpiLabel { font-size: 12px; font-weight: 900; color: #64748b; }
+.admOrdersKpiLabel { font-size: 12px; font-weight: 600; color: #64748b; }
 .admOrdersKpiValue { margin-top: 4px; font-size: 18px; font-weight: 600; color: #0f172a; }
 .admOrdersKpiValue.warn { color: #ea580c; }
 .admOrdersKpiValue.info { color: #2563eb; }
 .admOrdersKpiValue.ok { color: #16a34a; }
 .admOrdersKpiValue.bad { color: #ef4444; }
-.admOrdersKpiSub { margin-top: 6px; font-size: 11px; font-weight: 900; color: #94a3b8; }
+.admOrdersKpiSub { margin-top: 6px; font-size: 11px; font-weight: 600; color: #94a3b8; }
 .admOrdersKpiSub.ok { color: #16a34a; }
 .admOrdersKpiSub.bad { color: #ef4444; }
 
 .admOrdersFilterCard { background: #fff; border: 1px solid rgba(249,115,22,.22); border-radius: 5px; padding: 12px; margin-bottom: 14px; }
 .admOrdersFilterTitle { font-weight: 600; font-size: 13px; color: #0f172a; margin-bottom: 10px; }
 .admOrdersFilters { display: grid; grid-template-columns: 1.1fr 1.2fr 1.7fr 1fr 1fr; gap: 12px; }
-.admOrdersFieldLabel { font-size: 11px; font-weight: 900; color: #64748b; margin-bottom: 6px; }
+.admOrdersFieldLabel { font-size: 11px; font-weight: 600; color: #64748b; margin-bottom: 6px; }
 .admOrdersInput, .admOrdersSelect {
   width: 100%;
   border: 1px solid rgba(15, 23, 42, 0.10);
@@ -930,9 +930,9 @@
 }
 .admOrdersInput:focus, .admOrdersSelect:focus { border-color: rgba(249,115,22,.5); box-shadow: 0 0 0 3px rgba(249,115,22,.12); }
 .admOrdersDateRow { display: flex; align-items: center; gap: 8px; }
-.admOrdersDateSep { color: #94a3b8; font-weight: 900; }
+.admOrdersDateSep { color: #94a3b8; font-weight: 600; }
 .admOrdersFilterActions { display: flex; justify-content: flex-end; align-items: center; gap: 12px; margin-top: 10px; }
-.admOrdersLinkBtn { border: none; background: transparent; font-weight: 900; font-size: 12px; color: #f97316; cursor: pointer; }
+.admOrdersLinkBtn { border: none; background: transparent; font-weight: 600; font-size: 12px; color: #f97316; cursor: pointer; }
 .admOrdersLinkBtn:hover { text-decoration: underline; }
 
 .admOrdersTableCard { background: none; padding: 0; overflow: hidden; }
@@ -1031,7 +1031,7 @@
 .admOrderStatusPickLabel { font-weight: 600; font-size: 12px; color: #64748b; }
 
 .admOrderStatusControlRow { display: flex; align-items: center; gap: 10px; margin-top: 10px; padding: 10px 12px; border: 1px solid rgba(15,23,42,.08); border-radius: 12px; background: #fff; }
-.admOrderStatusControlLabel { font-weight: 900; font-size: 12px; color: #0f172a; white-space: nowrap; }
+.admOrderStatusControlLabel { font-weight: 600; font-size: 12px; color: #0f172a; white-space: nowrap; }
 
 .admOrderSteps { display: flex; flex-wrap: nowrap; gap: 10px; padding-top: 6px; overflow-x: auto; }
 .admOrderStep { flex: 0 0 auto; min-width: 200px; }
@@ -1039,7 +1039,7 @@
 .admOrderStep.done { border-style: solid; border-color: rgba(249,115,22,.22); background: rgba(249,115,22,.06); }
 .admOrderStepDot { width: 24px; height: 24px; border-radius: 999px; display: inline-flex; align-items: center; justify-content: center; font-weight: 600; font-size: 12px; background: rgba(148,163,184,.18); color: #475569; }
 .admOrderStep.done .admOrderStepDot { background: rgba(249,115,22,.18); color: #9a3412; }
-.admOrderStepLabel { font-weight: 900; font-size: 12px; color: #0f172a; }
+.admOrderStepLabel { font-weight: 600; font-size: 12px; color: #0f172a; }
 
 .admOrderGrid { display: grid; grid-template-columns: 1.6fr 1fr; gap: 14px; margin-top: 12px; align-items: start; }
 .admOrderRightCol { display: flex; flex-direction: column; gap: 12px; }
@@ -1049,11 +1049,11 @@
 .admOrderTable thead th { background: #fafafa; border-bottom: 1px solid rgba(15,23,42,.08); padding: 12px; font-size: 10px; letter-spacing: .12em; text-transform: uppercase; color: #64748b; text-align: left; }
 .admOrderTable tbody td { padding: 12px; border-bottom: 1px solid rgba(15,23,42,.06); font-size: 13px; }
 .admOrderTable tbody tr:last-child td { border-bottom: none; }
-.admOrderProd { font-weight: 900; color: #0f172a; }
-.admOrderMoney { font-weight: 900; white-space: nowrap; }
+.admOrderProd { font-weight: 600; color: #0f172a; }
+.admOrderMoney { font-weight: 600; white-space: nowrap; }
 .admOrderMoney.strong { font-weight: 600; }
 .admOrderMoney.neg { color: #ea580c; }
-.admOrderQty { text-align: center; font-weight: 900; }
+.admOrderQty { text-align: center; font-weight: 600; }
 
 .admOrderCustomerBox { display: flex; align-items: center; gap: 10px; }
 .admOrderAvatar, .admOrderAvatarImg { width: 40px; height: 40px; border-radius: 999px; flex: 0 0 auto; }
@@ -1062,7 +1062,7 @@
 .admOrderCustomerName { font-weight: 600; color: #0f172a; }
 .admOrderCustomerSub { font-weight: 600; font-size: 12px; color: #64748b; margin-top: 2px; }
 .admOrderAddr { margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(15,23,42,.06); }
-.admOrderAddrLabel { font-weight: 900; font-size: 12px; color: #64748b; }
+.admOrderAddrLabel { font-weight: 600; font-size: 12px; color: #64748b; }
 .admOrderAddrValue { margin-top: 6px; font-weight: 600; font-size: 12px; color: #0f172a; line-height: 1.5; }
 
 .admOrderPayGrid { display: flex; flex-direction: column; gap: 8px; }
@@ -1070,7 +1070,7 @@
 .admOrderPayRow.total { font-size: 13px; }
 .admOrderPayDivider { height: 1px; background: rgba(15,23,42,.08); margin: 4px 0; }
 .admOrderPayMethod { margin-top: 8px; padding: 10px; border-radius: 12px; border: 1px solid rgba(15,23,42,.08); background: #fafafa; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
-.admOrderPayMethodLabel { font-weight: 900; font-size: 12px; color: #64748b; }
+.admOrderPayMethodLabel { font-weight: 600; font-size: 12px; color: #64748b; }
 .admOrderPayMethodValue { font-weight: 600; color: #0f172a; }
 
 .admOrderNote { font-weight: 600; font-size: 12px; color: #334155; font-style: italic; line-height: 1.6; }
@@ -1078,7 +1078,7 @@
 .admOrderBottomGrid { margin-top: 12px; }
 .admOrderSupportGrid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 .admOrderSupportBox { border: 1px solid rgba(15,23,42,.08); border-radius: 12px; padding: 10px; background: #fff; }
-.admOrderSupportLabel { font-weight: 900; font-size: 11px; color: #64748b; }
+.admOrderSupportLabel { font-weight: 600; font-size: 11px; color: #64748b; }
 .admOrderSupportValue { margin-top: 6px; font-weight: 600; font-size: 13px; color: #0f172a; }
 .admOrderSupportHint { margin-top: 6px; font-weight: 600; font-size: 12px; color: #64748b; line-height: 1.5; }
 .admOrderTextarea { width: 100%; min-height: 88px; margin-top: 8px; border: 1px solid rgba(15,23,42,.10); border-radius: 12px; padding: 10px; font-size: 12px; font-weight: 600; outline: none; resize: vertical; }
@@ -1168,7 +1168,7 @@
   border-radius: 12px;
   border: 1px solid var(--admin-border);
   background: #fff;
-  font-weight: 900;
+  font-weight: 600;
   font-size: 12px;
   cursor: pointer;
   color: var(--admin-text-p);
@@ -1179,7 +1179,7 @@
   border: none;
   background: transparent;
   font: inherit;
-  font-weight: 900;
+  font-weight: 600;
   color: inherit;
   padding-right: 18px;
   cursor: pointer;
@@ -1230,7 +1230,7 @@
 
 .admKpiBadge {
   font-size: 11px;
- font-weight: 700;
+ font-weight: 600;
   padding: 6px 10px;
   border-radius: 999px;
   background: #f3f4f6;
@@ -1240,7 +1240,7 @@
 
 .admKpiLabel2 { font-size: 18px; font-weight: 600; color: #6a6b6c; }
 .admKpiValue2 { font-size: 22px; font-weight: 600; margin-top: 2px; }
-.admKpiSub2 { font-size: 11px; font-weight: 700; color: #9ca3af; margin-top: 2px; }
+.admKpiSub2 { font-size: 11px; font-weight: 600; color: #9ca3af; margin-top: 2px; }
 
 .admKpiAccentBar {
   position: absolute;
@@ -1287,8 +1287,8 @@
 .admKpiCard.tone-green .admKpiIcon { background: rgba(34,197,94,.12); color: #22c55e; }
 .admKpiCard.tone-purple .admKpiIcon { background: rgba(168,85,247,.12); color: #a855f7; }
 
-.admKpiLabel { font-size: 12px; color: var(--admin-text-s); font-weight: 700; }
-.admKpiValue { font-size: 20px;font-weight: 700; margin-top: 2px; }
+.admKpiLabel { font-size: 12px; color: var(--admin-text-s); font-weight: 600; }
+.admKpiValue { font-size: 20px;font-weight: 600; margin-top: 2px; }
 .admKpiSub { font-size: 11px; color: var(--admin-text-s); margin-top: 2px; }
 
 .admKpiCardAlert .admKpiIcon.alert { background: rgba(239,68,68,.10); color: #ef4444; }
@@ -1354,7 +1354,7 @@
 }
 
 .admQuickRowText {
- font-weight: 700;
+ font-weight: 600;
   font-size: 13px;
   color: #0f172a;
 }
@@ -1364,7 +1364,7 @@
   color: #0f172a;
   opacity: 0.55;
   font-size: 18px;
- font-weight: 700;
+ font-weight: 600;
 }
 
 .admActivityList2 {
@@ -1389,14 +1389,14 @@
 
 .admActivityRowText {
   font-size: 13px;
-  font-weight: 700;
+  font-weight: 600;
   color: #0f172a;
   line-height: 1.25;
 }
 
 .admActivityRowTime {
   font-size: 11px;
-  font-weight: 700;
+  font-weight: 600;
   color: #94a3b8;
 }
 
@@ -1426,7 +1426,7 @@
 }
 
 .admTopRatedName {
-  font-weight: 900;
+  font-weight: 600;
   font-size: 13px;
   color: #0f172a;
   line-height: 1.25;
@@ -1446,7 +1446,7 @@
   color: #f59e0b;
   letter-spacing: 0.06em;
   font-size: 11px;
-  font-weight: 900;
+  font-weight: 600;
 }
 
 .admTopRatedStarsMuted {
@@ -1476,7 +1476,7 @@
 .admCardSub {
   margin-top: 2px;
   font-size: 12px;
-  font-weight: 700;
+  font-weight: 600;
   color: #94a3b8;
 }
 
@@ -1517,7 +1517,7 @@
 .admAreaValueText {
   fill: #9a5a12;
   font-size: 10px;
-  font-weight: 900;
+  font-weight: 600;
   paint-order: stroke;
   stroke: rgba(255, 255, 255, 0.9);
   stroke-width: 3px;
@@ -1544,7 +1544,7 @@
 }
 
 .admCatsTitle {
-  font-weight: 900;
+  font-weight: 600;
   font-size: 13px;
   color: #0f172a;
   margin-bottom: 10px;
@@ -1600,7 +1600,7 @@
   margin-bottom: 10px;
 }
 
-.admCardTitle { margin: 0; font-size: 14px;font-weight: 700; }
+.admCardTitle { margin: 0; font-size: 14px;font-weight: 600; }
 
 .admQuickList { display: flex; flex-direction: column; gap: 10px; }
 .admQuickItem {
@@ -1623,7 +1623,7 @@
   flex-shrink: 0;
 }
 .admQuickBody { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
-.admQuickLabel {font-weight: 700; font-size: 13px; }
+.admQuickLabel {font-weight: 600; font-size: 13px; }
 .admQuickHint { font-size: 11px; color: var(--admin-text-s); font-weight: 600; }
 .admQuickArrow { margin-left: auto; color: var(--admin-text-s); font-size: 18px; }
 
@@ -1644,7 +1644,7 @@
 
 .admTopCats { display: flex; flex-direction: column; gap: 10px; }
 .admTopCatRow { display: flex; justify-content: space-between; font-size: 12px;font-weight: 600; color: var(--admin-text-p); }
-.admTopCatRow span:first-child { color: var(--admin-text-s); font-weight: 700; }
+.admTopCatRow span:first-child { color: var(--admin-text-s); font-weight: 600; }
 
 .admTableWrap { overflow: auto; border-radius: 5px; border: 1px solid var(--admin-border); }
 .admTable { width: 100%; border-collapse: collapse; background: #fff; min-width: 760px; }
@@ -1661,14 +1661,14 @@
 .admTable td { padding: 12px 14px; border-bottom: 1px solid var(--admin-border); font-size: 13px; }
 .admTable tr:last-child td { border-bottom: none; }
 .admMono { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;font-weight: 600; color: #0f172a; }
-.admStrong {font-weight: 700; }
+.admStrong {font-weight: 600; }
 
 .admBadge {
   display: inline-flex;
   padding: 4px 8px;
   border-radius: 999px;
   font-size: 11px;
- font-weight: 700;
+ font-weight: 600;
   border: 1px solid transparent;
 }
 .admBadge.ok { background: rgba(34,197,94,.12); color: #16a34a; border-color: rgba(34,197,94,.18); }
@@ -1681,7 +1681,7 @@
 .admOrdersAllBtn {
   border: none;
   background: transparent;
-  font-weight: 900;
+  font-weight: 600;
   font-size: 12px;
   color: #f97316;
   cursor: pointer;
@@ -1725,7 +1725,7 @@
 .admOrdersCodeCell { width: 120px; }
 .admOrdersCode {
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
-  font-weight: 900;
+  font-weight: 600;
   color: #f97316;
 }
 
@@ -1738,7 +1738,7 @@
   align-items: center;
   justify-content: center;
   font-size: 10px;
-  font-weight: 900;
+  font-weight: 600;
   color: #0f172a;
   border: 1px solid rgba(15, 23, 42, 0.08);
 }
@@ -1759,10 +1759,10 @@
 .admOrdersAvatar.tone-gray { background: #f3f4f6; color: #111827; }
 
 .admOrdersCustomerName { font-weight: 600; }
-.admOrdersProduct { color: #1f2937; font-weight: 700; }
-.admOrdersAmount { font-weight: 900; white-space: nowrap; }
-.admOrdersCurrency { margin-left: 4px; font-weight: 900; }
-.admOrdersDate { white-space: nowrap; color: #334155; font-weight: 700; }
+.admOrdersProduct { color: #1f2937; font-weight: 600; }
+.admOrdersAmount { font-weight: 600; white-space: nowrap; }
+.admOrdersCurrency { margin-left: 4px; font-weight: 600; }
+.admOrdersDate { white-space: nowrap; color: #334155; font-weight: 600; }
 
 .admOrdersStatus {
   display: inline-flex;
@@ -1770,7 +1770,7 @@
   padding: 6px 10px;
   border-radius: 999px;
   font-size: 11px;
-  font-weight: 900;
+  font-weight: 600;
   border: 1px solid transparent;
   white-space: nowrap;
 }
@@ -1851,7 +1851,7 @@
 }
 
 .admModalTitle { font-weight: 600; font-size: 14px; color: #0f172a; }
-.admModalSub { margin-top: 2px; font-weight: 900; font-size: 12px; color: #f97316; }
+.admModalSub { margin-top: 2px; font-weight: 600; font-size: 12px; color: #f97316; }
 
 .admModalClose {
   width: 34px;
@@ -1875,17 +1875,17 @@
 .admReviewList { display: flex; flex-direction: column; gap: 12px; }
 .admReviewItem { border: 1px solid var(--admin-border); border-radius: 14px; padding: 12px; }
 .admReviewTop { display: flex; justify-content: space-between; gap: 10px; align-items: center; }
-.admReviewName {font-weight: 700; font-size: 13px; }
-.admReviewStars {font-weight: 700; color: #f59e0b; letter-spacing: 0.06em; font-size: 11px; }
+.admReviewName {font-weight: 600; font-size: 13px; }
+.admReviewStars {font-weight: 600; color: #f59e0b; letter-spacing: 0.06em; font-size: 11px; }
 .admReviewStarsMuted { color: #e5e7eb; }
 .admReviewText { margin-top: 6px; font-size: 12px; color: var(--admin-text-p); font-weight: 600; }
 .admReviewTime { margin-top: 6px; font-size: 11px; color: var(--admin-text-s); }
 
 .admCustomerGrid { display: grid; grid-template-columns: 1fr; gap: 10px; }
 .admCustomerRow { display: grid; grid-template-columns: 42px 1fr auto; gap: 12px; align-items: center; padding: 10px 12px; border: 1px solid var(--admin-border); border-radius: 14px; }
-.admCustomerAvatar { width: 42px; height: 42px; border-radius: 14px; background: var(--admin-accent-soft); color: var(--admin-accent); display: flex; align-items: center; justify-content: center;font-weight: 700; }
-.admCustomerName {font-weight: 700; font-size: 13px; }
-.admCustomerTotal {font-weight: 700; color: var(--admin-text-s); }
+.admCustomerAvatar { width: 42px; height: 42px; border-radius: 14px; background: var(--admin-accent-soft); color: var(--admin-accent); display: flex; align-items: center; justify-content: center;font-weight: 600; }
+.admCustomerName {font-weight: 600; font-size: 13px; }
+.admCustomerTotal {font-weight: 600; color: var(--admin-text-s); }
 
 /* Reviews + Loyal customers (match screenshot) */
 .admIconBtn {
@@ -1915,7 +1915,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-weight: 900;
+  font-weight: 600;
   font-size: 10px;
   border: 1px solid rgba(249, 115, 22, 0.18);
 }
@@ -1927,10 +1927,10 @@
   border: 1px solid rgba(15, 23, 42, 0.08);
   background: #f3f4f6;
 }
-.admReviewUserName { font-weight: 900; font-size: 13px; color: #0f172a; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.admReviewStars2 { font-weight: 900; color: #f59e0b; letter-spacing: 0.06em; font-size: 11px; white-space: nowrap; }
+.admReviewUserName { font-weight: 600; font-size: 13px; color: #0f172a; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.admReviewStars2 { font-weight: 600; color: #f59e0b; letter-spacing: 0.06em; font-size: 11px; white-space: nowrap; }
 .admReviewStarsMuted2 { color: #e5e7eb; }
-.admReviewQuote { margin-top: 8px; font-size: 12px; font-weight: 700; color: #334155; font-style: italic; }
+.admReviewQuote { margin-top: 8px; font-size: 12px; font-weight: 600; color: #334155; font-style: italic; }
 .admReviewTime2 { margin-top: 8px; font-size: 11px; font-weight: 600; color: #94a3b8; text-align: right; }
 
 .admLoyalCard { padding: 14px; }
@@ -1958,7 +1958,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-weight: 900;
+  font-weight: 600;
   font-size: 11px;
   border: 1px solid rgba(15, 23, 42, 0.08);
   background: #fff;
@@ -2319,4 +2319,15 @@
   border-radius: 8px;
   background: rgba(148, 163, 184, 0.1);
   animation: admSkeletonPulse 1.8s ease-in-out infinite;
+}
+
+@keyframes admFadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

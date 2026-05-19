@@ -92,7 +92,7 @@
   background: transparent;
   cursor: pointer;
   font-size: 0.8125rem;
-  font-weight: 700;
+  font-weight: 600;
   letter-spacing: 0.04em;
   color: var(--et-text-muted);
   padding: 10px 0 10px 2px;
@@ -218,7 +218,7 @@
 
 .tosBannerTag {
   font-size: clamp(0.65rem, 1.2vw, 0.75rem);
-  font-weight: 900;
+  font-weight: 600;
   letter-spacing: 0.18em;
   color: #fff;
   text-shadow: 0 2px 12px rgba(0, 0, 0, 0.45);

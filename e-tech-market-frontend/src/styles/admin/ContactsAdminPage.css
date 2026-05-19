@@ -25,7 +25,7 @@
   border-radius: 12px;
   padding: 10px 14px;
   font-size: 14px;
-  font-weight: 700;
+  font-weight: 600;
   cursor: pointer;
 }
 
@@ -63,7 +63,7 @@
   background: transparent;
   color: #5f4a37;
   font-size: 14px;
-  font-weight: 700;
+  font-weight: 600;
 }
 
 .contactsAdminPage .contactsSortSelect select:focus {
@@ -105,7 +105,7 @@
   border-bottom: 1px solid #f1dcc9;
   color: #6f4f37;
   font-size: 13px;
-  font-weight: 700;
+  font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.03em;
 }
@@ -129,7 +129,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-weight: 700;
+  font-weight: 600;
   font-size: 13px;
 }
 
@@ -184,7 +184,7 @@
   padding: 7px 12px;
   border-radius: 999px;
   font-size: 14px;
-  font-weight: 700;
+  font-weight: 600;
 }
 
 .contactsAdminPage .statusPill.pending {
@@ -261,7 +261,7 @@
   border: 1px solid #f1dcc9;
   background: #fff;
   color: #8a6d56;
-  font-weight: 700;
+  font-weight: 600;
   cursor: pointer;
   padding: 0 10px;
 }

@@ -13,7 +13,7 @@
   padding: 40px 0 80px;
   background: var(--pdp-bg);
   min-height: 100vh;
-  overflow-x: hidden;
+  overflow-x: clip;
 }
 
 /* Flash Sale UI */
@@ -26,7 +26,7 @@
   flex-direction: column;
   gap: 10px;
   margin-bottom: 20px;
-  font-weight: 700;
+  font-weight: 600;
 }
 
 @media (min-width: 560px) {
@@ -83,7 +83,7 @@
 
 .pdpBreadcrumb span {
   color: #111827;
-  font-weight: 700;
+  font-weight: 600;
 }
 
 .pdpMainGrid {
@@ -423,7 +423,7 @@
 
 .pdpFacetColorChip__label {
   font-size: 14px;
-  font-weight: 700;
+  font-weight: 600;
   color: #0f172a;
   max-width: 160px;
   line-height: 1.3;
@@ -465,7 +465,7 @@
 
 .pdpFacetStorageChip__price {
   font-size: 13px;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--pdp-promo);
 }
 
@@ -479,12 +479,12 @@
 
 .pdpFacetStorageChip--more .pdpFacetStorageChip__cap {
   color: var(--pdp-primary);
-  font-weight: 900;
+  font-weight: 600;
 }
 
 .pdpFacetStorageChip--more .pdpFacetStorageChip__price {
   color: #2563eb;
-  font-weight: 800;
+  font-weight: 600;
 }
 
 .pdpFacetStockNote {
@@ -538,7 +538,7 @@
 
 .pdpVariantFallbackChip__price {
   font-size: 13px;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--pdp-promo);
 }
 
@@ -606,7 +606,7 @@
 
 .pdpUnifiedOption .vName {
   font-size: 14px;
-  font-weight: 700;
+  font-weight: 600;
   color: #1e293b;
 }
 
@@ -619,7 +619,7 @@
 .pdpUnifiedOption .vPrice {
   font-size: 13px;
   color: var(--pdp-promo);
-  font-weight: 700;
+  font-weight: 600;
 }
 
 .pdpUnifiedOption:hover {
@@ -694,7 +694,7 @@
 
 .pdpRichContent a {
   color: var(--pdp-primary);
-  font-weight: 700;
+  font-weight: 600;
   text-decoration: none;
 }
 
@@ -778,7 +778,7 @@
 
 .pdpMetaItem .value.stock {
   color: #10b981;
-  font-weight: 700;
+  font-weight: 600;
 }
 
 .pdpActions {
@@ -821,7 +821,7 @@
   width: 60px;
   border: none;
   text-align: center;
-  font-weight: 700;
+  font-weight: 600;
   font-size: 16px;
 }
 
@@ -854,7 +854,7 @@
   border: 1px solid #e2e8f0;
   border-radius: 4px;
   color: #0f172a;
-  font-weight: 800;
+  font-weight: 600;
   font-size: 13px;
   cursor: pointer;
   transition: all 0.2s;
@@ -895,7 +895,7 @@
 
 .pdpSectionTitle {
   font-size: 20px;
-  font-weight: 900;
+  font-weight: 600;
   color: #0f172a;
   margin-bottom: 0;
   border: none;
@@ -970,14 +970,14 @@
 }
 
 .vInnerKey {
-  font-weight: 700;
+  font-weight: 600;
   color: #64748b;
   min-width: 0;
 }
 
 .vInnerVal {
   color: #1e293b;
-  font-weight: 700;
+  font-weight: 600;
   min-width: 0;
   overflow-wrap: anywhere;
 }
@@ -1010,7 +1010,7 @@
 
 .pdpQnaPageEndMainTitle {
   font-size: 22px;
-  font-weight: 900;
+  font-weight: 600;
   color: #0f172a;
   margin: 0 0 20px;
   letter-spacing: -0.02em;
@@ -1329,7 +1329,7 @@
   border: none;
   background: none;
   font-size: 13px;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--pdp-primary);
   cursor: pointer;
   font-family: inherit;
@@ -1397,11 +1397,11 @@
   flex-shrink: 0;
   width: 40px;
   height: 40px;
-  border-radius: 50%;
-  background: var(--pdp-primary);
+  border-radius: 5px;
+  background: none;
   color: #fff;
   font-size: 15px;
-  font-weight: 900;
+  font-weight: 600;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1429,7 +1429,7 @@
 
 .pdpQnaShopBadge {
   font-size: 10px;
-  font-weight: 900;
+  font-weight: 600;
   letter-spacing: 0.06em;
   color: #fff;
   background: var(--pdp-primary);
@@ -1476,7 +1476,7 @@
 
 .pdpFaqTitleEyebrow {
   font-size: 12px;
-  font-weight: 700;
+  font-weight: 600;
   color: #64748b;
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -1546,7 +1546,7 @@
   cursor: pointer;
   font-family: inherit;
   font-size: 15px;
-  font-weight: 700;
+  font-weight: 600;
   color: #1f2937;
   text-align: left;
   line-height: 1.45;
@@ -1600,7 +1600,7 @@
 .pdpLoading, .pdpError {
   padding: 100px 20px;
   text-align: center;
-  font-weight: 700;
+  font-weight: 600;
   color: #64748b;
 }
 
@@ -1655,6 +1655,8 @@
   align-self: start;
   max-height: calc(100vh - 110px);
   overflow: auto;
+    scrollbar-width: none;
+  -ms-overflow-style: none;
 }
 
 .pdpRelatedSection {
@@ -1678,7 +1680,7 @@
 .pdpReviewsTitle {
   margin: 0;
   font-size: 16px;
-  font-weight: 900;
+  font-weight: 600;
   color: #111827;
 }
 
@@ -1703,7 +1705,7 @@
 
 .pdpScoreBig {
   font-size: 40px;
-  font-weight: 900;
+  font-weight: 600;
   color: #0f172a;
   line-height: 1;
 }
@@ -1727,7 +1729,7 @@
   border: none;
   border-radius: 10px;
   padding: 10px 14px;
-  font-weight: 900;
+  font-weight: 600;
   cursor: pointer;
 }
 
@@ -1795,7 +1797,7 @@
 }
 
 .pdpReviewsExpTitle {
-  font-weight: 900;
+  font-weight: 600;
   color: #111827;
   font-size: 14px;
   margin-bottom: 10px;
@@ -1825,7 +1827,7 @@
 .pdpExpStatRight {
   text-align: right;
   font-size: 13px;
-  font-weight: 900;
+  font-weight: 600;
   color: #0f172a;
   white-space: nowrap;
 }
@@ -1846,7 +1848,7 @@
 }
 
 .pdpReviewsFiltersLabel {
-  font-weight: 900;
+  font-weight: 600;
   color: #111827;
   font-size: 13px;
 }
@@ -1861,7 +1863,7 @@
   border: 1px solid #e2e8f0;
   background: #fff;
   color: #0f172a;
-  font-weight: 900;
+  font-weight: 600;
   font-size: 12px;
   padding: 6px 10px;
   border-radius: 999px;
@@ -1925,12 +1927,12 @@
   width: 34px;
   height: 34px;
   border-radius: 999px;
-  background: #16a34a;
+  background: none;
   color: #fff;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: 900;
+  font-weight: 600;
   flex-shrink: 0;
   overflow: hidden;
 }
@@ -1946,7 +1948,7 @@
 .pdpReviewBody { flex: 1; }
 
 .pdpReviewName {
-  font-weight: 900;
+  font-weight: 600;
   color: #0f172a;
   font-size: 13px;
   overflow: hidden;
@@ -1964,7 +1966,7 @@
   flex-wrap: wrap;
 }
 
-.pdpReviewTitle { margin-top: 6px; font-weight: 900; color: #111827; font-size: 13px; }
+.pdpReviewTitle { margin-top: 6px; font-weight: 600; color: #111827; font-size: 13px; }
 .pdpReviewComment { margin-top: 6px; color: #475569; font-size: 13px; line-height: 1.6; }
 .pdpReviewStars {
   display: flex;
@@ -1975,7 +1977,7 @@
 
 .pdpReviewLabel {
   font-size: 12px;
-  font-weight: 900;
+  font-weight: 600;
   color: #64748b;
 }
 
@@ -1983,7 +1985,7 @@
   margin-top: 10px;
   color: #94a3b8;
   font-size: 12px;
-  font-weight: 700;
+  font-weight: 600;
   display: flex;
   align-items: center;
   gap: 6px;
@@ -2033,7 +2035,7 @@
   background: var(--pdp-bg);
 }
 
-.pdpReviewModalTitle { font-weight: 900; color: #111827; }
+.pdpReviewModalTitle { font-weight: 600; color: #111827; }
 .pdpReviewModalClose { border: none; background: transparent; font-size: 26px; cursor: pointer; }
 
 .pdpReviewModalBody {
@@ -2048,7 +2050,7 @@
   -ms-overflow-style: none; /* IE/Edge legacy */
 }
 .pdpReviewModalBody::-webkit-scrollbar { display: none; } /* Chrome/Safari */
-.pdpReviewField label { display: block; font-size: 12px; font-weight: 900; color: #64748b; margin-bottom: 6px; }
+.pdpReviewField label { display: block; font-size: 12px; font-weight: 600; color: #64748b; margin-bottom: 6px; }
 .pdpReviewField input,
 .pdpReviewField textarea,
 .pdpReviewField select {
@@ -2067,7 +2069,7 @@
   justify-content: stretch;
   background: #fff;
 }
-.pdpReviewCancel { background: #fff; border: 1px solid #e2e8f0; padding: 10px 14px; border-radius: 12px; font-weight: 900; cursor: pointer; }
+.pdpReviewCancel { background: #fff; border: 1px solid #e2e8f0; padding: 10px 14px; border-radius: 12px; font-weight: 600; cursor: pointer; }
 .pdpReviewSubmit {
   width: 100%;
   background: var(--pdp-primary);
@@ -2075,7 +2077,7 @@
   border: none;
   padding: 14px 16px;
   border-radius: 12px;
-  font-weight: 900;
+  font-weight: 600;
   cursor: pointer;
   letter-spacing: 0.02em;
 }
@@ -2101,7 +2103,7 @@
 }
 
 .pdpReviewProductName {
-  font-weight: 900;
+  font-weight: 600;
   color: #111827;
   font-size: 18px;
   line-height: 1.2;
@@ -2113,7 +2115,7 @@
 }
 
 .pdpReviewSectionTitle {
-  font-weight: 900;
+  font-weight: 600;
   color: #111827;
   margin-bottom: 10px;
 }
@@ -2162,10 +2164,10 @@
 }
 
 .pdpExpRow:first-of-type { border-top: none; }
-.pdpExpLabel { color: #475569; font-weight: 700; font-size: 13px; }
+.pdpExpLabel { color: #475569; font-weight: 600; font-size: 13px; }
 .pdpExpStars .pdpRatingRow { justify-content: flex-start; gap: 6px; padding: 0; }
 .pdpExpStars .pdpRatingStar { width: 28px; height: 28px; font-size: 18px; border-radius: 8px; }
-.pdpExpRight { text-align: right; font-weight: 700; color: #334155; font-size: 13px; }
+.pdpExpRight { text-align: right; font-weight: 600; color: #334155; font-size: 13px; }
 
 .pdpReviewTextarea {
   border-radius: 12px;
@@ -2370,7 +2372,7 @@
 
 .pdpRelatedName {
   font-size: 13px;
-  font-weight: 700;
+  font-weight: 600;
   color: #111827;
   line-height: 1.35;
   display: -webkit-box;
@@ -2389,7 +2391,7 @@
 
 .pdpRelatedPrice {
   font-size: 15px;
-  font-weight: 900;
+  font-weight: 600;
   color: var(--pdp-promo);
 }
 
@@ -2417,7 +2419,7 @@
 
 .pdpRelatedOldPrice {
   text-decoration: line-through;
-  font-weight: 700;
+  font-weight: 600;
   color: #94a3b8;
 }
 
@@ -2544,17 +2546,17 @@
 }
 
 .pdpCommitText b {
-  font-weight: 700;
+  font-weight: 600;
   color: #111827;
 }
 
 .pdpCommitLinkAccent {
-  font-weight: 700;
+  font-weight: 600;
 }
 
 .pdpLink {
   color: var(--pdp-primary);
-  font-weight: 700;
+  font-weight: 600;
   cursor: pointer;
 }
 

@@ -715,7 +715,7 @@ font-weight: 600;
 
 .coSuccessCodeLabel{
   color: var(--et-text-muted);
-  font-weight: 800;
+  font-weight: 600;
   text-align: center;
 }
 
@@ -1011,7 +1011,7 @@ font-weight: 600;
 }
 
 .coCouponItemCode {
-  font-weight: 800;
+  font-weight: 600;
   color: var(--et-primary);
   font-size: 1.1rem;
 }

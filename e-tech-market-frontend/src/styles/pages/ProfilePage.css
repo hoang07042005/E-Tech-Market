@@ -66,7 +66,7 @@
 .pfName {
   margin: 0 0 6px;
   font-size: 22px;
-  font-weight: 900;
+  font-weight: 600;
   letter-spacing: -0.02em;
   word-break: break-word;
 }
@@ -86,7 +86,7 @@
   border-radius: 999px;
   background: rgba(249, 115, 22, 0.12);
   color: var(--et-primary-hover);
-  font-weight: 900;
+  font-weight: 600;
   font-size: 11px;
   letter-spacing: 0.08em;
 }
@@ -112,7 +112,7 @@
 
 .pfStatNum {
   margin: 0;
-  font-weight: 900;
+  font-weight: 600;
   color: var(--et-text);
   font-size: 16px;
 }
@@ -154,7 +154,7 @@
   background: transparent;
   cursor: pointer;
   color: var(--et-text);
-  font-weight: 900;
+  font-weight: 600;
   font-size: 12px;
 }
 
@@ -231,7 +231,7 @@
 
 .pfCardTitle {
   margin: 0;
-  font-weight: 900;
+  font-weight: 600;
   font-size: 16px;
   letter-spacing: -0.01em;
 }
@@ -242,7 +242,7 @@
   color: #fff;
   padding: 10px 14px;
   border-radius: 10px;
-  font-weight: 900;
+  font-weight: 600;
   font-size: 12px;
   cursor: pointer;
 }
@@ -265,7 +265,7 @@
 
 .pfLabel {
   font-size: 11px;
-  font-weight: 900;
+  font-weight: 600;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--et-text-muted);
@@ -306,7 +306,7 @@
 
 .pfTable th {
   font-size: 11px;
-  font-weight: 900;
+  font-weight: 600;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--et-text-muted);
@@ -323,7 +323,7 @@
   align-items: center;
   padding: 6px 10px;
   border-radius: 999px;
-  font-weight: 900;
+  font-weight: 600;
   font-size: 11px;
   background: rgba(34, 197, 94, 0.14);
   color: #166534;
@@ -347,7 +347,7 @@
 
 .pfMiniTitle {
   margin: 0 0 12px;
-  font-weight: 900;
+  font-weight: 600;
   font-size: 14px;
 }
 
@@ -384,7 +384,7 @@
 }
 
 .pfChevron {
-  font-weight: 900;
+  font-weight: 600;
   color: var(--et-text-muted);
   transition: transform 0.15s ease, color 0.15s ease;
 }
@@ -461,7 +461,7 @@
 
 .pfPromoTitle {
   margin: 0;
-  font-weight: 900;
+  font-weight: 600;
   font-size: 14px;
 }
 
@@ -480,7 +480,7 @@
   color: #b45309;
   padding: 10px 12px;
   border-radius: 999px;
-  font-weight: 900;
+  font-weight: 600;
   font-size: 12px;
   cursor: pointer;
 }
@@ -607,7 +607,7 @@
     border: 1px solid var(--et-border);
     border-radius: 14px;
     color: #dc2626;
-    font-weight: 900;
+    font-weight: 600;
     font-size: 15px;
     cursor: pointer;
     box-shadow: 0 4px 12px rgba(15, 23, 42, 0.03);
@@ -657,7 +657,7 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    font-weight: 900;
+    font-weight: 600;
   }
 
   .pfOrderMetaMobile {

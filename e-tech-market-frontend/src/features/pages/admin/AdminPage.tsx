@@ -813,7 +813,40 @@ function CustomTooltip({ active, payload, label }: CustomTooltipProps) {
 
 function DashboardContent({ onCreateProduct }: { onCreateProduct: () => void }) {
   const token = typeof window !== 'undefined' ? window.localStorage.getItem('token') : null
-  const [analyticsRange, setAnalyticsRange] = useState<'7d' | '30d' | 'month'>('month')
+  const [analyticsRange, setAnalyticsRange] = useState<'7d' | '30d' | 'month' | 'custom'>('month')
+  const [customStartDate, setCustomStartDate] = useState<string>(() => {
+    const d = new Date()
+    const month = String(d.getMonth() + 1).padStart(2, '0')
+    return `${d.getFullYear()}-${month}-01`
+  })
+  const [customEndDate, setCustomEndDate] = useState<string>(() => {
+    const d = new Date()
+    const month = String(d.getMonth() + 1).padStart(2, '0')
+    const day = String(d.getDate()).padStart(2, '0')
+    return `${d.getFullYear()}-${month}-${day}`
+  })
+  const [showRangeDropdown, setShowRangeDropdown] = useState(false)
+  const dropdownRef = useRef<HTMLDivElement>(null)
+  
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setShowRangeDropdown(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [])
+
+  const rangeLabels: Record<'7d' | '30d' | 'month' | 'custom', string> = {
+    month: 'Tháng này',
+    '7d': '7 ngày',
+    '30d': '30 ngày',
+    custom: 'Tùy chọn ngày',
+  }
+
   const [openOrderMenuId, setOpenOrderMenuId] = useState<number | null>(null)
   const [detailOrder, setDetailOrder] = useState<null | {
     id: number
@@ -922,7 +955,7 @@ function DashboardContent({ onCreateProduct }: { onCreateProduct: () => void }) 
       setDashError(null)
       try {
         const [res, products] = await Promise.all([
-          fetchDashboardStats<DashStats>(analyticsRange, token),
+          fetchDashboardStats<DashStats>(analyticsRange, token, customStartDate, customEndDate),
           apiFetch<unknown[]>('/api/admin/products', { token }),
         ])
         if (cancelled) return
@@ -989,7 +1022,7 @@ function DashboardContent({ onCreateProduct }: { onCreateProduct: () => void }) 
     return () => {
       cancelled = true
     }
-  }, [token, analyticsRange])
+  }, [token, analyticsRange, customStartDate, customEndDate])
 
   const restockVariant = async (variantId: number) => {
     if (!token) return
@@ -1230,19 +1263,187 @@ function DashboardContent({ onCreateProduct }: { onCreateProduct: () => void }) 
               <h3 className="admCardTitle">Phân tích & Thống kê</h3>
               <div className="admCardSub">Hiệu suất doanh thu và danh mục hàng đầu</div>
             </div>
-            <label className="admRangeSelectWrap">
-              <select
-                className="admRangeSelect"
-                value={analyticsRange}
-                onChange={(e) => setAnalyticsRange(e.target.value as '7d' | '30d' | 'month')}
-                aria-label="Chọn khoảng thời gian"
-              >
-                <option value="month">Tháng này</option>
-                <option value="7d">7 ngày</option>
-                <option value="30d">30 ngày</option>
-              </select>
-              <ChevronDownIcon />
-            </label>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+              {analyticsRange === 'custom' && (
+                <div 
+                  style={{ 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    gap: '8px',
+                    background: '#f8fafc',
+                    border: '1px solid #e2e8f0',
+                    borderRadius: '12px',
+                    padding: '4px 8px',
+                    boxShadow: '0 1px 2px 0 rgba(0, 0, 0, 0.02)',
+                    transition: 'all 0.2s ease',
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                      <line x1="16" y1="2" x2="16" y2="6"></line>
+                      <line x1="8" y1="2" x2="8" y2="6"></line>
+                      <line x1="3" y1="10" x2="21" y2="10"></line>
+                    </svg>
+                    <input
+                      type="date"
+                      className="admRangeDateInput"
+                      value={customStartDate}
+                      onChange={(e) => setCustomStartDate(e.target.value)}
+                      style={{
+                        padding: '4px 8px',
+                        borderRadius: '6px',
+                        border: 'none',
+                        fontSize: '13px',
+                        fontWeight: '600',
+                        outline: 'none',
+                        color: '#334155',
+                        backgroundColor: 'transparent',
+                        cursor: 'pointer',
+                      }}
+                    />
+                  </div>
+                  <span style={{ fontSize: '12px', color: '#94a3b8', fontWeight: '600', textTransform: 'uppercase' }}>đến</span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                      <line x1="16" y1="2" x2="16" y2="6"></line>
+                      <line x1="8" y1="2" x2="8" y2="6"></line>
+                      <line x1="3" y1="10" x2="21" y2="10"></line>
+                    </svg>
+                    <input
+                      type="date"
+                      className="admRangeDateInput"
+                      value={customEndDate}
+                      onChange={(e) => setCustomEndDate(e.target.value)}
+                      style={{
+                        padding: '4px 8px',
+                        borderRadius: '6px',
+                        border: 'none',
+                        fontSize: '13px',
+                        fontWeight: '600',
+                        outline: 'none',
+                        color: '#334155',
+                        backgroundColor: 'transparent',
+                        cursor: 'pointer',
+                      }}
+                    />
+                  </div>
+                </div>
+              )}
+
+              <div style={{ position: 'relative' }} ref={dropdownRef}>
+                <div
+                  className="admRangeSelectWrap"
+                  onClick={() => setShowRangeDropdown(!showRangeDropdown)}
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    padding: '8px 14px',
+                    borderRadius: '12px',
+                    border: '1px solid #e2e8f0',
+                    background: '#fff',
+                    fontWeight: '600',
+                    fontSize: '13px',
+                    cursor: 'pointer',
+                    color: '#334155',
+                    userSelect: 'none',
+                    boxShadow: '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
+                    transition: 'all 0.15s ease',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.borderColor = '#fb923c'
+                    e.currentTarget.style.boxShadow = '0 4px 12px rgba(249, 115, 22, 0.08)'
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.borderColor = '#e2e8f0'
+                    e.currentTarget.style.boxShadow = '0 1px 2px 0 rgba(0, 0, 0, 0.05)'
+                  }}
+                >
+                  <span>{rangeLabels[analyticsRange]}</span>
+                  <svg 
+                    width="16" 
+                    height="16" 
+                    viewBox="0 0 24 24" 
+                    fill="none" 
+                    stroke="currentColor" 
+                    strokeWidth="2" 
+                    strokeLinecap="round" 
+                    strokeLinejoin="round"
+                    style={{ 
+                      position: 'static', 
+                      opacity: 0.7, 
+                      transform: showRangeDropdown ? 'rotate(180deg)' : 'rotate(0deg)', 
+                      transition: 'transform 0.2s ease', 
+                      pointerEvents: 'none' 
+                    }}
+                  >
+                    <polyline points="6 9 12 15 18 9"></polyline>
+                  </svg>
+                </div>
+
+                {showRangeDropdown && (
+                  <div
+                    style={{
+                      position: 'absolute',
+                      top: 'calc(100% + 6px)',
+                      right: 0,
+                      zIndex: 100,
+                      minWidth: '160px',
+                      background: '#fff',
+                      border: '1px solid #e2e8f0',
+                      borderRadius: '12px',
+                      boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1)',
+                      padding: '6px',
+                      animation: 'admFadeInDown 0.15s ease-out forwards',
+                    }}
+                  >
+                    {(Object.keys(rangeLabels) as Array<'7d' | '30d' | 'month' | 'custom'>).map((key) => (
+                      <div
+                        key={key}
+                        onClick={() => {
+                          setAnalyticsRange(key)
+                          setShowRangeDropdown(false)
+                        }}
+                        style={{
+                          padding: '8px 12px',
+                          borderRadius: '8px',
+                          fontSize: '13px',
+                          fontWeight: '600',
+                          color: analyticsRange === key ? '#ea580c' : '#334155',
+                          backgroundColor: analyticsRange === key ? 'rgba(249, 115, 22, 0.08)' : 'transparent',
+                          cursor: 'pointer',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
+                          transition: 'all 0.12s ease',
+                        }}
+                        onMouseEnter={(e) => {
+                          if (analyticsRange !== key) {
+                            e.currentTarget.style.backgroundColor = '#f8fafc'
+                            e.currentTarget.style.color = '#0f172a'
+                          }
+                        }}
+                        onMouseLeave={(e) => {
+                          if (analyticsRange !== key) {
+                            e.currentTarget.style.backgroundColor = 'transparent'
+                            e.currentTarget.style.color = '#334155'
+                          }
+                        }}
+                      >
+                        <span>{rangeLabels[key]}</span>
+                        {analyticsRange === key && (
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ea580c" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                            <polyline points="20 6 9 17 4 12"></polyline>
+                          </svg>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
 
           <div className="admAnalyticsGrid">
@@ -1687,7 +1888,6 @@ function MedalIcon() {
   )
 }
 function RevenueIcon() { return <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg> }
-function ChevronDownIcon() { return <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg> }
 
 function PlusIcon() {
   return (

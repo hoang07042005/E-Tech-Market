@@ -23,14 +23,14 @@
   padding: 4px 12px;
   border-radius: 6px;
   font-size: 12px;
-  font-weight: 800;
+  font-weight: 600;
   text-transform: uppercase;
   margin-bottom: 16px;
 }
 
 .postTitle {
   font-size: 36px;
-  font-weight: 800;
+  font-weight: 600;
   color: #0f172a;
   line-height: 1.3;
   margin-bottom: 20px;
@@ -70,7 +70,7 @@
   align-items: center;
   justify-content: center;
   font-size: 10px;
-  font-weight: 800;
+  font-weight: 600;
   color: var(--et-primary);
   background: var(--et-primary-soft);
   text-transform: uppercase;
@@ -129,7 +129,7 @@
 
 .postContent h2 {
   font-size: 24px;
-  font-weight: 800;
+  font-weight: 600;
   color: #0f172a;
   margin: 40px 0 20px;
 }
@@ -153,7 +153,7 @@
 .prosColumn h4,
 .consColumn h4 {
   font-size: 16px;
-  font-weight: 800;
+  font-weight: 600;
   margin-bottom: 20px;
   display: flex;
   align-items: center;
@@ -187,7 +187,7 @@
 
 .prosConsList li::before {
   content: '•';
-  font-weight: 900;
+  font-weight: 600;
 }
 
 .postSpecTable {
@@ -205,7 +205,7 @@
   padding: 14px 20px;
   text-align: left;
   font-size: 14px;
-  font-weight: 800;
+  font-weight: 600;
   color: #475569;
 }
 
@@ -221,7 +221,7 @@
 }
 
 .postSpecTable td:first-child {
-  font-weight: 700;
+  font-weight: 600;
   color: #0f172a;
   width: 140px;
 }
@@ -267,7 +267,7 @@
 }
 
 .postSidebarWidget {
-  background: #fff;
+  background: #f7eedf;
   border-radius: 20px;
   padding: 24px;
   border: 1px solid rgba(0, 0, 0, 0.03);
@@ -276,7 +276,7 @@
 
 .postWidgetTitle {
   font-size: 16px;
-  font-weight: 800;
+  font-weight: 600;
   color: #0f172a;
   margin-bottom: 24px;
 }
@@ -294,7 +294,7 @@
 
 .postProductName {
   font-size: 15px;
-  font-weight: 700;
+  font-weight: 600;
   color: #0f172a;
   margin-bottom: 12px;
   display: block;
@@ -302,7 +302,7 @@
 
 .postProductPrice {
   font-size: 18px;
-  font-weight: 800;
+  font-weight: 600;
   color: #f97316;
   margin-bottom: 20px;
   display: block;
@@ -315,7 +315,7 @@
   border: none;
   background: #f97316;
   color: #fff;
-  font-weight: 800;
+  font-weight: 600;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -352,7 +352,7 @@
 
 .commentCount {
   font-size: 18px;
-  font-weight: 800;
+  font-weight: 600;
   margin-bottom: 40px;
 }
 
@@ -388,7 +388,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: 800;
+  font-weight: 600;
   color: var(--et-primary);
   background: var(--et-primary-soft);
   font-size: 16px;
@@ -409,7 +409,7 @@
 }
 
 .commentAuthor {
-  font-weight: 800;
+  font-weight: 600;
   font-size: 14px;
 }
 
@@ -446,7 +446,7 @@
   padding: 12px 32px;
   border-radius: 10px;
   border: none;
-  font-weight: 700;
+  font-weight: 600;
   cursor: pointer;
 }
 
@@ -548,4 +548,15 @@
   .postBreadcrumb::-webkit-scrollbar {
     display: none;
   }
+}
+
+.blogNewsletterBtn {
+  border-radius: 12px;
+  background: var(--et-primary);
+  color: #fff;
+  padding: 12px 32px;
+  border-radius: 10px;
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
 }

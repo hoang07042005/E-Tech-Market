@@ -364,7 +364,7 @@ input:-webkit-autofill:active {
   border: none;
   color: #71717a;
   font-size: 0.8rem;
-  font-weight: 700;
+  font-weight: 600;
   letter-spacing: 0.05em;
   cursor: pointer;
   transition: color 0.3s ease;

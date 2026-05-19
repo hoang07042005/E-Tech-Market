@@ -20,22 +20,39 @@ class DashboardController extends Controller
     public function stats(Request $request): JsonResponse
     {
         Carbon::setLocale('vi');
-        $range = (string) $request->query('range', 'month'); // 7d | 30d | month
-        if (! in_array($range, ['7d', '30d', 'month'], true)) {
+        $range = (string) $request->query('range', 'month'); // 7d | 30d | month | custom
+        if (! in_array($range, ['7d', '30d', 'month', 'custom'], true)) {
             $range = 'month';
         }
 
-        $statsData = \Illuminate\Support\Facades\Cache::remember('admin_dashboard_stats_' . $range, 60, function () use ($range) {
+        $startDateParam = $request->query('start_date');
+        $endDateParam = $request->query('end_date');
+
+        $cacheKey = 'admin_dashboard_stats_' . $range;
+        if ($range === 'custom') {
+            $cacheKey .= '_' . md5($startDateParam . '_' . $endDateParam);
+        }
+
+        $statsData = \Illuminate\Support\Facades\Cache::remember($cacheKey, 60, function () use ($range, $startDateParam, $endDateParam) {
             $now = Carbon::now();
             $from30d = $now->copy()->subDays(30);
             $from7d = $now->copy()->subDays(7);
             $toEnd = $now->copy()->endOfDay();
 
-            $analyticsStart = match ($range) {
-                '7d' => $now->copy()->subDays(6)->startOfDay(),
-                '30d' => $now->copy()->subDays(29)->startOfDay(),
-                default => $now->copy()->startOfMonth()->startOfDay(),
-            };
+            if ($range === 'custom' && $startDateParam && $endDateParam) {
+                try {
+                    $analyticsStart = Carbon::parse($startDateParam)->startOfDay();
+                    $toEnd = Carbon::parse($endDateParam)->endOfDay();
+                } catch (\Exception $e) {
+                    $analyticsStart = $now->copy()->startOfMonth()->startOfDay();
+                }
+            } else {
+                $analyticsStart = match ($range) {
+                    '7d' => $now->copy()->subDays(6)->startOfDay(),
+                    '30d' => $now->copy()->subDays(29)->startOfDay(),
+                    default => $now->copy()->startOfMonth()->startOfDay(),
+                };
+            }
 
             $paidOrders30d = Order::query()
                 ->where('payment_status', 'paid')
@@ -261,7 +278,7 @@ class DashboardController extends Controller
                 ->leftJoin('categories', 'categories.id', '=', 'products.category_id')
                 ->whereNull('products.deleted_at')
                 ->where('orders.payment_status', '=', 'paid')
-                ->where('orders.created_at', '>=', $analyticsStart)
+                ->whereBetween('orders.created_at', [$analyticsStart, $toEnd])
                 ->groupBy('categories.name')
                 ->select([
                     DB::raw("COALESCE(categories.name, 'Khác') as name"),

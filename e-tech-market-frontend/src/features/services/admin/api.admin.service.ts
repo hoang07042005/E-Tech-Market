@@ -55,5 +55,11 @@ export const createBlogCategory = <T>(body: any, token: string | null) => apiFet
 export const fetchReviews = <T>(url: string, token: string | null) => apiFetch<T>(url, { token })
 
 // Dashboard
-export const fetchDashboardStats = <T>(range: string, token: string | null) => apiFetch<T>(`/api/admin/dashboard/stats?range=${encodeURIComponent(range)}`, { token })
+export const fetchDashboardStats = <T>(range: string, token: string | null, startDate?: string, endDate?: string) => {
+  let url = `/api/admin/dashboard/stats?range=${encodeURIComponent(range)}`
+  if (range === 'custom' && startDate && endDate) {
+    url += `&start_date=${encodeURIComponent(startDate)}&end_date=${encodeURIComponent(endDate)}`
+  }
+  return apiFetch<T>(url, { token })
+}
 export const fetchNotifications = <T>(url: string, token: string | null) => apiFetch<T>(url, { token })

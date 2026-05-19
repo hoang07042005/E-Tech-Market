@@ -27,7 +27,7 @@
 
 .wlTitle {
   font-size: 32px;
-  font-weight: 800;
+  font-weight: 600;
   margin: 0 0 8px;
   letter-spacing: -0.5px;
 }
@@ -80,7 +80,7 @@
 
 .wlSideTitle {
   font-size: 13px;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--et-text-muted);
   margin-bottom: 16px;
   letter-spacing: 0.5px;
@@ -110,7 +110,7 @@
 .wlCatBtn--active {
   background: var(--et-primary-light, #fff7ed);
   color: var(--et-primary, #b45309);
-  font-weight: 700;
+  font-weight: 600;
 }
 
 .wlCatCount {
@@ -135,7 +135,7 @@
 
 .wlPromoTitle {
   font-size: 18px;
-  font-weight: 700;
+  font-weight: 600;
   margin-bottom: 8px;
 }
 
@@ -234,14 +234,14 @@
 
 .wlCardBrand {
   font-size: 11px;
-  font-weight: 700;
+  font-weight: 600;
   color: #64748b;
   letter-spacing: 0.5px;
 }
 
 .wlCardPrice {
   font-size: 16px;
-  font-weight: 800;
+  font-weight: 600;
   color: var(--et-primary, #ea580c);
 }
 
@@ -252,7 +252,7 @@
 
 .wlCardTitle {
   font-size: 16px;
-  font-weight: 700;
+  font-weight: 600;
   margin: 0 0 8px;
   line-height: 1.4;
   display: -webkit-box;
@@ -319,7 +319,7 @@
 
 .wlBottomTitle {
   font-size: 20px;
-  font-weight: 800;
+  font-weight: 600;
   margin-bottom: 8px;
 }
 
