@@ -161,6 +161,8 @@
 .usersRoleModalBody {
   padding: 16px 20px;
   overflow-y: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
 
 .usersRoleCheckRow {

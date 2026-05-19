@@ -532,8 +532,9 @@
 .ppCardRating {
   color: #a3a3a3;
   flex: auto;
-  justify-content: center;
+  justify-content: right;
   align-items: center;
+  padding-right: 10px;
   gap: 8px;
   min-width: 0;
   display: inline-flex
@@ -546,7 +547,7 @@
 }
 
 .ppStar {
-  font-size: 12px;
+  font-size: 15px;
   line-height: 1
 }
 
