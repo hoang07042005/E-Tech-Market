@@ -89,6 +89,12 @@ export default function AdminFlashSalePage() {
     quantity_limit: ''
   })
 
+  // Bulk state
+  const [activeItemTab, setActiveItemTab] = useState<'single' | 'bulk'>('single')
+  const [bulkDiscountPercentage, setBulkDiscountPercentage] = useState('')
+  const [bulkQuantityLimit, setBulkQuantityLimit] = useState('')
+  const [isBulkApplying, setIsBulkApplying] = useState(false)
+
   const selectedProduct = availableProducts.find(p => String(p.id) === addItemData.product_id)
 
   const loadSales = async () => {
@@ -173,6 +179,42 @@ export default function AdminFlashSalePage() {
       setAddItemData({ product_id: '', variant_id: '', flash_sale_price: '', quantity_limit: '' })
     } catch (e: any) {
       alert(e.message)
+    }
+  }
+
+  const handleBulkDiscount = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!token || !currentSale) return
+    if (!bulkDiscountPercentage) {
+      alert('Vui lòng nhập phần trăm giảm giá!')
+      return
+    }
+    const percent = Number(bulkDiscountPercentage)
+    if (isNaN(percent) || percent < 1 || percent > 99) {
+      alert('Phần trăm giảm giá phải từ 1 đến 99%!')
+      return
+    }
+    if (!confirm(`Bạn có chắc chắn muốn giảm giá đồng loạt ${percent}% cho TẤT CẢ sản phẩm trong cửa hàng cho chiến dịch này không? Việc này sẽ ghi đè giá bán hiện tại của các sản phẩm đã có mặt trong chiến dịch.`)) {
+      return
+    }
+    setIsBulkApplying(true)
+    try {
+      const res = await apiFetch<{ message: string }>(`/api/admin/flash-sales/${currentSale.id}/bulk-discount`, {
+        method: 'POST',
+        token,
+        body: JSON.stringify({
+          discount_percentage: percent,
+          quantity_limit: bulkQuantityLimit ? Number(bulkQuantityLimit) : null
+        })
+      })
+      alert(res.message)
+      handleOpenItems(currentSale) // Refresh items list
+      setBulkDiscountPercentage('')
+      setBulkQuantityLimit('')
+    } catch (e: any) {
+      alert(e.message)
+    } finally {
+      setIsBulkApplying(false)
     }
   }
 
@@ -480,112 +522,221 @@ export default function AdminFlashSalePage() {
 
             <div style={{
               background: '#f8fafc',
-              padding: '28px',
-              borderRadius: '5px',
+              padding: '24px 28px 28px 28px',
+              borderRadius: '12px',
               border: '1px solid #e2e8f0',
               marginBottom: '32px',
-              boxShadow: 'inset 0 2px 4px 0 rgba(0, 0, 0, 0.05)'
+              boxShadow: 'inset 0 2px 4px 0 rgba(0, 0, 0, 0.02)'
             }}>
-              <h4 style={{ margin: '0 0 20px 0', fontSize: '1.1rem', color: '#0f172a', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <span style={{ background: '#f97316', color: 'white', width: '24px', height: '24px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.8rem' }}>+</span>
-                Thêm sản phẩm vào chương trình
-              </h4>
+              {/* Tab Header */}
+              <div style={{
+                display: 'flex',
+                gap: '12px',
+                borderBottom: '1.5px solid #e2e8f0',
+                paddingBottom: '14px',
+                marginBottom: '24px'
+              }}>
+                <button
+                  type="button"
+                  onClick={() => setActiveItemTab('single')}
+                  style={{
+                    padding: '8px 18px',
+                    borderRadius: '8px',
+                    border: 'none',
+                    fontWeight: 700,
+                    fontSize: '0.9rem',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s',
+                    background: activeItemTab === 'single' ? '#ea580c' : 'transparent',
+                    color: activeItemTab === 'single' ? '#fff' : '#64748b',
+                    boxShadow: activeItemTab === 'single' ? '0 4px 6px -1px rgba(234, 88, 12, 0.2)' : 'none'
+                  }}
+                >
+                  ➕ Thêm từng sản phẩm
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setActiveItemTab('bulk')}
+                  style={{
+                    padding: '8px 18px',
+                    borderRadius: '8px',
+                    border: 'none',
+                    fontWeight: 700,
+                    fontSize: '0.9rem',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s',
+                    background: activeItemTab === 'bulk' ? '#ea580c' : 'transparent',
+                    color: activeItemTab === 'bulk' ? '#fff' : '#64748b',
+                    boxShadow: activeItemTab === 'bulk' ? '0 4px 6px -1px rgba(234, 88, 12, 0.2)' : 'none'
+                  }}
+                >
+                  ⚡ Giảm giá đồng loạt cả Shop
+                </button>
+              </div>
 
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
-                  <div>
-                    <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, color: '#475569', marginBottom: '8px' }}>1. Chọn sản phẩm</label>
-                    <select
-                      className="adminInput"
-                      style={{ borderRadius: '5px', border: '1.5px solid #cbd5e1', padding: '10px 16px', height: '48px' }}
-                      value={addItemData.product_id}
-                      onChange={e => setAddItemData({ ...addItemData, product_id: e.target.value, variant_id: '' })}
-                      required
-                    >
-                      <option value="">-- Tìm chọn sản phẩm trong kho --</option>
-                      {availableProducts.map(p => (
-                        <option key={p.id} value={p.id}>{p.name} (Gốc: {Number(p.price).toLocaleString()}đ)</option>
-                      ))}
-                    </select>
+              {activeItemTab === 'single' ? (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+                    <div>
+                      <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, color: '#475569', marginBottom: '8px' }}>1. Chọn sản phẩm</label>
+                      <select
+                        className="adminInput"
+                        style={{ borderRadius: '5px', border: '1.5px solid #cbd5e1', padding: '10px 16px', height: '48px' }}
+                        value={addItemData.product_id}
+                        onChange={e => setAddItemData({ ...addItemData, product_id: e.target.value, variant_id: '' })}
+                        required
+                      >
+                        <option value="">-- Tìm chọn sản phẩm trong kho --</option>
+                        {availableProducts.map(p => (
+                          <option key={p.id} value={p.id}>{p.name} (Gốc: {Number(p.price).toLocaleString()}đ)</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div>
+                      <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, color: '#475569', marginBottom: '8px' }}>2. Phiên bản áp dụng</label>
+                      <select
+                        className="adminInput"
+                        style={{
+                          borderRadius: '5px',
+                          border: '1.5px solid #cbd5e1',
+                          padding: '10px 16px',
+                          height: '48px',
+                          background: (!selectedProduct || !selectedProduct.variants?.length) ? '#f1f5f9' : 'white'
+                        }}
+                        value={addItemData.variant_id}
+                        onChange={e => {
+                          const vId = e.target.value;
+                          const variant = selectedProduct?.variants?.find(v => String(v.id) === vId);
+                          setAddItemData({
+                            ...addItemData,
+                            variant_id: vId,
+                            flash_sale_price: variant ? String(variant.price) : addItemData.flash_sale_price
+                          });
+                        }}
+                        disabled={!selectedProduct || !selectedProduct.variants?.length}
+                      >
+                        <option value="">-- Tất cả phiên bản / Mặc định --</option>
+                        {selectedProduct?.variants?.map(v => (
+                          <option key={v.id} value={v.id}>{v.variant_name} (Gốc: {Number(v.price).toLocaleString()}đ)</option>
+                        ))}
+                      </select>
+                    </div>
                   </div>
-                  <div>
-                    <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, color: '#475569', marginBottom: '8px' }}>2. Phiên bản áp dụng</label>
-                    <select
-                      className="adminInput"
-                      style={{
-                        borderRadius: '5px',
-                        border: '1.5px solid #cbd5e1',
-                        padding: '10px 16px',
-                        height: '48px',
-                        background: (!selectedProduct || !selectedProduct.variants?.length) ? '#f1f5f9' : 'white'
-                      }}
-                      value={addItemData.variant_id}
-                      onChange={e => {
-                        const vId = e.target.value;
-                        const variant = selectedProduct?.variants?.find(v => String(v.id) === vId);
-                        setAddItemData({
-                          ...addItemData,
-                          variant_id: vId,
-                          flash_sale_price: variant ? String(variant.price) : addItemData.flash_sale_price
-                        });
-                      }}
-                      disabled={!selectedProduct || !selectedProduct.variants?.length}
-                    >
-                      <option value="">-- Tất cả phiên bản / Mặc định --</option>
-                      {selectedProduct?.variants?.map(v => (
-                        <option key={v.id} value={v.id}>{v.variant_name} (Gốc: {Number(v.price).toLocaleString()}đ)</option>
-                      ))}
-                    </select>
-                  </div>
-                </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr auto', gap: '20px', alignItems: 'end' }}>
-                  <div>
-                    <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, color: '#475569', marginBottom: '8px' }}>3. Giá Sale đặc biệt (VNĐ)</label>
-                    <div style={{ position: 'relative' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr auto', gap: '20px', alignItems: 'end' }}>
+                    <div>
+                      <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, color: '#475569', marginBottom: '8px' }}>3. Giá Sale đặc biệt (VNĐ)</label>
+                      <div style={{ position: 'relative' }}>
+                        <input
+                          type="number"
+                          className="adminInput"
+                          style={{ borderRadius: '5px', border: '1.5px solid #cbd5e1', padding: '10px 16px 10px 40px', height: '48px', fontWeight: 600, color: '#f97316' }}
+                          placeholder="Nhập giá giảm..."
+                          value={addItemData.flash_sale_price}
+                          onChange={e => setAddItemData({ ...addItemData, flash_sale_price: e.target.value })}
+                          required
+                        />
+                        <span style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8', fontWeight: 700 }}>₫</span>
+                      </div>
+                    </div>
+                    <div>
+                      <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, color: '#475569', marginBottom: '8px' }}>4. Giới hạn suất mua</label>
                       <input
                         type="number"
                         className="adminInput"
-                        style={{ borderRadius: '5px', border: '1.5px solid #cbd5e1', padding: '10px 16px 10px 40px', height: '48px', fontWeight: 600, color: '#f97316' }}
-                        placeholder="Nhập giá giảm..."
-                        value={addItemData.flash_sale_price}
-                        onChange={e => setAddItemData({ ...addItemData, flash_sale_price: e.target.value })}
-                        required
+                        style={{ borderRadius: '5px', border: '1.5px solid #cbd5e1', padding: '10px 16px', height: '48px' }}
+                        placeholder="∞ (Vô hạn)"
+                        value={addItemData.quantity_limit}
+                        onChange={e => setAddItemData({ ...addItemData, quantity_limit: e.target.value })}
                       />
-                      <span style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8', fontWeight: 700 }}>₫</span>
                     </div>
+                    <button
+                      onClick={handleAddItem}
+                      type="button"
+                      className="adminBtnPrimary"
+                      style={{
+                        borderRadius: '5px',
+                        padding: '0 40px',
+                        height: '48px',
+                        fontWeight: 600,
+                        background: 'linear-gradient(135deg, #df8947ff 0%, #f49b0cff 100%)',
+                        border: 'none',
+                        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+                        color: 'white',
+                        cursor: 'pointer'
+                      }}
+                    >
+                      Thêm vào danh sách
+                    </button>
                   </div>
-                  <div>
-                    <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, color: '#475569', marginBottom: '8px' }}>4. Giới hạn suất mua</label>
-                    <input
-                      type="number"
-                      className="adminInput"
-                      style={{ borderRadius: '5px', border: '1.5px solid #cbd5e1', padding: '10px 16px', height: '48px' }}
-                      placeholder="∞ (Vô hạn)"
-                      value={addItemData.quantity_limit}
-                      onChange={e => setAddItemData({ ...addItemData, quantity_limit: e.target.value })}
-                    />
-                  </div>
-                  <button
-                    onClick={handleAddItem}
-                    type="button"
-                    className="adminBtnPrimary"
-                    style={{
-                      borderRadius: '5px',
-                      padding: '0 40px',
-                      height: '48px',
-                      fontWeight: 600,
-                      background: 'linear-gradient(135deg, #df8947ff 0%, #f49b0cff 100%)',
-                      border: 'none',
-                      boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
-                      color: 'white',
-                      cursor: 'pointer'
-                    }}
-                  >
-                    Thêm vào danh sách
-                  </button>
                 </div>
-              </div>
+              ) : (
+                <form onSubmit={handleBulkDiscount} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                  <div style={{
+                    padding: '16px',
+                    borderRadius: '8px',
+                    background: '#fff7ed',
+                    border: '1px solid #ffedd5',
+                    color: '#c2410c',
+                    fontSize: '0.85rem',
+                    fontWeight: 500,
+                    lineHeight: '1.5'
+                  }}>
+                    💡 <strong>Tính năng giảm giá đồng loạt:</strong> Hệ thống sẽ tự động tính toán giá giảm theo % của từng sản phẩm (và tất cả các phiên bản của sản phẩm) dựa trên giá bán gốc hiện tại, và tự động thêm chúng vào chiến dịch Flash Sale này.
+                  </div>
+
+                  <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr auto', gap: '20px', alignItems: 'end' }}>
+                    <div>
+                      <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, color: '#475569', marginBottom: '8px' }}>1. Mức giảm giá (%)</label>
+                      <div style={{ position: 'relative' }}>
+                        <input
+                          type="number"
+                          min="1"
+                          max="99"
+                          className="adminInput"
+                          style={{ borderRadius: '5px', border: '1.5px solid #cbd5e1', padding: '10px 40px 10px 16px', height: '48px', fontWeight: 700, color: '#ea580c' }}
+                          placeholder="Ví dụ: 10, 20, 50..."
+                          value={bulkDiscountPercentage}
+                          onChange={e => setBulkDiscountPercentage(e.target.value)}
+                          required
+                        />
+                        <span style={{ position: 'absolute', right: '16px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8', fontWeight: 700 }}>%</span>
+                      </div>
+                    </div>
+                    <div>
+                      <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, color: '#475569', marginBottom: '8px' }}>2. Giới hạn suất mua mỗi SP</label>
+                      <input
+                        type="number"
+                        min="1"
+                        className="adminInput"
+                        style={{ borderRadius: '5px', border: '1.5px solid #cbd5e1', padding: '10px 16px', height: '48px' }}
+                        placeholder="∞ (Vô hạn)"
+                        value={bulkQuantityLimit}
+                        onChange={e => setBulkQuantityLimit(e.target.value)}
+                      />
+                    </div>
+                    <button
+                      type="submit"
+                      disabled={isBulkApplying}
+                      className="adminBtnPrimary"
+                      style={{
+                        borderRadius: '5px',
+                        padding: '0 40px',
+                        height: '48px',
+                        fontWeight: 700,
+                        background: 'linear-gradient(135deg, #ea580c 0%, #ca8a04 100%)',
+                        border: 'none',
+                        boxShadow: '0 4px 6px -1px rgba(234, 88, 12, 0.2)',
+                        color: 'white',
+                        cursor: isBulkApplying ? 'not-allowed' : 'pointer',
+                        opacity: isBulkApplying ? 0.7 : 1
+                      }}
+                    >
+                      {isBulkApplying ? 'Đang áp dụng...' : '⚡ Áp Dụng Giảm Đồng Loạt'}
+                    </button>
+                  </div>
+                </form>
+              )}
             </div>
 
             <div

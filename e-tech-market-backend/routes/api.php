@@ -164,10 +164,10 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::apiResource('blog-posts', App\Http\Controllers\Admin\AdminBlogPostsController::class);
         Route::post('/blog-categories', [App\Http\Controllers\Admin\AdminBlogPostsController::class, 'storeCategory']);
 
-        // Flash Sales
         Route::apiResource('flash-sales', App\Http\Controllers\Admin\FlashSaleController::class);
         Route::post('flash-sales/{flash_sale}/items', [App\Http\Controllers\Admin\FlashSaleController::class, 'addItem']);
         Route::delete('flash-sales/{flash_sale}/items/{item}', [App\Http\Controllers\Admin\FlashSaleController::class, 'removeItem']);
+        Route::post('flash-sales/{flash_sale}/bulk-discount', [App\Http\Controllers\Admin\FlashSaleController::class, 'addBulkItems']);
 
         // Uploads
         Route::post('/uploads/product-news-thumbnail', [AdminUploadsController::class, 'storeProductNewsThumbnail']);

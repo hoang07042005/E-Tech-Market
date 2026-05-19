@@ -128,6 +128,7 @@
 .sidebarItem.active {
   background: rgb(240 111 22 / 12%);
   color: var(--admin-accent);
+  border-right: 4px solid var(--admin-accent);
 }
 
 .sidebarItemIcon {

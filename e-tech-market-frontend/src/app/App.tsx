@@ -40,6 +40,7 @@ const CouponsPage = lazy(() => import('@/features/pages/client/profile/CouponsPa
 const BlogPage = lazy(() => import('@/features/pages/client/blog/BlogPage'))
 const BlogPostDetailPage = lazy(() => import('@/features/pages/client/blog/BlogPostDetailPage'))
 const ComparePage = lazy(() => import('@/features/pages/client/products/ComparePage'))
+const FlashSalePage = lazy(() => import('@/features/pages/client/products/FlashSalePage'))
 
 type StoredUserJson = {
   roles?: { slug?: string }[]
@@ -207,6 +208,7 @@ function AppFrame() {
       <Suspense fallback={<PageLoader />}>
         <Routes>
           <Route path="/" element={<HomePage />} />
+          <Route path="/flash-sale" element={<FlashSalePage />} />
           <Route path="/products" element={<ProductsPage />} />
           <Route path="/products/:slug" element={<ProductDetailPage />} />
           <Route path="/product-news/:slug" element={<ProductNewsDetailPage />} />
