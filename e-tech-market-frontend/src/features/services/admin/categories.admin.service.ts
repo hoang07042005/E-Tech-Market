@@ -20,7 +20,7 @@ export const deleteAdminCategory = (id: number, token: string | null) => {
 
 export const saveAdminCategory = (payload: FormData, id: number | null | undefined, token: string | null) => {
   if (id) {
-    // using _method = PUT in FormData
+    payload.set('_method', 'PUT')
     return apiFetch(`/api/admin/categories/${id}`, {
       method: 'POST',
       body: payload,
