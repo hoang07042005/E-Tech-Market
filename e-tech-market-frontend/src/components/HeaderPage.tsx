@@ -138,8 +138,7 @@ export default function HeaderPage({ active = 'Home' }: { active?: NavKey }) {
   })
 
   useEffect(() => {
-    const isDark = localStorage.getItem('theme') === 'dark' || 
-      (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)
+    const isDark = localStorage.getItem('theme') === 'dark'
     
     if (isDark) {
       document.documentElement.classList.add('dark')
@@ -348,7 +347,7 @@ export default function HeaderPage({ active = 'Home' }: { active?: NavKey }) {
           aria-label="E-TECH MARKET — Trang chủ"
           onClick={() => navigate('/')}
         >
-          <img className="hfLogoImg" src="/logo.png" alt="" decoding="async" />
+          <img className="hfLogoImg" src={darkMode ? '/logo-trang.png' : '/logo.png'} alt="" decoding="async" />
         </button>
 
         {menuOpen && (

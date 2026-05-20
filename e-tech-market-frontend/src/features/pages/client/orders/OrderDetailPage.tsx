@@ -426,7 +426,7 @@ export default function OrderDetailPage() {
           <section className="oudCard">
             <div className="oudCardTitle">Lịch sử chuyển đổi trạng thái</div>
             {!order.status_history?.length ? (
-              <div style={{ fontSize: 12, color: '#64748b', fontWeight: 700 }}>
+              <div style={{ fontSize: 12, color: 'var(--et-text-muted)', fontWeight: 700 }}>
                 Chưa có lịch sử.
               </div>
             ) : (
@@ -436,15 +436,15 @@ export default function OrderDetailPage() {
                   const toLabel = statusMeta(h.to_status || null).label
                   const who = h.changed_by?.name ? ` • ${h.changed_by.name}` : ''
                   return (
-                    <div key={h.id} style={{ padding: 10, border: '1px solid rgba(15,23,42,.08)', borderRadius: 12, background: '#fff' }}>
-                      <div style={{ fontWeight: 900, fontSize: 12, color: '#0f172a' }}>
+                    <div key={h.id} style={{ padding: 10, border: '1px solid var(--et-border)', borderRadius: 12, background: 'var(--et-surface)' }}>
+                      <div style={{ fontWeight: 900, fontSize: 12, color: 'var(--et-text)' }}>
                         {fromLabel} → {toLabel}
                       </div>
-                      <div style={{ marginTop: 4, fontWeight: 700, fontSize: 12, color: '#64748b' }}>
+                      <div style={{ marginTop: 4, fontWeight: 700, fontSize: 12, color: 'var(--et-text-muted)' }}>
                         {fmtDateTimeVi(h.changed_at)}{who}
                       </div>
                       {h.note ? (
-                        <div style={{ marginTop: 6, fontWeight: 700, fontSize: 12, color: '#334155', whiteSpace: 'pre-wrap' }}>
+                        <div style={{ marginTop: 6, fontWeight: 700, fontSize: 12, color: 'var(--et-text-muted)', whiteSpace: 'pre-wrap' }}>
                           {h.note}
                         </div>
                       ) : null}
@@ -530,16 +530,16 @@ export default function OrderDetailPage() {
         <section className={`oudCard ${hasAdminResponse ? '' : 'span2'}`}>
           <div className="oudCardTitle">Yêu cầu hoàn trả</div>
           {!order.return_request ? (
-            <div style={{ fontSize: 12, color: '#64748b', fontWeight: 700 }}>
+            <div style={{ fontSize: 12, color: 'var(--et-text-muted)', fontWeight: 700 }}>
               Chưa có yêu cầu hoàn trả cho đơn hàng này.
             </div>
           ) : (
             <>
-              <div style={{ marginTop: 6, fontSize: 12, fontWeight: 800, color: '#0f172a' }}>
+              <div style={{ marginTop: 6, fontSize: 12, fontWeight: 800, color: 'var(--et-text)' }}>
                 Trạng thái: {rrStatusLabel(order.return_request.status)}
               </div>
               {order.return_request.content ? (
-                <div style={{ marginTop: 8, fontSize: 12, color: '#334155', whiteSpace: 'pre-wrap', fontWeight: 650 }}>
+                <div style={{ marginTop: 8, fontSize: 12, color: 'var(--et-text-muted)', whiteSpace: 'pre-wrap', fontWeight: 650 }}>
                   {order.return_request.content}
                 </div>
               ) : null}
@@ -572,17 +572,17 @@ export default function OrderDetailPage() {
           <section className="oudCard">
             <div className="oudCardTitle">Phản hồi từ admin / Hoàn tiền</div>
             {!order.return_request ? (
-              <div style={{ fontSize: 12, color: '#64748b', fontWeight: 700 }}>
+              <div style={{ fontSize: 12, color: 'var(--et-text-muted)', fontWeight: 700 }}>
                 Chưa có phản hồi.
               </div>
             ) : (
               <>
                 {order.return_request.admin_note ? (
-                  <div style={{ marginTop: 6, fontSize: 12, color: '#334155', whiteSpace: 'pre-wrap' }}>
+                  <div style={{ marginTop: 6, fontSize: 12, color: 'var(--et-text-muted)', whiteSpace: 'pre-wrap' }}>
                     <span style={{ fontWeight: 900 }}>Phản hồi admin:</span> {order.return_request.admin_note}
                   </div>
                 ) : (
-                  <div style={{ marginTop: 6, fontSize: 12, color: '#64748b', fontWeight: 700 }}>
+                  <div style={{ marginTop: 6, fontSize: 12, color: 'var(--et-text-muted)', fontWeight: 700 }}>
                     Admin chưa phản hồi.
                   </div>
                 )}

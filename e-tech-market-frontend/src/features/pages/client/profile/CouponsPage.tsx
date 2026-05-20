@@ -48,7 +48,7 @@ export default function CouponsPage() {
   return (
     <div style={{ marginTop: '20px' }}>
       {activeCoupons.length === 0 ? (
-        <div style={{ padding: '40px', textAlign: 'center', color: 'var(--et-text-muted)', background: '#f8fafc', borderRadius: '12px' }}>
+        <div style={{ padding: '40px', textAlign: 'center', color: 'var(--et-text-muted)', background: 'var(--et-surface)', border: '1px solid var(--et-border)', borderRadius: '12px' }}>
           Hiện bạn chưa có mã giảm giá nào.
         </div>
       ) : (

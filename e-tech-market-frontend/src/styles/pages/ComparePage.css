@@ -35,14 +35,15 @@
   background: #fff;
   border-radius: 32px;
   box-shadow: 0 25px 70px rgba(0, 0, 0, 0.05);
-  overflow: hidden;
+  overflow-x: auto;
   border: 1px solid rgba(15, 23, 42, 0.05);
+  -webkit-overflow-scrolling: touch;
 }
 
 .compareTable {
   width: 100%;
   border-collapse: collapse;
-  table-layout: fixed;
+  min-width: 600px;
 }
 
 .compareTable th, 
@@ -50,10 +51,12 @@
   padding: 24px;
   border-bottom: 1px solid #f1f5f9;
   text-align: left;
+  vertical-align: top;
 }
 
 .specLabelCol {
   width: 200px;
+  min-width: 160px;
   background: #f8fafc;
   font-weight: 600;
   color: #64748b;
@@ -64,6 +67,7 @@
 
 .productCol {
   width: auto;
+  min-width: 200px;
 }
 
 .compareProductCard {
@@ -218,10 +222,34 @@
 }
 
 @media (max-width: 768px) {
-  .compareTableWrapper {
-    overflow-x: auto;
+  .comparePage {
+    padding: 30px 0 80px;
   }
-  .compareTable {
-    min-width: 800px;
+  .compareContainer {
+    padding: 0 12px;
+  }
+  .compareHeader h1 {
+    font-size: 1.6rem;
+  }
+  .compareHeader {
+    margin-bottom: 24px;
+  }
+  .compareTableWrapper {
+    border-radius: 16px;
+  }
+  .compareTable th,
+  .compareTable td {
+    padding: 14px 12px;
+  }
+  .specLabelCol {
+    min-width: 120px;
+    width: 120px;
+  }
+  .productCol {
+    min-width: 180px;
+  }
+  .compareProductCard img {
+    width: 80px;
+    height: 80px;
   }
 }

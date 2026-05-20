@@ -18,6 +18,20 @@ export default function FooterPage() {
     vnpay: { enabled: boolean }
     cod: { enabled: boolean }
   } | null>(null)
+  const [darkMode, setDarkMode] = useState(() => {
+    return document.documentElement.classList.contains('dark')
+  })
+
+  useEffect(() => {
+    const observer = new MutationObserver(() => {
+      setDarkMode(document.documentElement.classList.contains('dark'))
+    })
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['class'],
+    })
+    return () => observer.disconnect()
+  }, [])
 
   useEffect(() => {
     let cancelled = false
@@ -60,7 +74,7 @@ export default function FooterPage() {
           
           {/* Cột 1: Giới thiệu & Kết nối */}
           <div id="footer-gioi-thieu">
-            <img className="hfFooterLogoImg" src="/logo.png" alt="E-TECH MARKET" decoding="async" />
+            <img className="hfFooterLogoImg" src={darkMode ? '/logo-trang.png' : '/logo.png'} alt="E-TECH MARKET" decoding="async" />
             <div className="hfFooterTagline">
               Chuỗi bán lẻ công nghệ cao cấp tinh gọn. Chúng tôi cam kết tuyển chọn những thiết bị công nghệ chọn lọc độc đáo, chuẩn mực chất lượng và mang đến dịch vụ chăm sóc hậu mãi hoàn hảo nhất.
             </div>
