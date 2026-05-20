@@ -22,7 +22,7 @@ html.dark .hfFooterSocialBtn:hover{background:rgba(249,115,22,.15);}
 html.dark .hfFooterPaymentBadge{background:rgba(255,255,255,.05);color:var(--et-text-muted);}
 html.dark .hfNavItem{color:var(--et-text-muted);}
 html.dark .hfNavItem:hover,html.dark .hfNavItemActive{color:var(--et-primary);}
-html.dark .hfIconBtn{color:var(--et-text-muted);background:rgba(255,255,255,.04);}
+html.dark .hfIconBtn{color:var(--et-text-muted);background:none;}
 html.dark .hfIconBtn:hover{color:var(--et-primary);background:rgba(249,115,22,.1);}
 html.dark .hfCartBadge,html.dark .hfNotifBadge{border-color:#090d16;}
 html.dark .hfNotifMenu{background:#121926;border-color:#1e293b;box-shadow:0 10px 30px rgba(0,0,0,.5);}

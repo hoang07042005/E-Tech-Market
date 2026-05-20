@@ -1772,7 +1772,7 @@ export default function ProductDetailPage() {
                 </div>
 
                 <div className="pdpReviewUploadRow">
-                  <label className="pdpReviewUploadBtn">
+                  {/* <label className="pdpReviewUploadBtn">
                     <input
                       type="file"
                       accept="image/*"
@@ -1787,7 +1787,7 @@ export default function ProductDetailPage() {
                     />
                     <span className="pdpReviewUploadIcon" aria-hidden>📷</span>
                     <span>Thêm hình ảnh</span>
-                  </label>
+                  </label> */}
 
                   {reviewImages.length > 0 && (
                     <div className="pdpReviewThumbs">

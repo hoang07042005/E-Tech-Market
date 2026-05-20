@@ -12,7 +12,7 @@
 .hfNavItem:hover{color:var(--et-primary-hover)}
 .hfNavItemActive{color:var(--et-primary)}
 .hfNavItemActive::after{content:'';position:absolute;left:0;right:0;bottom:0;height:3px;background:var(--et-primary);border-radius:3px 3px 0 0}
-.hfHeaderRight{display:flex;gap:0;align-items:center;flex-shrink:0}
+.hfHeaderRight{display:flex;gap:1px;align-items:center;flex-shrink:0}
 .hfIconBtn{width:40px;height:40px;display:inline-flex;align-items:center;justify-content:center;color:var(--et-promo);background:transparent;border:1px solid transparent;border-radius:10px;padding:0;outline:none;cursor:pointer;transition:background .18s ease,color .18s ease,border-color .18s ease}
 .hfIconBtn:hover{background:var(--et-primary-soft);color:var(--et-primary);border-color:rgba(249,115,22,.22)}
 

@@ -228,11 +228,16 @@ function ProductCard({
               </span>
             ))}
             <span className="hpCardRatingText">
-              {avgRating > 0 ? avgRating.toFixed(1) : '—'}
+              {avgRating > 0 ? avgRating.toFixed(1) : '(0)'}
               {ratingCount > 0 ? ` (${ratingCount})` : ''}
             </span>
           </div>
         </div>
+
+        <Link to={`/products/${product.slug}`} className="hpProductNameLink">
+          <h3 className="hpProductName">{product.name}</h3>
+        </Link>
+
         <div className="hpProductPriceRowNew">
           <span className="hpProductPrice">
             {hasMultiplePrices && <span style={{ fontSize: '0.8rem', marginRight: '4px', opacity: 0.8 }}></span>}
@@ -244,10 +249,6 @@ function ProductCard({
             </span>
           )}
         </div>
-
-        <Link to={`/products/${product.slug}`} className="hpProductNameLink">
-          <h3 className="hpProductName">{product.name}</h3>
-        </Link>
 
         <p className="hpProductExcerpt">{excerpt}</p>
 

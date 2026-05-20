@@ -3,7 +3,7 @@
 .hpPage{font-family:'Outfit',system-ui,sans-serif;color:var(--et-text);background:var(--et-bg);overflow-x:hidden;width:100%;position:relative;--transition:all .28s cubic-bezier(.4,0,.2,1);scrollbar-width:none;-ms-overflow-style:none;}
 .hpPage::-webkit-scrollbar{display:none;}
 .hpStatusText{grid-column:1 / -1;text-align:center;padding:40px;font-weight:600;color:var(--et-text-muted);}
-.hpContainer{max-width:1280px;margin:0 auto;padding:0 24px;margin-bottom:45px;}
+.hpContainer{max-width:1280px;margin:0 auto;padding:24px 24px;margin-bottom:45px;}
 
 /* Hero — nền trắng / kem, nhấn cam */
 .hpHeroNew{background:linear-gradient(165deg,#ffffff 0%,#fffaf5 45%,#ffedd5 100%);color:var(--et-text);padding:0;min-height:min(92vh,840px);display:flex;align-items:center;position:relative;overflow:hidden;}
@@ -89,7 +89,7 @@
 .hpProductGrid{display:grid;grid-template-columns:repeat(5,1fr);gap:20px;}
 .hpProductCard{background:var(--et-surface);border-radius:4px;overflow:hidden;border:1px solid #f1f5f9;transition:var(--transition);display:flex;flex-direction:column;}
 .hpProductCard:hover{transform:translateY(-5px);box-shadow:0 12px 24px rgba(0,0,0,.06);}
-.hpProductImageWrap{position:relative;height:280px;background:#fff;display:flex;align-items:center;justify-content:center;padding:16px;border-bottom:1px solid #f8fafc;}
+.hpProductImageWrap{position:relative;height:222px;background:#fff;display:flex;align-items:center;justify-content:center;padding:0;border-bottom:1px solid #f8fafc;}
 .hpProductImageLink{display:block;width:100%;height:100%;}
 .hpProductImage{width:100%;height:100%;object-fit:contain;transition:transform .5s ease;}
 .hpProductCard:hover .hpProductImage{transform:scale(1.05);}
@@ -105,7 +105,7 @@
 .hpBadgeSale{background:#ef4444;color:#fff;}
 
 /* Info Box */
-.hpProductInfo{padding:8px;display:flex;flex-direction:column;flex:1;}
+.hpProductInfo{padding:16px;display:flex;flex-direction:column;flex:1;}
 
 /* Meta Row (Brand, Stars, Price) */
 .hpProductMetaRow{display:flex;align-items:center;justify-content:space-between;margin-bottom:2px;}
@@ -113,7 +113,7 @@
 .hpProductPriceRowNew{margin-bottom:2px;}
 .hpProductPriceRowNew .hpProductPrice{font-size:1.25rem;}
 .hpProductBrand{font-size:.75rem;font-weight:600;color:#94a3b8;text-transform:uppercase;letter-spacing:.05em;}
-.hpProductStars{display:flex;gap:2px;color:#cbd5e1;font-size:1rem;}
+.hpProductStars{display:flex;gap:1px;color:#cbd5e1;font-size:1rem;}
 .hpProductStars .filled { color: #e6e300; }
 .hpProductPriceRowNew{display:flex;align-items:baseline;gap:8px;margin-bottom:8px;}
 .hpProductOldPrice{font-size:.85rem;color:#94a3b8;text-decoration:line-through;font-weight:400;}
@@ -263,10 +263,10 @@
 
 /* News Section */
 .hpNewsSection{padding:40px 0;background:#fff;}
-.hpNewsGrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:30px;}
-.hpNewsCard{background:#fff;border-radius:16px;overflow:hidden;text-decoration:none;transition:var(--transition);border:1px solid #f1f5f9;display:flex;flex-direction:column;}
+.hpNewsGrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:30px;}
+.hpNewsCard{background:#fff;border-radius:5px;overflow:hidden;text-decoration:none;transition:var(--transition);border:1px solid #f1f5f9;display:flex;flex-direction:column;}
 .hpNewsCard:hover{transform:translateY(-8px);box-shadow:0 20px 40px rgba(0,0,0,.08);border-color:rgba(249,115,22,.2);}
-.hpNewsThumb{position:relative;height:220px;overflow:hidden;}
+.hpNewsThumb{position:relative;height:250px;overflow:hidden;}
 .hpNewsThumb img{width:100%;height:100%;object-fit:cover;transition:transform .6s ease;}
 .hpNewsCard:hover .hpNewsThumb img{transform:scale(1.1);}
 .hpNewsTag{position:absolute;top:16px;left:16px;background:rgba(249,115,22,.9);color:#fff;padding:6px 14px;border-radius:8px;font-size:.75rem;font-weight:600;backdrop-filter:blur(4px);}
@@ -291,7 +291,7 @@
 .hpTabBtn.active::after{content:'';position:absolute;bottom:2px;left:0;width:100%;height:3px;background:#f97316;border-radius:3px;}
 .hpTabSeeAll{text-decoration:none;font-size:.85rem;font-weight:600;color:var(--et-primary);transition:color .2s;}
 .hpTabSeeAll:hover{color:#f97316;}
-.hpTabGrid4{display:grid;grid-template-columns:repeat(4,1fr);gap:24px;}
+.hpTabGrid4{display:grid;grid-template-columns:repeat(5,1fr);gap:24px;}
 @media (max-width:1100px){.hpTabGrid4{grid-template-columns:repeat(3,1fr)}}
 @media (max-width: 768px) {
   .hpTabHeader{flex-direction:column;align-items:flex-start;gap:12px;border-bottom:none;padding-bottom:0}
