@@ -109,12 +109,58 @@ function CloseIcon() {
   )
 }
 
+function SunIcon() {
+  return (
+    <svg className="hfIconSvg" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <circle cx="12" cy="12" r="4" stroke="currentColor" strokeWidth="1.6" />
+      <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+    </svg>
+  )
+}
+
+function MoonIcon() {
+  return (
+    <svg className="hfIconSvg" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
+    </svg>
+  )
+}
+
 export default function HeaderPage({ active = 'Home' }: { active?: NavKey }) {
   const navigate = useNavigate()
   const location = useLocation()
   const [user, setUser] = useState<StoredUser | null>(readStoredUser)
   const [cartQty, setCartQty] = useState(() => cartCount(getCart()))
   const token = typeof window !== 'undefined' ? window.localStorage.getItem('token') : null
+
+  const [darkMode, setDarkMode] = useState<boolean>(() => {
+    return typeof document !== 'undefined' && document.documentElement.classList.contains('dark')
+  })
+
+  useEffect(() => {
+    const isDark = localStorage.getItem('theme') === 'dark' || 
+      (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)
+    
+    if (isDark) {
+      document.documentElement.classList.add('dark')
+      setDarkMode(true)
+    } else {
+      document.documentElement.classList.remove('dark')
+      setDarkMode(false)
+    }
+  }, [])
+
+  const toggleTheme = () => {
+    if (document.documentElement.classList.contains('dark')) {
+      document.documentElement.classList.remove('dark')
+      localStorage.setItem('theme', 'light')
+      setDarkMode(false)
+    } else {
+      document.documentElement.classList.add('dark')
+      localStorage.setItem('theme', 'dark')
+      setDarkMode(true)
+    }
+  }
 
   type Notif = {
     id: number
@@ -359,6 +405,15 @@ export default function HeaderPage({ active = 'Home' }: { active?: NavKey }) {
         </nav>
 
         <div className="hfHeaderRight" aria-label="Thao tác trên header">
+          <button
+            type="button"
+            className="hfIconBtn hfThemeBtn"
+            aria-label="Chuyển đổi giao diện sáng/tối"
+            onClick={toggleTheme}
+          >
+            {darkMode ? <SunIcon /> : <MoonIcon />}
+          </button>
+
           <button
             type="button"
             className="hfIconBtn hfCartBtn"
