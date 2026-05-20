@@ -207,10 +207,10 @@ export default function BlogPostDetailPage() {
 
             <img src={resolveImageUrl(post.thumbnail_url)} alt={post.title} className="postFeaturedImage" />
 
-            <div 
-              className="postContent" 
+            <div
+              className="postContent"
               style={{ minHeight: '300px' }}
-              dangerouslySetInnerHTML={{ __html: post.content || '<p>Nội dung đang được cập nhật...</p>' }} 
+              dangerouslySetInnerHTML={{ __html: post.content || '<p>Nội dung đang được cập nhật...</p>' }}
             />
 
             {/* Social Share */}
