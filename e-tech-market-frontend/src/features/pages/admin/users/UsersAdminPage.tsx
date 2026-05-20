@@ -75,6 +75,7 @@ export default function UsersAdminPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [busy, setBusy] = useState<{ userId: number; kind: BusyKind } | null>(null)
+  const [activeTab, setActiveTab] = useState<'customer' | 'admin'>('customer')
 
   const [roleCatalog, setRoleCatalog] = useState<Role[]>([])
   const [rolesCatalogLoading, setRolesCatalogLoading] = useState(true)
@@ -116,6 +117,7 @@ export default function UsersAdminPage() {
     try {
       const q = new URLSearchParams()
       q.set('page', String(page))
+      q.set('role_type', activeTab)
       if (debouncedSearch) q.set('search', debouncedSearch)
       const res = await fetchUsers<PaginatedUsers>(q.toString(), token)
       setRows(res.data ?? [])
@@ -127,7 +129,7 @@ export default function UsersAdminPage() {
     } finally {
       setLoading(false)
     }
-  }, [token, page, debouncedSearch])
+  }, [token, page, debouncedSearch, activeTab])
 
   useEffect(() => {
     void load()
@@ -135,7 +137,7 @@ export default function UsersAdminPage() {
 
   useEffect(() => {
     setPage(1)
-  }, [debouncedSearch])
+  }, [debouncedSearch, activeTab])
 
   const setLock = async (u: AdminUserRow, lock: boolean) => {
     if (busy != null) return
@@ -235,6 +237,26 @@ export default function UsersAdminPage() {
             onChange={e => setSearch(e.target.value)}
             aria-label="Tìm người dùng"
           />
+        </div>
+      </div>
+
+      {/* Tab Switcher */}
+      <div className="pDetailFilterBar" style={{ marginBottom: '24px', border: 'none', background: 'none', boxShadow: 'none' }}>
+        <div className="pVariantFilterTabs" style={{ margin: 0, padding: 10, borderRadius: 30, border: '2px solid #dadadad8'}}>
+          <button 
+            type="button"
+            className={`pVariantTabBtn ${activeTab === 'customer' ? 'active' : ''}`}
+            onClick={() => setActiveTab('customer')}
+          >
+            Khách hàng
+          </button>
+          <button 
+            type="button"
+            className={`pVariantTabBtn ${activeTab === 'admin' ? 'active' : ''}`}
+            onClick={() => setActiveTab('admin')}
+          >
+            Quản trị & Nhân viên
+          </button>
         </div>
       </div>
 

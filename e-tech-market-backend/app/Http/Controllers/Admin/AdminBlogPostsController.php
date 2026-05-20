@@ -55,6 +55,10 @@ class AdminBlogPostsController extends Controller
 
         $post->save();
 
+        if ($isPublished) {
+            $this->notifySubscribers($post);
+        }
+
         return response()->json($post, 201);
     }
 
@@ -90,9 +94,10 @@ class AdminBlogPostsController extends Controller
             $blogPost->thumbnail_url = $request->thumbnail_url;
         }
         
+        $wasPublished = $blogPost->is_published;
         if ($request->has('is_published')) {
             $isPublished = $request->boolean('is_published');
-            if ($isPublished && !$blogPost->is_published) {
+            if ($isPublished && !$wasPublished) {
                 $blogPost->published_at = now();
             } elseif (!$isPublished) {
                 $blogPost->published_at = null;
@@ -101,6 +106,10 @@ class AdminBlogPostsController extends Controller
         }
 
         $blogPost->save();
+
+        if ($request->has('is_published') && $isPublished && !$wasPublished) {
+            $this->notifySubscribers($blogPost);
+        }
 
         return response()->json($blogPost);
     }
@@ -124,5 +133,37 @@ class AdminBlogPostsController extends Controller
         $category = BlogCategory::create($validated);
         
         return response()->json($category, 201);
+    }
+
+    private function notifySubscribers(BlogPost $post): void
+    {
+        // Lấy toàn bộ danh sách email đã đăng ký nhận tin
+        $emails = \App\Models\NewsletterSubscription::query()
+            ->whereNull('unsubscribed_at')
+            ->pluck('email');
+
+        if ($emails->isEmpty()) {
+            return;
+        }
+
+        // Tìm các tài khoản người dùng hoạt động tương ứng với các email này
+        $users = \App\Models\User::query()
+            ->whereIn('email', $emails)
+            ->where('is_active', true)
+            ->get();
+
+        foreach ($users as $user) {
+            \App\Models\Notification::create([
+                'user_id' => $user->id,
+                'type' => 'blog',
+                'title' => 'Tin tức công nghệ mới!',
+                'body' => 'Bài viết mới "' . $post->title . '" vừa được xuất bản. Xem ngay!',
+                'data' => [
+                    'post_id' => $post->id,
+                    'post_slug' => $post->slug,
+                    'action_url' => '/blog/' . $post->slug,
+                ],
+            ]);
+        }
     }
 }

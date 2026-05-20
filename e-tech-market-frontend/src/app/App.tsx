@@ -179,24 +179,40 @@ function AppFrame() {
     )
   }
 
-  // Block client UI if maintenance mode is ON, unless we are on Admin or Login pages
-  const isMaintenanceBlocked = maintenanceMode && !path.startsWith('/admin') && path !== '/login'
+  // Block client UI if maintenance mode is ON, unless we are on Admin/Login pages or the user is Staff/Admin
+  const userStr = localStorage.getItem('user')
+  const user = userStr ? parseStoredUser(userStr) : null
+  const isStaffOrAdmin =
+    user &&
+    Array.isArray(user.roles) &&
+    user.roles.some((role) =>
+      ['admin', 'warehouse-staff', 'order-staff', 'editor'].includes(role?.slug || '')
+    )
+
+  const isMaintenanceBlocked =
+    maintenanceMode &&
+    !isStaffOrAdmin &&
+    !path.startsWith('/admin') &&
+    path !== '/login'
 
   if (isMaintenanceBlocked) {
     return (
-      <div className="et-page-loader" style={{ background: '#f8fafc' }}>
-        <div className="et-loader-logo" style={{ marginBottom: '16px', animation: 'none' }}>
-          <svg width="60" height="60" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <rect width="40" height="40" rx="8" fill="#64748b" />
-            <path d="M12 10H28V14H16V18H26V22H16V26H28V30H12V10Z" fill="white" />
-          </svg>
-        </div>
-        <h1 style={{ fontSize: '28px', fontWeight: '800', color: '#1e293b', marginBottom: '12px' }}>Hệ thống đang bảo trì</h1>
-        <p style={{ fontSize: '16px', color: '#64748b', maxWidth: '400px', textAlign: 'center', lineHeight: '1.6' }}>
-          Chúng tôi đang thực hiện một số nâng cấp quan trọng để mang lại trải nghiệm tốt hơn. Vui lòng quay lại sau ít phút.
-        </p>
-        <div style={{ marginTop: '32px', padding: '8px 16px', background: '#e2e8f0', borderRadius: '20px', fontSize: '12px', fontWeight: '700', color: '#475569', textTransform: 'uppercase', letterSpacing: '1px' }}>
-          E-Tech Market Team
+      <div className="et-page-loader" style={{ background: '#f8fafc', padding: '24px' }}>
+        <div className="et-maintenance-container">
+          <div className="et-loader-logo">
+            <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect width="40" height="40" rx="8" fill="var(--et-primary)" />
+              <path d="M12 10H28V14H16V18H26V22H16V26H28V30H12V10Z" fill="white" />
+            </svg>
+            E-TECH
+          </div>
+          <h1 className="et-maintenance-title">Hệ thống đang bảo trì</h1>
+          <p className="et-maintenance-desc">
+            Chúng tôi đang tiến hành nâng cấp và tối ưu hệ thống nhằm mang đến trải nghiệm mua sắm nhanh chóng, ổn định và an toàn hơn cho khách hàng. Trong thời gian bảo trì, một số chức năng có thể tạm thời không khả dụng. Đội ngũ kỹ thuật đang nỗ lực hoàn tất quá trình nâng cấp trong thời gian sớm nhất. Cảm ơn bạn đã thông cảm và kiên nhẫn chờ đợi. Vui lòng quay lại sau ít phút để tiếp tục trải nghiệm dịch vụ tại E-TECH MARKET.
+          </p>
+          <div className="et-maintenance-badge">
+            E-Tech Market
+          </div>
         </div>
       </div>
     )

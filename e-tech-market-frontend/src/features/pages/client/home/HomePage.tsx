@@ -355,16 +355,15 @@ export default function HomePage() {
   const [categories, setCategories] = useState<Category[]>([])
   const [globalReviews, setGlobalReviews] = useState<ProductReview[]>([])
   const [latestNews, setLatestNews] = useState<BlogPost[]>([])
-
+  const [newsletterEmail, setNewsletterEmail] = useState('')
+  const [newsletterLoading, setNewsletterLoading] = useState(false)
   const [tabActive, setTabActive] = useState<'phone' | 'laptop' | 'pc' | 'monitor' | 'printer'>('phone')
   const [phoneProducts, setPhoneProducts] = useState<ApiProduct[]>([])
   const [laptopProducts, setLaptopProducts] = useState<ApiProduct[]>([])
   const [pcProducts, setPcProducts] = useState<ApiProduct[]>([])
   const [monitorProducts, setMonitorProducts] = useState<ApiProduct[]>([])
   const [printerProducts, setPrinterProducts] = useState<ApiProduct[]>([])
-
   const [loading, setLoading] = useState(true)
-
   const [wishSet, setWishSet] = useState<Set<number>>(() => new Set())
   const token = typeof window !== 'undefined' ? window.localStorage.getItem('token') : null
 
@@ -554,8 +553,23 @@ export default function HomePage() {
     }
   }
 
-  const onNewsletterSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const onNewsletterSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
+    const email = newsletterEmail.trim()
+    if (!email || newsletterLoading) return
+    setNewsletterLoading(true)
+    try {
+      await apiFetch('/api/newsletter/subscriptions', {
+        method: 'POST',
+        body: JSON.stringify({ email, source: 'home' }),
+      })
+      setNewsletterEmail('')
+      alert('Đăng ký nhận tin tức thành công!')
+    } catch (err: unknown) {
+      alert(err instanceof Error ? err.message : 'Có lỗi xảy ra khi đăng ký.')
+    } finally {
+      setNewsletterLoading(false)
+    }
   }
 
   return (
@@ -948,9 +962,16 @@ export default function HomePage() {
                 Tham gia cộng đồng ưu tiên: ưu đãi sớm cho phiên bản giới hạn và tài liệu kỹ thuật chọn lọc.
               </p>
               <form className="hpNewsletterForm" onSubmit={onNewsletterSubmit}>
-                <input type="email" placeholder="ĐỊA CHỈ EMAIL" className="hpNewsletterInput" />
-                <button type="submit" className="hpNewsletterBtn">
-                  ĐĂNG KÝ
+                <input 
+                  type="email" 
+                  placeholder="ĐỊA CHỈ EMAIL" 
+                  className="hpNewsletterInput" 
+                  value={newsletterEmail}
+                  onChange={(e) => setNewsletterEmail(e.target.value)}
+                  required
+                />
+                <button type="submit" className="hpNewsletterBtn" disabled={newsletterLoading}>
+                  {newsletterLoading ? 'ĐANG ĐĂNG KÝ...' : 'ĐĂNG KÝ'}
                 </button>
               </form>
             </div>

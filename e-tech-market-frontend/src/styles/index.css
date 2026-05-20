@@ -184,3 +184,42 @@ body::-webkit-scrollbar {
 .animate-pulse-soft {
   animation: et-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
+
+/* Maintenance Page Fluid Responsive Styles */
+.et-maintenance-container {
+  padding: 24px;
+  text-align: center;
+  max-width: 800px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.et-maintenance-title {
+  font-size: clamp(20px, 5.5vw, 28px);
+  font-weight: 600;
+  color: #1e293b;
+  margin-bottom: 16px;
+  text-align: center;
+}
+
+.et-maintenance-desc {
+  font-size: clamp(13px, 4vw, 15px);
+  color: #64748b;
+  max-width: 800px;
+  text-align: center;
+  line-height: 1.75;
+  padding: 0 12px;
+}
+
+.et-maintenance-badge {
+  margin-top: 32px;
+  padding: 8px 20px;
+  background: #f99c193e;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #fba906ff;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+}

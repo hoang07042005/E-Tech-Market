@@ -14,6 +14,17 @@ class UsersController extends Controller
     {
         $query = User::query()->with('roles')->orderByDesc('created_at');
 
+        $roleType = $request->query('role_type');
+        if ($roleType === 'customer') {
+            $query->whereHas('roles', function ($q) {
+                $q->where('slug', 'customer');
+            });
+        } elseif ($roleType === 'admin') {
+            $query->whereHas('roles', function ($q) {
+                $q->where('slug', '!=', 'customer');
+            });
+        }
+
         $search = trim((string) $request->query('search', ''));
         if ($search !== '') {
             $escaped = addcslashes($search, '%_\\');

@@ -201,6 +201,16 @@ export default function HeaderPage({ active = 'Home' }: { active?: NavKey }) {
       setNotifOpen(false)
       return
     }
+    if (typeof data.post_slug === 'string') {
+      navigate(`/blog/${data.post_slug}`)
+      setNotifOpen(false)
+      return
+    }
+    if (typeof data.action_url === 'string') {
+      navigate(data.action_url)
+      setNotifOpen(false)
+      return
+    }
     setNotifOpen(false)
   }
 

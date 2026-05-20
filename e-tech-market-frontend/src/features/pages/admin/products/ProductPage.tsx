@@ -2,6 +2,7 @@ import { useCallback, useMemo, useState, useEffect } from 'react'
 import { API_BASE_URL } from '@/configs/api.config'
 import { fetchAdminProducts, deleteAdminProduct } from '@/features/services/admin/products.admin.service'
 import ProductForm from './ProductForm'
+import ProductVariantsDetail from './ProductVariantsDetail'
 import '@/styles/admin/ProductPage.css'
 
 interface ProductImage {
@@ -138,6 +139,15 @@ function TrashIcon() {
   )
 }
 
+function EyeIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+      <circle cx="12" cy="12" r="3" />
+    </svg>
+  )
+}
+
 const resolveImageUrl = (url: string | null) => {
   if (!url) return ''
   if (url.startsWith('http')) return url
@@ -158,7 +168,7 @@ export default function ProductPage({
   const [error, setError] = useState<string | null>(null)
   
   // Navigation state
-  const [viewMode, setViewMode] = useState<'list' | 'form'>('list')
+  const [viewMode, setViewMode] = useState<'list' | 'form' | 'variants_detail'>('list')
   const [selectedProductId, setSelectedProductId] = useState<number | null>(null)
 
   // Filters (list view)
@@ -228,6 +238,11 @@ export default function ProductPage({
   const handleEdit = (id: number) => {
     setSelectedProductId(id)
     setViewMode('form')
+  }
+
+  const handleShowVariants = (id: number) => {
+    setSelectedProductId(id)
+    setViewMode('variants_detail')
   }
 
   const handleSave = () => {
@@ -326,6 +341,10 @@ export default function ProductPage({
 
   if (viewMode === 'form') {
     return <ProductForm productId={selectedProductId} onSave={handleSave} onCancel={() => setViewMode('list')} />
+  }
+
+  if (viewMode === 'variants_detail' && selectedProductId !== null) {
+    return <ProductVariantsDetail productId={selectedProductId} onBack={() => setViewMode('list')} />
   }
 
   return (
@@ -467,7 +486,6 @@ export default function ProductPage({
                 <th>DANH MỤC</th>
                 <th>MÔ TẢ</th>
                 <th>KHO HÀNG</th>
-                <th>GIÁ</th>
                 <th>TRẠNG THÁI</th>
                 <th>THAO TÁC</th>
               </tr>
@@ -493,7 +511,6 @@ export default function ProductPage({
                   <th>DANH MỤC</th>
                   <th>MÔ TẢ</th>
                   <th>KHO HÀNG</th>
-                  <th>GIÁ</th>
                   <th>TRẠNG THÁI</th>
                   <th>THAO TÁC</th>
                 </tr>
@@ -509,12 +526,17 @@ export default function ProductPage({
                   pagedProducts.map(p => (
                     <tr key={p.id}>
                       <td>
-                        <div className="prodNameCell">
+                        <div 
+                          className="prodNameCell" 
+                          style={{ cursor: 'pointer' }}
+                          onClick={() => handleShowVariants(p.id)}
+                          title="Xem phiên bản & thông số kĩ thuật"
+                        >
                           <div className="prodThumb">
                             {p.main_image_url && <img src={resolveImageUrl(p.main_image_url)} alt="" />}
                           </div>
                           <div className="prodInfo">
-                            <span className="pName">{p.name}</span>
+                            <span className="pName hover-accent" style={{ transition: 'color 0.2s' }}>{p.name}</span>
                             <span className="pBrand">{p.brand || 'Chưa có thương hiệu'}</span>
                           </div>
                         </div>
@@ -540,7 +562,6 @@ export default function ProductPage({
                           )
                         })()}
                       </td>
-                      <td><span className="pPrice">{Number(p.price).toLocaleString()} đ</span></td>
                       <td>
                         <span className={`pStatus ${p.is_active ? 'active' : 'inactive'}`}>
                           {p.is_active ? 'HOẠT ĐỘNG' : 'VÔ HIỆU'}
@@ -548,6 +569,16 @@ export default function ProductPage({
                       </td>
                       <td>
                         <div className="pActions">
+                          <button
+                            className="pIconBtn pView"
+                            onClick={() => handleShowVariants(p.id)}
+                            title="Xem chi tiết phiên bản & thông số kĩ thuật"
+                            aria-label="Xem chi tiết phiên bản & thông số kĩ thuật"
+                            type="button"
+                            style={{ color: '#0ea5e9', borderColor: 'rgba(14, 165, 233, 0.15)' }}
+                          >
+                            <EyeIcon />
+                          </button>
                           <button
                             className="pIconBtn pEdit"
                             onClick={() => handleEdit(p.id)}
