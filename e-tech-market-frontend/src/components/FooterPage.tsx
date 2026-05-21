@@ -19,7 +19,7 @@ export default function FooterPage() {
     cod: { enabled: boolean }
   } | null>(null)
   const [darkMode, setDarkMode] = useState(() => {
-    return document.documentElement.classList.contains('dark')
+    return typeof window !== 'undefined' && localStorage.getItem('theme') === 'dark'
   })
 
   useEffect(() => {

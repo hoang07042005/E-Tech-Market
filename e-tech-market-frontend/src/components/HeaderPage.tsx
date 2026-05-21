@@ -135,7 +135,7 @@ export default function HeaderPage({ active = 'Home' }: { active?: NavKey }) {
   const token = typeof window !== 'undefined' ? window.localStorage.getItem('token') : null
 
   const [darkMode, setDarkMode] = useState<boolean>(() => {
-    return typeof document !== 'undefined' && document.documentElement.classList.contains('dark')
+    return typeof window !== 'undefined' && localStorage.getItem('theme') === 'dark'
   })
 
   useEffect(() => {

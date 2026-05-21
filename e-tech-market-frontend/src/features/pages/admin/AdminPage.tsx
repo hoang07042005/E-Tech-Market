@@ -169,6 +169,10 @@ export default function AdminPage() {
   const [logoSrc, setLogoSrc] = useState('/logo.png')
   const token = typeof window !== 'undefined' ? window.localStorage.getItem('token') : null
 
+  useEffect(() => {
+    document.documentElement.classList.remove('dark')
+  }, [])
+
   type QuickProduct = {
     id: number
     name: string
