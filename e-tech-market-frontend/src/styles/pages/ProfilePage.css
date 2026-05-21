@@ -1,6 +1,6 @@
 .pfPage{background:linear-gradient(180deg,#fffaf5 0%,#fff 30%,#fff 100%);min-height:100vh;padding:28px 0 80px;color:var(--et-text);font-family:'Outfit',system-ui,sans-serif;overflow-x:hidden;width:100%;position:relative;}
 .pfInner{max-width:1240px;margin:0 auto;padding:0 12px;}
-.pfTopCard{border:1px solid var(--et-border);background:none;border-radius:16px;overflow:hidden;box-shadow:0 14px 40px rgba(15,23,42,.06);padding:18px 18px;}
+.pfTopCard{border:none;background:none;border-radius:16px;overflow:hidden;padding:18px 330px;}
 .pfTopRow{display:grid;grid-template-columns:84px 1fr auto;gap:18px;align-items:center;}
 .pfAvatarWrap{position:relative;width:84px;height:84px;}
 .pfAvatar{width:84px;height:84px;border-radius:999px;object-fit:cover;border:3px solid #fff;box-shadow:0 10px 24px rgba(15,23,42,.12);background:#f3f4f6;}
@@ -14,8 +14,8 @@
 .pfStatNum{margin:0;font-weight:600;color:var(--et-text);font-size:16px;}
 .pfStatLabel{margin:4px 0 0;color:var(--et-text-muted);font-size:11px;line-height:1.2;}
 .pfGrid{margin-top:18px;display:grid;grid-template-columns:260px 1fr;gap:18px;align-items:start;}
-.pfSidebar{position:sticky;top:92px;border:1px solid var(--et-border);border-radius:16px;background:#fff;box-shadow:0 14px 40px rgba(15,23,42,.04);padding:14px;}
-.pfNavBtn{width:100%;display:flex;align-items:center;justify-content:flex-start;gap:12px;padding:12px 12px;border-radius:12px;border:1px solid transparent;background:transparent;cursor:pointer;color:var(--et-text);font-weight:600;font-size:12px;}
+.pfSidebar{position:sticky;top:92px;border:1px solid var(--et-border);border-radius:5px;background:#fff;box-shadow:0 14px 40px rgba(15,23,42,.04);padding:14px;}
+.pfNavBtn{width:100%;display:flex;align-items:center;justify-content:flex-start;gap:12px;padding:12px 12px;border-radius:5px;border:1px solid transparent;background:transparent;cursor:pointer;color:var(--et-text);font-weight:600;font-size:12px;}
 .pfNavBtn:hover{background:#fffaf5;border-color:rgba(249,115,22,.15);}
 .pfNavBtnActive{background:var(--et-primary-soft,#fff7ed);border-color:var(--et-primary);color:var(--et-primary-hover);box-shadow:0 8px 20px rgba(249,115,22,.1);}
 .pfNavBtnActive .pfSideIcon{background:var(--et-primary);color:#fff;}
@@ -25,7 +25,7 @@
 .pfLogoutBtn{color:#dc2626;}
 .pfLogoutBtnMobile{display:none;}
 .pfContent{display:flex;flex-direction:column;gap:18px;}
-.pfCard{border:1px solid var(--et-border);border-radius:16px;background:#fff;box-shadow:0 14px 40px rgba(15,23,42,.06);padding:16px;}
+.pfCard{border:1px solid var(--et-border);border-radius:5px;background:#fff;box-shadow:0 14px 40px rgba(15,23,42,.06);padding:16px;}
 .pfCardHead{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:14px;}
 .pfCardTitle{margin:0;font-weight:600;font-size:16px;letter-spacing:-.01em;}
 .pfSaveBtn{border:none;background:#a16207;color:#fff;padding:10px 14px;border-radius:10px;font-weight:600;font-size:12px;cursor:pointer;}

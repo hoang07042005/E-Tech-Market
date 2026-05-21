@@ -183,7 +183,7 @@ export default function AdminBlogPage() {
         <table className="adminTable">
           <thead>
             <tr>
-              <th>ID</th>
+              {/* <th>ID</th> */}
               <th>Hình ảnh</th>
               <th>Tiêu đề</th>
               <th>Danh mục</th>
@@ -195,7 +195,7 @@ export default function AdminBlogPage() {
           <tbody>
             {posts.map(p => (
               <tr key={p.id}>
-                <td>{p.id}</td>
+                {/* <td>{p.id}</td> */}
                 <td>
                   {p.thumbnail_url ? (
                     <img src={resolveImageUrl(p.thumbnail_url)} alt="" style={{ width: '60px', height: '40px', objectFit: 'cover', borderRadius: '4px' }} />

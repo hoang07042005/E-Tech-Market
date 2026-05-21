@@ -1,5 +1,5 @@
 .secRoot{display:flex;flex-direction:column;gap:14px;}
-.secTopCard{border:1px solid var(--et-border);background:#fff;border-radius:16px;padding:16px 18px;}
+.secTopCard{border:1px solid var(--et-border);background:#fff;border-radius:5px;padding:16px 18px;}
 .secTopTitle{font-weight:600;font-size:14px;color:#0f172a;margin-bottom:6px;}
 .secTopDesc{color:var(--et-text-muted);font-weight:600;font-size:12.5px;line-height:1.6;}
 .secSectionCard{border:1px solid var(--et-border);border-radius:5px;padding:30px 30px;}
