@@ -53,7 +53,7 @@ function WishlistCard({
       <div className="wlCardBody">
         <div className="wlCardTop">
           <span className="wlCardBrand">{(product.brand || 'TECH').toUpperCase()}</span>
-          <span className="wlCardPrice">{Number.isFinite(price) ? price.toLocaleString('vi-VN') : '0'} đ</span>
+          {/* <span className="wlCardPrice">{Number.isFinite(price) ? price.toLocaleString('vi-VN') : '0'} đ</span> */}
         </div>
         <Link to={`/products/${product.slug}`} className="wlCardTitleLink">
           <h3 className="wlCardTitle">{product.name}</h3>

@@ -767,7 +767,7 @@ export default function HomePage() {
               </div>
               <div className="hpNewsGrid">
                 {latestNews.map((post) => (
-                  <Link key={post.id} to={`/blog/posts/${post.slug}`} className="hpNewsCard">
+                  <Link key={post.id} to={`/blog/${post.slug}`} className="hpNewsCard">
                     <div className="hpNewsThumb">
                       <img src={resolveImageUrl(post.thumbnail_url)} alt={post.title} />
                       {post.category && <span className="hpNewsTag">{post.category.name}</span>}

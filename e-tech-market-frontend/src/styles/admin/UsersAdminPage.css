@@ -1,38 +1,262 @@
-.usersAdminActions{gap:8px;}
-.usersAdminIconBtn{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;padding:0;border-radius:999px;flex-shrink:0;border:1px solid var(--admin-border);}
-.usersAdminIconBtn svg{display:block;}
-.usersAdminIconBtn.pEdit:hover:not(:disabled){background:rgba(249,115,22,.1);}
-.usersAdminIconBtn.pDelete:hover:not(:disabled){background:rgba(239,68,68,.1);}
-.usersAdminIconBtn:disabled{opacity:.38;cursor:not-allowed;}
-.usersAdminRoleEditBtn:disabled:hover{background:transparent;}
-@keyframes usersAdminSpin{to{transform:rotate(360deg)}}
-.usersAdminIconSpinner{animation:usersAdminSpin .75s linear infinite;}
-.usersAdminToolbar{display:flex;align-items:center;gap:12px;}
-.usersAdminSearch{min-width:220px;padding:10px 14px;border:1px solid var(--admin-border);border-radius:10px;background:#fff;color:var(--admin-text-p);font-size:14px;}
-.usersAdminSearch:focus{outline:none;border-color:var(--admin-accent);box-shadow:0 0 0 3px rgba(249,115,22,.15);}
-.usersAdminPager{display:flex;align-items:center;justify-content:center;gap:16px;margin-top:20px;flex-wrap:wrap;}
-.usersAdminPagerInfo{font-size:14px;color:var(--admin-text-s);}
-.usersAdminRoleCell{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
-.usersAdminRoleText{flex:1;min-width:120px;line-height:1.35;}
-.usersRoleModalOverlay{position:fixed;inset:0;z-index:1200;display:flex;align-items:center;justify-content:center;padding:20px;background:rgba(15,23,42,.45);}
-.usersRoleModal{width:100%;max-width:440px;max-height:min(90vh,520px);display:flex;flex-direction:column;background:#fff;border-radius:14px;box-shadow:0 24px 48px rgba(15,23,42,.18);overflow:hidden;}
-.usersRoleModalHead{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:18px 20px;border-bottom:1px solid var(--admin-border);}
-.usersRoleModalTitle{margin:0;font-size:17px;font-weight:600;color:var(--admin-text-p);}
-.usersRoleModalLead{margin:6px 0 0;font-size:13px;color:var(--admin-text-s);font-weight:500;}
-.usersRoleModalClose{flex-shrink:0;width:36px;height:36px;border:none;border-radius:8px;background:transparent;color:var(--admin-text-s);font-size:22px;line-height:1;cursor:pointer;}
-.usersRoleModalClose:hover{background:rgba(15,23,42,.06);color:var(--admin-text-p);}
-.usersRoleModalBody{padding:16px 20px;overflow-y:auto;scrollbar-width:none;-ms-overflow-style:none;}
-.usersRoleCheckRow{display:flex;align-items:flex-start;gap:12px;padding:12px 14px;border:1px solid var(--admin-border);border-radius:10px;margin-bottom:10px;cursor:pointer;}
-.usersRoleCheckRow:last-child{margin-bottom:0;}
-.usersRoleCheckRow:has(input:focus-visible){outline:2px solid rgba(249,115,22,.45);outline-offset:2px;}
-.usersRoleCheckRow input{margin-top:3px;width:18px;height:18px;accent-color:var(--admin-accent);cursor:pointer;}
-.usersRoleCheckText{display:flex;flex-direction:column;gap:4px;min-width:0;}
-.usersRoleCheckLabel{font-weight:600;font-size:14px;color:var(--admin-text-p);}
-.usersRoleCheckDesc{font-size:12px;color:var(--admin-text-s);line-height:1.35;}
-.usersRoleModalFoot{padding:16px 20px;border-top:1px solid var(--admin-border);display:flex;justify-content:flex-end;gap:10px;}
-.usersRoleModalBtnGhost{padding:10px 18px;border-radius:10px;border:1px solid var(--admin-border);background:#fff;color:var(--admin-text-p);font-weight:600;font-size:14px;cursor:pointer;}
-.usersRoleModalBtnGhost:hover{background:#f8fafc;}
-.usersRoleModalBtnSave{padding:10px 20px;border-radius:10px;border:none;background:var(--admin-accent);color:#fff;font-weight:600;font-size:14px;cursor:pointer;}
-.usersRoleModalBtnSave:disabled{opacity:.55;cursor:not-allowed;}
-.usersRoleModalBtnSave:not(:disabled):hover{filter:brightness(1.06);}
-@media (max-width:480px){.usersRoleModal{max-height:none}}
+.usersAdminActions {
+    gap: 8px;
+}
+
+.usersAdminIconBtn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    padding: 0;
+    border-radius: 999px;
+    flex-shrink: 0;
+    border: 1px solid var(--admin-border);
+}
+
+.usersAdminIconBtn svg {
+    display: block;
+}
+
+.usersAdminIconBtn.pEdit:hover:not(:disabled) {
+    background: rgba(249, 115, 22, .1);
+}
+
+.usersAdminIconBtn.pDelete:hover:not(:disabled) {
+    background: rgba(239, 68, 68, .1);
+}
+
+.usersAdminIconBtn:disabled {
+    opacity: .38;
+    cursor: not-allowed;
+}
+
+.usersAdminRoleEditBtn:disabled:hover {
+    background: transparent;
+}
+
+@keyframes usersAdminSpin {
+    to {
+        transform: rotate(360deg)
+    }
+}
+
+.usersAdminIconSpinner {
+    animation: usersAdminSpin .75s linear infinite;
+}
+
+.usersAdminToolbar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.usersAdminSearch {
+    min-width: 220px;
+    padding: 10px 14px;
+    border: 1px solid var(--admin-border);
+    border-radius: 10px;
+    background: #fff;
+    color: var(--admin-text-p);
+    font-size: 14px;
+}
+
+.usersAdminSearch:focus {
+    outline: none;
+    border-color: var(--admin-accent);
+    box-shadow: 0 0 0 3px rgba(249, 115, 22, .15);
+}
+
+.usersAdminPager {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    margin-top: 20px;
+    flex-wrap: wrap;
+}
+
+.usersAdminPagerInfo {
+    font-size: 14px;
+    color: var(--admin-text-s);
+}
+
+.usersAdminRoleCell {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.usersAdminRoleText {
+    flex: 1;
+    min-width: 120px;
+    line-height: 1.35;
+}
+
+.usersRoleModalOverlay {
+    position: fixed;
+    inset: 0;
+    z-index: 1200;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background: rgba(15, 23, 42, .45);
+}
+
+.usersRoleModal {
+    width: 100%;
+    max-width: 440px;
+    max-height: min(90vh, 520px);
+    display: flex;
+    flex-direction: column;
+    background: #fff;
+    border-radius: 14px;
+    box-shadow: 0 24px 48px rgba(15, 23, 42, .18);
+    overflow: hidden;
+}
+
+.usersRoleModalHead {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 18px 20px;
+    border-bottom: 1px solid var(--admin-border);
+}
+
+.usersRoleModalTitle {
+    margin: 0;
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--admin-text-p);
+}
+
+.usersRoleModalLead {
+    margin: 6px 0 0;
+    font-size: 13px;
+    color: var(--admin-text-s);
+    font-weight: 500;
+}
+
+.usersRoleModalClose {
+    flex-shrink: 0;
+    width: 36px;
+    height: 36px;
+    border: none;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--admin-text-s);
+    font-size: 22px;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.usersRoleModalClose:hover {
+    background: rgba(15, 23, 42, .06);
+    color: var(--admin-text-p);
+}
+
+.usersRoleModalBody {
+    padding: 16px 20px;
+    overflow-y: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.usersRoleCheckRow {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 12px 14px;
+    border: 1px solid var(--admin-border);
+    border-radius: 10px;
+    margin-bottom: 10px;
+    cursor: pointer;
+}
+
+.usersRoleCheckRow:last-child {
+    margin-bottom: 0;
+}
+
+.usersRoleCheckRow:has(input:focus-visible) {
+    outline: 2px solid rgba(249, 115, 22, .45);
+    outline-offset: 2px;
+}
+
+.usersRoleCheckRow input {
+    margin-top: 3px;
+    width: 18px;
+    height: 18px;
+    accent-color: var(--admin-accent);
+    cursor: pointer;
+}
+
+.usersRoleCheckText {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+}
+
+.usersRoleCheckLabel {
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--admin-text-p);
+}
+
+.usersRoleCheckDesc {
+    font-size: 12px;
+    color: var(--admin-text-s);
+    line-height: 1.35;
+}
+
+.usersRoleModalFoot {
+    padding: 16px 20px;
+    border-top: 1px solid var(--admin-border);
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.usersRoleModalBtnGhost {
+    padding: 10px 18px;
+    border-radius: 10px;
+    border: 1px solid var(--admin-border);
+    background: #fff;
+    color: var(--admin-text-p);
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.usersRoleModalBtnGhost:hover {
+    background: #f8fafc;
+}
+
+.usersRoleModalBtnSave {
+    padding: 10px 20px;
+    border-radius: 10px;
+    border: none;
+    background: var(--admin-accent);
+    color: #fff;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.usersRoleModalBtnSave:disabled {
+    opacity: .55;
+    cursor: not-allowed;
+}
+
+.usersRoleModalBtnSave:not(:disabled):hover {
+    filter: brightness(1.06);
+}
+
+@media (max-width:480px) {
+    .usersRoleModal {
+        max-height: none
+    }
+}

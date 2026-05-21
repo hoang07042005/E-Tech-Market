@@ -864,4 +864,4 @@ export default function CheckoutPage() {
 
 
 
-function CheckIcon() {return (<svg width="26" height="26" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M20 6L9 17l-5-5"stroke="currentColor"strokeWidth="2.4"strokeLinecap="round"strokeLinejoin="round"/></svg>)}
+function CheckIcon() {return (<svg width="40" height="40" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M20 6L9 17l-5-5"stroke="currentColor"strokeWidth="2.4"strokeLinecap="round"strokeLinejoin="round"/></svg>)}

@@ -150,7 +150,7 @@ export default function FlashSaleSection() {
                   <h3 className="flashSaleProductName">{displayName}</h3>
                   <div className="flashSalePricing">
                     <span className="flashSalePrice">{Number(item.flash_sale_price).toLocaleString()}đ</span>
-                    <span className="flashSaleOldPrice">{Number(originalPrice).toLocaleString()}đ</span>
+                    {/* <span className="flashSaleOldPrice">{Number(originalPrice).toLocaleString()}đ</span> */}
                   </div>
                   <div className={`flashSaleProgress ${isHot ? 'is-hot' : ''} ${hasProgress ? 'has-progress' : ''}`}>
                     <div className="progressBar">
