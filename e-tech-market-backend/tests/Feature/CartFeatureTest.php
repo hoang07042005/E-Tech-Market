@@ -2,19 +2,19 @@
 
 namespace Tests\Feature;
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Tests\TestCase;
 use App\Models\User;
 use App\Models\Cart;
 
 class CartFeatureTest extends TestCase
 {
-    use RefreshDatabase;
+    use DatabaseTransactions;
 
     public function test_user_can_retrieve_cart()
     {
         $user = User::factory()->create();
-        Cart::factory()->create([
+        Cart::create([
             'user_id' => $user->id,
             'status' => 'active'
         ]);

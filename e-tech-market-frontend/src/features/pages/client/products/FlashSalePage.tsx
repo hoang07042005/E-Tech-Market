@@ -95,7 +95,7 @@ export default function FlashSalePage() {
       const start = new Date(startStr).getTime()
       const end = new Date(endStr).getTime()
 
-      let targetTime = 0
+      let targetTime: number
       if (now < start) {
         setStatus('upcoming')
         targetTime = start

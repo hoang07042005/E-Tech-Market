@@ -196,6 +196,7 @@ Route::get('/reviews', [ReviewsController::class, 'index']);
 Route::get('/blog/categories', [App\Http\Controllers\Client\ClientBlogPostsController::class, 'categories']);
 Route::get('/blog/posts', [App\Http\Controllers\Client\ClientBlogPostsController::class, 'index']);
 Route::get('/blog/posts/{slug}', [App\Http\Controllers\Client\ClientBlogPostsController::class, 'show']);
+Route::post('/blog/posts/{slug}/comments', [App\Http\Controllers\Client\ClientBlogPostsController::class, 'storeComment']);
 Route::post('/newsletter/subscriptions', [NewsletterController::class, 'store']);
 
 Route::get('/store/config', [StoreProfileController::class, 'config']);
@@ -213,5 +214,4 @@ Route::middleware('auth:sanctum')->group(function () {
     
     // Moved from public routes
     Route::post('/products/{product:slug}/shop-qna', [ClientProductShopQnaController::class, 'store']);
-    Route::post('/blog/posts/{slug}/comments', [App\Http\Controllers\Client\ClientBlogPostsController::class, 'storeComment']);
 });

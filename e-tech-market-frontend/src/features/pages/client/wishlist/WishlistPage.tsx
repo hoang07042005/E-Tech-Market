@@ -25,13 +25,6 @@ function WishlistCard({
   onRemove: (productId: number) => void
 }) {
   const imageUrl = resolveImageUrl(product.main_image_url)
-  const price = useMemo(() => {
-    const activeVariants = (product.variants || []).filter(v => v.is_active)
-    if (activeVariants.length > 0) {
-      return Math.min(...activeVariants.map(v => v.effective_price))
-    }
-    return 0
-  }, [product.variants])
 
   return (
     <div className="wlCard">

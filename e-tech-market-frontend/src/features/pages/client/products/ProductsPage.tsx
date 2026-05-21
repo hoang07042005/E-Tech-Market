@@ -314,15 +314,48 @@ const sortOptions = [
   { value: 'price-desc', label: 'Giá: Cao → Thấp' },
 ]
 
+function ProductCardSkeleton() {
+  return (
+    <div className="ppCardNew">
+      <div className="ppCardImageWrap">
+        <Skeleton height="220px" borderRadius="12px" />
+      </div>
+      <div className="ppCardContent">
+        <div className="ppCardTopRow">
+          <Skeleton width="60px" height="14px" />
+          <Skeleton width="40px" height="14px" />
+          <Skeleton width="80px" height="14px" />
+        </div>
+        <Skeleton width="100%" height="22px" style={{ margin: '12px 0 8px' }} />
+        <Skeleton width="100%" height="40px" style={{ marginBottom: '16px' }} />
+        <Skeleton width="100%" height="48px" borderRadius="10px" />
+      </div>
+    </div>
+  )
+}
+
+function SidebarSkeleton() {
+  return (
+    <div className="ppCheckboxList">
+      {Array.from({ length: 6 }).map((_, i) => (
+        <div key={i} style={{ marginBottom: '12px' }}>
+          <Skeleton width="90%" height="18px" />
+        </div>
+      ))}
+    </div>
+  )
+}
+
 export default function ProductsPage() {
   const [searchParams, setSearchParams] = useSearchParams()
   const navigate = useNavigate()
+  const searchQueryParam = (searchParams.get('search') ?? '').trim()
 
   const [products, setProducts] = useState<ApiProduct[]>([])
   const [categories, setCategories] = useState<ApiCategory[]>([])
   const [loading, setLoading] = useState(true)
 
-  const [query, setQuery] = useState('')
+  const [query, setQuery] = useState(() => searchQueryParam)
   const [sort, setSort] = useState<string>('default')
   const [maxPrice, setMaxPrice] = useState(100000000)
   const [selectedBrand, setSelectedBrand] = useState<string | null>(null)
@@ -355,6 +388,11 @@ export default function ProductsPage() {
       .catch(() => setWishSet(new Set()))
   }, [hasAuth, token])
 
+  useEffect(() => {
+    setQuery((current) => (current === searchQueryParam ? current : searchQueryParam))
+    setPage(1)
+  }, [searchQueryParam])
+
   async function onToggleLike(productId: number) {
     if (!token) {
       navigate('/login')
@@ -385,39 +423,6 @@ export default function ProductsPage() {
       })
     }
   }
-
-  function ProductCardSkeleton() {
-    return (
-      <div className="ppCardNew">
-        <div className="ppCardImageWrap">
-          <Skeleton height="220px" borderRadius="12px" />
-        </div>
-        <div className="ppCardContent">
-          <div className="ppCardTopRow">
-            <Skeleton width="60px" height="14px" />
-            <Skeleton width="40px" height="14px" />
-            <Skeleton width="80px" height="14px" />
-          </div>
-          <Skeleton width="100%" height="22px" style={{ margin: '12px 0 8px' }} />
-          <Skeleton width="100%" height="40px" style={{ marginBottom: '16px' }} />
-          <Skeleton width="100%" height="48px" borderRadius="10px" />
-        </div>
-      </div>
-    )
-  }
-
-  function SidebarSkeleton() {
-    return (
-      <div className="ppCheckboxList">
-        {Array.from({ length: 6 }).map((_, i) => (
-          <div key={i} style={{ marginBottom: '12px' }}>
-            <Skeleton width="90%" height="18px" />
-          </div>
-        ))}
-      </div>
-    )
-  }
-
 
   const brands = useMemo(() => {
     const set = new Set<string>()

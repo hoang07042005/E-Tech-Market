@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from 'react'
+import { useState, useEffect, useCallback, useRef, type FormEvent } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import '@/styles/components/HeaderFooter.css'
 import { cartCount, getCart } from '@/features/services/cart.service'
@@ -131,6 +131,7 @@ export default function HeaderPage({ active = 'Home' }: { active?: NavKey }) {
   const location = useLocation()
   const [user, setUser] = useState<StoredUser | null>(readStoredUser)
   const [cartQty, setCartQty] = useState(() => cartCount(getCart()))
+  const [searchQuery, setSearchQuery] = useState('')
   const token = typeof window !== 'undefined' ? window.localStorage.getItem('token') : null
 
   const [darkMode, setDarkMode] = useState<boolean>(() => {
@@ -337,6 +338,16 @@ export default function HeaderPage({ active = 'Home' }: { active?: NavKey }) {
     }
   }
 
+  const handleSearchSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+    const term = searchQuery.trim()
+    if (!term) {
+      navigate('/products')
+      return
+    }
+    navigate(`/products?search=${encodeURIComponent(term)}`)
+  }
+
 
   return (
     <header className={`hfHeader ${menuOpen ? 'hfMenuOpen' : ''}`}>
@@ -402,6 +413,22 @@ export default function HeaderPage({ active = 'Home' }: { active?: NavKey }) {
             {notifUnread > 0 && <span className="hfNavBadgeMobile">{notifUnread > 99 ? '99+' : notifUnread}</span>}
           </div>
         </nav>
+
+        <form className="hfSearch" role="search" onSubmit={handleSearchSubmit}>
+          <input
+            type="search"
+            className="hfSearchInput"
+            placeholder="Tìm kiếm..."
+            value={searchQuery}
+            onChange={(event) => setSearchQuery(event.target.value)}
+          />
+          <button type="submit" className="hfSearchButton" aria-label="Tìm kiếm">
+            <svg className="hfSearchIcon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <circle cx="11" cy="11" r="7" stroke="currentColor" strokeWidth="1.8" />
+              <path d="m16.5 16.5 4 4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+            </svg>
+          </button>
+        </form>
 
         <div className="hfHeaderRight" aria-label="Thao tác trên header">
           <button

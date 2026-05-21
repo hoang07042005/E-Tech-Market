@@ -34,16 +34,16 @@ function ratingLabel(rating: number) {
 
 function timeAgoVi(iso: string) {
   if (!iso) return 'vừa xong'
-  let t = Date.parse(iso)
+  const t = Date.parse(iso)
   if (!Number.isFinite(t)) return 'vừa xong'
-  let diff = Date.now() - t
-  let sec = Math.floor(diff / 1000)
+  const diff = Date.now() - t
+  const sec = Math.floor(diff / 1000)
   if (sec < 60) return 'vừa xong'
-  let min = Math.floor(sec / 60)
+  const min = Math.floor(sec / 60)
   if (min < 60) return `${min} phút trước`
-  let hr = Math.floor(min / 60)
+  const hr = Math.floor(min / 60)
   if (hr < 24) return `${hr} giờ trước`
-  let day = Math.floor(hr / 24)
+  const day = Math.floor(hr / 24)
   if (day < 30) return `${day} ngày trước`
   return new Date(t).toLocaleDateString('vi-VN')
 }
@@ -286,6 +286,46 @@ type BlogPost = {
   reading_time?: number
 }
 
+function FeaturedProductSkeleton() {
+  return (
+    <div className="hpProductCard">
+      <div className="hpProductImageWrap">
+        <Skeleton height="280px" borderRadius="12px" />
+      </div>
+      <div className="hpProductInfo">
+        <Skeleton width="80%" height="20px" style={{ marginBottom: '12px' }} />
+        <div className="hpProductPriceRow">
+          <Skeleton width="40%" height="24px" />
+          <Skeleton width="32px" height="32px" borderRadius="50%" />
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function CouponSkeleton() {
+  return (
+    <div className="hpCouponCard">
+      <div className="hpCouponIconWrap">
+        <Skeleton width="32px" height="32px" borderRadius="50%" />
+      </div>
+      <div className="hpCouponInfo">
+        <Skeleton width="60%" height="18px" style={{ marginBottom: '8px' }} />
+        <Skeleton width="40%" height="14px" />
+      </div>
+      <Skeleton width="80px" height="36px" borderRadius="20px" />
+    </div>
+  )
+}
+
+function CategorySkeleton() {
+  return (
+    <div className="hpCuratedCard">
+      <Skeleton height="100%" borderRadius="16px" />
+    </div>
+  )
+}
+
 export default function HomePage() {
   const navigate = useNavigate()
   const [featuredProducts, setFeaturedProducts] = useState<ApiProduct[]>([])
@@ -430,46 +470,6 @@ export default function HomePage() {
 
     return () => observer.disconnect()
   }, [loading, tabActive, featuredProducts, latestNews])
-
-  function FeaturedProductSkeleton() {
-    return (
-      <div className="hpProductCard">
-        <div className="hpProductImageWrap">
-          <Skeleton height="280px" borderRadius="12px" />
-        </div>
-        <div className="hpProductInfo">
-          <Skeleton width="80%" height="20px" style={{ marginBottom: '12px' }} />
-          <div className="hpProductPriceRow">
-            <Skeleton width="40%" height="24px" />
-            <Skeleton width="32px" height="32px" borderRadius="50%" />
-          </div>
-        </div>
-      </div>
-    )
-  }
-
-  function CouponSkeleton() {
-    return (
-      <div className="hpCouponCard">
-        <div className="hpCouponIconWrap">
-          <Skeleton width="32px" height="32px" borderRadius="50%" />
-        </div>
-        <div className="hpCouponInfo">
-          <Skeleton width="60%" height="18px" style={{ marginBottom: '8px' }} />
-          <Skeleton width="40%" height="14px" />
-        </div>
-        <Skeleton width="80px" height="36px" borderRadius="20px" />
-      </div>
-    )
-  }
-
-  function CategorySkeleton() {
-    return (
-      <div className="hpCuratedCard">
-        <Skeleton height="100%" borderRadius="16px" />
-      </div>
-    )
-  }
 
   const saveCoupon = async (code: string) => {
     const token = localStorage.getItem('token')
