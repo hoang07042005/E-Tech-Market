@@ -50,38 +50,10 @@ function getNotifType(n: Notif): 'blog' | 'order' | 'warning' | 'system' {
 }
 
 function renderIcon(type: 'blog' | 'order' | 'warning' | 'system') {
-  if (type === 'blog') {
-    return (
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
-        <path d="M16 8h2M11 8h3M8 8h1M8 12h10M8 16h10" />
-      </svg>
-    )
-  }
-  if (type === 'order') {
-    return (
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-        <polyline points="22 12 16 12 14 15 10 15 8 12 2 12" />
-        <path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z" />
-      </svg>
-    )
-  }
-  if (type === 'warning') {
-    return (
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-        <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" />
-        <line x1="12" y1="9" x2="12" y2="13" />
-        <line x1="12" y1="17" x2="12.01" y2="17" />
-      </svg>
-    )
-  }
-  return (
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <path d="M18 8a6 6 0 1 0-12 0c0 7-3 7-3 7h18s-3 0-3-7z" />
-      <path d="M13.73 21a2 2 0 0 1-3.46 0" />
-    </svg>
-  )
-}
+  if (type === 'blog') {return (<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" /><path d="M16 8h2M11 8h3M8 8h1M8 12h10M8 16h10" /></svg>)}
+  if (type === 'order') {return (<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12" /><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z" /></svg>)}
+  if (type === 'warning') {return (<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" /><line x1="12" y1="9" x2="12" y2="13" /><line x1="12" y1="17" x2="12.01" y2="17" /></svg>)}
+  return (<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 7-3 7h18s-3 0-3-7z" /><path d="M13.73 21a2 2 0 0 1-3.46 0" /></svg>)}
 
 export default function NotificationsPage() {
   const navigate = useNavigate()
@@ -175,7 +147,7 @@ export default function NotificationsPage() {
             Xem tất cả các tin tức công nghệ, cảnh báo kho và cập nhật đơn hàng của bạn.
           </div>
         </div>
-        
+
         <Link className="notifBackLink" to="/profile" title="Quay lại trang cá nhân">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
             <line x1="19" y1="12" x2="5" y2="12" />
@@ -193,24 +165,24 @@ export default function NotificationsPage() {
           <div className="notifSidebarCard">
             <h3 className="notifSidebarTitle">Bộ lọc thư</h3>
             <div className="notifFilterList">
-              <button 
-                type="button" 
+              <button
+                type="button"
                 className={`notifFilterItem ${filter === 'all' ? 'active' : ''}`}
                 onClick={() => setFilter('all')}
               >
                 <span className="notifFilterLabel">Tất cả</span>
                 <span className="notifFilterCount">{rows.length}</span>
               </button>
-              <button 
-                type="button" 
+              <button
+                type="button"
                 className={`notifFilterItem ${filter === 'unread' ? 'active' : ''}`}
                 onClick={() => setFilter('unread')}
               >
                 <span className="notifFilterLabel">Chưa đọc</span>
                 <span className={`notifFilterCount ${unreadCount > 0 ? 'badge-unread' : ''}`}>{unreadCount}</span>
               </button>
-              <button 
-                type="button" 
+              <button
+                type="button"
                 className={`notifFilterItem ${filter === 'read' ? 'active' : ''}`}
                 onClick={() => setFilter('read')}
               >
@@ -220,8 +192,8 @@ export default function NotificationsPage() {
             </div>
 
             {unreadCount > 0 && (
-              <button 
-                type="button" 
+              <button
+                type="button"
                 className="notifBtnMarkAll"
                 onClick={() => void markAllRead()}
                 disabled={markingAll}
@@ -255,11 +227,11 @@ export default function NotificationsPage() {
                   </div>
                   <h3 className="notifEmptyTitle">Không có thông báo</h3>
                   <p className="notifEmptyText">
-                    {filter === 'unread' 
+                    {filter === 'unread'
                       ? 'Tuyệt vời! Bạn không có thông báo chưa đọc nào.'
-                      : filter === 'read' 
-                      ? 'Bạn chưa có thông báo nào được đánh dấu đã đọc.'
-                      : 'Hộp thư thông báo của bạn hiện đang trống.'}
+                      : filter === 'read'
+                        ? 'Bạn chưa có thông báo nào được đánh dấu đã đọc.'
+                        : 'Hộp thư thông báo của bạn hiện đang trống.'}
                   </p>
                 </div>
               ) : (
@@ -316,9 +288,9 @@ export default function NotificationsPage() {
 
               {pg && pg.last_page > 1 && filter === 'all' && (
                 <div className="notifPager">
-                  <button 
-                    className="notifPageBtn" 
-                    disabled={page <= 1} 
+                  <button
+                    className="notifPageBtn"
+                    disabled={page <= 1}
                     onClick={() => setPage((p) => Math.max(1, p - 1))}
                     aria-label="Trang trước"
                   >
@@ -327,9 +299,9 @@ export default function NotificationsPage() {
                   <div className="notifPageInfo">
                     Trang {page} / {pg.last_page}
                   </div>
-                  <button 
-                    className="notifPageBtn" 
-                    disabled={page >= pg.last_page} 
+                  <button
+                    className="notifPageBtn"
+                    disabled={page >= pg.last_page}
                     onClick={() => setPage((p) => p + 1)}
                     aria-label="Trang sau"
                   >

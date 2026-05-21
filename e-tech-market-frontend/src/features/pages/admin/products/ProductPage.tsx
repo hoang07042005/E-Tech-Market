@@ -35,119 +35,6 @@ interface Product {
   variants?: ProductVariant[]
 }
 
-function ClipboardIcon() {
-  return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path
-        d="M9 4.5c0-.83.67-1.5 1.5-1.5h3c.83 0 1.5.67 1.5 1.5v1H9v-1Z"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <path
-        d="M8 6h8a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2Z"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinejoin="round"
-      />
-      <path d="M9 12h6M9 16h4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-    </svg>
-  )
-}
-
-function BanIcon() {
-  return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="2" />
-      <path d="M7.5 7.5l9 9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-    </svg>
-  )
-}
-
-function WarningTriangleIcon() {
-  return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path
-        d="M12 3 2.8 20.2c-.4.8.2 1.8 1.1 1.8h16.2c.9 0 1.5-1 .1-1.8L12 3Z"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinejoin="round"
-      />
-      <path d="M12 9v5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M12 17h.01" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
-    </svg>
-  )
-}
-
-function CheckCircleIcon() {
-  return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="2" />
-      <path d="m8.5 12.3 2.3 2.3 4.9-5.3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-    </svg>
-  )
-}
-
-function PencilIcon() {
-  return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path
-        d="M12 20h9"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-      />
-      <path
-        d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5Z"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinejoin="round"
-      />
-    </svg>
-  )
-}
-
-function TrashIcon() {
-  return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path
-        d="M4 7h16"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-      />
-      <path
-        d="M10 11v6M14 11v6"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-      />
-      <path
-        d="M6 7l1 14a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-14"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinejoin="round"
-      />
-      <path
-        d="M9 7V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v3"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinejoin="round"
-      />
-    </svg>
-  )
-}
-
-function EyeIcon() {
-  return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-      <circle cx="12" cy="12" r="3" />
-    </svg>
-  )
-}
-
 const resolveImageUrl = (url: string | null) => {
   if (!url) return ''
   if (url.startsWith('http')) return url
@@ -662,3 +549,13 @@ export default function ProductPage({
     </div>
   )
 }
+
+
+
+function ClipboardIcon() {return (<svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 4.5c0-.83.67-1.5 1.5-1.5h3c.83 0 1.5.67 1.5 1.5v1H9v-1Z"stroke="currentColor"strokeWidth="2"strokeLinecap="round"strokeLinejoin="round"/><path d="M8 6h8a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2Z"stroke="currentColor"strokeWidth="2"strokeLinejoin="round"/><path d="M9 12h6M9 16h4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></svg>)}
+function BanIcon() {return (<svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="2" /><path d="M7.5 7.5l9 9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></svg>)}
+function WarningTriangleIcon() {return (<svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3 2.8 20.2c-.4.8.2 1.8 1.1 1.8h16.2c.9 0 1.5-1 .1-1.8L12 3Z"stroke="currentColor"strokeWidth="2"strokeLinejoin="round"/><path d="M12 9v5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /><path d="M12 17h.01" stroke="currentColor" strokeWidth="3" strokeLinecap="round" /></svg>)}
+function CheckCircleIcon() {return (<svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="2" /><path d="m8.5 12.3 2.3 2.3 4.9-5.3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></svg>)}
+function PencilIcon() {return (<svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 20h9"stroke="currentColor"strokeWidth="2"strokeLinecap="round"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5Z"stroke="currentColor"strokeWidth="2"strokeLinejoin="round"/></svg>)}
+function TrashIcon() {return (<svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 7h16"stroke="currentColor"strokeWidth="2"strokeLinecap="round"/><path d="M10 11v6M14 11v6"stroke="currentColor"strokeWidth="2"strokeLinecap="round"/><path d="M6 7l1 14a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-14"stroke="currentColor"strokeWidth="2"strokeLinejoin="round"/><path d="M9 7V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v3"stroke="currentColor"strokeWidth="2"strokeLinejoin="round"/></svg>)}
+function EyeIcon() {return (<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" /><circle cx="12" cy="12" r="3" /></svg>)}

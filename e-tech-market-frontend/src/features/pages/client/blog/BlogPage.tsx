@@ -136,14 +136,14 @@ export default function BlogPage() {
             <div className="blogSectionTitleRow">
               <h2 className="blogSectionTitle">Tin tức mới nhất</h2>
               <div className="blogFilters">
-                <button 
+                <button
                   className={`blogFilterBtn ${activeFilter === 'all' ? 'active' : ''}`}
                   onClick={() => setActiveFilter('all')}
                 >
                   Tất cả
                 </button>
                 {categories.map(cat => (
-                  <button 
+                  <button
                     key={cat.id}
                     className={`blogFilterBtn ${activeFilter === cat.slug ? 'active' : ''}`}
                     onClick={() => setActiveFilter(cat.slug)}

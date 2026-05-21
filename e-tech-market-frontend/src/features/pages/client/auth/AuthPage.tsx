@@ -90,7 +90,7 @@ export default function AuthPage({
       window.location.replace('/login?session=expired')
       return
     }
-    ;(async () => {
+    ; (async () => {
       try {
         const me = await fetchMe(token)
         setUser(me as MeUser)

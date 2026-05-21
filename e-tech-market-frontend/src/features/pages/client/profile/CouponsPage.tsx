@@ -32,7 +32,7 @@ export default function CouponsPage() {
       .then((res) => {
         if (!cancelled && Array.isArray(res)) setActiveCoupons(res)
       })
-      .catch(() => {})
+      .catch(() => { })
       .finally(() => {
         if (!cancelled) setLoading(false)
       })
@@ -71,9 +71,9 @@ export default function CouponsPage() {
                   </div>
                 )}
               </div>
-              <button 
-                type="button" 
-                className="coGhostBtn" 
+              <button
+                type="button"
+                className="coGhostBtn"
                 style={{ width: '100%', textAlign: 'center', marginTop: '10px' }}
                 onClick={() => {
                   navigator.clipboard.writeText(c.code)

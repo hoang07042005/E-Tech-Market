@@ -24,45 +24,6 @@ type StoreContactPayload = {
   warehouse_address: string
 }
 
-function IconPin() {
-  return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path
-        d="M12 22s7-4.5 7-11a7 7 0 1 0-14 0c0 6.5 7 11 7 11Z"
-        stroke="currentColor"
-        strokeWidth="1.7"
-      />
-      <path
-        d="M12 12.2a2.2 2.2 0 1 0 0-4.4 2.2 2.2 0 0 0 0 4.4Z"
-        stroke="currentColor"
-        strokeWidth="1.7"
-      />
-    </svg>
-  )
-}
-
-function IconPhone() {
-  return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path
-        d="M22 16.9v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.4 19.4 0 0 1-5.97-5.97A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.08 2h3a2 2 0 0 1 2 1.72c.12.9.32 1.78.6 2.62a2 2 0 0 1-.45 2.11L8.1 9.6a16 16 0 0 0 6.3 6.3l1.15-1.13a2 2 0 0 1 2.11-.45c.84.28 1.72.48 2.62.6A2 2 0 0 1 22 16.9Z"
-        stroke="currentColor"
-        strokeWidth="1.7"
-        strokeLinejoin="round"
-      />
-    </svg>
-  )
-}
-
-function IconMail() {
-  return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path d="M4 4h16v16H4V4Z" stroke="currentColor" strokeWidth="1.7" />
-      <path d="M4 6l8 6 8-6" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round" />
-    </svg>
-  )
-}
-
 export default function ContactPage() {
   const [storeContact, setStoreContact] = useState<StoreContactPayload | null>(null)
   const [submitted, setSubmitted] = useState(false)
@@ -87,14 +48,14 @@ export default function ContactPage() {
 
   useEffect(() => {
     let cancelled = false
-    ;(async () => {
-      try {
-        const data = await apiFetch<StoreContactPayload>('/api/store/contact')
-        if (!cancelled) setStoreContact(data)
-      } catch {
-        if (!cancelled) setStoreContact(null)
-      }
-    })()
+      ; (async () => {
+        try {
+          const data = await apiFetch<StoreContactPayload>('/api/store/contact')
+          if (!cancelled) setStoreContact(data)
+        } catch {
+          if (!cancelled) setStoreContact(null)
+        }
+      })()
     return () => {
       cancelled = true
     }
@@ -297,3 +258,9 @@ export default function ContactPage() {
   )
 }
 
+
+
+
+function IconPin() {return (<svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 22s7-4.5 7-11a7 7 0 1 0-14 0c0 6.5 7 11 7 11Z"stroke="currentColor"strokeWidth="1.7"/><path d="M12 12.2a2.2 2.2 0 1 0 0-4.4 2.2 2.2 0 0 0 0 4.4Z"stroke="currentColor"strokeWidth="1.7"/></svg>)}
+function IconPhone() {return (<svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.4 19.4 0 0 1-5.97-5.97A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.08 2h3a2 2 0 0 1 2 1.72c.12.9.32 1.78.6 2.62a2 2 0 0 1-.45 2.11L8.1 9.6a16 16 0 0 0 6.3 6.3l1.15-1.13a2 2 0 0 1 2.11-.45c.84.28 1.72.48 2.62.6A2 2 0 0 1 22 16.9Z"stroke="currentColor"strokeWidth="1.7"strokeLinejoin="round"/></svg>)}
+function IconMail() {return (<svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 4h16v16H4V4Z" stroke="currentColor" strokeWidth="1.7" /><path d="M4 6l8 6 8-6" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round" /></svg>)}

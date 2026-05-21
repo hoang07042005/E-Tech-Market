@@ -88,16 +88,6 @@ function payLabel(raw?: string | null) {
   return raw ? raw.toString() : '—'
 }
 
-
-function IconPin() {
-  return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path d="M12 22s7-4.5 7-12a7 7 0 1 0-14 0c0 7.5 7 12 7 12Z" stroke="currentColor" strokeWidth="1.8" />
-      <path d="M12 12.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z" stroke="currentColor" strokeWidth="1.8" />
-    </svg>
-  )
-}
-
 function statusMeta(status?: string | null) {
   const s = (status || '').toLowerCase()
   if (s === 'pending') return { label: 'Chờ xác nhận', tone: 'wait' as const, step: 1 }
@@ -689,3 +679,5 @@ export default function OrderDetailPage() {
   )
 }
 
+
+function IconPin() {return (<svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 22s7-4.5 7-12a7 7 0 1 0-14 0c0 7.5 7 12 7 12Z" stroke="currentColor" strokeWidth="1.8" /><path d="M12 12.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z" stroke="currentColor" strokeWidth="1.8" /></svg>)}

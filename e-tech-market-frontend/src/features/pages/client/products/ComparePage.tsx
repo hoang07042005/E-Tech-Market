@@ -59,7 +59,7 @@ export default function ComparePage() {
   }, [products])
 
   const resolveSpecValue = (product: Product, group: string, key: string) => {
-    const s = product.specs?.find(spec => 
+    const s = product.specs?.find(spec =>
       (spec.spec_group || 'Thông tin khác') === group && spec.spec_key === key
     )
     if (!s) return '—'
@@ -111,7 +111,7 @@ export default function ComparePage() {
                 ) : (
                   compareList.map(p => (
                     <th key={p.id} className="productCol">
-                       <div className="compareProductCard">
+                      <div className="compareProductCard">
                         <button className="compareRemoveTop" onClick={() => removeFromCompare(p.id)}>×</button>
                         <h3>{p.name}</h3>
                         <div className="comparePrice">{p.price.toLocaleString('vi-VN')} đ</div>

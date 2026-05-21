@@ -61,12 +61,12 @@ export default function FlashSalePage() {
       try {
         const res = await apiFetch<FlashSale>('/api/flash-sale/current')
         setSale(res)
-        
+
         if (res) {
           const now = new Date().getTime()
           const start = new Date(res.start_at.replace(' ', 'T')).getTime()
           const end = new Date(res.end_at.replace(' ', 'T')).getTime()
-          
+
           if (now >= start && now <= end) {
             setStatus('active')
           } else if (now < start) {
@@ -91,10 +91,10 @@ export default function FlashSalePage() {
       const now = new Date().getTime()
       const startStr = sale.start_at.replace(' ', 'T')
       const endStr = sale.end_at.replace(' ', 'T')
-      
+
       const start = new Date(startStr).getTime()
       const end = new Date(endStr).getTime()
-      
+
       let targetTime = 0
       if (now < start) {
         setStatus('upcoming')
@@ -120,7 +120,7 @@ export default function FlashSalePage() {
         const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))
         const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60))
         const s = Math.floor((diff % (1000 * 60)) / 1000)
-        
+
         if (!isNaN(h)) {
           setTimeLeft({ h, m, s })
         }
@@ -137,8 +137,8 @@ export default function FlashSalePage() {
     // 1. Filter
     let items = sale.items.filter(item => {
       if (!item.product) return false
-      const name = item.variant 
-        ? `${item.product.name} ${item.variant.variant_name}` 
+      const name = item.variant
+        ? `${item.product.name} ${item.variant.variant_name}`
         : item.product.name
       return name.toLowerCase().includes(searchQuery.toLowerCase())
     })
@@ -269,14 +269,14 @@ export default function FlashSalePage() {
       <div className="fspGrid">
         {filteredAndSortedItems.map(item => {
           const productUrl = `/products/${item.product.slug}${item.variant_id ? `?variant=${item.variant_id}` : ''}`;
-          const displayImage = item.variant?.image_url 
-            ? `${API_BASE_URL}${item.variant.image_url}` 
+          const displayImage = item.variant?.image_url
+            ? `${API_BASE_URL}${item.variant.image_url}`
             : (item.product.main_image_url ? `${API_BASE_URL}${item.product.main_image_url}` : '/placeholder.png');
-          const displayName = item.variant 
-            ? `${item.product.name} - ${item.variant.variant_name}` 
+          const displayName = item.variant
+            ? `${item.product.name} - ${item.variant.variant_name}`
             : item.product.name;
           const originalPrice = item.variant ? item.variant.price : item.product.price;
-          
+
           const progressPercent = Math.min(100, (item.sold_quantity / (item.quantity_limit || 100)) * 100);
           const isHot = progressPercent >= 80;
 
@@ -297,15 +297,15 @@ export default function FlashSalePage() {
                   <span className="fspSalePrice">{Number(item.flash_sale_price).toLocaleString()}đ</span>
                   <span className="fspOldPrice">{Number(originalPrice).toLocaleString()}đ</span>
                 </div>
-                
+
                 <div className="fspProgress">
                   <div className="fspProgressBar">
                     <div className="fspProgressFill" style={{ width: `${progressPercent}%` }}></div>
                   </div>
                   <div className="fspProgressText">
                     <span>
-                      {status === 'upcoming' 
-                        ? 'Chưa mở bán' 
+                      {status === 'upcoming'
+                        ? 'Chưa mở bán'
                         : (item.sold_quantity === 0 ? 'Vừa mở bán' : `Đã bán ${item.sold_quantity}`)
                       }
                     </span>
@@ -313,8 +313,8 @@ export default function FlashSalePage() {
                   </div>
                 </div>
 
-                <button 
-                  type="button" 
+                <button
+                  type="button"
                   className={`fspCTA ${status === 'upcoming' ? 'upcoming' : ''}`}
                 >
                   {status === 'upcoming' ? 'CHỜ BÁN ⏰' : 'MUA NGAY ⚡'}

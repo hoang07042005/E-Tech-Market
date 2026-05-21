@@ -6,217 +6,6 @@ import logoCod from '@/assets/COD.png'
 
 type IconProps = { className?: string; title?: string }
 
-function IconStore({ className, title }: IconProps) {
-  return (
-    <svg className={className} width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden={title ? undefined : true}>
-      {title ? <title>{title}</title> : null}
-      <path
-        d="M3 10.5 5 4h14l2 6.5M4 10.5h16M6 10.5V20h12v-9.5"
-        stroke="currentColor"
-        strokeWidth="1.7"
-        strokeLinejoin="round"
-        strokeLinecap="round"
-      />
-      <path d="M10 20v-6h4v6" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round" />
-    </svg>
-  )
-}
-
-function IconGlobe({ className, title }: IconProps) {
-  return (
-    <svg className={className} width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden={title ? undefined : true}>
-      {title ? <title>{title}</title> : null}
-      <path
-        d="M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20Z"
-        stroke="currentColor"
-        strokeWidth="1.7"
-      />
-      <path d="M2 12h20" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
-      <path
-        d="M12 2c3 3 3 17 0 20-3-3-3-17 0-20Z"
-        stroke="currentColor"
-        strokeWidth="1.7"
-        strokeLinejoin="round"
-      />
-    </svg>
-  )
-}
-
-function IconUser({ className, title }: IconProps) {
-  return (
-    <svg className={className} width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden={title ? undefined : true}>
-      {title ? <title>{title}</title> : null}
-      <path
-        d="M20 21a8 8 0 1 0-16 0"
-        stroke="currentColor"
-        strokeWidth="1.7"
-        strokeLinecap="round"
-      />
-      <path
-        d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z"
-        stroke="currentColor"
-        strokeWidth="1.7"
-      />
-    </svg>
-  )
-}
-
-function IconKey({ className, title }: IconProps) {
-  return (
-    <svg className={className} width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden={title ? undefined : true}>
-      {title ? <title>{title}</title> : null}
-      <path
-        d="M21 7a5 5 0 1 1-9.7 1.7L3 17v4h4l2-2h2l2-2"
-        stroke="currentColor"
-        strokeWidth="1.7"
-        strokeLinejoin="round"
-        strokeLinecap="round"
-      />
-      <path d="M18 7h.01" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
-    </svg>
-  )
-}
-
-function IconPhone({ className, title }: IconProps) {
-  return (
-    <svg className={className} width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden={title ? undefined : true}>
-      {title ? <title>{title}</title> : null}
-      <path
-        d="M22 16.9v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.4 19.4 0 0 1-5.97-5.97A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.08 2h3a2 2 0 0 1 2 1.72c.12.9.32 1.78.6 2.62a2 2 0 0 1-.45 2.11L8.1 9.6a16 16 0 0 0 6.3 6.3l1.15-1.13a2 2 0 0 1 2.11-.45c.84.28 1.72.48 2.62.6A2 2 0 0 1 22 16.9Z"
-        stroke="currentColor"
-        strokeWidth="1.7"
-        strokeLinejoin="round"
-      />
-    </svg>
-  )
-}
-
-function IconShield({ className, title }: IconProps) {
-  return (
-    <svg className={className} width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden={title ? undefined : true}>
-      {title ? <title>{title}</title> : null}
-      <path
-        d="M12 2 20 6v6c0 5-3.5 9-8 10-4.5-1-8-5-8-10V6l8-4Z"
-        stroke="currentColor"
-        strokeWidth="1.7"
-        strokeLinejoin="round"
-      />
-    </svg>
-  )
-}
-
-function IconClipboard({ className, title }: IconProps) {
-  return (
-    <svg className={className} width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden={title ? undefined : true}>
-      {title ? <title>{title}</title> : null}
-      <path d="M9 4h6v3H9V4Z" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round" />
-      <path
-        d="M7 7H6a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-1"
-        stroke="currentColor"
-        strokeWidth="1.7"
-        strokeLinejoin="round"
-      />
-    </svg>
-  )
-}
-
-function IconPlus({ className, title }: IconProps) {
-  return (
-    <svg className={className} width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden={title ? undefined : true}>
-      {title ? <title>{title}</title> : null}
-      <path d="M12 5v14M5 12h14" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
-    </svg>
-  )
-}
-
-function IconPencil({ className, title }: IconProps) {
-  return (
-    <svg className={className} width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden={title ? undefined : true}>
-      {title ? <title>{title}</title> : null}
-      <path
-        d="M12 20h9"
-        stroke="currentColor"
-        strokeWidth="1.7"
-        strokeLinecap="round"
-      />
-      <path
-        d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5Z"
-        stroke="currentColor"
-        strokeWidth="1.7"
-        strokeLinejoin="round"
-      />
-    </svg>
-  )
-}
-
-function IconTrash({ className, title }: IconProps) {
-  return (
-    <svg className={className} width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden={title ? undefined : true}>
-      {title ? <title>{title}</title> : null}
-      <path d="M4 7h16" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
-      <path
-        d="M10 11v7M14 11v7"
-        stroke="currentColor"
-        strokeWidth="1.7"
-        strokeLinecap="round"
-      />
-      <path
-        d="M6 7l1 14h10l1-14"
-        stroke="currentColor"
-        strokeWidth="1.7"
-        strokeLinejoin="round"
-      />
-      <path d="M9 7V4h6v3" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round" />
-    </svg>
-  )
-}
-
-function IconX({ className, title }: IconProps) {
-  return (
-    <svg className={className} width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden={title ? undefined : true}>
-      {title ? <title>{title}</title> : null}
-      <path d="M18 6 6 18M6 6l12 12" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
-    </svg>
-  )
-}
-
-function IconFuel({ className, title }: IconProps) {
-  return (
-    <svg className={className} width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden={title ? undefined : true}>
-      {title ? <title>{title}</title> : null}
-      <path
-        d="M6 3h8v18H6V3Z"
-        stroke="currentColor"
-        strokeWidth="1.7"
-        strokeLinejoin="round"
-      />
-      <path d="M6 7h8" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
-      <path
-        d="M14 6h3l2 2v9a2 2 0 0 1-2 2h-3"
-        stroke="currentColor"
-        strokeWidth="1.7"
-        strokeLinejoin="round"
-        strokeLinecap="round"
-      />
-      <path d="M18 11v-2" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
-    </svg>
-  )
-}
-
-function IconClock({ className, title }: IconProps) {
-  return (
-    <svg className={className} width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden={title ? undefined : true}>
-      {title ? <title>{title}</title> : null}
-      <path
-        d="M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20Z"
-        stroke="currentColor"
-        strokeWidth="1.7"
-      />
-      <path d="M12 7v6l4 2" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  )
-}
-
 type SettingsPayload = {
   meta?: {
     last_saved_at?: string | null
@@ -1454,3 +1243,20 @@ export default function SettingsAdminPage() {
   )
 }
 
+
+
+
+
+function IconStore({ className, title }: IconProps) {return (<svg className={className} width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden={title ? undefined : true}>{title ? <title>{title}</title> : null}<path d="M3 10.5 5 4h14l2 6.5M4 10.5h16M6 10.5V20h12v-9.5"stroke="currentColor"strokeWidth="1.7"strokeLinejoin="round"strokeLinecap="round"/><path d="M10 20v-6h4v6" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round" /></svg>)}
+function IconGlobe({ className, title }: IconProps) {return (<svg className={className} width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden={title ? undefined : true}>{title ? <title>{title}</title> : null}<path d="M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20Z"stroke="currentColor"strokeWidth="1.7"/><path d="M2 12h20" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" /><path d="M12 2c3 3 3 17 0 20-3-3-3-17 0-20Z"stroke="currentColor"strokeWidth="1.7"strokeLinejoin="round"/></svg>)}
+function IconUser({ className, title }: IconProps) {return (<svg className={className} width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden={title ? undefined : true}>{title ? <title>{title}</title> : null}<path d="M20 21a8 8 0 1 0-16 0"stroke="currentColor"strokeWidth="1.7"strokeLinecap="round"/><path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z"stroke="currentColor"strokeWidth="1.7"/></svg>)}
+function IconKey({ className, title }: IconProps) {return (<svg className={className} width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden={title ? undefined : true}>{title ? <title>{title}</title> : null}<path d="M21 7a5 5 0 1 1-9.7 1.7L3 17v4h4l2-2h2l2-2"stroke="currentColor"strokeWidth="1.7"strokeLinejoin="round"strokeLinecap="round"/><path d="M18 7h.01" stroke="currentColor" strokeWidth="3" strokeLinecap="round" /></svg>)}
+function IconPhone({ className, title }: IconProps) {return (<svg className={className} width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden={title ? undefined : true}>{title ? <title>{title}</title> : null}<path d="M22 16.9v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.4 19.4 0 0 1-5.97-5.97A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.08 2h3a2 2 0 0 1 2 1.72c.12.9.32 1.78.6 2.62a2 2 0 0 1-.45 2.11L8.1 9.6a16 16 0 0 0 6.3 6.3l1.15-1.13a2 2 0 0 1 2.11-.45c.84.28 1.72.48 2.62.6A2 2 0 0 1 22 16.9Z"stroke="currentColor"strokeWidth="1.7"strokeLinejoin="round"/></svg>)}
+function IconShield({ className, title }: IconProps) {return (<svg className={className} width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden={title ? undefined : true}>{title ? <title>{title}</title> : null}<path d="M12 2 20 6v6c0 5-3.5 9-8 10-4.5-1-8-5-8-10V6l8-4Z"stroke="currentColor"strokeWidth="1.7"strokeLinejoin="round"/></svg>)}
+function IconClipboard({ className, title }: IconProps) {return (<svg className={className} width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden={title ? undefined : true}>{title ? <title>{title}</title> : null}<path d="M9 4h6v3H9V4Z" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round" /><path d="M7 7H6a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-1"stroke="currentColor"strokeWidth="1.7"strokeLinejoin="round"/></svg>)}
+function IconPlus({ className, title }: IconProps) {return (<svg className={className} width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden={title ? undefined : true}>{title ? <title>{title}</title> : null}<path d="M12 5v14M5 12h14" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" /></svg>)}
+function IconPencil({ className, title }: IconProps) {return (<svg className={className} width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden={title ? undefined : true}>{title ? <title>{title}</title> : null}<path d="M12 20h9"stroke="currentColor"strokeWidth="1.7"strokeLinecap="round"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5Z"stroke="currentColor"strokeWidth="1.7"strokeLinejoin="round"/></svg>)}
+function IconTrash({ className, title }: IconProps) {return (<svg className={className} width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden={title ? undefined : true}>{title ? <title>{title}</title> : null}<path d="M4 7h16" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" /><path d="M10 11v7M14 11v7"stroke="currentColor"strokeWidth="1.7"strokeLinecap="round"/><path d="M6 7l1 14h10l1-14"stroke="currentColor"strokeWidth="1.7"strokeLinejoin="round"/><path d="M9 7V4h6v3" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round" /></svg>)}
+function IconX({ className, title }: IconProps) {return (<svg className={className} width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden={title ? undefined : true}>{title ? <title>{title}</title> : null}<path d="M18 6 6 18M6 6l12 12" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" /></svg>)}
+function IconFuel({ className, title }: IconProps) {return (<svg className={className} width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden={title ? undefined : true}>{title ? <title>{title}</title> : null}<path d="M6 3h8v18H6V3Z"stroke="currentColor"strokeWidth="1.7"strokeLinejoin="round"/><path d="M6 7h8" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" /><path d="M14 6h3l2 2v9a2 2 0 0 1-2 2h-3"stroke="currentColor"strokeWidth="1.7"strokeLinejoin="round"strokeLinecap="round"/><path d="M18 11v-2" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" /></svg>)}
+function IconClock({ className, title }: IconProps) {return (<svg className={className} width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden={title ? undefined : true}>{title ? <title>{title}</title> : null}<path d="M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20Z"stroke="currentColor"strokeWidth="1.7"/><path d="M12 7v6l4 2" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" /></svg>)}

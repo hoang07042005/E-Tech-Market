@@ -53,30 +53,6 @@ function avatarInitial(name: string) {
   return t ? t.charAt(0).toUpperCase() : 'U'
 }
 
-function IconPaperPlane({ className }: { className?: string }) {
-  return (
-    <svg className={className} viewBox="0 0 24 24" width="18" height="18" aria-hidden>
-      <path
-        fill="currentColor"
-        d="m2 21 21-9L2 3v7l13 4-13 4v7z"
-      />
-    </svg>
-  )
-}
-
-function IconQnaChatBubble({ className }: { className?: string }) {
-  return (
-    <svg className={className} viewBox="0 0 24 24" fill="none" width="16" height="16" aria-hidden>
-      <path
-        d="M5 17.5v-13A1.5 1.5 0 0 1 6.5 3h13A1.5 1.5 0 0 1 21 4.5V15a1.5 1.5 0 0 1-1.5 1.5h-11L5 21l.5-3.5"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinejoin="round"
-      />
-    </svg>
-  )
-}
-
 type ProductSpecRow = NonNullable<Product['specs']>[number]
 
 /** Màu ưu tiên cột admin `color`; thiếu thì một nhãn tổng quát để không gộp nhầm. */
@@ -739,7 +715,7 @@ export default function ProductDetailPage() {
               if (matched) targetVariant = matched
             }
             setSelectedVariant(targetVariant)
-            
+
             // Also update main image if variant has its own image
             if (targetVariant.image_url) {
               setSelectedImg(targetVariant.image_url)
@@ -878,19 +854,19 @@ export default function ProductDetailPage() {
           <div className="pdpMainGrid">
             {/* Gallery Skeleton */}
             <div className="pdpGallery">
-            <div className="pdpGallerySkeleton">
-              <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
-                <div className="pdpThumbSkeletonWrap" style={{ display: 'flex', flexDirection: 'row', gap: '12px', overflowX: 'auto', width: '100%' }}>
-                  {Array.from({ length: 4 }).map((_, i) => (
-                    <Skeleton key={i} width="70px" height="70px" borderRadius="8px" style={{ flexShrink: 0 }} />
-                  ))}
-                </div>
-                <div style={{ flex: 1, minWidth: '280px' }}>
-                  <Skeleton width="100%" height="400px" borderRadius="16px" />
+              <div className="pdpGallerySkeleton">
+                <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
+                  <div className="pdpThumbSkeletonWrap" style={{ display: 'flex', flexDirection: 'row', gap: '12px', overflowX: 'auto', width: '100%' }}>
+                    {Array.from({ length: 4 }).map((_, i) => (
+                      <Skeleton key={i} width="70px" height="70px" borderRadius="8px" style={{ flexShrink: 0 }} />
+                    ))}
+                  </div>
+                  <div style={{ flex: 1, minWidth: '280px' }}>
+                    <Skeleton width="100%" height="400px" borderRadius="16px" />
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
 
             {/* Info Skeleton */}
             <div className="pdpInfo">
@@ -901,7 +877,7 @@ export default function ProductDetailPage() {
                 <Skeleton width="100px" height="20px" />
               </div>
               <Skeleton width="200px" height="48px" style={{ marginBottom: '32px' }} />
-              
+
               <div style={{ marginBottom: '32px' }}>
                 <Skeleton width="120px" height="18px" style={{ marginBottom: '16px' }} />
                 <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
@@ -960,819 +936,819 @@ export default function ProductDetailPage() {
         <meta name="description" content={product.short_description || product.description || `Mua ${product.name} giá rẻ tại E-Tech Market.`} />
       </Helmet>
       <div className="pdpPage">
-      <div className="ppContainer">
-        <nav className="pdpBreadcrumb">
-          <Link to="/">Home</Link> / <Link to="/products">Store</Link> / <span>{product.name}</span>
-        </nav>
+        <div className="ppContainer">
+          <nav className="pdpBreadcrumb">
+            <Link to="/">Home</Link> / <Link to="/products">Store</Link> / <span>{product.name}</span>
+          </nav>
 
-        <div className="pdpMainGrid">
-          {/* Image Gallery */}
-          <div className="pdpGallery">
-            <div className="pdpGalleryGrid">
-              <div className="pdpMainImageWrap">
-                <img src={resolveImageUrl(selectedImg || product.main_image_url)} alt={product.name} className="pdpMainImage" />
-              </div>
-              {allImages.length > 1 && (
-                <PdpThumbStrip
-                  key={product.id}
-                  allImages={allImages}
-                  selectedImg={selectedImg}
-                  onSelectImage={setSelectedImg}
-                />
-              )}
-            </div>
-          </div>
-
-          {/* Product Info */}
-          <div className="pdpInfo">
-            {activeFlashSale && flashTimeLeft && (
-              <div className="pdpFlashSaleHeader">
-                <div className="pdpFlashSaleTitle">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ color: '#fff' }}>
-                    <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
-                  </svg>
-                  <span>FLASH SALE ĐANG DIỄN RA</span>
+          <div className="pdpMainGrid">
+            {/* Image Gallery */}
+            <div className="pdpGallery">
+              <div className="pdpGalleryGrid">
+                <div className="pdpMainImageWrap">
+                  <img src={resolveImageUrl(selectedImg || product.main_image_url)} alt={product.name} className="pdpMainImage" />
                 </div>
-                <div className="pdpFlashSaleTimer">
-                  <span>KẾT THÚC TRONG</span>
-                  <div className="timerBox">{String(flashTimeLeft.h).padStart(2, '0')}</div>
-                  <span>:</span>
-                  <div className="timerBox">{String(flashTimeLeft.m).padStart(2, '0')}</div>
-                  <span>:</span>
-                  <div className="timerBox">{String(flashTimeLeft.s).padStart(2, '0')}</div>
-                </div>
-              </div>
-            )}
-
-            <div className="pdpPriceRow">
-              <span className="pdpPrice">
-                {activeFlashSale 
-                  ? `${parseFloat(activeFlashSale.flash_sale_price.toString()).toLocaleString('vi-VN')} đ`
-                  : parseFloat(selectedVariant ? selectedVariant.effective_price.toString() : '0').toLocaleString('vi-VN') + ' đ'
-                }
-              </span>
-              {(activeFlashSale || (selectedVariant && selectedVariant.effective_price < parseFloat(selectedVariant.price))) && (
-                <span className="pdpOldPrice">
-                  {activeFlashSale 
-                    ? `${parseFloat(selectedVariant ? selectedVariant.price : '0').toLocaleString('vi-VN')} đ`
-                    : parseFloat(selectedVariant!.price).toLocaleString('vi-VN') + ' đ'
-                  }
-                </span>
-              )}
-            </div>
-
-            {/* Variants: facet (màu + dung lượng) hoặc danh sách gọn */}
-            {product.variants && product.variants.length > 0 && (
-              <div className="pdpConfigurator">
-                {showVariantFacetUi && variantFacetModel ? (
-                  <PdpFacetVariantPicker
-                    facet={variantFacetModel}
-                    product={product}
-                    selectedVariant={selectedVariant}
-                    onSelectVariant={setSelectedVariant}
+                {allImages.length > 1 && (
+                  <PdpThumbStrip
+                    key={product.id}
+                    allImages={allImages}
+                    selectedImg={selectedImg}
+                    onSelectImage={setSelectedImg}
                   />
-                ) : (
-                  <div className="pdpConfigGroup">
-                    <label>Chọn phiên bản</label>
-                    <div className="pdpVariantFallback">
-                      {product.variants.map((v, i) => {
-                        const isActive = selectedVariant?.id === v.id
-                        return (
-                          <button
-                            key={v.id ?? i}
-                            type="button"
-                            className={`pdpVariantFallbackChip ${isActive ? 'is-active' : ''}`}
-                            onClick={() => setSelectedVariant(v)}
-                          >
-                            <span className="pdpVariantFallbackChip__name">{v.variant_name}</span>
-                            <span className="pdpVariantFallbackChip__meta">
-                              {[variantColorLabel(v), variantStorageLabel(v)]
-                                .filter(Boolean)
-                                .join(' · ') || 'Chi tiết trong tên'}
-                            </span>
-                            <span className="pdpVariantFallbackChip__price">
-                              {parseFloat(v.effective_price.toString()).toLocaleString('vi-VN')} đ
-                            </span>
-                          </button>
-                        )
-                      })}
-                    </div>
-                  </div>
                 )}
               </div>
-            )}
+            </div>
 
-            <p className="pdpShortDesc">
-              {product.description}
-            </p>
+            {/* Product Info */}
+            <div className="pdpInfo">
+              {activeFlashSale && flashTimeLeft && (
+                <div className="pdpFlashSaleHeader">
+                  <div className="pdpFlashSaleTitle">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ color: '#fff' }}>
+                      <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+                    </svg>
+                    <span>FLASH SALE ĐANG DIỄN RA</span>
+                  </div>
+                  <div className="pdpFlashSaleTimer">
+                    <span>KẾT THÚC TRONG</span>
+                    <div className="timerBox">{String(flashTimeLeft.h).padStart(2, '0')}</div>
+                    <span>:</span>
+                    <div className="timerBox">{String(flashTimeLeft.m).padStart(2, '0')}</div>
+                    <span>:</span>
+                    <div className="timerBox">{String(flashTimeLeft.s).padStart(2, '0')}</div>
+                  </div>
+                </div>
+              )}
 
-            <div className="pdpMeta">
-              <div className="pdpMetaItem">
-                <span className="label">CATEGORY</span>
-                <span className="value">{product.category?.name || 'Electronics'}</span>
-              </div>
-              <div className="pdpMetaItem">
-                <span className="label">SKU</span>
-                <span className="value">{selectedVariant ? selectedVariant.sku : 'N/A'}</span>
-              </div>
-              <div className="pdpMetaItem">
-                <span className="label">AVAILABILITY</span>
-                <span className={`value stock ${selectedVariant && selectedVariant.stock_quantity === 0 ? 'out' : ''}`}>
-                  {selectedVariant 
-                    ? (selectedVariant.stock_quantity > 0 ? `IN STOCK (${selectedVariant.stock_quantity})` : 'OUT OF STOCK')
-                    : 'IN STOCK'}
+              <div className="pdpPriceRow">
+                <span className="pdpPrice">
+                  {activeFlashSale
+                    ? `${parseFloat(activeFlashSale.flash_sale_price.toString()).toLocaleString('vi-VN')} đ`
+                    : parseFloat(selectedVariant ? selectedVariant.effective_price.toString() : '0').toLocaleString('vi-VN') + ' đ'
+                  }
                 </span>
+                {(activeFlashSale || (selectedVariant && selectedVariant.effective_price < parseFloat(selectedVariant.price))) && (
+                  <span className="pdpOldPrice">
+                    {activeFlashSale
+                      ? `${parseFloat(selectedVariant ? selectedVariant.price : '0').toLocaleString('vi-VN')} đ`
+                      : parseFloat(selectedVariant!.price).toLocaleString('vi-VN') + ' đ'
+                    }
+                  </span>
+                )}
               </div>
-            </div>
 
-            <div className="pdpActions">
-              <div className="pdpQtyWrap">
-                <button
-                  type="button"
-                  onClick={() => setQty(q => Math.max(1, q - 1))}
-                  aria-label="Giảm số lượng"
-                >
-                  -
-                </button>
-                <input
-                  type="number"
-                  min={1}
-                  value={qty}
-                  onChange={(e) => setQty(Math.max(1, Math.floor(Number(e.target.value) || 1)))}
-                  aria-label="Số lượng"
-                />
-                <button
-                  type="button"
-                  onClick={() => setQty(q => q + 1)}
-                  aria-label="Tăng số lượng"
-                >
-                  +
-                </button>
-              </div>
-              <button
-                type="button"
-                className="pdpAddBtn"
-                onClick={() => {
-                  const v = selectedVariant
-                  const priceStr = v ? v.effective_price.toString() : '0'
-                  const price = activeFlashSale
-                    ? Number.parseFloat(activeFlashSale.flash_sale_price.toString())
-                    : Number.parseFloat(priceStr)
-                  
-                  const variantLabel =
-                    v
-                      ? [variantColorLabel(v), variantStorageLabel(v)]
-                          .filter(Boolean)
-                          .join(' · ') ||
-                        v.variant_name
-                      : null
-                  addToCart(
-                    {
-                      product_id: product.id,
-                      slug: product.slug,
-                      name: product.name,
-                      price: Number.isFinite(price) ? price : 0,
-                      image_url: resolveImageUrl(v?.image_url || product.main_image_url),
-                      variant_id: v?.id ?? null,
-                      variant_label: variantLabel,
-                      quantity: 1,
-                    },
-                    qty,
-                  )
-                }}
-              >
-                THÊM VÀO GIỎ
-              </button>
-
-              <button
-                type="button"
-                className={`pdpCompareBtn ${isInCompare ? 'is-active' : ''}`}
-                onClick={toggleCompare}
-                title="So sánh sản phẩm"
-              >
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M16 3h5v5M4 20l7-7M21 3l-7 7M15 14l6 6M9 3H4v5M3 21l7-7M3 3l7 7M14 15l7 7"></path>
-                </svg>
-                <span>{isInCompare ? 'ĐÃ THÊM' : 'SO SÁNH'}</span>
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {/* Bottom Section - Two Columns */}
-        <div className="pdpBottomGrid">
-          <div className="pdpSpecsSide">
-            {/* Specifications Section - Table Style */}
-            <div className="pdpSpecsSection">
-              <div className="pdpSpecsHeader">
-                <h3 className="pdpSectionTitle">Thông số kỹ thuật</h3>
-              </div>
-              
-              {mergedDisplaySpecs.length > 0 ? (
-                <div className="pdpSpecsTable">
-                  {Object.entries(
-                    mergedDisplaySpecs.reduce(
-                      (acc: Record<string, ProductSpecRow[]>, spec: ProductSpecRow) => {
-                        const group = spec.spec_group || 'Thông tin khác'
-                        if (!acc[group]) acc[group] = []
-                        acc[group].push(spec)
-                        return acc
-                      },
-                      {} as Record<string, ProductSpecRow[]>,
-                    )
-                  ).map(([groupName, groupSpecs], idx) => (
-                    <div key={idx} className="pdpTableRow">
-                      <div className="pdpTableKey">{groupName}</div>
-                      <div className="pdpTableValue">
-                        {groupSpecs.map((s, i) => (
-                          <div key={i} className="vValueLine">
-                            <span className="vInnerKey">{s.spec_key}: </span>
-                            <span className="vInnerVal">{s.spec_value} {s.spec_unit}</span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <p className="pdpNoData">Chưa có thông số kỹ thuật.</p>
-              )}
-            </div>
-          </div>
-
-          <div className="pdpSidebarSide">
-            {/* Product Commitments */}
-            <div className="pdpCommitments">
-              <h3 className="pdpCommitTitle">Cam kết sản phẩm</h3>
-              <div className="pdpCommitGrid">
-                {commitmentItems.map((item) => (
-                  <div key={item.key} className="pdpCommitCard">
-                    <div className="pdpCommitIcon" aria-hidden>
-                      {item.icon}
-                    </div>
-                    <p className="pdpCommitText">{item.text}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <section className="pdpFaqSection" aria-labelledby="pdp-faq-mau-title">
-              <h3 id="pdp-faq-mau-title" className="pdpFaqMainTitle">
-                Câu hỏi thường gặp{' '}
-                <span className="pdpFaqTitleEyebrow">về sản phẩm</span>
-              </h3>
-              <p className="pdpFaqSidebarLead">
-                Các gợi ý được cửa hàng soạn trước — xem chung cho mọi phiên bản.
-              </p>
-              {visibleFaqs.length > 0 ? (
-                <ul className="pdpFaqList">
-                  {visibleFaqs.map(faq => {
-                    const expanded = openFaqId === faq.id
-                    return (
-                      <li key={faq.id} className="pdpFaqItem">
-                        <div className={`pdpFaqCard ${expanded ? 'pdpFaqCard--expanded' : ''}`}>
-                          <button
-                            type="button"
-                            className="pdpFaqToggle"
-                            aria-expanded={expanded}
-                            aria-controls={`pdp-faq-ans-${faq.id}`}
-                            id={`pdp-faq-q-${faq.id}`}
-                            onClick={() => setOpenFaqId(expanded ? null : faq.id)}
-                          >
-                            <span className="pdpFaqQText">{faq.question}</span>
-                            <span className={`pdpFaqIcon ${expanded ? 'pdpFaqIcon--up' : ''}`} aria-hidden>
-                              <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-                                <path
-                                  d="M6 9l6 6 6-6"
-                                  stroke="currentColor"
-                                  strokeWidth="2.2"
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                />
-                              </svg>
-                            </span>
-                          </button>
-                          {expanded && (
-                            <div
-                              id={`pdp-faq-ans-${faq.id}`}
-                              role="region"
-                              className="pdpFaqAnswer"
-                              aria-labelledby={`pdp-faq-q-${faq.id}`}
+              {/* Variants: facet (màu + dung lượng) hoặc danh sách gọn */}
+              {product.variants && product.variants.length > 0 && (
+                <div className="pdpConfigurator">
+                  {showVariantFacetUi && variantFacetModel ? (
+                    <PdpFacetVariantPicker
+                      facet={variantFacetModel}
+                      product={product}
+                      selectedVariant={selectedVariant}
+                      onSelectVariant={setSelectedVariant}
+                    />
+                  ) : (
+                    <div className="pdpConfigGroup">
+                      <label>Chọn phiên bản</label>
+                      <div className="pdpVariantFallback">
+                        {product.variants.map((v, i) => {
+                          const isActive = selectedVariant?.id === v.id
+                          return (
+                            <button
+                              key={v.id ?? i}
+                              type="button"
+                              className={`pdpVariantFallbackChip ${isActive ? 'is-active' : ''}`}
+                              onClick={() => setSelectedVariant(v)}
                             >
-                              {faq.answer.split('\n').map((para, idx) =>
-                                para.trim() ? <p key={idx}>{para.trim()}</p> : null,
-                              )}
-                            </div>
-                          )}
-                        </div>
-                      </li>
-                    )
-                  })}
-                </ul>
-              ) : (
-                <p className="pdpFaqSidebarEmpty">Chưa có câu hỏi mẫu cho sản phẩm này.</p>
-              )}
-            </section>
-          </div>
-        </div>
-
-        {relatedProducts.length > 0 && (
-          <section className="pdpRelatedSection" aria-label="Sản phẩm liên quan">
-            <div className="pdpRelatedHeader">
-              <h3 className="pdpRelatedTitle">Sản phẩm liên quan</h3>
-            </div>
-            <div className="pdpRelatedGrid">
-              {relatedProducts.map(rp => (
-                <div key={rp.id} className="pdpRelatedCard">
-                  <Link to={`/products/${rp.slug}`} className="pdpRelatedTop">
-                    <div className="pdpRelatedImgWrap">
-                      <img
-                        src={resolveImageUrl(rp.main_image_url)}
-                        alt={rp.name}
-                        className="pdpRelatedImg"
-                        loading="lazy"
-                      />
-                    </div>
-                  </Link>
-
-                  <div className="pdpRelatedInfo">
-                    <Link to={`/products/${rp.slug}`} className="pdpRelatedNameLink">
-                      <div className="pdpRelatedName">{rp.name}</div>
-                    </Link>
-
-                    <div className="pdpRelatedPriceRow">
-                      <div className="pdpRelatedPrice">{parseFloat(rp.price).toLocaleString('vi-VN')}đ</div>
-                    </div>
-
-                    {(rp.short_description || rp.description) && (
-                      <div className="pdpRelatedDesc">
-                        {rp.short_description || rp.description}
+                              <span className="pdpVariantFallbackChip__name">{v.variant_name}</span>
+                              <span className="pdpVariantFallbackChip__meta">
+                                {[variantColorLabel(v), variantStorageLabel(v)]
+                                  .filter(Boolean)
+                                  .join(' · ') || 'Chi tiết trong tên'}
+                              </span>
+                              <span className="pdpVariantFallbackChip__price">
+                                {parseFloat(v.effective_price.toString()).toLocaleString('vi-VN')} đ
+                              </span>
+                            </button>
+                          )
+                        })}
                       </div>
-                    )}
-
-                    <button
-                      type="button"
-                      className="pdpRelatedFavBtn"
-                      aria-label={wishSet.has(rp.id) ? 'Bỏ khỏi yêu thích' : 'Thêm vào yêu thích'}
-                      onClick={() => onToggleLike(rp.id)}
-                    >
-                      <span className="pdpRelatedFavIcon" aria-hidden>
-                        <HeartIcon filled={wishSet.has(rp.id)} size={18} />
-                      </span>
-                      <span>{wishSet.has(rp.id) ? 'Đã yêu thích' : 'Yêu thích'}</span>
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </section>
-        )}
-
-        {product.rich_html && (
-          <section className="pdpRichSection" aria-label="Nội dung sản phẩm">
-            <div
-              className={[
-                'pdpRichGrid',
-                isRichExpanded ? 'is-expanded' : '',
-                visibleNews.length > 0 ? '' : 'is-no-news',
-              ].filter(Boolean).join(' ')}
-            >
-              <div className="pdpRichLeft">
-                <div className="pdpRichCard">
-                  <div
-                    ref={richRef}
-                    className={`pdpRichContent ${!isRichExpanded ? 'is-collapsed' : ''}`}
-                    dangerouslySetInnerHTML={{ __html: product.rich_html }}
-                  />
-                  {canExpandRich && (
-                    <div className="pdpRichActions">
-                      <button
-                        type="button"
-                        className="pdpRichToggleBtn"
-                        onClick={() => setIsRichExpanded(v => !v)}
-                        aria-expanded={isRichExpanded}
-                      >
-                        {isRichExpanded ? 'Thu gọn' : 'Xem thêm'}
-                      </button>
                     </div>
                   )}
                 </div>
-              </div>
-              {visibleNews.length > 0 && (
-                <div className="pdpRichRight">
-                  <section className="pdpNewsSection" aria-labelledby="pdp-news-title">
-                    <div className="pdpNewsHead">
-                      <h3 id="pdp-news-title" className="pdpNewsTitle">Tin tức sản phẩm</h3>
-                      <Link to={`/products/${product.slug}#product-news`} className="pdpNewsAllLink">Xem tất cả</Link>
-                    </div>
-                    <div className="pdpNewsMiniList" id="product-news">
-                      {visibleNews.slice(0, 7).map(item => (
-                        <Link key={item.id} to={`/product-news/${item.slug}`} className="pdpNewsMiniCard">
-                          <span className="pdpNewsMiniThumb" aria-hidden>
-                            {item.thumbnail_url ? (
-                              <img src={resolveImageUrl(item.thumbnail_url)} alt="" />
-                            ) : (
-                              <span className="pdpNewsMiniThumbPh" />
-                            )}
-                          </span>
-                          <span className="pdpNewsMiniTitle">{item.title}</span>
-                        </Link>
-                      ))}
-                    </div>
-                  </section>
-                </div>
               )}
-            </div>
-          </section>
-        )}
 
-        <section className="pdpReviewsSection" aria-label="Đánh giá sản phẩm">
-          <div className="pdpReviewsHeader">
-            <h3 className="pdpReviewsTitle">Đánh giá {product.name}</h3>
-          </div>
+              <p className="pdpShortDesc">
+                {product.description}
+              </p>
 
-          <div className="pdpReviewsSummary">
-            <div className="pdpReviewsScore">
-              <div className="pdpScoreBig">
-                {reviewStats.avg ? reviewStats.avg.toFixed(1) : '0.0'}
-                <span className="pdpScoreSmall">/5</span>
-              </div>
-              <div className="pdpStarsRow">
-                <Stars value={reviewStats.avg} />
-              </div>
-              <div className="pdpReviewsCount">{reviewStats.total} lượt đánh giá</div>
-              <button type="button" className="pdpWriteReviewBtn" onClick={() => setIsReviewModalOpen(true)}>
-                Viết đánh giá
-              </button>
-            </div>
-
-            <div className="pdpReviewsBars">
-              {[5,4,3,2,1].map(star => {
-                const s = star as 1|2|3|4|5
-                const count = reviewStats.counts[s]
-                const pct = reviewStats.total ? (count / reviewStats.total) * 100 : 0
-                return (
-                  <div key={star} className="pdpBarRow">
-                    <span className="pdpBarLabel">{star}</span>
-                    <span className="pdpBarStar">★</span>
-                    <div className="pdpBarTrack">
-                      <div className="pdpBarFill" style={{ width: `${pct}%` }} />
-                    </div>
-                    <span className="pdpBarCount">{count} đánh giá</span>
-                  </div>
-                )
-              })}
-            </div>
-
-            <div className="pdpReviewsExp">
-              <div className="pdpReviewsExpTitle">Đánh giá theo trải nghiệm</div>
-              <div className="pdpReviewsExpList">
-                <div className="pdpExpStatRow">
-                  <div className="pdpExpStatLabel">Hiệu năng</div>
-                  <div className="pdpExpStatStars"><Stars value={reviewStats.exp.performance.avg} /></div>
-                  <div className="pdpExpStatRight">
-                    {reviewStats.exp.performance.count ? `${reviewStats.exp.performance.avg.toFixed(0)}/5` : '0/5'}
-                    <span className="pdpExpStatMeta">({reviewStats.exp.performance.count} đánh giá)</span>
-                  </div>
+              <div className="pdpMeta">
+                <div className="pdpMetaItem">
+                  <span className="label">CATEGORY</span>
+                  <span className="value">{product.category?.name || 'Electronics'}</span>
                 </div>
-                <div className="pdpExpStatRow">
-                  <div className="pdpExpStatLabel">Thời lượng pin</div>
-                  <div className="pdpExpStatStars"><Stars value={reviewStats.exp.battery.avg} /></div>
-                  <div className="pdpExpStatRight">
-                    {reviewStats.exp.battery.count ? `${reviewStats.exp.battery.avg.toFixed(0)}/5` : '0/5'}
-                    <span className="pdpExpStatMeta">({reviewStats.exp.battery.count} đánh giá)</span>
-                  </div>
+                <div className="pdpMetaItem">
+                  <span className="label">SKU</span>
+                  <span className="value">{selectedVariant ? selectedVariant.sku : 'N/A'}</span>
                 </div>
-                <div className="pdpExpStatRow">
-                  <div className="pdpExpStatLabel">Chất lượng camera</div>
-                  <div className="pdpExpStatStars"><Stars value={reviewStats.exp.camera.avg} /></div>
-                  <div className="pdpExpStatRight">
-                    {reviewStats.exp.camera.count ? `${reviewStats.exp.camera.avg.toFixed(0)}/5` : '0/5'}
-                    <span className="pdpExpStatMeta">({reviewStats.exp.camera.count} đánh giá)</span>
-                  </div>
+                <div className="pdpMetaItem">
+                  <span className="label">AVAILABILITY</span>
+                  <span className={`value stock ${selectedVariant && selectedVariant.stock_quantity === 0 ? 'out' : ''}`}>
+                    {selectedVariant
+                      ? (selectedVariant.stock_quantity > 0 ? `IN STOCK (${selectedVariant.stock_quantity})` : 'OUT OF STOCK')
+                      : 'IN STOCK'}
+                  </span>
                 </div>
               </div>
-            </div>
-          </div>
 
-          <div className="pdpReviewsFilters" aria-label="Lọc đánh giá theo">
-            <div className="pdpReviewsFiltersLabel">Lọc đánh giá theo</div>
-            <div className="pdpReviewChips">
-              <button type="button" className={`pdpChip ${reviewFilter === 'all' ? 'active' : ''}`} onClick={() => setReviewFilter('all')}>Tất cả</button>
-              <button type="button" className={`pdpChip ${reviewFilter === 'with_images' ? 'active' : ''}`} onClick={() => setReviewFilter('with_images')}>Có hình ảnh</button>
-              <button type="button" className={`pdpChip ${reviewFilter === 'verified' ? 'active' : ''}`} onClick={() => setReviewFilter('verified')}>Đã mua hàng</button>
-              <button type="button" className={`pdpChip ${reviewFilter === 'star_5' ? 'active' : ''}`} onClick={() => setReviewFilter('star_5')}>5 sao</button>
-              <button type="button" className={`pdpChip ${reviewFilter === 'star_4' ? 'active' : ''}`} onClick={() => setReviewFilter('star_4')}>4 sao</button>
-              <button type="button" className={`pdpChip ${reviewFilter === 'star_3' ? 'active' : ''}`} onClick={() => setReviewFilter('star_3')}>3 sao</button>
-              <button type="button" className={`pdpChip ${reviewFilter === 'star_2' ? 'active' : ''}`} onClick={() => setReviewFilter('star_2')}>2 sao</button>
-              <button type="button" className={`pdpChip ${reviewFilter === 'star_1' ? 'active' : ''}`} onClick={() => setReviewFilter('star_1')}>1 sao</button>
-            </div>
-          </div>
-
-          <div className="pdpReviewsList">
-            {filteredReviews.length === 0 ? (
-              <div className="pdpNoReviews">Chưa có đánh giá nào.</div>
-            ) : (
-              filteredReviews.slice(0, 5).map(r => (
-                <div key={r.id} className="pdpReviewItem">
-                  <div className="pdpReviewLeft">
-                    <div className="pdpReviewAvatar" aria-hidden>
-                      {r.user?.avatar_url ? (
-                        <img
-                          className="pdpAvatarImg"
-                          src={resolveImageUrl(r.user.avatar_url)}
-                          alt=""
-                          loading="lazy"
-                          decoding="async"
-                        />
-                      ) : (
-                        avatarInitial(r.user?.name || 'U')
-                      )}
-                    </div>
-                    <div className="pdpReviewName">{r.user?.name || 'Người dùng'}</div>
-                  </div>
-                  <div className="pdpReviewRight">
-                    <div className="pdpReviewStars">
-                      <Stars value={r.rating} />
-                      <span className="pdpReviewLabel">{ratingLabel(r.rating)}</span>
-                    </div>
-                    <div className="pdpReviewPills">
-                      {typeof r.exp_performance === 'number' && (
-                        <span className="pdpReviewPill">Hiệu năng {r.exp_performance >= 5 ? 'Siêu mạnh mẽ' : ratingLabel(r.exp_performance)}</span>
-                      )}
-                      {typeof r.exp_battery === 'number' && (
-                        <span className="pdpReviewPill">Thời lượng pin {r.exp_battery >= 5 ? 'Cực khủng' : ratingLabel(r.exp_battery)}</span>
-                      )}
-                      {typeof r.exp_camera === 'number' && (
-                        <span className="pdpReviewPill">Chất lượng camera {r.exp_camera >= 5 ? 'Chụp đẹp, chuyên nghiệp' : ratingLabel(r.exp_camera)}</span>
-                      )}
-                      {!!r.order_id && <span className="pdpReviewPill verified">Đã mua hàng</span>}
-                    </div>
-                    {r.comment && <div className="pdpReviewComment">{r.comment}</div>}
-                    <div className="pdpReviewTime">
-                      <span className="pdpReviewClock" aria-hidden>🕒</span>
-                      Đánh giá đã đăng vào {timeAgoVi(r.created_at)}
-                    </div>
-                  </div>
-                </div>
-              ))
-            )}
-          </div>
-        </section>
-
-        <section className="pdpQnaPageEnd" id="pdp-hoi-dap" aria-labelledby="pdp-hoi-dap-main-title">
-          <h2 id="pdp-hoi-dap-main-title" className="pdpQnaPageEndMainTitle">
-            Hỏi và đáp
-          </h2>
-
-          <div className="pdpQnaUnifiedCard">
-            <form
-              id="pdp-shop-qna-form"
-              className="pdpQnaUnifiedAsk"
-              onSubmit={async e => {
-                e.preventDefault()
-                setQaError(null)
-                setQaFlash(null)
-                const q = qaQuestion.trim()
-                if (q.length < 5) {
-                  setQaError('Vui lòng nhập câu hỏi tối thiểu 5 ký tự.')
-                  return
-                }
-                if (!buyerLoggedIn && qaGuestName.trim().length < 2) {
-                  setQaError('Vui lòng nhập tên hiển thị (hoặc đăng nhập).')
-                  return
-                }
-                const token = localStorage.getItem('token')
-                setQaSending(true)
-                try {
-                  const res = await apiFetch<{ message?: string }>(
-                    `/api/products/${encodeURIComponent(product.slug)}/shop-qna`,
-                    {
-                      method: 'POST',
-                      token: token || undefined,
-                      body: JSON.stringify({
-                        question: q,
-                        ...(buyerLoggedIn ? {} : { guest_name: qaGuestName.trim() }),
-                      }),
-                    },
-                  )
-                  setQaQuestion('')
-                  if (!buyerLoggedIn) setQaGuestName('')
-                  setQaFlash(res.message ?? 'Đã gửi câu hỏi.')
-                  await refreshShopQnas()
-                } catch (err: unknown) {
-                  setQaError(err instanceof Error ? err.message : 'Không gửi được câu hỏi.')
-                } finally {
-                  setQaSending(false)
-                }
-              }}
-            >
-              <div className="pdpQnaAskMascot" aria-hidden>
-                <img src="/linh-vat.png" alt="" className="pdpQnaMascotImg" width={108} decoding="async" />
-              </div>
-              <div className="pdpQnaAskBody">
-                <h3 className="pdpQnaAskHeading">Hãy đặt câu hỏi cho chúng tôi</h3>
-                <p className="pdpQnaAskLead">
-                  Đội ngũ E-Tech Market sẽ phản hồi trong thời gian sớm nhất trong giờ làm việc. Câu hỏi gửi sau 22h có thể được
-                  trả lời vào sáng hôm sau.
-                </p>
-                {!buyerLoggedIn && (
-                  <label className="pdpQnaGuestField">
-                    <span className="pdpQnaGuestLabel">Tên hiển thị</span>
-                    <input
-                      type="text"
-                      className="pdpQnaGuestInput"
-                      value={qaGuestName}
-                      onChange={e => setQaGuestName(e.target.value)}
-                      placeholder="Ví dụ: Ngô Thị Vân Anh"
-                      maxLength={120}
-                      autoComplete="name"
-                    />
-                  </label>
-                )}
-                {buyerLoggedIn && (
-                  <p className="pdpQnaLoggedNote">Bạn đang đăng nhập — câu hỏi sẽ hiển thị kèm tên tài khoản.</p>
-                )}
-                <div className="pdpQnaAskInputRow">
-                  <textarea
-                    className="pdpQnaQuestionInput"
-                    name="question"
-                    value={qaQuestion}
-                    onChange={e => setQaQuestion(e.target.value)}
-                    placeholder="Viết câu hỏi của bạn tại đây"
-                    rows={2}
-                    maxLength={2000}
-                    required
+              <div className="pdpActions">
+                <div className="pdpQtyWrap">
+                  <button
+                    type="button"
+                    onClick={() => setQty(q => Math.max(1, q - 1))}
+                    aria-label="Giảm số lượng"
+                  >
+                    -
+                  </button>
+                  <input
+                    type="number"
+                    min={1}
+                    value={qty}
+                    onChange={(e) => setQty(Math.max(1, Math.floor(Number(e.target.value) || 1)))}
+                    aria-label="Số lượng"
                   />
-                  <button type="submit" className="pdpQnaSubmitBtn" disabled={qaSending}>
-                    <span>{qaSending ? 'Đang gửi…' : 'Gửi câu hỏi'}</span>
-                    <IconPaperPlane className="pdpQnaSubmitIcon" aria-hidden />
+                  <button
+                    type="button"
+                    onClick={() => setQty(q => q + 1)}
+                    aria-label="Tăng số lượng"
+                  >
+                    +
                   </button>
                 </div>
-                {qaError && <p className="pdpQnaFormErr">{qaError}</p>}
-                {qaFlash && !qaError && <p className="pdpQnaFormOk">{qaFlash}</p>}
-              </div>
-            </form>
+                <button
+                  type="button"
+                  className="pdpAddBtn"
+                  onClick={() => {
+                    const v = selectedVariant
+                    const priceStr = v ? v.effective_price.toString() : '0'
+                    const price = activeFlashSale
+                      ? Number.parseFloat(activeFlashSale.flash_sale_price.toString())
+                      : Number.parseFloat(priceStr)
 
-            <div className="pdpQnaUnifiedThreads">
-              {shopQnas.length === 0 ? (
-                <p className="pdpQnaListEmpty">Chưa có câu hỏi nào. Hãy đặt câu hỏi đầu tiên ở ô phía trên.</p>
-              ) : (
-                <ul className="pdpQnaThreadList pdpQnaThreadList--inCard">
-                  {shopQnas.map(row => {
-                    const hasAnswer = !!(row.answer && row.answer.trim())
-                    const shopOpen = qnaShopOpenById[row.id] !== false
-                    const tsQ = row.created_at ?? row.answered_at ?? ''
-                    return (
-                      <li key={row.id} className="pdpQnaThreadItem">
-                        <div className="pdpQnaUserRow">
-                          <div className="pdpQnaUserAvatar" aria-hidden>
-                            {row.user?.avatar_url ? (
-                              <img
-                                className="pdpAvatarImg"
-                                src={resolveImageUrl(row.user.avatar_url)}
-                                alt=""
-                                loading="lazy"
-                                decoding="async"
-                              />
-                            ) : (
-                              qnaAvatarInitial(row.asker_display_name)
-                            )}
-                          </div>
-                          <div className="pdpQnaUserBlock">
-                            <div className="pdpQnaUserMeta">
-                              <span className="pdpQnaUserName">{row.asker_display_name}</span>
-                              {tsQ !== '' ? (
-                                <time className="pdpQnaUserTime" dateTime={tsQ}>
-                                  {timeAgoVi(tsQ)}
-                                </time>
-                              ) : null}
+                    const variantLabel =
+                      v
+                        ? [variantColorLabel(v), variantStorageLabel(v)]
+                          .filter(Boolean)
+                          .join(' · ') ||
+                        v.variant_name
+                        : null
+                    addToCart(
+                      {
+                        product_id: product.id,
+                        slug: product.slug,
+                        name: product.name,
+                        price: Number.isFinite(price) ? price : 0,
+                        image_url: resolveImageUrl(v?.image_url || product.main_image_url),
+                        variant_id: v?.id ?? null,
+                        variant_label: variantLabel,
+                        quantity: 1,
+                      },
+                      qty,
+                    )
+                  }}
+                >
+                  THÊM VÀO GIỎ
+                </button>
+
+                <button
+                  type="button"
+                  className={`pdpCompareBtn ${isInCompare ? 'is-active' : ''}`}
+                  onClick={toggleCompare}
+                  title="So sánh sản phẩm"
+                >
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M16 3h5v5M4 20l7-7M21 3l-7 7M15 14l6 6M9 3H4v5M3 21l7-7M3 3l7 7M14 15l7 7"></path>
+                  </svg>
+                  <span>{isInCompare ? 'ĐÃ THÊM' : 'SO SÁNH'}</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Bottom Section - Two Columns */}
+          <div className="pdpBottomGrid">
+            <div className="pdpSpecsSide">
+              {/* Specifications Section - Table Style */}
+              <div className="pdpSpecsSection">
+                <div className="pdpSpecsHeader">
+                  <h3 className="pdpSectionTitle">Thông số kỹ thuật</h3>
+                </div>
+
+                {mergedDisplaySpecs.length > 0 ? (
+                  <div className="pdpSpecsTable">
+                    {Object.entries(
+                      mergedDisplaySpecs.reduce(
+                        (acc: Record<string, ProductSpecRow[]>, spec: ProductSpecRow) => {
+                          const group = spec.spec_group || 'Thông tin khác'
+                          if (!acc[group]) acc[group] = []
+                          acc[group].push(spec)
+                          return acc
+                        },
+                        {} as Record<string, ProductSpecRow[]>,
+                      )
+                    ).map(([groupName, groupSpecs], idx) => (
+                      <div key={idx} className="pdpTableRow">
+                        <div className="pdpTableKey">{groupName}</div>
+                        <div className="pdpTableValue">
+                          {groupSpecs.map((s, i) => (
+                            <div key={i} className="vValueLine">
+                              <span className="vInnerKey">{s.spec_key}: </span>
+                              <span className="vInnerVal">{s.spec_value} {s.spec_unit}</span>
                             </div>
-                            <p className="pdpQnaQuestionText">{row.question}</p>
-                            <div className="pdpQnaThreadActions">
-                              {/* <button type="button" className="pdpQnaActionLink" onClick={() => scrollToPdpShopQnaForm()}>
-                                <IconQnaChatBubble aria-hidden />
-                                Phản hồi
-                              </button> */}
-                              {hasAnswer ? (
-                                <button
-                                  type="button"
-                                  className="pdpQnaCollapseLink"
-                                  onClick={() =>
-                                    setQnaShopOpenById(prev => ({
-                                      ...prev,
-                                      [row.id]: !(prev[row.id] ?? true),
-                                    }))
-                                  }
-                                >
-                                  <span className={`pdpQnaChevron ${shopOpen ? 'pdpQnaChevron--up' : ''}`} aria-hidden>
-                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-                                      <path
-                                        d="M6 9l6 6 6-6"
-                                        stroke="currentColor"
-                                        strokeWidth="2.2"
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                      />
-                                    </svg>
-                                  </span>
-                                  {shopOpen ? 'Thu gọn phản hồi' : 'Xem phản hồi'}
-                                </button>
-                              ) : (
-                                <span className="pdpQnaPendingBadge">Đang chờ cửa hàng</span>
-                              )}
-                            </div>
-                          </div>
+                          ))}
                         </div>
-                        {!hasAnswer ? (
-                          <p className="pdpQnaPendingNote">Đang chờ cửa hàng trả lời. Bạn có thể gửi thêm câu hỏi khác phía trên.</p>
-                        ) : shopOpen ? (
-                          <div className="pdpQnaShopRow">
-                            <div className="pdpQnaShopAvatar" aria-hidden>
-                              <img
-                                className="pdpAvatarImg"
-                                src={SHOP_REPLY_AVATAR_SRC}
-                                alt=""
-                                decoding="async"
-                              />
-                            </div>
-                            <div className="pdpQnaShopBlock">
-                              <div className="pdpQnaShopMeta">
-                                <span className="pdpQnaShopName">Quản trị viên</span>
-                                <span className="pdpQnaShopBadge">QTV</span>
-                                {row.answered_at && (
-                                  <time className="pdpQnaShopTime" dateTime={row.answered_at}>
-                                    {timeAgoVi(row.answered_at)}
-                                  </time>
-                                )}
-                              </div>
-                              <div className="pdpQnaShopAnswer">
-                                {row.answer!.split('\n').map((para, idx) =>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="pdpNoData">Chưa có thông số kỹ thuật.</p>
+                )}
+              </div>
+            </div>
+
+            <div className="pdpSidebarSide">
+              {/* Product Commitments */}
+              <div className="pdpCommitments">
+                <h3 className="pdpCommitTitle">Cam kết sản phẩm</h3>
+                <div className="pdpCommitGrid">
+                  {commitmentItems.map((item) => (
+                    <div key={item.key} className="pdpCommitCard">
+                      <div className="pdpCommitIcon" aria-hidden>
+                        {item.icon}
+                      </div>
+                      <p className="pdpCommitText">{item.text}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <section className="pdpFaqSection" aria-labelledby="pdp-faq-mau-title">
+                <h3 id="pdp-faq-mau-title" className="pdpFaqMainTitle">
+                  Câu hỏi thường gặp{' '}
+                  <span className="pdpFaqTitleEyebrow">về sản phẩm</span>
+                </h3>
+                <p className="pdpFaqSidebarLead">
+                  Các gợi ý được cửa hàng soạn trước — xem chung cho mọi phiên bản.
+                </p>
+                {visibleFaqs.length > 0 ? (
+                  <ul className="pdpFaqList">
+                    {visibleFaqs.map(faq => {
+                      const expanded = openFaqId === faq.id
+                      return (
+                        <li key={faq.id} className="pdpFaqItem">
+                          <div className={`pdpFaqCard ${expanded ? 'pdpFaqCard--expanded' : ''}`}>
+                            <button
+                              type="button"
+                              className="pdpFaqToggle"
+                              aria-expanded={expanded}
+                              aria-controls={`pdp-faq-ans-${faq.id}`}
+                              id={`pdp-faq-q-${faq.id}`}
+                              onClick={() => setOpenFaqId(expanded ? null : faq.id)}
+                            >
+                              <span className="pdpFaqQText">{faq.question}</span>
+                              <span className={`pdpFaqIcon ${expanded ? 'pdpFaqIcon--up' : ''}`} aria-hidden>
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                                  <path
+                                    d="M6 9l6 6 6-6"
+                                    stroke="currentColor"
+                                    strokeWidth="2.2"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                  />
+                                </svg>
+                              </span>
+                            </button>
+                            {expanded && (
+                              <div
+                                id={`pdp-faq-ans-${faq.id}`}
+                                role="region"
+                                className="pdpFaqAnswer"
+                                aria-labelledby={`pdp-faq-q-${faq.id}`}
+                              >
+                                {faq.answer.split('\n').map((para, idx) =>
                                   para.trim() ? <p key={idx}>{para.trim()}</p> : null,
                                 )}
                               </div>
-                              <button type="button" className="pdpQnaActionLink" onClick={() => scrollToPdpShopQnaForm()}>
-                                <IconQnaChatBubble aria-hidden />
-                                Phản hồi
-                              </button>
-                            </div>
+                            )}
                           </div>
-                        ) : null}
-                      </li>
-                    )
-                  })}
-                </ul>
-              )}
+                        </li>
+                      )
+                    })}
+                  </ul>
+                ) : (
+                  <p className="pdpFaqSidebarEmpty">Chưa có câu hỏi mẫu cho sản phẩm này.</p>
+                )}
+              </section>
             </div>
           </div>
-        </section>
 
-        {isReviewModalOpen && (
-          <div className="pdpReviewModalOverlay" onClick={() => setIsReviewModalOpen(false)}>
-            <div className="pdpReviewModal" onClick={e => e.stopPropagation()}>
-              <div className="pdpReviewModalHead">
-                <div className="pdpReviewModalTitle">Đánh giá &amp; nhận xét</div>
-                <button type="button" className="pdpReviewModalClose" onClick={() => setIsReviewModalOpen(false)}>×</button>
+          {relatedProducts.length > 0 && (
+            <section className="pdpRelatedSection" aria-label="Sản phẩm liên quan">
+              <div className="pdpRelatedHeader">
+                <h3 className="pdpRelatedTitle">Sản phẩm liên quan</h3>
               </div>
-              <div className="pdpReviewModalBody">
-                <div className="pdpReviewProductRow">
-                  <div className="pdpReviewMascot" aria-hidden>
-                    <span>★</span>
+              <div className="pdpRelatedGrid">
+                {relatedProducts.map(rp => (
+                  <div key={rp.id} className="pdpRelatedCard">
+                    <Link to={`/products/${rp.slug}`} className="pdpRelatedTop">
+                      <div className="pdpRelatedImgWrap">
+                        <img
+                          src={resolveImageUrl(rp.main_image_url)}
+                          alt={rp.name}
+                          className="pdpRelatedImg"
+                          loading="lazy"
+                        />
+                      </div>
+                    </Link>
+
+                    <div className="pdpRelatedInfo">
+                      <Link to={`/products/${rp.slug}`} className="pdpRelatedNameLink">
+                        <div className="pdpRelatedName">{rp.name}</div>
+                      </Link>
+
+                      <div className="pdpRelatedPriceRow">
+                        <div className="pdpRelatedPrice">{parseFloat(rp.price).toLocaleString('vi-VN')}đ</div>
+                      </div>
+
+                      {(rp.short_description || rp.description) && (
+                        <div className="pdpRelatedDesc">
+                          {rp.short_description || rp.description}
+                        </div>
+                      )}
+
+                      <button
+                        type="button"
+                        className="pdpRelatedFavBtn"
+                        aria-label={wishSet.has(rp.id) ? 'Bỏ khỏi yêu thích' : 'Thêm vào yêu thích'}
+                        onClick={() => onToggleLike(rp.id)}
+                      >
+                        <span className="pdpRelatedFavIcon" aria-hidden>
+                          <HeartIcon filled={wishSet.has(rp.id)} size={18} />
+                        </span>
+                        <span>{wishSet.has(rp.id) ? 'Đã yêu thích' : 'Yêu thích'}</span>
+                      </button>
+                    </div>
                   </div>
-                  <div className="pdpReviewProductName">{product.name}</div>
-                </div>
+                ))}
+              </div>
+            </section>
+          )}
 
-                <div className="pdpReviewSection">
-                  <div className="pdpReviewSectionTitle">Đánh giá chung</div>
-                  <RatingRow value={reviewRating} onChange={setReviewRating} />
-                  <div className="pdpReviewScale">
-                    <span>Rất tệ</span>
-                    <span>Tệ</span>
-                    <span>Bình thường</span>
-                    <span>Tốt</span>
-                    <span>Tuyệt vời</span>
+          {product.rich_html && (
+            <section className="pdpRichSection" aria-label="Nội dung sản phẩm">
+              <div
+                className={[
+                  'pdpRichGrid',
+                  isRichExpanded ? 'is-expanded' : '',
+                  visibleNews.length > 0 ? '' : 'is-no-news',
+                ].filter(Boolean).join(' ')}
+              >
+                <div className="pdpRichLeft">
+                  <div className="pdpRichCard">
+                    <div
+                      ref={richRef}
+                      className={`pdpRichContent ${!isRichExpanded ? 'is-collapsed' : ''}`}
+                      dangerouslySetInnerHTML={{ __html: product.rich_html }}
+                    />
+                    {canExpandRich && (
+                      <div className="pdpRichActions">
+                        <button
+                          type="button"
+                          className="pdpRichToggleBtn"
+                          onClick={() => setIsRichExpanded(v => !v)}
+                          aria-expanded={isRichExpanded}
+                        >
+                          {isRichExpanded ? 'Thu gọn' : 'Xem thêm'}
+                        </button>
+                      </div>
+                    )}
                   </div>
                 </div>
+                {visibleNews.length > 0 && (
+                  <div className="pdpRichRight">
+                    <section className="pdpNewsSection" aria-labelledby="pdp-news-title">
+                      <div className="pdpNewsHead">
+                        <h3 id="pdp-news-title" className="pdpNewsTitle">Tin tức sản phẩm</h3>
+                        <Link to={`/products/${product.slug}#product-news`} className="pdpNewsAllLink">Xem tất cả</Link>
+                      </div>
+                      <div className="pdpNewsMiniList" id="product-news">
+                        {visibleNews.slice(0, 7).map(item => (
+                          <Link key={item.id} to={`/product-news/${item.slug}`} className="pdpNewsMiniCard">
+                            <span className="pdpNewsMiniThumb" aria-hidden>
+                              {item.thumbnail_url ? (
+                                <img src={resolveImageUrl(item.thumbnail_url)} alt="" />
+                              ) : (
+                                <span className="pdpNewsMiniThumbPh" />
+                              )}
+                            </span>
+                            <span className="pdpNewsMiniTitle">{item.title}</span>
+                          </Link>
+                        ))}
+                      </div>
+                    </section>
+                  </div>
+                )}
+              </div>
+            </section>
+          )}
 
-                <div className="pdpReviewSection">
-                  <div className="pdpReviewSectionTitle">Theo trải nghiệm</div>
-                  <ExperienceRow label="Hiệu năng" value={expPerformance} onChange={setExpPerformance} rightText={expPerformance >= 5 ? 'Siêu mạnh mẽ' : ratingLabel(expPerformance)} />
-                  <ExperienceRow label="Thời lượng pin" value={expBattery} onChange={setExpBattery} rightText={expBattery >= 5 ? 'Cực khủng' : ratingLabel(expBattery)} />
-                  <ExperienceRow label="Chất lượng camera" value={expCamera} onChange={setExpCamera} rightText={expCamera >= 5 ? 'Chụp đẹp, chuyên nghiệp' : ratingLabel(expCamera)} />
+          <section className="pdpReviewsSection" aria-label="Đánh giá sản phẩm">
+            <div className="pdpReviewsHeader">
+              <h3 className="pdpReviewsTitle">Đánh giá {product.name}</h3>
+            </div>
+
+            <div className="pdpReviewsSummary">
+              <div className="pdpReviewsScore">
+                <div className="pdpScoreBig">
+                  {reviewStats.avg ? reviewStats.avg.toFixed(1) : '0.0'}
+                  <span className="pdpScoreSmall">/5</span>
                 </div>
-
-                <div className="pdpReviewField">
-                  <textarea
-                    className="pdpReviewTextarea"
-                    rows={5}
-                    value={reviewComment}
-                    onChange={e => setReviewComment(e.target.value)}
-                    placeholder="Xin mời chia sẻ một số cảm nhận về sản phẩm (nhập tối thiểu 15 kí tự)"
-                  />
+                <div className="pdpStarsRow">
+                  <Stars value={reviewStats.avg} />
                 </div>
+                <div className="pdpReviewsCount">{reviewStats.total} lượt đánh giá</div>
+                <button type="button" className="pdpWriteReviewBtn" onClick={() => setIsReviewModalOpen(true)}>
+                  Viết đánh giá
+                </button>
+              </div>
 
-                <div className="pdpReviewUploadRow">
-                  {/* <label className="pdpReviewUploadBtn">
+              <div className="pdpReviewsBars">
+                {[5, 4, 3, 2, 1].map(star => {
+                  const s = star as 1 | 2 | 3 | 4 | 5
+                  const count = reviewStats.counts[s]
+                  const pct = reviewStats.total ? (count / reviewStats.total) * 100 : 0
+                  return (
+                    <div key={star} className="pdpBarRow">
+                      <span className="pdpBarLabel">{star}</span>
+                      <span className="pdpBarStar">★</span>
+                      <div className="pdpBarTrack">
+                        <div className="pdpBarFill" style={{ width: `${pct}%` }} />
+                      </div>
+                      <span className="pdpBarCount">{count} đánh giá</span>
+                    </div>
+                  )
+                })}
+              </div>
+
+              <div className="pdpReviewsExp">
+                <div className="pdpReviewsExpTitle">Đánh giá theo trải nghiệm</div>
+                <div className="pdpReviewsExpList">
+                  <div className="pdpExpStatRow">
+                    <div className="pdpExpStatLabel">Hiệu năng</div>
+                    <div className="pdpExpStatStars"><Stars value={reviewStats.exp.performance.avg} /></div>
+                    <div className="pdpExpStatRight">
+                      {reviewStats.exp.performance.count ? `${reviewStats.exp.performance.avg.toFixed(0)}/5` : '0/5'}
+                      <span className="pdpExpStatMeta">({reviewStats.exp.performance.count} đánh giá)</span>
+                    </div>
+                  </div>
+                  <div className="pdpExpStatRow">
+                    <div className="pdpExpStatLabel">Thời lượng pin</div>
+                    <div className="pdpExpStatStars"><Stars value={reviewStats.exp.battery.avg} /></div>
+                    <div className="pdpExpStatRight">
+                      {reviewStats.exp.battery.count ? `${reviewStats.exp.battery.avg.toFixed(0)}/5` : '0/5'}
+                      <span className="pdpExpStatMeta">({reviewStats.exp.battery.count} đánh giá)</span>
+                    </div>
+                  </div>
+                  <div className="pdpExpStatRow">
+                    <div className="pdpExpStatLabel">Chất lượng camera</div>
+                    <div className="pdpExpStatStars"><Stars value={reviewStats.exp.camera.avg} /></div>
+                    <div className="pdpExpStatRight">
+                      {reviewStats.exp.camera.count ? `${reviewStats.exp.camera.avg.toFixed(0)}/5` : '0/5'}
+                      <span className="pdpExpStatMeta">({reviewStats.exp.camera.count} đánh giá)</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="pdpReviewsFilters" aria-label="Lọc đánh giá theo">
+              <div className="pdpReviewsFiltersLabel">Lọc đánh giá theo</div>
+              <div className="pdpReviewChips">
+                <button type="button" className={`pdpChip ${reviewFilter === 'all' ? 'active' : ''}`} onClick={() => setReviewFilter('all')}>Tất cả</button>
+                <button type="button" className={`pdpChip ${reviewFilter === 'with_images' ? 'active' : ''}`} onClick={() => setReviewFilter('with_images')}>Có hình ảnh</button>
+                <button type="button" className={`pdpChip ${reviewFilter === 'verified' ? 'active' : ''}`} onClick={() => setReviewFilter('verified')}>Đã mua hàng</button>
+                <button type="button" className={`pdpChip ${reviewFilter === 'star_5' ? 'active' : ''}`} onClick={() => setReviewFilter('star_5')}>5 sao</button>
+                <button type="button" className={`pdpChip ${reviewFilter === 'star_4' ? 'active' : ''}`} onClick={() => setReviewFilter('star_4')}>4 sao</button>
+                <button type="button" className={`pdpChip ${reviewFilter === 'star_3' ? 'active' : ''}`} onClick={() => setReviewFilter('star_3')}>3 sao</button>
+                <button type="button" className={`pdpChip ${reviewFilter === 'star_2' ? 'active' : ''}`} onClick={() => setReviewFilter('star_2')}>2 sao</button>
+                <button type="button" className={`pdpChip ${reviewFilter === 'star_1' ? 'active' : ''}`} onClick={() => setReviewFilter('star_1')}>1 sao</button>
+              </div>
+            </div>
+
+            <div className="pdpReviewsList">
+              {filteredReviews.length === 0 ? (
+                <div className="pdpNoReviews">Chưa có đánh giá nào.</div>
+              ) : (
+                filteredReviews.slice(0, 5).map(r => (
+                  <div key={r.id} className="pdpReviewItem">
+                    <div className="pdpReviewLeft">
+                      <div className="pdpReviewAvatar" aria-hidden>
+                        {r.user?.avatar_url ? (
+                          <img
+                            className="pdpAvatarImg"
+                            src={resolveImageUrl(r.user.avatar_url)}
+                            alt=""
+                            loading="lazy"
+                            decoding="async"
+                          />
+                        ) : (
+                          avatarInitial(r.user?.name || 'U')
+                        )}
+                      </div>
+                      <div className="pdpReviewName">{r.user?.name || 'Người dùng'}</div>
+                    </div>
+                    <div className="pdpReviewRight">
+                      <div className="pdpReviewStars">
+                        <Stars value={r.rating} />
+                        <span className="pdpReviewLabel">{ratingLabel(r.rating)}</span>
+                      </div>
+                      <div className="pdpReviewPills">
+                        {typeof r.exp_performance === 'number' && (
+                          <span className="pdpReviewPill">Hiệu năng {r.exp_performance >= 5 ? 'Siêu mạnh mẽ' : ratingLabel(r.exp_performance)}</span>
+                        )}
+                        {typeof r.exp_battery === 'number' && (
+                          <span className="pdpReviewPill">Thời lượng pin {r.exp_battery >= 5 ? 'Cực khủng' : ratingLabel(r.exp_battery)}</span>
+                        )}
+                        {typeof r.exp_camera === 'number' && (
+                          <span className="pdpReviewPill">Chất lượng camera {r.exp_camera >= 5 ? 'Chụp đẹp, chuyên nghiệp' : ratingLabel(r.exp_camera)}</span>
+                        )}
+                        {!!r.order_id && <span className="pdpReviewPill verified">Đã mua hàng</span>}
+                      </div>
+                      {r.comment && <div className="pdpReviewComment">{r.comment}</div>}
+                      <div className="pdpReviewTime">
+                        <span className="pdpReviewClock" aria-hidden>🕒</span>
+                        Đánh giá đã đăng vào {timeAgoVi(r.created_at)}
+                      </div>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          </section>
+
+          <section className="pdpQnaPageEnd" id="pdp-hoi-dap" aria-labelledby="pdp-hoi-dap-main-title">
+            <h2 id="pdp-hoi-dap-main-title" className="pdpQnaPageEndMainTitle">
+              Hỏi và đáp
+            </h2>
+
+            <div className="pdpQnaUnifiedCard">
+              <form
+                id="pdp-shop-qna-form"
+                className="pdpQnaUnifiedAsk"
+                onSubmit={async e => {
+                  e.preventDefault()
+                  setQaError(null)
+                  setQaFlash(null)
+                  const q = qaQuestion.trim()
+                  if (q.length < 5) {
+                    setQaError('Vui lòng nhập câu hỏi tối thiểu 5 ký tự.')
+                    return
+                  }
+                  if (!buyerLoggedIn && qaGuestName.trim().length < 2) {
+                    setQaError('Vui lòng nhập tên hiển thị (hoặc đăng nhập).')
+                    return
+                  }
+                  const token = localStorage.getItem('token')
+                  setQaSending(true)
+                  try {
+                    const res = await apiFetch<{ message?: string }>(
+                      `/api/products/${encodeURIComponent(product.slug)}/shop-qna`,
+                      {
+                        method: 'POST',
+                        token: token || undefined,
+                        body: JSON.stringify({
+                          question: q,
+                          ...(buyerLoggedIn ? {} : { guest_name: qaGuestName.trim() }),
+                        }),
+                      },
+                    )
+                    setQaQuestion('')
+                    if (!buyerLoggedIn) setQaGuestName('')
+                    setQaFlash(res.message ?? 'Đã gửi câu hỏi.')
+                    await refreshShopQnas()
+                  } catch (err: unknown) {
+                    setQaError(err instanceof Error ? err.message : 'Không gửi được câu hỏi.')
+                  } finally {
+                    setQaSending(false)
+                  }
+                }}
+              >
+                <div className="pdpQnaAskMascot" aria-hidden>
+                  <img src="/linh-vat.png" alt="" className="pdpQnaMascotImg" width={108} decoding="async" />
+                </div>
+                <div className="pdpQnaAskBody">
+                  <h3 className="pdpQnaAskHeading">Hãy đặt câu hỏi cho chúng tôi</h3>
+                  <p className="pdpQnaAskLead">
+                    Đội ngũ E-Tech Market sẽ phản hồi trong thời gian sớm nhất trong giờ làm việc. Câu hỏi gửi sau 22h có thể được
+                    trả lời vào sáng hôm sau.
+                  </p>
+                  {!buyerLoggedIn && (
+                    <label className="pdpQnaGuestField">
+                      <span className="pdpQnaGuestLabel">Tên hiển thị</span>
+                      <input
+                        type="text"
+                        className="pdpQnaGuestInput"
+                        value={qaGuestName}
+                        onChange={e => setQaGuestName(e.target.value)}
+                        placeholder="Ví dụ: Ngô Thị Vân Anh"
+                        maxLength={120}
+                        autoComplete="name"
+                      />
+                    </label>
+                  )}
+                  {buyerLoggedIn && (
+                    <p className="pdpQnaLoggedNote">Bạn đang đăng nhập — câu hỏi sẽ hiển thị kèm tên tài khoản.</p>
+                  )}
+                  <div className="pdpQnaAskInputRow">
+                    <textarea
+                      className="pdpQnaQuestionInput"
+                      name="question"
+                      value={qaQuestion}
+                      onChange={e => setQaQuestion(e.target.value)}
+                      placeholder="Viết câu hỏi của bạn tại đây"
+                      rows={2}
+                      maxLength={2000}
+                      required
+                    />
+                    <button type="submit" className="pdpQnaSubmitBtn" disabled={qaSending}>
+                      <span>{qaSending ? 'Đang gửi…' : 'Gửi câu hỏi'}</span>
+                      <IconPaperPlane className="pdpQnaSubmitIcon" aria-hidden />
+                    </button>
+                  </div>
+                  {qaError && <p className="pdpQnaFormErr">{qaError}</p>}
+                  {qaFlash && !qaError && <p className="pdpQnaFormOk">{qaFlash}</p>}
+                </div>
+              </form>
+
+              <div className="pdpQnaUnifiedThreads">
+                {shopQnas.length === 0 ? (
+                  <p className="pdpQnaListEmpty">Chưa có câu hỏi nào. Hãy đặt câu hỏi đầu tiên ở ô phía trên.</p>
+                ) : (
+                  <ul className="pdpQnaThreadList pdpQnaThreadList--inCard">
+                    {shopQnas.map(row => {
+                      const hasAnswer = !!(row.answer && row.answer.trim())
+                      const shopOpen = qnaShopOpenById[row.id] !== false
+                      const tsQ = row.created_at ?? row.answered_at ?? ''
+                      return (
+                        <li key={row.id} className="pdpQnaThreadItem">
+                          <div className="pdpQnaUserRow">
+                            <div className="pdpQnaUserAvatar" aria-hidden>
+                              {row.user?.avatar_url ? (
+                                <img
+                                  className="pdpAvatarImg"
+                                  src={resolveImageUrl(row.user.avatar_url)}
+                                  alt=""
+                                  loading="lazy"
+                                  decoding="async"
+                                />
+                              ) : (
+                                qnaAvatarInitial(row.asker_display_name)
+                              )}
+                            </div>
+                            <div className="pdpQnaUserBlock">
+                              <div className="pdpQnaUserMeta">
+                                <span className="pdpQnaUserName">{row.asker_display_name}</span>
+                                {tsQ !== '' ? (
+                                  <time className="pdpQnaUserTime" dateTime={tsQ}>
+                                    {timeAgoVi(tsQ)}
+                                  </time>
+                                ) : null}
+                              </div>
+                              <p className="pdpQnaQuestionText">{row.question}</p>
+                              <div className="pdpQnaThreadActions">
+                                {/* <button type="button" className="pdpQnaActionLink" onClick={() => scrollToPdpShopQnaForm()}>
+                                <IconQnaChatBubble aria-hidden />
+                                Phản hồi
+                              </button> */}
+                                {hasAnswer ? (
+                                  <button
+                                    type="button"
+                                    className="pdpQnaCollapseLink"
+                                    onClick={() =>
+                                      setQnaShopOpenById(prev => ({
+                                        ...prev,
+                                        [row.id]: !(prev[row.id] ?? true),
+                                      }))
+                                    }
+                                  >
+                                    <span className={`pdpQnaChevron ${shopOpen ? 'pdpQnaChevron--up' : ''}`} aria-hidden>
+                                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                                        <path
+                                          d="M6 9l6 6 6-6"
+                                          stroke="currentColor"
+                                          strokeWidth="2.2"
+                                          strokeLinecap="round"
+                                          strokeLinejoin="round"
+                                        />
+                                      </svg>
+                                    </span>
+                                    {shopOpen ? 'Thu gọn phản hồi' : 'Xem phản hồi'}
+                                  </button>
+                                ) : (
+                                  <span className="pdpQnaPendingBadge">Đang chờ cửa hàng</span>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                          {!hasAnswer ? (
+                            <p className="pdpQnaPendingNote">Đang chờ cửa hàng trả lời. Bạn có thể gửi thêm câu hỏi khác phía trên.</p>
+                          ) : shopOpen ? (
+                            <div className="pdpQnaShopRow">
+                              <div className="pdpQnaShopAvatar" aria-hidden>
+                                <img
+                                  className="pdpAvatarImg"
+                                  src={SHOP_REPLY_AVATAR_SRC}
+                                  alt=""
+                                  decoding="async"
+                                />
+                              </div>
+                              <div className="pdpQnaShopBlock">
+                                <div className="pdpQnaShopMeta">
+                                  <span className="pdpQnaShopName">Quản trị viên</span>
+                                  <span className="pdpQnaShopBadge">QTV</span>
+                                  {row.answered_at && (
+                                    <time className="pdpQnaShopTime" dateTime={row.answered_at}>
+                                      {timeAgoVi(row.answered_at)}
+                                    </time>
+                                  )}
+                                </div>
+                                <div className="pdpQnaShopAnswer">
+                                  {row.answer!.split('\n').map((para, idx) =>
+                                    para.trim() ? <p key={idx}>{para.trim()}</p> : null,
+                                  )}
+                                </div>
+                                <button type="button" className="pdpQnaActionLink" onClick={() => scrollToPdpShopQnaForm()}>
+                                  <IconQnaChatBubble aria-hidden />
+                                  Phản hồi
+                                </button>
+                              </div>
+                            </div>
+                          ) : null}
+                        </li>
+                      )
+                    })}
+                  </ul>
+                )}
+              </div>
+            </div>
+          </section>
+
+          {isReviewModalOpen && (
+            <div className="pdpReviewModalOverlay" onClick={() => setIsReviewModalOpen(false)}>
+              <div className="pdpReviewModal" onClick={e => e.stopPropagation()}>
+                <div className="pdpReviewModalHead">
+                  <div className="pdpReviewModalTitle">Đánh giá &amp; nhận xét</div>
+                  <button type="button" className="pdpReviewModalClose" onClick={() => setIsReviewModalOpen(false)}>×</button>
+                </div>
+                <div className="pdpReviewModalBody">
+                  <div className="pdpReviewProductRow">
+                    <div className="pdpReviewMascot" aria-hidden>
+                      <span>★</span>
+                    </div>
+                    <div className="pdpReviewProductName">{product.name}</div>
+                  </div>
+
+                  <div className="pdpReviewSection">
+                    <div className="pdpReviewSectionTitle">Đánh giá chung</div>
+                    <RatingRow value={reviewRating} onChange={setReviewRating} />
+                    <div className="pdpReviewScale">
+                      <span>Rất tệ</span>
+                      <span>Tệ</span>
+                      <span>Bình thường</span>
+                      <span>Tốt</span>
+                      <span>Tuyệt vời</span>
+                    </div>
+                  </div>
+
+                  <div className="pdpReviewSection">
+                    <div className="pdpReviewSectionTitle">Theo trải nghiệm</div>
+                    <ExperienceRow label="Hiệu năng" value={expPerformance} onChange={setExpPerformance} rightText={expPerformance >= 5 ? 'Siêu mạnh mẽ' : ratingLabel(expPerformance)} />
+                    <ExperienceRow label="Thời lượng pin" value={expBattery} onChange={setExpBattery} rightText={expBattery >= 5 ? 'Cực khủng' : ratingLabel(expBattery)} />
+                    <ExperienceRow label="Chất lượng camera" value={expCamera} onChange={setExpCamera} rightText={expCamera >= 5 ? 'Chụp đẹp, chuyên nghiệp' : ratingLabel(expCamera)} />
+                  </div>
+
+                  <div className="pdpReviewField">
+                    <textarea
+                      className="pdpReviewTextarea"
+                      rows={5}
+                      value={reviewComment}
+                      onChange={e => setReviewComment(e.target.value)}
+                      placeholder="Xin mời chia sẻ một số cảm nhận về sản phẩm (nhập tối thiểu 15 kí tự)"
+                    />
+                  </div>
+
+                  <div className="pdpReviewUploadRow">
+                    {/* <label className="pdpReviewUploadBtn">
                     <input
                       type="file"
                       accept="image/*"
@@ -1789,67 +1765,67 @@ export default function ProductDetailPage() {
                     <span>Thêm hình ảnh</span>
                   </label> */}
 
-                  {reviewImages.length > 0 && (
-                    <div className="pdpReviewThumbs">
-                      {reviewImages.map((f, i) => (
-                        <div key={`${f.name}-${i}`} className="pdpReviewThumb">
-                          <img src={URL.createObjectURL(f)} alt="" />
-                          <button
-                            type="button"
-                            className="pdpReviewThumbRemove"
-                            onClick={() => setReviewImages(prev => prev.filter((_, idx) => idx !== i))}
-                          >
-                            ×
-                          </button>
-                        </div>
-                      ))}
-                    </div>
-                  )}
+                    {reviewImages.length > 0 && (
+                      <div className="pdpReviewThumbs">
+                        {reviewImages.map((f, i) => (
+                          <div key={`${f.name}-${i}`} className="pdpReviewThumb">
+                            <img src={URL.createObjectURL(f)} alt="" />
+                            <button
+                              type="button"
+                              className="pdpReviewThumbRemove"
+                              onClick={() => setReviewImages(prev => prev.filter((_, idx) => idx !== i))}
+                            >
+                              ×
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
+                <div className="pdpReviewModalFoot">
+                  <button
+                    type="button"
+                    className="pdpReviewSubmit"
+                    onClick={async () => {
+                      const token = localStorage.getItem('token')
+                      if (!token) {
+                        alert('Vui lòng đăng nhập để đánh giá.')
+                        return
+                      }
+                      if ((reviewComment || '').trim().length < 15) {
+                        alert('Vui lòng nhập tối thiểu 15 kí tự.')
+                        return
+                      }
+                      try {
+                        await apiFetch(`/api/products/${product.id}/reviews`, {
+                          method: 'POST',
+                          token,
+                          body: JSON.stringify({
+                            rating: reviewRating,
+                            exp_performance: expPerformance,
+                            exp_battery: expBattery,
+                            exp_camera: expCamera,
+                            comment: reviewComment || null,
+                          }),
+                        })
+                        setIsReviewModalOpen(false)
+                        // refresh product data
+                        const updated = await fetchProductBySlug(product.slug)
+                        setProduct(updated)
+                      } catch (e: unknown) {
+                        alert(e instanceof Error ? e.message : 'Gửi đánh giá thất bại.')
+                      }
+                    }}
+                  >
+                    GỬI ĐÁNH GIÁ
+                  </button>
                 </div>
               </div>
-              <div className="pdpReviewModalFoot">
-                <button
-                  type="button"
-                  className="pdpReviewSubmit"
-                  onClick={async () => {
-                    const token = localStorage.getItem('token')
-                    if (!token) {
-                      alert('Vui lòng đăng nhập để đánh giá.')
-                      return
-                    }
-                    if ((reviewComment || '').trim().length < 15) {
-                      alert('Vui lòng nhập tối thiểu 15 kí tự.')
-                      return
-                    }
-                    try {
-                      await apiFetch(`/api/products/${product.id}/reviews`, {
-                        method: 'POST',
-                        token,
-                        body: JSON.stringify({
-                          rating: reviewRating,
-                          exp_performance: expPerformance,
-                          exp_battery: expBattery,
-                          exp_camera: expCamera,
-                          comment: reviewComment || null,
-                        }),
-                      })
-                      setIsReviewModalOpen(false)
-                      // refresh product data
-                      const updated = await fetchProductBySlug(product.slug)
-                      setProduct(updated)
-                    } catch (e: unknown) {
-                      alert(e instanceof Error ? e.message : 'Gửi đánh giá thất bại.')
-                    }
-                  }}
-                >
-                  GỬI ĐÁNH GIÁ
-                </button>
-              </div>
             </div>
-          </div>
-        )}
+          )}
+        </div>
       </div>
-    </div>
     </>
   )
 }
@@ -1949,75 +1925,9 @@ function timeAgoVi(iso: string) {
   return `${y} năm trước`
 }
 
-function CommitIconPhoneCheck() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" width="22" height="22">
-      <rect x="7" y="2.5" width="10" height="19" rx="2.2" stroke="currentColor" strokeWidth="1.55" />
-      <path d="M10 5.5h4" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" />
-      <path
-        d="M10.2 12.3l1.35 1.35 3.45-3.4"
-        stroke="currentColor"
-        strokeWidth="1.45"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <path d="M10 18.2h4" stroke="currentColor" strokeWidth="1.1" strokeLinecap="round" opacity="0.75" />
-    </svg>
-  )
-}
-
-function CommitIconShieldCheck() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" width="22" height="22">
-      <path
-        d="M12 21.5c4.5-2.2 7.5-5.8 7.5-10.4V6.2L12 3.5 4.5 6.2v4.9c0 4.6 3 8.2 7.5 10.4Z"
-        stroke="currentColor"
-        strokeWidth="1.55"
-        strokeLinejoin="round"
-      />
-      <path
-        d="M9 12.2l2 2 4.2-4.1"
-        stroke="currentColor"
-        strokeWidth="1.45"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  )
-}
-
-function CommitIconCpu() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" width="22" height="22">
-      <rect x="7.2" y="7.2" width="9.6" height="9.6" rx="1.4" stroke="currentColor" strokeWidth="1.45" />
-      <rect x="9.7" y="9.7" width="4.6" height="4.6" rx="0.5" stroke="currentColor" strokeWidth="1.15" />
-      <path
-        d="M12 5.2v2M12 16.8v2M16.8 12h2M5.2 12H7M9 5.2v1.9M15 5.2v1.9M9 17v1.9M15 17v1.9M5.2 9h2M16.8 9h2M5.2 15h2M16.8 15h2"
-        stroke="currentColor"
-        strokeWidth="1.15"
-        strokeLinecap="round"
-      />
-    </svg>
-  )
-}
-
-function CommitIconPriceTag() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" width="22" height="22">
-      <path
-        d="M4.5 9.8V7.2A1.7 1.7 0 0 1 6.2 5.5h2.6l10.7 10.7v2.6a1.7 1.7 0 0 1-1.7 1.7h-2.6L4.5 12.4v-2.6Z"
-        stroke="currentColor"
-        strokeWidth="1.45"
-        strokeLinejoin="round"
-      />
-      <circle cx="7.3" cy="7.3" r="1.35" fill="currentColor" />
-      <path
-        d="M12.2 14.2l2.1 2.1 3.6-3.6"
-        stroke="currentColor"
-        strokeWidth="1.35"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  )
-}
+function CommitIconPhoneCheck() {return (<svg viewBox="0 0 24 24" fill="none" width="22" height="22"><rect x="7" y="2.5" width="10" height="19" rx="2.2" stroke="currentColor" strokeWidth="1.55" /><path d="M10 5.5h4" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" /><path  d="M10.2 12.3l1.35 1.35 3.45-3.4"  stroke="currentColor"  strokeWidth="1.45"  strokeLinecap="round"  strokeLinejoin="round"/><path d="M10 18.2h4" stroke="currentColor" strokeWidth="1.1" strokeLinecap="round" opacity="0.75" /></svg>)}
+function CommitIconShieldCheck() {return (<svg viewBox="0 0 24 24" fill="none" width="22" height="22"><path  d="M12 21.5c4.5-2.2 7.5-5.8 7.5-10.4V6.2L12 3.5 4.5 6.2v4.9c0 4.6 3 8.2 7.5 10.4Z"  stroke="currentColor"  strokeWidth="1.55"  strokeLinejoin="round"/><path  d="M9 12.2l2 2 4.2-4.1"  stroke="currentColor"  strokeWidth="1.45"  strokeLinecap="round"  strokeLinejoin="round"/></svg>)}
+function CommitIconCpu() {return (<svg viewBox="0 0 24 24" fill="none" width="22" height="22"><rect x="7.2" y="7.2" width="9.6" height="9.6" rx="1.4" stroke="currentColor" strokeWidth="1.45" /><rect x="9.7" y="9.7" width="4.6" height="4.6" rx="0.5" stroke="currentColor" strokeWidth="1.15" /><path  d="M12 5.2v2M12 16.8v2M16.8 12h2M5.2 12H7M9 5.2v1.9M15 5.2v1.9M9 17v1.9M15 17v1.9M5.2 9h2M16.8 9h2M5.2 15h2M16.8 15h2"  stroke="currentColor"  strokeWidth="1.15"  strokeLinecap="round"/></svg>)}
+function CommitIconPriceTag() {return (<svg viewBox="0 0 24 24" fill="none" width="22" height="22"><path  d="M4.5 9.8V7.2A1.7 1.7 0 0 1 6.2 5.5h2.6l10.7 10.7v2.6a1.7 1.7 0 0 1-1.7 1.7h-2.6L4.5 12.4v-2.6Z"  stroke="currentColor"  strokeWidth="1.45"  strokeLinejoin="round"/><circle cx="7.3" cy="7.3" r="1.35" fill="currentColor" /><path  d="M12.2 14.2l2.1 2.1 3.6-3.6"  stroke="currentColor"  strokeWidth="1.35"  strokeLinecap="round" strokeLinejoin="round"/></svg>)}
+function IconPaperPlane({ className }: { className?: string }) {return (<svg className={className} viewBox="0 0 24 24" width="18" height="18" aria-hidden><path  fill="currentColor"  d="m2 21 21-9L2 3v7l13 4-13 4v7z"/></svg>)}
+function IconQnaChatBubble({ className }: { className?: string }) {return (<svg className={className} viewBox="0 0 24 24" fill="none" width="16" height="16" aria-hidden><path  d="M5 17.5v-13A1.5 1.5 0 0 1 6.5 3h13A1.5 1.5 0 0 1 21 4.5V15a1.5 1.5 0 0 1-1.5 1.5h-11L5 21l.5-3.5"  stroke="currentColor"  strokeWidth="1.8"  strokeLinejoin="round"/></svg>)}

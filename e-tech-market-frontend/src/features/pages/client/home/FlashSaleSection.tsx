@@ -48,7 +48,7 @@ export default function FlashSaleSection() {
       try {
         const res = await apiFetch<FlashSale>('/api/flash-sale/current')
         setSale(res)
-        
+
         // Initial check if active
         if (res) {
           const now = new Date().getTime()
@@ -73,7 +73,7 @@ export default function FlashSaleSection() {
       // Fix for some browsers not parsing 'YYYY-MM-DD HH:mm:ss'
       const startStr = sale.start_at.replace(' ', 'T')
       const endStr = sale.end_at.replace(' ', 'T')
-      
+
       const start = new Date(startStr).getTime()
       const end = new Date(endStr).getTime()
       const diff = end - now
@@ -90,7 +90,7 @@ export default function FlashSaleSection() {
         const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))
         const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60))
         const s = Math.floor((diff % (1000 * 60)) / 1000)
-        
+
         if (!isNaN(h)) {
           setTimeLeft({ h, m, s })
         }
@@ -128,14 +128,14 @@ export default function FlashSaleSection() {
         <div className="flashSaleGrid">
           {(sale.items || []).filter(i => i.product).slice(0, 5).map(item => {
             const productUrl = `/products/${item.product.slug}${item.variant_id ? `?variant=${item.variant_id}` : ''}`;
-            const displayImage = item.variant?.image_url 
-              ? `${API_BASE_URL}${item.variant.image_url}` 
+            const displayImage = item.variant?.image_url
+              ? `${API_BASE_URL}${item.variant.image_url}`
               : (item.product.main_image_url ? `${API_BASE_URL}${item.product.main_image_url}` : '/placeholder.png');
-            const displayName = item.variant 
-              ? `${item.product.name} - ${item.variant.variant_name}` 
+            const displayName = item.variant
+              ? `${item.product.name} - ${item.variant.variant_name}`
               : item.product.name;
             const originalPrice = item.variant ? item.variant.price : (item.product.variants?.[0]?.price || 0);
-            
+
             const progressPercent = Math.min(100, (item.sold_quantity / (item.quantity_limit || 100)) * 100);
             const isHot = progressPercent > 80;
             const hasProgress = progressPercent > 40;

@@ -27,54 +27,6 @@ function resolveImageUrl(url: string | null | undefined) {
   return `${API_BASE_URL}${path}`
 }
 
-function TrashIcon() {
-  return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path d="M3 6h18" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-      <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
-      <path d="M6 6l1 16a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-16" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
-      <path d="M10 11v7M14 11v7" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-    </svg>
-  )
-}
-
-function MinusIcon() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path d="M5 12h14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-    </svg>
-  )
-}
-
-function PlusIcon() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path d="M12 5v14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M5 12h14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-    </svg>
-  )
-}
-
-function BagIcon() {
-  return (
-    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path
-        d="M6 7V6a6 6 0 0 1 12 0v1"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-      />
-      <path
-        d="M4.5 7.5h15l-1.2 14a2 2 0 0 1-2 1.8H7.7a2 2 0 0 1-2-1.8l-1.2-14Z"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinejoin="round"
-      />
-      <path d="M9 11v0.01M15 11v0.01" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" />
-    </svg>
-  )
-}
-
 export default function CartPage() {
   const navigate = useNavigate()
   const [cart, setCart] = useState<CartState>(() => getCart())
@@ -196,27 +148,27 @@ export default function CartPage() {
                 {loadingSuggestions
                   ? Array.from({ length: 6 }).map((_, i) => <ProductSuggestionSkeleton key={i} />)
                   : suggested.slice(0, 6).map((p) => (
-                  <div key={p.id} className="ppCardNew">
-                    <Link to={`/products/${p.slug}`} className="ppCardImageWrap">
-                      <img
-                        className="ppCardImg"
-                        src={resolveImageUrl(p.main_image_url)}
-                        alt={p.name}
-                        loading="lazy"
-                        decoding="async"
-                      />
-                    </Link>
-                    <div className="ppCardContent">
-                      <div className="ppCardTopRow">
-                        <span className="ppCardBrand">{(p.brand || 'TECH').toUpperCase()}</span>
-                        <span className="ppCardPrice">{formatVnd(Number.parseFloat(p.price || '0'))}</span>
-                      </div>
-                      <Link to={`/products/${p.slug}`} className="ppCardTitleLink">
-                        <h3 className="ppCardTitle">{p.name}</h3>
+                    <div key={p.id} className="ppCardNew">
+                      <Link to={`/products/${p.slug}`} className="ppCardImageWrap">
+                        <img
+                          className="ppCardImg"
+                          src={resolveImageUrl(p.main_image_url)}
+                          alt={p.name}
+                          loading="lazy"
+                          decoding="async"
+                        />
                       </Link>
+                      <div className="ppCardContent">
+                        <div className="ppCardTopRow">
+                          <span className="ppCardBrand">{(p.brand || 'TECH').toUpperCase()}</span>
+                          <span className="ppCardPrice">{formatVnd(Number.parseFloat(p.price || '0'))}</span>
+                        </div>
+                        <Link to={`/products/${p.slug}`} className="ppCardTitleLink">
+                          <h3 className="ppCardTitle">{p.name}</h3>
+                        </Link>
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  ))}
               </div>
             </section>
           </>
@@ -224,69 +176,69 @@ export default function CartPage() {
           <>
             <div className="cartGrid">
               <div className="cartList">
-              <div className="cartListHead">
-                <div className="hideMd">Ảnh</div>
-                <div className="hideMd">Sản phẩm</div>
-                <div className="hideSm">Đơn giá</div>
-                <div className="hideMd">Số lượng</div>
-                <div className="hideSm">Thành tiền</div>
-                <div className="hideMd">Xoá</div>
-              </div>
-              {cart.items.map((it) => (
-                <div key={it.key} className="cartItem">
-                  <div className="cartItemImgWrap">
-                    {it.image_url ? (
-                      <img src={it.image_url} alt={it.name} className="cartItemImg" />
-                    ) : (
-                      <div className="cartItemImgPlaceholder" />
-                    )}
-                  </div>
-
-                  <div className="cartItemBody">
-                    <Link to={`/products/${it.slug}`} className="cartItemName">
-                      {it.name}
-                    </Link>
-                    {it.variant_label && <div className="cartItemVariant">{it.variant_label}</div>}
-                    <div className="cartItemPriceSm">{formatVnd(it.price)}</div>
-                  </div>
-
-                  <div className="cartUnit hideSm">{formatVnd(it.price)}</div>
-
-                  <div className="cartQty">
-                    <button
-                      type="button"
-                      className="cartQtyBtn"
-                      onClick={() => updateCartQuantity(it.key, it.quantity - 1)}
-                      disabled={it.quantity <= 1}
-                      aria-label="Giảm số lượng"
-                    >
-                      <MinusIcon />
-                    </button>
-                    <input
-                      className="cartQtyInput"
-                      type="number"
-                      min={1}
-                      value={it.quantity}
-                      onChange={(e) => updateCartQuantity(it.key, Number(e.target.value))}
-                      aria-label="Số lượng"
-                    />
-                    <button
-                      type="button"
-                      className="cartQtyBtn"
-                      onClick={() => updateCartQuantity(it.key, it.quantity + 1)}
-                      aria-label="Tăng số lượng"
-                    >
-                      <PlusIcon />
-                    </button>
-                  </div>
-
-                  <div className="cartLine hideSm">{formatVnd(it.price * it.quantity)}</div>
-
-                  <button type="button" className="cartRemoveBtn" onClick={() => removeFromCart(it.key)} aria-label="Xoá sản phẩm">
-                    <TrashIcon />
-                  </button>
+                <div className="cartListHead">
+                  <div className="hideMd">Ảnh</div>
+                  <div className="hideMd">Sản phẩm</div>
+                  <div className="hideSm">Đơn giá</div>
+                  <div className="hideMd">Số lượng</div>
+                  <div className="hideSm">Thành tiền</div>
+                  <div className="hideMd">Xoá</div>
                 </div>
-              ))}
+                {cart.items.map((it) => (
+                  <div key={it.key} className="cartItem">
+                    <div className="cartItemImgWrap">
+                      {it.image_url ? (
+                        <img src={it.image_url} alt={it.name} className="cartItemImg" />
+                      ) : (
+                        <div className="cartItemImgPlaceholder" />
+                      )}
+                    </div>
+
+                    <div className="cartItemBody">
+                      <Link to={`/products/${it.slug}`} className="cartItemName">
+                        {it.name}
+                      </Link>
+                      {it.variant_label && <div className="cartItemVariant">{it.variant_label}</div>}
+                      <div className="cartItemPriceSm">{formatVnd(it.price)}</div>
+                    </div>
+
+                    <div className="cartUnit hideSm">{formatVnd(it.price)}</div>
+
+                    <div className="cartQty">
+                      <button
+                        type="button"
+                        className="cartQtyBtn"
+                        onClick={() => updateCartQuantity(it.key, it.quantity - 1)}
+                        disabled={it.quantity <= 1}
+                        aria-label="Giảm số lượng"
+                      >
+                        <MinusIcon />
+                      </button>
+                      <input
+                        className="cartQtyInput"
+                        type="number"
+                        min={1}
+                        value={it.quantity}
+                        onChange={(e) => updateCartQuantity(it.key, Number(e.target.value))}
+                        aria-label="Số lượng"
+                      />
+                      <button
+                        type="button"
+                        className="cartQtyBtn"
+                        onClick={() => updateCartQuantity(it.key, it.quantity + 1)}
+                        aria-label="Tăng số lượng"
+                      >
+                        <PlusIcon />
+                      </button>
+                    </div>
+
+                    <div className="cartLine hideSm">{formatVnd(it.price * it.quantity)}</div>
+
+                    <button type="button" className="cartRemoveBtn" onClick={() => removeFromCart(it.key)} aria-label="Xoá sản phẩm">
+                      <TrashIcon />
+                    </button>
+                  </div>
+                ))}
                 <div className="cartFooterBar">
                   <div className="cartFooterLeft">
                     <span className="cartFooterLabel">Tổng tiền</span>
@@ -312,27 +264,27 @@ export default function CartPage() {
                   {loadingBoughtTogether
                     ? Array.from({ length: 4 }).map((_, i) => <ProductSuggestionSkeleton key={i} />)
                     : boughtTogether.map((p) => (
-                        <div key={p.id} className="ppCardNew">
-                          <Link to={`/products/${p.slug}`} className="ppCardImageWrap">
-                            <img
-                              className="ppCardImg"
-                              src={resolveImageUrl(p.main_image_url)}
-                              alt={p.name}
-                              loading="lazy"
-                              decoding="async"
-                            />
-                          </Link>
-                          <div className="ppCardContent">
-                            <div className="ppCardTopRow">
-                              <span className="ppCardBrand">{(p.brand || 'TECH').toUpperCase()}</span>
-                              <span className="ppCardPrice">{formatVnd(Number.parseFloat(p.price || '0'))}</span>
-                            </div>
-                            <Link to={`/products/${p.slug}`} className="ppCardTitleLink">
-                              <h3 className="ppCardTitle">{p.name}</h3>
-                            </Link>
+                      <div key={p.id} className="ppCardNew">
+                        <Link to={`/products/${p.slug}`} className="ppCardImageWrap">
+                          <img
+                            className="ppCardImg"
+                            src={resolveImageUrl(p.main_image_url)}
+                            alt={p.name}
+                            loading="lazy"
+                            decoding="async"
+                          />
+                        </Link>
+                        <div className="ppCardContent">
+                          <div className="ppCardTopRow">
+                            <span className="ppCardBrand">{(p.brand || 'TECH').toUpperCase()}</span>
+                            <span className="ppCardPrice">{formatVnd(Number.parseFloat(p.price || '0'))}</span>
                           </div>
+                          <Link to={`/products/${p.slug}`} className="ppCardTitleLink">
+                            <h3 className="ppCardTitle">{p.name}</h3>
+                          </Link>
                         </div>
-                      ))}
+                      </div>
+                    ))}
                 </div>
               </section>
             )}
@@ -346,27 +298,27 @@ export default function CartPage() {
                 {loadingSuggestions
                   ? Array.from({ length: 6 }).map((_, i) => <ProductSuggestionSkeleton key={i} />)
                   : suggested.slice(0, 6).map((p) => (
-                  <div key={p.id} className="ppCardNew">
-                    <Link to={`/products/${p.slug}`} className="ppCardImageWrap">
-                      <img
-                        className="ppCardImg"
-                        src={resolveImageUrl(p.main_image_url)}
-                        alt={p.name}
-                        loading="lazy"
-                        decoding="async"
-                      />
-                    </Link>
-                    <div className="ppCardContent">
-                      <div className="ppCardTopRow">
-                        <span className="ppCardBrand">{(p.brand || 'TECH').toUpperCase()}</span>
-                        <span className="ppCardPrice">{formatVnd(Number.parseFloat(p.price || '0'))}</span>
-                      </div>
-                      <Link to={`/products/${p.slug}`} className="ppCardTitleLink">
-                        <h3 className="ppCardTitle">{p.name}</h3>
+                    <div key={p.id} className="ppCardNew">
+                      <Link to={`/products/${p.slug}`} className="ppCardImageWrap">
+                        <img
+                          className="ppCardImg"
+                          src={resolveImageUrl(p.main_image_url)}
+                          alt={p.name}
+                          loading="lazy"
+                          decoding="async"
+                        />
                       </Link>
+                      <div className="ppCardContent">
+                        <div className="ppCardTopRow">
+                          <span className="ppCardBrand">{(p.brand || 'TECH').toUpperCase()}</span>
+                          <span className="ppCardPrice">{formatVnd(Number.parseFloat(p.price || '0'))}</span>
+                        </div>
+                        <Link to={`/products/${p.slug}`} className="ppCardTitleLink">
+                          <h3 className="ppCardTitle">{p.name}</h3>
+                        </Link>
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  ))}
               </div>
             </section>
           </>
@@ -376,3 +328,10 @@ export default function CartPage() {
   )
 }
 
+
+
+
+function TrashIcon() {return (<svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M3 6h18" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" /><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" /><path d="M6 6l1 16a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-16" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" /><path d="M10 11v7M14 11v7" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" /></svg>)}
+function MinusIcon() {return (<svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></svg>)}
+function PlusIcon() {return (<svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 5v14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /><path d="M5 12h14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></svg>)}
+function BagIcon() {return (<svg width="26" height="26" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 7V6a6 6 0 0 1 12 0v1"stroke="currentColor"strokeWidth="1.8"strokeLinecap="round"/><path d="M4.5 7.5h15l-1.2 14a2 2 0 0 1-2 1.8H7.7a2 2 0 0 1-2-1.8l-1.2-14Z"stroke="currentColor"strokeWidth="1.8"strokeLinejoin="round"/><path d="M9 11v0.01M15 11v0.01" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" /></svg>)}

@@ -17,69 +17,6 @@ function fmtDateTimeVi(iso?: string | null) {
   return new Date(t).toLocaleString('vi-VN')
 }
 
-function WarningIcon() {
-  return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path
-        d="M12 9v4"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-      />
-      <path
-        d="M12 17h.01"
-        stroke="currentColor"
-        strokeWidth="2.6"
-        strokeLinecap="round"
-      />
-      <path
-        d="M10.3 4.2 2.8 18a2 2 0 0 0 1.8 3h14.8a2 2 0 0 0 1.8-3L13.7 4.2a2 2 0 0 0-3.4 0Z"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinejoin="round"
-      />
-    </svg>
-  )
-}
-
-function ShieldIcon() {
-  return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path
-        d="M12 2l8 4v6c0 5-3.4 9.4-8 10-4.6-.6-8-5-8-10V6l8-4Z"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinejoin="round"
-      />
-      <path
-        d="M9.5 12.2l1.6 1.6 3.6-3.8"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-      />
-    </svg>
-  )
-}
-
-function CloseIcon() {
-  return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path
-        d="M18 6 6 18"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-      />
-      <path
-        d="M6 6l12 12"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-      />
-    </svg>
-  )
-}
-
 export default function SecurityPage() {
   const [twoFaEnabled, setTwoFaEnabled] = useState(true)
   const [busy, setBusy] = useState(false)
@@ -330,3 +267,6 @@ export default function SecurityPage() {
   )
 }
 
+function WarningIcon() {return (<svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path  d="M12 9v4"  stroke="currentColor"  strokeWidth="1.8"  strokeLinecap="round"/><path d="M12 17h.01" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round"/><path  d="M10.3 4.2 2.8 18a2 2 0 0 0 1.8 3h14.8a2 2 0 0 0 1.8-3L13.7 4.2a2 2 0 0 0-3.4 0Z"  stroke="currentColor"  strokeWidth="1.8"  strokeLinejoin="round"/></svg>)}
+function ShieldIcon() {return (<svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path  d="M12 2l8 4v6c0 5-3.4 9.4-8 10-4.6-.6-8-5-8-10V6l8-4Z"  stroke="currentColor"  strokeWidth="1.8"  strokeLinejoin="round"/><path  d="M9.5 12.2l1.6 1.6 3.6-3.8"  stroke="currentColor"  strokeWidth="1.8"  strokeLinecap="round"/></svg>)}
+function CloseIcon() {return (<svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M18 6 6 18" stroke="currentColor"  strokeWidth="2"  strokeLinecap="round"/><path d="M6 6l12 12"  stroke="currentColor" strokeWidth="2"  strokeLinecap="round"/></svg>)}

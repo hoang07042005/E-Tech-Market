@@ -22,32 +22,6 @@ const TOC = [
   { id: SECTION_IDS[4], num: '05', title: 'Luật áp dụng' },
 ] as const
 
-function IconCheckCircle() {
-  return (
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" stroke="currentColor" strokeWidth="1.85" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  )
-}
-
-function IconLock() {
-  return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <rect x="4" y="11" width="16" height="10" rx="2" stroke="currentColor" strokeWidth="1.85" />
-      <path d="M8 11V8a4 4 0 018 0v3" stroke="currentColor" strokeWidth="1.85" strokeLinecap="round" />
-    </svg>
-  )
-}
-
-function IconXCircle() {
-  return (
-    <svg className="tosRiskIcon" width="38" height="38" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <circle cx="12" cy="12" r="9.5" stroke="#dc2626" strokeWidth="1.65" />
-      <path d="M9 9l6 6M15 9l-6 6" stroke="#dc2626" strokeWidth="1.65" strokeLinecap="round" />
-    </svg>
-  )
-}
-
 export default function TermsOfServicePage() {
   const navigate = useNavigate()
   const { activeId, scrollToId } = useLegalDocToc(SECTION_IDS)
@@ -241,3 +215,9 @@ export default function TermsOfServicePage() {
     </main>
   )
 }
+
+
+
+function IconCheckCircle() {return (<svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" stroke="currentColor" strokeWidth="1.85" strokeLinecap="round" strokeLinejoin="round" /></svg>)}
+function IconLock() {return (<svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2" stroke="currentColor" strokeWidth="1.85" /><path d="M8 11V8a4 4 0 018 0v3" stroke="currentColor" strokeWidth="1.85" strokeLinecap="round" /></svg>)}
+function IconXCircle() {return (<svg className="tosRiskIcon" width="38" height="38" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="9.5" stroke="#dc2626" strokeWidth="1.65" /><path d="M9 9l6 6M15 9l-6 6" stroke="#dc2626" strokeWidth="1.65" strokeLinecap="round" /></svg>)}

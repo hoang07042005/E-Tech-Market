@@ -55,34 +55,6 @@ function formatPriceVnd(price: string) {
 }
 
 
-function HeartIcon({ filled }: { filled?: boolean }) {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      fill={filled ? '#f97316' : 'none'}
-      width="16"
-      height="16"
-      stroke={filled ? '#f97316' : 'currentColor'}
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
-    </svg>
-  )
-}
-
-function ExpandIcon() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" width="16" height="16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <polyline points="15 3 21 3 21 9"></polyline>
-      <polyline points="9 21 3 21 3 15"></polyline>
-      <line x1="21" y1="3" x2="14" y2="10"></line>
-      <line x1="3" y1="21" x2="10" y2="14"></line>
-    </svg>
-  )
-}
-
 function ProductCard({
   product,
   liked,
@@ -119,7 +91,7 @@ function ProductCard({
     }
     // Fallback: no variants → 0
     const basePrice = 0
-    
+
     return {
       displayPrice: basePrice.toString(),
       displayOldPrice: null,
@@ -276,41 +248,6 @@ function ProductCard({
   )
 }
 
-function PaymentIcon() {
-  return (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
-      <line x1="1" y1="10" x2="23" y2="10"></line>
-    </svg>
-  )
-}
-
-function ShippingIcon() {
-  return (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <rect x="1" y="3" width="15" height="13"></rect>
-      <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon>
-      <circle cx="5.5" cy="18.5" r="2.5"></circle>
-      <circle cx="18.5" cy="18.5" r="2.5"></circle>
-    </svg>
-  )
-}
-
-function WarrantyIcon() {
-  return (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
-    </svg>
-  )
-}
-
-function SupportIcon() {
-  return (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
-    </svg>
-  )
-}
 function Stars({ value }: { value: number }) {
   const full = Math.floor(value)
   const half = value - full >= 0.5
@@ -963,10 +900,10 @@ export default function HomePage() {
                 Tham gia cộng đồng ưu tiên: ưu đãi sớm cho phiên bản giới hạn và tài liệu kỹ thuật chọn lọc.
               </p>
               <form className="hpNewsletterForm" onSubmit={onNewsletterSubmit}>
-                <input 
-                  type="email" 
-                  placeholder="ĐỊA CHỈ EMAIL" 
-                  className="hpNewsletterInput" 
+                <input
+                  type="email"
+                  placeholder="ĐỊA CHỈ EMAIL"
+                  className="hpNewsletterInput"
                   value={newsletterEmail}
                   onChange={(e) => setNewsletterEmail(e.target.value)}
                   required
@@ -982,3 +919,13 @@ export default function HomePage() {
     </div>
   )
 }
+
+
+
+
+function HeartIcon({ filled }: { filled?: boolean }) {return (<svg viewBox="0 0 24 24"fill={filled ? '#f97316' : 'none'}width="16"height="16"stroke={filled ? '#f97316' : 'currentColor'}strokeWidth="2"strokeLinecap="round"strokeLinejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>)}
+function ExpandIcon() {return (<svg viewBox="0 0 24 24" fill="none" width="16" height="16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 3 21 3 21 9"></polyline><polyline points="9 21 3 21 3 15"></polyline><line x1="21" y1="3" x2="14" y2="10"></line><line x1="3" y1="21" x2="10" y2="14"></line></svg>)}
+function PaymentIcon() {return (<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>)}
+function ShippingIcon() {return (<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg>)}
+function WarrantyIcon() {return (<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>)}
+function SupportIcon() {return (<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>)}

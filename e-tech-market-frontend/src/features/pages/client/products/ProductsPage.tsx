@@ -607,7 +607,7 @@ export default function ProductsPage() {
                       >
                         <span>{sortOptions.find(o => o.value === sort)?.label || 'Mặc định'}</span>
                         <svg className="ppSortArrow" width="10" height="6" viewBox="0 0 10 6" fill="none">
-                          <path d="M1 1L5 5L9 1" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                          <path d="M1 1L5 5L9 1" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                         </svg>
                       </button>
                       {sortOpen && (
@@ -630,8 +630,8 @@ export default function ProductsPage() {
                       )}
                     </div>
                   </div>
-                  <button 
-                    className="ppMobileFilterBtn" 
+                  <button
+                    className="ppMobileFilterBtn"
                     onClick={() => setShowMobileFilters(true)}
                   >
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

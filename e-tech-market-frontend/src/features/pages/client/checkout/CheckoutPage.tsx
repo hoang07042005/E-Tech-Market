@@ -55,20 +55,6 @@ type CouponPublic = {
   end_at: string | null
 }
 
-function CheckIcon() {
-  return (
-    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path
-        d="M20 6L9 17l-5-5"
-        stroke="currentColor"
-        strokeWidth="2.4"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  )
-}
-
 function readStoredUser(): StoredUser | null {
   const raw = localStorage.getItem('user')
   if (!raw) return null
@@ -145,27 +131,27 @@ export default function CheckoutPage() {
 
   useEffect(() => {
     let cancelled = false
-    ;(async () => {
-      try {
-        const cfg = await apiFetch<{ momo?: { enabled?: boolean }; vnpay?: { enabled?: boolean }; cod?: { enabled?: boolean } }>(
-          '/api/store/payments',
-        )
-        const next: PaymentAvailability = {
-          cod: !!cfg.cod?.enabled,
-          vnpay: !!cfg.vnpay?.enabled,
-          momo: !!cfg.momo?.enabled,
+      ; (async () => {
+        try {
+          const cfg = await apiFetch<{ momo?: { enabled?: boolean }; vnpay?: { enabled?: boolean }; cod?: { enabled?: boolean } }>(
+            '/api/store/payments',
+          )
+          const next: PaymentAvailability = {
+            cod: !!cfg.cod?.enabled,
+            vnpay: !!cfg.vnpay?.enabled,
+            momo: !!cfg.momo?.enabled,
+          }
+          if (!cancelled) setPayAvail(next)
+        } catch {
+          // keep defaults
         }
-        if (!cancelled) setPayAvail(next)
-      } catch {
-        // keep defaults
-      }
-    })()
+      })()
 
     apiFetch<CouponPublic[]>('/api/coupons')
       .then((res) => {
         if (!cancelled && Array.isArray(res)) setActiveCoupons(res)
       })
-      .catch(() => {})
+      .catch(() => { })
 
     return () => {
       cancelled = true
@@ -174,45 +160,45 @@ export default function CheckoutPage() {
 
   useEffect(() => {
     let cancelled = false
-    ;(async () => {
-      try {
-        const s = await apiFetch<{
-          policy: { free_shipping_min: number; apply_global: boolean }
-          methods: ShippingMethodPublic[]
-          zones: ShippingZonePublic[]
-        }>('/api/store/shipping')
+      ; (async () => {
+        try {
+          const s = await apiFetch<{
+            policy: { free_shipping_min: number; apply_global: boolean }
+            methods: ShippingMethodPublic[]
+            zones: ShippingZonePublic[]
+          }>('/api/store/shipping')
 
-        if (cancelled) return
-        setShipPolicy({
-          free_shipping_min: Number(s.policy?.free_shipping_min ?? 0) || 0,
-          apply_global: !!s.policy?.apply_global,
-        })
-        setShippingMethods(Array.isArray(s.methods) ? s.methods : [])
-        setShippingZones(Array.isArray(s.zones) ? s.zones : [])
+          if (cancelled) return
+          setShipPolicy({
+            free_shipping_min: Number(s.policy?.free_shipping_min ?? 0) || 0,
+            apply_global: !!s.policy?.apply_global,
+          })
+          setShippingMethods(Array.isArray(s.methods) ? s.methods : [])
+          setShippingZones(Array.isArray(s.zones) ? s.zones : [])
 
-        setForm((cur) => {
-          const next = { ...cur }
+          setForm((cur) => {
+            const next = { ...cur }
 
-          // Restore last selection from localStorage (if still active).
-          if (!next.shipping_method_id) {
-            const raw = window.localStorage.getItem(shipMethodKey)
-            const id = raw ? Number(raw) : NaN
-            const ok = Number.isFinite(id) && (Array.isArray(s.methods) ? s.methods : []).some((m) => m.is_active && m.id === id)
-            if (ok) next.shipping_method_id = id
-          }
-          if (!next.shipping_zone_id) {
-            const raw = window.localStorage.getItem(shipZoneKey)
-            const id = raw ? Number(raw) : NaN
-            const ok = Number.isFinite(id) && (Array.isArray(s.zones) ? s.zones : []).some((z) => z.is_active && z.id === id)
-            if (ok) next.shipping_zone_id = id
-          }
+            // Restore last selection from localStorage (if still active).
+            if (!next.shipping_method_id) {
+              const raw = window.localStorage.getItem(shipMethodKey)
+              const id = raw ? Number(raw) : NaN
+              const ok = Number.isFinite(id) && (Array.isArray(s.methods) ? s.methods : []).some((m) => m.is_active && m.id === id)
+              if (ok) next.shipping_method_id = id
+            }
+            if (!next.shipping_zone_id) {
+              const raw = window.localStorage.getItem(shipZoneKey)
+              const id = raw ? Number(raw) : NaN
+              const ok = Number.isFinite(id) && (Array.isArray(s.zones) ? s.zones : []).some((z) => z.is_active && z.id === id)
+              if (ok) next.shipping_zone_id = id
+            }
 
-          return next
-        })
-      } catch {
-        // keep defaults
-      }
-    })()
+            return next
+          })
+        } catch {
+          // keep defaults
+        }
+      })()
     return () => {
       cancelled = true
     }
@@ -507,8 +493,8 @@ export default function CheckoutPage() {
               </div>
 
               <div className="coSuccessDesc">
-              Đơn hàng của bạn đã được ghi nhận và đang chờ xác nhận. Chúng tôi sẽ nhanh chóng xử lý, đóng gói và cập nhật trạng thái vận chuyển trong thời gian sớm nhất.
-              Bạn có thể theo dõi chi tiết đơn hàng, trạng thái giao hàng và thông tin thanh toán trong mục <b>Đơn hàng</b> bất cứ lúc nào.
+                Đơn hàng của bạn đã được ghi nhận và đang chờ xác nhận. Chúng tôi sẽ nhanh chóng xử lý, đóng gói và cập nhật trạng thái vận chuyển trong thời gian sớm nhất.
+                Bạn có thể theo dõi chi tiết đơn hàng, trạng thái giao hàng và thông tin thanh toán trong mục <b>Đơn hàng</b> bất cứ lúc nào.
               </div>
 
               <div className="coSuccessActions">
@@ -617,10 +603,10 @@ export default function CheckoutPage() {
                       {shippingZones
                         .filter((z) => z.is_active)
                         .map((z) => {
-                        const feeLabel = isFreeShipping ? 'Miễn phí' : z.fee > 0 ? `+${formatVnd(z.fee)}` : '+0 đ'
+                          const feeLabel = isFreeShipping ? 'Miễn phí' : z.fee > 0 ? `+${formatVnd(z.fee)}` : '+0 đ'
                           return (
                             <option key={z.id} value={String(z.id)}>
-                            {z.name} ({feeLabel})
+                              {z.name} ({feeLabel})
                             </option>
                           )
                         })}
@@ -874,3 +860,8 @@ export default function CheckoutPage() {
   )
 }
 
+
+
+
+
+function CheckIcon() {return (<svg width="26" height="26" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M20 6L9 17l-5-5"stroke="currentColor"strokeWidth="2.4"strokeLinecap="round"strokeLinejoin="round"/></svg>)}

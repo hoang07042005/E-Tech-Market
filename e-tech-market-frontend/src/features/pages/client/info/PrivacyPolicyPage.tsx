@@ -21,35 +21,6 @@ const TOC = [
   { id: PP_SECTION_IDS[4], num: '05', title: 'Quyền của người dùng' },
 ] as const
 
-function IconDatabase() {
-  return (
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <ellipse cx="12" cy="6.5" rx="7.5" ry="3.5" stroke="currentColor" strokeWidth="1.75" />
-      <path d="M4.5 6.5v11c0 2 15 2 15 0v-11" stroke="currentColor" strokeWidth="1.75" />
-      <path d="M4.5 12h15" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" />
-    </svg>
-  )
-}
-
-function IconFingerprint() {
-  return (
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path
-        d="M12 4a14 14 0 0 1 14 14M12 7a11 11 0 0 1 11 11M12 10a8 8 0 0 1 8 8"
-        stroke="currentColor"
-        strokeWidth="1.75"
-        strokeLinecap="round"
-      />
-      <path
-        d="M9 21a15 15 0 0 1-9-13M6 21a12 12 0 0 1-6-10"
-        stroke="currentColor"
-        strokeWidth="1.75"
-        strokeLinecap="round"
-      />
-    </svg>
-  )
-}
-
 export default function PrivacyPolicyPage() {
   const { activeId, scrollToId } = useLegalDocToc(PP_SECTION_IDS)
 
@@ -275,3 +246,8 @@ export default function PrivacyPolicyPage() {
     </main>
   )
 }
+
+
+
+function IconDatabase() {return (<svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><ellipse cx="12" cy="6.5" rx="7.5" ry="3.5" stroke="currentColor" strokeWidth="1.75" /><path d="M4.5 6.5v11c0 2 15 2 15 0v-11" stroke="currentColor" strokeWidth="1.75" /><path d="M4.5 12h15" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" /></svg>)}
+function IconFingerprint() {return (<svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 4a14 14 0 0 1 14 14M12 7a11 11 0 0 1 11 11M12 10a8 8 0 0 1 8 8"stroke="currentColor"strokeWidth="1.75"strokeLinecap="round"/><path d="M9 21a15 15 0 0 1-9-13M6 21a12 12 0 0 1-6-10"stroke="currentColor"strokeWidth="1.75"strokeLinecap="round"/></svg>)}
