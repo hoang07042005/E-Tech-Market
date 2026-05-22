@@ -54,6 +54,41 @@ CREATE SEQUENCE public.admin_settings_id_seq
 
 ALTER SEQUENCE public.admin_settings_id_seq OWNED BY public.admin_settings.id;
 
+--
+-- Name: banners; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.banners (
+    id bigint NOT NULL,
+    title character varying(255),
+    description text,
+    image_url character varying(255) NOT NULL,
+    link_url character varying(255),
+    is_active boolean DEFAULT true NOT NULL,
+    sort_order integer DEFAULT 0 NOT NULL,
+    created_at timestamp(0) without time zone,
+    updated_at timestamp(0) without time zone
+);
+
+
+--
+-- Name: banners_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.banners_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: banners_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.banners_id_seq OWNED BY public.banners.id;
+
 
 --
 -- Name: blog_categories; Type: TABLE; Schema: public; Owner: -
@@ -1600,6 +1635,13 @@ ALTER TABLE ONLY public.admin_settings ALTER COLUMN id SET DEFAULT nextval('publ
 
 
 --
+-- Name: banners id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.banners ALTER COLUMN id SET DEFAULT nextval('public.banners_id_seq'::regclass);
+
+
+--
 -- Name: blog_categories id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -1886,6 +1928,14 @@ ALTER TABLE ONLY public.admin_settings
 
 ALTER TABLE ONLY public.admin_settings
     ADD CONSTRAINT admin_settings_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: banners banners_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.banners
+    ADD CONSTRAINT banners_pkey PRIMARY KEY (id);
 
 
 --

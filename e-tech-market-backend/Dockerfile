@@ -20,6 +20,15 @@ RUN docker-php-ext-install pdo_mysql pdo_pgsql mbstring exif pcntl bcmath gd
 # Install phpredis extension (required for CACHE_DRIVER=redis / SESSION_DRIVER=redis)
 RUN pecl install redis && docker-php-ext-enable redis
 
+# Set PHP upload limits so banner image uploads do not fail on Docker default settings
+RUN printf '%s\n' \
+    'upload_max_filesize = 20M' \
+    'post_max_size = 20M' \
+    'memory_limit = 512M' \
+    'max_execution_time = 300' \
+    'max_input_time = 300' \
+    > /usr/local/etc/php/conf.d/uploads.ini
+
 # Get latest Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 

@@ -15,6 +15,7 @@ import SettingsAdminPage from './settings/SettingsAdminPage'
 import NotificationsAdminPage from './notifications/NotificationsAdminPage'
 import AdminBlogPage from './blog/AdminBlogPage'
 import AdminFlashSalePage from './flashSale/AdminFlashSalePage'
+import BannerAdminPage from './banners/BannerAdminPage'
 import { apiFetch } from '@/configs/api.config'
 import { fetchDashboardStats,  } from '@/features/services/admin/api.admin.service'
 import { API_BASE_URL } from '@/configs/api.config'
@@ -34,6 +35,7 @@ type AdminTab =
   | 'users'
   | 'blog'
   | 'flashSale'
+  | 'banners'
   | 'settings'
 
 const ADMIN_TAB_TITLE: Record<AdminTab, string> = {
@@ -50,6 +52,7 @@ const ADMIN_TAB_TITLE: Record<AdminTab, string> = {
   users: 'Người dùng',
   blog: 'Tin tức Blog',
   flashSale: 'Flash Sale',
+  banners: 'Banners',
   settings: 'Cài đặt',
 }
 
@@ -135,6 +138,7 @@ function hasPermissionForTab(tab: AdminTab): boolean {
       case 'settings':
         return roles.includes('admin')
       case 'flashSale':
+      case 'banners':
         return roles.includes('admin')
       case 'reviews':
       case 'shopQna':
@@ -395,6 +399,7 @@ export default function AdminPage() {
             <SidebarSection title="NỘI DUNG & TRUYỀN THÔNG" collapsed={isSidebarCollapsed} />
           )}
           {hasPermissionForTab('blog') && <SidebarItem active={activeTab === 'blog'} onClick={() => setActiveTab('blog')} icon={<NewspaperIcon />} label="Tin tức Blog" collapsed={isSidebarCollapsed} />}
+          {hasPermissionForTab('banners') && <SidebarItem active={activeTab === 'banners'} onClick={() => setActiveTab('banners')} icon={<ImageIcon />} label="Banners" collapsed={isSidebarCollapsed} />}
           {hasPermissionForTab('notifications') && <SidebarItem active={activeTab === 'notifications'} onClick={() => setActiveTab('notifications')} icon={<BellIcon />} label="Thông báo" collapsed={isSidebarCollapsed} />}
 
           {hasPermissionForTab('settings') && (
@@ -674,6 +679,7 @@ export default function AdminPage() {
           {activeTab === 'users' && <UsersAdminPage />}
           {activeTab === 'orders' && <OrdersAdminPage />}
           {activeTab === 'blog' && <AdminBlogPage />}
+          {activeTab === 'banners' && <BannerAdminPage />}
           {activeTab === 'flashSale' && <AdminFlashSalePage />}
           {activeTab === 'settings' && <SettingsAdminPage />}
         </div>
@@ -766,6 +772,16 @@ function MailIcon() {
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
       <polyline points="22,6 12,13 2,6" />
+    </svg>
+  )
+}
+
+function ImageIcon() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+      <circle cx="8.5" cy="8.5" r="1.5" />
+      <polyline points="21 15 16 10 5 21" />
     </svg>
   )
 }

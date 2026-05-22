@@ -48,11 +48,11 @@
   z-index: 5;
 }
 .hpHeroText {
-  max-width: 800px;
+  max-width: 950px;
   position: relative;
 }
 .hpHeroTitleNew {
-  font-size: 6rem;
+  font-size: 5rem;
   font-weight: 600;
   line-height: 1;
   margin-bottom: 0;
@@ -65,8 +65,8 @@
   font-size: 1.25rem;
   color: var(--et-text-muted);
   line-height: 1.8;
-  margin-bottom: 10px;
-  max-width: 520px;
+  margin-bottom: 15px;
+  max-width: 750px;
 }
 .hpBtnShopNow {
   display: inline-flex;

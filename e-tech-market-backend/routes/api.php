@@ -33,6 +33,8 @@ use App\Http\Controllers\Admin\OrdersController as AdminOrdersController;
 use App\Http\Controllers\Admin\SettingsController as AdminSettingsController;
 use App\Http\Controllers\Admin\ShippingZonesController as AdminShippingZonesController;
 use App\Http\Controllers\Admin\ShippingMethodsController as AdminShippingMethodsController;
+use App\Http\Controllers\Admin\BannerController as AdminBannerController;
+use App\Http\Controllers\Client\BannerController as ClientBannerController;
 use Illuminate\Http\Request;
 
 /*
@@ -172,6 +174,9 @@ Route::middleware('auth:sanctum')->group(function () {
         // Uploads
         Route::post('/uploads/product-news-thumbnail', [AdminUploadsController::class, 'storeProductNewsThumbnail']);
         Route::post('/uploads/blog-thumbnail', [AdminUploadsController::class, 'storeBlogThumbnail']);
+
+        // Banners
+        Route::apiResource('banners', AdminBannerController::class);
     });
 });
 
@@ -203,6 +208,8 @@ Route::get('/store/config', [StoreProfileController::class, 'config']);
 Route::get('/store/contact', [StoreProfileController::class, 'contact']);
 Route::get('/store/payments', [StoreProfileController::class, 'payments']);
 Route::get('/store/shipping', [StoreProfileController::class, 'shipping']);
+
+Route::get('/banners', [ClientBannerController::class, 'index']);
 
 Route::get('/coupons', [ClientCouponsController::class, 'index']);
 Route::post('/coupons/apply', [ClientCouponsController::class, 'apply']);

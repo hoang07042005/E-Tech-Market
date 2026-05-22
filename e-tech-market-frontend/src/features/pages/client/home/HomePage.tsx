@@ -10,6 +10,7 @@ import { addToCart } from '@/features/services/cart.service'
 import { fetchWishlist, toggleWishlist } from '@/features/services/wishlist.service'
 import { addToCompare, getCompareList, removeFromCompare } from '@/features/services/compare.service'
 import FlashSaleSection from './FlashSaleSection'
+import { fetchActiveBanners, type Banner } from '@/features/services/client/banners.client.service'
 import Skeleton from '@/components/Skeleton'
 
 const resolveImageUrl = (url: string | null) => {
@@ -343,6 +344,16 @@ export default function HomePage() {
   const [printerProducts, setPrinterProducts] = useState<ApiProduct[]>([])
   const [loading, setLoading] = useState(true)
   const [wishSet, setWishSet] = useState<Set<number>>(() => new Set())
+  const [banners, setBanners] = useState<Banner[]>([])
+  const [currentBannerIndex, setCurrentBannerIndex] = useState(0)
+
+  useEffect(() => {
+    if (banners.length <= 1) return
+    const interval = setInterval(() => {
+      setCurrentBannerIndex((prev) => (prev + 1) % banners.length)
+    }, 300000)
+    return () => clearInterval(interval)
+  }, [banners.length])
   const token = typeof window !== 'undefined' ? window.localStorage.getItem('token') : null
 
   useEffect(() => {
@@ -395,10 +406,12 @@ export default function HomePage() {
       fetchCategories(),
       apiFetch<ProductReview[]>('/api/reviews?min_rating=5&limit=6'),
       apiFetch<{ data: BlogPost[] }>('/api/blog/posts?per_page=5'),
-      fetchProducts({ limit: 16, category_id: 2 })
+      fetchProducts({ limit: 16, category_id: 2 }),
+      fetchActiveBanners()
     ])
-      .then(([prodRes, couponRes, catRes, reviewRes, newsRes, phoneRes]) => {
+      .then(([prodRes, couponRes, catRes, reviewRes, newsRes, phoneRes, bannerRes]) => {
         if (active) {
+          setBanners(Array.isArray(bannerRes) ? bannerRes : [])
           setFeaturedProducts(prodRes.data)
           if (Array.isArray(couponRes)) setActiveCoupons(couponRes.slice(0, 4))
           if (Array.isArray(catRes)) {
@@ -513,34 +526,92 @@ export default function HomePage() {
   return (
     <div className="hpPage">
       <main className="hpMain">
-        <section className="hpHeroNew">
-          <div className="hpHeroImageContainer">
-            <img src={heroImg} alt="Sản phẩm tiêu biểu" className="hpHeroImg" />
-            <div className="hpHeroOverlay"></div>
-          </div>
+        {banners.length > 0 ? (
+          <section className="hpHeroNew" style={{ position: 'relative' }}>
+            <div className="hpHeroImageContainer" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}>
+              {banners.map((b, idx) => (
+                <img 
+                  key={b.id} 
+                  src={resolveImageUrl(b.image_url)} 
+                  alt={b.title || ''} 
+                  className="hpHeroImg"
+                  style={{ opacity: idx === currentBannerIndex ? 1 : 0, transition: 'opacity 0.8s ease-in-out', position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover' }}
+                />
+              ))}
+              <div className="hpHeroOverlay"></div>
+            </div>
 
-          <div className="hpHeroContent">
-            <div className="hpHeroText">
-              <h1 className="hpHeroTitleNew">
-                Chính xác.<br />Sức mạnh.<br />Hoàn hảo.
-              </h1>
-              <p className="hpHeroDescNew">
-                Trải nghiệm đỉnh cao của kỹ thuật hiệu năng cao.<br />
-                Mỗi linh kiện đều được tuyển chọn dành cho người dùng chuyên nghiệp khó tính.
-              </p>
-              <div className="hpHeroActions">
-                <button type="button" className="hpBtnShopNow" onClick={() => navigate('/products')}>
-                  MUA NGAY
-                </button>
-              </div>
+            <div className="hpHeroContent" style={{ position: 'relative', zIndex: 2 }}>
+              <div className="hpHeroText">
+                <h1 className="hpHeroTitleNew" style={{ whiteSpace: 'pre-line' }}>
+                  {banners[currentBannerIndex]?.title || 'Chính xác.\nSức mạnh.\nHoàn hảo.'}
+                </h1>
+                {(banners[currentBannerIndex]?.description) && (
+                  <p className="hpHeroDescNew" style={{ whiteSpace: 'pre-line' }}>
+                    {banners[currentBannerIndex].description}
+                  </p>
+                )}
+                
+                <div className="hpHeroActions">
+                  <button 
+                    type="button" 
+                    className="hpBtnShopNow" 
+                    onClick={() => navigate(banners[currentBannerIndex]?.link_url || '/products')}
+                  >
+                    Khám Phá Ngay
+                  </button>
+                </div>
 
-              <div className="hpHeroIndicator">
-                <span className="hpIndicatorLine"></span>
-                <span className="hpIndicatorText">HÀNG MỚI: BỘ TITANIUM</span>
+                <div className="hpHeroIndicator">
+                  <span className="hpIndicatorLine"></span>
+                  <span className="hpIndicatorText">CẬP NHẬT MỚI NHẤT</span>
+                </div>
               </div>
             </div>
-          </div>
-        </section>
+            
+            {banners.length > 1 && (
+              <div className="hpBannerDots" style={{ position: 'absolute', bottom: '30px', left: '0', width: '100%', display: 'flex', justifyContent: 'center', gap: '10px', zIndex: 10 }}>
+                {banners.map((_, idx) => (
+                  <button 
+                    key={idx} 
+                    onClick={() => setCurrentBannerIndex(idx)}
+                    style={{ width: '12px', height: '12px', borderRadius: '50%', background: idx === currentBannerIndex ? '#f97316' : '#fff', border: 'none', cursor: 'pointer', transition: 'all 0.3s', opacity: idx === currentBannerIndex ? 1 : 0.4 }}
+                    aria-label={`Go to slide ${idx + 1}`}
+                  />
+                ))}
+              </div>
+            )}
+          </section>
+        ) : (
+          <section className="hpHeroNew">
+            <div className="hpHeroImageContainer">
+              <img src={heroImg} alt="Sản phẩm tiêu biểu" className="hpHeroImg" />
+              <div className="hpHeroOverlay"></div>
+            </div>
+
+            <div className="hpHeroContent">
+              <div className="hpHeroText">
+                <h1 className="hpHeroTitleNew">
+                  Chính xác.<br />Sức mạnh.<br />Hoàn hảo.
+                </h1>
+                <p className="hpHeroDescNew">
+                  Trải nghiệm đỉnh cao của kỹ thuật hiệu năng cao.<br />
+                  Mỗi linh kiện đều được tuyển chọn dành cho người dùng chuyên nghiệp khó tính.
+                </p>
+                <div className="hpHeroActions">
+                  <button type="button" className="hpBtnShopNow" onClick={() => navigate('/products')}>
+                    MUA NGAY
+                  </button>
+                </div>
+
+                <div className="hpHeroIndicator">
+                  <span className="hpIndicatorLine"></span>
+                  <span className="hpIndicatorText">HÀNG MỚI: BỘ TITANIUM</span>
+                </div>
+              </div>
+            </div>
+          </section>
+        )}
 
         {(loading || activeCoupons.length > 0) && (
           <section className="hpCouponSection reveal">
