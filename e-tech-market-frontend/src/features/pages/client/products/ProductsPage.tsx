@@ -358,6 +358,9 @@ export default function ProductsPage() {
   const [query, setQuery] = useState(() => searchQueryParam)
   const [sort, setSort] = useState<string>('default')
   const [maxPrice, setMaxPrice] = useState(100000000)
+  const [minPrice, setMinPrice] = useState(0)
+  const [useCustomPrice, setUseCustomPrice] = useState(false)
+  const [priceTouched, setPriceTouched] = useState(false)
   const [selectedBrand, setSelectedBrand] = useState<string | null>(null)
   const [page, setPage] = useState(1)
   const [lastPage, setLastPage] = useState(1)
@@ -460,8 +463,18 @@ export default function ProductsPage() {
       search: query || undefined,
       page,
       limit: 12,
-      max_price: maxPrice,
     }
+
+    if (priceTouched) {
+      if (useCustomPrice) {
+        // send both bounds
+        params.min_price = Math.max(0, minPrice)
+        params.max_price = Math.max(0, maxPrice)
+      } else {
+        params.max_price = maxPrice
+      }
+    }
+
     if (selectedCatId) params.category_id = selectedCatId
     if (selectedBrand) params.brand = selectedBrand
 
@@ -477,7 +490,7 @@ export default function ProductsPage() {
       })
       .catch(console.error)
       .finally(() => setLoading(false))
-  }, [query, selectedCatId, sort, page, maxPrice, selectedBrand])
+  }, [query, selectedCatId, sort, page, maxPrice, selectedBrand, priceTouched, minPrice, useCustomPrice])
 
   function selectCategory(id: number | null) {
     const nextParams = new URLSearchParams(searchParams)
@@ -529,21 +542,81 @@ export default function ProductsPage() {
               </div>
 
               <div className="ppFilterGroup">
-                <h3 className="ppFilterTitle">MỨC GIÁ</h3>
+                <div className="ppFilterTitleRow">
+                  <h3 className="ppFilterTitle">MỨC GIÁ</h3>
+                  <label className="ppPriceToggle">
+                    <span>Nhập khoảng giá</span>
+                    <input
+                      type="checkbox"
+                      checked={useCustomPrice}
+                      onChange={(e) => {
+                        setUseCustomPrice(e.target.checked)
+                        if (!e.target.checked) {
+                          setMinPrice(0)
+                          setMaxPrice(100000000)
+                          setPage(1)
+                          setPriceTouched(false)
+                        }
+                      }}
+                    />
+                  </label>
+                </div>
                 <div className="ppPriceRangeWrap">
-                  <input
-                    type="range"
-                    className="ppPriceRange"
-                    min="0"
-                    max="100000000"
-                    step="500000"
-                    value={maxPrice}
-                    onChange={(e) => setMaxPrice(parseInt(e.target.value))}
-                  />
-                  <div className="ppPriceLabels">
-                    <span>0 đ</span>
-                    <span>Tối đa {maxPrice.toLocaleString('vi-VN')} đ</span>
-                  </div>
+                  {!useCustomPrice ? (
+                    <>
+                      <input
+                        type="range"
+                        className="ppPriceRange"
+                        min="0"
+                        max="100000000"
+                        step="500000"
+                        value={maxPrice}
+                        onChange={(e) => {
+                          setMaxPrice(parseInt(e.target.value))
+                          setPriceTouched(true)
+                        }}
+                      />
+                      <div className="ppPriceLabels">
+                        <span>0 đ</span>
+                        <span>Tối đa {maxPrice.toLocaleString('vi-VN')} đ</span>
+                      </div>
+                    </>
+                  ) : (
+                    <div className="ppPriceCustomInputs">
+                      <div>
+                        <label className="ppPriceInputLabel">Từ (đ)</label>
+                        <input
+                          type="number"
+                          className="ppPriceInput"
+                          min={0}
+                          step={1000}
+                          value={minPrice}
+                          onChange={(e) => {
+                              const v = Math.max(0, Number(e.target.value) || 0)
+                              setMinPrice(v)
+                              setPage(1)
+                              setPriceTouched(true)
+                            }}
+                        />
+                      </div>
+                      <div>
+                        <label className="ppPriceInputLabel">Đến (đ)</label>
+                        <input
+                          type="number"
+                          className="ppPriceInput"
+                          min={0}
+                          step={1000}
+                          value={maxPrice}
+                          onChange={(e) => {
+                              const v = Math.max(0, Number(e.target.value) || 0)
+                              setMaxPrice(v)
+                              setPage(1)
+                              setPriceTouched(true)
+                            }}
+                        />
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
 

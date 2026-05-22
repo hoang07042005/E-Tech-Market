@@ -439,6 +439,12 @@
     font-weight: 600;
     font-size: 15px;
     color: var(--admin-text-p);
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    max-width: 300px;
 }
 
 .pBrand {
@@ -457,7 +463,7 @@
 }
 
 .pDescCell {
-    max-width: 420px;
+    max-width: 320px;
     color: rgba(17, 24, 39, .78);
     font-size: 13px;
     line-height: 1.4;

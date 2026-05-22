@@ -91,6 +91,28 @@
   margin-bottom: 40px
 }
 
+.ppFilterTitleRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.ppPriceToggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: #444;
+  cursor: pointer;
+}
+
+.ppPriceToggle input {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--et-primary);
+}
+
 .ppFilterTitle {
   letter-spacing: .1em;
   color: #111;
@@ -168,6 +190,27 @@
   width: 100%;
   accent-color: var(--et-primary);
   margin-bottom: 12px
+}
+
+.ppPriceCustomInputs {
+  display: flex;
+  gap: 8px;
+  align-items: flex-end;
+}
+
+.ppPriceInputLabel {
+  font-size: 12px;
+  color: #666;
+  display: block;
+  margin-bottom: 6px;
+}
+
+.ppPriceInput {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid var(--et-border);
+  border-radius: 5px;
+  font-size: 13px;
 }
 
 .ppPriceLabels {
@@ -505,7 +548,7 @@
 }
 
 .ppCardContent {
-  padding: 25px
+  padding: 15px
 }
 
 .ppCardTopRow {
@@ -584,7 +627,12 @@
   margin-bottom: 15px;
   font-size: 18px;
   font-weight: 600;
-  line-height: 1.3
+  line-height: 1.3;
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
 }
 
 .ppCardTitleLink {

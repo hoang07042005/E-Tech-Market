@@ -334,6 +334,16 @@ html.dark .ppFilterTitle {
     color: var(--et-text);
 }
 
+html.dark .ppPriceInput {
+    background: var(--et-surface);
+    border-color: var(--et-border);
+    color: var(--et-text);
+}
+
+html.dark .ppPriceToggle {
+    color: var(--et-text);
+}
+
 html.dark .ppSidebarLabel {
     color: var(--et-text-muted);
 }
