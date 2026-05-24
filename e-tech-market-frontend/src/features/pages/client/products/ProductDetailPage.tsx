@@ -938,9 +938,9 @@ export default function ProductDetailPage() {
       <div className="pdpPage">
         <div className="ppContainer">
           <nav className="pdpBreadcrumb">
-            <Link to="/">Home</Link> / <Link to="/products">Store</Link> / <span>{product.name}</span>
+            <Link to="/">Trang chủ</Link> / <Link to="/products">Danh sách sản phẩm</Link> / <span>{product.name}</span>
           </nav>
-
+          <h1 className="pdpProductName">{product.name}</h1>
           <div className="pdpMainGrid">
             {/* Image Gallery */}
             <div className="pdpGallery">
@@ -979,6 +979,8 @@ export default function ProductDetailPage() {
                   </div>
                 </div>
               )}
+
+              
 
               <div className="pdpPriceRow">
                 <span className="pdpPrice">
