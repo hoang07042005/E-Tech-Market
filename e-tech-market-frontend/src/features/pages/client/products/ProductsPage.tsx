@@ -454,7 +454,7 @@ export default function ProductsPage() {
   }, [categories, searchParams])
 
   useEffect(() => {
-    fetchCategories().then(setCategories).catch(console.error)
+    fetchCategories('product').then(setCategories).catch(console.error)
   }, [])
 
   useEffect(() => {

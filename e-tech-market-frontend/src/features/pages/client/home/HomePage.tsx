@@ -1,4 +1,5 @@
 import '@/styles/pages/HomePage.css'
+import '@/styles/pages/VideoPage.css'
 import heroImg from '@/assets/banner.jpg'
 import cpuImg from '@/assets/unnamed.png'
 
@@ -18,6 +19,24 @@ const resolveImageUrl = (url: string | null) => {
   if (url.startsWith('http')) return url
   return `${API_BASE_URL}${url.startsWith('/') ? url : `/${url}`}`
 }
+
+interface Video {
+  id: number
+  product_id?: number | null
+  title?: string | null
+  video_url: string
+  thumbnail_url?: string | null
+  sort_order?: number
+  is_active: boolean
+  product?: {
+    id: number
+    name: string
+    slug: string
+    main_image_url: string | null
+    price: string | number
+  } | null
+}
+
 
 function avatarInitial(name: string) {
   const t = (name || '').trim()
@@ -334,6 +353,7 @@ export default function HomePage() {
   const [categories, setCategories] = useState<Category[]>([])
   const [globalReviews, setGlobalReviews] = useState<ProductReview[]>([])
   const [latestNews, setLatestNews] = useState<BlogPost[]>([])
+  const [homeVideos, setHomeVideos] = useState<Video[]>([])
   const [newsletterEmail, setNewsletterEmail] = useState('')
   const [newsletterLoading, setNewsletterLoading] = useState(false)
   const [tabActive, setTabActive] = useState<'phone' | 'laptop' | 'pc' | 'monitor' | 'printer'>('phone')
@@ -403,17 +423,19 @@ export default function HomePage() {
     Promise.all([
       fetchProducts({ limit: 10, is_featured: 1 }),
       apiFetch<CouponPublic[]>('/api/coupons?exclude_saved=true', { token: localStorage.getItem('token') }),
-      fetchCategories(),
+      fetchCategories('product'),
       apiFetch<ProductReview[]>('/api/reviews?min_rating=5&limit=6'),
       apiFetch<{ data: BlogPost[] }>('/api/blog/posts?per_page=5'),
       fetchProducts({ limit: 16, category_id: 2 }),
-      fetchActiveBanners()
+      fetchActiveBanners(),
+      apiFetch<Video[]>('/api/videos')
     ])
-      .then(([prodRes, couponRes, catRes, reviewRes, newsRes, phoneRes, bannerRes]) => {
+      .then(([prodRes, couponRes, catRes, reviewRes, newsRes, phoneRes, bannerRes, videoRes]) => {
         if (active) {
           setBanners(Array.isArray(bannerRes) ? bannerRes : [])
           setFeaturedProducts(prodRes.data)
           if (Array.isArray(couponRes)) setActiveCoupons(couponRes.slice(0, 4))
+          if (Array.isArray(videoRes)) setHomeVideos(videoRes.slice(0, 4))
           if (Array.isArray(catRes)) {
             const mainCats = catRes.filter(c => c.parent_id === null && c.is_active && c.image).slice(0, 5)
             setCategories(mainCats)
@@ -859,6 +881,55 @@ export default function HomePage() {
           </section>
         )}
 
+        {homeVideos.length > 0 && (
+          <section className="hpCuratedSection reveal" style={{ marginTop: '60px' }}>
+            <div className="hpContainer">
+              <div className="hpCuratedHeader" style={{ marginBottom: '24px' }}>
+                <div className="hpCuratedTitleBox">
+                  <span className="hpCuratedKicker">REVIEW THỰC TẾ &amp; TRỰC QUAN</span>
+                  <h2 className="hpCuratedTitle">Video nổi bật</h2>
+                </div>
+                <Link to="/videos" className="hpCuratedLink">
+                  XEM TẤT CẢ VIDEO →
+                </Link>
+              </div>
+
+              <div className="cvGrid">
+                {homeVideos.map((video) => (
+                  <div key={video.id} className="cvCard" onClick={() => navigate(`/videos/${video.id}`)}>
+                    <div className="cvThumbnailWrap">
+                      <img
+                        src={resolveImageUrl(video.thumbnail_url || (video.product?.main_image_url ?? null))}
+                        alt={video.title || ''}
+                        className="cvThumbnail"
+                      />
+                      <div className="cvPlayOverlay">
+                        <div className="cvPlayBtn">
+                          <svg width="24" height="24" viewBox="0 0 24 24" fill="#fff" style={{ marginLeft: '2px' }}>
+                            <path d="M8 5v14l11-7z" />
+                          </svg>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="cvCardBody">
+                      <h3 className="cvCardTitle">{video.title || 'Video giới thiệu'}</h3>
+                      {video.product && (
+                        <div className="cvProductLinkBadge">
+                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: '6px' }}>
+                            <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+                            <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+                          </svg>
+                          {video.product.name}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
+        )}
+
         <section className="hpWhyUsSection reveal">
           <div className="hpContainer">
             <div className="hpWhyUsGrid">
@@ -987,6 +1058,7 @@ export default function HomePage() {
           </div>
         </section>
       </main>
+
     </div>
   )
 }

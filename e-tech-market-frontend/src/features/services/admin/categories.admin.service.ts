@@ -14,6 +14,11 @@ export const fetchAdminCategories = (token: string | null) => {
   return apiFetch<Category[]>('/api/admin/categories', { token })
 }
 
+export const fetchAdminCategoriesByType = (token: string | null, type?: 'product' | 'video') => {
+  const qs = type ? `?type=${encodeURIComponent(type)}` : ''
+  return apiFetch<Category[]>(`/api/admin/categories${qs}`, { token })
+}
+
 export const deleteAdminCategory = (id: number, token: string | null) => {
   return apiFetch(`/api/admin/categories/${id}`, { method: 'DELETE', token })
 }

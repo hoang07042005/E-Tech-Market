@@ -11,6 +11,7 @@ import {
   type ProductFaq,
   type ProductNews,
   type ProductReview,
+  type Video,
 } from '@/features/services/products.service'
 import { API_BASE_URL } from '@/configs/api.config'
 import { addToCart } from '@/features/services/cart.service'
@@ -24,6 +25,45 @@ const resolveImageUrl = (url: string | null) => {
   if (!url) return 'https://via.placeholder.com/600'
   if (url.startsWith('http')) return url
   return `${API_BASE_URL}${url.startsWith('/') ? url : `/${url}`}`
+}
+
+function renderVideoPlayer(videoUrl: string, title?: string | null) {
+  if (!videoUrl) return null
+
+  let embedUrl = ''
+    const ytMatch = videoUrl.match(/(?:youtube\.com\/(?:[^/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?/\s]{11})/)
+  if (ytMatch) {
+    embedUrl = `https://www.youtube.com/embed/${ytMatch[1]}`
+  } else {
+    const vimeoMatch = videoUrl.match(/(?:vimeo\.com\/)(?:video\/)?(\d+)/)
+    if (vimeoMatch) {
+      embedUrl = `https://player.vimeo.com/video/${vimeoMatch[1]}`
+    }
+  }
+
+  if (embedUrl) {
+    return (
+      <iframe
+        width="100%"
+        height="100%"
+        src={embedUrl}
+        title={title || 'Product Video'}
+        frameBorder="0"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        allowFullScreen
+      />
+    )
+  }
+
+  const videoSrc = videoUrl.startsWith('http') ? videoUrl : `${API_BASE_URL}${videoUrl.startsWith('/') ? videoUrl : `/${videoUrl}`}`
+  return (
+    <video
+      src={videoSrc}
+      controls
+      preload="metadata"
+      style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+    />
+  )
 }
 
 const SHOP_REPLY_AVATAR_SRC =
@@ -135,13 +175,17 @@ function resolveVariantByFacet(
 
 const PDP_THUMB_VISIBLE = 7
 
+type ProductMediaItem =
+  | { type: 'image'; url: string }
+  | { type: 'video'; url: string; thumbnailUrl?: string | null; video: Video }
+
 type PdpThumbStripProps = {
-  allImages: string[]
+  mediaItems: ProductMediaItem[]
   selectedImg: string | null
   onSelectImage: (url: string) => void
 }
 
-function PdpThumbStrip({ allImages, selectedImg, onSelectImage }: PdpThumbStripProps) {
+function PdpThumbStrip({ mediaItems, selectedImg, onSelectImage }: PdpThumbStripProps) {
   const [windowWidth, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1200)
 
   useEffect(() => {
@@ -152,18 +196,18 @@ function PdpThumbStrip({ allImages, selectedImg, onSelectImage }: PdpThumbStripP
 
   const visibleCount = windowWidth <= 768 ? 5 : PDP_THUMB_VISIBLE
   const [thumbWindowStart, setThumbWindowStart] = useState(0)
-  const thumbTotal = allImages.length
+  const thumbTotal = mediaItems.length
   const showThumbNav = thumbTotal > visibleCount
   const thumbMaxStart = Math.max(0, thumbTotal - visibleCount)
   const thumbStart = Math.min(thumbWindowStart, thumbMaxStart)
   const thumbsToRender = showThumbNav
-    ? allImages.slice(thumbStart, thumbStart + visibleCount)
-    : allImages
+    ? mediaItems.slice(thumbStart, thumbStart + visibleCount)
+    : mediaItems
 
-  const pick = (img: string) => {
-    onSelectImage(img)
+  const pick = (url: string) => {
+    onSelectImage(url)
     if (!showThumbNav) return
-    const idx = allImages.indexOf(img)
+    const idx = mediaItems.findIndex(item => item.url === url)
     if (idx < 0) return
     setThumbWindowStart(s => {
       const effective = Math.min(s, thumbMaxStart)
@@ -173,11 +217,10 @@ function PdpThumbStrip({ allImages, selectedImg, onSelectImage }: PdpThumbStripP
     })
   }
 
-
   return (
     <div
       className={`pdpThumbRow${showThumbNav ? ' pdpThumbRow--paged' : ''}`}
-      aria-label="Thư viện ảnh"
+      aria-label="Thư viện ảnh và video"
     >
       {showThumbNav && (
         <button
@@ -191,17 +234,33 @@ function PdpThumbStrip({ allImages, selectedImg, onSelectImage }: PdpThumbStripP
         </button>
       )}
       <div className="pdpThumbCol">
-        {thumbsToRender.map((img, i) => {
+        {thumbsToRender.map((item, i) => {
           const globalIdx = showThumbNav ? thumbStart + i : i
+          const isActive = selectedImg === item.url || (!selectedImg && i === 0 && !showThumbNav)
+          const thumbUrl = item.type === 'video' ? (item.thumbnailUrl || '') : item.url
           return (
             <button
-              key={`${img}-${globalIdx}`}
+              key={`${item.url}-${globalIdx}`}
               type="button"
-              className={`pdpThumb ${selectedImg === img ? 'active' : ''}`}
-              onClick={() => pick(img)}
-              aria-label={`Chọn ảnh ${globalIdx + 1}`}
+              className={`pdpThumb ${isActive ? 'active' : ''}`}
+              onClick={() => pick(item.url)}
+              aria-label={`Chọn media ${globalIdx + 1}`}
+              style={{ position: 'relative' }}
             >
-              <img src={resolveImageUrl(img)} alt="" />
+              {thumbUrl ? (
+                <img src={resolveImageUrl(thumbUrl)} alt="" style={{ objectFit: item.type === 'video' ? 'cover' : 'contain' }} />
+              ) : (
+                <div style={{ width: '100%', height: '100%', background: '#1e293b', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#64748b', fontSize: '10px' }}>
+                  Video
+                </div>
+              )}
+              {item.type === 'video' && (
+                <div className="pdpThumbPlayOverlay">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="white">
+                    <polygon points="6 4 20 12 6 20 6 4" />
+                  </svg>
+                </div>
+              )}
             </button>
           )
         })}
@@ -847,6 +906,40 @@ export default function ProductDetailPage() {
     }
   }, [product?.slug])
 
+  const mediaItems = useMemo<ProductMediaItem[]>(() => {
+    if (!product) return []
+    const list: ProductMediaItem[] = []
+
+    const images = product.images || []
+    const rawImages = product.main_image_url ? [product.main_image_url, ...images.map(i => i.image_url)] : images.map(i => i.image_url)
+    const uniqueImages = Array.from(new Set(rawImages.filter(Boolean)))
+
+    uniqueImages.forEach(url => {
+      list.push({ type: 'image', url })
+    })
+
+    if (product.videos) {
+      product.videos.forEach(video => {
+        if (video.is_active !== false) {
+          list.push({
+            type: 'video',
+            url: video.video_url,
+            thumbnailUrl: video.thumbnail_url,
+            video
+          })
+        }
+      })
+    }
+
+    return list
+  }, [product])
+
+  const selectedMediaItem = useMemo(() => {
+    return mediaItems.find(item => item.url === selectedImg) || mediaItems[0]
+  }, [mediaItems, selectedImg])
+
+  const isVideo = selectedMediaItem?.type === 'video'
+
   if (loading) {
     return (
       <div className="pdpPage" style={{ paddingTop: '100px' }}>
@@ -909,10 +1002,7 @@ export default function ProductDetailPage() {
 
   if (error || !product) return <div className="pdpError">Product not found. <Link to="/products">Back to store</Link></div>
 
-  const images = product.images || []
-  const rawImages = product.main_image_url ? [product.main_image_url, ...images.map(i => i.image_url)] : images.map(i => i.image_url)
-  // Ensure unique images
-  const allImages = Array.from(new Set(rawImages.filter(Boolean)))
+
 
   const visibleFaqs: ProductFaq[] = [...(product.faqs ?? [])]
     .filter(f => f.is_active !== false)
@@ -942,17 +1032,23 @@ export default function ProductDetailPage() {
           </nav>
           <h1 className="pdpProductName">{product.name}</h1>
           <div className="pdpMainGrid">
-            {/* Image Gallery */}
+            {/* Image/Video Gallery */}
             <div className="pdpGallery">
               <div className="pdpGalleryGrid">
-                <div className="pdpMainImageWrap">
-                  <img src={resolveImageUrl(selectedImg || product.main_image_url)} alt={product.name} className="pdpMainImage" />
-                </div>
-                {allImages.length > 1 && (
+                {isVideo ? (
+                  <div className="pdpMainImageWrap pdpMainVideoWrap">
+                    {renderVideoPlayer(selectedMediaItem.url, selectedMediaItem.video?.title)}
+                  </div>
+                ) : (
+                  <div className="pdpMainImageWrap">
+                    <img src={resolveImageUrl(selectedImg || product.main_image_url)} alt={product.name} className="pdpMainImage" />
+                  </div>
+                )}
+                {mediaItems.length > 1 && (
                   <PdpThumbStrip
                     key={product.id}
-                    allImages={allImages}
-                    selectedImg={selectedImg}
+                    mediaItems={mediaItems}
+                    selectedImg={selectedImg || (mediaItems[0]?.url ?? null)}
                     onSelectImage={setSelectedImg}
                   />
                 )}
@@ -1137,6 +1233,8 @@ export default function ProductDetailPage() {
             </div>
           </div>
 
+
+
           {/* Bottom Section - Two Columns */}
           <div className="pdpBottomGrid">
             <div className="pdpSpecsSide">
@@ -1278,9 +1376,9 @@ export default function ProductDetailPage() {
                         <div className="pdpRelatedName">{rp.name}</div>
                       </Link>
 
-                      <div className="pdpRelatedPriceRow">
+                      {/* <div className="pdpRelatedPriceRow">
                         <div className="pdpRelatedPrice">{parseFloat(rp.price).toLocaleString('vi-VN')}đ</div>
-                      </div>
+                      </div> */}
 
                       {(rp.short_description || rp.description) && (
                         <div className="pdpRelatedDesc">

@@ -16,6 +16,8 @@ import NotificationsAdminPage from './notifications/NotificationsAdminPage'
 import AdminBlogPage from './blog/AdminBlogPage'
 import AdminFlashSalePage from './flashSale/AdminFlashSalePage'
 import BannerAdminPage from './banners/BannerAdminPage'
+import VideoAdminPage from './videos/VideoAdminPage'
+import VideoCategoryPage from './categories/VideoCategoryPage'
 import { apiFetch } from '@/configs/api.config'
 import { fetchDashboardStats,  } from '@/features/services/admin/api.admin.service'
 import { API_BASE_URL } from '@/configs/api.config'
@@ -36,7 +38,9 @@ type AdminTab =
   | 'blog'
   | 'flashSale'
   | 'banners'
+  | 'videos'
   | 'settings'
+  | 'videoCategories'
 
 const ADMIN_TAB_TITLE: Record<AdminTab, string> = {
   dashboard: 'Bảng điều khiển',
@@ -53,7 +57,9 @@ const ADMIN_TAB_TITLE: Record<AdminTab, string> = {
   blog: 'Tin tức Blog',
   flashSale: 'Flash Sale',
   banners: 'Banners',
+  videos: 'Videos',
   settings: 'Cài đặt',
+  videoCategories: 'Danh mục Video',
 }
 
 function readUserNameFromStorage(): string {
@@ -139,6 +145,8 @@ function hasPermissionForTab(tab: AdminTab): boolean {
         return roles.includes('admin')
       case 'flashSale':
       case 'banners':
+      case 'videos':
+      case 'videoCategories':
         return roles.includes('admin')
       case 'reviews':
       case 'shopQna':
@@ -380,10 +388,11 @@ export default function AdminPage() {
           {hasPermissionForTab('flashSale') && <SidebarItem active={activeTab === 'flashSale'} onClick={() => setActiveTab('flashSale')} icon={<FlashIcon />} label="Flash Sale" collapsed={isSidebarCollapsed} />}
           {hasPermissionForTab('products') && <SidebarItem active={activeTab === 'products'} onClick={() => setActiveTab('products')} icon={<BoxIcon />} label="Sản phẩm" collapsed={isSidebarCollapsed} />}
 
-          {(hasPermissionForTab('categories') || hasPermissionForTab('productNews') || hasPermissionForTab('coupons')) && (
+          {(hasPermissionForTab('categories') || hasPermissionForTab('videoCategories') || hasPermissionForTab('productNews') || hasPermissionForTab('coupons')) && (
             <SidebarSection title="QUẢN LÝ SẢN PHẨM" collapsed={isSidebarCollapsed} />
           )}
-          {hasPermissionForTab('categories') && <SidebarItem active={activeTab === 'categories'} onClick={() => setActiveTab('categories')} icon={<GridIcon />} label="Danh mục" collapsed={isSidebarCollapsed} />}
+          {hasPermissionForTab('categories') && <SidebarItem active={activeTab === 'categories'} onClick={() => setActiveTab('categories')} icon={<GridIcon />} label="Danh mục sản phẩm" collapsed={isSidebarCollapsed} />}
+          {hasPermissionForTab('videoCategories') && <SidebarItem active={activeTab === 'videoCategories'} onClick={() => setActiveTab('videoCategories')} icon={<GridIcon />} label="Danh mục video" collapsed={isSidebarCollapsed} />}
           {hasPermissionForTab('productNews') && <SidebarItem active={activeTab === 'productNews'} onClick={() => setActiveTab('productNews')} icon={<NewspaperIcon />} label="Tin sản phẩm" collapsed={isSidebarCollapsed} />}
           {hasPermissionForTab('coupons') && <SidebarItem active={activeTab === 'coupons'} onClick={() => setActiveTab('coupons')} icon={<TicketIcon />} label="Mã giảm giá" collapsed={isSidebarCollapsed} />}
 
@@ -400,6 +409,7 @@ export default function AdminPage() {
           )}
           {hasPermissionForTab('blog') && <SidebarItem active={activeTab === 'blog'} onClick={() => setActiveTab('blog')} icon={<NewspaperIcon />} label="Tin tức Blog" collapsed={isSidebarCollapsed} />}
           {hasPermissionForTab('banners') && <SidebarItem active={activeTab === 'banners'} onClick={() => setActiveTab('banners')} icon={<ImageIcon />} label="Banners" collapsed={isSidebarCollapsed} />}
+          {hasPermissionForTab('videos') && <SidebarItem active={activeTab === 'videos'} onClick={() => setActiveTab('videos')} icon={<VideoIcon />} label="Videos" collapsed={isSidebarCollapsed} />}
           {hasPermissionForTab('notifications') && <SidebarItem active={activeTab === 'notifications'} onClick={() => setActiveTab('notifications')} icon={<BellIcon />} label="Thông báo" collapsed={isSidebarCollapsed} />}
 
           {hasPermissionForTab('settings') && (
@@ -671,6 +681,7 @@ export default function AdminPage() {
           )}
           {activeTab === 'productNews' && <ProductNewsPage />}
           {activeTab === 'categories' && <CategoryPage />}
+          {activeTab === 'videoCategories' && <VideoCategoryPage />}
           {activeTab === 'shopQna' && <ShopQnaInboxPage />}
           {activeTab === 'reviews' && <ReviewsAdminPage />}
           {activeTab === 'contactMessages' && <ContactsAdminPage />}
@@ -680,6 +691,7 @@ export default function AdminPage() {
           {activeTab === 'orders' && <OrdersAdminPage />}
           {activeTab === 'blog' && <AdminBlogPage />}
           {activeTab === 'banners' && <BannerAdminPage />}
+          {activeTab === 'videos' && <VideoAdminPage />}
           {activeTab === 'flashSale' && <AdminFlashSalePage />}
           {activeTab === 'settings' && <SettingsAdminPage />}
         </div>
@@ -782,6 +794,15 @@ function ImageIcon() {
       <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
       <circle cx="8.5" cy="8.5" r="1.5" />
       <polyline points="21 15 16 10 5 21" />
+    </svg>
+  )
+}
+
+function VideoIcon() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <polygon points="23 7 16 12 23 17 23 7" />
+      <rect x="1" y="5" width="15" height="14" rx="2" ry="2" />
     </svg>
   )
 }

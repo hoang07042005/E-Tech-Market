@@ -108,6 +108,7 @@ class ProductsController extends Controller
             'images' => fn ($q) => $q->orderBy('sort_order'),
             'specs' => fn ($q) => $q->orderBy('sort_order'),
             'variants' => fn ($q) => $q->where('is_active', true),
+            'videos' => fn ($q) => $q->where('is_active', true)->orderBy('sort_order'),
             'faqs' => fn ($q) => $q->where('is_active', true)->orderBy('sort_order'),
             'news' => fn ($q) => $q->where('is_active', true)->orderByDesc('published_at')->orderBy('sort_order'),
             'reviews' => fn ($q) => $q->where('status', 'approved')->with('user')->orderBy('created_at', 'desc'),

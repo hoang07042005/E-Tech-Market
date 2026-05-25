@@ -194,6 +194,39 @@
   transition: transform .5s ease;
 }
 
+/* Gallery Video Embed Sizing */
+.pdpMainImageWrap.pdpMainVideoWrap {
+  background: #000;
+  display: block;
+}
+
+.pdpMainImageWrap.pdpMainVideoWrap iframe,
+.pdpMainImageWrap.pdpMainVideoWrap video {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  display: block;
+}
+
+.pdpThumbPlayOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.35);
+  border-radius: inherit;
+  color: #fff;
+  transition: background .2s ease;
+}
+
+.pdpThumb:hover .pdpThumbPlayOverlay {
+  background: rgba(0, 0, 0, 0.5);
+}
+
 .pdpThumb {
   width: 88px;
   min-width: 88px;
@@ -2511,7 +2544,7 @@
 }
 
 .pdpRelatedName {
-  font-size: 13px;
+  font-size: 22px;
   font-weight: 600;
   color: #111827;
   line-height: 1.35;
@@ -2536,7 +2569,7 @@
 }
 
 .pdpRelatedDesc {
-  font-size: 11.5px;
+  font-size: 15px;
   color: #475569;
   line-height: 1.45;
   display: -webkit-box;
@@ -2919,4 +2952,64 @@
   .pdpCommitGrid {
     grid-template-columns: 1fr
   }
+}
+
+/* Product Videos Section */
+.pdpVideosSection {
+  margin-top: 50px;
+  margin-bottom: 40px;
+}
+
+.pdpVideosGrid {
+  display: grid;
+  gap: 24px;
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 768px) {
+  .pdpVideosGrid.has-multiple {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.pdpVideoCard {
+  background: #ffffff;
+  border: 1px solid #eef2f7;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 4px 20px rgba(15, 23, 42, 0.03);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.pdpVideoCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(15, 23, 42, 0.06);
+}
+
+.pdpVideoPlayerWrap {
+  position: relative;
+  width: 100%;
+  padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+  height: 0;
+  overflow: hidden;
+  border-radius: 8px;
+  background: #000;
+}
+
+.pdpVideoPlayerWrap iframe,
+.pdpVideoPlayerWrap video {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+.pdpVideoTitle {
+  margin-top: 14px;
+  font-size: 16px;
+  font-weight: 600;
+  color: #0f172a;
+  line-height: 1.4;
 }

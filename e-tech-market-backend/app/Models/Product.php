@@ -37,6 +37,11 @@ class Product extends Model
         return $this->hasMany(ProductImage::class, 'product_id');
     }
 
+    public function videos(): HasMany
+    {
+        return $this->hasMany(Video::class, 'product_id')->orderBy('sort_order');
+    }
+
     public function specs(): HasMany
     {
         return $this->hasMany(ProductSpec::class, 'product_id');

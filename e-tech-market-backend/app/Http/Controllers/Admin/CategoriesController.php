@@ -13,7 +13,12 @@ class CategoriesController extends Controller
 {
     public function index(): JsonResponse
     {
-        $categories = Category::orderBy('name')->get();
+        $type = request()->get('type', null);
+        $query = Category::query();
+        if ($type) {
+            $query->where('type', $type);
+        }
+        $categories = $query->orderBy('name')->get();
         return response()->json($categories);
     }
 
@@ -22,6 +27,7 @@ class CategoriesController extends Controller
         $data = $request->validate([
             'name' => 'required|string|max:255',
             'slug' => 'nullable|string|max:255|unique:categories,slug',
+            'type' => 'nullable|string|in:product,video',
             'parent_id' => 'nullable|exists:categories,id',
             'description' => 'nullable|string',
             'is_active' => 'boolean',
@@ -47,6 +53,7 @@ class CategoriesController extends Controller
         $data = $request->validate([
             'name' => 'required|string|max:255',
             'slug' => 'required|string|max:255|unique:categories,slug,' . $category->id,
+            'type' => 'nullable|string|in:product,video',
             'parent_id' => 'nullable|exists:categories,id',
             'description' => 'nullable|string',
             'is_active' => 'boolean',

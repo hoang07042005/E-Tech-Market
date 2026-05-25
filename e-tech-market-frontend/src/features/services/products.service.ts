@@ -70,6 +70,16 @@ export type ProductReview = {
   product?: Product | null
 }
 
+export type Video = {
+  id: number
+  product_id?: number | null
+  title?: string | null
+  video_url: string
+  thumbnail_url?: string | null
+  sort_order: number
+  is_active: boolean
+}
+
 export type Product = {
   id: number
   category_id: number
@@ -100,6 +110,7 @@ export type Product = {
     sort_order?: number
   }[]
   variants?: ProductVariant[]
+  videos?: Video[]
   faqs?: ProductFaq[]
   news?: ProductNews[]
   reviews?: ProductReview[]
@@ -151,8 +162,9 @@ export async function fetchProducts(params: Record<string, unknown> = {}): Promi
   return apiFetch<PaginatedResponse<Product>>(`/api/products${queryString ? `?${queryString}` : ''}`)
 }
 
-export async function fetchCategories(): Promise<Category[]> {
-  return apiFetch<Category[]>('/api/categories')
+export async function fetchCategories(type?: 'product' | 'video'): Promise<Category[]> {
+  const qs = type ? `?type=${encodeURIComponent(type)}` : ''
+  return apiFetch<Category[]>(`/api/categories${qs}`)
 }
 
 export async function fetchProductBySlug(slug: string): Promise<Product> {

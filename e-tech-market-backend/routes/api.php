@@ -126,6 +126,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('/categories/{category}', [AdminCategoriesController::class, 'update']);
         Route::delete('/categories/{category}', [AdminCategoriesController::class, 'destroy']);
 
+        Route::apiResource('video-categories', App\Http\Controllers\Admin\VideoCategoryController::class);
+
         Route::get('/roles', [AdminRolesController::class, 'index']);
 
         Route::get('/users', [AdminUsersController::class, 'index']);
@@ -177,6 +179,9 @@ Route::middleware('auth:sanctum')->group(function () {
 
         // Banners
         Route::apiResource('banners', AdminBannerController::class);
+
+        // Videos
+        Route::apiResource('videos', App\Http\Controllers\Admin\VideoController::class);
     });
 });
 
@@ -210,6 +215,8 @@ Route::get('/store/payments', [StoreProfileController::class, 'payments']);
 Route::get('/store/shipping', [StoreProfileController::class, 'shipping']);
 
 Route::get('/banners', [ClientBannerController::class, 'index']);
+Route::get('/videos', [App\Http\Controllers\Client\VideoController::class, 'index']);
+Route::get('/videos/{video}', [App\Http\Controllers\Client\VideoController::class, 'show']);
 
 Route::get('/coupons', [ClientCouponsController::class, 'index']);
 Route::post('/coupons/apply', [ClientCouponsController::class, 'apply']);

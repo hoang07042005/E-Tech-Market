@@ -194,11 +194,12 @@
 }
 
 .catModalHeader {
-    padding: 24px 30px;
+    padding: 0 30px;
     border-bottom: 1px solid var(--admin-border);
     display: flex;
     justify-content: space-between;
     align-items: center;
+    margin: 0;
 }
 
 .catModalHeader h3 {
@@ -215,14 +216,13 @@
 }
 
 .catForm {
-    padding: 30px;
+    padding: 10px 30px;
 }
 
 .catFormRow {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 20px;
-    margin-bottom: 20px;
 }
 
 .catFormField {
@@ -306,7 +306,6 @@
     display: flex;
     justify-content: flex-end;
     gap: 15px;
-    margin-top: 20px;
 }
 
 .catCancelBtn {

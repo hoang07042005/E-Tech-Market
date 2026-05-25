@@ -15,6 +15,7 @@ class Category extends Model
         'parent_id',
         'name',
         'slug',
+        'type',
         'image',
         'description',
         'sort_order',
@@ -25,6 +26,7 @@ class Category extends Model
         'parent_id' => 'integer',
         'sort_order' => 'integer',
         'is_active' => 'boolean',
+        'type' => 'string',
     ];
 
     public function parent(): BelongsTo

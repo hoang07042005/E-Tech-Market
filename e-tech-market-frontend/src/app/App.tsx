@@ -41,6 +41,8 @@ const BlogPage = lazy(() => import('@/features/pages/client/blog/BlogPage'))
 const BlogPostDetailPage = lazy(() => import('@/features/pages/client/blog/BlogPostDetailPage'))
 const ComparePage = lazy(() => import('@/features/pages/client/products/ComparePage'))
 const FlashSalePage = lazy(() => import('@/features/pages/client/products/FlashSalePage'))
+const VideoPage = lazy(() => import('@/features/pages/client/video/VideoPage'))
+const VideoDetailPage = lazy(() => import('@/features/pages/client/video/VideoDetailPage'))
 
 type StoredUserJson = {
   roles?: { slug?: string }[]
@@ -227,6 +229,8 @@ function AppFrame() {
           <Route path="/flash-sale" element={<FlashSalePage />} />
           <Route path="/products" element={<ProductsPage />} />
           <Route path="/products/:slug" element={<ProductDetailPage />} />
+          <Route path="/videos" element={<VideoPage />} />
+          <Route path="/videos/:id" element={<VideoDetailPage />} />
           <Route path="/product-news/:slug" element={<ProductNewsDetailPage />} />
           <Route path="/blog" element={<BlogPage />} />
           <Route path="/blog/:slug" element={<BlogPostDetailPage />} />

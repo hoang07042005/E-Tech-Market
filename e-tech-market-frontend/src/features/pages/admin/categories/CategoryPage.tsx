@@ -166,13 +166,15 @@ export default function CategoryPage() {
     <div className="catAdminRoot">
       <div className="catHeader">
         <div className="catHeaderLeft">
-          <h2 className="catAdminTitle">Quản lý danh mục</h2>
+          <h2 className="catAdminTitle">Quản lý danh mục sản phẩm</h2>
           <p className="catAdminSub">Tổ chức cấu trúc và phân loại cửa hàng</p>
         </div>
-        <button className="catAddBtn" onClick={() => handleOpenModal()}>
-          <PlusIcon />
-          <span>Thêm danh mục</span>
-        </button>
+        <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+          <button className="catAddBtn" onClick={() => handleOpenModal()}>
+            <PlusIcon />
+            <span>Thêm danh mục</span>
+          </button>
+        </div>
       </div>
 
       {error && <div className="catErrorBanner">{error}</div>}
@@ -206,7 +208,6 @@ export default function CategoryPage() {
           <table className="catTable">
             <thead>
               <tr>
-                <th>ẢNH</th>
                 <th>TÊN DANH MỤC</th>
                 <th>SLUG URL</th>
                 <th>CHA</th>
@@ -217,7 +218,7 @@ export default function CategoryPage() {
             <tbody>
               {categories.length === 0 ? (
                 <tr>
-                  <td colSpan={6} style={{ textAlign: 'center', padding: '40px', color: '#94a3b8' }}>
+                  <td colSpan={5} style={{ textAlign: 'center', padding: '40px', color: '#94a3b8' }}>
                     Chưa có danh mục. Bấm «Thêm danh mục» để bắt đầu.
                   </td>
                 </tr>
@@ -299,25 +300,6 @@ export default function CategoryPage() {
                   placeholder="Mô tả danh mục (không bắt buộc)…"
                 />
               </div>
-
-              {!formData.parent_id && (
-                <div className="catFormField">
-                  <label>ẢNH DANH MỤC</label>
-                  <input 
-                    type="file" 
-                    accept="image/*"
-                    onChange={e => {
-                      if (e.target.files?.[0]) setImageFile(e.target.files[0])
-                    }}
-                    style={{ padding: '8px', border: '1px solid #334155', borderRadius: '6px', background: '#0f172a', color: '#e2e8f0', width: '100%' }}
-                  />
-                  {editingCategory?.image && !imageFile && (
-                    <div style={{ marginTop: '8px' }}>
-                      <img src={resolveImageUrl(editingCategory.image)} alt="Current" style={{ height: '60px', borderRadius: '4px' }} />
-                    </div>
-                  )}
-                </div>
-              )}
 
               <div className="catModalFooter">
                 <button type="button" className="catCancelBtn" onClick={() => setIsModalOpen(false)}>Hủy</button>
