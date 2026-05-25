@@ -1,21 +1,22 @@
 # 🛒 E-Tech Market — Hệ Thống Thương Mại Điện Tử Thiết Bị Công Nghệ Cao Cấp
 
-**E-Tech Market** là một nền tảng thương mại điện tử chuyên biệt dành cho các thiết bị công nghệ và điện tử cao cấp. Dự án được phát triển theo mô hình Full-Stack hiện đại với thiết kế giao diện (UI/UX) vô cùng bắt mắt, hiệu ứng mượt mà và hệ thống quản trị chuyên sâu cùng nhiều giải pháp tích hợp thanh toán phổ biến tại Việt Nam.
+**E-Tech Market** là một nền tảng thương mại điện tử chuyên biệt dành cho các thiết bị công nghệ và điện tử cao cấp. Dự án được thiết kế và phát triển theo mô hình **Full-Stack SPA hiện đại** với thiết kế giao diện (UI/UX) vô cùng bắt mắt, hiệu ứng mượt mà, hệ thống quản trị chuyên sâu và hàng loạt các giải pháp thanh toán điện tử tối ưu tại Việt Nam.
 
 Dự án được phân chia thành hai thành phần cốt lõi:
-*   **Backend API (Laravel 10)**: Nằm tại thư mục [`e-tech-market-backend`](file:///d:/E-Tech-Market/e-tech-market-backend), đóng vai trò cung cấp RESTful API bảo mật và quản lý hàng đợi (queues).
-*   **Frontend SPA (React, TypeScript & Vite)**: Nằm tại thư mục [`e-tech-market-frontend`](file:///d:/E-Tech-Market/e-tech-market-frontend), mang lại trải nghiệm mượt mà, phản hồi ngay lập tức với ngôn ngữ Vanilla CSS tùy biến cao cấp.
+*   **Backend API (Laravel 10)**: Nằm tại thư mục [`e-tech-market-backend`](file:///d:/E-Tech-Market/e-tech-market-backend), cung cấp hệ thống RESTful API an toàn, xử lý hàng đợi (queues) gửi thư và quản trị hệ thống.
+*   **Frontend SPA (React, TypeScript & Vite)**: Nằm tại thư mục [`e-tech-market-frontend`](file:///d:/E-Tech-Market/e-tech-market-frontend), mang lại trải nghiệm khách hàng mượt mà bằng việc tối ưu hóa hiệu năng render qua ngôn ngữ **Vanilla CSS Premium**.
 
 ---
 
-## 💎 Các Tính Năng Nổi Bật
+## 💎 Các Tính Năng Nổi Bật & Giải Pháp Kỹ Thuật
 
 ### 🌐 Trải Nghiệm Khách Hàng (Client SPA)
 *   **Trang chủ ấn tượng**: Banner chuyển động mượt mà, danh mục sản phẩm trực quan, danh sách sản phẩm nổi bật cùng khu vực **Flash Sale** đếm ngược thời gian thực.
 *   **Bộ lọc sản phẩm thông minh**: Lọc sản phẩm đa chiều theo giá, danh mục, thương hiệu, đánh giá và trạng thái kho hàng kèm phân trang động.
 *   **Trang chi tiết sản phẩm tối ưu**:
-    *   Thư viện ảnh sản phẩm zoom/slider chất lượng cao.
-    *   Thông số kỹ thuật chi tiết theo dạng bảng chuyên nghiệp.
+    *   Thư viện ảnh sản phẩm zoom/slider chất lượng cao, tích hợp cả video đánh giá.
+    *   Thông số kỹ thuật chi tiết theo dạng bảng chuyên nghiệp (hỗ trợ hiển thị thông số chung hoặc thông số riêng cho từng biến thể sản phẩm).
+    *   **Bộ soạn thảo Nội dung Chi tiết Đa năng (WYSIWYG Dual Editor)**: Tự động nhận diện chuỗi dữ liệu. Nếu chứa mã HTML thì render thành định dạng đa phương tiện (HTML); nếu là văn bản viết tay thông thường thì tự động áp dụng `white-space: pre-wrap` để giữ nguyên các khoảng cách thụt lề, khoảng trắng và các dòng xuống dòng (`\n`).
     *   Hệ thống đánh giá sản phẩm trực quan (hiển thị biểu đồ phân bố sao, bộ lọc đánh giá kèm hình ảnh thực tế).
     *   Mục **Hỏi & Đáp (Shop Q&A)** giúp khách hàng tương tác trực tiếp với cửa hàng.
 *   **Công cụ so sánh sản phẩm (Compare System)**: Cho phép chọn tối đa 3 sản phẩm cùng lúc để so sánh thông số chi tiết thông qua một thanh khay chứa tiện lợi (Compare Tray).
@@ -25,7 +26,7 @@ Dự án được phân chia thành hai thành phần cốt lõi:
     *   Ví Voucher / Coupon (quản lý mã giảm giá khả dụng).
     *   Bảo mật tài khoản (đổi mật khẩu nâng cao).
     *   Hệ thống thông báo đồng bộ thời gian thực.
-*   **Tin tức & Blog**: Các bài viết công nghệ mới nhất giúp tối ưu SEO và tương tác với khách hàng.
+*   **Hệ thống Video độc lập**: Tích hợp danh mục video độc lập (`video_categories`) giúp tách rời và quản lý nội dung video đánh giá công nghệ mà không bị xung đột với bộ lọc danh mục sản phẩm.
 
 ### 🛡️ Hệ Thống Quản Trị Chuyên Sâu (Admin Console `/admin`)
 Hệ thống phân quyền thông minh cho phép các vai trò khác nhau như **Admin**, **Warehouse Staff** (Nhân viên kho), **Order Staff** (Nhân viên xử lý đơn), và **Editor** (Biên tập viên bài viết) thực hiện nhiệm vụ một cách an toàn:
@@ -59,165 +60,257 @@ Hệ thống phân quyền thông minh cho phép các vai trò khác nhau như *
 
 ---
 
-## ⚙️ Hướng Dẫn Cài Đặt (Local Environment)
+## ⚙️ Cẩm Nang Lệnh Dành Cho Backend (Laravel 10)
 
-### 📋 Yêu cầu hệ thống
-*   **PHP 8.1 trở lên**
-*   **Composer** (Trình quản lý gói PHP)
-*   **Node.js (v18+) & npm**
-*   **PostgreSQL** (Nếu chạy trực tiếp trên máy chủ vật lý)
+Thư mục làm việc: `e-tech-market-backend/`
 
----
-
-### 💻 Cách 1: Chạy trực tiếp trên máy vật lý (Host Machine)
-
-#### 1. Thiết lập Backend API
-Di chuyển vào thư mục backend và tiến hành cài đặt:
-```bash
-cd e-tech-market-backend
-composer install
-cp .env.example .env
-php artisan key:generate
-```
-
-Mở tệp `.env` vừa tạo và cấu hình thông tin kết nối Database cùng các đường dẫn của bạn:
-```env
-APP_NAME="E-Tech Market"
-APP_URL=http://localhost:8000
-FRONTEND_URL=http://localhost:5173
-
-DB_CONNECTION=pgsql
-DB_HOST=127.0.0.1
-DB_PORT=5432
-DB_DATABASE="E-Tech Market"
-DB_USERNAME=postgres
-DB_PASSWORD=mat_khau_postgres_cua_ban
-```
-
-Khởi tạo cấu trúc bảng và nạp dữ liệu mẫu (sản phẩm, tài khoản mẫu):
-```bash
-# 1. Tạo database "E-Tech Market" trong pgAdmin / PostgreSQL của bạn trước.
-# 2. Chạy lệnh sau để import cấu trúc database:
-psql -U postgres -d "E-Tech Market" -f database/schema-postgres.sql
-
-# 3. Chạy lệnh sau để import dữ liệu mẫu chất lượng cao:
-psql -U postgres -d "E-Tech Market" -f database/seed-postgres.sql
-```
-
-> [!NOTE]
-> Nếu bạn chỉ cập nhật các tính năng mới mà không muốn import lại từ đầu, hãy chạy lệnh migration tiêu chuẩn của Laravel:
-> `php artisan migrate`
-
-Liên kết thư mục upload hình ảnh để hiển thị ảnh sản phẩm, avatar:
-```bash
-php artisan storage:link
-```
-*(Trên Windows, lệnh này sẽ tạo một Junction Link liên kết thư mục `storage` và `public` giúp xử lý triệt để lỗi không tải được ảnh trên local).*
-
-Khởi chạy Laravel Server:
-```bash
-cd e-tech-market-backend
-php artisan serve
-```
-Backend API sẽ hoạt động tại địa chỉ: `http://localhost:8000`.
-
-#### 2. Thiết lập Frontend SPA
-Di chuyển vào thư mục frontend và cài đặt các thư viện Node.js:
-```bash
-cd e-tech-market-frontend
-npm install
-```
-
-*(Tùy chọn)* Cấu hình biến môi trường bằng cách tạo tệp `.env` tại thư mục frontend:
-```env
-VITE_API_BASE_URL=http://localhost:8000
-```
-
-Khởi chạy Vite Development Server:
-```bash
-cd e-tech-market-frontend
-npm run dev
-```
-Giao diện người dùng sẽ sẵn sàng tại địa chỉ: `http://localhost:5173`.
-
----
-
-### 🐳 Cách 2: Triển khai nhanh chóng bằng Docker (Khuyên Dùng)
-
-Hệ thống được đóng gói hoàn chỉnh bằng Docker giúp bạn có thể khởi chạy toàn bộ dịch vụ (Frontend, Backend, PostgreSQL, Redis và Queue Worker) chỉ với một câu lệnh duy nhất.
-
-#### 1. Khởi chạy các Containers
-Tại thư mục gốc của dự án (nơi chứa file `docker-compose.yml`), chạy lệnh:
-```bash
-docker-compose up -d --build
-```
-Sau khi các Container khởi động thành công:
-*   **Giao diện người dùng (React SPA)**: `http://localhost:5173`
-*   **Hệ thống RESTful API (Laravel)**: `http://localhost:8000`
-*   **Cơ sở dữ liệu (PostgreSQL)**: `localhost:5432`
-*   **Bộ nhớ đệm (Redis)**: `localhost:6379`
-
-#### 2. Đồng bộ dữ liệu thực tế vào môi trường Docker (Windows Only)
-Dự án đi kèm các tệp kịch bản tự động giúp đồng bộ và sao lưu dữ liệu nhanh chóng:
-
-*   **Sao lưu dữ liệu từ máy Host**: Chạy file `export_database.bat` để sao lưu toàn bộ dữ liệu thực tế trên máy host thành file `database_real_data_backup.sql` ở thư mục gốc.
-*   **Nạp dữ liệu thực tế vào Docker**: 
-    1. Đảm bảo các container Docker đang chạy (`docker-compose up -d`).
-    2. Click đúp chuột chạy file **`import_database.bat`**.
-    3. Chương trình sẽ tự động dọn dẹp database cũ trong Docker và nạp dữ liệu từ file sao lưu `database_real_data_backup.sql` vào cơ sở dữ liệu `etech` trong Docker mà **không làm mất định dạng tiếng Việt UTF-8**.
-
----
-
-## 🔄 Hệ Thống Hàng Đợi (Queue Worker)
-
-Hệ thống sử dụng cơ chế hàng đợi bất đồng bộ để gửi các email xác thực tài khoản, hóa đơn mua hàng nhằm nâng cao hiệu năng phản hồi của ứng dụng.
-
-*   **Môi trường phát triển (Local)**: Bạn cần bật một terminal riêng và chạy lệnh sau để xử lý hàng đợi:
+### 1. Lệnh Cài Đặt Ban Đầu
+*   **Cài đặt dependencies**: Cài đặt toàn bộ các thư viện PHP được định nghĩa trong `composer.json`.
     ```bash
-    cd e-tech-market-backend
+    composer install
+    ```
+*   **Tạo file cấu hình môi trường**: Sao chép file cấu hình mẫu.
+    ```bash
+    cp .env.example .env
+    ```
+*   **Tạo khóa bảo mật ứng dụng**: Khởi tạo giá trị `APP_KEY` trong file `.env` dùng để mã hóa cookie, session.
+    ```bash
+    php artisan key:generate
+    ```
+*   **Tối ưu hóa Autoloader**: Tạo lại sơ đồ lớp để tăng tốc độ tải file.
+    ```bash
+    composer dump-autoload
+    ```
+
+### 2. Lệnh Quản Trị Cơ Sở Dữ Liệu (Migrations & Seeders)
+*   **Chạy migration cơ bản**: Tạo các bảng mới phát sinh trong dự án.
+    ```bash
+    php artisan migrate
+    ```
+*   **Thu hồi migration gần nhất**: Hủy bỏ lô migration vừa chạy gần nhất.
+    ```bash
+    php artisan migrate:rollback
+    ```
+*   **Reset và chạy lại toàn bộ Database**: Xóa sạch toàn bộ bảng và chạy lại toàn bộ migrations từ đầu (⚠️ Cực kỳ cẩn thận vì sẽ xóa sạch dữ liệu).
+    ```bash
+    php artisan migrate:fresh
+    ```
+*   **Đổ dữ liệu mẫu (Seeder)**: Nạp các bản ghi mẫu từ tệp seed của hệ thống vào database.
+    ```bash
+    php artisan db:seed
+    ```
+*   **Reset database và đổ lại dữ liệu mẫu**:
+    ```bash
+    php artisan migrate:fresh --seed
+    ```
+
+### 3. Lệnh Quản Lý Bộ Nhớ Đệm & Cấu Hình (Caching & Optimization)
+Khi chỉnh sửa file `.env` hoặc cập nhật code Route, bạn bắt buộc phải xóa/tạo lại cache để Laravel nhận diện chính xác:
+*   **Xóa toàn bộ các loại cache**: Dọn sạch cache cấu hình, routes, views.
+    ```bash
+    php artisan optimize:clear
+    ```
+*   **Tạo cache cho cấu hình (Tăng hiệu năng)**: Gộp các file cấu hình và thông tin từ `.env` thành 1 file duy nhất để đọc nhanh hơn.
+    ```bash
+    php artisan config:cache
+    ```
+*   **Xóa cache cấu hình**:
+    ```bash
+    php artisan config:clear
+    ```
+*   **Tạo cache cho Routes**: Gộp toàn bộ sơ đồ định tuyến lại.
+    ```bash
+    php artisan route:cache
+    ```
+*   **Xóa cache routes**:
+    ```bash
+    php artisan route:clear
+    ```
+
+### 4. Lệnh Vận Hành Hệ Thống Hàng Đợi (Queue Worker)
+Hàng đợi được dùng để gửi Email hóa đơn, Email xác nhận tài khoản bất đồng bộ để tránh làm chậm trải nghiệm của khách hàng:
+*   **Khởi chạy Queue Worker (Local)**: Lắng nghe và thực thi các jobs trong hàng đợi database liên tục.
+    ```bash
     php artisan queue:work
     ```
-*   **Môi trường sản xuất (Production)**: Khuyến nghị sử dụng công cụ **Supervisor** để giám sát và giữ cho tiến trình hàng đợi chạy liên tục.
+*   **Lắng nghe hàng đợi dạng live-reload**: Tự động tải lại code khi có sự thay đổi (tiện dụng trong lúc code).
+    ```bash
+    php artisan queue:listen
+    ```
+*   **Khởi động lại toàn bộ Workers**: Buộc các tiến trình queue đang chạy ngầm phải khởi động lại (dùng khi bạn vừa sửa code Job gửi email).
+    ```bash
+    php artisan queue:restart
+    ```
 
-### Cấu hình Supervisor mẫu (Linux / Ubuntu)
-Tạo file cấu hình tại đường dẫn `/etc/supervisor/conf.d/etech-worker.conf`:
-```ini
-[program:etech-worker]
-process_name=%(program_name)s_%(process_num)02d
-command=php /var/www/etech/e-tech-market-backend/artisan queue:work --sleep=3 --tries=3 --max-time=3600
-autostart=true
-autorestart=true
-stopasgroup=true
-killasgroup=true
-user=www-data
-numprocs=2
-redirect_stderr=true
-stdout_logfile=/var/www/etech/e-tech-market-backend/storage/logs/worker.log
-stopwaitsecs=3600
-```
-
-Kích hoạt cấu hình Supervisor:
-```bash
-sudo supervisorctl reread
-sudo supervisorctl update
-sudo supervisorctl start etech-worker:*
-```
+### 5. Lệnh Phát Triển & Khởi Chạy
+*   **Tạo liên kết thư mục hình ảnh (Symlink)**: Cực kỳ quan trọng để hiển thị hình ảnh sản phẩm được upload.
+    ```bash
+    php artisan storage:link
+    ```
+*   **Khởi chạy Web Server cục bộ**: Khởi chạy Laravel Development Server chạy ở cổng mặc định 8000.
+    ```bash
+    php artisan serve
+    ```
+    *Chạy server tại một cổng hoặc IP tùy chọn:*
+    ```bash
+    php artisan serve --host=0.0.0.0 --port=8080
+    ```
+*   **Tạo nhanh các file mã nguồn mẫu (Scaffolding)**:
+    ```bash
+    # Tạo Model kèm file Migration
+    php artisan make:model Product -m
+    
+    # Tạo Controller dạng Resource
+    php artisan make:controller Admin/ProductController --resource
+    
+    # Tạo Request Validate dữ liệu đầu vào
+    php artisan make:request StoreProductRequest
+    ```
 
 ---
 
-## 💳 Tài Khoản Thử Nghiệm Thanh Toán Sandbox
+## ⚙️ Cẩm Nang Lệnh Dành Cho Frontend (React, Vite & TypeScript)
 
-Bạn có thể sử dụng các tài khoản thử nghiệm sau để thực hiện quy trình mua sắm và thanh toán mô phỏng:
+Thư mục làm việc: `e-tech-market-frontend/`
+
+### 1. Lệnh Cài Đặt & Phát Triển
+*   **Cài đặt Node modules**: Cài đặt toàn bộ các thư viện được liệt kê trong `package.json`.
+    ```bash
+    npm install
+    ```
+*   **Khởi chạy Dev Server**: Khởi động trình biên dịch Vite siêu tốc độ với tính năng Hot Module Replacement (HMR).
+    ```bash
+    npm run dev
+    ```
+    *Khởi chạy server công khai trong mạng LAN nội bộ:*
+    ```bash
+    npm run dev -- --host
+    ```
+
+### 2. Lệnh Kiểm Tra Cú Pháp & Biên Dịch (Build Production)
+*   **Kiểm tra cú pháp TypeScript**: Quét toàn bộ dự án để tìm lỗi kiểu dữ liệu (Types) mà không sinh ra file build.
+    ```bash
+    npx tsc --noEmit
+    ```
+*   **Biên dịch các packages/dependencies**:
+    ```bash
+    npx tsc -b
+    ```
+*   **Chạy Linter quét lỗi code style**:
+    ```bash
+    npm run lint
+    ```
+*   **Biên dịch đóng gói dự án**: Tối ưu hóa dung lượng code CSS/JS, nén và sinh ra thư mục chứa sản phẩm tĩnh `dist/` sẵn sàng triển khai thực tế.
+    ```bash
+    npm run build
+    ```
+*   **Chạy thử bản Build tĩnh**: Xem trước sản phẩm sau khi nén ngay dưới local máy tính tại cổng mặc định `4173`.
+    ```bash
+    npm run preview
+    ```
+
+---
+
+## 🐳 Cẩm Nang Lệnh Docker & Docker Compose
+
+Lệnh được thực thi tại thư mục gốc của dự án (nơi có chứa tệp `docker-compose.yml`).
+
+### 1. Khởi Chạy & Dừng Containers
+*   **Khởi chạy toàn bộ hệ thống ngầm**: Tự động tải ảnh ảo, tạo mạng nội bộ, kết nối các Container (Frontend, Backend, DB, Redis, Queue) và chạy ngầm.
+    ```bash
+    docker-compose up -d
+    ```
+*   **Khởi dựng lại và chạy**: Bắt buộc Docker phải build lại các Dockerfile (Frontend/Backend) để cập nhật code mới hoàn toàn.
+    ```bash
+    docker-compose up -d --build
+    ```
+*   **Dừng hệ thống**: Tắt và giải phóng tài nguyên của các container nhưng giữ nguyên dữ liệu trong ổ đĩa ảo (Volumes).
+    ```bash
+    docker-compose down
+    ```
+*   **Dừng hệ thống và XÓA SẠCH dữ liệu**: Tắt container và hủy bỏ toàn bộ dữ liệu database, cache lưu trong volumes. Dùng khi muốn reset môi trường Docker hoàn toàn sạch sẽ từ đầu.
+    ```bash
+    docker-compose down -v
+    ```
+
+### 2. Xem Trạng Thế & Log Hệ Thống
+*   **Xem danh sách Container đang chạy**: Kiểm tra xem các cổng 8000, 5173, 5432 có hoạt động bình thường không.
+    ```bash
+    docker-compose ps
+    ```
+*   **Xem log thời gian thực của toàn bộ hệ thống**:
+    ```bash
+    docker-compose logs -f
+    ```
+*   **Xem log chi tiết của một dịch vụ cụ thể**:
+    ```bash
+    # Xem log của Container Database
+    docker-compose logs -f db
+    
+    # Xem log của Backend Laravel
+    docker-compose logs -f backend
+    
+    # Xem log của Queue Worker trong Docker
+    docker-compose logs -f queue
+    ```
+
+### 3. Thực Thi Lệnh Bên Trong Docker Containers
+Bạn không cần cài đặt PHP hay PostgreSQL trên máy vật lý, chỉ cần gọi Docker thực thi lệnh trực tiếp vào trong môi trường ảo hóa:
+*   **Chạy Migrations trong Docker**:
+    ```bash
+    docker-compose exec backend php artisan migrate
+    ```
+*   **Dọn dẹp cache Laravel trong Docker**:
+    ```bash
+    docker-compose exec backend php artisan optimize:clear
+    ```
+*   **Truy cập vào Terminal của container Backend**:
+    ```bash
+    docker-compose exec backend bash
+    ```
+*   **Truy cập Terminal dòng lệnh của Database PostgreSQL**:
+    ```bash
+    docker-compose exec db psql -U postgres -d etech
+    ```
+
+---
+
+## 💾 Hướng Dẫn Đồng Bộ Dữ Liệu PostgreSQL Độc Quyền (Dành Cho Windows)
+
+Để giúp quá trình chuyển dịch dữ liệu giữa **Máy Vật Lý (Host Machine)** và **Môi Trường Ảo (Docker)** diễn ra nhanh chóng, dự án được trang bị sẵn 2 kịch bản tự động hóa tối ưu mã hóa UTF-8 tiếng Việt:
+
+### 1. Trích xuất dữ liệu thực tế từ máy Host (`export_database.bat`)
+*   **Mục đích**: Xuất toàn bộ cấu trúc và dữ liệu từ Database PostgreSQL trên máy chủ vật lý của bạn ra một file sao lưu an toàn.
+*   **Cách dùng**: Nhấp đúp chuột vào file `export_database.bat` ở thư mục gốc của dự án. 
+*   **Kết quả**: Hệ thống sẽ sinh ra tệp `database_real_data_backup.sql` nằm ngay tại thư mục gốc của dự án.
+
+### 2. Đổ dữ liệu thực tế đã sao lưu vào Docker (`import_database.bat`)
+*   **Mục đích**: Nhập toàn bộ dữ liệu từ tệp `database_real_data_backup.sql` vào cơ sở dữ liệu `etech` đang chạy bên trong Container Docker.
+*   **Cách dùng**:
+    1. Đảm bảo các Container Docker đang khởi chạy (`docker-compose up -d`).
+    2. Nhấp đúp chuột vào file `import_database.bat` ở thư mục gốc của dự án.
+*   **Quy trình tự động hóa bên trong script**:
+    1. Script tự động kiểm tra sự tồn tại của tệp sao lưu.
+    2. Sao chép tệp `database_real_data_backup.sql` vào bên trong container cơ sở dữ liệu `db` của Docker.
+    3. Thực hiện dọn dẹp (Drop) database `etech` cũ đang tồn tại trong Docker để tránh xung đột ràng buộc khóa ngoại.
+    4. Tạo mới lại database trống `etech` với chuẩn bảng mã UTF-8.
+    5. Thực thi import dữ liệu mẫu với bảng mã UTF-8 chuẩn xác, khắc phục triệt để lỗi hiển thị sai font chữ tiếng Việt.
+
+---
+
+## 💳 Tài Khoản Thử Nghiệm Thanh Toán Sandbox (Demo)
+
+Bạn có thể sử dụng các thông tin thẻ mô phỏng dưới đây để thực hiện quy trình đặt hàng và thanh toán trên hệ thống:
 
 ### 📱 Cổng Thanh Toán MoMo (Ví Thử Nghiệm)
 *   **Số thẻ/Số tài khoản**: `9704 0000 0000 0018`
 *   **Ngày phát hành**: `03/07`
 *   **Tên chủ thẻ**: `NGUYEN VAN A`
-*   **Số điện thoại**: Một số điện thoại bất kỳ (Ví dụ: `0901234567`)
-*   **Mã OTP**: Nhập chính xác chuỗi ký tự **`OTP`** tại ô nhập mã OTP trên màn hình thanh toán.
+*   **Số điện thoại**: Sử dụng một số điện thoại bất kỳ (Ví dụ: `0901234567`)
+*   **Mã OTP**: Nhập chính xác chuỗi ký tự **`OTP`** tại màn hình nhập mã xác thực của MoMo Sandbox.
 
 ### 🏦 Cổng Thanh Toán VNPAY (Thẻ ATM Nội Địa)
-*   **Ngân hàng**: Chọn ngân hàng **`NCB`** trên cổng VNPAY.
+*   **Ngân hàng**: Chọn ngân hàng **`NCB`** trên giao diện cổng thanh toán VNPAY.
 *   **Số thẻ**: `9704198526191432198`
 *   **Tên chủ thẻ**: `NGUYEN VAN A`
 *   **Ngày phát hành**: `07/15`
@@ -225,25 +318,38 @@ Bạn có thể sử dụng các tài khoản thử nghiệm sau để thực hi
 
 ---
 
-## 🧪 Kiểm Thử & Đảm Bảo Chất Lượng Code
+## 🛠️ Khắc Phục Lỗi Thường Gặp (Troubleshooting)
 
-### Kiểm thử tự động Backend (Laravel Tests)
-Chạy bộ kiểm thử (Feature & Unit tests) của Laravel để đảm bảo các API hoạt động chính xác:
-```bash
-cd e-tech-market-backend
-php artisan test
-```
+### 1. Lỗi Không Hiển Thị Hình Ảnh Sản Phẩm (Local Host)
+*   **Nguyên nhân**: Thư mục `public/storage` chưa liên kết chính xác tới `storage/app/public` hoặc đường dẫn Junction Link bị hỏng.
+*   **Khắc phục**:
+    1. Truy cập vào thư mục `e-tech-market-backend/public/`.
+    2. Tìm và xóa thư mục (hoặc shortcut link) mang tên `storage` (nếu có).
+    3. Mở Command Prompt (CMD) với quyền **Administrator** (Run as Administrator).
+    4. Di chuyển vào thư mục backend và chạy lại lệnh:
+       ```bash
+       php artisan storage:link
+       ```
 
-### Kiểm tra Code Style & Build thử Frontend
-Kiểm tra lỗi cú pháp TypeScript và tạo bản build sản phẩm tối ưu:
-```bash
-cd e-tech-market-frontend
-npm run lint
-npm run build
-```
+### 2. Lỗi Xung Đột Cổng Chạy Local (Port Conflicted)
+*   **Nguyên nhân**: Cổng `8000` (Backend) hoặc `5173` (Frontend) đã bị ứng dụng khác chiếm dụng.
+*   **Khắc phục**:
+    *   Đối với Backend, khởi động lại server với cổng khác:
+        ```bash
+        php artisan serve --port=8080
+        ```
+    *   Đối với Frontend, khởi động lại server Vite với cổng khác:
+        ```bash
+        npm run dev -- --port 3000
+        ```
+    *   Đối với Docker, bạn có thể chỉnh sửa ánh xạ cổng trong file `docker-compose.yml` tại nhánh cấu hình `ports`.
 
 ---
 
-## ⚠️ Lưu Ý & Bảo Mật
-*   **Không bao giờ** cam kết (commit) các thông tin nhạy cảm thực tế (như mật khẩu DB, khóa bảo mật MoMo/VNPAY) lên GitHub. Luôn đưa tệp `.env` vào danh sách `.gitignore`.
-*   Khi chạy trên Windows, hãy đảm bảo bạn có quyền Administrator khi chạy lệnh `php artisan storage:link` lần đầu để tránh các lỗi liên kết thư mục.
+## 🔒 Quy Tắc Bảo Mật & Phát Triển
+*   **Bảo mật tài nguyên cấu hình**: Tuyệt đối không bao giờ được commit các tệp `.env` chứa mật khẩu cơ sở dữ liệu thực tế, các khóa ký điện tử của ví MoMo/VNPAY lên hệ thống Git công khai.
+*   **Kiểm thử trước khi bàn giao**: Luôn chạy kiểm thử backend `php artisan test` và biên dịch kiểm tra kiểu dữ liệu frontend `npx tsc -b` trước khi đẩy các bản cập nhật lên máy chủ Production để đảm bảo tính toàn vẹn của mã nguồn.
+
+---
+
+*Chúc các lập trình viên có những trải nghiệm phát triển tuyệt vời cùng hệ thống E-Tech Market!* 🚀
