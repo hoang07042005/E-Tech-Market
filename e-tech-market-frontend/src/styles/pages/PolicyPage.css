@@ -1,0 +1,146 @@
+.policyPage {
+  background: #f8fafc;
+  min-height: 100vh;
+  padding: 32px 0;
+  display: flex;
+  justify-content: center;
+}
+.policyCard {
+  background: #fff;
+  border-radius: 5px;
+  box-shadow: 0 2px 16px 0 rgba(30,41,59,0.08);
+  max-width: 840px;
+  width: 100%;
+  padding: 32px 28px 28px 28px;
+  margin: 0 auto;
+}
+.policyHeader {
+  margin-bottom: 24px;
+}
+.policyTitle {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #ea580c;
+  margin-bottom: 4px;
+}
+.policyUpdate {
+  color: #64748b;
+  font-size: 14px;
+  margin-bottom: 8px;
+}
+.policySection {
+  margin-bottom: 28px;
+}
+.policySectionTitle {
+  font-weight: 700;
+  color: #f59e42;
+  font-size: 1.1rem;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+}
+.policySectionNum {
+  background: #fef3c7;
+  color: #ea580c;
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  margin-right: 8px;
+  font-size: 1rem;
+}
+.policySectionBody {
+  color: #334155;
+  font-size: 15px;
+}
+.policyPaymentGrid {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+}
+.policyPaymentBox {
+  background: #fef3c7;
+  border-radius: 5px;
+  padding: 14px 18px;
+  flex: 1 1 220px;
+  min-width: 180px;
+}
+.policyPaymentTitle {
+  font-weight: 700;
+  color: #ea580c;
+  margin-bottom: 4px;
+}
+.policyPaymentDesc {
+  color: #92400e;
+  font-size: 14px;
+}
+.policyPaymentNote {
+  margin-top: 8px;
+  color: #334155;
+  font-size: 14px;
+}
+.policyPaymentTag {
+  background: #fde68a;
+  color: #ea580c;
+  border-radius: 6px;
+  padding: 2px 10px;
+  margin-right: 6px;
+  font-size: 13px;
+  font-weight: 600;
+}
+.policyList {
+  margin: 8px 0 8px 18px;
+  padding: 0;
+}
+.policyList li {
+  margin-bottom: 4px;
+  font-size: 15px;
+}
+.policyAlert {
+  background: #fee2e2;
+  color: #b91c1c;
+  border-radius: 5px;
+  padding: 10px 14px;
+  margin-top: 12px;
+  font-size: 14px;
+}
+.policyContactBox {
+  background: #f1f5f9;
+  border-radius: 5px;
+  padding: 18px 18px 10px 18px;
+  margin-top: 18px;
+}
+.policyContactTitle {
+  font-weight: 700;
+  color: #ea580c;
+  margin-bottom: 10px;
+}
+.policyContactGrid {
+  display: flex;
+  gap: 32px;
+  flex-wrap: wrap;
+}
+.policyContactLabel {
+  color: #64748b;
+  font-size: 13px;
+  margin-bottom: 2px;
+}
+.policyContactValue {
+  color: #ea580c;
+  font-weight: 700;
+  font-size: 15px;
+  text-decoration: none;
+}
+@media (max-width: 700px) {
+  .policyCard {
+    padding: 18px 4vw 18px 4vw;
+  }
+  .policyPaymentGrid, .policyContactGrid {
+    flex-direction: column;
+    gap: 10px;
+  }
+}

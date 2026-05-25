@@ -26,6 +26,7 @@ interface Video {
   category_id?: number | null
   video_category_id?: number | null
   title?: string | null
+  description?: string | null
   video_url: string
   thumbnail_url?: string | null
   sort_order?: number
@@ -198,7 +199,14 @@ export default function VideoPage() {
                     </div>
                   </div>
                   <div className="cvCardBody">
-                    <h3 className="cvCardTitle">{video.title || 'Video giới thiệu'}</h3>
+                    <div>
+                      <h3 className="cvCardTitle">{video.title || 'Video giới thiệu'}</h3>
+                      {video.description ? (
+                        <p className="cvCardDesc">{video.description}</p>
+                      ) : video.product?.short_description ? (
+                        <p className="cvCardDesc">{video.product.short_description}</p>
+                      ) : null}
+                    </div>
                     {video.product ? (
                       <div className="cvProductLinkBadge">
                         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: '4px' }}>

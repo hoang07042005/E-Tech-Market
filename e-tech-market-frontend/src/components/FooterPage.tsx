@@ -134,10 +134,8 @@ export default function FooterPage() {
             <div className="hfFooterColTitle">Hỗ trợ khách hàng</div>
             <div className="hfFooterLinks">
               <Link className="hfFooterLink" to="/contact">Liên hệ trực tuyến</Link>
-              <a className="hfFooterLink disabled" href="#">Quy định bảo hành 1-đổi-1</a>
-              <a className="hfFooterLink disabled" href="#">Chính sách hoàn tiền</a>
-              <a className="hfFooterLink disabled" href="#">Phương thức vận chuyển</a>
-              <a className="hfFooterLink disabled" href="#">Câu hỏi thường gặp (FAQs)</a>
+              <Link className="hfFooterLink" to="/quy-dinh-bao-hanh-1-doi-1">Quy định bảo hành 1-đổi-1</Link>
+              <Link className="hfFooterLink" to="/chinh-sach-hoan-tien">Chính sách hoàn tiền</Link>
             </div>
           </div>
 
@@ -147,9 +145,8 @@ export default function FooterPage() {
             <div className="hfFooterLinks">
               <Link className="hfFooterLink" to="/chinh-sach-bao-mat">Chính sách bảo mật</Link>
               <Link className="hfFooterLink" to="/dieu-khoan">Điều khoản dịch vụ</Link>
-              <a className="hfFooterLink disabled" href="#">Chính sách bảo mật thanh toán</a>
-              <a className="hfFooterLink disabled" href="#">Thỏa thuận người dùng</a>
-              <a className="hfFooterLink disabled" href="#">Giải quyết khiếu nại</a>
+              <Link className="hfFooterLink" to="/chinh-sach-bao-mat-thanh-toan">Chính sách bảo mật thanh toán</Link>
+              <Link className="hfFooterLink" to="/giai-quyet-khieu-nai">Giải quyết khiếu nại</Link>
             </div>
           </div>
 

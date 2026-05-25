@@ -15,6 +15,7 @@ export interface Video {
   video_category_id?: number | null
   category_id?: number | null
   title?: string | null
+  description?: string | null
   video_url: string
   thumbnail_url?: string | null
   sort_order: number

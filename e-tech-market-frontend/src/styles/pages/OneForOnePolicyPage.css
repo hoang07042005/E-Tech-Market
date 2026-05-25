@@ -1,0 +1,701 @@
+/* ==========================================================================
+   ONE FOR ONE REPLACEMENT POLICY PAGE - PREMIUM CUSTOM CSS
+   ========================================================================== */
+
+.oneForOnePage {
+  min-height: 100vh;
+  padding: 24px 18px 64px;
+  background: linear-gradient(180deg, #fff8f5 0%, #fffefe 100%);
+  color: #241912;
+  font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+}
+
+.oneForOneContainer {
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+/* Breadcrumb Styling */
+.oneForOneBreadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  color: #5f5f60;
+  margin-bottom: 18px;
+}
+
+.oneForOneBreadcrumb a {
+  color: #5f5f60;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.oneForOneBreadcrumb a:hover {
+  color: #904d00;
+}
+
+.oneForOneBreadcrumbIcon {
+  width: 16px;
+  height: 16px;
+  color: #8b8f92;
+}
+
+/* Hero Section */
+.oneForOneHero {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 32px;
+  padding: 40px;
+  margin-bottom: 28px;
+  border-radius: 5px;
+  background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 55%, #fde68a 100%);
+  border: 1px solid #f4d3bd;
+  box-shadow: 0 20px 40px rgba(144, 77, 0, 0.12);
+}
+
+.oneForOneHeroContent {
+  flex: 1.3;
+}
+
+.oneForOneEyebrow {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: rgba(144, 77, 0, 0.08);
+  color: #904d00;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-bottom: 16px;
+}
+
+.oneForOneTitle {
+  margin: 0 0 12px;
+  font-size: 38px;
+  line-height: 1.15;
+  font-weight: 800;
+  color: #241912;
+}
+
+.oneForOneLead {
+  margin: 0;
+  max-width: 680px;
+  color: #564334;
+  font-size: 16.5px;
+  line-height: 1.75;
+}
+
+.oneForOneHeroVisual {
+  flex: 0.9;
+  width: 100%;
+  max-width: 440px;
+  aspect-ratio: 16 / 10;
+  border-radius: 5px;
+  overflow: hidden;
+  border: 1px solid rgba(137, 115, 98, 0.15);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.06);
+}
+
+.oneForOneHeroImg {
+  width: 100%;
+  height: 100%;
+  object-cover: cover;
+}
+
+/* Page Layout Grid */
+.oneForOneLayout {
+  display: grid;
+  grid-template-columns: minmax(0, 2.5fr) minmax(280px, 1fr);
+  gap: 20px;
+}
+
+.oneForOneMain {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Cards Design */
+.oneForOneCard {
+  background: #ffffff;
+  border: 1px solid #e9ecef;
+  border-radius: 5px;
+  padding: 28px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.03);
+}
+
+.oneForOneSectionHeader {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.oneForOneSectionIconWrap {
+  width: 46px;
+  height: 46px;
+  border-radius: 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff3e8;
+  color: #904d00;
+  flex-shrink: 0;
+}
+
+.oneForOneSectionIconWrap .material-symbols-outlined {
+  font-size: 24px;
+}
+
+.oneForOneSectionLabel {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 800;
+  color: #241912;
+}
+
+/* Three Columns Eligibility Grid */
+.oneForOneEligibilityGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.oneForOneEligibilityBox {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 20px;
+  border-radius: 5px;
+  background: #fdfaf7;
+  border: 1px solid rgba(137, 115, 98, 0.12);
+  transition: all 0.25s ease;
+}
+
+.oneForOneEligibilityBox:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 12px rgba(144, 77, 0, 0.05);
+  border-color: rgba(144, 77, 0, 0.35);
+}
+
+.oneForOneEligibilityBox .material-symbols-outlined {
+  font-size: 28px;
+  color: #904d00;
+}
+
+.oneForOneEligibilityTitle {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: #241912;
+}
+
+.oneForOneEligibilityDesc {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.6;
+  color: #564334;
+}
+
+/* Timeframe Feature Card */
+.oneForOneTimeframeCard {
+  background: #904d00;
+  color: #ffffff;
+  padding: 28px;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  box-shadow: 0 12px 28px rgba(144, 77, 0, 0.2);
+  position: relative;
+  overflow: hidden;
+}
+
+.oneForOneTimeframeCard::after {
+  content: "schedule";
+  font-family: 'Material Symbols Outlined';
+  position: absolute;
+  right: -20px;
+  top: -20px;
+  font-size: 160px;
+  color: rgba(255, 255, 255, 0.08);
+  pointer-events: none;
+}
+
+.oneForOneTimeframeInfo h3 {
+  margin: 0 0 6px;
+  font-size: 22px;
+  font-weight: 800;
+}
+
+.oneForOneTimeframeInfo p {
+  margin: 0;
+  font-size: 15px;
+  opacity: 0.9;
+}
+
+.oneForOneTimeframeBadge {
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  padding: 16px 28px;
+  border-radius: 5px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.oneForOneTimeframeBadge strong {
+  display: block;
+  font-size: 32px;
+  font-weight: 900;
+  line-height: 1.1;
+}
+
+.oneForOneTimeframeBadge span {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  opacity: 0.85;
+}
+
+/* Process Flow Steps */
+.oneForOneStepGrid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 20px;
+  position: relative;
+}
+
+.oneForOneStepCard {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 14px;
+}
+
+.oneForOneStepIndex {
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+  background: #904d00;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  font-weight: 800;
+  box-shadow: 0 4px 10px rgba(144, 77, 0, 0.15);
+  z-index: 2;
+  transition: transform 0.25s ease;
+}
+
+.oneForOneStepCard:hover .oneForOneStepIndex {
+  transform: scale(1.15);
+}
+
+.oneForOneStepTitle {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: #241912;
+}
+
+.oneForOneStepDesc {
+  margin: 0;
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: #564334;
+}
+
+/* Exclusions List Box */
+.oneForOneExclusionsCard {
+  background: #fff8f5;
+  border: 1px solid rgba(186, 26, 26, 0.15);
+  border-radius: 5px;
+  padding: 28px;
+}
+
+.oneForOneExclusionsCard .oneForOneSectionIconWrap {
+  background: #ffdad6;
+  color: #ba1a1a;
+}
+
+.oneForOneExclusionsGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.oneForOneExclusionItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 16px;
+  border-radius: 5px;
+  background: #ffffff;
+  border: 1px solid rgba(137, 115, 98, 0.12);
+  transition: border-color 0.2s ease;
+}
+
+.oneForOneExclusionItem:hover {
+  border-color: rgba(186, 26, 26, 0.25);
+}
+
+.oneForOneExclusionItem .material-symbols-outlined {
+  color: #ba1a1a;
+  font-size: 22px;
+  flex-shrink: 0;
+}
+
+.oneForOneExclusionTitle {
+  margin: 0 0 4px;
+  font-size: 15px;
+  font-weight: 700;
+  color: #241912;
+}
+
+.oneForOneExclusionDesc {
+  margin: 0;
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: #564334;
+}
+
+/* Sidebar Section */
+.oneForOneAside {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.oneForOneSupportCard,
+.oneForOneRelatedCard {
+  background: #ffffff;
+  border: 1px solid #e9ecef;
+  border-radius: 5px;
+  padding: 24px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
+}
+
+.oneForOneSupportCard {
+  border: 1px solid rgba(144, 77, 0, 0.15);
+  text-align: center;
+}
+
+.oneForOneAgentIconWrap {
+  width: 56px;
+  height: 56px;
+  border-radius: 999px;
+  background: #904d00;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 16px;
+  box-shadow: 0 4px 12px rgba(144, 77, 0, 0.18);
+}
+
+.oneForOneAgentIconWrap .material-symbols-outlined {
+  font-size: 28px;
+}
+
+.oneForOneSupportCard h4 {
+  margin: 0 0 6px;
+  font-size: 20px;
+  font-weight: 800;
+  color: #241912;
+}
+
+.oneForOneSupportCard p {
+  margin: 0 0 18px;
+  font-size: 14px;
+  line-height: 1.6;
+  color: #564334;
+}
+
+.oneForOneHotlineBox {
+  border-top: 1px solid #e9ecef;
+  border-bottom: 1px solid #e9ecef;
+  padding: 16px 0;
+  margin-bottom: 18px;
+}
+
+.oneForOneHotlineLabel {
+  margin: 0 0 4px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #897362;
+  letter-spacing: 0.08em;
+}
+
+.oneForOneHotlineLink {
+  font-size: 24px;
+  font-weight: 800;
+  color: #904d00;
+  text-decoration: none;
+  transition: transform 0.2s ease;
+  display: inline-block;
+}
+
+.oneForOneHotlineLink:hover {
+  transform: scale(1.04);
+}
+
+.oneForOneSupportBtn {
+  width: 100%;
+  background: #904d00;
+  color: #ffffff;
+  padding: 12px 18px;
+  border: none;
+  border-radius: 5px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(144, 77, 0, 0.12);
+  transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.oneForOneSupportBtn:hover {
+  background: #6e3900;
+}
+
+.oneForOneSupportBtn:active {
+  transform: scale(0.98);
+}
+
+.oneForOneRelatedCard h4 {
+  margin: 0 0 16px;
+  font-size: 16px;
+  font-weight: 800;
+  color: #241912;
+  border-bottom: 1px solid #e9ecef;
+  padding-bottom: 8px;
+}
+
+.oneForOneRelatedLinks {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.oneForOneRelatedLinks a {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  text-decoration: none;
+  color: #564334;
+  font-size: 13.5px;
+  padding: 12px 14px;
+  border-radius: 5px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  transition: all 0.2s ease;
+}
+
+.oneForOneRelatedLinks a:hover {
+  background: #fff8f5;
+  border-color: rgba(144, 77, 0, 0.2);
+  color: #904d00;
+}
+
+.oneForOneRelatedLinks a .material-symbols-outlined {
+  font-size: 18px;
+  color: #904d00;
+  transition: transform 0.2s ease;
+}
+
+.oneForOneRelatedLinks a:hover .material-symbols-outlined {
+  transform: translateX(3px);
+}
+
+/* ==========================================================================
+   RESPONSIVE MEDIA QUERIES
+   ========================================================================== */
+
+@media (max-width: 960px) {
+  .oneForOneLayout {
+    grid-template-columns: 1fr;
+  }
+  
+  .oneForOneHero {
+    flex-direction: column;
+    text-align: center;
+    padding: 32px 24px;
+  }
+  
+  .oneForOneHeroVisual {
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  .oneForOneEligibilityGrid {
+    grid-template-columns: 1fr;
+  }
+  
+  .oneForOneStepGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  
+  .oneForOneExclusionsGrid {
+    grid-template-columns: 1fr;
+  }
+  
+  .oneForOneTimeframeCard {
+    flex-direction: column;
+    text-align: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .oneForOneStepGrid {
+    grid-template-columns: 1fr;
+  }
+  
+  .oneForOneTitle {
+    font-size: 30px;
+  }
+}
+
+/* ==========================================================================
+   DARK MODE STYLING
+   ========================================================================== */
+
+html.dark .oneForOnePage {
+  background: linear-gradient(180deg, #090d16 0%, #111827 100%);
+  color: var(--et-text);
+}
+
+html.dark .oneForOneBreadcrumb,
+html.dark .oneForOneBreadcrumb a,
+html.dark .oneForOneLead,
+html.dark .oneForOneEligibilityDesc,
+html.dark .oneForOneTimeframeInfo p,
+html.dark .oneForOneStepDesc,
+html.dark .oneForOneExclusionDesc,
+html.dark .oneForOneSupportCard p,
+html.dark .oneForOneRelatedLinks a {
+  color: var(--et-text-muted);
+}
+
+html.dark .oneForOneTitle,
+html.dark .oneForOneSectionLabel,
+html.dark .oneForOneEligibilityTitle,
+html.dark .oneForOneStepTitle,
+html.dark .oneForOneExclusionTitle,
+html.dark .oneForOneSupportCard h4,
+html.dark .oneForOneRelatedCard h4 {
+  color: var(--et-text);
+}
+
+html.dark .oneForOneHero {
+  background: linear-gradient(135deg, rgba(15, 23, 42, 0.98) 0%, rgba(30, 41, 59, 0.95) 55%, rgba(120, 53, 15, 0.95) 100%);
+  border-color: rgba(249, 115, 22, 0.25);
+  box-shadow: 0 20px 40px rgba(15, 23, 42, 0.45);
+}
+
+html.dark .oneForOneEyebrow {
+  background: rgba(249, 115, 22, 0.18);
+  color: #fdba74;
+}
+
+html.dark .oneForOneCard,
+html.dark .oneForOneSupportCard,
+html.dark .oneForOneRelatedCard {
+  background: var(--et-surface);
+  border-color: var(--et-border);
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.32);
+}
+
+html.dark .oneForOneEligibilityBox {
+  background: rgba(15, 23, 42, 0.5);
+  border-color: var(--et-border);
+}
+
+html.dark .oneForOneEligibilityBox:hover {
+  border-color: rgba(249, 115, 22, 0.45);
+  box-shadow: 0 6px 12px rgba(249, 115, 22, 0.08);
+}
+
+html.dark .oneForOneEligibilityBox .material-symbols-outlined,
+html.dark .oneForOneSectionIconWrap,
+html.dark .oneForOneRelatedLinks a .material-symbols-outlined {
+  color: #fdba74;
+}
+
+html.dark .oneForOneSectionIconWrap {
+  background: rgba(249, 115, 22, 0.14);
+}
+
+html.dark .oneForOneTimeframeCard {
+  background: linear-gradient(135deg, #ea580c, #f97316);
+  box-shadow: 0 12px 28px rgba(249, 115, 22, 0.22);
+}
+
+html.dark .oneForOneStepIndex {
+  background: linear-gradient(135deg, #f97316, #fb923c);
+  color: #ffffff;
+}
+
+html.dark .oneForOneExclusionsCard {
+  background: rgba(15, 23, 42, 0.3);
+  border-color: rgba(239, 68, 68, 0.2);
+}
+
+html.dark .oneForOneExclusionsCard .oneForOneSectionIconWrap {
+  background: rgba(239, 68, 68, 0.15);
+  color: #f87171;
+}
+
+html.dark .oneForOneExclusionItem {
+  background: rgba(15, 23, 42, 0.6);
+  border-color: var(--et-border);
+}
+
+html.dark .oneForOneExclusionItem:hover {
+  border-color: rgba(239, 68, 68, 0.35);
+}
+
+html.dark .oneForOneExclusionItem .material-symbols-outlined {
+  color: #f87171;
+}
+
+html.dark .oneForOneAgentIconWrap {
+  background: linear-gradient(135deg, #f97316, #fb923c);
+}
+
+html.dark .oneForOneHotlineBox {
+  border-color: var(--et-border);
+}
+
+html.dark .oneForOneHotlineLink {
+  color: #fdba74;
+}
+
+html.dark .oneForOneSupportBtn {
+  background: linear-gradient(135deg, #f97316, #fb923c);
+}
+
+html.dark .oneForOneSupportBtn:hover {
+  background: #ea580c;
+}
+
+html.dark .oneForOneRelatedLinks a {
+  background: rgba(15, 23, 42, 0.7);
+  border-color: var(--et-border);
+}
+
+html.dark .oneForOneRelatedLinks a:hover {
+  background: rgba(249, 115, 22, 0.08);
+  border-color: rgba(249, 115, 22, 0.25);
+  color: #fdba74;
+}

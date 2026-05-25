@@ -1,0 +1,527 @@
+.complaintPage {
+  min-height: 100vh;
+  padding: 24px 18px 64px;
+  background: linear-gradient(180deg, #fff8f5 0%, #fffefe 100%);
+  color: #241912;
+  font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+}
+
+.complaintContainer {
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+.complaintHeroCard {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(280px, 0.8fr);
+  gap: 24px;
+  align-items: center;
+  padding: 28px;
+  border-radius: 5px;
+  border: 1px solid rgba(137, 115, 98, 0.2);
+  background: linear-gradient(135deg, #fff 0%, #fff1e8 55%, #ffedd5 100%);
+  box-shadow: 0 18px 40px rgba(144, 77, 0, 0.12);
+  margin-bottom: 24px;
+}
+
+.complaintHeroContent {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.complaintBreadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #5f5f60;
+  font-size: 14px;
+}
+
+.complaintBreadcrumb a {
+  color: #5f5f60;
+  text-decoration: none;
+}
+
+.complaintBreadcrumb a:hover {
+  color: #904d00;
+}
+
+.complaintBreadcrumbIcon {
+  width: 16px;
+  height: 16px;
+  color: #8b8f92;
+}
+
+.complaintEyebrow {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: rgba(144, 77, 0, 0.08);
+  color: #904d00;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.complaintTitle {
+  margin: 0;
+  font-size: 40px;
+  line-height: 1.05;
+  font-weight: 800;
+  color: #241912;
+}
+
+.complaintLead {
+  margin: 0;
+  max-width: 720px;
+  color: #564334;
+  font-size: 18px;
+  line-height: 1.75;
+}
+
+.complaintUpdatePill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  width: fit-content;
+  border-radius: 999px;
+  padding: 8px 12px;
+  background: rgba(255, 255, 255, 0.8);
+  color: #4b5563;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.complaintUpdateIcon {
+  font-family: 'Material Symbols Outlined', sans-serif;
+  font-size: 18px;
+  color: #904d00;
+}
+
+.complaintHeroVisual {
+  min-height: 280px;
+  border-radius: 5px;
+  overflow: hidden;
+  border: 1px solid rgba(137, 115, 98, 0.15);
+}
+
+.complaintHeroVisual img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.complaintLayout {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(300px, 1fr);
+  gap: 24px;
+}
+
+.complaintMain {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.complaintCard,
+.complaintSidebarCard,
+.complaintBentoCard {
+  background: #ffffff;
+  border: 1px solid #e9ecef;
+  border-radius: 5px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
+}
+
+.complaintCard {
+  padding: 24px;
+}
+
+.complaintSectionHeader {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.complaintSectionHeader.centered {
+  justify-content: flex-start;
+}
+
+.complaintSectionIconWrap {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff3e8;
+  color: #904d00;
+}
+
+.complaintSectionLabel {
+  margin: 0 0 4px;
+  color: #6b7280;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.complaintSectionHeader h2,
+.complaintSidebarCard h2,
+.complaintBentoCard h3 {
+  margin: 0;
+  color: #241912;
+}
+
+.complaintText {
+  margin: 0;
+  color: #564334;
+  line-height: 1.8;
+}
+
+.complaintCommitmentList {
+  margin-top: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.complaintCommitmentItem {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  color: #241912;
+  line-height: 1.7;
+}
+
+.complaintCommitmentIcon,
+.complaintChannelIcon,
+.complaintStepIcon {
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: #904d00;
+  background: #fff3e8;
+}
+
+.complaintIconSvg {
+  width: 22px;
+  height: 22px;
+}
+
+.complaintStepGrid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+  margin-top: 18px;
+}
+
+.complaintStepCard {
+  position: relative;
+  padding: 18px 16px;
+  border-radius: 5px;
+  background: linear-gradient(180deg, #fffdf9 0%, #fff 100%);
+  border: 1px solid #f4d3bd;
+  text-align: center;
+}
+
+.complaintStepIndex {
+  width: 26px;
+  height: 26px;
+  border-radius: 999px;
+  margin: 10px auto 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #904d00;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.complaintStepCard h3 {
+  margin: 0 0 6px;
+  font-size: 16px;
+  color: #241912;
+}
+
+.complaintStepSubtitle {
+  margin: 0 0 8px;
+  color: #904d00;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.complaintStepDesc {
+  margin: 0;
+  color: #564334;
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+.complaintTimelineCard {
+  margin-top: 2px;
+}
+
+.complaintAside {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.complaintSidebarCard {
+  padding: 20px;
+}
+
+.complaintChannelList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.complaintChannelItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  border-radius: 12px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+}
+
+.complaintChannelItem p {
+  margin: 0 0 4px;
+  color: #6b7280;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.complaintChannelItem strong {
+  color: #241912;
+}
+
+.complaintNeedHelpCard {
+  position: sticky;
+  top: 24px;
+}
+
+.complaintSupportButton {
+  width: 100%;
+  border: 0;
+  border-radius: 999px;
+  margin-top: 16px;
+  padding: 12px 16px;
+  background: #904d00;
+  color: #fff;
+  font-size: 15px;
+  font-weight: 800;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.complaintButtonArrow {
+  font-size: 18px;
+}
+
+.complaintHint {
+  margin: 12px 0 0;
+  text-align: center;
+  color: #6b7280;
+  font-size: 13px;
+  font-style: italic;
+}
+
+.complaintBentoCard {
+  min-height: 180px;
+  padding: 20px;
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(135deg, #904d00 0%, #ff8c00 100%);
+  color: #fff;
+}
+
+.complaintBentoCard p {
+  margin: 8px 0 0;
+  color: rgba(255,255,255,0.88);
+  line-height: 1.7;
+}
+
+.complaintBentoLabel {
+  margin: 0 0 8px;
+  color: rgba(255,255,255,0.92);
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.complaintBentoGlow {
+  position: absolute;
+  right: -24px;
+  top: -24px;
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255,255,255,0.9);
+}
+
+.complaintBentoGlow svg {
+  width: 38px;
+  height: 38px;
+}
+
+@media (max-width: 1080px) {
+  .complaintHeroCard,
+  .complaintLayout {
+    grid-template-columns: 1fr;
+  }
+
+  .complaintStepGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .complaintPage {
+    padding: 18px 14px 48px;
+  }
+
+  .complaintHeroCard,
+  .complaintCard,
+  .complaintSidebarCard,
+  .complaintBentoCard {
+    padding: 18px;
+  }
+
+  .complaintTitle {
+    font-size: 30px;
+  }
+
+  .complaintLead {
+    font-size: 16px;
+  }
+
+  .complaintStepGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+html.dark .complaintPage {
+  background: linear-gradient(180deg, #090d16 0%, #111827 100%);
+  color: var(--et-text);
+}
+
+html.dark .complaintHeroCard,
+html.dark .complaintCard,
+html.dark .complaintSidebarCard,
+html.dark .complaintBentoCard {
+  background: var(--et-surface);
+  border-color: var(--et-border);
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.32);
+}
+
+html.dark .complaintHeroCard {
+  background: linear-gradient(135deg, rgba(15, 23, 42, 0.98) 0%, rgba(30, 41, 59, 0.95) 55%, rgba(120, 53, 15, 0.95) 100%);
+  border-color: rgba(249, 115, 22, 0.25);
+  box-shadow: 0 20px 40px rgba(15, 23, 42, 0.45);
+}
+
+html.dark .complaintBreadcrumb,
+html.dark .complaintBreadcrumb a,
+html.dark .complaintLead,
+html.dark .complaintText,
+html.dark .complaintCommitmentItem,
+html.dark .complaintStepDesc,
+html.dark .complaintChannelItem p,
+html.dark .complaintHint,
+html.dark .complaintBentoCard p {
+  color: var(--et-text-muted);
+}
+
+html.dark .complaintTitle,
+html.dark .complaintSectionHeader h2,
+html.dark .complaintSidebarCard h2,
+html.dark .complaintBentoCard h3,
+html.dark .complaintStepCard h3,
+html.dark .complaintChannelItem strong {
+  color: var(--et-text);
+}
+
+html.dark .complaintEyebrow,
+html.dark .complaintUpdateIcon,
+html.dark .complaintSectionIconWrap,
+html.dark .complaintCommitmentIcon,
+html.dark .complaintChannelIcon,
+html.dark .complaintStepIcon,
+html.dark .complaintSupportButton {
+  color: #fdba74;
+}
+
+html.dark .complaintEyebrow,
+html.dark .complaintSectionIconWrap,
+html.dark .complaintCommitmentIcon,
+html.dark .complaintChannelIcon,
+html.dark .complaintStepIcon {
+  background: rgba(249, 115, 22, 0.14);
+}
+
+html.dark .complaintUpdatePill {
+  background: rgba(15, 23, 42, 0.8);
+  color: var(--et-text-muted);
+}
+
+html.dark .complaintSectionLabel {
+  color: #fbbf24;
+}
+
+html.dark .complaintStepCard {
+  background: linear-gradient(180deg, rgba(15, 23, 42, 0.88) 0%, rgba(30, 41, 59, 0.92) 100%);
+  border-color: rgba(249, 115, 22, 0.18);
+}
+
+html.dark .complaintStepSubtitle {
+  color: #fdba74;
+}
+
+html.dark .complaintStepIndex {
+  background: linear-gradient(135deg, #f97316, #fb923c);
+  color: #fff;
+}
+
+html.dark .complaintChannelItem {
+  background: rgba(15, 23, 42, 0.7);
+  border-color: var(--et-border);
+}
+
+html.dark .complaintSupportButton {
+  background: linear-gradient(135deg, #f97316, #fb923c);
+}
+
+html.dark .complaintBentoCard {
+  background: linear-gradient(135deg, #7c2d12 0%, #9a3412 100%);
+}
+
+html.dark .complaintBentoLabel,
+html.dark .complaintBentoGlow {
+  color: rgba(255,255,255,0.92);
+}

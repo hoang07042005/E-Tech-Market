@@ -28,6 +28,10 @@ const CartPage = lazy(() => import('@/features/pages/client/cart/CartPage'))
 const CheckoutPage = lazy(() => import('@/features/pages/client/checkout/CheckoutPage'))
 const TermsOfServicePage = lazy(() => import('@/features/pages/client/info/TermsOfServicePage'))
 const PrivacyPolicyPage = lazy(() => import('@/features/pages/client/info/PrivacyPolicyPage'))
+const PaymentSecurityPolicyPage = lazy(() => import('@/features/pages/client/info/PaymentSecurityPolicyPage'))
+const RefundPolicyPage = lazy(() => import('@/features/pages/client/info/RefundPolicyPage'))
+const ComplaintPolicyPage = lazy(() => import('@/features/pages/client/info/ComplaintPolicyPage'))
+const OneForOnePolicyPage = lazy(() => import('@/features/pages/client/info/OneForOnePolicyPage'))
 const ContactPage = lazy(() => import('@/features/pages/client/info/ContactPage'))
 const AboutPage = lazy(() => import('@/features/pages/client/info/AboutPage'))
 const WishlistPage = lazy(() => import('@/features/pages/client/wishlist/WishlistPage'))
@@ -251,27 +255,31 @@ function AppFrame() {
           <Route path="/orders/:id" element={<OrderDetailPage />} />
           <Route path="/dieu-khoan" element={<TermsOfServicePage />} />
           <Route path="/chinh-sach-bao-mat" element={<PrivacyPolicyPage />} />
+          <Route path="/chinh-sach-bao-mat-thanh-toan" element={<PaymentSecurityPolicyPage />} />
+          <Route path="/chinh-sach-hoan-tien" element={<RefundPolicyPage />} />
+          <Route path="/giai-quyet-khieu-nai" element={<ComplaintPolicyPage />} />
+          <Route path="/quy-dinh-bao-hanh-1-doi-1" element={<OneForOnePolicyPage />} />
 
           <Route path="/login" element={<AuthPage initialMode="login" />} />
           <Route path="/register" element={<AuthPage initialMode="register" />} />
           <Route path="/forgot-password" element={<ForgotPasswordPage />} />
           <Route path="/reset-password" element={<ResetPasswordPage />} />
           <Route path="/compare" element={<ComparePage />} />
-          <Route 
-            path="/admin" 
+          <Route
+            path="/admin"
             element={
               <ProtectedRoute>
                 <AdminPage />
               </ProtectedRoute>
-            } 
+            }
           />
-          <Route 
-            path="/admin/:tab" 
+          <Route
+            path="/admin/:tab"
             element={
               <ProtectedRoute>
                 <AdminPage />
               </ProtectedRoute>
-            } 
+            }
           />
         </Routes>
       </Suspense>

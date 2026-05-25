@@ -1153,8 +1153,8 @@ export default function ProductDetailPage() {
                   <span className="label">AVAILABILITY</span>
                   <span className={`value stock ${selectedVariant && selectedVariant.stock_quantity === 0 ? 'out' : ''}`}>
                     {selectedVariant
-                      ? (selectedVariant.stock_quantity > 0 ? `IN STOCK (${selectedVariant.stock_quantity})` : 'OUT OF STOCK')
-                      : 'IN STOCK'}
+                      ? (selectedVariant.stock_quantity > 0 ? `Còn hàng (${selectedVariant.stock_quantity})` : 'Hết hàng')
+                      : 'Còn hàng'}
                   </span>
                 </div>
               </div>
@@ -1418,6 +1418,7 @@ export default function ProductDetailPage() {
                     <div
                       ref={richRef}
                       className={`pdpRichContent ${!isRichExpanded ? 'is-collapsed' : ''}`}
+                      style={!/<[a-z][\s\S]*>/i.test(product.rich_html || '') ? { whiteSpace: 'pre-wrap' } : undefined}
                       dangerouslySetInnerHTML={{ __html: product.rich_html }}
                     />
                     {canExpandRich && (

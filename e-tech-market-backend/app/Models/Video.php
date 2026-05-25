@@ -14,6 +14,7 @@ class Video extends Model
         'product_id',
         'video_category_id',
         'title',
+        'description',
         'video_url',
         'thumbnail_url',
         'sort_order',

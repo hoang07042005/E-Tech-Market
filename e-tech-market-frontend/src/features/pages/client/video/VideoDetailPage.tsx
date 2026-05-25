@@ -18,6 +18,7 @@ interface Video {
   id: number
   product_id?: number | null
   title?: string | null
+  description?: string | null
   video_url: string
   thumbnail_url?: string | null
   sort_order?: number
@@ -35,7 +36,7 @@ function renderVideoPlayer(videoUrl: string, title?: string | null) {
   if (!videoUrl) return null
 
   let embedUrl = ''
-  const ytMatch = videoUrl.match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/)
+  const ytMatch = videoUrl.match(/(?:youtube\.com\/(?:[^/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?/\s]{11})/)
   if (ytMatch) {
     embedUrl = `https://www.youtube.com/embed/${ytMatch[1]}?autoplay=1`
   } else {
@@ -151,7 +152,7 @@ export default function VideoDetailPage() {
       <div className="clientVideoPage">
         <div className="cvContainer">
           <nav className="cvBreadcrumb">
-            <Link to="/">Trang chủ</Link> / <Link to="/videos">Videos</Link> / <span>Chi tiết</span>
+            <Link to="/">Trang chủ</Link> / <Link to="/videos">Videos</Link> / <span>{video.title}  </span>
           </nav>
 
           <div className="vdpLayout">
@@ -172,8 +173,7 @@ export default function VideoDetailPage() {
               <div className="vdpDescription">
                 <h3>Về video này</h3>
                 <p>
-                  Đây là video giới thiệu trực quan, giúp bạn có cái nhìn khách quan và rõ nét nhất về thiết kế, 
-                  tính năng và hiệu năng thực tế của sản phẩm. Video được tổng hợp và phân phối bởi E-Tech Market.
+                  {video.description || video.product?.short_description || 'Đây là video giới thiệu trực quan, giúp bạn có cái nhìn khách quan và rõ nét nhất về thiết kế, tính năng và hiệu năng thực tế của sản phẩm. Video được tổng hợp và phân phối bởi E-Tech Market.'}
                 </p>
               </div>
             </div>
@@ -236,7 +236,9 @@ export default function VideoDetailPage() {
                             alt={rec.title || ''}
                             className="vdpRecThumb"
                           />
-                          <div className="vdpRecPlay">★</div>
+                          <div className="vdpRecPlay"><svg width="24" height="24" viewBox="0 0 24 24" fill="white">
+                          <polygon points="6 4 20 12 6 20 6 4" />
+                        </svg></div>
                         </div>
                         <div className="vdpRecInfo">
                           <h4 className="vdpRecTitle">{rec.title}</h4>

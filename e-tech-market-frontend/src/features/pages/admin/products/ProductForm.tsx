@@ -480,15 +480,15 @@ export default function ProductForm({ productId, onSave, onCancel }: ProductForm
                       </div>
 
                       <div className="pField">
-                        <label>NỘI DUNG CHI TIẾT (HTML)</label>
+                        <label>NỘI DUNG CHI TIẾT (HTML / VĂN BẢN THƯỜNG)</label>
                         <textarea
                           value={formData.rich_html}
                           onChange={e => setFormData({ ...formData, rich_html: e.target.value })}
                           rows={10}
-                          placeholder="Dán mã HTML bài viết chi tiết vào đây..."
+                          placeholder="Dán mã HTML hoặc nhập văn bản thường. Khi nhập văn bản thường, bạn xuống dòng/thụt lề như thế nào thì hệ thống sẽ tự động hiển thị chính xác như thế tại trang chi tiết sản phẩm."
                         />
                         <p className="pHint" style={{ marginTop: 8, fontSize: 12 }}>
-                          Lưu ý: hệ thống sẽ tự lọc các thẻ nguy hiểm.
+                          Mẹo: Hỗ trợ cả 2 định dạng: Dán mã HTML hoặc gõ văn bản thông thường xuống dòng tự do (hệ thống sẽ tự nhận diện và giữ nguyên định dạng hiển thị của bạn).
                         </p>
                       </div>
                     </div>

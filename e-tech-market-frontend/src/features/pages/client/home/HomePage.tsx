@@ -24,6 +24,7 @@ interface Video {
   id: number
   product_id?: number | null
   title?: string | null
+  description?: string | null
   video_url: string
   thumbnail_url?: string | null
   sort_order?: number
@@ -34,6 +35,7 @@ interface Video {
     slug: string
     main_image_url: string | null
     price: string | number
+    short_description?: string | null
   } | null
 }
 
@@ -912,7 +914,14 @@ export default function HomePage() {
                       </div>
                     </div>
                     <div className="cvCardBody">
-                      <h3 className="cvCardTitle">{video.title || 'Video giới thiệu'}</h3>
+                      <div>
+                        <h3 className="cvCardTitle">{video.title || 'Video giới thiệu'}</h3>
+                        {(video.description || video.product?.short_description) && (
+                          <p className="cvCardDesc">
+                            {video.description || video.product?.short_description}
+                          </p>
+                        )}
+                      </div>
                       {video.product && (
                         <div className="cvProductLinkBadge">
                           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: '6px' }}>

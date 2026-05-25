@@ -37,6 +37,7 @@ export default function VideoAdminPage() {
     product_id: '',
     category_id: '',
     title: '',
+    description: '',
     video_url: '',
     thumbnail_url: '',
     is_active: true,
@@ -77,6 +78,7 @@ export default function VideoAdminPage() {
         product_id: video.product_id ? video.product_id.toString() : '',
         category_id: (video.video_category_id ?? video.category_id ?? video.category?.id ?? video.video_category?.id ?? video.videoCategory?.id ?? null)?.toString() || '',
         title: video.title || '',
+        description: video.description || '',
         video_url: video.video_url || '',
         thumbnail_url: video.thumbnail_url || '',
         is_active: video.is_active,
@@ -89,6 +91,7 @@ export default function VideoAdminPage() {
         product_id: '',
         category_id: '',
         title: '',
+        description: '',
         video_url: '',
         thumbnail_url: '',
         is_active: true,
@@ -129,6 +132,7 @@ export default function VideoAdminPage() {
       }
 
       if (formData.title) payload.append('title', formData.title)
+      if (formData.description) payload.append('description', formData.description)
       if (formData.video_url) payload.append('video_url', formData.video_url)
       if (formData.thumbnail_url) payload.append('thumbnail_url', formData.thumbnail_url)
       payload.append('is_active', formData.is_active ? '1' : '0')
@@ -194,7 +198,7 @@ export default function VideoAdminPage() {
             <tbody>
               {Array.from({ length: 4 }).map((_, i) => (
                 <tr key={i} className="admSkeletonRow">
-                  <td colSpan={7}>
+                  <td colSpan={8}>
                     <div className="admSkeletonCell">
                       <div className="admSkeletonBar" style={{ width: i % 2 === 0 ? '60%' : '80%' }} />
                     </div>
@@ -219,7 +223,7 @@ export default function VideoAdminPage() {
             <tbody>
               {videos.length === 0 ? (
                 <tr>
-                  <td colSpan={7} style={{ textAlign: 'center', padding: '40px', color: '#94a3b8' }}>
+                  <td colSpan={8} style={{ textAlign: 'center', padding: '40px', color: '#94a3b8' }}>
                     Chưa có video nào. Bấm «Thêm video» để tạo mới.
                   </td>
                 </tr>
@@ -243,6 +247,21 @@ export default function VideoAdminPage() {
                         )}
                       </td>
                       <td><span style={{ fontWeight: 600 }}>{video.title || '—'}</span></td>
+                      {/* <td>
+                        <span style={{
+                          display: '-webkit-box',
+                          WebkitLineClamp: 2,
+                          WebkitBoxOrient: 'vertical',
+                          overflow: 'hidden',
+                          maxWidth: '260px',
+                          color: '#333',
+                          fontSize: '13px',
+                          lineHeight: 1.6,
+                          wordBreak: 'break-word'
+                        }}>
+                          {video.description || '—'}
+                        </span>
+                      </td> */}
                       <td>
                         {video.product ? (
                           <span style={{ color: '#fb923c', fontWeight: 500 }}>
@@ -366,6 +385,17 @@ export default function VideoAdminPage() {
                     </div> */}
                   </div>
                 )}
+              </div>
+
+              <div className="catFormField" style={{ marginBottom: '16px' }}>
+                <label>NỘI DUNG / MÔ TẢ NGẮN</label>
+                <textarea
+                  rows={4}
+                  value={formData.description}
+                  onChange={e => setFormData({...formData, description: e.target.value})}
+                  placeholder="Mô tả ngắn về video, tính năng nổi bật hoặc thông điệp chính"
+                  style={{ width: '100%', padding: '10px', border: '1px solid rgb(147 148 150 / 14%)', borderRadius: '6px', background: '#f5f5f6ff', color: '#313232ff', resize: 'vertical' }}
+                />
               </div>
 
               <div className="catFormField" style={{ marginBottom: '16px' }}>

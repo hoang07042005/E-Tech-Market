@@ -2106,6 +2106,170 @@ html.dark .compareEmptyIcon {
 }
 
 
+
+
+
+html.dark .policyPage {
+    background: var(--et-bg);
+    color: var(--et-text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+html.dark .policyCard {
+    background: var(--et-surface);
+    border: 1px solid var(--et-border);
+    border-radius: 5px;
+    padding: 24px;
+    margin-bottom: 24px;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, .1);
+}
+
+html.dark .policySectionBody {
+    color: var(--et-text-muted);
+    line-height: 1.75;
+    margin-top: 16px;
+}
+
+html.dark .policyPaymentNote {
+    background: rgba(249, 115, 22, .05);
+    border: 1px solid rgba(249, 115, 22, .15);
+    color: var(--et-primary);
+    padding: 16px;
+    border-radius: 8px;
+    margin-top: 16px;
+}
+
+
+html.dark .refundPage {
+    background: var(--et-bg);
+    color: var(--et-text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+html.dark .refundHero {
+    background: var(--et-surface);
+    border: 1px solid var(--et-border);
+    border-radius: 5px;
+    padding: 24px;
+    margin-bottom: 24px;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, .1);
+}
+
+html.dark .refundTitle {
+    color: var(--et-text);
+    font-size: 24px;
+    font-weight: 600;
+}
+
+html.dark .refundLead {
+    color: var(--et-text-muted);
+    line-height: 1.75;
+    margin-top: 16px;
+}
+
+html.dark .refundMain {
+    box-shadow: 0 12px 30px rgba(0, 0, 0, .1);
+}
+html.dark .refundMain .sectionCard {
+    background: var(--et-surface);
+    border: 1px solid var(--et-border);
+    border-radius: 5px;
+    padding: 24px;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, .1);
+}
+
+html.dark .sectionLabel {
+    color: var(--et-primary);
+    font-size: 12px;
+    font-weight: 600;
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 20px;
+    margin-bottom: 16px;
+}
+
+html.dark .sectionHeader h2 , html.dark .timelineItem h3 {
+    color: var(--et-primary);
+    font-size: 20px;
+    font-weight: 600;
+}  
+
+html.dark .sectionText{
+    color: var(--et-text-muted);
+    line-height: 1.75;
+    margin-top: 12px;
+}
+
+html.dark .sectionList {
+    list-style: disc;
+    padding-left: 20px;
+    margin-top: 12px;
+    color: #cdcbcb;
+}
+
+html.dark .timelineItem h3 {
+    color: var(--et-primary);
+    font-size: 20px;
+    font-weight: 600;
+}
+
+html.dark .timelineItem p {
+    color: var(--et-text-muted);
+    line-height: 1.75;
+    margin-top: 12px;
+}
+
+html.dark .refundTable {
+    width: 100%;
+    border-collapse: collapse;
+    color: var(--et-text);
+    background: var(--et-surface);
+}
+
+html.dark .refundTable thead tr {
+    background: rgba(255, 255, 255, .02);
+    color: var(--et-text);
+}
+
+html.dark .supportCard, .imageCard {
+    background: var(--et-surface);
+    border: 1px solid var(--et-border);
+    border-radius: 12px;
+    padding: 16px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, .1);
+}
+
+html.dark .supportCard h2, .relatedCard h2 {
+    color: var(--et-primary);
+    font-size: 18px;
+    font-weight: 600;
+}
+
+html.dark .supportCard p {
+    color: var(--et-text-muted);
+    line-height: 1.75;
+    margin-top: 8px;
+}
+
+html.dark .supportList div {
+    list-style: disc;
+    padding-left: 20px;
+    margin-top: 12px;
+    color: var(--et-text-muted);
+}
+
+html.dark .supportCard, .relatedCard, .imageCard {
+    background-color: var(--et-surface);
+    border: 1px solid #e5e7eb;
+    border-radius: 5px;
+    padding: 16px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, .1);
+}   
+
+
 html,
 body,
 #root {
@@ -2317,3 +2481,5 @@ body::-webkit-scrollbar {
     text-transform: uppercase;
     letter-spacing: 1.5px;
 }
+
+
