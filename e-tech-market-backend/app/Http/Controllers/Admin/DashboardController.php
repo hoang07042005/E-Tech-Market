@@ -28,12 +28,14 @@ class DashboardController extends Controller
         $startDateParam = $request->query('start_date');
         $endDateParam = $request->query('end_date');
 
-        $cacheKey = 'admin_dashboard_stats_' . $range;
+        $resolution = $request->get('resolution', 'day');
+        
+        $cacheKey = 'admin_dashboard_stats_' . $range . '_' . $resolution;
         if ($range === 'custom') {
             $cacheKey .= '_' . md5($startDateParam . '_' . $endDateParam);
         }
 
-        $statsData = \Illuminate\Support\Facades\Cache::remember($cacheKey, 60, function () use ($range, $startDateParam, $endDateParam) {
+        $statsData = \Illuminate\Support\Facades\Cache::remember($cacheKey, 60, function () use ($range, $startDateParam, $endDateParam, $resolution) {
             $now = Carbon::now();
             $from30d = $now->copy()->subDays(30);
             $from7d = $now->copy()->subDays(7);
@@ -67,6 +69,10 @@ class DashboardController extends Controller
             $currentOrders = Order::query()
                 ->whereIn('status', ['pending', 'processing'])
                 ->where('created_at', '>=', $from30d)
+                ->count();
+
+            $ordersToday = Order::query()
+                ->whereDate('created_at', $now->toDateString())
                 ->count();
 
             $totalProducts = Product::query()->count();
@@ -217,60 +223,73 @@ class DashboardController extends Controller
                 ->values()
                 ->all();
 
-            $revenueByDay = Order::query()
+            $analyticsByDay = Order::query()
                 ->where('payment_status', 'paid')
                 ->whereBetween('created_at', [$analyticsStart, $toEnd])
-                ->selectRaw('DATE(created_at) as d, SUM(total_amount) as sum')
+                ->selectRaw('DATE(created_at) as d, SUM(total_amount) as sum, COUNT(id) as cnt')
                 ->groupBy('d')
-                ->pluck('sum', 'd')
+                ->get()
+                ->keyBy('d')
+                ->toArray();
+
+            // Items sold per day (sum of order_items.quantity for paid orders)
+            $itemsSoldByDay = DB::table('order_items')
+                ->join('orders', 'orders.id', '=', 'order_items.order_id')
+                ->where('orders.payment_status', '=', 'paid')
+                ->whereBetween('orders.created_at', [$analyticsStart, $toEnd])
+                ->selectRaw('DATE(orders.created_at) as d, SUM(order_items.quantity) as qty')
+                ->groupBy('d')
+                ->get()
+                ->keyBy('d')
                 ->toArray();
 
             $series = [];
             $start = $analyticsStart->copy()->startOfDay();
             $end = $toEnd->copy()->endOfDay();
-            $totalDays = max(0, $start->diffInDays($end));
 
-            $points = [];
-            for ($i = 0; $i < 7; $i++) {
-                $offset = (int) floor(($totalDays * $i) / 6);
-                $points[] = $start->copy()->addDays($offset)->startOfDay();
-            }
-
-            for ($i = 1; $i < 7; $i++) {
-                if ($points[$i]->lte($points[$i - 1])) {
-                    $points[$i] = $points[$i - 1]->copy()->addDay()->startOfDay();
-                }
-            }
-            for ($i = 0; $i < 7; $i++) {
-                if ($points[$i]->gt($end)) {
-                    $points[$i] = $end->copy()->startOfDay();
-                }
-            }
-
-            for ($i = 0; $i < 7; $i++) {
-                $bucketStart = $points[$i]->copy()->startOfDay();
-                $bucketEnd = ($i < 6 ? $points[$i + 1]->copy()->subDay()->endOfDay() : $end->copy());
-                if ($bucketEnd->lt($bucketStart)) {
-                    $bucketEnd = $bucketStart->copy()->endOfDay();
+            $cur = $start->copy();
+            $buckets = [];
+            while ($cur->lte($end)) {
+                $k = $cur->toDateString();
+                
+                if ($resolution === 'month') {
+                    $bucketKey = $cur->format('Y-m');
+                    $bucketLabel = 'Tháng ' . $cur->format('m/Y');
+                    $bucketDate = $cur->copy()->startOfMonth()->toDateString();
+                } elseif ($resolution === 'week') {
+                    $weekStart = $cur->copy()->startOfWeek();
+                    $weekEnd = $cur->copy()->endOfWeek();
+                    $bucketKey = $weekStart->format('Y-m-d');
+                    $bucketLabel = $weekStart->format('d/m') . ' - ' . $weekEnd->format('d/m');
+                    $bucketDate = $bucketKey;
+                } else {
+                    $bucketKey = $k;
+                    $bucketLabel = $cur->format('d/m');
+                    $bucketDate = $k;
                 }
 
-                $sum = 0.0;
-                $cur = $bucketStart->copy();
-                while ($cur->lte($bucketEnd)) {
-                    $k = $cur->toDateString();
-                    if (isset($revenueByDay[$k])) {
-                        $sum += (float) $revenueByDay[$k];
-                    }
-                    $cur->addDay();
+                if (!isset($buckets[$bucketKey])) {
+                    $buckets[$bucketKey] = [
+                        'date' => $bucketDate,
+                        'label' => $bucketLabel,
+                        'value' => 0.0,
+                        'orders' => 0,
+                        'items_sold' => 0,
+                    ];
                 }
 
-                $label = $bucketStart->format('d/m');
-                $series[] = [
-                    'date' => $bucketStart->toDateString(),
-                    'label' => $label,
-                    'value' => $sum,
-                ];
+                if (isset($analyticsByDay[$k])) {
+                    $dayData = $analyticsByDay[$k];
+                    $buckets[$bucketKey]['value'] += (float) ($dayData['sum'] ?? 0);
+                    $buckets[$bucketKey]['orders'] += (int) ($dayData['cnt'] ?? 0);
+                }
+                if (isset($itemsSoldByDay[$k])) {
+                    $buckets[$bucketKey]['items_sold'] += (int) ($itemsSoldByDay[$k]->qty ?? 0);
+                }
+
+                $cur->addDay();
             }
+            $series = array_values($buckets);
 
             $catRows = DB::table('order_items')
                 ->join('orders', 'orders.id', '=', 'order_items.order_id')
@@ -285,7 +304,7 @@ class DashboardController extends Controller
                     DB::raw('SUM(order_items.total_price) as sum'),
                 ])
                 ->orderByDesc('sum')
-                ->limit(6)
+                ->limit(10)
                 ->get();
 
             $catTotal = (float) $catRows->sum('sum');
@@ -369,6 +388,7 @@ class DashboardController extends Controller
                     'low_stock_variants' => $lowStockVariants,
                     'low_stock_threshold' => $lowStockThreshold,
                     'paid_orders_30d' => $paidOrders30d,
+                    'orders_today' => $ordersToday,
                 ],
                 'quick_tasks' => [
                     'pending_reviews' => $pendingReviews,

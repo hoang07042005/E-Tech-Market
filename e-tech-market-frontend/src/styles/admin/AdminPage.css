@@ -3259,7 +3259,7 @@
     border-radius: 5px;
     padding: 8px 8px 0;
     background: linear-gradient(180deg, rgba(249, 115, 22, .06), rgba(249, 115, 22, 0));
-    border: 1px solid #f3e7df;
+    /* border: 1px solid #f3e7df; */
 }
 
 .admAreaSvg {

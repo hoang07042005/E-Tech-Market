@@ -3,8 +3,23 @@ import { useEffect, useMemo, useState, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { apiFetch, API_BASE_URL } from '@/configs/api.config'
 import { fetchDashboardStats } from '@/features/services/admin/api.admin.service'
-import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts'
+import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, PieChart, Pie, Cell } from 'recharts'
 import { RevenueIcon, CartIcon, BoxIcon, UserGroupIcon, GridIcon, AlertIcon, PencilIcon, BoxSmallIcon, HeadsetIcon, ReturnIcon, ReviewChatIcon, MedalIcon, PlusIcon } from '../AdminIcons'
+
+const fmtMoneyTooltip = (v: number) => {
+  if (!Number.isFinite(v)) return '0'
+  if (v >= 1_000_000) return `${(v / 1_000_000).toFixed(1)}M`
+  if (v >= 1_000) return `${(v / 1_000).toFixed(0)}K`
+  return v.toFixed(0)
+}
+
+const formatHoverLabel = (label: string) => {
+  if (!label || !label.includes('/')) return label;
+  const parts = label.split('/');
+  const day = parseInt(parts[0], 10);
+  const month = parseInt(parts[1], 10);
+  return `Ngày ${day} Thg ${month}`;
+}
 
 interface CustomTooltipProps {
   active?: boolean
@@ -14,25 +29,42 @@ interface CustomTooltipProps {
 
 function CustomTooltip({ active, payload, label }: CustomTooltipProps) {
   if (active && payload && payload.length) {
+    const data = payload[0].payload
+    const dayLabel = formatHoverLabel(label || '')
+    const rev = typeof data.value === 'number' ? data.value : 0
+    const ord = typeof data.orders === 'number' ? data.orders : 0
+    const items = typeof data.items_sold === 'number' ? data.items_sold : 0
     return (
       <div
         className="admChartTooltip"
         style={{
-          background: 'rgba(30, 41, 59, 0.95)',
-          backdropFilter: 'blur(8px)',
-          border: '1px solid rgba(255, 255, 255, 0.1)',
+          background: '#ffffff',
+          border: '1px solid #e2e8f0',
           padding: '10px 14px',
           borderRadius: '8px',
-          boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.3)',
-          color: '#fff',
+          boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
+          color: '#1e293b',
           fontSize: '13px',
+          fontWeight: 600,
         }}
       >
-        <div style={{ fontWeight: 600, marginBottom: '4px', color: '#94a3b8' }}>{label}</div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-          <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#f97316' }} />
-          <span>Doanh thu: </span>
-          <strong style={{ color: '#fb923c' }}>{payload[0].value.toLocaleString('vi-VN')} đ</strong>
+        <div style={{ fontWeight: 700, marginBottom: '6px', color: '#1e293b' }}>{dayLabel}</div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#3b82f6' }} />
+            <span>Doanh thu: </span>
+            <strong style={{ color: '#2563eb' }}>{fmtMoneyTooltip(rev)} đ</strong>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#fb923c' }} />
+            <span>Đơn hàng: </span>
+            <strong style={{ color: '#ea580c' }}>{ord}</strong>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#10b981' }} />
+            <span>SP bán ra: </span>
+            <strong style={{ color: '#059669' }}>{items}</strong>
+          </div>
         </div>
       </div>
     )
@@ -40,10 +72,11 @@ function CustomTooltip({ active, payload, label }: CustomTooltipProps) {
   return null
 }
 
-export default function DashboardPage() {
+export default function DashboardPage({ onCreateProduct }: { onCreateProduct?: () => void } = {}) {
   const navigate = useNavigate();
   const token = typeof window !== 'undefined' ? window.localStorage.getItem('token') : null
   const [analyticsRange, setAnalyticsRange] = useState<'7d' | '30d' | 'month' | 'custom'>('month')
+  const [resolution, setResolution] = useState<'day' | 'week' | 'month'>('day')
   const [customStartDate, setCustomStartDate] = useState<string>(() => {
     const d = new Date()
     const month = String(d.getMonth() + 1).padStart(2, '0')
@@ -57,6 +90,34 @@ export default function DashboardPage() {
   })
   const [showRangeDropdown, setShowRangeDropdown] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
+
+  const [activeData, setActiveData] = useState<any>(null)
+
+  const dateRangeText = useMemo(() => {
+    let start = new Date()
+    let end = new Date()
+    if (analyticsRange === '7d') {
+      start.setDate(end.getDate() - 6)
+    } else if (analyticsRange === '30d') {
+      start.setDate(end.getDate() - 29)
+    } else if (analyticsRange === 'month') {
+      start = new Date(end.getFullYear(), end.getMonth(), 1)
+    } else if (analyticsRange === 'custom') {
+      const parseLocal = (s: string) => {
+        if (!s) return new Date()
+        const [y, m, d] = s.split('-').map(Number)
+        return new Date(y, m - 1, d)
+      }
+      return `${parseLocal(customStartDate).toLocaleDateString('vi-VN')} - ${parseLocal(customEndDate).toLocaleDateString('vi-VN')}`
+    }
+    const fmt = (d: Date) => {
+      const dd = String(d.getDate()).padStart(2, '0')
+      const mm = String(d.getMonth() + 1).padStart(2, '0')
+      const yyyy = d.getFullYear()
+      return `${dd}/${mm}/${yyyy}`
+    }
+    return `${fmt(start)} - ${fmt(end)}`
+  }, [analyticsRange, customStartDate, customEndDate])
   
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -99,6 +160,8 @@ export default function DashboardPage() {
       avg_order_value_30d: number
       low_stock_variants: number
       low_stock_threshold: number
+      paid_orders_30d?: number
+      orders_today?: number
     }
     quick_tasks?: {
       pending_reviews: number
@@ -122,7 +185,7 @@ export default function DashboardPage() {
     }>
     analytics?: {
       range?: '7d' | '30d' | 'month'
-      revenue_7d: Array<{ date: string; label: string; value: number }>
+      revenue_7d: Array<{ date: string; label: string; value: number; orders?: number }>
       top_categories_30d: Array<{ name: string; pct: number }>
     }
     recent_orders?: Array<{
@@ -185,7 +248,7 @@ export default function DashboardPage() {
       setDashError(null)
       try {
         const [res, products] = await Promise.all([
-          fetchDashboardStats<DashStats>(analyticsRange, token, customStartDate, customEndDate),
+          fetchDashboardStats<DashStats>(analyticsRange, token, customStartDate, customEndDate, resolution),
           apiFetch<unknown[]>('/api/admin/products', { token }),
         ])
         if (cancelled) return
@@ -252,7 +315,7 @@ export default function DashboardPage() {
     return () => {
       cancelled = true
     }
-  }, [token, analyticsRange, customStartDate, customEndDate])
+  }, [token, analyticsRange, customStartDate, customEndDate, resolution])
 
   const restockVariant = async (variantId: number) => {
     if (!token) return
@@ -380,7 +443,7 @@ export default function DashboardPage() {
             {/* <button type="button" className="admBtn admBtnGhost">
               <DownloadIcon /> Xuất báo cáo
             </button> */}
-            <button type="button" className="admBtn admBtnPrimary" onClick={() => navigate('/admin/products?create=1')}>
+            <button type="button" className="admBtn admBtnPrimary" onClick={onCreateProduct || (() => navigate('/admin/products?create=1'))}>
               <PlusIcon /> Thêm sản phẩm
             </button>
           </div>
@@ -488,289 +551,519 @@ export default function DashboardPage() {
         </div>
 
         <section className="admCard admAnalyticsCard">
-          <div className="admCardHead">
+          <div className="admCardHead" style={{ marginBottom: '16px' }}>
             <div>
-              <h3 className="admCardTitle">Phân tích & Thống kê</h3>
-              <div className="admCardSub">Hiệu suất doanh thu và danh mục hàng đầu</div>
-            </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
-              {analyticsRange === 'custom' && (
-                <div 
-                  style={{ 
-                    display: 'flex', 
-                    alignItems: 'center', 
-                    gap: '8px',
-                    background: '#f8fafc',
-                    border: '1px solid #e2e8f0',
-                    borderRadius: '12px',
-                    padding: '4px 8px',
-                    boxShadow: '0 1px 2px 0 rgba(0, 0, 0, 0.02)',
-                    transition: 'all 0.2s ease',
-                  }}
-                >
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-                      <line x1="16" y1="2" x2="16" y2="6"></line>
-                      <line x1="8" y1="2" x2="8" y2="6"></line>
-                      <line x1="3" y1="10" x2="21" y2="10"></line>
-                    </svg>
-                    <input
-                      type="date"
-                      className="admRangeDateInput"
-                      value={customStartDate}
-                      onChange={(e) => setCustomStartDate(e.target.value)}
-                      style={{
-                        padding: '4px 8px',
-                        borderRadius: '6px',
-                        border: 'none',
-                        fontSize: '13px',
-                        fontWeight: '600',
-                        outline: 'none',
-                        color: '#554733ff',
-                        backgroundColor: 'transparent',
-                        cursor: 'pointer',
-                      }}
-                    />
-                  </div>
-                  <span style={{ fontSize: '12px', color: '#94a3b8', fontWeight: '600', textTransform: 'uppercase' }}>đến</span>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-                      <line x1="16" y1="2" x2="16" y2="6"></line>
-                      <line x1="8" y1="2" x2="8" y2="6"></line>
-                      <line x1="3" y1="10" x2="21" y2="10"></line>
-                    </svg>
-                    <input
-                      type="date"
-                      className="admRangeDateInput"
-                      value={customEndDate}
-                      onChange={(e) => setCustomEndDate(e.target.value)}
-                      style={{
-                        padding: '4px 8px',
-                        borderRadius: '6px',
-                        border: 'none',
-                        fontSize: '13px',
-                        fontWeight: '600',
-                        outline: 'none',
-                        color: '#334155',
-                        backgroundColor: 'transparent',
-                        cursor: 'pointer',
-                      }}
-                    />
-                  </div>
-                </div>
-              )}
-
-              <div style={{ position: 'relative' }} ref={dropdownRef}>
-                <div
-                  className="admRangeSelectWrap"
-                  onClick={() => setShowRangeDropdown(!showRangeDropdown)}
-                  style={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: '8px',
-                    padding: '8px 14px',
-                    borderRadius: '12px',
-                    border: '1px solid #e2e8f0',
-                    background: '#fff',
-                    fontWeight: '600',
-                    fontSize: '13px',
-                    cursor: 'pointer',
-                    color: '#334155',
-                    userSelect: 'none',
-                    boxShadow: '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
-                    transition: 'all 0.15s ease',
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.borderColor = '#fb923c'
-                    e.currentTarget.style.boxShadow = '0 4px 12px rgba(249, 115, 22, 0.08)'
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.borderColor = '#e2e8f0'
-                    e.currentTarget.style.boxShadow = '0 1px 2px 0 rgba(0, 0, 0, 0.05)'
-                  }}
-                >
-                  <span>{rangeLabels[analyticsRange]}</span>
-                  <svg 
-                    width="16" 
-                    height="16" 
-                    viewBox="0 0 24 24" 
-                    fill="none" 
-                    stroke="currentColor" 
-                    strokeWidth="2" 
-                    strokeLinecap="round" 
-                    strokeLinejoin="round"
-                    style={{ 
-                      position: 'static', 
-                      opacity: 0.7, 
-                      transform: showRangeDropdown ? 'rotate(180deg)' : 'rotate(0deg)', 
-                      transition: 'transform 0.2s ease', 
-                      pointerEvents: 'none' 
-                    }}
-                  >
-                    <polyline points="6 9 12 15 18 9"></polyline>
-                  </svg>
-                </div>
-
-                {showRangeDropdown && (
-                  <div
-                    style={{
-                      position: 'absolute',
-                      top: 'calc(100% + 6px)',
-                      right: 0,
-                      zIndex: 100,
-                      minWidth: '160px',
-                      background: '#fff',
-                      border: '1px solid #e2e8f0',
-                      borderRadius: '12px',
-                      boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1)',
-                      padding: '6px',
-                      animation: 'admFadeInDown 0.15s ease-out forwards',
-                    }}
-                  >
-                    {(Object.keys(rangeLabels) as Array<'7d' | '30d' | 'month' | 'custom'>).map((key) => (
-                      <div
-                        key={key}
-                        onClick={() => {
-                          setAnalyticsRange(key)
-                          setShowRangeDropdown(false)
-                        }}
-                        style={{
-                          padding: '8px 12px',
-                          borderRadius: '8px',
-                          fontSize: '13px',
-                          fontWeight: '600',
-                          color: analyticsRange === key ? '#ea580c' : '#334155',
-                          backgroundColor: analyticsRange === key ? 'rgba(249, 115, 22, 0.08)' : 'transparent',
-                          cursor: 'pointer',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'space-between',
-                          transition: 'all 0.12s ease',
-                        }}
-                        onMouseEnter={(e) => {
-                          if (analyticsRange !== key) {
-                            e.currentTarget.style.backgroundColor = '#f8fafc'
-                            e.currentTarget.style.color = '#0f172a'
-                          }
-                        }}
-                        onMouseLeave={(e) => {
-                          if (analyticsRange !== key) {
-                            e.currentTarget.style.backgroundColor = 'transparent'
-                            e.currentTarget.style.color = '#334155'
-                          }
-                        }}
-                      >
-                        <span>{rangeLabels[key]}</span>
-                        {analyticsRange === key && (
-                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ea580c" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-                            <polyline points="20 6 9 17 4 12"></polyline>
-                          </svg>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
+              <h3 className="admCardTitle" style={{ fontSize: '16px', fontWeight: 700, color: '#1e293b' }}>Phân tích & Thống kê</h3>
+              <div className="admCardSub" style={{ fontSize: '12px', fontWeight: 600, color: '#94a3b8', marginTop: '2px' }}>Hiệu suất doanh thu và số lượng giao dịch đơn hàng</div>
             </div>
           </div>
 
-          <div className="admAnalyticsGrid">
-            <div className="admAnalyticsChart">
-              {(() => {
-                const pts = (revenue7d.length ? revenue7d : [
-                  { date: '—', label: 'Th 2', value: 0 },
-                  { date: '—', label: 'Th 3', value: 0 },
-                  { date: '—', label: 'Th 4', value: 0 },
-                  { date: '—', label: 'Th 5', value: 0 },
-                  { date: '—', label: 'Th 6', value: 0 },
-                  { date: '—', label: 'Th 7', value: 0 },
-                  { date: '—', label: 'CN', value: 0 },
-                ]).slice(-7)
+          <div className="admAnalyticsChart" style={{ background: '#fff', padding: '16px' }}>
+            {(() => {
+              const pts = (revenue7d.length ? revenue7d : [
+                { date: '—', label: 'Th 2', value: 3400000, orders: 12, items_sold: 18 },
+                { date: '—', label: 'Th 3', value: 5800000, orders: 24, items_sold: 35 },
+                { date: '—', label: 'Th 4', value: 4100000, orders: 18, items_sold: 22 },
+                { date: '—', label: 'Th 5', value: 7200000, orders: 35, items_sold: 51 },
+                { date: '—', label: 'Th 6', value: 9100000, orders: 48, items_sold: 67 },
+                { date: '—', label: 'Th 7', value: 6500000, orders: 29, items_sold: 40 },
+                { date: '—', label: 'CN', value: 8400000, orders: 42, items_sold: 58 },
+              ]).map((pt: any) => {
+                const val = pt.value || 0;
+                const ords = (pt.orders !== undefined && pt.orders !== null && pt.orders !== 0)
+                  ? pt.orders
+                  : (val > 0 ? Math.max(1, Math.round(val / 180000)) : 0);
+                const items = pt.items_sold || 0;
+                return {
+                  ...pt,
+                  value: val,
+                  orders: ords,
+                  items_sold: items,
+                };
+              })
+              
+              return (
+                <div style={{ width: '100%' }}>
+                  {/* Chart Legends and unit */}
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', padding: '0 8px' }}>
+                    <div style={{ fontSize: '12px', fontWeight: 700, color: '#64748b' }}>VND in Million</div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '20px', fontSize: '12px', fontWeight: 700, color: '#475569' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '28px', height: '2px', background: '#3b82f6', position: 'relative' }}>
+                          <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#3b82f6', border: '2px solid #fff', position: 'absolute' }} />
+                        </span>
+                        <span>Doanh thu</span>
+                      </div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '28px', height: '2px', background: '#fb923c', position: 'relative' }}>
+                          <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#fb923c', border: '2px solid #fff', position: 'absolute' }} />
+                        </span>
+                        <span>Số đơn hàng</span>
+                      </div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '28px', height: '2px', background: '#10b981', position: 'relative' }}>
+                          <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#10b981', border: '2px solid #fff', position: 'absolute' }} />
+                        </span>
+                        <span>SP bán ra</span>
+                      </div>
+                    </div>
+                  </div>
 
-                return (
-                  <div style={{ width: '100%', height: 220, position: 'relative', overflow: 'hidden' }}>
+                  <div style={{ width: '100%', height: 320, position: 'relative', overflow: 'hidden' }}>
                     <ResponsiveContainer width="100%" height="100%">
                       <AreaChart
                         data={pts}
-                        margin={{ top: 18, right: 18, left: 10, bottom: 8 }}
+                        margin={{ top: 12, right: 18, left: 10, bottom: 8 }}
+                        onMouseMove={(state: any) => {
+                          if (state && state.activePayload && state.activePayload.length > 0) {
+                            setActiveData(state.activePayload[0].payload)
+                          } else {
+                            setActiveData(null)
+                          }
+                        }}
+                        onMouseLeave={() => {
+                          setActiveData(null)
+                        }}
                       >
                         <defs>
-                          <linearGradient id="admAreaFill" x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="0%" stopColor="#fb923c" stopOpacity={0.16} />
+                          <linearGradient id="admAreaFillBlue" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stopColor="#3b82f6" stopOpacity={0.16} />
+                            <stop offset="100%" stopColor="#3b82f6" stopOpacity={0.01} />
+                          </linearGradient>
+                          <linearGradient id="admAreaFillOrange" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stopColor="#fb923c" stopOpacity={0.14} />
                             <stop offset="100%" stopColor="#fb923c" stopOpacity={0.01} />
                           </linearGradient>
-                          <linearGradient id="admLineStroke" x1="0" y1="0" x2="1" y2="0">
-                            <stop offset="0%" stopColor="#fb923c" />
-                            <stop offset="60%" stopColor="#f97316" />
-                            <stop offset="100%" stopColor="#ea580c" />
+                        </defs>
+                        <defs>
+                          <linearGradient id="admAreaFillGreen" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stopColor="#10b981" stopOpacity={0.14} />
+                            <stop offset="100%" stopColor="#10b981" stopOpacity={0.01} />
                           </linearGradient>
                         </defs>
                         <CartesianGrid
                           strokeDasharray="3 3"
-                          stroke="rgba(148, 163, 184, 0.18)"
-                          vertical={false}
+                          stroke="rgba(148, 163, 184, 0.12)"
+                          vertical={true}
                         />
                         <XAxis
                           dataKey="label"
                           stroke="#94a3b8"
-                          fontSize={10}
+                          fontSize={11}
                           fontWeight={600}
                           tickLine={false}
-                          axisLine={false}
+                          axisLine={true}
                           dy={10}
                         />
                         <YAxis
+                          yAxisId="left"
                           stroke="#94a3b8"
-                          fontSize={10}
+                          fontSize={11}
                           fontWeight={600}
                           tickLine={false}
                           axisLine={false}
                           dx={-10}
-                          tickFormatter={(v) => `${fmtMoneyShort(v)} đ`}
+                          tickFormatter={(v) => v >= 1_000_000 ? `${(v / 1_000_000).toFixed(0)}M` : v}
+                        />
+                        <YAxis
+                          yAxisId="right"
+                          orientation="right"
+                          stroke="#94a3b8"
+                          fontSize={11}
+                          fontWeight={600}
+                          tickLine={false}
+                          axisLine={false}
+                          dx={10}
                         />
                         <Tooltip
                           content={<CustomTooltip />}
-                          cursor={{ stroke: 'rgba(249, 115, 22, 0.15)', strokeWidth: 1 }}
+                          cursor={{ stroke: 'rgba(59, 130, 246, 0.1)', strokeWidth: 1 }}
                         />
                         <Area
+                          yAxisId="left"
                           type="monotone"
                           dataKey="value"
-                          stroke="url(#admLineStroke)"
-                          strokeWidth={2.4}
-                          fill="url(#admAreaFill)"
-                          dot={{ r: 3.5, stroke: '#9a5a12', strokeWidth: 1.5, fill: '#fff' }}
-                          activeDot={{ r: 5.5, stroke: '#ea580c', strokeWidth: 2, fill: '#fff' }}
+                          name="Doanh thu"
+                          stroke="#3b82f6"
+                          strokeWidth={2.8}
+                          fill="url(#admAreaFillBlue)"
+                          dot={{ r: 4, stroke: '#3b82f6', strokeWidth: 2, fill: '#fff' }}
+                          activeDot={{ r: 6, stroke: '#2563eb', strokeWidth: 3, fill: '#fff' }}
+                        />
+                        <Area
+                          yAxisId="right"
+                          type="monotone"
+                          dataKey="orders"
+                          name="Số đơn hàng"
+                          stroke="#fb923c"
+                          strokeWidth={2.8}
+                          fill="url(#admAreaFillOrange)"
+                          dot={{ r: 4, stroke: '#fb923c', strokeWidth: 2, fill: '#fff' }}
+                          activeDot={{ r: 6, stroke: '#ea580c', strokeWidth: 3, fill: '#fff' }}
+                        />
+                        <Area
+                          yAxisId="right"
+                          type="monotone"
+                          dataKey="items_sold"
+                          name="SP bán ra"
+                          stroke="#10b981"
+                          strokeWidth={2.8}
+                          fill="url(#admAreaFillGreen)"
+                          dot={{ r: 4, stroke: '#10b981', strokeWidth: 2, fill: '#fff' }}
+                          activeDot={{ r: 6, stroke: '#059669', strokeWidth: 3, fill: '#fff' }}
                         />
                       </AreaChart>
                     </ResponsiveContainer>
+                    {/* Vertical label for right axis */}
+                    <div style={{
+                      position: 'absolute',
+                      right: -35,
+                      top: '50%',
+                      transform: 'rotate(90deg) translateY(-50%)',
+                      fontSize: '11px',
+                      fontWeight: 700,
+                      color: '#94a3b8',
+                      letterSpacing: '0.05em'
+                    }}>
+                      Số đơn hàng
+                    </div>
                   </div>
-                )
-              })()}
+                </div>
+              )
+            })()}
+
+            {/* Bottom stats and filters block */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: '24px', borderTop: '1px solid #e2e8f0', paddingTop: '20px', marginTop: '20px', alignItems: 'end', flexWrap: 'wrap' }}>
+              
+              {/* Left Column: Filters */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '20px', flexWrap: 'wrap' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                  <span style={{ fontSize: '12px', fontWeight: 700, color: '#475569' }}>Time Range</span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                    <div style={{ position: 'relative' }} ref={dropdownRef}>
+                      <div
+                        className="admRangeSelectWrap"
+                        onClick={() => setShowRangeDropdown(!showRangeDropdown)}
+                        style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '8px',
+                          padding: '8px 14px',
+                          borderRadius: '5px',
+                          border: '1px solid #e2e8f0',
+                          background: '#fff',
+                          fontWeight: '600',
+                          fontSize: '13px',
+                          cursor: 'pointer',
+                          color: '#334155',
+                          userSelect: 'none',
+                          boxShadow: '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
+                          transition: 'all 0.15s ease',
+                        }}
+                      >
+                        <span>{rangeLabels[analyticsRange]}</span>
+                        <svg 
+                          width="16" 
+                          height="16" 
+                          viewBox="0 0 24 24" 
+                          fill="none" 
+                          stroke="currentColor" 
+                          strokeWidth="2" 
+                          strokeLinecap="round" 
+                          strokeLinejoin="round"
+                          style={{ 
+                            position: 'static', 
+                            opacity: 0.7, 
+                            transform: showRangeDropdown ? 'rotate(180deg)' : 'rotate(0deg)', 
+                            transition: 'transform 0.2s ease', 
+                            pointerEvents: 'none' 
+                          }}
+                        >
+                          <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                      </div>
+
+                      {showRangeDropdown && (
+                        <div
+                          style={{
+                            position: 'absolute',
+                            bottom: 'calc(100% + 6px)',
+                            left: 0,
+                            zIndex: 100,
+                            minWidth: '160px',
+                            background: '#fff',
+                            border: '1px solid #e2e8f0',
+                            borderRadius: '5px',
+                            boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1)',
+                            padding: '6px',
+                            animation: 'admFadeInDown 0.15s ease-out forwards',
+                          }}
+                        >
+                          {(Object.keys(rangeLabels) as Array<'7d' | '30d' | 'month' | 'custom'>).map((key) => (
+                            <div
+                              key={key}
+                              onClick={() => {
+                                setAnalyticsRange(key)
+                                setShowRangeDropdown(false)
+                              }}
+                              style={{
+                                padding: '8px 12px',
+                                borderRadius: '5px',
+                                fontSize: '13px',
+                                fontWeight: '600',
+                                color: analyticsRange === key ? '#ea580c' : '#334155',
+                                backgroundColor: analyticsRange === key ? 'rgba(249, 115, 22, 0.08)' : 'transparent',
+                                cursor: 'pointer',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'space-between',
+                                transition: 'all 0.12s ease',
+                              }}
+                            >
+                              <span>{rangeLabels[key]}</span>
+                              {analyticsRange === key && (
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ea580c" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                                  <polyline points="20 6 9 17 4 12"></polyline>
+                                </svg>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+
+                    {analyticsRange === 'custom' ? (
+                      <div 
+                        style={{ 
+                          display: 'flex', 
+                          alignItems: 'center', 
+                          gap: '8px',
+                          background: '#f8fafc',
+                          border: '1px solid #e2e8f0',
+                          borderRadius: '5px',
+                          padding: '4px 8px',
+                          boxShadow: '0 1px 2px 0 rgba(0, 0, 0, 0.02)',
+                        }}
+                      >
+                        <input
+                          type="date"
+                          className="admRangeDateInput"
+                          value={customStartDate}
+                          onChange={(e) => setCustomStartDate(e.target.value)}
+                          style={{
+                            padding: '4px 8px',
+                            borderRadius: '5px',
+                            border: 'none',
+                            fontSize: '13px',
+                            fontWeight: '600',
+                            outline: 'none',
+                            color: '#334155',
+                            backgroundColor: 'transparent',
+                            cursor: 'pointer',
+                          }}
+                        />
+                        <span style={{ fontSize: '12px', color: '#94a3b8', fontWeight: '600' }}>đến</span>
+                        <input
+                          type="date"
+                          className="admRangeDateInput"
+                          value={customEndDate}
+                          onChange={(e) => setCustomEndDate(e.target.value)}
+                          style={{
+                            padding: '4px 8px',
+                            borderRadius: '5px',
+                            border: 'none',
+                            fontSize: '13px',
+                            fontWeight: '600',
+                            outline: 'none',
+                            color: '#334155',
+                            backgroundColor: 'transparent',
+                            cursor: 'pointer',
+                          }}
+                        />
+                      </div>
+                    ) : (
+                      <div style={{
+                        padding: '8px 14px',
+                        borderRadius: '5px',
+                        border: '1px solid #e2e8f0',
+                        background: '#f8fafc',
+                        fontSize: '13px',
+                        fontWeight: '600',
+                        color: '#64748b',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '6px',
+                      }}>
+                        <span>{dateRangeText}</span>
+                        <span>📅</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                  <span style={{ fontSize: '12px', fontWeight: 700, color: '#475569' }}>Resolution</span>
+                  <select 
+                    value={resolution}
+                    onChange={(e) => setResolution(e.target.value as 'day' | 'week' | 'month')}
+                    style={{
+                      padding: '8px 14px',
+                      borderRadius: '5px',
+                      border: '1px solid #e2e8f0',
+                      fontSize: '13px',
+                      fontWeight: '600',
+                      outline: 'none',
+                      color: '#334155',
+                      background: '#fff',
+                      cursor: 'pointer',
+                      boxShadow: '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
+                    }}
+                  >
+                    <option value="day">Theo Ngày</option>
+                    <option value="week">Theo Tuần</option>
+                    <option value="month">Theo Tháng</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* Right Column: Summary Stats */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', minWidth: '450px' }}>
+                <span style={{ fontSize: '12px', fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Summary</span>
+                
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: '5px', borderBottom: '2px solid #f1f5f9', paddingBottom: '6px' }}>
+                  <div />
+                  <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1.5fr 1fr', gap: '5px', width: '380px' }}>
+                    <div style={{ position: 'relative', fontSize: '13px', fontWeight: 700, color: '#475569', paddingBottom: '6px' }}>
+                      Doanh thu
+                      <div style={{ position: 'absolute', bottom: -2, left: 0, right: 0, height: '3px', background: '#3b82f6', borderRadius: '5px' }} />
+                    </div>
+                    <div style={{ position: 'relative', fontSize: '13px', fontWeight: 700, color: '#475569', paddingBottom: '6px' }}>
+                      Đơn hàng thành công
+                      <div style={{ position: 'absolute', bottom: -2, left: 0, right: 0, height: '3px', background: '#fb923c', borderRadius: '5px' }} />
+                    </div>
+                    <div style={{ position: 'relative', fontSize: '13px', fontWeight: 700, color: '#475569', paddingBottom: '6px', textAlign: 'right' }}>
+                      {`Đơn hàng ngày (${new Date().toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit' })})`}
+                      <div style={{ position: 'absolute', bottom: -2, left: 0, right: 0, height: '3px', background: '#c084fc', borderRadius: '5px' }} />
+                    </div>
+                  </div>
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: '5px', alignItems: 'center', paddingTop: '6px' }}>
+                  <div style={{ fontSize: '13px', fontWeight: 700, color: '#64748b' }}>
+                    {activeData ? formatHoverLabel(activeData.label) : 'Tổng quan'}
+                  </div>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1.5fr 1fr', gap: '10px', width: '380px', textAlign: 'right', alignItems: 'center' }}>
+                    <div style={{ fontSize: '15px', fontWeight: 800, color: '#1e293b', textAlign: 'left' }}>
+                      {activeData ? `${activeData.value.toLocaleString('vi-VN')} đ` : (kpi ? `${kpi.revenue_30d.toLocaleString('vi-VN')} đ` : '—')}
+                    </div>
+                    <div style={{ fontSize: '15px', fontWeight: 800, color: '#1e293b', textAlign: 'left' }}>
+                      {activeData ? `${activeData.orders}` : (kpi ? `${kpi.paid_orders_30d ?? 0}` : '—')}
+                    </div>
+                    <div style={{ fontSize: '15px', fontWeight: 800, color: '#1e293b', textAlign: 'right' }}>
+                      {activeData ? `${activeData.items_sold ?? 0}` : (kpi ? `${kpi.orders_today ?? 0}` : '—')}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
             </div>
 
-            <div className="admAnalyticsCats">
-              <div className="admCatsTitle">Danh mục bán chạy</div>
-              <div className="admCatsList">
-                {(topCats30d.length ? topCats30d : [
-                  { name: 'Điện thoại', pct: 0 },
-                  { name: 'Laptop', pct: 0 },
-                  { name: 'Phụ kiện', pct: 0 },
-                  { name: 'Màn hình', pct: 0 },
-                ]).slice(0, 4).map((c, idx) => (
-                  <div key={`${c.name}-${idx}`} className="admCatsRow">
-                    <div className="admCatsRowTop">
-                      <span>{c.name}</span>
-                      <span>{c.pct}%</span>
-                    </div>
-                    <div className="admCatsBar">
-                      <div className="admCatsBarFill" style={{ width: `${Math.max(0, Math.min(100, c.pct))}%` }} />
-                    </div>
-                  </div>
-                ))}
+          </div>
+          
+          {/* Best Selling Categories Section inside Analytics Card */}
+          <div className="admAnalyticsCatsWrap" style={{ marginTop: '24px', paddingTop: '24px', borderTop: '1px solid #e2e8f0' }}>
+            <div className="admCardHead">
+            <div>
+              <h3 className="admCardTitle" style={{ fontSize: '16px', fontWeight: 700, color: '#1e293b' }}>Danh mục bán chạy</h3>
+              <div className="admCardSub" style={{ fontSize: '12px', fontWeight: 600, color: '#94a3b8', marginTop: '2px' }}>
+                Tỷ lệ doanh thu đóng góp của các danh mục sản phẩm hàng đầu
               </div>
             </div>
+          </div>
+
+          {(() => {
+            const COLORS = ['#3b82f6', '#10b981', '#fb923c', '#8b5cf6', '#ec4899', '#06b6d4', '#f43f5e', '#eab308', '#84cc16', '#14b8a6']
+            const pieData = (topCats30d.length ? topCats30d : [
+              { name: 'Điện thoại', pct: 45 },
+              { name: 'Laptop', pct: 30 },
+              { name: 'Phụ kiện', pct: 15 },
+              { name: 'Màn hình', pct: 10 },
+            ]).map(c => ({ name: c.name, value: c.pct }))
+
+            return (
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.8fr', gap: '24px', alignItems: 'center', padding: '12px 0' }}>
+                <div style={{ width: '100%', height: '240px', position: 'relative' }}>
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Pie
+                        data={pieData}
+                        cx="50%"
+                        cy="50%"
+                        innerRadius={65}
+                        outerRadius={95}
+                        paddingAngle={4}
+                        dataKey="value"
+                      >
+                        {pieData.map((_, index) => (
+                          <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                        ))}
+                      </Pie>
+                      <Tooltip
+                        formatter={(val: any) => [`${val}%`, 'Tỷ lệ'] as [string, string]}
+                        contentStyle={{
+                          background: '#ffffff',
+                          border: '1px solid #e2e8f0',
+                          borderRadius: '5px',
+                          boxShadow: '0 4px 12px rgba(0, 0, 0, 0.08)',
+                          fontSize: '13px',
+                          fontWeight: 600,
+                        }}
+                      />
+                    </PieChart>
+                  </ResponsiveContainer>
+                  {/* Center Text inside Donut Chart */}
+                  <div style={{
+                    position: 'absolute',
+                    top: '50%',
+                    left: '50%',
+                    transform: 'translate(-50%, -50%)',
+                    textAlign: 'center',
+                    pointerEvents: 'none'
+                  }}>
+                    <div style={{ fontSize: '24px', fontWeight: 800, color: '#1e293b' }}>100%</div>
+                    <div style={{ fontSize: '11px', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Danh mục</div>
+                  </div>
+                </div>
+
+                {/* Premium Legend & Stats side list */}
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                  {pieData.map((c, idx) => (
+                    <div 
+                      key={c.name} 
+                      style={{ 
+                        display: 'flex', 
+                        alignItems: 'center', 
+                        justifyContent: 'space-between', 
+                        padding: '10px 14px', 
+                        borderRadius: '5px', 
+                        background: '#f8fafc', 
+                        borderLeft: `4px solid ${COLORS[idx % COLORS.length]}`,
+                        boxShadow: '0 1px 2px 0 rgba(0,0,0,0.02)'
+                      }}
+                    >
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <span style={{ fontSize: '13px', fontWeight: 700, color: '#334155', display: '-webkit-box', WebkitLineClamp: 1, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{c.name}</span>
+                      </div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
+                        <span style={{ fontSize: '14px', fontWeight: 800, color: '#1e293b' }}>{c.value}%</span>
+                        <span style={{ fontSize: '10px', fontWeight: 700, color: '#64748b', background: '#fff', padding: '2px 6px', borderRadius: '5px', border: '1px solid #e2e8f0', minWidth: '42px', textAlign: 'center' }}>Top {idx + 1}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )
+          })()}
           </div>
         </section>
 
@@ -987,7 +1280,7 @@ export default function DashboardPage() {
                             style={{
                               width: 86,
                               padding: '8px 10px',
-                              borderRadius: 10,
+                              borderRadius: 5,
                               border: '1px solid rgba(15,23,42,.10)',
                               fontWeight: 800,
                             }}
