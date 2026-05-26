@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { apiFetch, API_BASE_URL } from '@/configs/api.config'
 import { fetchFlashSales, fetchFlashSaleDetail } from '@/features/services/admin/api.admin.service'
 import '@/styles/admin/AdminPage.css'
+import '@/styles/admin/AdminFlashSalePage.css'
 
 type Product = {
   id: number
@@ -235,9 +236,9 @@ export default function AdminFlashSalePage() {
   if (loading) {
     return (
       <div className="adminContentCard">
-        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '24px' }}>
-          <div className="admSkeletonBar" style={{ width: '250px', height: '32px' }} />
-          <div className="admSkeletonBar" style={{ width: '150px', height: '40px' }} />
+        <div  className="adm-fs-style-1">
+          <div className="admSkeletonBar adm-fs-style-2"  />
+          <div className="admSkeletonBar adm-fs-style-3"  />
         </div>
         <div className="adminTableWrap">
           <table className="adminTable">
@@ -260,23 +261,15 @@ export default function AdminFlashSalePage() {
 
   return (
     <div className="adminContentCard">
-      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '24px', alignItems: 'center' }}>
-        <h2 style={{ margin: 0 }}>Quản lý Flash Sale</h2>
+      <div  className="adm-fs-style-4">
+        <h2  className="adm-fs-style-5">Quản lý Flash Sale</h2>
         <button className="adminBtnPrimary" onClick={() => { setEditingSale(null); setFormData({ name: '', start_at: '', end_at: '', status: 'active' }); setIsFormOpen(true); }}>
           + Tạo Chiến Dịch
         </button>
       </div>
 
       {error && (
-        <div style={{ 
-          color: '#d93025', 
-          background: '#fce8e6', 
-          padding: '12px 16px', 
-          borderRadius: '5px', 
-          marginBottom: '24px',
-          fontWeight: 600,
-          border: '1px solid #f5c2c7'
-        }}>
+        <div  className="adm-fs-style-6">
           Lỗi: {error}
         </div>
       )}
@@ -331,8 +324,8 @@ export default function AdminFlashSalePage() {
                   })()}
                 </td>
                 <td>
-                  <button className="adminBtnSecondary" style={{ marginRight: '8px' }} onClick={() => handleOpenItems(s)}>Sản phẩm</button>
-                  <button className="adminBtnSecondary" style={{ marginRight: '8px' }} onClick={() => {
+                  <button className="adminBtnSecondary adm-fs-style-7"  onClick={() => handleOpenItems(s)}>Sản phẩm</button>
+                  <button className="adminBtnSecondary adm-fs-style-8"  onClick={() => {
                     setEditingSale(s);
 
                     // Chuyển đổi sang giờ địa phương của trình duyệt để khớp với danh sách
@@ -367,28 +360,22 @@ export default function AdminFlashSalePage() {
 
       {/* Sale Form Modal */}
       {isFormOpen && (
-        <div className="adminModalOverlay" style={{ backdropFilter: 'blur(4px)', backgroundColor: 'rgba(15, 23, 42, 0.4)' }}>
-          <div className="adminModalContent" style={{
-            maxWidth: '540px',
-            borderRadius: '5px',
-            padding: '32px',
-            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
-            border: '1px solid rgba(255, 255, 255, 0.1)'
-          }}>
-            <div style={{ marginBottom: '24px' }}>
-              <h3 style={{ fontSize: '1.5rem', fontWeight: 600, color: '#0f172a', marginBottom: '8px' }}>
+        <div className="adminModalOverlay adm-fs-style-9" >
+          <div className="adminModalContent adm-fs-style-10" >
+            <div  className="adm-fs-style-11">
+              <h3  className="adm-fs-style-12">
                 {editingSale ? '✨ Hiệu chỉnh Flash Sale' : '🚀 Tạo Chiến Dịch Mới'}
               </h3>
-              <p style={{ color: '#64748b', fontSize: '0.9rem' }}>Thiết lập khoảng thời gian và tên gọi cho chương trình giảm giá chớp nhoáng.</p>
+              <p  className="adm-fs-style-13">Thiết lập khoảng thời gian và tên gọi cho chương trình giảm giá chớp nhoáng.</p>
             </div>
 
-            <form onSubmit={handleSubmitSale} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-              <div style={{ position: 'relative' }}>
-                <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: '#475569', marginBottom: '8px' }}>Tên chiến dịch</label>
+            <form onSubmit={handleSubmitSale}  className="adm-fs-style-14">
+              <div  className="adm-fs-style-15">
+                <label  className="adm-fs-style-16">Tên chiến dịch</label>
                 <input
                   type="text"
-                  className="adminInput"
-                  style={{ borderRadius: '5px', padding: '12px 16px', border: '1.5px solid #e2e8f0', transition: 'all 0.2s' }}
+                  className="adminInput adm-fs-style-17"
+                  
                   placeholder="Ví dụ: Sale sập sàn 12.12"
                   value={formData.name}
                   onChange={e => setFormData({ ...formData, name: e.target.value })}
@@ -396,24 +383,24 @@ export default function AdminFlashSalePage() {
                 />
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+              <div  className="adm-fs-style-18">
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: '#475569', marginBottom: '8px' }}>Bắt đầu</label>
+                  <label  className="adm-fs-style-19">Bắt đầu</label>
                   <input
                     type="datetime-local"
-                    className="adminInput"
-                    style={{ borderRadius: '5px', padding: '12px 16px', border: '1.5px solid #e2e8f0' }}
+                    className="adminInput adm-fs-style-20"
+                    
                     value={formData.start_at}
                     onChange={e => setFormData({ ...formData, start_at: e.target.value })}
                     required
                   />
                 </div>
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: '#475569', marginBottom: '8px' }}>Kết thúc</label>
+                  <label  className="adm-fs-style-21">Kết thúc</label>
                   <input
                     type="datetime-local"
-                    className="adminInput"
-                    style={{ borderRadius: '5px', padding: '12px 16px', border: '1.5px solid #e2e8f0' }}
+                    className="adminInput adm-fs-style-22"
+                    
                     value={formData.end_at}
                     onChange={e => setFormData({ ...formData, end_at: e.target.value })}
                     required
@@ -421,17 +408,11 @@ export default function AdminFlashSalePage() {
                 </div>
               </div>
 
-              <div style={{
-                background: 'none',
-                padding: '16px',
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '8px'
-              }}>
-                <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: '#475569' }}>Trạng thái quản lý</label>
+              <div  className="adm-fs-style-23">
+                <label  className="adm-fs-style-24">Trạng thái quản lý</label>
                 <select
-                  className="adminInput"
-                  style={{ borderRadius: '5px', padding: '10px 16px', border: '1.5px solid #e2e8f0' }}
+                  className="adminInput adm-fs-style-25"
+                  
                   value={formData.status}
                   onChange={e => setFormData({ ...formData, status: e.target.value as any })}
                 >
@@ -440,31 +421,24 @@ export default function AdminFlashSalePage() {
                   <option value="paused">Tạm dừng (Ẩn hoàn toàn)</option>
                   <option value="ended">Đã kết thúc</option>
                 </select>
-                <p style={{ fontSize: '0.75rem', color: '#64748b', margin: 0 }}>
+                <p  className="adm-fs-style-26">
                   * Trạng thái "Hoạt động" sẽ tự động chuyển sang "Đã kết thúc" khi hết giờ.
                 </p>
               </div>
 
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', marginTop: '12px' }}>
+              <div  className="adm-fs-style-27">
                 <button
                   type="button"
-                  className="adminBtnSecondary"
-                  style={{ borderRadius: '5px', padding: '12px 24px', fontWeight: 600 }}
+                  className="adminBtnSecondary adm-fs-style-28"
+                  
                   onClick={() => setIsFormOpen(false)}
                 >
                   Hủy bỏ
                 </button>
                 <button
                   type="submit"
-                  className="adminBtnPrimary"
-                  style={{
-                    borderRadius: '5px',
-                    padding: '12px 32px',
-                    fontWeight: 600,
-                    background: 'linear-gradient(135deg, #f97316 0%, #ea580c 100%)',
-                    border: 'none',
-                    boxShadow: '0 10px 15px -3px rgba(249, 115, 22, 0.3)'
-                  }}
+                  className="adminBtnPrimary adm-fs-style-29"
+                  
                 >
                   {editingSale ? 'Cập nhật' : 'Tạo ngay'}
                 </button>
@@ -476,32 +450,23 @@ export default function AdminFlashSalePage() {
 
       {/* Items Modal */}
       {isItemsModalOpen && currentSale && (
-        <div className="adminModalOverlay" style={{ backdropFilter: 'blur(6px)', backgroundColor: 'rgba(15, 23, 42, 0.5)' }}>
-          <div className="adminModalContent" style={{
-            maxWidth: '1000px',
-            width: '95%',
-            borderRadius: '5px',
-            padding: '40px',
-            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.3)',
-            maxHeight: '90vh',
-            display: 'flex',
-            flexDirection: 'column'
-          }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '32px' }}>
+        <div className="adminModalOverlay adm-fs-style-30" >
+          <div className="adminModalContent adm-fs-style-31" >
+            <div  className="adm-fs-style-32">
               <div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '4px' }}>
-                  <span style={{ fontSize: '1.5rem' }}>📦</span>
-                  <h3 style={{ fontSize: '1.75rem', fontWeight: 600, color: '#0f172a', margin: 0 }}>Danh sách sản phẩm</h3>
+                <div  className="adm-fs-style-33">
+                  <span  className="adm-fs-style-34">📦</span>
+                  <h3  className="adm-fs-style-35">Danh sách sản phẩm</h3>
                 </div>
-                <p style={{ color: '#64748b', margin: 0 }}>
-                  Chiến dịch: <span style={{ fontWeight: 700, color: '#f97316' }}>{currentSale.name}</span>
+                <p  className="adm-fs-style-36">
+                  Chiến dịch: <span  className="adm-fs-style-37">{currentSale.name}</span>
                 </p>
               </div>
               <button
                 onClick={() => setIsItemsModalOpen(false)}
                 style={{
-                  background: '#f1f5f9',
-                  border: 'none',
+                  background: 'var(--admin-card-bg)',
+                  border: '1px solid var(--admin-border)',
                   width: '40px',
                   height: '40px',
                   borderRadius: '12px',
@@ -511,31 +476,18 @@ export default function AdminFlashSalePage() {
                   alignItems: 'center',
                   justifyContent: 'center',
                   transition: 'all 0.2s',
-                  color: '#64748b'
+                  color: 'var(--admin-text-s)'
                 }}
-                onMouseOver={(e) => e.currentTarget.style.background = '#e2e8f0'}
-                onMouseOut={(e) => e.currentTarget.style.background = '#f1f5f9'}
+                onMouseOver={(e) => e.currentTarget.style.background = 'rgba(249, 115, 22, 0.14)'}
+                onMouseOut={(e) => e.currentTarget.style.background = 'var(--admin-card-bg)'}
               >
                 &times;
               </button>
             </div>
 
-            <div style={{
-              background: '#f8fafc',
-              padding: '24px 28px 28px 28px',
-              borderRadius: '12px',
-              border: '1px solid #e2e8f0',
-              marginBottom: '32px',
-              boxShadow: 'inset 0 2px 4px 0 rgba(0, 0, 0, 0.02)'
-            }}>
+            <div  className="adm-fs-style-38">
               {/* Tab Header */}
-              <div style={{
-                display: 'flex',
-                gap: '12px',
-                borderBottom: '1.5px solid #e2e8f0',
-                paddingBottom: '14px',
-                marginBottom: '24px'
-              }}>
+              <div  className="adm-fs-style-39">
                 <button
                   type="button"
                   onClick={() => setActiveItemTab('single')}
@@ -575,13 +527,13 @@ export default function AdminFlashSalePage() {
               </div>
 
               {activeItemTab === 'single' ? (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+                <div  className="adm-fs-style-40">
+                  <div  className="adm-fs-style-41">
                     <div>
-                      <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, color: '#475569', marginBottom: '8px' }}>1. Chọn sản phẩm</label>
+                      <label  className="adm-fs-style-42">1. Chọn sản phẩm</label>
                       <select
-                        className="adminInput"
-                        style={{ borderRadius: '5px', border: '1.5px solid #cbd5e1', padding: '10px 16px', height: '48px' }}
+                        className="adminInput adm-fs-style-43"
+                        
                         value={addItemData.product_id}
                         onChange={e => setAddItemData({ ...addItemData, product_id: e.target.value, variant_id: '' })}
                         required
@@ -593,15 +545,19 @@ export default function AdminFlashSalePage() {
                       </select>
                     </div>
                     <div>
-                      <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, color: '#475569', marginBottom: '8px' }}>2. Phiên bản áp dụng</label>
+                      <label  className="adm-fs-style-44">2. Phiên bản áp dụng</label>
                       <select
                         className="adminInput"
                         style={{
+                          width: '100%',
+                          minWidth: 0,
+                          boxSizing: 'border-box',
                           borderRadius: '5px',
-                          border: '1.5px solid #cbd5e1',
+                          border: '1.5px solid var(--admin-border)',
                           padding: '10px 16px',
                           height: '48px',
-                          background: (!selectedProduct || !selectedProduct.variants?.length) ? '#f1f5f9' : 'white'
+                          background: (!selectedProduct || !selectedProduct.variants?.length) ? '#0f172a' : 'var(--admin-card-bg)',
+                          color: 'var(--admin-text-p)'
                         }}
                         value={addItemData.variant_id}
                         onChange={e => {
@@ -623,28 +579,28 @@ export default function AdminFlashSalePage() {
                     </div>
                   </div>
 
-                  <div style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr auto', gap: '20px', alignItems: 'end' }}>
+                  <div  className="adm-fs-style-45">
                     <div>
-                      <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, color: '#475569', marginBottom: '8px' }}>3. Giá Sale đặc biệt (VNĐ)</label>
-                      <div style={{ position: 'relative' }}>
+                      <label  className="adm-fs-style-46">3. Giá Sale đặc biệt (VNĐ)</label>
+                      <div  className="adm-fs-style-47">
                         <input
                           type="number"
-                          className="adminInput"
-                          style={{ borderRadius: '5px', border: '1.5px solid #cbd5e1', padding: '10px 16px 10px 40px', height: '48px', fontWeight: 600, color: '#f97316' }}
+                          className="adminInput adm-fs-style-48"
+                          
                           placeholder="Nhập giá giảm..."
                           value={addItemData.flash_sale_price}
                           onChange={e => setAddItemData({ ...addItemData, flash_sale_price: e.target.value })}
                           required
                         />
-                        <span style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8', fontWeight: 700 }}>₫</span>
+                        <span  className="adm-fs-style-49">₫</span>
                       </div>
                     </div>
                     <div>
-                      <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, color: '#475569', marginBottom: '8px' }}>4. Giới hạn suất mua</label>
+                      <label  className="adm-fs-style-50">4. Giới hạn suất mua</label>
                       <input
                         type="number"
-                        className="adminInput"
-                        style={{ borderRadius: '5px', border: '1.5px solid #cbd5e1', padding: '10px 16px', height: '48px' }}
+                        className="adminInput adm-fs-style-51"
+                        
                         placeholder="∞ (Vô hạn)"
                         value={addItemData.quantity_limit}
                         onChange={e => setAddItemData({ ...addItemData, quantity_limit: e.target.value })}
@@ -653,63 +609,44 @@ export default function AdminFlashSalePage() {
                     <button
                       onClick={handleAddItem}
                       type="button"
-                      className="adminBtnPrimary"
-                      style={{
-                        borderRadius: '5px',
-                        padding: '0 40px',
-                        height: '48px',
-                        fontWeight: 600,
-                        background: 'linear-gradient(135deg, #df8947ff 0%, #f49b0cff 100%)',
-                        border: 'none',
-                        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
-                        color: 'white',
-                        cursor: 'pointer'
-                      }}
+                      className="adminBtnPrimary adm-fs-style-52"
+                      
                     >
                       Thêm vào danh sách
                     </button>
                   </div>
                 </div>
               ) : (
-                <form onSubmit={handleBulkDiscount} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-                  <div style={{
-                    padding: '16px',
-                    borderRadius: '8px',
-                    background: '#fff7ed',
-                    border: '1px solid #ffedd5',
-                    color: '#c2410c',
-                    fontSize: '0.85rem',
-                    fontWeight: 500,
-                    lineHeight: '1.5'
-                  }}>
+                <form onSubmit={handleBulkDiscount}  className="adm-fs-style-53">
+                  <div  className="adm-fs-style-54">
                     💡 <strong>Tính năng giảm giá đồng loạt:</strong> Hệ thống sẽ tự động tính toán giá giảm theo % của từng sản phẩm (và tất cả các phiên bản của sản phẩm) dựa trên giá bán gốc hiện tại, và tự động thêm chúng vào chiến dịch Flash Sale này.
                   </div>
 
-                  <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr auto', gap: '20px', alignItems: 'end' }}>
+                  <div  className="adm-fs-style-55">
                     <div>
-                      <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, color: '#475569', marginBottom: '8px' }}>1. Mức giảm giá (%)</label>
-                      <div style={{ position: 'relative' }}>
+                      <label  className="adm-fs-style-56">1. Mức giảm giá (%)</label>
+                      <div  className="adm-fs-style-57">
                         <input
                           type="number"
                           min="1"
                           max="99"
-                          className="adminInput"
-                          style={{ borderRadius: '5px', border: '1.5px solid #cbd5e1', padding: '10px 40px 10px 16px', height: '48px', fontWeight: 700, color: '#ea580c' }}
+                          className="adminInput adm-fs-style-58"
+                          
                           placeholder="Ví dụ: 10, 20, 50..."
                           value={bulkDiscountPercentage}
                           onChange={e => setBulkDiscountPercentage(e.target.value)}
                           required
                         />
-                        <span style={{ position: 'absolute', right: '16px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8', fontWeight: 700 }}>%</span>
+                        <span  className="adm-fs-style-59">%</span>
                       </div>
                     </div>
                     <div>
-                      <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, color: '#475569', marginBottom: '8px' }}>2. Giới hạn suất mua mỗi SP</label>
+                      <label  className="adm-fs-style-60">2. Giới hạn suất mua mỗi SP</label>
                       <input
                         type="number"
                         min="1"
-                        className="adminInput"
-                        style={{ borderRadius: '5px', border: '1.5px solid #cbd5e1', padding: '10px 16px', height: '48px' }}
+                        className="adminInput adm-fs-style-61"
+                        
                         placeholder="∞ (Vô hạn)"
                         value={bulkQuantityLimit}
                         onChange={e => setBulkQuantityLimit(e.target.value)}
@@ -740,17 +677,8 @@ export default function AdminFlashSalePage() {
             </div>
 
             <div
-              className="adminTableWrap"
-              style={{
-                flex: 1,
-                overflowY: 'auto',
-                borderRadius: '16px',
-                border: '1px solid #f1f5f9',
-
-                /* Ẩn scrollbar */
-                scrollbarWidth: 'none',
-                msOverflowStyle: 'none'
-              }}
+              className="adminTableWrap adm-fs-style-62"
+              
             >
               <style>
                 {`
@@ -761,39 +689,32 @@ export default function AdminFlashSalePage() {
               </style>
 
               <table className="adminTable">
-                <thead style={{ position: 'sticky', top: 0, zIndex: 10 }}>
+                <thead  className="adm-fs-style-63">
                   <tr>
-                    <th style={{ background: '#f8fafc' }}>Sản phẩm / Phiên bản</th>
-                    <th style={{ background: '#f8fafc' }}>Giá Flash Sale</th>
-                    <th style={{ background: '#f8fafc' }}>Giới hạn</th>
-                    <th style={{ background: '#f8fafc' }}>Đã bán</th>
-                    <th style={{ background: '#f8fafc', textAlign: 'center' }}>Thao tác</th>
+                    <th  className="adm-fs-style-64">Sản phẩm / Phiên bản</th>
+                    <th  className="adm-fs-style-65">Giá Flash Sale</th>
+                    <th  className="adm-fs-style-66">Giới hạn</th>
+                    <th  className="adm-fs-style-67">Đã bán</th>
+                    <th  className="adm-fs-style-68">Thao tác</th>
                   </tr>
                 </thead>
 
                 <tbody>
                   {(!currentSale.items || currentSale.items.length === 0) ? (
                     <tr>
-                      <td colSpan={5} style={{ textAlign: 'center', padding: '40px', color: '#94a3b8' }}>
-                        <div style={{ fontSize: '2rem', marginBottom: '8px' }}>📭</div>
+                      <td colSpan={5}  className="adm-fs-style-69">
+                        <div  className="adm-fs-style-70">📭</div>
                         Chưa có sản phẩm nào trong chiến dịch này.
                       </td>
                     </tr>
                   ) : (
                     currentSale.items.map(item => (
-                      <tr key={item.id} style={{ transition: 'all 0.2s' }}>
+                      <tr key={item.id}  className="adm-fs-style-71">
                         <td>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                          <div  className="adm-fs-style-72">
                             <div
-                              style={{
-                                width: '48px',
-                                height: '48px',
-                                borderRadius: '10px',
-                                overflow: 'hidden',
-                                border: '1px solid #e2e8f0',
-                                background: '#f8fafc'
-                              }}
-                            >
+                              
+                             className="adm-fs-style-73">
                               <img
                                 src={
                                   (item.variant?.id &&
@@ -809,16 +730,16 @@ export default function AdminFlashSalePage() {
                             </div>
 
                             <div>
-                              <div style={{ fontWeight: 700, color: '#0f172a' }}>
+                              <div  className="adm-fs-style-74">
                                 {item.product.name}
                               </div>
 
                               {item.variant ? (
-                                <div style={{ fontSize: '0.8rem', color: '#f97316', fontWeight: 600 }}>
+                                <div  className="adm-fs-style-75">
                                   Phiên bản: {item.variant.variant_name}
                                 </div>
                               ) : (
-                                <div style={{ fontSize: '0.75rem', color: '#64748b' }}>
+                                <div  className="adm-fs-style-76">
                                   Tất cả phiên bản
                                 </div>
                               )}
@@ -827,7 +748,7 @@ export default function AdminFlashSalePage() {
                         </td>
 
                         <td>
-                          <span style={{ fontWeight: 600, color: '#f97316' }}>
+                          <span  className="adm-fs-style-77">
                             {Number(item.flash_sale_price).toLocaleString()}đ
                           </span>
                         </td>
@@ -837,8 +758,8 @@ export default function AdminFlashSalePage() {
                             style={{
                               padding: '4px 8px',
                               borderRadius: '6px',
-                              background: item.quantity_limit ? '#f1f5f9' : '#fff7ed',
-                              color: item.quantity_limit ? '#475569' : '#c2410c',
+                              background: item.quantity_limit ? '#0f172a' : 'rgba(249, 115, 22, 0.14)',
+                              color: item.quantity_limit ? 'var(--admin-text-s)' : '#fb923c',
                               fontSize: '0.85rem',
                               fontWeight: 600
                             }}
@@ -848,16 +769,10 @@ export default function AdminFlashSalePage() {
                         </td>
 
                         <td>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                          <div  className="adm-fs-style-78">
                             <div
-                              style={{
-                                width: '40px',
-                                height: '8px',
-                                background: '#e2e8f0',
-                                borderRadius: '4px',
-                                overflow: 'hidden'
-                              }}
-                            >
+                              
+                             className="adm-fs-style-79">
                               <div
                                 style={{
                                   width: `${Math.min(
@@ -870,24 +785,16 @@ export default function AdminFlashSalePage() {
                               />
                             </div>
 
-                            <span style={{ fontSize: '0.85rem', fontWeight: 700 }}>
+                            <span  className="adm-fs-style-80">
                               {item.sold_quantity}
                             </span>
                           </div>
                         </td>
 
-                        <td style={{ textAlign: 'center' }}>
+                        <td  className="adm-fs-style-81">
                           <button
-                            className="adminBtnDanger"
-                            style={{
-                              padding: '6px 12px',
-                              borderRadius: '8px',
-                              fontSize: '0.8rem',
-                              fontWeight: 600,
-                              background: '#fff1f2',
-                              color: '#e11d48',
-                              border: 'none'
-                            }}
+                            className="adminBtnDanger adm-fs-style-82"
+                            
                             onMouseOver={(e) => e.currentTarget.style.background = '#ffe4e6'}
                             onMouseOut={(e) => e.currentTarget.style.background = '#fff1f2'}
                             onClick={() => handleRemoveItem(item.id)}

@@ -105,10 +105,10 @@ export default function ShopQnaInboxPage() {
       {loading ? (
         <ul className="sqInboxList">
           {Array.from({ length: 4 }).map((_, i) => (
-            <li key={i} className="sqCard" style={{ minHeight: 200 }}>
-              <div className="admSkeletonBar" style={{ width: '30%', height: 16, marginBottom: 16 }} />
-              <div className="admSkeletonBar" style={{ width: '90%', height: 14, marginBottom: 12 }} />
-              <div className="admSkeletonBar" style={{ width: '100%', height: 80 }} />
+            <li key={i} className="sqCard shopqnainboxpage-style-1" >
+              <div className="admSkeletonBar shopqnainboxpage-style-2"  />
+              <div className="admSkeletonBar shopqnainboxpage-style-3"  />
+              <div className="admSkeletonBar shopqnainboxpage-style-4"  />
             </li>
           ))}
         </ul>

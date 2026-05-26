@@ -230,7 +230,7 @@ export default function BannerAdminPage() {
                   value={formData.description} 
                   onChange={e => setFormData({...formData, description: e.target.value})} 
                   placeholder="VD: Trải nghiệm đỉnh cao của kỹ thuật hiệu năng cao..."
-                  style={{ padding: '10px', border: '1px solid rgb(147 148 150 / 14%)', borderRadius: '6px', background: '#f5f5f6ff', color: '#313232ff', width: '100%', minHeight: '60px', fontFamily: 'inherit' }}
+                  style={{ padding: '10px', border: '1px solid var(--admin-border)', borderRadius: '6px', background: 'var(--admin-card-bg)', color: 'var(--admin-text-p)', width: '100%', minHeight: '60px', fontFamily: 'inherit' }}
                 />
               </div>
 
@@ -266,7 +266,7 @@ export default function BannerAdminPage() {
                   onChange={e => {
                     if (e.target.files?.[0]) setImageFile(e.target.files[0])
                   }}
-                  style={{ padding: '8px', border: '1px solid #334155', borderRadius: '6px', background: '#ebecefff', color: '#131314ff', width: '100%' }}
+                  style={{ padding: '8px', border: '1px solid var(--admin-border)', borderRadius: '6px', background: 'var(--admin-card-bg)', color: 'var(--admin-text-p)', width: '100%' }}
                 />
                 {editingBanner?.image_url && !imageFile && (
                   <div style={{ marginTop: '8px' }}>

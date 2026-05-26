@@ -725,7 +725,7 @@ export default function SettingsAdminPage() {
               ))}
               {!data.recent_transactions.length && (
                 <tr>
-                  <td colSpan={4} style={{ padding: 14, color: '#64748b', fontWeight: 700 }}>Chưa có giao dịch.</td>
+                  <td colSpan={4} style={{ padding: 14, color: 'var(--admin-text-s)', fontWeight: 700 }}>Chưa có giao dịch.</td>
                 </tr>
               )}
             </tbody>
@@ -859,11 +859,11 @@ export default function SettingsAdminPage() {
                             : '—'
                       return (
                         <tr key={m.id}>
-                          <td style={{ fontWeight: 950, color: '#0f172a' }}>
+                          <td style={{ fontWeight: 950, color: 'var(--admin-text-p)' }}>
                             {m.name}
-                            <div style={{ color: '#64748b', fontWeight: 850, fontSize: 12, marginTop: 2 }}>{m.description ?? '—'}</div>
+                            <div style={{ color: 'var(--admin-text-s)', fontWeight: 850, fontSize: 12, marginTop: 2 }}>{m.description ?? '—'}</div>
                           </td>
-                          <td style={{ color: '#0f172a', fontWeight: 900 }}>{eta}</td>
+                          <td style={{ color: 'var(--admin-text-p)', fontWeight: 900 }}>{eta}</td>
                           <td className="admStrong">{fmtVnd(m.base_fee)}đ</td>
                           <td>
                             <label className="admSwitch" title={m.is_active ? 'Đang bật' : 'Đang tắt'}>
@@ -886,7 +886,7 @@ export default function SettingsAdminPage() {
                     })}
                     {!filteredMethods.length && (
                       <tr>
-                        <td colSpan={5} style={{ padding: 14, color: '#64748b', fontWeight: 700 }}>
+                        <td colSpan={5} style={{ padding: 14, color: 'var(--admin-text-s)', fontWeight: 700 }}>
                           Chưa có đối tác vận chuyển.
                         </td>
                       </tr>
@@ -1046,7 +1046,7 @@ export default function SettingsAdminPage() {
               ))}
               {!filteredZones.length && (
                 <tr>
-                  <td colSpan={5} style={{ padding: 14, color: '#64748b', fontWeight: 700 }}>Chưa có vùng vận chuyển.</td>
+                  <td colSpan={5} style={{ padding: 14, color: 'var(--admin-text-s)', fontWeight: 700 }}>Chưa có vùng vận chuyển.</td>
                 </tr>
               )}
             </tbody>
@@ -1155,7 +1155,7 @@ export default function SettingsAdminPage() {
                 />
               </label>
               <div className="admSetField" style={{ justifyContent: 'center', display: 'flex', flexDirection: 'column' }}>
-                <span style={{ fontSize: 12, color: '#64748b' }}>Lưu ý: Bạn cần thêm domain của website vào Whitelisted Domains trong cài đặt Fanpage.</span>
+                <span style={{ fontSize: 12, color: 'var(--admin-text-s)' }}>Lưu ý: Bạn cần thêm domain của website vào Whitelisted Domains trong cài đặt Fanpage.</span>
               </div>
             </div>
           )}

@@ -5,6 +5,7 @@ import { apiFetch, API_BASE_URL } from '@/configs/api.config'
 import { fetchDashboardStats } from '@/features/services/admin/api.admin.service'
 import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, PieChart, Pie, Cell } from 'recharts'
 import { RevenueIcon, CartIcon, BoxIcon, UserGroupIcon, GridIcon, AlertIcon, PencilIcon, BoxSmallIcon, HeadsetIcon, ReturnIcon, ReviewChatIcon, MedalIcon, PlusIcon } from '../AdminIcons'
+import '@/styles/admin/DashboardPage.css'
 
 const fmtMoneyTooltip = (v: number) => {
   if (!Number.isFinite(v)) return '0'
@@ -36,34 +37,25 @@ function CustomTooltip({ active, payload, label }: CustomTooltipProps) {
     const items = typeof data.items_sold === 'number' ? data.items_sold : 0
     return (
       <div
-        className="admChartTooltip"
-        style={{
-          background: '#ffffff',
-          border: '1px solid #e2e8f0',
-          padding: '10px 14px',
-          borderRadius: '8px',
-          boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
-          color: '#1e293b',
-          fontSize: '13px',
-          fontWeight: 600,
-        }}
+        className="admChartTooltip adm-dash-style-1"
+        
       >
-        <div style={{ fontWeight: 700, marginBottom: '6px', color: '#1e293b' }}>{dayLabel}</div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#3b82f6' }} />
+        <div  className="adm-dash-style-2">{dayLabel}</div>
+        <div  className="adm-dash-style-3">
+          <div  className="adm-dash-style-4">
+            <span   className="adm-dash-style-5" />
             <span>Doanh thu: </span>
-            <strong style={{ color: '#2563eb' }}>{fmtMoneyTooltip(rev)} đ</strong>
+            <strong  className="adm-dash-style-6">{fmtMoneyTooltip(rev)} đ</strong>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#fb923c' }} />
+          <div  className="adm-dash-style-7">
+            <span   className="adm-dash-style-8" />
             <span>Đơn hàng: </span>
-            <strong style={{ color: '#ea580c' }}>{ord}</strong>
+            <strong  className="adm-dash-style-9">{ord}</strong>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#10b981' }} />
+          <div  className="adm-dash-style-10">
+            <span   className="adm-dash-style-11" />
             <span>SP bán ra: </span>
-            <strong style={{ color: '#059669' }}>{items}</strong>
+            <strong  className="adm-dash-style-12">{items}</strong>
           </div>
         </div>
       </div>
@@ -551,14 +543,30 @@ export default function DashboardPage({ onCreateProduct }: { onCreateProduct?: (
         </div>
 
         <section className="admCard admAnalyticsCard">
-          <div className="admCardHead" style={{ marginBottom: '16px' }}>
-            <div>
-              <h3 className="admCardTitle" style={{ fontSize: '16px', fontWeight: 700, color: '#1e293b' }}>Phân tích & Thống kê</h3>
-              <div className="admCardSub" style={{ fontSize: '12px', fontWeight: 600, color: '#94a3b8', marginTop: '2px' }}>Hiệu suất doanh thu và số lượng giao dịch đơn hàng</div>
+          <div className="admAnalyticsHeader">
+            <div className="admCardHead adm-dash-style-13" >
+              <div>
+                <h3 className="admCardTitle adm-dash-style-14" >Phân tích & Thống kê</h3>
+                <div className="admCardSub adm-dash-style-15" >Hiệu suất doanh thu và số lượng giao dịch đơn hàng</div>
+              </div>
+            </div>
+            <div className="admAnalyticsLegend">
+              <div className="adm-dash-style-21">
+                <span className="adm-dash-style-22"><span className="adm-dash-style-23" /></span>
+                <span>Doanh thu</span>
+              </div>
+              <div className="adm-dash-style-24">
+                <span className="adm-dash-style-25"><span className="adm-dash-style-26" /></span>
+                <span>Số đơn hàng</span>
+              </div>
+              <div className="adm-dash-style-27">
+                <span className="adm-dash-style-28"><span className="adm-dash-style-29" /></span>
+                <span>SP bán ra</span>
+              </div>
             </div>
           </div>
 
-          <div className="admAnalyticsChart" style={{ background: '#fff', padding: '16px' }}>
+          <div className="admAnalyticsChart adm-dash-style-16" >
             {(() => {
               const pts = (revenue7d.length ? revenue7d : [
                 { date: '—', label: 'Th 2', value: 3400000, orders: 12, items_sold: 18 },
@@ -583,33 +591,13 @@ export default function DashboardPage({ onCreateProduct }: { onCreateProduct?: (
               })
               
               return (
-                <div style={{ width: '100%' }}>
-                  {/* Chart Legends and unit */}
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', padding: '0 8px' }}>
-                    <div style={{ fontSize: '12px', fontWeight: 700, color: '#64748b' }}>VND in Million</div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '20px', fontSize: '12px', fontWeight: 700, color: '#475569' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '28px', height: '2px', background: '#3b82f6', position: 'relative' }}>
-                          <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#3b82f6', border: '2px solid #fff', position: 'absolute' }} />
-                        </span>
-                        <span>Doanh thu</span>
-                      </div>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '28px', height: '2px', background: '#fb923c', position: 'relative' }}>
-                          <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#fb923c', border: '2px solid #fff', position: 'absolute' }} />
-                        </span>
-                        <span>Số đơn hàng</span>
-                      </div>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '28px', height: '2px', background: '#10b981', position: 'relative' }}>
-                          <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#10b981', border: '2px solid #fff', position: 'absolute' }} />
-                        </span>
-                        <span>SP bán ra</span>
-                      </div>
-                    </div>
+                <div  className="adm-dash-style-17">
+                  <div className="admAnalyticsAxisRow">
+                    <div  className="adm-dash-style-19">VND in Million</div>
+                    <div className="admAnalyticsAxisRight">Số đơn hàng</div>
                   </div>
 
-                  <div style={{ width: '100%', height: 320, position: 'relative', overflow: 'hidden' }}>
+                  <div  className="adm-dash-style-30">
                     <ResponsiveContainer width="100%" height="100%">
                       <AreaChart
                         data={pts}
@@ -714,52 +702,23 @@ export default function DashboardPage({ onCreateProduct }: { onCreateProduct?: (
                         />
                       </AreaChart>
                     </ResponsiveContainer>
-                    {/* Vertical label for right axis */}
-                    <div style={{
-                      position: 'absolute',
-                      right: -35,
-                      top: '50%',
-                      transform: 'rotate(90deg) translateY(-50%)',
-                      fontSize: '11px',
-                      fontWeight: 700,
-                      color: '#94a3b8',
-                      letterSpacing: '0.05em'
-                    }}>
-                      Số đơn hàng
-                    </div>
                   </div>
                 </div>
               )
             })()}
-
             {/* Bottom stats and filters block */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: '24px', borderTop: '1px solid #e2e8f0', paddingTop: '20px', marginTop: '20px', alignItems: 'end', flexWrap: 'wrap' }}>
+            <div  className="adm-dash-style-32">
               
               {/* Left Column: Filters */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: '20px', flexWrap: 'wrap' }}>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                  <span style={{ fontSize: '12px', fontWeight: 700, color: '#475569' }}>Time Range</span>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-                    <div style={{ position: 'relative' }} ref={dropdownRef}>
+              <div  className="adm-dash-style-33">
+                <div  className="adm-dash-style-34">
+                  <span  className="adm-dash-style-35">Time Range</span>
+                  <div  className="adm-dash-style-36">
+                    <div  ref={dropdownRef} className="adm-dash-style-37">
                       <div
                         className="admRangeSelectWrap"
                         onClick={() => setShowRangeDropdown(!showRangeDropdown)}
-                        style={{
-                          display: 'inline-flex',
-                          alignItems: 'center',
-                          gap: '8px',
-                          padding: '8px 14px',
-                          borderRadius: '5px',
-                          border: '1px solid #e2e8f0',
-                          background: '#fff',
-                          fontWeight: '600',
-                          fontSize: '13px',
-                          cursor: 'pointer',
-                          color: '#334155',
-                          userSelect: 'none',
-                          boxShadow: '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
-                          transition: 'all 0.15s ease',
-                        }}
+
                       >
                         <span>{rangeLabels[analyticsRange]}</span>
                         <svg 
@@ -771,34 +730,16 @@ export default function DashboardPage({ onCreateProduct }: { onCreateProduct?: (
                           strokeWidth="2" 
                           strokeLinecap="round" 
                           strokeLinejoin="round"
-                          style={{ 
-                            position: 'static', 
-                            opacity: 0.7, 
-                            transform: showRangeDropdown ? 'rotate(180deg)' : 'rotate(0deg)', 
-                            transition: 'transform 0.2s ease', 
-                            pointerEvents: 'none' 
-                          }}
-                        >
+                          style={{ transform: showRangeDropdown ? 'rotate(180deg)' : 'rotate(0deg)' }}
+                         className="adm-dash-style-38">
                           <polyline points="6 9 12 15 18 9"></polyline>
                         </svg>
                       </div>
 
                       {showRangeDropdown && (
                         <div
-                          style={{
-                            position: 'absolute',
-                            bottom: 'calc(100% + 6px)',
-                            left: 0,
-                            zIndex: 100,
-                            minWidth: '160px',
-                            background: '#fff',
-                            border: '1px solid #e2e8f0',
-                            borderRadius: '5px',
-                            boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1)',
-                            padding: '6px',
-                            animation: 'admFadeInDown 0.15s ease-out forwards',
-                          }}
-                        >
+                          
+                         className="adm-dash-style-39">
                           {(Object.keys(rangeLabels) as Array<'7d' | '30d' | 'month' | 'custom'>).map((key) => (
                             <div
                               key={key}
@@ -806,19 +747,7 @@ export default function DashboardPage({ onCreateProduct }: { onCreateProduct?: (
                                 setAnalyticsRange(key)
                                 setShowRangeDropdown(false)
                               }}
-                              style={{
-                                padding: '8px 12px',
-                                borderRadius: '5px',
-                                fontSize: '13px',
-                                fontWeight: '600',
-                                color: analyticsRange === key ? '#ea580c' : '#334155',
-                                backgroundColor: analyticsRange === key ? 'rgba(249, 115, 22, 0.08)' : 'transparent',
-                                cursor: 'pointer',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'space-between',
-                                transition: 'all 0.12s ease',
-                              }}
+className={`admRangeDropdownItem ${analyticsRange === key ? 'active' : ''}`}
                             >
                               <span>{rangeLabels[key]}</span>
                               {analyticsRange === key && (
@@ -834,66 +763,26 @@ export default function DashboardPage({ onCreateProduct }: { onCreateProduct?: (
 
                     {analyticsRange === 'custom' ? (
                       <div 
-                        style={{ 
-                          display: 'flex', 
-                          alignItems: 'center', 
-                          gap: '8px',
-                          background: '#f8fafc',
-                          border: '1px solid #e2e8f0',
-                          borderRadius: '5px',
-                          padding: '4px 8px',
-                          boxShadow: '0 1px 2px 0 rgba(0, 0, 0, 0.02)',
-                        }}
-                      >
+                        
+                       className="adm-dash-style-40">
                         <input
                           type="date"
                           className="admRangeDateInput"
                           value={customStartDate}
                           onChange={(e) => setCustomStartDate(e.target.value)}
-                          style={{
-                            padding: '4px 8px',
-                            borderRadius: '5px',
-                            border: 'none',
-                            fontSize: '13px',
-                            fontWeight: '600',
-                            outline: 'none',
-                            color: '#334155',
-                            backgroundColor: 'transparent',
-                            cursor: 'pointer',
-                          }}
+
                         />
-                        <span style={{ fontSize: '12px', color: '#94a3b8', fontWeight: '600' }}>đến</span>
+                        <span  className="adm-dash-style-41">đến</span>
                         <input
                           type="date"
                           className="admRangeDateInput"
                           value={customEndDate}
                           onChange={(e) => setCustomEndDate(e.target.value)}
-                          style={{
-                            padding: '4px 8px',
-                            borderRadius: '5px',
-                            border: 'none',
-                            fontSize: '13px',
-                            fontWeight: '600',
-                            outline: 'none',
-                            color: '#334155',
-                            backgroundColor: 'transparent',
-                            cursor: 'pointer',
-                          }}
+
                         />
                       </div>
                     ) : (
-                      <div style={{
-                        padding: '8px 14px',
-                        borderRadius: '5px',
-                        border: '1px solid #e2e8f0',
-                        background: '#f8fafc',
-                        fontSize: '13px',
-                        fontWeight: '600',
-                        color: '#64748b',
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        gap: '6px',
-                      }}>
+                      <div  className="adm-dash-style-42">
                         <span>{dateRangeText}</span>
                         <span>📅</span>
                       </div>
@@ -901,23 +790,12 @@ export default function DashboardPage({ onCreateProduct }: { onCreateProduct?: (
                   </div>
                 </div>
 
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                  <span style={{ fontSize: '12px', fontWeight: 700, color: '#475569' }}>Resolution</span>
+                <div  className="adm-dash-style-43">
+                  <span  className="adm-dash-style-44">Resolution</span>
                   <select 
                     value={resolution}
                     onChange={(e) => setResolution(e.target.value as 'day' | 'week' | 'month')}
-                    style={{
-                      padding: '8px 14px',
-                      borderRadius: '5px',
-                      border: '1px solid #e2e8f0',
-                      fontSize: '13px',
-                      fontWeight: '600',
-                      outline: 'none',
-                      color: '#334155',
-                      background: '#fff',
-                      cursor: 'pointer',
-                      boxShadow: '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
-                    }}
+className="admResolutionSelect"
                   >
                     <option value="day">Theo Ngày</option>
                     <option value="week">Theo Tuần</option>
@@ -927,39 +805,39 @@ export default function DashboardPage({ onCreateProduct }: { onCreateProduct?: (
               </div>
 
               {/* Right Column: Summary Stats */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', minWidth: '450px' }}>
-                <span style={{ fontSize: '12px', fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Summary</span>
+              <div  className="adm-dash-style-45">
+                <span  className="adm-dash-style-46">Summary</span>
                 
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: '5px', borderBottom: '2px solid #f1f5f9', paddingBottom: '6px' }}>
+                <div  className="adm-dash-style-47">
                   <div />
-                  <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1.5fr 1fr', gap: '5px', width: '380px' }}>
-                    <div style={{ position: 'relative', fontSize: '13px', fontWeight: 700, color: '#475569', paddingBottom: '6px' }}>
+                  <div  className="adm-dash-style-48">
+                    <div  className="adm-dash-style-49">
                       Doanh thu
-                      <div style={{ position: 'absolute', bottom: -2, left: 0, right: 0, height: '3px', background: '#3b82f6', borderRadius: '5px' }} />
+                      <div   className="adm-dash-style-50" />
                     </div>
-                    <div style={{ position: 'relative', fontSize: '13px', fontWeight: 700, color: '#475569', paddingBottom: '6px' }}>
+                    <div  className="adm-dash-style-51">
                       Đơn hàng thành công
-                      <div style={{ position: 'absolute', bottom: -2, left: 0, right: 0, height: '3px', background: '#fb923c', borderRadius: '5px' }} />
+                      <div   className="adm-dash-style-52" />
                     </div>
-                    <div style={{ position: 'relative', fontSize: '13px', fontWeight: 700, color: '#475569', paddingBottom: '6px', textAlign: 'right' }}>
+                    <div  className="adm-dash-style-53">
                       {`Đơn hàng ngày (${new Date().toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit' })})`}
-                      <div style={{ position: 'absolute', bottom: -2, left: 0, right: 0, height: '3px', background: '#c084fc', borderRadius: '5px' }} />
+                      <div   className="adm-dash-style-54" />
                     </div>
                   </div>
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: '5px', alignItems: 'center', paddingTop: '6px' }}>
-                  <div style={{ fontSize: '13px', fontWeight: 700, color: '#64748b' }}>
+                <div  className="adm-dash-style-55">
+                  <div  className="adm-dash-style-56">
                     {activeData ? formatHoverLabel(activeData.label) : 'Tổng quan'}
                   </div>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1.5fr 1fr', gap: '10px', width: '380px', textAlign: 'right', alignItems: 'center' }}>
-                    <div style={{ fontSize: '15px', fontWeight: 800, color: '#1e293b', textAlign: 'left' }}>
+                  <div  className="adm-dash-style-57">
+                    <div  className="adm-dash-style-58">
                       {activeData ? `${activeData.value.toLocaleString('vi-VN')} đ` : (kpi ? `${kpi.revenue_30d.toLocaleString('vi-VN')} đ` : '—')}
                     </div>
-                    <div style={{ fontSize: '15px', fontWeight: 800, color: '#1e293b', textAlign: 'left' }}>
+                    <div  className="adm-dash-style-59">
                       {activeData ? `${activeData.orders}` : (kpi ? `${kpi.paid_orders_30d ?? 0}` : '—')}
                     </div>
-                    <div style={{ fontSize: '15px', fontWeight: 800, color: '#1e293b', textAlign: 'right' }}>
+                    <div  className="adm-dash-style-60">
                       {activeData ? `${activeData.items_sold ?? 0}` : (kpi ? `${kpi.orders_today ?? 0}` : '—')}
                     </div>
                   </div>
@@ -971,11 +849,11 @@ export default function DashboardPage({ onCreateProduct }: { onCreateProduct?: (
           </div>
           
           {/* Best Selling Categories Section inside Analytics Card */}
-          <div className="admAnalyticsCatsWrap" style={{ marginTop: '24px', paddingTop: '24px', borderTop: '1px solid #e2e8f0' }}>
+          <div className="admAnalyticsCatsWrap adm-dash-style-61" >
             <div className="admCardHead">
             <div>
-              <h3 className="admCardTitle" style={{ fontSize: '16px', fontWeight: 700, color: '#1e293b' }}>Danh mục bán chạy</h3>
-              <div className="admCardSub" style={{ fontSize: '12px', fontWeight: 600, color: '#94a3b8', marginTop: '2px' }}>
+              <h3 className="admCardTitle adm-dash-style-62" >Danh mục bán chạy</h3>
+              <div className="admCardSub adm-dash-style-63" >
                 Tỷ lệ doanh thu đóng góp của các danh mục sản phẩm hàng đầu
               </div>
             </div>
@@ -991,8 +869,8 @@ export default function DashboardPage({ onCreateProduct }: { onCreateProduct?: (
             ]).map(c => ({ name: c.name, value: c.pct }))
 
             return (
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.8fr', gap: '24px', alignItems: 'center', padding: '12px 0' }}>
-                <div style={{ width: '100%', height: '240px', position: 'relative' }}>
+              <div  className="adm-dash-style-64">
+                <div  className="adm-dash-style-65">
                   <ResponsiveContainer width="100%" height="100%">
                     <PieChart>
                       <Pie
@@ -1011,52 +889,38 @@ export default function DashboardPage({ onCreateProduct }: { onCreateProduct?: (
                       <Tooltip
                         formatter={(val: any) => [`${val}%`, 'Tỷ lệ'] as [string, string]}
                         contentStyle={{
-                          background: '#ffffff',
-                          border: '1px solid #e2e8f0',
+                          background: 'var(--admin-card-bg)',
+                          border: '1px solid var(--admin-border)',
                           borderRadius: '5px',
-                          boxShadow: '0 4px 12px rgba(0, 0, 0, 0.08)',
+                          boxShadow: '0 4px 12px rgba(0, 0, 0, 0.18)',
                           fontSize: '13px',
                           fontWeight: 600,
+                          color: 'var(--admin-text-p)',
                         }}
                       />
                     </PieChart>
                   </ResponsiveContainer>
                   {/* Center Text inside Donut Chart */}
-                  <div style={{
-                    position: 'absolute',
-                    top: '50%',
-                    left: '50%',
-                    transform: 'translate(-50%, -50%)',
-                    textAlign: 'center',
-                    pointerEvents: 'none'
-                  }}>
-                    <div style={{ fontSize: '24px', fontWeight: 800, color: '#1e293b' }}>100%</div>
-                    <div style={{ fontSize: '11px', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Danh mục</div>
+                  <div  className="adm-dash-style-66">
+                    <div  className="adm-dash-style-67">100%</div>
+                    <div  className="adm-dash-style-68">Danh mục</div>
                   </div>
                 </div>
 
                 {/* Premium Legend & Stats side list */}
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                <div  className="adm-dash-style-69">
                   {pieData.map((c, idx) => (
                     <div 
                       key={c.name} 
-                      style={{ 
-                        display: 'flex', 
-                        alignItems: 'center', 
-                        justifyContent: 'space-between', 
-                        padding: '10px 14px', 
-                        borderRadius: '5px', 
-                        background: '#f8fafc', 
-                        borderLeft: `4px solid ${COLORS[idx % COLORS.length]}`,
-                        boxShadow: '0 1px 2px 0 rgba(0,0,0,0.02)'
-                      }}
+                      className="admPieCategoryItem"
+                      style={{ '--category-color': COLORS[idx % COLORS.length] } as React.CSSProperties}
                     >
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <span style={{ fontSize: '13px', fontWeight: 700, color: '#334155', display: '-webkit-box', WebkitLineClamp: 1, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{c.name}</span>
+                      <div  className="adm-dash-style-70">
+                        <span  className="adm-dash-style-71">{c.name}</span>
                       </div>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
-                        <span style={{ fontSize: '14px', fontWeight: 800, color: '#1e293b' }}>{c.value}%</span>
-                        <span style={{ fontSize: '10px', fontWeight: 700, color: '#64748b', background: '#fff', padding: '2px 6px', borderRadius: '5px', border: '1px solid #e2e8f0', minWidth: '42px', textAlign: 'center' }}>Top {idx + 1}</span>
+                      <div  className="adm-dash-style-72">
+                        <span  className="adm-dash-style-73">{c.value}%</span>
+                        <span  className="adm-dash-style-74">Top {idx + 1}</span>
                       </div>
                     </div>
                   ))}
@@ -1258,7 +1122,7 @@ export default function DashboardPage({ onCreateProduct }: { onCreateProduct?: (
                   ))
                 ) : lowStockProducts.length === 0 ? (
                   <tr>
-                    <td colSpan={8} style={{ padding: 16, color: '#64748b' }}>
+                    <td colSpan={8}  className="adm-dash-style-76">
                       {dashError ? dashError : 'Chưa có dữ liệu tồn kho (API chưa trả `stock_quantity` hoặc không có SP sắp hết).'}
                     </td>
                   </tr>
@@ -1271,7 +1135,7 @@ export default function DashboardPage({ onCreateProduct }: { onCreateProduct?: (
                       <td>{p.category?.name ?? '—'}</td>
                       <td className="admStrong">{p.stock_quantity ?? '—'}</td>
                       <td>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                        <div  className="adm-dash-style-77">
                           <input
                             value={restockDraft[p.id] ?? ''}
                             onChange={(e) => setRestockDraft((cur) => ({ ...cur, [p.id]: e.target.value }))}
@@ -1287,8 +1151,8 @@ export default function DashboardPage({ onCreateProduct }: { onCreateProduct?: (
                           />
                           <button
                             type="button"
-                            className="admBtn admBtnPrimary"
-                            style={{ padding: '8px 10px' }}
+                            className="admBtn admBtnPrimary adm-dash-style-78"
+                            
                             disabled={restockBusyId === p.id || !(Number.parseInt((restockDraft[p.id] ?? '').trim(), 10) > 0)}
                             onClick={() => void restockVariant(p.id)}
                           >
@@ -1336,7 +1200,7 @@ export default function DashboardPage({ onCreateProduct }: { onCreateProduct?: (
                 </div>
               ))}
               {!recentReviews.length && (
-                <div style={{ padding: 12, color: '#64748b', fontWeight: 700 }}>Chưa có đánh giá.</div>
+                <div  className="adm-dash-style-79">Chưa có đánh giá.</div>
               )}
             </div>
           </section>
@@ -1369,7 +1233,7 @@ export default function DashboardPage({ onCreateProduct }: { onCreateProduct?: (
                 </div>
               ))}
               {!topCustomers.length && (
-                <div style={{ padding: 12, color: '#64748b', fontWeight: 700 }}>Chưa có dữ liệu khách hàng.</div>
+                <div  className="adm-dash-style-80">Chưa có dữ liệu khách hàng.</div>
               )}
             </div>
             <button type="button" className="admLoyalAllBtn">Xem tất cả khách hàng</button>
@@ -1379,4 +1243,5 @@ export default function DashboardPage({ onCreateProduct }: { onCreateProduct?: (
     </div>
   )
 }
+
 

@@ -178,11 +178,25 @@ export default function AdminPage() {
   const [userEmail] = useState(readUserEmailFromStorage)
   const [userAvatarUrl] = useState(readUserAvatarFromStorage)
   const [logoSrc, setLogoSrc] = useState('/logo.png')
+  const [darkMode, setDarkMode] = useState<boolean>(() => {
+    return typeof window !== 'undefined' && localStorage.getItem('theme') === 'dark'
+  })
   const token = typeof window !== 'undefined' ? window.localStorage.getItem('token') : null
 
   useEffect(() => {
-    document.documentElement.classList.remove('dark')
+    const isDark = localStorage.getItem('theme') === 'dark'
+
+    document.documentElement.classList.toggle('dark', isDark)
+    setDarkMode(isDark)
   }, [])
+
+  const toggleTheme = () => {
+    const nextDark = !document.documentElement.classList.contains('dark')
+
+    document.documentElement.classList.toggle('dark', nextDark)
+    localStorage.setItem('theme', nextDark ? 'dark' : 'light')
+    setDarkMode(nextDark)
+  }
 
   type QuickProduct = {
     id: number
@@ -368,6 +382,8 @@ export default function AdminPage() {
     return `${API_BASE_URL}${url.startsWith('/') ? url : `/${url}`}`
   }
 
+  const adminLogoSrc = darkMode && logoSrc === '/logo.png' ? '/logo-trang.png' : logoSrc
+
   return (
     <div className={`adminLayout ${isSidebarCollapsed ? 'collapsed' : ''}`}>
       {/* Sidebar Overlay for Mobile */}
@@ -376,7 +392,7 @@ export default function AdminPage() {
       {/* Sidebar */}
       <aside className="adminSidebarPremium">
         <div className="adminBrand">
-          <img className="adminBrandLogoImg" src={logoSrc} alt="" decoding="async" />
+          <img className="adminBrandLogoImg" src={adminLogoSrc} alt="" decoding="async" />
           {!isSidebarCollapsed }
         </div>
 
@@ -584,6 +600,17 @@ export default function AdminPage() {
             >
               Đổi logo
             </button> */}
+            {/* chế độ tối */}
+
+            <button
+              type="button"
+              className="adminThemeBtn"
+              aria-label="Toggle dark mode"
+              onClick={toggleTheme}
+            >
+              {darkMode ? <SunIcon /> : <MoonIcon />}
+            </button>
+
             <div className="adminNotificationWrap" ref={notifWrapRef}>
               <button
                 type="button"
@@ -827,5 +854,7 @@ function SettingsIcon() { return <svg width="20" height="20" viewBox="0 0 24 24"
 function MenuIcon() { return <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg> }
 function SearchIcon() { return <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg> }
 function BellIcon() { return <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg> }
+function SunIcon() { return <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path></svg> }
+function MoonIcon() { return <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg> }
 function ExitIcon() { return <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg> }
 

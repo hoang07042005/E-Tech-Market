@@ -1,0 +1,111 @@
+.videoadminpage-style-1 {
+  text-align: center;
+  padding: 40px;
+  color: #94a3b8;
+}
+
+.videoadminpage-style-2 {
+  width: 80px;
+  height: 45px;
+  object-fit: cover;
+  border-radius: 4px;
+}
+
+.videoadminpage-style-3 {
+  width: 80px;
+  height: 45px;
+  background: #334155;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #64748b;
+  font-size: 10px;
+}
+
+.videoadminpage-style-4 {
+  font-weight: 600;
+}
+
+.videoadminpage-style-5 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2px;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  max-width: 260px;
+  color: #333;
+  font-size: 13px;
+  line-height: 1.6px;
+  word-break: break-word;
+}
+
+.videoadminpage-style-6 {
+  color: #fb923c;
+  font-weight: 500;
+}
+
+.videoadminpage-style-7 {
+  color: #60a5fa;
+  font-weight: 500;
+}
+
+.videoadminpage-style-8 {
+  color: #94a3b8;
+  font-style: italic;
+}
+
+.videoadminpage-style-9 {
+  text-decoration: underline;
+  max-width: 250px;
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.videoadminpage-style-10 {
+  max-width: 620px;
+}
+
+.videoadminpage-style-11 {
+  margin-bottom: 16px;
+}
+
+.videoadminpage-style-12 {
+  display: flex;
+  gap: 12px;
+  margin-top: 6px;
+}
+
+.videoadminpage-style-13 {
+  margin-top: 8px;
+}
+
+.videoadminpage-style-14 {
+  font-size: 12px;
+  color: #64748b;
+}
+
+.videoadminpage-style-15 {
+  margin-bottom: 16px;
+}
+
+.videoadminpage-style-16 {
+  margin-bottom: 16px;
+}
+
+.videoadminpage-style-17 {
+  margin-bottom: 16px;
+}
+
+.videoadminpage-style-18 {
+  margin-bottom: 16px;
+}
+
+.videoadminpage-style-19 {
+  margin-bottom: 16px;
+}
+
+.videoadminpage-style-20 {
+  margin-bottom: 12px;
+}

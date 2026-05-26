@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { apiFetch, API_BASE_URL } from '@/configs/api.config'
 import '@/styles/admin/AdminPage.css' // Reuse styles
+import '@/styles/admin/AdminBlogPage.css'
 
 type BlogCategory = {
   id: number
@@ -145,10 +146,10 @@ export default function AdminBlogPage() {
 
   if (loading) {
     return (
-      <div style={{ padding: '24px', background: 'var(--et-surface)', borderRadius: '12px' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '24px' }}>
-          <div className="admSkeletonBar" style={{ width: '200px', height: '32px' }} />
-          <div className="admSkeletonBar" style={{ width: '150px', height: '40px' }} />
+      <div  className="adminblogpage-style-1">
+        <div  className="adminblogpage-style-2">
+          <div className="admSkeletonBar adminblogpage-style-3"  />
+          <div className="admSkeletonBar adminblogpage-style-4"  />
         </div>
         <div className="adminTableWrap">
           <table className="adminTable">
@@ -168,12 +169,12 @@ export default function AdminBlogPage() {
       </div>
     )
   }
-  if (error) return <div style={{ padding: '20px', color: 'red' }}>Lỗi: {error}</div>
+  if (error) return <div  className="adminblogpage-style-5">Lỗi: {error}</div>
 
   return (
-    <div style={{ padding: '24px', background: 'var(--et-surface)', borderRadius: '12px' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '24px' }}>
-        <h2 style={{ margin: 0 }}>Quản lý Tin tức (Blog)</h2>
+    <div  className="adminblogpage-style-6">
+      <div  className="adminblogpage-style-7">
+        <h2  className="adminblogpage-style-8">Quản lý Tin tức (Blog)</h2>
         <button className="adminBtnPrimary" onClick={() => handleOpenForm()}>
           + Thêm Bài Viết
         </button>
@@ -198,23 +199,23 @@ export default function AdminBlogPage() {
                 {/* <td>{p.id}</td> */}
                 <td>
                   {p.thumbnail_url ? (
-                    <img src={resolveImageUrl(p.thumbnail_url)} alt="" style={{ width: '60px', height: '40px', objectFit: 'cover', borderRadius: '4px' }} />
+                    <img src={resolveImageUrl(p.thumbnail_url)} alt=""   className="adminblogpage-style-9" />
                   ) : '—'}
                 </td>
-                <td style={{ maxWidth: '300px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                <td  className="adminblogpage-style-10">
                   {p.title}
                 </td>
                 <td>{p.category?.name || '—'}</td>
                 <td>
                   {p.is_published ? (
-                    <span style={{ color: 'green', fontWeight: 'bold' }}>Đã xuất bản</span>
+                    <span  className="adminblogpage-style-11">Đã xuất bản</span>
                   ) : (
-                    <span style={{ color: 'orange', fontWeight: 'bold' }}>Bản nháp</span>
+                    <span  className="adminblogpage-style-12">Bản nháp</span>
                   )}
                 </td>
                 <td>{new Date(p.published_at || new Date()).toLocaleDateString('vi-VN')}</td>
                 <td>
-                  <button className="adminBtnSecondary" style={{ marginRight: '8px' }} onClick={() => handleOpenForm(p)}>Sửa</button>
+                  <button className="adminBtnSecondary adminblogpage-style-13"  onClick={() => handleOpenForm(p)}>Sửa</button>
                   <button className="adminBtnDanger" onClick={() => handleDelete(p.id)}>Xóa</button>
                 </td>
               </tr>
@@ -224,12 +225,12 @@ export default function AdminBlogPage() {
       </div>
 
       {isFormOpen && (
-        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999 }}>
-          <div style={{ background: '#fff', width: '800px', maxWidth: '90%', maxHeight: '90vh', overflowY: 'auto', borderRadius: '12px', padding: '24px' }}>
+        <div  className="adminblogpage-style-14">
+          <div  className="adminblogpage-style-15">
             <h2>{editingPost ? 'Sửa bài viết' : 'Thêm bài viết mới'}</h2>
-            <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            <form onSubmit={handleSubmit}  className="adminblogpage-style-16">
               <div>
-                <label style={{ fontWeight: 'bold', display: 'block', marginBottom: '8px' }}>Tiêu đề *</label>
+                <label  className="adminblogpage-style-17">Tiêu đề *</label>
                 <input 
                   type="text" 
                   value={formData.title} 
@@ -239,10 +240,10 @@ export default function AdminBlogPage() {
                 />
               </div>
 
-              <div style={{ display: 'flex', gap: '16px' }}>
-                <div style={{ flex: 1 }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                    <label style={{ fontWeight: 'bold', display: 'block' }}>Danh mục</label>
+              <div  className="adminblogpage-style-18">
+                <div  className="adminblogpage-style-19">
+                  <div  className="adminblogpage-style-20">
+                    <label  className="adminblogpage-style-21">Danh mục</label>
                     <button 
                       type="button" 
                       onClick={async () => {
@@ -276,9 +277,9 @@ export default function AdminBlogPage() {
                     ))}
                   </select>
                 </div>
-                <div style={{ flex: 1 }}>
-                  <label style={{ fontWeight: 'bold', display: 'block', marginBottom: '8px' }}>Ảnh Thumbnail</label>
-                  <div style={{ display: 'flex', gap: '8px' }}>
+                <div  className="adminblogpage-style-22">
+                  <label  className="adminblogpage-style-23">Ảnh Thumbnail</label>
+                  <div  className="adminblogpage-style-24">
                     <input 
                       type="file" 
                       accept="image/*"
@@ -302,15 +303,15 @@ export default function AdminBlogPage() {
                     />
                   </div>
                   {formData.thumbnail_url && (
-                    <div style={{ marginTop: '8px' }}>
-                      <img src={resolveImageUrl(formData.thumbnail_url)} alt="Thumbnail" style={{ height: '80px', borderRadius: '4px', objectFit: 'cover' }} />
+                    <div  className="adminblogpage-style-25">
+                      <img src={resolveImageUrl(formData.thumbnail_url)} alt="Thumbnail"   className="adminblogpage-style-26" />
                     </div>
                   )}
                 </div>
               </div>
 
               <div>
-                <label style={{ fontWeight: 'bold', display: 'block', marginBottom: '8px' }}>Mô tả ngắn (Excerpt)</label>
+                <label  className="adminblogpage-style-27">Mô tả ngắn (Excerpt)</label>
                 <textarea 
                   value={formData.excerpt} 
                   onChange={e => setFormData({ ...formData, excerpt: e.target.value })} 
@@ -319,7 +320,7 @@ export default function AdminBlogPage() {
               </div>
 
               <div>
-                <label style={{ fontWeight: 'bold', display: 'block', marginBottom: '8px' }}>Nội dung (HTML) *</label>
+                <label  className="adminblogpage-style-28">Nội dung (HTML) *</label>
                 <textarea 
                   value={formData.content} 
                   onChange={e => setFormData({ ...formData, content: e.target.value })} 
@@ -328,8 +329,8 @@ export default function AdminBlogPage() {
                 />
               </div>
 
-              <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
-                <label style={{ fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
+              <div  className="adminblogpage-style-29">
+                <label  className="adminblogpage-style-30">
                   <input 
                     type="checkbox" 
                     checked={formData.is_published} 
@@ -340,7 +341,7 @@ export default function AdminBlogPage() {
                 </label>
               </div>
 
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', marginTop: '16px' }}>
+              <div  className="adminblogpage-style-31">
                 <button type="button" className="adminBtnSecondary" onClick={() => setIsFormOpen(false)} disabled={submitting}>Hủy</button>
                 <button type="submit" className="adminBtnPrimary" disabled={submitting}>
                   {submitting ? 'Đang lưu...' : 'Lưu bài viết'}

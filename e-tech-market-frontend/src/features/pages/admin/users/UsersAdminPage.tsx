@@ -241,8 +241,8 @@ export default function UsersAdminPage() {
       </div>
 
       {/* Tab Switcher */}
-      <div className="pDetailFilterBar" style={{ marginBottom: '24px', border: 'none', background: 'none', boxShadow: 'none' }}>
-        <div className="pVariantFilterTabs" style={{ margin: 0, padding: 10, borderRadius: 30, border: '2px solid #dadadad8'}}>
+      <div className="pDetailFilterBar usersadminpage-style-1" >
+        <div className="pVariantFilterTabs usersadminpage-style-2" >
           <button 
             type="button"
             className={`pVariantTabBtn ${activeTab === 'customer' ? 'active' : ''}`}
@@ -303,7 +303,7 @@ export default function UsersAdminPage() {
             <tbody>
               {rows.length === 0 ? (
                 <tr>
-                  <td colSpan={6} style={{ textAlign: 'center', padding: '40px', color: '#94a3b8' }}>
+                  <td colSpan={6}  className="usersadminpage-style-3">
                     {debouncedSearch ? 'Không tìm thấy người dùng phù hợp.' : 'Chưa có người dùng.'}
                   </td>
                 </tr>

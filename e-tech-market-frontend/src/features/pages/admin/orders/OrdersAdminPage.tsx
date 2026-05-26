@@ -658,26 +658,26 @@ export default function OrdersAdminPage() {
                         />
                         {detail.return_request.status === 'approved' ? (
                           <div style={{ marginTop: 10 }}>
-                            <div style={{ fontWeight: 900, fontSize: 12, color: '#0f172a' }}>Chứng từ hoàn tiền</div>
+                            <div style={{ fontWeight: 900, fontSize: 12, color: 'var(--admin-text-p)' }}>Chứng từ hoàn tiền</div>
                             <input
                               type="file"
                               multiple
                               accept="image/*,video/*"
                               onChange={(e) => setRrRefundFiles(Array.from(e.target.files || []))}
                             />
-                            <div style={{ marginTop: 6, fontSize: 12, color: '#64748b' }}>Upload ảnh/video chứng từ hoàn tiền (tối đa 8 file).</div>
+                            <div style={{ marginTop: 6, fontSize: 12, color: 'var(--admin-text-s)' }}>Upload ảnh/video chứng từ hoàn tiền (tối đa 8 file).</div>
                           </div>
                         ) : null}
 
                         {detail.return_request.admin_note ? (
-                          <div style={{ marginTop: 10, fontSize: 12, color: '#334155' }}>
+                          <div style={{ marginTop: 10, fontSize: 12, color: 'var(--admin-text-s)' }}>
                             <span style={{ fontWeight: 900 }}>Đã lưu:</span> {detail.return_request.admin_note}
                           </div>
                         ) : null}
 
                         {Array.isArray(detail.return_request.refund_proof) && detail.return_request.refund_proof.length ? (
                           <div style={{ marginTop: 10 }}>
-                            <div style={{ fontWeight: 900, fontSize: 12, color: '#0f172a' }}>Chứng từ đã lưu</div>
+                            <div style={{ fontWeight: 900, fontSize: 12, color: 'var(--admin-text-p)' }}>Chứng từ đã lưu</div>
                             <div style={{ marginTop: 8, display: 'grid', gridTemplateColumns: 'repeat(4, minmax(0, 1fr))', gap: 8 }}>
                               {detail.return_request.refund_proof.slice(0, 8).map((m, i) => {
                                 const u = resolveImage(m?.url || null)
@@ -735,14 +735,14 @@ export default function OrdersAdminPage() {
                   {detail.status_history.map((h) => (
                     <div key={h.id} className="admOrderSupportBox" style={{ display: 'flex', justifyContent: 'space-between', gap: 10 }}>
                       <div style={{ minWidth: 0 }}>
-                        <div style={{ fontWeight: 900, fontSize: 12, color: '#0f172a' }}>
+                        <div style={{ fontWeight: 900, fontSize: 12, color: 'var(--admin-text-p)' }}>
                           {(h.from_label || '—') + ' → ' + (h.to_label || h.to_status)}
                         </div>
-                        <div style={{ marginTop: 4, fontWeight: 700, fontSize: 12, color: '#64748b' }}>
+                        <div style={{ marginTop: 4, fontWeight: 700, fontSize: 12, color: 'var(--admin-text-s)' }}>
                           {fmtViTime(h.changed_at)} {h.changed_by?.name ? `• ${h.changed_by.name}` : ''}
                         </div>
                         {h.note ? (
-                          <div style={{ marginTop: 6, fontWeight: 600, fontSize: 12, color: '#334155' }}>{h.note}</div>
+                          <div style={{ marginTop: 6, fontWeight: 600, fontSize: 12, color: 'var(--admin-text-s)' }}>{h.note}</div>
                         ) : null}
                       </div>
                       <span className="admOrderChip">{h.to_label || h.to_status}</span>
@@ -985,7 +985,7 @@ export default function OrdersAdminPage() {
                   ))}
                   {!rows.length && (
                     <tr>
-                      <td colSpan={7} style={{ padding: 16, color: '#64748b', fontWeight: 700 }}>
+                      <td colSpan={7} style={{ padding: 16, color: 'var(--admin-text-s)', fontWeight: 700 }}>
                         Không có đơn hàng phù hợp.
                       </td>
                     </tr>
@@ -1040,4 +1040,3 @@ export default function OrdersAdminPage() {
     </div>
   )
 }
-

@@ -101,19 +101,19 @@ export default function NotificationsAdminPage() {
                 onClick={() => void markRead(n.id)}
                 style={{
                   textAlign: 'left',
-                  border: '1px solid rgba(15,23,42,.08)',
-                  background: n.read_at ? '#fff' : 'rgba(37,99,235,.06)',
+                  border: '1px solid var(--admin-border)',
+                  background: n.read_at ? 'var(--admin-card-bg)' : 'rgba(37,99,235,.12)',
                   borderRadius: 5,
                   padding: 12,
                   cursor: 'pointer',
                 }}
               >
                 <div style={{ display: 'flex', justifyContent: 'space-between', gap: 10 }}>
-                  <div style={{ fontWeight: 900, fontSize: 13, color: '#0f172a' }}>{n.title || '—'}</div>
+                  <div style={{ fontWeight: 900, fontSize: 13, color: 'var(--admin-text-p)' }}>{n.title || '—'}</div>
                   <span className={`admOrdersStatus2 ${n.read_at ? 'tone-muted' : 'tone-info'}`}>{n.read_at ? 'Đã đọc' : 'Mới'}</span>
                 </div>
-                <div style={{ marginTop: 6, fontWeight: 700, fontSize: 12, color: '#64748b' }}>{n.body || ''}</div>
-                <div style={{ marginTop: 6, fontWeight: 800, fontSize: 12, color: '#94a3b8' }}>{fmtVi(n.created_at)}</div>
+                <div style={{ marginTop: 6, fontWeight: 700, fontSize: 12, color: 'var(--admin-text-s)' }}>{n.body || ''}</div>
+                <div style={{ marginTop: 6, fontWeight: 800, fontSize: 12, color: 'var(--admin-text-s)' }}>{fmtVi(n.created_at)}</div>
               </button>
             ))}
           </div>
@@ -130,4 +130,3 @@ export default function NotificationsAdminPage() {
     </div>
   )
 }
-

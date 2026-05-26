@@ -108,7 +108,7 @@
     align-items: center;
     gap: 16px;
     padding: 10px;
-    border: none;
+    border: 1px solid transparent;
     background: transparent;
     color: var(--admin-text-s);
     border-radius: 5px;
@@ -127,7 +127,8 @@
 .sidebarItem.active {
     background: rgb(240 111 22 / 12%);
     color: var(--admin-accent);
-    border-right: 4px solid var(--admin-accent);
+    border-color: rgba(249, 115, 22, .14);
+    box-shadow: inset 4px 0 0 var(--admin-accent);
 }
 
 .sidebarItemIcon {
@@ -4724,4 +4725,895 @@
         opacity: 1;
         transform: translateY(0)
     }
+}
+
+.adminThemeBtn {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    border: 1px solid var(--admin-border);
+    background: #ffffff;
+    color: var(--admin-text-s);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all .2s ease;
+    flex: 0 0 auto;
+}
+
+.adminThemeBtn:hover {
+    background: var(--admin-accent-soft);
+    color: var(--admin-accent);
+    border-color: rgba(249, 115, 22, .28);
+}
+
+html.dark .adminLayout {
+    --admin-main-bg: #090d16;
+    --admin-sidebar-bg: #0c111c;
+    --admin-card-bg: #121926;
+    --admin-card-glass: #121926;
+    --admin-border: #1e293b;
+    --admin-text-p: #f1f5f9;
+    --admin-text-s: #94a3b8;
+    --admin-accent-soft: rgba(249, 115, 22, .22);
+    --admin-glow: 0 12px 30px rgba(249, 115, 22, .24);
+}
+
+html.dark .adminSidebarPremium,
+html.dark .adminTopBar,
+html.dark .adminFooter {
+    background: rgba(12, 17, 28, .96);
+    border-color: var(--admin-border);
+}
+
+html.dark .sidebarItem {
+    background: rgba(255, 255, 255, .02);
+    border-color: rgba(255, 255, 255, .04);
+}
+
+html.dark .sidebarItem:hover {
+    background: rgba(249, 115, 22, .10);
+    color: var(--admin-text-p);
+    border-color: rgba(249, 115, 22, .18);
+}
+
+html.dark .sidebarItem.active {
+    background: rgba(249, 115, 22, .12);
+    color: var(--admin-text-p);
+    border-color: rgba(249, 115, 22, .18);
+    box-shadow: inset 4px 0 0 var(--admin-accent);
+}
+
+html.dark .sidebarItemLabel,
+html.dark .sidebarItemIcon {
+    color: inherit;
+}
+
+html.dark .adminMainArea,
+html.dark .adminScrollContent {
+    background: var(--admin-main-bg);
+}
+
+html.dark .adminThemeBtn,
+html.dark .adminSearchBox,
+html.dark .adminSidebarUserCard,
+html.dark .dashboardDateRange,
+html.dark .statWidget,
+html.dark .revenueChartCard,
+html.dark .recentOrdersCard,
+html.dark .productsTableWrap,
+html.dark .admSetCard,
+html.dark .admSetMiniCard,
+html.dark .admIconBtn,
+html.dark .admOrdersMenuBtn,
+html.dark .admModalClose {
+    background: var(--admin-card-bg);
+    border-color: var(--admin-border);
+    color: var(--admin-text-p);
+}
+
+html.dark .adminSearchBox input,
+html.dark .admSetField input,
+html.dark .admSetField textarea,
+html.dark .admSetField select {
+    color: var(--admin-text-p);
+    background: transparent;
+    border-color: var(--admin-border);
+}
+
+html.dark .adminSearchBox input::placeholder,
+html.dark .admSetField input::placeholder,
+html.dark .admSetField textarea::placeholder {
+    color: rgba(148, 163, 184, .72);
+}
+
+html.dark .adminQuickMenu,
+html.dark .adminNotifMenu,
+html.dark .admOrdersMenu,
+html.dark .admModal {
+    background: #121926;
+    border-color: var(--admin-border);
+    box-shadow: 0 24px 60px rgba(0, 0, 0, .38);
+}
+
+html.dark .adminQuickHead,
+html.dark .adminNotifHead,
+html.dark .admModalHead {
+    background: rgba(249, 115, 22, .12);
+    border-color: rgba(249, 115, 22, .18);
+}
+
+html.dark .adminQuickRow,
+html.dark .adminNotifRow,
+html.dark .admOrdersMenuItem {
+    background: transparent;
+    color: var(--admin-text-p);
+}
+
+html.dark .adminQuickRow:hover,
+html.dark .adminNotificationBtn:hover,
+html.dark .admIconBtn:hover,
+html.dark .admOrdersMenuBtn:hover,
+html.dark .admOrdersMenuItem:hover,
+html.dark .admModalClose:hover {
+    background: rgba(249, 115, 22, .14);
+    color: var(--admin-accent);
+}
+
+html.dark .adminNotifRow.unread {
+    background: rgba(37, 99, 235, .16);
+}
+
+html.dark .adminQuickTitle,
+html.dark .adminQuickGroupName,
+html.dark .adminNotifTitle,
+html.dark .adminNotifRowTitle,
+html.dark .adminUserName,
+html.dark .adminSidebarUserName,
+html.dark .breadcrumbCurrent,
+html.dark .admSettingsTitle,
+html.dark .admSetCardTitle,
+html.dark .admMiniTitle,
+html.dark .admSetSectionHead h3,
+html.dark .admModalTitle,
+html.dark .admModalValue,
+html.dark .admOrdersTable tbody td,
+html.dark .admOrdersProduct,
+html.dark .admOrdersDate,
+html.dark .admReviewUserName,
+html.dark .admLoyalName,
+html.dark .admLoyalSpent,
+html.dark .dashboardHeading,
+html.dark .cardTitle,
+html.dark .statValue,
+html.dark .activityTitle,
+html.dark .pTableName,
+html.dark .adminTableNew td {
+    color: var(--admin-text-p);
+}
+
+html.dark .adminQuickSub,
+html.dark .adminQuickEmpty,
+html.dark .adminNotifEmpty,
+html.dark .adminNotifRowBody,
+html.dark .adminUserRole,
+html.dark .adminSidebarUserEmail,
+html.dark .breadcrumbParent,
+html.dark .admSettingsSub,
+html.dark .admSetField,
+html.dark .admSetSectionSub,
+html.dark .admMiniSub,
+html.dark .admModalLabel,
+html.dark .admReviewQuote,
+html.dark .admReviewTime2,
+html.dark .admLoyalOrders,
+html.dark .adminFooterBrandDesc,
+html.dark .statLabel,
+html.dark .activityTime,
+html.dark .pTableCat {
+    color: var(--admin-text-s);
+}
+
+html.dark .adminLayout :is(.admShipMethodTile,
+    .admShipMethodAddTile,
+    .admShipPolicyCard,
+    .admShipCurrentCard,
+    .admShipTipCard,
+    .admShipMethodsCard,
+    .admTxnWrap,
+    .admTxnTable,
+    .admPencilBtn,
+    .admShipZoneSearch,
+    .admShipAddZoneBtn,
+    .admShipPolicyBtn,
+    .admShipMethodIcon,
+    .admShipMethodAddIcon,
+    .admShipMethodCfg,
+    .admShipMethodName,
+    .admShipMethodDesc,
+    .admShipMethodFee,
+    .admShipMethodSub,
+    .admShipMethodAddText,
+    .admShipMethodAddSub,
+    .admShipCurrentTitle,
+    .admShipPolicyTitle,
+    .admShipCheck,
+    .admShipTipText) {
+    background-color: var(--admin-card-bg) !important;
+    border-color: var(--admin-border) !important;
+    color: var(--admin-text-p) !important;
+}
+
+html.dark .adminLayout :is(.admShipMethodTile,
+    .admShipMethodAddTile,
+    .admShipPolicyCard,
+    .admShipCurrentCard,
+    .admShipTipCard,
+    .admShipMethodsCard,
+    .admShipZoneCard,
+    .admShipMethodCard) {
+    background: var(--admin-card-bg) !important;
+}
+
+html.dark .adminLayout :is(.admShipMethodIcon,
+    .admShipMethodAddIcon) {
+    background: rgba(249, 115, 22, .16) !important;
+    color: var(--admin-accent) !important;
+    border-color: rgba(249, 115, 22, .18) !important;
+}
+
+html.dark .adminLayout :is(.admShipManageLink,
+    .admShipMethodCfg) {
+    background: transparent !important;
+    color: var(--admin-accent) !important;
+}
+
+html.dark .adminLayout .admActivityRowText,
+html.dark .adminLayout .admActivityRowText b {
+    color: var(--admin-text-p) !important;
+}
+
+html.dark .adminLayout .admActivityRowTime {
+    color: var(--admin-text-s) !important;
+}
+
+html.dark .adminLayout .admShipMethodSub.ok {
+    color: #4ade80 !important;
+}
+
+html.dark .adminLayout .admShipMethodDesc,
+html.dark .adminLayout .admShipMethodSub,
+html.dark .adminLayout .admShipMethodAddSub,
+html.dark .adminLayout .admShipTipText,
+html.dark .adminLayout .admShipPolicyCard .admSetField span,
+html.dark .adminLayout .admShipPolicyCard .admShipCheck,
+html.dark .adminLayout .admShipPolicyCard .admSetField input {
+    color: var(--admin-text-s) !important;
+}
+
+html.dark .adminLayout .admShipPolicyBtn.isShot,
+html.dark .adminLayout .admShipPolicyBtn {
+    background: rgba(249, 115, 22, .12) !important;
+    border-color: rgba(249, 115, 22, .28) !important;
+    color: var(--admin-accent) !important;
+}
+
+html.dark .adminLayout .admShipPolicyBtn.isShot:hover,
+html.dark .adminLayout .admShipPolicyBtn:hover {
+    background: rgba(249, 115, 22, .18) !important;
+}
+
+html.dark .adminLayout .admShipZoneSearch {
+    background: #0f172a !important;
+}
+
+html.dark .adminLayout .admShipTipCard {
+    background: rgba(37, 99, 235, .10) !important;
+    border-color: rgba(59, 130, 246, .22) !important;
+}
+
+html.dark .adminTableNew th,
+html.dark .admOrdersTable thead th {
+    background: rgba(255, 255, 255, .04);
+    color: var(--admin-text-s);
+    border-color: var(--admin-border);
+}
+
+html.dark .adminTableNew td,
+html.dark .admOrdersTable tbody td,
+html.dark .admReviewRow2,
+html.dark .adminQuickDivider,
+html.dark .adminNotifRow,
+html.dark .adminFooter,
+html.dark .admMaintenanceSection {
+    border-color: var(--admin-border);
+}
+
+html.dark .statWidget:hover {
+    background: rgba(249, 115, 22, .10);
+}
+
+html.dark .chartBar,
+html.dark .pTableImg,
+html.dark .adminQuickThumb,
+html.dark .adminUserAvatarImg,
+html.dark .adminSidebarUserAvatarImg,
+html.dark .admSkeletonRow {
+    background: #0f172a;
+}
+
+html.dark .adminFooterCopy {
+    color: var(--admin-text-p);
+}
+
+/* Broad admin page dark-mode coverage for page-specific CSS modules. */
+html.dark .adminLayout :is(.prodTableWrap,
+    .prodPaginationBar,
+    .pSideCard,
+    .pTabsNav,
+    .pTabContent,
+    .pFormSection,
+    .pModalContent,
+    .pQuickPasteArea,
+    .pVariantRowGroup,
+    .pVariantRow,
+    .pDetailFilterBar,
+    .pDetailEmptyBox,
+    .pDetailVariantCard,
+    .pSideSection,
+    .catTableWrap,
+    .catModal,
+    .adminTableWrap,
+    .adminPagination,
+    .adminModalContent,
+    .contactsTableWrap,
+    .contactsDetailCard,
+    .contactsAdminPage .adminTableWrap,
+    .adminblogpage-style-15,
+    .adm-dash-style-1,
+    .adm-dash-style-16,
+    .adm-dash-style-39,
+    .adm-dash-style-74,
+    .admRangeSelectWrap,
+    .admResolutionSelect,
+    .prodNewsModal,
+    .prodNewsEditor,
+    .reviewsAdminCard,
+    .reviewDetailCard,
+    .admPayCard,
+    .admShipPartnerCard,
+    .admShipAddCard,
+    .admShipPolicyCard,
+    .admShipCurrentCard,
+    .admShipZoneCard,
+    .admShipMethodCard,
+    .admSecCard,
+    .admOrdersKpi,
+    .admOrdersFilterCard,
+    .admOrderCard,
+    .admOrderInfoBox,
+    .admOrderEmptyBox,
+    .admKpiCard,
+    .admKpiCard2,
+    .admCard,
+    .admTable,
+    .admModal,
+    .dashboardDateRange,
+    .statWidget,
+    .revenueChartCard,
+    .recentOrdersCard) {
+    background: var(--admin-card-bg) !important;
+    border-color: var(--admin-border) !important;
+    color: var(--admin-text-p) !important;
+}
+
+html.dark .adminLayout :is(input,
+    select,
+    textarea,
+    .catFormField input,
+    .catFormField select,
+    .catFormField textarea,
+    .pField input,
+    .pField select,
+    .pSpecRow input,
+    .pFaqQInput,
+    .pFaqAInput,
+    .pQuickPasteArea,
+    .vDiscountFields input,
+    .vDiscountFields select,
+    .prodFilterField input,
+    .adminFormGroup input,
+    .adminFormGroup select,
+    .adminFormGroup textarea,
+    .prodNewsModal input,
+    .prodNewsModal select,
+    .prodNewsModal textarea,
+    .admRangeDateInput) {
+    background: #0f172a !important;
+    border-color: var(--admin-border) !important;
+    color: var(--admin-text-p) !important;
+}
+
+html.dark .adminLayout :is(input,
+    textarea)::placeholder {
+    color: rgba(148, 163, 184, .72) !important;
+}
+
+html.dark .adminLayout :is(.prodTable th,
+    .catTable th,
+    .adminTable th,
+    .contactsTable th,
+    .admTable th,
+    .admOrdersTable thead th) {
+    background: rgba(255, 255, 255, .05) !important;
+    border-color: var(--admin-border) !important;
+    color: var(--admin-text-s) !important;
+}
+
+html.dark .adminLayout :is(.prodTable td,
+    .catTable td,
+    .adminTable td,
+    .contactsTable td,
+    .admTable td,
+    .admOrdersTable td,
+    .prodTable tr,
+    .catTable tr,
+    .adminTable tr,
+    .contactsTable tr,
+    .admTable tr) {
+    background: transparent !important;
+    border-color: var(--admin-border) !important;
+    color: var(--admin-text-p) !important;
+}
+
+html.dark .adminLayout :is(.prodTitle,
+    .pFormTitle,
+    .catAdminTitle,
+    .adminPageTitle,
+    .contactsAdminPage h1,
+    .contactsAdminPage h2,
+    .pName,
+    .pSideTitle,
+    .pSectionTitle,
+    .pDetailTitle,
+    .pBlockTitle,
+    .pVarCardTitle,
+    .pSkuText,
+    .pSideSpecVal,
+    .pSpecVal,
+    .catNameCell,
+    .adm-dash-style-2,
+    .adm-dash-style-14,
+    .admOrdersCode,
+    .admOrdersCustomerName,
+    .admOrderCardTitle,
+    .admKpiValue,
+    .admCardTitle) {
+    color: var(--admin-text-p) !important;
+}
+
+html.dark .adminLayout :is(.prodSub,
+    .pBrand,
+    .pCat,
+    .pDescMuted,
+    .pSideHint,
+    .pHint,
+    .pVarMetaLabel,
+    .pSideSpecKey,
+    .pSpecKey,
+    .catSlug,
+    .catParent,
+    .adminEmpty,
+    .adminLoading,
+    .contactsAdminPage .muted,
+    .adm-dash-style-15,
+    .adm-dash-style-19,
+    .adm-dash-style-20,
+    .admKpiLabel,
+    .admCardSub) {
+    color: var(--admin-text-s) !important;
+}
+
+html.dark .adminLayout :is(.pQuickPasteBtn,
+    .pBackDetailBtn,
+    .prodPageBtn,
+    .catCancelBtn,
+    .adminBtnSecondary,
+    .adminModalClose,
+    .contactsAdminPage .iconBtn,
+    .admBtnGhost,
+    .admOrderBackBtn,
+    .admOrderMiniBtn,
+    .admOrdersTab.active,
+    .admOrdersFilterInput,
+    .admRangeDropdownItem) {
+    background: #121926 !important;
+    border-color: var(--admin-border) !important;
+    color: var(--admin-text-p) !important;
+}
+
+html.dark .adminLayout :is(.pQuickPasteBtn,
+    .pBackDetailBtn,
+    .prodPageBtn,
+    .catCancelBtn,
+    .adminBtnSecondary,
+    .contactsAdminPage .iconBtn,
+    .admBtnGhost,
+    .admOrderBackBtn,
+    .admOrderMiniBtn,
+    .admRangeDropdownItem):hover {
+    background: rgba(249, 115, 22, .14) !important;
+    border-color: rgba(249, 115, 22, .30) !important;
+    color: var(--admin-accent) !important;
+}
+
+html.dark .adminLayout :is(.pInventorySyncNote,
+    .pWarningHint,
+    .pVarStockValue.low,
+    .contactsAdminPage .contactsFilterTabs button,
+    .contactsAdminPage .contactsSearch,
+    .contactsAdminPage .contactsTable th,
+    .contactsAdminPage .iconBtn:hover,
+    .contactsAdminPage .replyBox,
+    .admQuickRow,
+    .admQuickRow:nth-child(2),
+    .admQuickRow:nth-child(3),
+    .statWidget:hover) {
+    background: rgba(249, 115, 22, .10) !important;
+    border-color: rgba(249, 115, 22, .22) !important;
+}
+
+/* Dark admin hardening layer: catch page-specific and inline light surfaces. */
+html.dark .adminLayout,
+html.dark .adminLayout .adminScrollContent,
+html.dark .adminLayout :is([class*="Page"],
+    [class*="Root"],
+    [class*="Container"],
+    [class*="Content"]) {
+    background-color: var(--admin-main-bg) !important;
+    color: var(--admin-text-p) !important;
+}
+
+html.dark .adminLayout :is([class*="Card"],
+    [class*="card"],
+    [class*="Wrap"],
+    [class*="wrap"],
+    [class*="Panel"],
+    [class*="panel"],
+    [class*="Box"],
+    [class*="box"],
+    [class*="Modal"],
+    [class*="modal"],
+    [class*="Table"],
+    [class*="table"],
+    [class*="Form"],
+    [class*="form"],
+    [class*="Field"],
+    [class*="field"],
+    [class*="Filter"],
+    [class*="filter"],
+    [class*="Search"],
+    [class*="search"],
+    [class*="Dropdown"],
+    [class*="dropdown"],
+    [class*="Menu"],
+    [class*="menu"],
+    [class*="List"],
+    [class*="list"],
+    [class*="Item"],
+    [class*="item"],
+    [class*="Section"],
+    [class*="section"],
+    [class*="Header"],
+    [class*="header"],
+    [class*="Footer"],
+    [class*="footer"],
+    [class*="Row"],
+    [class*="row"],
+    [class*="Cell"],
+    [class*="cell"],
+    [class*="Grid"],
+    [class*="grid"],
+    [class*="style-"],
+    [class*="Style-"]) {
+    border-color: var(--admin-border) !important;
+}
+
+html.dark .adminLayout :is([class*="Card"],
+    [class*="card"],
+    [class*="Panel"],
+    [class*="panel"],
+    [class*="Box"],
+    [class*="box"],
+    [class*="Modal"],
+    [class*="modal"],
+    [class*="Table"],
+    [class*="table"],
+    [class*="Wrap"],
+    [class*="wrap"],
+    [class*="Form"],
+    [class*="form"],
+    [class*="Search"],
+    [class*="search"],
+    [class*="Dropdown"],
+    [class*="dropdown"],
+    [class*="Menu"],
+    [class*="menu"],
+    [class*="Filter"],
+    [class*="filter"],
+    [class*="Section"],
+    [class*="section"],
+    [class*="style-"],
+    [class*="Style-"]) {
+    background-color: var(--admin-card-bg) !important;
+    color: var(--admin-text-p) !important;
+}
+
+html.dark .adminLayout :is([style*="background: rgb(255"],
+    [style*="background: white"],
+    [style*="background: #fff"],
+    [style*="background:#fff"],
+    [style*="background: #f1"],
+    [style*="background:#f1"],
+    [style*="background: #f3"],
+    [style*="background:#f3"],
+    [style*="background: #f5"],
+    [style*="background:#f5"],
+    [style*="background: #f8"],
+    [style*="background:#f8"],
+    [style*="background: #fa"],
+    [style*="background:#fa"],
+    [style*="background: #eb"],
+    [style*="background:#eb"],
+    [style*="background: #e2"],
+    [style*="background:#e2"],
+    [style*="background-color: rgb(255"],
+    [style*="background-color: white"],
+    [style*="background-color: #fff"],
+    [style*="background-color:#fff"],
+    [style*="background-color: #f1"],
+    [style*="background-color:#f1"],
+    [style*="background-color: #f3"],
+    [style*="background-color:#f3"],
+    [style*="background-color: #f5"],
+    [style*="background-color:#f5"],
+    [style*="background-color: #f8"],
+    [style*="background-color:#f8"],
+    [style*="background-color: #fa"],
+    [style*="background-color:#fa"],
+    [style*="background-color: #eb"],
+    [style*="background-color:#eb"],
+    [style*="background-color: #e2"],
+    [style*="background-color:#e2"]) {
+    background: var(--admin-card-bg) !important;
+    border-color: var(--admin-border) !important;
+    color: var(--admin-text-p) !important;
+}
+
+html.dark .adminLayout :is([style*="color: rgb(15"],
+    [style*="color: rgb(17"],
+    [style*="color: rgb(30"],
+    [style*="color: rgb(49"],
+    [style*="color: rgb(51"],
+    [style*="color: #0f"],
+    [style*="color:#0f"],
+    [style*="color: #11"],
+    [style*="color:#11"],
+    [style*="color: #13"],
+    [style*="color:#13"],
+    [style*="color: #1f"],
+    [style*="color:#1f"],
+    [style*="color: #31"],
+    [style*="color:#31"],
+    [style*="color: #33"],
+    [style*="color:#33"],
+    [style*="color: #47"],
+    [style*="color:#47"]) {
+    color: var(--admin-text-p) !important;
+}
+
+html.dark .adminLayout :is([style*="color: rgb(100"],
+    [style*="color: rgb(148"],
+    [style*="color: #64"],
+    [style*="color:#64"],
+    [style*="color: #6b"],
+    [style*="color:#6b"],
+    [style*="color: #94"],
+    [style*="color:#94"]) {
+    color: var(--admin-text-s) !important;
+}
+
+html.dark .adminLayout :is([style*="border: 1px solid rgb(147"],
+    [style*="border: 1px solid rgba(15"],
+    [style*="border: '1px solid rgba(15"],
+    [style*="border: 1px solid #e"],
+    [style*="border:1px solid #e"],
+    [style*="border-color: #e"],
+    [style*="border-color:#e"],
+    [style*="border: 1.5px solid #c"],
+    [style*="border:1.5px solid #c"],
+    [style*="border: 1px solid #c"],
+    [style*="border:1px solid #c"]) {
+    border-color: var(--admin-border) !important;
+}
+
+html.dark .adminLayout :is(input,
+    select,
+    textarea,
+    button:not(.prodAddBtn):not(.pSubmitBtn):not(.catSubmitBtn):not(.adminBtnPrimary):not(.admSettingsSaveBtn):not(.admOrdersPrimaryBtn),
+    [contenteditable="true"]) {
+    border-color: var(--admin-border) !important;
+}
+
+html.dark .adminLayout :is(input,
+    select,
+    textarea,
+    [contenteditable="true"]) {
+    background: #0f172a !important;
+    color: var(--admin-text-p) !important;
+    caret-color: var(--admin-text-p);
+}
+
+html.dark .adminLayout :is(option,
+    optgroup) {
+    background: #0f172a !important;
+    color: var(--admin-text-p) !important;
+}
+
+html.dark .adminLayout :is(table,
+    thead,
+    tbody,
+    tfoot,
+    tr,
+    th,
+    td) {
+    background-color: transparent !important;
+    border-color: var(--admin-border) !important;
+}
+
+html.dark .adminLayout :is(th,
+    thead td,
+    [class*="HeaderRow"],
+    [class*="Head"],
+    [class*="head"]) {
+    /* background-color: rgba(255, 255, 255, .045) !important; */
+    color: var(--admin-text-s) !important;
+}
+
+html.dark .adminLayout :is([class*="Title"],
+    [class*="title"],
+    [class*="Name"],
+    [class*="name"],
+    [class*="Value"],
+    [class*="value"],
+    [class*="Code"],
+    [class*="code"],
+    [class*="Strong"],
+    [class*="strong"],
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6,
+    td,
+    th) {
+    color: var(--admin-text-p) !important;
+}
+
+html.dark .adminLayout :is(.admDashTop,
+    .admDashTopActions,
+    .admKpiGrid,
+    .admKpiCard,
+    .admKpiCard2,
+    .admCardTight,
+    .admQuickList2,
+    .admQuickRow,
+    .admTopRatedList,
+    .admTopRatedRow,
+    .admAnalyticsCard,
+    .admAnalyticsCatsWrap,
+    .admOrdersCard,
+    .admReviewCard,
+    .admLoyalCard) {
+    background: var(--admin-card-bg) !important;
+    border-color: var(--admin-border) !important;
+    color: var(--admin-text-p) !important;
+}
+
+html.dark .adminLayout .admQuickRow {
+    background: rgba(255, 255, 255, .03) !important;
+}
+
+html.dark .adminLayout .admQuickRow:nth-child(2),
+html.dark .adminLayout .admQuickRow:nth-child(3) {
+    background: rgba(255, 255, 255, .04) !important;
+}
+
+html.dark .adminLayout .admQuickRowIcon,
+html.dark .adminLayout .admTopRatedThumb {
+    background: #0f172a !important;
+    border-color: var(--admin-border) !important;
+}
+
+html.dark .adminLayout .admQuickRowText,
+html.dark .adminLayout .admQuickRowChevron,
+html.dark .adminLayout .admTopRatedName,
+html.dark .adminLayout .admTopRatedScore,
+html.dark .adminLayout .admTopRatedCount,
+html.dark .adminLayout .admTopRatedMeta,
+html.dark .adminLayout .admKpiLabel,
+html.dark .adminLayout .admKpiLabel2,
+html.dark .adminLayout .admKpiSub,
+html.dark .adminLayout .admKpiSub2 {
+    color: var(--admin-text-p) !important;
+}
+
+html.dark .adminLayout .admKpiValue,
+html.dark .adminLayout .admKpiValue2 {
+    color: #ffffff !important;
+}
+
+html.dark .adminLayout .admTopRatedStars,
+html.dark .adminLayout .admTopRatedStarsMuted {
+    color: #f59e0b !important;
+}
+
+html.dark .adminLayout :is([class*="Sub"],
+    [class*="sub"],
+    [class*="Desc"],
+    [class*="desc"],
+    [class*="Hint"],
+    [class*="hint"],
+    [class*="Muted"],
+    [class*="muted"],
+    [class*="Meta"],
+    [class*="meta"],
+    [class*="Label"],
+    [class*="label"],
+    [class*="Empty"],
+    [class*="empty"],
+    p,
+    small) {
+    color: var(--admin-text-s) !important;
+}
+
+html.dark .adminLayout :is(.adminBtnPrimary,
+    .prodAddBtn,
+    .pSubmitBtn,
+    .catAddBtn,
+    .catSubmitBtn,
+    .admSettingsSaveBtn,
+    .admOrdersPrimaryBtn,
+    [class*="PrimaryBtn"],
+    [class*="SubmitBtn"]) {
+    background: var(--admin-accent) !important;
+    border-color: transparent !important;
+    color: #ffffff !important;
+}
+
+html.dark .adminLayout :is([class*="Status"],
+    [class*="status"],
+    [class*="Badge"],
+    [class*="badge"],
+    [class*="Pill"],
+    [class*="pill"],
+    [class*="Icon"],
+    [class*="icon"],
+    [class*="Dot"],
+    [class*="dot"]) {
+    border-color: rgba(255, 255, 255, .08) !important;
+}
+
+html.dark .adminLayout :is([class*="Avatar"],
+    [class*="avatar"],
+    [class*="Thumb"],
+    [class*="thumb"],
+    [class*="Img"],
+    [class*="img"],
+    img,
+    video) {
+    background-color: #0f172a !important;
+    border-color: var(--admin-border) !important;
 }

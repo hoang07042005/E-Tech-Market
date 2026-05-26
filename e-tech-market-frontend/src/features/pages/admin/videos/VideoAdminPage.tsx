@@ -4,6 +4,7 @@ import '@/styles/admin/CategoryPage.css'
 import { fetchAdminVideoCategories } from '@/features/services/admin/video-categories.admin.service'
 import { fetchAdminVideos, deleteAdminVideo, saveAdminVideo, type Video } from '@/features/services/admin/videos.admin.service'
 import type { VideoCategory } from '@/features/services/admin/video-categories.admin.service'
+import '@/styles/admin/VideoAdminPage.css'
 
 interface SimpleProduct {
   id: number
@@ -223,7 +224,7 @@ export default function VideoAdminPage() {
             <tbody>
               {videos.length === 0 ? (
                 <tr>
-                  <td colSpan={8} style={{ textAlign: 'center', padding: '40px', color: '#94a3b8' }}>
+                  <td colSpan={8}  className="videoadminpage-style-1">
                     Chưa có video nào. Bấm «Thêm video» để tạo mới.
                   </td>
                 </tr>
@@ -238,45 +239,35 @@ export default function VideoAdminPage() {
                           <img 
                             src={thumb} 
                             alt={video.title || 'Video thumbnail'} 
-                            style={{ width: '80px', height: '45px', objectFit: 'cover', borderRadius: '4px' }}
-                          />
+                            
+                           className="videoadminpage-style-2" />
                         ) : (
-                          <div style={{ width: '80px', height: '45px', background: '#334155', borderRadius: '4px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#64748b', fontSize: '10px' }}>
+                          <div  className="videoadminpage-style-3">
                             Không có ảnh
                           </div>
                         )}
                       </td>
-                      <td><span style={{ fontWeight: 600 }}>{video.title || '—'}</span></td>
+                      <td><span  className="videoadminpage-style-4">{video.title || '—'}</span></td>
                       {/* <td>
-                        <span style={{
-                          display: '-webkit-box',
-                          WebkitLineClamp: 2,
-                          WebkitBoxOrient: 'vertical',
-                          overflow: 'hidden',
-                          maxWidth: '260px',
-                          color: '#333',
-                          fontSize: '13px',
-                          lineHeight: 1.6,
-                          wordBreak: 'break-word'
-                        }}>
+                        <span  className="videoadminpage-style-5">
                           {video.description || '—'}
                         </span>
                       </td> */}
                       <td>
                         {video.product ? (
-                          <span style={{ color: '#fb923c', fontWeight: 500 }}>
+                          <span  className="videoadminpage-style-6">
                             📦 {video.product.name}
                           </span>
                         ) : linkedCategory ? (
-                          <span style={{ color: '#60a5fa', fontWeight: 500 }}>
+                          <span  className="videoadminpage-style-7">
                             🏷️ {linkedCategory.name}
                           </span>
                         ) : (
-                          <span style={{ color: '#94a3b8', fontStyle: 'italic' }}>Video chung</span>
+                          <span  className="videoadminpage-style-8">Video chung</span>
                         )}
                       </td>
                       <td>
-                        <a href={video.video_url} target="_blank" rel="noopener noreferrer" className="catSlug" style={{ textDecoration: 'underline', maxWidth: '250px', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        <a href={video.video_url} target="_blank" rel="noopener noreferrer" className="catSlug videoadminpage-style-9" >
                           {video.video_url}
                         </a>
                       </td>
@@ -304,7 +295,7 @@ export default function VideoAdminPage() {
       {/* Modal */}
       {isModalOpen && (
         <div className="catModalOverlay">
-          <div className="catModal" style={{ maxWidth: '620px' }}>
+          <div className="catModal videoadminpage-style-10" >
             <div className="catModalHeader">
               <h3>{editingVideo ? 'Cập nhật video' : 'Thêm video mới'}</h3>
               <button className="catCloseModal" onClick={() => setIsModalOpen(false)}>×</button>
@@ -312,9 +303,9 @@ export default function VideoAdminPage() {
             <form onSubmit={handleSubmit} className="catForm">
 
               {/* Loại video: liên kết sản phẩm hay video chung */}
-              <div className="catFormField" style={{ marginBottom: '16px' }}>
+              <div className="catFormField videoadminpage-style-11" >
                 <label>LOẠI VIDEO</label>
-                <div style={{ display: 'flex', gap: '12px', marginTop: '6px' }}>
+                <div  className="videoadminpage-style-12">
                   <label style={{ display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer', fontWeight: 500, color: isLinkedToProduct ? '#f97316' : '#64748b' }}>
                     <input
                       type="radio"
@@ -358,7 +349,7 @@ export default function VideoAdminPage() {
                     <select
                       value={formData.product_id}
                       onChange={e => setFormData({...formData, product_id: e.target.value})}
-                      style={{ padding: '10px', border: '1px solid rgb(147 148 150 / 14%)', borderRadius: '6px', background: '#f5f5f6ff', color: '#313232ff', width: '100%', height: '42px' }}
+                      style={{ padding: '10px', border: '1px solid var(--admin-border)', borderRadius: '6px', background: 'var(--admin-card-bg)', color: 'var(--admin-text-p)', width: '100%', height: '42px' }}
                     >
                       <option value="">-- Chọn sản phẩm --</option>
                       {products.map(p => (
@@ -373,32 +364,32 @@ export default function VideoAdminPage() {
                     <select
                       value={formData.category_id}
                       onChange={e => setFormData({...formData, category_id: e.target.value})}
-                      style={{ padding: '10px', border: '1px solid rgb(147 148 150 / 14%)', borderRadius: '6px', background: '#f5f5f6ff', color: '#313232ff', width: '100%', height: '42px' }}
+                      style={{ padding: '10px', border: '1px solid var(--admin-border)', borderRadius: '6px', background: 'var(--admin-card-bg)', color: 'var(--admin-text-p)', width: '100%', height: '42px' }}
                     >
                       <option value="">-- Không chọn danh mục --</option>
                       {categories.map(c => (
                         <option key={c.id} value={c.id}>{c.name}</option>
                       ))}
                     </select>
-                    {/* <div style={{ marginTop: 8 }}>
-                      <a href="/admin/categories?type=video" style={{ fontSize: '12px', color: '#64748b' }}>Quản lý danh mục (thêm/ sửa loại 'video')</a>
+                    {/* <div  className="videoadminpage-style-13">
+                      <a href="/admin/categories?type=video"  className="videoadminpage-style-14">Quản lý danh mục (thêm/ sửa loại 'video')</a>
                     </div> */}
                   </div>
                 )}
               </div>
 
-              <div className="catFormField" style={{ marginBottom: '16px' }}>
+              <div className="catFormField videoadminpage-style-15" >
                 <label>NỘI DUNG / MÔ TẢ NGẮN</label>
                 <textarea
                   rows={4}
                   value={formData.description}
                   onChange={e => setFormData({...formData, description: e.target.value})}
                   placeholder="Mô tả ngắn về video, tính năng nổi bật hoặc thông điệp chính"
-                  style={{ width: '100%', padding: '10px', border: '1px solid rgb(147 148 150 / 14%)', borderRadius: '6px', background: '#f5f5f6ff', color: '#313232ff', resize: 'vertical' }}
+                  style={{ width: '100%', padding: '10px', border: '1px solid var(--admin-border)', borderRadius: '6px', background: 'var(--admin-card-bg)', color: 'var(--admin-text-p)', resize: 'vertical' }}
                 />
               </div>
 
-              <div className="catFormField" style={{ marginBottom: '16px' }}>
+              <div className="catFormField videoadminpage-style-16" >
                 <label>URL VIDEO (YouTube, Vimeo hoặc liên kết ngoài)</label>
                 <input 
                   type="text" 
@@ -409,7 +400,7 @@ export default function VideoAdminPage() {
                 />
               </div>
 
-              <div className="catFormField" style={{ marginBottom: '16px' }}>
+              <div className="catFormField videoadminpage-style-17" >
                 <label>HOẶC TẢI LÊN VIDEO TỪ THIẾT BỊ (Hỗ trợ MP4, WebM)</label>
                 <input 
                   type="file" 
@@ -421,12 +412,12 @@ export default function VideoAdminPage() {
                       setVideoFile(null)
                     }
                   }}
-                  style={{ padding: '8px', border: '1px solid #334155', borderRadius: '6px', background: '#ebecefff', color: '#131314ff', width: '100%' }}
+                  style={{ padding: '8px', border: '1px solid var(--admin-border)', borderRadius: '6px', background: 'var(--admin-card-bg)', color: 'var(--admin-text-p)', width: '100%' }}
                   disabled={!!formData.video_url}
                 />
               </div>
 
-              <div className="catFormField" style={{ marginBottom: '16px' }}>
+              <div className="catFormField videoadminpage-style-18" >
                 <label>URL HÌNH THU NHỎ (THUMBNAIL URL)</label>
                 <input 
                   type="text" 
@@ -437,7 +428,7 @@ export default function VideoAdminPage() {
                 />
               </div>
 
-              <div className="catFormField" style={{ marginBottom: '16px' }}>
+              <div className="catFormField videoadminpage-style-19" >
                 <label>HOẶC TẢI LÊN HÌNH THU NHỎ (THUMBNAIL FILE)</label>
                 <input 
                   type="file" 
@@ -449,7 +440,7 @@ export default function VideoAdminPage() {
                       setThumbnailFile(null)
                     }
                   }}
-                  style={{ padding: '8px', border: '1px solid #334155', borderRadius: '6px', background: '#ebecefff', color: '#131314ff', width: '100%' }}
+                  style={{ padding: '8px', border: '1px solid var(--admin-border)', borderRadius: '6px', background: 'var(--admin-card-bg)', color: 'var(--admin-text-p)', width: '100%' }}
                   disabled={!!formData.thumbnail_url}
                 />
               </div>
@@ -477,7 +468,7 @@ export default function VideoAdminPage() {
                 </div>
               </div>
 
-              {error && <div className="catErrorBanner" style={{ marginBottom: '12px' }}>{error}</div>}
+              {error && <div className="catErrorBanner videoadminpage-style-20" >{error}</div>}
 
               <div className="catModalFooter">
                 <button type="button" className="catCancelBtn" onClick={() => setIsModalOpen(false)}>Hủy</button>

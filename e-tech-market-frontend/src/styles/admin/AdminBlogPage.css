@@ -1,0 +1,184 @@
+.adminblogpage-style-1 {
+  padding: 24px;
+  background: var(--et-surface);
+  border-radius: 12px;
+}
+
+.adminblogpage-style-2 {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.adminblogpage-style-3 {
+  width: 200px;
+  height: 32px;
+}
+
+.adminblogpage-style-4 {
+  width: 150px;
+  height: 40px;
+}
+
+.adminblogpage-style-5 {
+  padding: 20px;
+  color: red;
+}
+
+.adminblogpage-style-6 {
+  padding: 24px;
+  background: var(--et-surface);
+  border-radius: 12px;
+}
+
+.adminblogpage-style-7 {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.adminblogpage-style-8 {
+  margin: 0;
+}
+
+.adminblogpage-style-9 {
+  width: 60px;
+  height: 40px;
+  object-fit: cover;
+  border-radius: 4px;
+}
+
+.adminblogpage-style-10 {
+  max-width: 300px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.adminblogpage-style-11 {
+  color: green;
+  font-weight: bold;
+}
+
+.adminblogpage-style-12 {
+  color: orange;
+  font-weight: bold;
+}
+
+.adminblogpage-style-13 {
+  margin-right: 8px;
+}
+
+.adminblogpage-style-14 {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.adminblogpage-style-15 {
+  background: #fff;
+  width: 800px;
+  max-width: 90%;
+  max-height: 90vh;
+  overflow-y: auto;
+  border-radius: 12px;
+  padding: 24px;
+}
+
+.adminblogpage-style-16 {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.adminblogpage-style-17 {
+  font-weight: bold;
+  display: block;
+  margin-bottom: 8px;
+}
+
+.adminblogpage-style-18 {
+  display: flex;
+  gap: 16px;
+}
+
+.adminblogpage-style-19 {
+  flex: 1;
+}
+
+.adminblogpage-style-20 {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.adminblogpage-style-21 {
+  font-weight: bold;
+  display: block;
+}
+
+.adminblogpage-style-22 {
+  flex: 1;
+}
+
+.adminblogpage-style-23 {
+  font-weight: bold;
+  display: block;
+  margin-bottom: 8px;
+}
+
+.adminblogpage-style-24 {
+  display: flex;
+  gap: 8px;
+}
+
+.adminblogpage-style-25 {
+  margin-top: 8px;
+}
+
+.adminblogpage-style-26 {
+  height: 80px;
+  border-radius: 4px;
+  object-fit: cover;
+}
+
+.adminblogpage-style-27 {
+  font-weight: bold;
+  display: block;
+  margin-bottom: 8px;
+}
+
+.adminblogpage-style-28 {
+  font-weight: bold;
+  display: block;
+  margin-bottom: 8px;
+}
+
+.adminblogpage-style-29 {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+.adminblogpage-style-30 {
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.adminblogpage-style-31 {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 16px;
+}
