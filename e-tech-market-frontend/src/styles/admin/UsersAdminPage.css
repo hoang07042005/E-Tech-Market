@@ -17,3 +17,240 @@
   padding: 40px;
   color: #94a3b8;
 }
+
+.usersAdminToolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    margin-bottom: 20px;
+    gap: 16px;
+}
+
+.usersAdminSearch {
+    width: 100%;
+    max-width: 380px;
+
+    height: 44px;
+    padding: 0 16px;
+
+    border: 1px solid #dcdcdc;
+    border-radius: 12px;
+
+    background: #fff;
+
+    font-size: 14px;
+    outline: none;
+
+    transition: all 0.2s ease;
+}
+
+/* Hover */
+.usersAdminSearch:hover {
+    border-color: #bdbdbd;
+}
+
+/* Focus */
+.usersAdminSearch:focus {
+    border-color: #eb8f25;
+    box-shadow: 0 0 0 4px rgba(222, 158, 85, 0.12);
+}
+
+/* Placeholder */
+.usersAdminSearch::placeholder {
+    color: #999;
+}
+
+
+.usersAdminRoleCell {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.usersAdminRoleText {
+    flex: 1;
+}
+
+.usersAdminRoleEditBtn {
+    margin-left: auto;
+}
+
+.usersAdminIconBtn {
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  border: 1px solid #dadadad8;
+  display: flex;
+  align-items: center;
+  justify-content: right;
+}
+
+.usersRoleModalOverlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    z-index: 999;
+    padding: 20px;
+}
+
+.usersRoleModal {
+    width: 100%;
+    max-width: 520px;
+
+    background: #ffffff;
+    border-radius: 16px;
+
+    box-shadow:
+        0 10px 30px rgba(0,0,0,0.2),
+        0 2px 10px rgba(0,0,0,0.08);
+
+    overflow: hidden;
+
+    animation: modalShow 0.25s ease;
+}
+
+/* Header */
+.usersRoleModalHead {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+
+    padding: 20px 24px;
+    border-bottom: 1px solid #eee;
+}
+
+.usersRoleModalTitle {
+    margin: 0;
+    font-size: 22px;
+    font-weight: 700;
+}
+
+.usersRoleModalLead {
+    margin-top: 6px;
+    color: #666;
+    font-size: 14px;
+}
+
+/* Close button */
+.usersRoleModalClose {
+    border: none;
+    background: transparent;
+
+    font-size: 28px;
+    cursor: pointer;
+
+    width: 40px;
+    height: 40px;
+
+    border-radius: 10px;
+    transition: 0.2s;
+}
+
+.usersRoleModalClose:hover {
+    background: #f3f3f3;
+}
+
+/* Body */
+.usersRoleModalBody {
+    padding: 20px 24px;
+
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+/* Checkbox row */
+.usersRoleCheckRow {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+
+    padding: 14px;
+    border: 1px solid #e5e5e5;
+    border-radius: 12px;
+
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.usersRoleCheckRow:hover {
+    background: #fafafa;
+    border-color: #d0d0d0;
+}
+
+.usersRoleCheckText {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.usersRoleCheckLabel {
+    font-weight: 600;
+}
+
+.usersRoleCheckDesc {
+    font-size: 13px;
+    color: #777;
+}
+
+/* Footer */
+.usersRoleModalFoot {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+
+    padding: 18px 24px;
+    border-top: 1px solid #eee;
+}
+
+/* Buttons */
+.usersRoleModalBtnGhost,
+.usersRoleModalBtnSave {
+    border: none;
+    border-radius: 10px;
+
+    padding: 11px 18px;
+    font-size: 14px;
+    font-weight: 600;
+
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.usersRoleModalBtnGhost {
+    background: #f3f3f3;
+}
+
+.usersRoleModalBtnGhost:hover {
+    background: #e5e5e5;
+}
+
+.usersRoleModalBtnSave {
+    background: #f49003;
+    color: white;
+}
+
+.usersRoleModalBtnSave:hover {
+    background: #f49003;
+}
+
+/* Animation */
+@keyframes modalShow {
+    from {
+        opacity: 0;
+        transform: translateY(10px) scale(0.97);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}

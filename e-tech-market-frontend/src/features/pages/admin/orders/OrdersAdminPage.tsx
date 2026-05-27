@@ -535,7 +535,7 @@ export default function OrdersAdminPage() {
                 <section className="admOrderCard">
                   <div className="admOrderCardHead">
                     <div className="admOrderCardTitle">Thông tin khách hàng</div>
-                    <button type="button" className="admOrderMiniBtn">Sửa</button>
+                    
                   </div>
                   <div className="admOrderCustomerBox">
                     {detail.customer.avatar_url ? (

@@ -554,10 +554,10 @@ export default function AdminFlashSalePage() {
                           minWidth: 0,
                           boxSizing: 'border-box',
                           borderRadius: '5px',
-                          border: '1.5px solid var(--admin-border)',
+                          border: '1.5px solid #cbd5e1;',
                           padding: '10px 16px',
                           height: '48px',
-                          background: (!selectedProduct || !selectedProduct.variants?.length) ? '#0f172a' : 'var(--admin-card-bg)',
+                          background: (!selectedProduct || !selectedProduct.variants?.length) ? '#ffffff' : 'var(--admin-card-bg)',
                           color: 'var(--admin-text-p)'
                         }}
                         value={addItemData.variant_id}
@@ -759,7 +759,7 @@ export default function AdminFlashSalePage() {
                             style={{
                               padding: '4px 8px',
                               borderRadius: '6px',
-                              background: item.quantity_limit ? '#0f172a' : 'rgba(249, 115, 22, 0.14)',
+                              background: item.quantity_limit ? '#fefefe' : 'rgba(249, 115, 22, 0.14)',
                               color: item.quantity_limit ? 'var(--admin-text-s)' : '#fb923c',
                               fontSize: '0.85rem',
                               fontWeight: 600

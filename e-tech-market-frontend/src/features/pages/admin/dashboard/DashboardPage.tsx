@@ -821,7 +821,7 @@ className="admResolutionSelect"
                       <div   className="adm-dash-style-52" />
                     </div>
                     <div  className="adm-dash-style-53">
-                      {`Đơn hàng ngày (${new Date().toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit' })})`}
+                      {`Đơn ngày (${new Date().toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit' })})`}
                       <div   className="adm-dash-style-54" />
                     </div>
                   </div>
