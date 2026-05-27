@@ -1,8 +1,9 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { API_BASE_URL } from '@/configs/api.config'
 import { fetchProductNewsBySlug, type ProductNews } from '@/features/services/products.service'
 import '@/styles/pages/ProductDetailPage.css'
+import { sanitizeHtml } from '@/utils/sanitizeHtml'
 
 const resolveImageUrl = (url: string | null) => {
   if (!url) return ''
@@ -15,6 +16,7 @@ export default function ProductNewsDetailPage() {
   const [news, setNews] = useState<ProductNews | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const sanitizedContent = useMemo(() => sanitizeHtml(news?.content_html), [news?.content_html])
 
   useEffect(() => {
     if (!slug) return
@@ -49,7 +51,7 @@ export default function ProductNewsDetailPage() {
               style={{ width: '100%', borderRadius: 14, margin: '8px 0 18px', objectFit: 'cover' }}
             />
           )}
-          <div className="pdpRichContent" dangerouslySetInnerHTML={{ __html: news.content_html }} />
+          <div className="pdpRichContent" dangerouslySetInnerHTML={{ __html: sanitizedContent }} />
         </div>
       </div>
     </div>

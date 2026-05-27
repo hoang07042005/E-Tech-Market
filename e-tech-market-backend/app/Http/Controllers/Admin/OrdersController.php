@@ -5,18 +5,21 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Models\OrderReturnRequest;
+use App\Services\AdminOrderService;
 use App\Models\Product;
-use App\Models\ProductVariant;
-use App\Support\ProductInventorySync;
-use App\Models\OrderStatusHistory;
-use App\Models\Notification;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\DB;
 
 class OrdersController extends Controller
 {
+    protected AdminOrderService $adminOrderService;
+
+    public function __construct(AdminOrderService $adminOrderService)
+    {
+        $this->adminOrderService = $adminOrderService;
+    }
+
     public function approveReturnRequest(Order $order, Request $request): JsonResponse
     {
         $order->loadMissing(['returnRequest']);
@@ -32,25 +35,9 @@ class OrdersController extends Controller
             'admin_note' => ['nullable', 'string', 'max:4000'],
         ]);
 
-        $order->returnRequest->status = 'approved';
-        $order->returnRequest->admin_note = array_key_exists('admin_note', $data) ? ($data['admin_note'] !== null ? (string) $data['admin_note'] : null) : $order->returnRequest->admin_note;
-        $order->returnRequest->approved_by_user_id = $request->user()?->id;
-        $order->returnRequest->approved_at = now();
-        $order->returnRequest->save();
+        $adminNote = array_key_exists('admin_note', $data) ? ($data['admin_note'] !== null ? (string) $data['admin_note'] : null) : $order->returnRequest->admin_note;
 
-        // Notify customer
-        Notification::create([
-            'user_id' => (int) $order->user_id,
-            'type' => 'order_return_approved',
-            'title' => 'Yêu cầu hoàn trả đã được phê duyệt',
-            'body' => 'Admin đã phê duyệt yêu cầu hoàn trả cho đơn #' . ($order->order_code ?: ('ET-' . $order->id)) . '.',
-            'data' => [
-                'order_id' => (int) $order->id,
-                'order_code' => (string) ($order->order_code ?: ('ET-' . $order->id)),
-                'return_request_status' => 'approved',
-            ],
-            'read_at' => null,
-        ]);
+        $order = $this->adminOrderService->approveReturnRequest($order, $adminNote, $request->user()?->id);
 
         return $this->show($order);
     }
@@ -70,26 +57,7 @@ class OrdersController extends Controller
             'admin_note' => ['required', 'string', 'min:2', 'max:4000'],
         ]);
 
-        $order->returnRequest->status = 'rejected';
-        $order->returnRequest->admin_note = (string) $data['admin_note'];
-        $order->returnRequest->approved_by_user_id = $request->user()?->id;
-        $order->returnRequest->approved_at = now();
-        $order->returnRequest->save();
-
-        // Notify customer
-        Notification::create([
-            'user_id' => (int) $order->user_id,
-            'type' => 'order_return_rejected',
-            'title' => 'Yêu cầu hoàn trả bị từ chối',
-            'body' => 'Admin đã từ chối yêu cầu hoàn trả cho đơn #' . ($order->order_code ?: ('ET-' . $order->id)) . '.',
-            'data' => [
-                'order_id' => (int) $order->id,
-                'order_code' => (string) ($order->order_code ?: ('ET-' . $order->id)),
-                'return_request_status' => 'rejected',
-                'admin_note' => (string) $data['admin_note'],
-            ],
-            'read_at' => null,
-        ]);
+        $order = $this->adminOrderService->rejectReturnRequest($order, (string) $data['admin_note'], $request->user()?->id);
 
         return $this->show($order);
     }
@@ -112,83 +80,13 @@ class OrdersController extends Controller
         ]);
 
         $files = $request->file('refund_proof', []);
-        $proofMeta = [];
-        foreach ($files as $f) {
-            if (!$f) continue;
-            $mime = (string) ($f->getMimeType() ?? '');
-            $isVideo = str_starts_with(strtolower($mime), 'video/');
-            $type = $isVideo ? 'video' : 'image';
-            $path = $f->storePublicly('returns/' . (int) $order->id . '/refund-proof', ['disk' => 'public']);
-            $proofMeta[] = [
-                'type' => $type,
-                'url' => '/storage/' . ltrim($path, '/'),
-                'original_name' => (string) ($f->getClientOriginalName() ?? ''),
-                'mime' => $mime !== '' ? $mime : null,
-                'size' => (int) ($f->getSize() ?? 0),
-            ];
-        }
+        $adminNote = array_key_exists('admin_note', $data) ? ($data['admin_note'] !== null ? (string) $data['admin_note'] : null) : $order->returnRequest->admin_note;
 
-        $order->returnRequest->status = 'refunded';
-        if (array_key_exists('admin_note', $data)) {
-            $order->returnRequest->admin_note = $data['admin_note'] !== null ? (string) $data['admin_note'] : $order->returnRequest->admin_note;
-        }
-        $order->returnRequest->refund_proof = $proofMeta;
-        $order->returnRequest->refunded_at = now();
-        $order->returnRequest->save();
-
-        // Notify customer with proof
-        Notification::create([
-            'user_id' => (int) $order->user_id,
-            'type' => 'order_return_refunded',
-            'title' => 'Đơn hàng đã được hoàn tiền',
-            'body' => 'Admin đã hoàn tiền cho yêu cầu hoàn trả của đơn #' . ($order->order_code ?: ('ET-' . $order->id)) . '.',
-            'data' => [
-                'order_id' => (int) $order->id,
-                'order_code' => (string) ($order->order_code ?: ('ET-' . $order->id)),
-                'return_request_status' => 'refunded',
-                'refund_proof' => $proofMeta,
-                'admin_note' => $order->returnRequest->admin_note,
-            ],
-            'read_at' => null,
-        ]);
-
-        // Mark order as returned after refund is processed (business workflow).
-        $prevStatus = strtolower((string) ($order->status ?? ''));
-        if ($prevStatus !== 'returned') {
-            $order->status = 'returned';
-            $order->save();
-
-            // Restore stock for returned items
-            $order->loadMissing('items');
-            $productIdsToSync = [];
-            foreach ($order->items as $item) {
-                if ($item->variant_id) {
-                    $variant = ProductVariant::find($item->variant_id);
-                    if ($variant) {
-                        $variant->stock_quantity = (int) ($variant->stock_quantity ?? 0) + (int) $item->quantity;
-                        $variant->save();
-                        $productIdsToSync[$variant->product_id] = true;
-                    }
-                }
-            }
-            foreach (array_keys($productIdsToSync) as $pid) {
-                $p = Product::find($pid);
-                if ($p) {
-                    ProductInventorySync::syncFromVariants($p, 'order_returned');
-                }
-            }
-
-            OrderStatusHistory::create([
-                'order_id' => (int) $order->id,
-                'from_status' => $prevStatus !== '' ? $prevStatus : null,
-                'to_status' => 'returned',
-                'changed_by_user_id' => $request->user()?->id,
-                'note' => 'Hoàn tiền yêu cầu hoàn trả',
-            ]);
-        }
+        $order = $this->adminOrderService->markReturnRefunded($order, $adminNote, $files, $request->user()?->id);
 
         return $this->show($order);
     }
+
     public function update(Order $order, Request $request): JsonResponse
     {
         $data = $request->validate([
@@ -200,7 +98,6 @@ class OrdersController extends Controller
         $prevStatus = strtolower((string) ($order->status ?? ''));
         $status = isset($data['status']) ? strtolower(trim((string) $data['status'])) : null;
         if ($status !== null && $status !== '') {
-            // Must match DB CHECK constraint on orders.status (see schema-postgres.sql)
             $allowed = ['pending', 'paid', 'processing', 'shipped', 'delivered', 'completed', 'cancelled', 'returned'];
             if (!in_array($status, $allowed, true)) {
                 return response()->json(['message' => 'Status invalid'], 422);
@@ -225,46 +122,26 @@ class OrdersController extends Controller
             $curStep = $statusStep($cur);
             $nextStep = $statusStep($status);
 
-            // Terminal states cannot be changed
             if (in_array($cur, ['completed', 'cancelled', 'returned'], true) && $status !== $cur) {
                 return response()->json(['message' => 'Không thể cập nhật đơn đã kết thúc (hoàn thành/hủy/hoàn trả).'], 422);
             }
 
-            // Disallow going backwards in the normal flow:
-            // pending -> processing -> paid -> shipped -> delivered -> completed
-            // Cancel/Return are treated separately.
             if (!in_array($status, ['cancelled', 'returned'], true) && $curStep > 0 && $nextStep > 0 && $nextStep < $curStep) {
                 return response()->json(['message' => 'Không thể cập nhật trạng thái lùi về trước.'], 422);
             }
 
-            // "Hoàn thành" chỉ khi user xác nhận (delivered -> completed)
             if (in_array($status, ['completed', 'returned', 'cancelled'], true)) {
                 return response()->json([
                     'message' => 'Admin không được chuyển trạng thái sang Hoàn thành/Hoàn trả/Hủy. Các trạng thái này chỉ phát sinh từ thao tác của khách hàng hoặc luồng nghiệp vụ riêng.',
                 ], 422);
             }
-            $order->status = $status;
         }
 
-        if (array_key_exists('notes', $data)) {
-            $order->notes = $data['notes'] !== null ? (string) $data['notes'] : null;
-        }
-
-        $order->save();
-
-        $newStatus = strtolower((string) ($order->status ?? ''));
-        if ($newStatus !== '' && $newStatus !== $prevStatus) {
-            OrderStatusHistory::create([
-                'order_id' => (int) $order->id,
-                'from_status' => $prevStatus !== '' ? $prevStatus : null,
-                'to_status' => $newStatus,
-                'changed_by_user_id' => $request->user()?->id,
-                'note' => isset($data['status_note']) && $data['status_note'] !== null ? (string) $data['status_note'] : null,
-            ]);
-        }
+        $order = $this->adminOrderService->updateOrderStatus($order, $data, $request->user()?->id);
 
         return $this->show($order);
     }
+
     public function show(Order $order): JsonResponse
     {
         $order->load([
@@ -438,7 +315,7 @@ class OrdersController extends Controller
         $paymentStatus = trim((string) $request->query('payment_status', ''));
         $dateFrom = trim((string) $request->query('date_from', ''));
         $dateTo = trim((string) $request->query('date_to', ''));
-        $returnRequests = trim((string) $request->query('return_requests', '')); // 1 | pending | approved | rejected | refunded
+        $returnRequests = trim((string) $request->query('return_requests', ''));
 
         $query = Order::query()
             ->with(['user:id,name,avatar_url', 'payment:id,order_id,method,status'])
@@ -485,7 +362,6 @@ class OrdersController extends Controller
 
         $parseDate = static function (string $s): ?Carbon {
             try {
-                // allow yyyy-mm-dd or dd/mm/yyyy
                 if (preg_match('/^\d{4}-\d{2}-\d{2}$/', $s)) return Carbon::parse($s);
                 if (preg_match('/^\d{2}\/\d{2}\/\d{4}$/', $s)) return Carbon::createFromFormat('d/m/Y', $s);
                 return null;
@@ -549,7 +425,7 @@ class OrdersController extends Controller
                 'payment_method' => $paymentLabel($o->payment?->method),
                 'status' => (string) ($o->status ?? ''),
                 'status_label' => $statusLabel,
-                'status_tone' => $statusTone, // ok | wait | info | bad | muted
+                'status_tone' => $statusTone,
                 'product' => $productText,
                 'return_request' => $o->returnRequest ? [
                     'status' => (string) ($o->returnRequest->status ?? ''),
@@ -581,4 +457,3 @@ class OrdersController extends Controller
         ]);
     }
 }
-

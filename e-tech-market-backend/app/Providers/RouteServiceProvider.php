@@ -29,6 +29,12 @@ class RouteServiceProvider extends ServiceProvider
         });
 
         $this->routes(function () {
+            // Primary versioned endpoint: /api/v1/*
+            Route::middleware('api')
+                ->prefix('api/v1')
+                ->group(base_path('routes/api.php'));
+
+            // Backward-compatible alias: /api/* → same routes (no breaking change)
             Route::middleware('api')
                 ->prefix('api')
                 ->group(base_path('routes/api.php'));

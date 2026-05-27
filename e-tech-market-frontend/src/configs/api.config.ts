@@ -15,6 +15,22 @@ export type ApiError = {
   errors?: unknown
 }
 
+export class ApiRequestError extends Error {
+  public readonly globalErrorNotified: boolean
+
+  constructor(message: string, options: { globalErrorNotified?: boolean } = {}) {
+    super(message)
+    this.name = 'ApiRequestError'
+    this.globalErrorNotified = options.globalErrorNotified ?? false
+  }
+}
+
+export function notifyGlobalError(message: string) {
+  if (typeof window !== 'undefined' && typeof window.dispatchEvent === 'function') {
+    window.dispatchEvent(new CustomEvent('global-error', { detail: { message } }))
+  }
+}
+
 async function parseJsonSafe<T>(res: Response): Promise<T | null> {
   try {
     const ct = res.headers.get('content-type') || ''
@@ -77,9 +93,9 @@ export async function apiFetch<T>(
         : fallbackText && fallbackText.trim().length > 0
           ? `Request failed: ${res.status} (${fallbackText.slice(0, 140)})`
           : `Request failed: ${res.status}`
-    throw new Error(message)
+    notifyGlobalError(message)
+    throw new ApiRequestError(message, { globalErrorNotified: true })
   }
 
   return (data as T) ?? ({} as T)
 }
-

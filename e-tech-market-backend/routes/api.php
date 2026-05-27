@@ -102,7 +102,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::patch('/notifications/read-all', [ClientNotificationsController::class, 'markReadAll']);
 
     // Admin Routes
-    Route::prefix('admin')->middleware('admin')->group(function () {
+    Route::prefix('admin')->middleware(['admin', 'throttle:30,1'])->group(function () {
         Route::get('/dashboard/stats', [AdminDashboardController::class, 'stats']);
         Route::get('/orders', [AdminOrdersController::class, 'index']);
         Route::get('/orders/{order}', [AdminOrdersController::class, 'show']);

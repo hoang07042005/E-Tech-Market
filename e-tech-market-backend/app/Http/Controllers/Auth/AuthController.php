@@ -138,7 +138,7 @@ class AuthController extends Controller
 
         $data = $request->validate([
             'current_password' => ['required', 'string'],
-            'new_password' => ['required', 'string', 'min:8'],
+            'new_password' => ['required', 'string', \Illuminate\Validation\Rules\Password::min(8)->mixedCase()->numbers()->symbols()],
         ]);
 
         if (!Hash::check($data['current_password'], $user->password)) {

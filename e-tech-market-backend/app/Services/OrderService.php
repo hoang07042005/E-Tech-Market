@@ -293,6 +293,14 @@ class OrderService
 
     private function generateOrderCode(): string
     {
-        return 'ET-' . strtoupper(substr(uniqid(), -6)) . rand(10, 99);
+        // Retry up to 5 times to guarantee uniqueness under high concurrency.
+        for ($attempt = 0; $attempt < 5; $attempt++) {
+            $code = 'ET-' . strtoupper(bin2hex(random_bytes(4))) . '-' . now()->format('ymd');
+            if (!Order::query()->where('order_code', $code)->exists()) {
+                return $code;
+            }
+        }
+        // Ultimate fallback: UUID-based code (practically impossible to collide)
+        return 'ET-' . strtoupper(substr(str_replace('-', '', (string) \Illuminate\Support\Str::uuid()), 0, 10));
     }
 }

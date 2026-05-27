@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { apiFetch, API_BASE_URL } from '@/configs/api.config'
 import '@/styles/admin/ProductNewsPage.css'
+import { sanitizeHtml } from '@/utils/sanitizeHtml'
 
 type ProductLite = {
   id: number
@@ -283,7 +284,7 @@ export default function ProductNewsPage() {
                       <span className="pnMetaText">Thứ tự: {n.sort_order}</span>
                     </div>
                     <div className="pnHtmlHint">Nội dung HTML đã lưu (xem trước đơn giản):</div>
-                    <div className="pnHtmlPreview" dangerouslySetInnerHTML={{ __html: n.content_html }} />
+                    <div className="pnHtmlPreview" dangerouslySetInnerHTML={{ __html: sanitizeHtml(n.content_html) }} />
                   </div>
                 ))}
               </div>

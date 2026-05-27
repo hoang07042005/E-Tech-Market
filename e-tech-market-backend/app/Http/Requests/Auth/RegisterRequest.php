@@ -16,7 +16,7 @@ class RegisterRequest extends FormRequest
         return [
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'max:255', 'unique:users,email'],
-            'password' => ['required', 'string', 'min:8'],
+            'password' => ['required', 'string', \Illuminate\Validation\Rules\Password::min(8)->mixedCase()->numbers()->symbols()],
             'phone' => ['nullable', 'string', 'max:30'],
             'address_line' => ['nullable', 'string'],
             'province' => ['nullable', 'string', 'max:100'],

@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
+import { useQuery } from '@tanstack/react-query'
 import '@/styles/admin/AdminPage.css'
 import DashboardContent from './dashboard/DashboardPage'
 import CategoryPage from './categories/CategoryPage'
@@ -41,6 +42,15 @@ type AdminTab =
   | 'settings'
   | 'videoCategories'
 
+type AdminUser = {
+  name?: string | null
+  email?: string | null
+  username?: string | null
+  avatar_url?: string | null
+  avatarUrl?: string | null
+  roles?: Array<{ slug?: string | null }>
+}
+
 const ADMIN_TAB_TITLE: Record<AdminTab, string> = {
   dashboard: 'Bảng điều khiển',
   products: 'Sản phẩm',
@@ -61,102 +71,43 @@ const ADMIN_TAB_TITLE: Record<AdminTab, string> = {
   videoCategories: 'Danh mục Video',
 }
 
-function readUserNameFromStorage(): string {
-  const userStr = localStorage.getItem('user')
-  if (!userStr) return 'Quản trị'
-  try {
-    const user = JSON.parse(userStr) as { name?: string }
-    return user.name || 'Quản trị'
-  } catch {
-    return 'Quản trị'
-  }
-}
-
-function readUserRoleFromStorage(): string {
-  const userStr = localStorage.getItem('user')
-  if (!userStr) return 'Quản trị viên'
-  try {
-    const user = JSON.parse(userStr) as { roles?: Array<{ name?: string; slug?: string }> }
-    const r = user.roles?.[0]
-    if (r?.name) return r.name
-    if (r?.slug === 'admin') return 'Quản trị viên'
-    if (r?.slug === 'customer') return 'Khách hàng'
-    return 'Quản trị viên'
-  } catch {
-    return 'Quản trị viên'
-  }
-}
-
-function readUserEmailFromStorage(): string {
-  const userStr = localStorage.getItem('user')
-  if (!userStr) return 'admin@etech.com'
-  try {
-    const user = JSON.parse(userStr) as { email?: string; username?: string }
-    return user.email || user.username || 'admin@etech.com'
-  } catch {
-    return 'admin@etech.com'
-  }
-}
-
-function readUserAvatarFromStorage(): string | null {
-  const userStr = localStorage.getItem('user')
-  if (!userStr) return null
-  try {
-    const user = JSON.parse(userStr) as { avatar_url?: string | null; avatarUrl?: string | null }
-    return (user.avatar_url ?? user.avatarUrl ?? null) || null
-  } catch {
-    return null
-  }
-}
-
 function resolveAdminImg(url?: string | null): string {
   if (!url) return ''
   if (url.startsWith('http')) return url
   return `${API_BASE_URL}${url.startsWith('/') ? url : `/${url}`}`
 }
 
-function hasPermissionForTab(tab: AdminTab): boolean {
-  const userStr = localStorage.getItem('user')
-  if (!userStr) return false
-  try {
-    const user = JSON.parse(userStr) as { roles?: Array<{ slug?: string }> }
-    const roles = (user.roles ?? []).map(r => r.slug || '')
-    
-    // Super Admin has all permissions
-    if (roles.includes('admin')) return true
-    
-    switch (tab) {
-      case 'dashboard':
-        return true // Everyone can view the dashboard
-      case 'products':
-      case 'categories':
-        return roles.includes('warehouse-staff')
-      case 'orders':
-        return roles.includes('order-staff') || roles.includes('warehouse-staff')
-      case 'blog':
-      case 'productNews':
-        return roles.includes('editor')
-      case 'coupons':
-        return roles.includes('admin')
-      case 'users':
-        return roles.includes('admin')
-      case 'settings':
-        return roles.includes('admin')
-      case 'flashSale':
-      case 'banners':
-      case 'videos':
-      case 'videoCategories':
-        return roles.includes('admin')
-      case 'reviews':
-      case 'shopQna':
-      case 'contactMessages':
-      case 'notifications':
-        return roles.includes('admin')
-      default:
-        return false
-    }
-  } catch {
-    return false
+function hasPermissionForTab(tab: AdminTab, user: AdminUser | undefined): boolean {
+  const roles = (user?.roles ?? []).map(r => r.slug || '')
+
+  // Super Admin has all permissions
+  if (roles.includes('admin')) return true
+
+  switch (tab) {
+    case 'dashboard':
+      return roles.length > 0
+    case 'products':
+    case 'categories':
+      return roles.includes('warehouse-staff')
+    case 'orders':
+      return roles.includes('order-staff') || roles.includes('warehouse-staff')
+    case 'blog':
+    case 'productNews':
+      return roles.includes('editor')
+    case 'coupons':
+    case 'users':
+    case 'settings':
+    case 'flashSale':
+    case 'banners':
+    case 'videos':
+    case 'videoCategories':
+    case 'reviews':
+    case 'shopQna':
+    case 'contactMessages':
+    case 'notifications':
+      return false
+    default:
+      return false
   }
 }
 
@@ -173,15 +124,23 @@ export default function AdminPage() {
   const [createProductTick, setCreateProductTick] = useState(0)
   const [openEditProductId, setOpenEditProductId] = useState<number | null>(null)
   const [openEditProductTick, setOpenEditProductTick] = useState(0)
-  const [userName] = useState(readUserNameFromStorage)
-  const [userRole] = useState(readUserRoleFromStorage)
-  const [userEmail] = useState(readUserEmailFromStorage)
-  const [userAvatarUrl] = useState(readUserAvatarFromStorage)
   const [logoSrc, setLogoSrc] = useState('/logo.png')
   const [darkMode, setDarkMode] = useState<boolean>(() => {
     return typeof window !== 'undefined' && localStorage.getItem('theme') === 'dark'
   })
   const token = typeof window !== 'undefined' ? window.localStorage.getItem('token') : null
+  const currentUserQuery = useQuery<AdminUser>({
+    queryKey: ['currentUser'],
+    queryFn: () => apiFetch<AdminUser>('/api/me', { token }),
+    enabled: !!token,
+    staleTime: 1000 * 60 * 2,
+  })
+  const currentUser = currentUserQuery.data
+  const userName = currentUser?.name || 'Admin'
+  const userRole = currentUser?.roles?.[0]?.slug || 'admin'
+  const userEmail = currentUser?.email || currentUser?.username || 'admin@etech.com'
+  const userAvatarUrl = (currentUser?.avatar_url ?? currentUser?.avatarUrl ?? null) || null
+  const canAccessTab = hasPermissionForTab(activeTab, currentUser)
 
   useEffect(() => {
     const isDark = localStorage.getItem('theme') === 'dark'
@@ -384,6 +343,22 @@ export default function AdminPage() {
 
   const adminLogoSrc = darkMode && logoSrc === '/logo.png' ? '/logo-trang.png' : logoSrc
 
+  if (currentUserQuery.isLoading) {
+    return <div className="adminLoader" style={{ margin: '120px auto' }} />
+  }
+
+  if (!canAccessTab) {
+    return (
+      <div className="adminAccessDenied">
+        <h1>Access denied</h1>
+        <p>Your account does not have permission to open this admin section.</p>
+        <button type="button" className="adminBtnPrimary" onClick={() => setActiveTab('dashboard')}>
+          Back to dashboard
+        </button>
+      </div>
+    )
+  }
+
   return (
     <div className={`adminLayout ${isSidebarCollapsed ? 'collapsed' : ''}`}>
       {/* Sidebar Overlay for Mobile */}
@@ -399,35 +374,35 @@ export default function AdminPage() {
         <nav className="adminSidebarNav">
           <SidebarSection title="CHÍNH" collapsed={isSidebarCollapsed} />
           <SidebarItem active={activeTab === 'dashboard'} onClick={() => setActiveTab('dashboard')} icon={<DashboardIcon />} label="Bảng điều khiển" collapsed={isSidebarCollapsed} />
-          {hasPermissionForTab('orders') && <SidebarItem active={activeTab === 'orders'} onClick={() => setActiveTab('orders')} icon={<CartIcon />} label="Đơn hàng" collapsed={isSidebarCollapsed} />}
-          {hasPermissionForTab('flashSale') && <SidebarItem active={activeTab === 'flashSale'} onClick={() => setActiveTab('flashSale')} icon={<FlashIcon />} label="Flash Sale" collapsed={isSidebarCollapsed} />}
-          {hasPermissionForTab('products') && <SidebarItem active={activeTab === 'products'} onClick={() => setActiveTab('products')} icon={<BoxIcon />} label="Sản phẩm" collapsed={isSidebarCollapsed} />}
+          {hasPermissionForTab('orders', currentUser) && <SidebarItem active={activeTab === 'orders'} onClick={() => setActiveTab('orders')} icon={<CartIcon />} label="Đơn hàng" collapsed={isSidebarCollapsed} />}
+          {hasPermissionForTab('flashSale', currentUser) && <SidebarItem active={activeTab === 'flashSale'} onClick={() => setActiveTab('flashSale')} icon={<FlashIcon />} label="Flash Sale" collapsed={isSidebarCollapsed} />}
+          {hasPermissionForTab('products', currentUser) && <SidebarItem active={activeTab === 'products'} onClick={() => setActiveTab('products')} icon={<BoxIcon />} label="Sản phẩm" collapsed={isSidebarCollapsed} />}
 
-          {(hasPermissionForTab('categories') || hasPermissionForTab('videoCategories') || hasPermissionForTab('productNews') || hasPermissionForTab('coupons')) && (
+          {(hasPermissionForTab('categories', currentUser) || hasPermissionForTab('videoCategories', currentUser) || hasPermissionForTab('productNews', currentUser) || hasPermissionForTab('coupons', currentUser)) && (
             <SidebarSection title="QUẢN LÝ SẢN PHẨM" collapsed={isSidebarCollapsed} />
           )}
-          {hasPermissionForTab('categories') && <SidebarItem active={activeTab === 'categories'} onClick={() => setActiveTab('categories')} icon={<GridIcon />} label="Danh mục sản phẩm" collapsed={isSidebarCollapsed} />}
-          {hasPermissionForTab('videoCategories') && <SidebarItem active={activeTab === 'videoCategories'} onClick={() => setActiveTab('videoCategories')} icon={<GridIcon />} label="Danh mục video" collapsed={isSidebarCollapsed} />}
-          {hasPermissionForTab('productNews') && <SidebarItem active={activeTab === 'productNews'} onClick={() => setActiveTab('productNews')} icon={<NewspaperIcon />} label="Tin sản phẩm" collapsed={isSidebarCollapsed} />}
-          {hasPermissionForTab('coupons') && <SidebarItem active={activeTab === 'coupons'} onClick={() => setActiveTab('coupons')} icon={<TicketIcon />} label="Mã giảm giá" collapsed={isSidebarCollapsed} />}
+          {hasPermissionForTab('categories', currentUser) && <SidebarItem active={activeTab === 'categories'} onClick={() => setActiveTab('categories')} icon={<GridIcon />} label="Danh mục sản phẩm" collapsed={isSidebarCollapsed} />}
+          {hasPermissionForTab('videoCategories', currentUser) && <SidebarItem active={activeTab === 'videoCategories'} onClick={() => setActiveTab('videoCategories')} icon={<GridIcon />} label="Danh mục video" collapsed={isSidebarCollapsed} />}
+          {hasPermissionForTab('productNews', currentUser) && <SidebarItem active={activeTab === 'productNews'} onClick={() => setActiveTab('productNews')} icon={<NewspaperIcon />} label="Tin sản phẩm" collapsed={isSidebarCollapsed} />}
+          {hasPermissionForTab('coupons', currentUser) && <SidebarItem active={activeTab === 'coupons'} onClick={() => setActiveTab('coupons')} icon={<TicketIcon />} label="Mã giảm giá" collapsed={isSidebarCollapsed} />}
 
-          {(hasPermissionForTab('users') || hasPermissionForTab('reviews') || hasPermissionForTab('shopQna') || hasPermissionForTab('contactMessages')) && (
+          {(hasPermissionForTab('users', currentUser) || hasPermissionForTab('reviews', currentUser) || hasPermissionForTab('shopQna', currentUser) || hasPermissionForTab('contactMessages', currentUser)) && (
             <SidebarSection title="QUẢN LÝ KHÁCH HÀNG" collapsed={isSidebarCollapsed} />
           )}
-          {hasPermissionForTab('users') && <SidebarItem active={activeTab === 'users'} onClick={() => setActiveTab('users')} icon={<UserGroupIcon />} label="Người dùng" collapsed={isSidebarCollapsed} />}
-          {hasPermissionForTab('reviews') && <SidebarItem active={activeTab === 'reviews'} onClick={() => setActiveTab('reviews')} icon={<StarIcon />} label="Đánh giá" collapsed={isSidebarCollapsed} />}
-          {hasPermissionForTab('shopQna') && <SidebarItem active={activeTab === 'shopQna'} onClick={() => setActiveTab('shopQna')} icon={<ChatBubbleIcon />} label="Hỏi đáp cửa hàng" collapsed={isSidebarCollapsed} />}
-          {hasPermissionForTab('contactMessages') && <SidebarItem active={activeTab === 'contactMessages'} onClick={() => setActiveTab('contactMessages')} icon={<MailIcon />} label="Liên hệ" collapsed={isSidebarCollapsed} />}
+          {hasPermissionForTab('users', currentUser) && <SidebarItem active={activeTab === 'users'} onClick={() => setActiveTab('users')} icon={<UserGroupIcon />} label="Người dùng" collapsed={isSidebarCollapsed} />}
+          {hasPermissionForTab('reviews', currentUser) && <SidebarItem active={activeTab === 'reviews'} onClick={() => setActiveTab('reviews')} icon={<StarIcon />} label="Đánh giá" collapsed={isSidebarCollapsed} />}
+          {hasPermissionForTab('shopQna', currentUser) && <SidebarItem active={activeTab === 'shopQna'} onClick={() => setActiveTab('shopQna')} icon={<ChatBubbleIcon />} label="Hỏi đáp cửa hàng" collapsed={isSidebarCollapsed} />}
+          {hasPermissionForTab('contactMessages', currentUser) && <SidebarItem active={activeTab === 'contactMessages'} onClick={() => setActiveTab('contactMessages')} icon={<MailIcon />} label="Liên hệ" collapsed={isSidebarCollapsed} />}
 
-          {(hasPermissionForTab('blog') || hasPermissionForTab('notifications')) && (
+          {(hasPermissionForTab('blog', currentUser) || hasPermissionForTab('notifications', currentUser)) && (
             <SidebarSection title="NỘI DUNG & TRUYỀN THÔNG" collapsed={isSidebarCollapsed} />
           )}
-          {hasPermissionForTab('blog') && <SidebarItem active={activeTab === 'blog'} onClick={() => setActiveTab('blog')} icon={<NewspaperIcon />} label="Tin tức Blog" collapsed={isSidebarCollapsed} />}
-          {hasPermissionForTab('banners') && <SidebarItem active={activeTab === 'banners'} onClick={() => setActiveTab('banners')} icon={<ImageIcon />} label="Banners" collapsed={isSidebarCollapsed} />}
-          {hasPermissionForTab('videos') && <SidebarItem active={activeTab === 'videos'} onClick={() => setActiveTab('videos')} icon={<VideoIcon />} label="Videos" collapsed={isSidebarCollapsed} />}
-          {hasPermissionForTab('notifications') && <SidebarItem active={activeTab === 'notifications'} onClick={() => setActiveTab('notifications')} icon={<BellIcon />} label="Thông báo" collapsed={isSidebarCollapsed} />}
+          {hasPermissionForTab('blog', currentUser) && <SidebarItem active={activeTab === 'blog'} onClick={() => setActiveTab('blog')} icon={<NewspaperIcon />} label="Tin tức Blog" collapsed={isSidebarCollapsed} />}
+          {hasPermissionForTab('banners', currentUser) && <SidebarItem active={activeTab === 'banners'} onClick={() => setActiveTab('banners')} icon={<ImageIcon />} label="Banners" collapsed={isSidebarCollapsed} />}
+          {hasPermissionForTab('videos', currentUser) && <SidebarItem active={activeTab === 'videos'} onClick={() => setActiveTab('videos')} icon={<VideoIcon />} label="Videos" collapsed={isSidebarCollapsed} />}
+          {hasPermissionForTab('notifications', currentUser) && <SidebarItem active={activeTab === 'notifications'} onClick={() => setActiveTab('notifications')} icon={<BellIcon />} label="Thông báo" collapsed={isSidebarCollapsed} />}
 
-          {hasPermissionForTab('settings') && (
+          {hasPermissionForTab('settings', currentUser) && (
             <>
               <SidebarSection title="HỆ THỐNG" collapsed={isSidebarCollapsed} />
               <SidebarItem active={activeTab === 'settings'} onClick={() => setActiveTab('settings')} icon={<SettingsIcon />} label="Cài đặt" collapsed={isSidebarCollapsed} />

@@ -1,6 +1,9 @@
 import { BrowserRouter as Router, Routes, Route, useLocation, useNavigate, Navigate } from 'react-router-dom'
 import { useEffect, useState, lazy, Suspense } from 'react'
-import { apiFetch } from '@/configs/api.config'
+import { MutationCache, QueryCache, QueryClient, QueryClientProvider, useQuery } from '@tanstack/react-query'
+import { ApiRequestError, apiFetch, notifyGlobalError } from '@/configs/api.config'
+import ErrorBoundary from '@/components/ErrorBoundary'
+import { GlobalToastProvider } from '@/components/GlobalToastProvider'
 
 import {
   AUTH_EXPIRED_EVENT,
@@ -48,40 +51,63 @@ const FlashSalePage = lazy(() => import('@/features/pages/client/products/FlashS
 const VideoPage = lazy(() => import('@/features/pages/client/video/VideoPage'))
 const VideoDetailPage = lazy(() => import('@/features/pages/client/video/VideoDetailPage'))
 
-type StoredUserJson = {
-  roles?: { slug?: string }[]
+const queryClient = new QueryClient({
+  queryCache: new QueryCache({
+    onError: (error) => {
+      if (error instanceof ApiRequestError && error.globalErrorNotified) return
+      notifyGlobalError(error instanceof Error ? error.message : 'Đã xảy ra lỗi khi tải dữ liệu.')
+    },
+  }),
+  mutationCache: new MutationCache({
+    onError: (error) => {
+      if (error instanceof ApiRequestError && error.globalErrorNotified) return
+      notifyGlobalError(error instanceof Error ? error.message : 'Thao tác không thành công.')
+    },
+  }),
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: true,
+      retry: false,
+      staleTime: 1000 * 60 * 2,
+      gcTime: 1000 * 60 * 10,
+    },
+  },
+})
+
+function isStaffOrAdmin(user: unknown): boolean {
+  if (!user || typeof user !== 'object') return false
+  const roles = (user as { roles?: unknown }).roles
+  return Array.isArray(roles) && roles.some((role: any) =>
+    ['admin', 'warehouse-staff', 'order-staff', 'editor'].includes(role?.slug || ''),
+  )
 }
 
-function parseStoredUser(raw: string): StoredUserJson | null {
-  try {
-    const data = JSON.parse(raw) as unknown
-    return data !== null && typeof data === 'object' ? (data as StoredUserJson) : null
-  } catch {
-    return null
-  }
+function useCurrentUser() {
+  const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null
+  return useQuery<any>({
+    queryKey: ['currentUser'],
+    queryFn: () => apiFetch('/api/me', { token }),
+    enabled: !!token,
+    retry: false,
+    staleTime: 1000 * 60 * 2,
+    gcTime: 1000 * 60 * 5,
+  })
 }
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
-  const userStr = localStorage.getItem('user')
-  const token = localStorage.getItem('token')
+  const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null
+  const { data: user, isLoading, isError } = useCurrentUser()
 
-  if (!userStr || !token) {
+  if (!token) {
     return <Navigate to="/login" replace />
   }
 
-  const user = parseStoredUser(userStr)
-  if (!user) {
-    return <Navigate to="/login" replace />
+  if (isLoading) {
+    return <PageLoader />
   }
 
-  const isStaffOrAdmin =
-    Array.isArray(user.roles) &&
-    user.roles.some((role) =>
-      ['admin', 'warehouse-staff', 'order-staff', 'editor'].includes(role?.slug || '')
-    )
-
-  if (!isStaffOrAdmin) {
-    return <Navigate to="/" replace />
+  if (isError || !isStaffOrAdmin(user)) {
+    return <Navigate to="/login" replace />
   }
 
   return <>{children}</>
@@ -120,6 +146,9 @@ function AppFrame() {
 
   const [maintenanceMode, setMaintenanceMode] = useState<boolean | null>(null)
   const [chatConfig, setChatConfig] = useState<any>(null)
+  const currentUserQuery = useCurrentUser()
+  const currentUser = currentUserQuery.data
+  const isStaffOrAdminUser = isStaffOrAdmin(currentUser)
 
   useEffect(() => {
     let mounted = true
@@ -186,18 +215,9 @@ function AppFrame() {
   }
 
   // Block client UI if maintenance mode is ON, unless we are on Admin/Login pages or the user is Staff/Admin
-  const userStr = localStorage.getItem('user')
-  const user = userStr ? parseStoredUser(userStr) : null
-  const isStaffOrAdmin =
-    user &&
-    Array.isArray(user.roles) &&
-    user.roles.some((role) =>
-      ['admin', 'warehouse-staff', 'order-staff', 'editor'].includes(role?.slug || '')
-    )
-
   const isMaintenanceBlocked =
     maintenanceMode &&
-    !isStaffOrAdmin &&
+    !isStaffOrAdminUser &&
     !path.startsWith('/admin') &&
     path !== '/login'
 
@@ -293,7 +313,13 @@ function AppFrame() {
 export default function App() {
   return (
     <Router>
-      <AppFrame />
+      <GlobalToastProvider>
+        <QueryClientProvider client={queryClient}>
+          <ErrorBoundary>
+            <AppFrame />
+          </ErrorBoundary>
+        </QueryClientProvider>
+      </GlobalToastProvider>
     </Router>
   )
 }

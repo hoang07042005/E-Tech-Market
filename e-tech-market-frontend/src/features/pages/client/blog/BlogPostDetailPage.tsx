@@ -1,9 +1,10 @@
 
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { apiFetch, API_BASE_URL } from '@/configs/api.config'
 import { Helmet } from 'react-helmet-async'
 import '@/styles/pages/BlogPostDetailPage.css'
+import { sanitizeHtml } from '@/utils/sanitizeHtml'
 
 type BlogPost = {
   id: number
@@ -80,6 +81,10 @@ export default function BlogPostDetailPage() {
     }
   })()
   const canComment = !!token
+  const sanitizedContent = useMemo(
+    () => sanitizeHtml(post?.content || '<p>Nội dung đang được cập nhật...</p>'),
+    [post?.content],
+  )
 
   useEffect(() => {
     let active = true
@@ -210,7 +215,7 @@ export default function BlogPostDetailPage() {
             <div
               className="postContent"
               style={{ minHeight: '300px' }}
-              dangerouslySetInnerHTML={{ __html: post.content || '<p>Nội dung đang được cập nhật...</p>' }}
+              dangerouslySetInnerHTML={{ __html: sanitizedContent }}
             />
 
             {/* Social Share */}
