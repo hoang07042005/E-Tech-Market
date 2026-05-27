@@ -386,10 +386,45 @@ export default function DashboardPage({ onCreateProduct }: { onCreateProduct?: (
   const topRated = dash?.top_rated_products ?? []
   const revenue7d = dash?.analytics?.revenue_7d ?? []
   const topCats30d = dash?.analytics?.top_categories_30d ?? []
+  // Build KPI list with compact sparkline series (use real analytics when available)
+  const kpisWithSpark = kpis.map((kp) => {
+    const baseDigits = String(kp.value || '').replace(/[^0-9]/g, '')
+    const base = baseDigits ? Number(baseDigits.slice(0, 6)) : 10
+    const pts = revenue7d.length
+      ? revenue7d.map((pt) => (kp.key === 'rev' ? (pt.value || 0) : (pt.orders || 0)))
+      : Array.from({ length: 7 }).map((_, i) => Math.max(0, Math.round(base * (0.7 + Math.sin(i) * 0.15))))
+    // Decide chart type per KPI key
+    let chartType: 'area' | 'bars' | 'donut' | 'line' = 'line'
+    if (kp.key === 'rev') chartType = 'area'
+    else if (kp.key === 'orders') chartType = 'bars'
+    else if (kp.key === 'products') chartType = 'donut'
+    else if (kp.key === 'newCus') chartType = 'bars'
+    else if (kp.key === 'avg') chartType = 'line'
+
+    // For donut, try parse percent from badge (e.g., 'Kho: 98%')
+    let donutPct = 0
+    if (chartType === 'donut') {
+      const m = String(kp.badge || '').match(/(\d{1,3})/) 
+      donutPct = m ? Math.max(0, Math.min(100, Number(m[1]))) : 75
+    }
+
+    return { ...(kp as any), sparkline: pts, chartType, donutPct }
+  })
   const resolveAdminImg = (url?: string | null) => {
     if (!url) return '/logo.png'
     if (url.startsWith('http')) return url
     return `${API_BASE_URL}${url.startsWith('/') ? url : `/${url}`}`
+  }
+
+  const colorOfTone = (t: KpiCard['tone']) => {
+    switch (t) {
+      case 'orange': return '#fb923c'
+      case 'blue': return '#3b82f6'
+      case 'green': return '#10b981'
+      case 'purple': return '#8b5cf6'
+      case 'cyan': return '#06b6d4'
+      default: return '#3b82f6'
+    }
   }
 
   const fmtVnd = (n: number) => n.toLocaleString('vi-VN')
@@ -424,6 +459,221 @@ export default function DashboardPage({ onCreateProduct }: { onCreateProduct?: (
     return () => document.removeEventListener('mousedown', onDown)
   }, [])
 
+  // Tiny inline sparkline renderer used in KPI cards
+  // Small inline chart renderers for KPI cards
+  const renderLine = (values: number[] = [], stroke = '#3b82f6') => {
+    if (!values || values.length === 0) return null
+    const w = 120
+    const h = 30
+    const min = Math.min(...values)
+    const max = Math.max(...values)
+    const range = max - min || 1
+    const step = w / Math.max(1, values.length - 1)
+    const pts = values.map((v, i) => `${(i * step).toFixed(2)},${(h - ((v - min) / range) * h).toFixed(2)}`)
+    return (
+      <svg className="admKpiSparkline" width={w} height={h} viewBox={`0 0 ${w} ${h}`} preserveAspectRatio="none" aria-hidden>
+        <polyline points={pts.join(' ')} fill="none" stroke={stroke} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
+    )
+  }
+
+  const renderArea = (values: number[] = [], stroke = '#10b981', fill = 'rgba(16,185,129,0.12)') => {
+    if (!values || values.length === 0) return null
+    const w = 120
+    const h = 56
+    const min = Math.min(...values)
+    const max = Math.max(...values)
+    const range = max - min || 1
+    const step = w / Math.max(1, values.length - 1)
+    const pts = values.map((v, i) => ({ x: i * step, y: (h - 6) - ((v - min) / range) * (h - 12) }))
+    // Build smooth path using simple quadratic Bezier chaining
+    const buildPath = () => {
+      if (!pts.length) return ''
+      let d = `M ${pts[0].x.toFixed(2)} ${pts[0].y.toFixed(2)}`
+      for (let i = 1; i < pts.length; i++) {
+        const prev = pts[i - 1]
+        const cur = pts[i]
+        const cx = ((prev.x + cur.x) / 2).toFixed(2)
+        d += ` Q ${prev.x.toFixed(2)} ${prev.y.toFixed(2)} ${cx} ${( (prev.y + cur.y) / 2 ).toFixed(2)}`
+      }
+      // Close path to bottom
+      d += ` L ${w} ${h} L 0 ${h} Z`
+      return d
+    }
+    const path = buildPath()
+    return (
+      <svg className="admKpiSparkline admKpiArea" width={w} height={h} viewBox={`0 0 ${w} ${h}`} preserveAspectRatio="none" aria-hidden>
+        <path d={path} fill={fill} stroke="none" />
+        <path d={path.replace(/ L .* Z$/, '')} fill="none" stroke={stroke} strokeWidth={3} strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
+    )
+  }
+
+  // Specialized revenue area to match reference style (gradient fill + dots)
+  const renderRevenueArea = (values: number[] = [], stroke = '#10b981') => {
+    if (!values || values.length === 0) return null
+    const w = 140
+    const h = 72
+    const min = Math.min(...values)
+    const max = Math.max(...values)
+    const range = max - min || 1
+    const step = w / Math.max(1, values.length - 1)
+    const pts = values.map((v, i) => ({ x: i * step, y: (h - 12) - ((v - min) / range) * (h - 24) }))
+    const buildSmooth = () => {
+      if (!pts.length) return ''
+      let d = `M ${pts[0].x.toFixed(2)} ${pts[0].y.toFixed(2)}`
+      for (let i = 1; i < pts.length; i++) {
+        const prev = pts[i - 1]
+        const cur = pts[i]
+        const cx = ((prev.x + cur.x) / 2).toFixed(2)
+        d += ` Q ${prev.x.toFixed(2)} ${prev.y.toFixed(2)} ${cx} ${( (prev.y + cur.y) / 2 ).toFixed(2)}`
+      }
+      return d
+    }
+    const linePath = buildSmooth()
+    const areaPath = `${linePath} L ${w} ${h} L 0 ${h} Z`
+    return (
+      <svg className="admKpiSparkline admKpiRevenue" width={w} height={h} viewBox={`0 0 ${w} ${h}`} preserveAspectRatio="none" aria-hidden>
+        <defs>
+          <linearGradient id="revGrad" x1="0" x2="0" y1="0" y2="1">
+            <stop offset="0%" stopColor="#10b981" stopOpacity="0.18" />
+            <stop offset="100%" stopColor="#10b981" stopOpacity="0.02" />
+          </linearGradient>
+        </defs>
+        <path d={areaPath} fill="url(#revGrad)" stroke="none" />
+        <path d={linePath} fill="none" stroke={stroke} strokeWidth={3} strokeLinecap="round" strokeLinejoin="round" />
+        {/* only mark the last point to avoid clutter */}
+        {pts.length > 0 && (() => {
+          const p = pts[pts.length - 1]
+          return (
+            <g transform={`translate(${p.x}, ${p.y})`}>
+              <circle r={3} fill="#fff" stroke={stroke} strokeWidth={1.5} />
+            </g>
+          )
+        })()}
+      </svg>
+    )
+  }
+
+  // Thin area for avg order value (light blue fill, thin stroke)
+  const renderThinArea = (values: number[] = [], stroke = '#3b82f6') => {
+    if (!values || values.length === 0) return null
+    const w = 120
+    const h = 44
+    const min = Math.min(...values)
+    const max = Math.max(...values)
+    const range = max - min || 1
+    const step = w / Math.max(1, values.length - 1)
+    const pts = values.map((v, i) => ({ x: i * step, y: (h - 8) - ((v - min) / range) * (h - 16) }))
+    const buildSmooth = () => {
+      if (!pts.length) return ''
+      let d = `M ${pts[0].x.toFixed(2)} ${pts[0].y.toFixed(2)}`
+      for (let i = 1; i < pts.length; i++) {
+        const prev = pts[i - 1]
+        const cur = pts[i]
+        const cx = ((prev.x + cur.x) / 2).toFixed(2)
+        d += ` Q ${prev.x.toFixed(2)} ${prev.y.toFixed(2)} ${cx} ${( (prev.y + cur.y) / 2 ).toFixed(2)}`
+      }
+      return d
+    }
+    const linePath = buildSmooth()
+    const areaPath = `${linePath} L ${w} ${h} L 0 ${h} Z`
+    return (
+      <svg className="admKpiSparkline admKpiThinArea" width={w} height={h} viewBox={`0 0 ${w} ${h}`} preserveAspectRatio="none" aria-hidden>
+        <defs>
+          <linearGradient id="thinGrad" x1="0" x2="0" y1="0" y2="1">
+            <stop offset="0%" stopColor="#3b82f6" stopOpacity="0.12" />
+            <stop offset="100%" stopColor="#3b82f6" stopOpacity="0.02" />
+          </linearGradient>
+        </defs>
+        <path d={areaPath} fill="url(#thinGrad)" stroke="none" />
+        <path d={linePath} fill="none" stroke={stroke} strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
+    )
+  }
+
+  // Purple column style for New Customers KPI (highlight last column)
+  const renderPurpleColumns = (values: number[] = [], base = '#c4b5fd', accent = '#7c3aed') => {
+    if (!values || values.length === 0) return null
+    const w = 84
+    const h = 56
+    const gap = 6
+    const maxBars = Math.max(1, values.length)
+    const barW = Math.max(10, (w - gap * (maxBars - 1)) / maxBars)
+    const min = Math.min(...values)
+    const max = Math.max(...values)
+    const range = max - min || 1
+    const totalBarsWidth = values.length * barW + (values.length - 1) * gap
+    const startX = Math.max(0, (w - totalBarsWidth) / 2)
+    return (
+      <svg className="admKpiBarChart admKpiPurpleBars" width={w} height={h} viewBox={`0 0 ${w} ${h}`} preserveAspectRatio="xMidYMid slice" aria-hidden>
+        <line x1={6} x2={w - 6} y1={h - 12} y2={h - 12} stroke="#f1effa" strokeWidth={2} strokeLinecap="round" />
+        {values.map((v, i) => {
+          const bw = Math.max(6, barW)
+          const bh = Math.max(3, Math.round(((v - min) / range) * (h - 22)))
+          const x = startX + i * (bw + gap)
+          const y = h - bh - 14
+          const isLast = i === values.length - 1
+          const fill = isLast ? accent : base
+          return <rect key={i} x={x} y={y} width={bw} height={bh} rx={bw / 2} fill={fill} />
+        })}
+      </svg>
+    )
+  }
+
+  const renderBars = (values: number[] = [], color = '#7c3aed') => {
+    if (!values || values.length === 0) return null
+    // make a compact vertical column chart similar to reference
+    const w = 84
+    const h = 56
+    const gap = 6
+    const maxBars = Math.max(1, values.length)
+    const barW = Math.max(8, (w - gap * (maxBars - 1)) / maxBars)
+    const min = Math.min(...values)
+    const max = Math.max(...values)
+    const range = max - min || 1
+    const totalBarsWidth = values.length * barW + (values.length - 1) * gap
+    const startX = Math.max(0, (w - totalBarsWidth) / 2)
+    return (
+      <svg className="admKpiBarChart" width={w} height={h} viewBox={`0 0 ${w} ${h}`} preserveAspectRatio="xMidYMid slice" aria-hidden>
+        {/* baseline */}
+        <line x1={6} x2={w - 6} y1={h - 12} y2={h - 12} stroke="#e6eef6" strokeWidth={2} strokeLinecap="round" />
+        {values.map((v, i) => {
+          const bw = Math.max(1, barW)
+          const bh = Math.max(3, Math.round(((v - min) / range) * (h - 20)))
+          const x = startX + i * (bw + gap)
+          const y = h - bh - 14
+          return <rect key={i} x={x} y={y} width={bw} height={bh} rx={bw / 2} fill={color} />
+        })}
+      </svg>
+    )
+  }
+
+  const renderDonut = (pct = 0, color = '#10b981', size = 56) => {
+    const r = (size / 2) - 6
+    const c = 2 * Math.PI * r
+    const offset = c * (1 - Math.max(0, Math.min(1, pct / 100)))
+    return (
+      <svg className="admKpiDonut" width={size} height={size} viewBox={`0 0 ${size} ${size}`} aria-hidden>
+        <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="#edf2f7" strokeWidth={6} />
+        <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke={color} strokeWidth={6} strokeDasharray={c} strokeDashoffset={offset} strokeLinecap="round" transform={`rotate(-90 ${size / 2} ${size / 2})`} />
+        <text x="50%" y="50%" dominantBaseline="middle" textAnchor="middle" fontSize={12} fontWeight={700} fill="#111">{`${pct}%`}</text>
+      </svg>
+    )
+  }
+
+  const renderStockBlocks = (count = 0) => {
+    const total = 5
+    const filled = Math.max(0, Math.min(total, Math.ceil((count / Math.max(1, lowStockThreshold)) * total)))
+    return (
+      <div className="admKpiBlocks" aria-hidden>
+        {Array.from({ length: total }).map((_, i) => (
+          <span key={i} className={`admKpiBlock ${i < filled ? 'filled' : ''}`} />
+        ))}
+      </div>
+    )
+  }
+
   return (
     <div className="dashboardFadeIn">
       <div className="admDashWrap">
@@ -443,16 +693,36 @@ export default function DashboardPage({ onCreateProduct }: { onCreateProduct?: (
         </div>
 
         <div className="admKpiGrid">
-          {kpis.map((k) => (
-            <div key={k.key} className={`admKpiCard2 tone-${k.tone}`}>
+          {kpisWithSpark.map((k) => (
+            <div key={k.key} className={`admKpiCard2 tone-${k.tone} ${(k as any).key === 'rev' ? 'admKpiCard2--chartCenter' : ''}`}>
               <div className="admKpiTop">
                 <div className="admKpiIcon2" aria-hidden>{k.icon}</div>
                 <div className="admKpiBadge" aria-hidden>{k.badge}</div>
               </div>
               <div className="admKpiLabel2">{k.label}</div>
               <div className="admKpiValue2">{k.value}</div>
+              <div className="admKpiSparkWrap">
+                {(() => {
+                    const kt = (k as any).chartType as string
+                    // Prefer explicit colors per KPI key to match reference
+                    const keyColorMap: Record<string, string> = {
+                      rev: '#10b981',
+                      orders: '#3b82f6',
+                      products: '#10b981',
+                      newCus: '#8b5cf6',
+                      avg: '#3b82f6',
+                    }
+                    const color = keyColorMap[(k as any).key] || colorOfTone((k as any).tone)
+                    if ((k as any).key === 'rev') return renderRevenueArea((k as any).sparkline || [], color)
+                    if ((k as any).key === 'avg') return renderThinArea((k as any).sparkline || [], color)
+                    if ((k as any).key === 'newCus') return renderPurpleColumns((k as any).sparkline || [], '#d8c7ff', '#7c3aed')
+                    if (kt === 'area') return renderArea((k as any).sparkline || [], color)
+                    if (kt === 'bars') return renderBars((k as any).sparkline || [], color)
+                    if (kt === 'donut') return renderDonut((k as any).donutPct || 0, color)
+                    return renderLine((k as any).sparkline || [], color)
+                })()}
+              </div>
               <div className="admKpiSub2">{k.sub}</div>
-              
             </div>
           ))}
           <div className="admKpiCard2 tone-red">
@@ -464,6 +734,7 @@ export default function DashboardPage({ onCreateProduct }: { onCreateProduct?: (
             </div>
             <div className="admKpiLabel2">Cảnh báo tồn kho</div>
             <div className="admKpiValue2">Sắp hết hàng</div>
+            <div className="admKpiSparkWrap">{renderStockBlocks(kpi?.low_stock_variants ?? 0)}</div>
             <div className="admKpiSub2">Cần nhập thêm ngay</div>
             
           </div>

@@ -797,3 +797,115 @@ html.dark .admDashWrap .admQuickRow:nth-child(2),
 html.dark .admDashWrap .admQuickRow:nth-child(3) {
   background: rgba(255, 255, 255, .04) !important;
 }
+
+/* KPI sparkline styles */
+.admKpiSparkWrap {
+  position: absolute;
+  right: 18px;
+  bottom: 16px;
+  width: 140px;
+  height: 56px;
+  display: flex;
+  align-items: end;
+  justify-content: center;
+  pointer-events: none;
+}
+
+/* Center chart only for cards tagged with modifier */
+.admKpiCard2--chartCenter .admKpiSparkWrap {
+  left: 50%;
+  right: auto;
+  transform: translateX(-50%);
+}
+.admKpiSparkline {
+  width: 100%;
+  max-width: 140px;
+  height: 56px;
+  display: flex ;
+  opacity: 1;
+  justify-content: center;
+  align-items: center;
+}
+.admKpiSparkline.admKpiThinArea {
+  height: 44px;
+}
+.admKpiSparkline.admKpiThinArea path {
+  shape-rendering: geometricPrecision;
+
+}
+
+.admKpiCard2 {
+  padding: 30px 18px 64px 18px;
+  min-height: 140px;
+  border-radius: 10px;
+}
+.admKpiLabel2 {
+  font-size: 13px;
+  color: #374151;
+}
+.admKpiValue2 {
+  font-size: 28px;
+  font-weight: 600;
+  margin-top: 6px;
+}
+.admKpiSub2 {
+  font-size: 12px;
+  color: #6b7280;
+  margin-top: 6px;
+}
+html.dark .admKpiSparkline polyline {
+  stroke-opacity: 0.9;
+}
+
+.admKpiBarChart rect {
+  transition: opacity 0.12s ease, transform 0.12s ease;
+  rx: 3;
+}
+.admKpiBarChart line {
+  mix-blend-mode: normal;
+}
+.admKpiBarChart rect {
+  shape-rendering: geometricPrecision;
+}
+.admKpiBarChart rect:hover {
+  opacity: 0.95;
+}
+.admKpiPurpleBars rect {
+  transition: transform 0.12s ease, opacity 0.12s ease;
+}
+.admKpiPurpleBars rect:last-child {
+  filter: drop-shadow(0 6px 10px rgba(124,58,237,0.12));
+}
+.admKpiDonut {
+  display: block;
+  width: 72px;
+  height: 72px;
+}
+.admKpiBlocks {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.admKpiBlock {
+  width: 18px;
+  height: 18px;
+  border-radius: 4px;
+  background: transparent;
+  border: 2px solid #f3f4f6;
+}
+.admKpiBlock.filled {
+  background: #ef4444;
+  border-color: #ef4444;
+}
+html.dark .admKpiBlock {
+  background: rgba(255,255,255,0.02);
+  border-color: rgba(255,255,255,0.06);
+}
+html.dark .admKpiBlock.filled {
+  background: #ef4444;
+  border-color: #ef4444;
+}
+
+.admKpiSparkline.admKpiRevenue circle {
+  filter: drop-shadow(0 2px 6px rgba(16,185,129,0.12));
+}
