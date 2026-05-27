@@ -115,8 +115,9 @@ export default function AdminFlashSalePage() {
     if (!token) return
     try {
       // For simplicity, just get all products. In real app, use search/pagination
-      const res = await apiFetch<Product[]>('/api/admin/products', { token })
-      setAvailableProducts(res)
+      const res = await apiFetch<any>('/api/admin/products?per_page=100', { token })
+      const data = Array.isArray(res?.data) ? res.data : (Array.isArray(res) ? res : [])
+      setAvailableProducts(data)
     } catch (e: any) {
       console.error(e)
     }

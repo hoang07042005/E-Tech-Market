@@ -20,8 +20,9 @@ export interface AdminProductList {
   variants?: any[]
 }
 
-export const fetchAdminProducts = (token: string | null) => {
-  return apiFetch<AdminProductList[]>('/api/admin/products', { token })
+export const fetchAdminProducts = async (token: string | null) => {
+  const res = await apiFetch<any>('/api/admin/products?per_page=100', { token })
+  return (Array.isArray(res) ? res : res?.data || []) as AdminProductList[]
 }
 
 export const deleteAdminProduct = (id: number, token: string | null) => {

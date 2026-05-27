@@ -39,6 +39,8 @@ class Kernel extends HttpKernel
         ],
 
         'api' => [
+            // Add auth_token cookie support for httpOnly token sessions.
+            \App\Http\Middleware\ResolveAuthTokenCookie::class,
             // \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
             \Illuminate\Routing\Middleware\ThrottleRequests::class.':api',
             \Illuminate\Routing\Middleware\SubstituteBindings::class,

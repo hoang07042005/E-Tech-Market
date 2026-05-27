@@ -83,11 +83,13 @@ function isStaffOrAdmin(user: unknown): boolean {
 }
 
 function useCurrentUser() {
-  const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null
+  // 🔒 Token is now in httpOnly cookie, managed by browser automatically
+  // We check if user is authenticated by attempting to fetch /api/me
+  // The cookie will be sent automatically with credentials: 'include'
   return useQuery<any>({
     queryKey: ['currentUser'],
-    queryFn: () => apiFetch('/api/me', { token }),
-    enabled: !!token,
+    queryFn: () => apiFetch('/api/me'),
+    enabled: true, // Always try to fetch, backend will reject with 401 if not authenticated
     retry: false,
     staleTime: 1000 * 60 * 2,
     gcTime: 1000 * 60 * 5,
@@ -95,12 +97,9 @@ function useCurrentUser() {
 }
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
-  const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null
+  // 🔒 Token is in httpOnly cookie, not localStorage
+  // We rely on useCurrentUser() to validate authentication
   const { data: user, isLoading, isError } = useCurrentUser()
-
-  if (!token) {
-    return <Navigate to="/login" replace />
-  }
 
   if (isLoading) {
     return <PageLoader />
@@ -126,6 +125,8 @@ function AppFrame() {
   const location = useLocation()
   const navigate = useNavigate()
   const path = (location.pathname || '').toLowerCase()
+
+
 
   const headerActive = (() => {
     if (location.pathname.startsWith('/contact')) return 'Contact' as const
@@ -177,7 +178,8 @@ function AppFrame() {
     }
 
     const check = () => {
-      if (!localStorage.getItem('token')) return
+      // 🔒 Token is in httpOnly cookie, always check expiry
+      // Don't rely on localStorage which is now deprecated
       ensureAuthExpiryMigrated()
       if (isAuthSessionExpired()) {
         performAuthSessionExpiry()

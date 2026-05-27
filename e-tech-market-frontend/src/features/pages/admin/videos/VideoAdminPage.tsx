@@ -51,11 +51,12 @@ export default function VideoAdminPage() {
     try {
       const [videoData, productData, categoryData] = await Promise.all([
         fetchAdminVideos(token),
-        apiFetch<SimpleProduct[]>('/api/admin/products', { token }),
+        apiFetch<any>('/api/admin/products?per_page=100', { token }),
         fetchAdminVideoCategories(token)
       ])
       setVideos(videoData)
-      setProducts(productData || [])
+      const prodArr = Array.isArray(productData?.data) ? productData.data : (Array.isArray(productData) ? productData : [])
+      setProducts(prodArr)
       setCategories(Array.isArray(categoryData) ? categoryData : [])
     } catch (err: any) {
       setError(err.message || 'Không tải được dữ liệu.')

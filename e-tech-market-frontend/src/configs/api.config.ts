@@ -57,7 +57,8 @@ export async function apiFetch<T>(
 
   const url = `${API_BASE_URL}${effectivePath}`
 
-  if (typeof window !== 'undefined' && window.localStorage.getItem('token')) {
+  // Validate token expiry only for legacy token-based requests.
+  if (typeof window !== 'undefined' && options.token) {
     ensureAuthExpiryMigrated()
     if (isAuthSessionExpired()) {
       performAuthSessionExpiry()
@@ -65,7 +66,6 @@ export async function apiFetch<T>(
     }
   }
 
-  const token = options.token ?? null
   const isFormData =
     typeof FormData !== 'undefined' && options.body instanceof FormData
 
@@ -74,11 +74,16 @@ export async function apiFetch<T>(
     Accept: 'application/json',
     ...(isFormData ? {} : { 'Content-Type': 'application/json' }),
   }
+
+  // ⚠️ DEPRECATED: 'token' param is for backward compatibility only.
+  // New code should rely on httpOnly cookies which are sent automatically.
+  const token = options.token ?? null
   if (token) headers.Authorization = `Bearer ${token}`
 
   const res = await fetch(url, {
     ...options,
     headers,
+    credentials: 'include', // 🔒 IMPORTANT: Auto-send httpOnly cookies with every request
   })
 
   const data = await parseJsonSafe<ApiError & T>(res)

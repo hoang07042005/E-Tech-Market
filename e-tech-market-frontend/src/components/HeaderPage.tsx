@@ -34,8 +34,9 @@ function isAdminUser(user: StoredUser | null): boolean {
 
 function readStoredUser(): StoredUser | null {
   const savedUser = localStorage.getItem('user')
-  const token = localStorage.getItem('token')
-  if (!savedUser || !token) return null
+  // 🔒 Token is now in httpOnly cookie, no need to check localStorage token
+  // Just verify user data exists
+  if (!savedUser) return null
   try {
     return JSON.parse(savedUser) as StoredUser
   } catch {
@@ -132,7 +133,7 @@ export default function HeaderPage({ active = 'Home' }: { active?: NavKey }) {
   const [user, setUser] = useState<StoredUser | null>(readStoredUser)
   const [cartQty, setCartQty] = useState(() => cartCount(getCart()))
   const [searchQuery, setSearchQuery] = useState('')
-  const token = typeof window !== 'undefined' ? window.localStorage.getItem('token') : null
+  // 🔒 Token is now in httpOnly cookie, check user state instead
 
   const [darkMode, setDarkMode] = useState<boolean>(() => {
     return typeof window !== 'undefined' && localStorage.getItem('theme') === 'dark'
@@ -179,10 +180,11 @@ export default function HeaderPage({ active = 'Home' }: { active?: NavKey }) {
   const notifWrapRef = useRef<HTMLDivElement | null>(null)
 
   const loadNotifs = useCallback(async () => {
-    if (!token) return
+    if (!user) return // 🔒 Check user instead of token
     setNotifLoading(true)
     try {
-      const res = await apiFetch<{ data: Notif[]; unread: number }>(`/notifications?per_page=10&unread=1`, { token })
+      // 🔒 Token is in httpOnly cookie, no need to pass it
+      const res = await apiFetch<{ data: Notif[]; unread: number }>(`/notifications?per_page=10&unread=1`)
       setNotifRows(Array.isArray(res.data) ? res.data : [])
       setNotifUnread(Number(res.unread ?? 0) || 0)
     } catch {
@@ -190,7 +192,7 @@ export default function HeaderPage({ active = 'Home' }: { active?: NavKey }) {
     } finally {
       setNotifLoading(false)
     }
-  }, [token])
+  }, [user])
 
   useEffect(() => {
     if (!notifOpen) return
@@ -327,11 +329,8 @@ export default function HeaderPage({ active = 'Home' }: { active?: NavKey }) {
   }
 
   const handleUserClick = () => {
-    const savedUser = localStorage.getItem('user')
-    const token = localStorage.getItem('token')
-
-    if (!savedUser || !token) {
-      setUser(null)
+    // 🔒 Token is in httpOnly cookie, check user state instead
+    if (!user) {
       navigate('/login')
     } else {
       navigate('/profile')

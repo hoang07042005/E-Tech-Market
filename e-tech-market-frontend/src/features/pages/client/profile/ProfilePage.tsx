@@ -67,7 +67,6 @@ function resolveMediaUrl(maybeUrl: string | null | undefined): string | null {
 export default function ProfilePage() {
   const location = useLocation()
   const navigate = useNavigate()
-  const token = typeof window !== 'undefined' ? window.localStorage.getItem('token') : null
   const [tab, setTab] = useState<TabKey>('profile')
   const path = (location.pathname || '').toLowerCase()
   const ordersRoute = path.startsWith('/profile/orders')
@@ -122,12 +121,10 @@ export default function ProfilePage() {
   }, [me?.name, me?.username])
 
   useEffect(() => {
-    if (!token) {
-      navigate('/login')
-      return
-    }
-    fetchMe(token)
+    let revoked = false
+    fetchMe()
       .then((u) => {
+        if (revoked) return
         const next = u as MeUser
         setMe(next)
         setProfileDraft({
@@ -140,17 +137,33 @@ export default function ProfilePage() {
           ward: (next?.ward ?? '').toString(),
         })
       })
-      .catch(() => setMe(null))
+      .catch(() => {
+        if (revoked) return
+        setMe(null)
+        navigate('/login')
+      })
 
-    apiFetch<{ data: OrderRow[] }>('/orders', { token })
-      .then((res) => setOrders(res.data ?? []))
-      .catch(() => setOrders([]))
-      .finally(() => setLoading(false))
-  }, [navigate, token])
+    apiFetch<{ data: OrderRow[] }>('/orders')
+      .then((res) => {
+        if (revoked) return
+        setOrders(res.data ?? [])
+      })
+      .catch(() => {
+        if (revoked) return
+        setOrders([])
+      })
+      .finally(() => {
+        if (revoked) return
+        setLoading(false)
+      })
+
+    return () => {
+      revoked = true
+    }
+  }, [navigate])
 
   const canSave = useMemo(() => {
     if (tab !== 'profile') return false
-    if (!token) return false
     if (!me) return false
     const next = {
       name: profileDraft.name.trim(),
@@ -191,16 +204,14 @@ export default function ProfilePage() {
     profileDraft.province,
     profileDraft.ward,
     tab,
-    token,
   ])
 
   async function saveProfile() {
-    if (!token) return
+    if (!me) return
     setSaveStatus('saving')
     setSaveError(null)
     try {
       const updated = await apiFetch<MeUser>('/me', {
-        token,
         method: 'PATCH',
         body: JSON.stringify({
           name: profileDraft.name.trim(),
@@ -234,14 +245,12 @@ export default function ProfilePage() {
   }
 
   async function onPickAvatar(file: File) {
-    if (!token) return
     setAvatarBusy(true)
     setSaveError(null)
     try {
       const fd = new FormData()
       fd.append('file', file)
       const updated = await apiFetch<MeUser>('/me/avatar', {
-        token,
         method: 'POST',
         body: fd,
       })
@@ -278,17 +287,12 @@ export default function ProfilePage() {
   // }, [me?.id])
 
   async function logout() {
-    if (!token) {
-      navigate('/login')
-      return
-    }
     try {
-      await apiLogout(token)
+      await apiLogout()
     } catch {
       // ignore
     }
     window.localStorage.removeItem('user')
-    window.localStorage.removeItem('token')
     clearAuthSessionExpiry()
     window.dispatchEvent(new Event('auth-change'))
     navigate('/login')

@@ -199,7 +199,7 @@ class ProductsController extends Controller
             ->withAvg([
                 'reviews as avg_rating' => fn ($q) => $q->where('status', 'approved'),
             ], 'rating')
-            ->orderBy('price', 'desc') // Suggesting slightly better/alternative products
+            ->orderBy('reviews_count', 'desc') // Order by popularity (review count)
             ->limit(10)
             ->get();
 

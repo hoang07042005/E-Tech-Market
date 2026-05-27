@@ -17,7 +17,8 @@ export type RegisterPayload = {
 }
 
 export type AuthResponse = {
-  token: string
+  // 🔒 Token is primarily in httpOnly cookie, but also returned for legacy fallback checks
+  token?: string
   user: any
 }
 
@@ -35,14 +36,13 @@ export async function register(payload: RegisterPayload): Promise<AuthResponse> 
   })
 }
 
-export async function me(token: string): Promise<any> {
-  return apiFetch<any>('/api/me', { method: 'GET', token })
+export async function me(): Promise<any> {
+  return apiFetch<any>('/api/me', { method: 'GET' })
 }
 
-export async function logout(token: string): Promise<void> {
+export async function logout(): Promise<void> {
   await apiFetch<any>('/api/auth/logout', {
     method: 'POST',
-    token,
   })
 }
 

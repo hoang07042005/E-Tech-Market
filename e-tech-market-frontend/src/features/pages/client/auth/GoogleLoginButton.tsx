@@ -5,7 +5,7 @@ import { setAuthSessionExpiry } from '@/features/store/auth.store'
 import { useState } from 'react'
 
 interface GoogleAuthResponse {
-  token: string
+  // 🔒 Token is no longer returned to frontend - it's stored in httpOnly cookie by backend
   user: Record<string, unknown>
 }
 
@@ -24,7 +24,7 @@ export function GoogleLoginButton() {
           body: JSON.stringify({ access_token: tokenResponse.access_token }),
         })
 
-        localStorage.setItem('token', res.token)
+        // 🔒 Token is now stored in httpOnly cookie by backend, no need for localStorage
         localStorage.setItem('user', JSON.stringify(res.user))
         setAuthSessionExpiry()
         window.dispatchEvent(new Event('auth-change'))

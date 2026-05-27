@@ -1,14 +1,8 @@
 import { useEffect, useMemo, useState, type FormEvent } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
-import { login, me as fetchMe, register } from '@/features/services/auth.service'
+import { login, register } from '@/features/services/auth.service'
 import { GoogleLoginButton } from './GoogleLoginButton'
-import {
-  clearAuthSessionExpiry,
-  ensureAuthExpiryMigrated,
-  isAuthSessionExpired,
-  performAuthSessionExpiry,
-  setAuthSessionExpiry,
-} from '@/features/store/auth.store'
+import { setAuthSessionExpiry } from '@/features/store/auth.store'
 
 import '@/styles/pages/AuthPage.css'
 import AuthMarketingColumn from './AuthMarketingColumn'
@@ -25,17 +19,13 @@ export default function AuthPage({
   onAuthed,
 }: {
   initialMode?: Mode
-  onAuthed?: (token: string) => void
+  onAuthed?: (user: MeUser) => void
 }) {
   const navigate = useNavigate()
   const [searchParams, setSearchParams] = useSearchParams()
   const mode = initialMode
   const sessionExpired = searchParams.get('session') === 'expired'
 
-  const [token, setToken] = useState<string | null>(() => {
-    if (typeof window === 'undefined') return null
-    return window.localStorage.getItem('token')
-  })
   const [user, setUser] = useState<MeUser | null>(null)
   const [error, setError] = useState<string | null>(null)
 
@@ -83,27 +73,9 @@ export default function AuthPage({
   }, [])
 
   useEffect(() => {
-    if (!token) return
-    ensureAuthExpiryMigrated()
-    if (isAuthSessionExpired()) {
-      performAuthSessionExpiry()
-      window.location.replace('/login?session=expired')
-      return
-    }
-    ; (async () => {
-      try {
-        const me = await fetchMe(token)
-        setUser(me as MeUser)
-        navigate('/')
-      } catch {
-        window.localStorage.removeItem('token')
-        window.localStorage.removeItem('user')
-        clearAuthSessionExpiry()
-        setToken(null)
-        setUser(null)
-      }
-    })()
-  }, [token, navigate])
+    // No token in localStorage for httpOnly cookie auth.
+    // If the user has a valid session cookie, App.tsx will resolve /api/me.
+  }, [])
 
   async function onSubmit(e: FormEvent) {
     e.preventDefault()
@@ -112,13 +84,13 @@ export default function AuthPage({
     try {
       if (mode === 'login') {
         const res = await login(loginForm)
-        localStorage.setItem('token', res.token)
+        // 🔒 Token is stored in httpOnly cookie, but we also save it for legacy frontend checks
+        if (res.token) window.localStorage.setItem('token', res.token)
         localStorage.setItem('user', JSON.stringify(res.user))
         setAuthSessionExpiry()
         window.dispatchEvent(new Event('auth-change'))
-        setToken(res.token)
         setUser(res.user as MeUser)
-        onAuthed?.(res.token)
+        onAuthed?.(res.user as MeUser)
         navigate('/')
         return
       }
@@ -139,13 +111,13 @@ export default function AuthPage({
         phone: registerForm.phone,
       })
 
-      localStorage.setItem('token', res.token)
+      // 🔒 Token is stored in httpOnly cookie, but we also save it for legacy frontend checks
+      if (res.token) window.localStorage.setItem('token', res.token)
       localStorage.setItem('user', JSON.stringify(res.user))
       setAuthSessionExpiry()
       window.dispatchEvent(new Event('auth-change'))
-      setToken(res.token)
       setUser(res.user as MeUser)
-      onAuthed?.(res.token)
+      onAuthed?.(res.user as MeUser)
       navigate('/')
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : null

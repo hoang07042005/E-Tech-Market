@@ -62,9 +62,10 @@ export default function ProductNewsPage() {
     setLoadingProducts(true)
     setError(null)
     try {
-      const data = await apiFetch<ProductLite[]>('/api/admin/products', { token })
-      setProducts(data)
-      if (!selectedProductId && data.length > 0) setSelectedProductId(data[0].id)
+      const res = await apiFetch<any>('/api/admin/products?per_page=100', { token })
+      const arr = Array.isArray(res?.data) ? res.data : (Array.isArray(res) ? res : [])
+      setProducts(arr)
+      if (!selectedProductId && arr.length > 0) setSelectedProductId(arr[0].id)
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : 'Không tải được danh sách sản phẩm.')
     } finally {

@@ -240,8 +240,9 @@ export default function AdminPage() {
       setQLoading(true)
       ;(async () => {
         try {
-          const data = await apiFetch<unknown[]>(`/api/admin/products`, { token })
-          const rows: QuickProduct[] = (Array.isArray(data) ? data : []).map((p) => {
+          const res = await apiFetch<any>(`/api/admin/products`, { token })
+          const data = Array.isArray(res?.data) ? res.data : (Array.isArray(res) ? res : [])
+          const rows: QuickProduct[] = data.map((p: any) => {
             const obj = (p ?? {}) as Record<string, unknown>
             const cat = (obj.category ?? {}) as Record<string, unknown>
             return {

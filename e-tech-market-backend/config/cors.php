@@ -15,6 +15,11 @@ $allowedOrigins = $allowedOrigins
         // Vite CLI defaults
         'http://localhost:5173',
         'http://127.0.0.1:5173',
+        // Common frontend dev ports
+        'http://localhost:3000',
+        'http://127.0.0.1:3000',
+        'http://localhost:4200',
+        'http://127.0.0.1:4200',
     ])
     ->filter(fn ($origin) => is_string($origin) && $origin !== '')
     ->unique()
@@ -54,7 +59,10 @@ return [
 
     'allowed_origins' => $allowedOrigins,
 
-    'allowed_origins_patterns' => [],
+    'allowed_origins_patterns' => [
+        '/^https?:\\/\\/localhost(:[0-9]+)?$/',
+        '/^https?:\\/\\/127\\.0\\.0\\.1(:[0-9]+)?$/',
+    ],
 
     'allowed_headers' => ['*'],
 

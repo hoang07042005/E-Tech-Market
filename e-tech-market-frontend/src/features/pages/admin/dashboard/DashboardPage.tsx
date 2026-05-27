@@ -239,13 +239,14 @@ export default function DashboardPage({ onCreateProduct }: { onCreateProduct?: (
       setDashLoading(true)
       setDashError(null)
       try {
-        const [res, products] = await Promise.all([
+        const [res, productsRes] = await Promise.all([
           fetchDashboardStats<DashStats>(analyticsRange, token, customStartDate, customEndDate, resolution),
-          apiFetch<unknown[]>('/api/admin/products', { token }),
+          apiFetch<any>('/api/admin/products?per_page=100', { token }),
         ])
         if (cancelled) return
         setDash(res)
 
+        const products = Array.isArray(productsRes?.data) ? productsRes.data : (Array.isArray(productsRes) ? productsRes : [])
         // Low stock list for table (best-effort, depends on API fields)
         const threshold = res?.kpi?.low_stock_threshold ?? 10
         setLowStockThreshold(threshold)

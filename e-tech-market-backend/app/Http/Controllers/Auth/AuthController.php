@@ -22,6 +22,41 @@ use App\Http\Resources\UserResource;
 
 class AuthController extends Controller
 {
+    /**
+     * Set authentication token as httpOnly cookie (more secure than localStorage).
+     */
+    private function setAuthCookie(string $token, Carbon $expiresAt): \Symfony\Component\HttpFoundation\Cookie
+    {
+        // Calculate minutes until expiration
+        $minutes = (int) now()->diffInMinutes($expiresAt);
+
+        // Decide secure / sameSite based on environment or APP_URL scheme
+        $appEnv = env('APP_ENV', 'production');
+        $appUrl = env('APP_URL', '');
+        $isHttps = (strpos($appUrl, 'https://') === 0);
+
+        if ($appEnv === 'production' || $isHttps) {
+            $secure = true;
+            $sameSite = 'none';
+        } else {
+            // Local development (HTTP): use lax to avoid SameSite=None+Secure issues
+            $secure = false;
+            $sameSite = 'lax';
+        }
+
+        return cookie(
+            'auth_token',   // name
+            $token,         // value
+            $minutes,       // minutes until expiration
+            '/',            // path
+            null,           // domain
+            $secure,        // secure
+            true,           // httpOnly
+            false,          // raw
+            $sameSite       // sameSite
+        );
+    }
+
     public function register(RegisterRequest $request): JsonResponse
     {
         $data = $request->validated();
@@ -51,9 +86,9 @@ class AuthController extends Controller
 
         $user->load('roles');
         return response()->json([
-            'token' => $token,
             'user' => new UserResource($user),
-        ]);
+            'token' => $token,
+        ])->cookie($this->setAuthCookie($token, $expiresAt));
     }
 
     public function login(LoginRequest $request): JsonResponse
@@ -71,9 +106,9 @@ class AuthController extends Controller
         $token = $user->createToken('auth_token', ['*'], $expiresAt)->plainTextToken;
         $user->load('roles');
         return response()->json([
-            'token' => $token,
             'user' => new UserResource($user),
-        ]);
+            'token' => $token,
+        ])->cookie($this->setAuthCookie($token, $expiresAt));
     }
 
     public function me(Request $request): JsonResponse
@@ -195,7 +230,7 @@ class AuthController extends Controller
     {
         $request->user()->currentAccessToken()?->delete();
 
-        return response()->json(['ok' => true]);
+        return response()->json(['ok' => true])->withoutCookie('auth_token');
     }
 
     public function googleLogin(Request $request): JsonResponse
@@ -273,9 +308,9 @@ class AuthController extends Controller
         $user->load('roles');
 
         return response()->json([
-            'token' => $token,
             'user' => new UserResource($user),
-        ]);
+            'token' => $token,
+        ])->cookie($this->setAuthCookie($token, $expiresAt));
     }
 }
 
