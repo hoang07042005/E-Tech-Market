@@ -64,6 +64,9 @@ jobs:
           php -r "file_exists('.env') || copy('.env.example', '.env');"
           php artisan key:generate --force
 
+      - name: Run database migrations
+        run: php artisan migrate --force
+
       - name: Run backend tests
         run: vendor/bin/phpunit --colors=never
 
