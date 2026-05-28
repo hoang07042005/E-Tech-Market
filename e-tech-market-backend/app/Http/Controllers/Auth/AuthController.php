@@ -30,9 +30,9 @@ class AuthController extends Controller
         // Calculate minutes until expiration
         $minutes = (int) now()->diffInMinutes($expiresAt);
 
-        // Decide secure / sameSite based on environment or APP_URL scheme
-        $appEnv = env('APP_ENV', 'production');
-        $appUrl = env('APP_URL', '');
+        // Decide secure / sameSite based on environment or app URL scheme
+        $appEnv = config('app.env', 'production');
+        $appUrl = config('app.url', '');
         $isHttps = (strpos($appUrl, 'https://') === 0);
 
         if ($appEnv === 'production' || $isHttps) {

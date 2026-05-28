@@ -27,7 +27,7 @@ services:
       - DB_PORT=5432
       - DB_DATABASE=etech
       - DB_USERNAME=postgres
-      - DB_PASSWORD=postgres
+      - DB_PASSWORD=${POSTGRES_PASSWORD}
       - QUEUE_CONNECTION=database
       - REDIS_HOST=redis
       - REDIS_PORT=6379
@@ -37,6 +37,12 @@ services:
     depends_on:
       - db
       - redis
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8000/api/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 10s
 
   queue_worker:
     build:
@@ -52,7 +58,7 @@ services:
       - DB_PORT=5432
       - DB_DATABASE=etech
       - DB_USERNAME=postgres
-      - DB_PASSWORD=postgres
+      - DB_PASSWORD=${POSTGRES_PASSWORD}
       - QUEUE_CONNECTION=database
       - REDIS_HOST=redis
       - REDIS_PORT=6379
@@ -68,7 +74,7 @@ services:
     environment:
       - POSTGRES_DB=etech
       - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
     ports:
       - "5432:5432"
     volumes:

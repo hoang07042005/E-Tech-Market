@@ -1,0 +1,87 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  pull_request:
+    branches:
+      - main
+      - master
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_DB: etech
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5433:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d etech"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+      redis:
+        image: redis:alpine
+        ports:
+          - 6379:6379
+    defaults:
+      run:
+        working-directory: e-tech-market-backend
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v3
+        with:
+          php-version: 8.1
+          extensions: redis, pdo_pgsql, gd, bcmath
+          ini-values: post_max_size=20M, upload_max_filesize=20M
+
+      - name: Install Composer dependencies
+        run: composer install --prefer-dist --no-progress --no-suggest --no-interaction
+
+      - name: Prepare backend environment
+        run: |
+          cp .env.example .env
+          php -r "file_exists('.env') || copy('.env.example', '.env');"
+          php artisan key:generate --force
+        env:
+          DB_CONNECTION: pgsql
+          DB_HOST: 127.0.0.1
+          DB_PORT: 5433
+          DB_DATABASE: etech
+          DB_USERNAME: postgres
+          DB_PASSWORD: postgres
+          CACHE_DRIVER=redis
+          SESSION_DRIVER=redis
+          REDIS_HOST=127.0.0.1
+          REDIS_PORT=6379
+
+      - name: Run backend tests
+        run: vendor/bin/phpunit --colors=never
+
+  frontend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: e-tech-market-frontend
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: 20
+
+      - name: Install frontend dependencies
+        run: npm ci
+
+      - name: Run frontend tests
+        run: npm test -- --run

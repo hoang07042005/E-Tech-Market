@@ -247,6 +247,42 @@ export default function ProductDetailPage() {
     return base.filter(r => Math.round(r.rating) === 1)
   }, [reviewFilter, visibleReviews])
 
+  const productJsonLd = useMemo(() => {
+    if (!product) return null
+
+    const priceValue = selectedVariant
+      ? selectedVariant.effective_price
+      : Number(String(product.price).replace(/[^0-9.]/g, ''))
+
+    const schema: Record<string, unknown> = {
+      '@context': 'https://schema.org',
+      '@type': 'Product',
+      name: product.name,
+      description: product.short_description || product.description || undefined,
+      sku: product.sku || undefined,
+      image: product.main_image_url ? [resolveImageUrl(product.main_image_url)] : undefined,
+      brand: product.brand ? { '@type': 'Brand', name: product.brand } : undefined,
+      offers: {
+        '@type': 'Offer',
+        priceCurrency: 'VND',
+        price: Number.isFinite(priceValue) ? priceValue : 0,
+        availability: product.stock_quantity > 0 ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
+        url: window.location.href,
+      },
+    }
+
+    if (reviewStats.total > 0) {
+      schema.aggregateRating = {
+        '@type': 'AggregateRating',
+        ratingValue: Number(reviewStats.avg.toFixed(1)),
+        reviewCount: reviewStats.total,
+        bestRating: 5,
+      }
+    }
+
+    return schema
+  }, [product, reviewStats, selectedVariant])
+
   const activeFlashSale = useMemo(() => {
     if (!product?.flash_sale_items?.length) return null
     // Assuming only one active flash sale per product for simplicity
@@ -523,6 +559,11 @@ export default function ProductDetailPage() {
       <Helmet>
         <title>{product.name} | E-Tech Market</title>
         <meta name="description" content={product.short_description || product.description || `Mua ${product.name} giá rẻ tại E-Tech Market.`} />
+        {productJsonLd ? (
+          <script type="application/ld+json">
+            {JSON.stringify(productJsonLd)}
+          </script>
+        ) : null}
       </Helmet>
       <div className="pdpPage">
         <div className="ppContainer">

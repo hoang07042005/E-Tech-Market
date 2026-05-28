@@ -12,6 +12,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Str;
 use App\Notifications\OrderConfirmationNotification;
 use Illuminate\Support\Facades\Notification;
 
@@ -134,10 +135,8 @@ class PaymentsController extends Controller
 
     public function createVnpay(Order $order, Request $request): JsonResponse
     {
+        $this->authorize('view', $order);
         $user = $request->user();
-        if ((int) $order->user_id !== (int) $user->id) {
-            return response()->json(['message' => 'Forbidden'], 403);
-        }
 
         $payment = Payment::query()->firstOrCreate(
             ['order_id' => $order->id],
@@ -214,7 +213,7 @@ class PaymentsController extends Controller
     public function vnpayReturn(Request $request): RedirectResponse
     {
         $result = $this->handleVnpayCallback($request);
-        $frontendUrl = rtrim((string) env('FRONTEND_URL', ''), '/');
+        $frontendUrl = rtrim((string) config('app.frontend_url', ''), '/');
 
         if ($frontendUrl === '') {
             // fallback: just redirect to home
@@ -345,10 +344,8 @@ class PaymentsController extends Controller
 
     public function createMomo(Order $order, Request $request): JsonResponse
     {
+        $this->authorize('view', $order);
         $user = $request->user();
-        if ((int) $order->user_id !== (int) $user->id) {
-            return response()->json(['message' => 'Forbidden'], 403);
-        }
 
         $validated = $request->validate([
             'request_type' => ['nullable', 'string', 'max:50'], // captureWallet | payWithATM | payWithMethod
@@ -479,7 +476,7 @@ class PaymentsController extends Controller
     public function momoReturn(Request $request): RedirectResponse
     {
         // MoMo typically redirects with query params; we simply forward to frontend.
-        $frontendUrl = rtrim((string) env('FRONTEND_URL', ''), '/');
+        $frontendUrl = rtrim((string) config('app.frontend_url', ''), '/');
         if ($frontendUrl === '') {
             return redirect('/');
         }

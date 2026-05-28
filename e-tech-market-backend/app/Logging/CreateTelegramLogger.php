@@ -8,8 +8,8 @@ class CreateTelegramLogger
 {
     public function __invoke(array $config): Logger
     {
-        $botToken = (string) ($config['bot_token'] ?? env('TELEGRAM_BOT_TOKEN', ''));
-        $chatId = (string) ($config['chat_id'] ?? env('TELEGRAM_CHAT_ID', ''));
+        $botToken = (string) ($config['bot_token'] ?? '');
+        $chatId = (string) ($config['chat_id'] ?? '');
         $level = $config['level'] ?? 'error';
 
         $logger = new Logger('telegram');

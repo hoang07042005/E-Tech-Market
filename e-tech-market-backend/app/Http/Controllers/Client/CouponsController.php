@@ -14,7 +14,9 @@ class CouponsController extends Controller
         $userId = $request->user('sanctum') ? $request->user('sanctum')->id : null;
         $excludeSaved = $request->boolean('exclude_saved');
         $now = \Illuminate\Support\Carbon::now();
-        $coupons = Coupon::where('is_active', true)
+        $coupons = Coupon::with(['usages', 'savedByUsers'])
+            ->withCount('usages')
+            ->where('is_active', true)
             ->where(function ($query) use ($now) {
                 $query->whereNull('start_at')->orWhere('start_at', '<=', $now);
             })
@@ -25,15 +27,15 @@ class CouponsController extends Controller
             ->get();
 
         $filtered = $coupons->filter(function($coupon) use ($userId, $excludeSaved) {
-            if ($userId && $excludeSaved && $coupon->savedByUsers()->where('user_id', $userId)->exists()) {
+            if ($userId && $excludeSaved && $coupon->savedByUsers->where('id', $userId)->isNotEmpty()) {
                 return false;
             }
             if ($userId && $coupon->max_uses_per_user) {
-                if ($coupon->usages()->where('user_id', $userId)->count() >= $coupon->max_uses_per_user) {
+                if ($coupon->usages->where('user_id', $userId)->count() >= $coupon->max_uses_per_user) {
                     return false;
                 }
             }
-            if ($coupon->max_uses && $coupon->usages()->count() >= $coupon->max_uses) {
+            if ($coupon->max_uses && $coupon->usages_count >= $coupon->max_uses) {
                 return false;
             }
             return true;
@@ -47,6 +49,8 @@ class CouponsController extends Controller
         $user = $request->user();
         $now = \Illuminate\Support\Carbon::now();
         $coupons = $user->savedCoupons()
+            ->with(['usages'])
+            ->withCount('usages')
             ->where('is_active', true)
             ->where(function ($query) use ($now) {
                 $query->whereNull('start_at')->orWhere('start_at', '<=', $now);
@@ -58,7 +62,7 @@ class CouponsController extends Controller
             ->get();
 
         $filtered = $coupons->filter(function($coupon) {
-            if ($coupon->max_uses && $coupon->usages()->count() >= $coupon->max_uses) {
+            if ($coupon->max_uses && $coupon->usages_count >= $coupon->max_uses) {
                 return false;
             }
             return true;
@@ -95,7 +99,10 @@ class CouponsController extends Controller
         $code = $request->input('code');
         $orderAmount = $request->input('order_amount');
 
-        $coupon = Coupon::where('code', $code)->first();
+        $coupon = Coupon::with(['usages'])
+            ->withCount('usages')
+            ->where('code', $code)
+            ->first();
 
         if (!$coupon) {
             return response()->json(['message' => 'Mã giảm giá không tồn tại.'], 404);
@@ -109,13 +116,13 @@ class CouponsController extends Controller
             return response()->json(['message' => "Đơn hàng tối thiểu để áp dụng mã này là " . number_format($coupon->min_order_amount) . "đ"], 400);
         }
 
-        if ($coupon->max_uses && $coupon->usages()->count() >= $coupon->max_uses) {
+        if ($coupon->max_uses && $coupon->usages_count >= $coupon->max_uses) {
             return response()->json(['message' => 'Mã giảm giá đã hết lượt sử dụng.'], 400);
         }
 
         $userId = $request->user('sanctum') ? $request->user('sanctum')->id : null;
         if ($userId && $coupon->max_uses_per_user) {
-            $userUses = $coupon->usages()->where('user_id', $userId)->count();
+            $userUses = $coupon->usages->where('user_id', $userId)->count();
             if ($userUses >= $coupon->max_uses_per_user) {
                 return response()->json(['message' => 'Bạn đã hết lượt sử dụng mã này.'], 400);
             }

@@ -7,6 +7,14 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
+/**
+ * @property int $id
+ * @property string|null $order_code
+ * @property int|null $user_id
+ * @property string|null $status
+ * @property string|null $payment_status
+ * @property float|null $total_amount
+ */
 class Order extends Model
 {
     protected $fillable = [

@@ -5,32 +5,18 @@ namespace App\Http\Controllers\Client;
 use App\Http\Controllers\Controller;
 use App\Models\Cart;
 use App\Models\CartItem;
-use App\Models\Coupon;
-use App\Models\CouponUsage;
-use App\Models\FlashSaleItem;
+use App\Models\Notification;
 use App\Models\Order;
-use App\Models\OrderItem;
-use App\Models\Payment;
+use App\Models\OrderReturnRequest;
+use App\Models\OrderStatusHistory;
 use App\Models\Product;
 use App\Models\ProductVariant;
-use App\Models\AdminSetting;
-use App\Models\ShippingMethod;
-use App\Models\ShippingZone;
-use App\Models\OrderStatusHistory;
-use App\Models\OrderReturnRequest;
-use App\Notifications\OrderConfirmationNotification;
-use Illuminate\Support\Facades\Notification as NotificationFacade;
-use App\Models\Notification;
 use App\Models\User;
 use App\Services\OrderService;
 use App\Support\ProductInventorySync;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use App\Http\Requests\Client\StoreOrderRequest;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Validation\ValidationException;
-use Illuminate\Support\Str;
 
 class OrdersController extends Controller
 {
@@ -50,10 +36,7 @@ class OrdersController extends Controller
 
     public function show(Order $order, Request $request): JsonResponse
     {
-        $user = $request->user();
-        if ((int) $order->user_id !== (int) $user->id) {
-            return response()->json(['message' => 'Forbidden'], 403);
-        }
+        $this->authorize('view', $order);
 
         $order->load(['items.product', 'payment', 'returnRequest', 'statusHistories', 'statusHistories.changedBy']);
 
@@ -93,10 +76,8 @@ class OrdersController extends Controller
 
     public function cancel(Order $order, Request $request): JsonResponse
     {
+        $this->authorize('update', $order);
         $user = $request->user();
-        if ((int) $order->user_id !== (int) $user->id) {
-            return response()->json(['message' => 'Forbidden'], 403);
-        }
 
         $cur = strtolower((string) ($order->status ?? ''));
         if (!in_array($cur, ['pending', 'processing'], true)) {
@@ -140,10 +121,8 @@ class OrdersController extends Controller
 
     public function confirmReceived(Order $order, Request $request): JsonResponse
     {
+        $this->authorize('update', $order);
         $user = $request->user();
-        if ((int) $order->user_id !== (int) $user->id) {
-            return response()->json(['message' => 'Forbidden'], 403);
-        }
 
         $cur = strtolower((string) ($order->status ?? ''));
         if ($cur !== 'delivered') {
@@ -166,10 +145,8 @@ class OrdersController extends Controller
 
     public function confirmPayment(Order $order, Request $request): JsonResponse
     {
+        $this->authorize('update', $order);
         $user = $request->user();
-        if ((int) $order->user_id !== (int) $user->id) {
-            return response()->json(['message' => 'Forbidden'], 403);
-        }
 
         $order->loadMissing(['payment']);
         if (!$order->payment || strtolower((string) $order->payment->method) !== 'cod') {
@@ -192,10 +169,8 @@ class OrdersController extends Controller
 
     public function requestReturn(Order $order, Request $request): JsonResponse
     {
+        $this->authorize('update', $order);
         $user = $request->user();
-        if ((int) $order->user_id !== (int) $user->id) {
-            return response()->json(['message' => 'Forbidden'], 403);
-        }
 
         $cur = strtolower((string) ($order->status ?? ''));
         if ($cur !== 'delivered') {
@@ -267,10 +242,8 @@ class OrdersController extends Controller
 
     public function confirmRefundReceived(Order $order, Request $request): JsonResponse
     {
+        $this->authorize('update', $order);
         $user = $request->user();
-        if ((int) $order->user_id !== (int) $user->id) {
-            return response()->json(['message' => 'Forbidden'], 403);
-        }
 
         $order->loadMissing(['returnRequest']);
         if (!$order->returnRequest) {

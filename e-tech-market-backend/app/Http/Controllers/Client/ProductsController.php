@@ -101,13 +101,18 @@ class ProductsController extends Controller
     private function getAllCategoryIds($categoryId): array
     {
         $ids = [$categoryId];
-        $childrenIds = Category::where('parent_id', $categoryId)->pluck('id')->toArray();
-        
-        foreach ($childrenIds as $childId) {
-            $ids = array_merge($ids, $this->getAllCategoryIds($childId));
+        $queue = [$categoryId];
+
+        while (!empty($queue)) {
+            $childrenIds = Category::whereIn('parent_id', $queue)->pluck('id')->all();
+            $queue = array_values(array_diff($childrenIds, $ids));
+            if (empty($queue)) {
+                break;
+            }
+            $ids = array_merge($ids, $queue);
         }
-        
-        return array_unique($ids);
+
+        return array_values(array_unique($ids));
     }
 
     public function show(Product $product, Request $request): JsonResponse

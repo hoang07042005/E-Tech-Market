@@ -35,7 +35,8 @@ use App\Http\Controllers\Admin\ShippingZonesController as AdminShippingZonesCont
 use App\Http\Controllers\Admin\ShippingMethodsController as AdminShippingMethodsController;
 use App\Http\Controllers\Admin\BannerController as AdminBannerController;
 use App\Http\Controllers\Client\BannerController as ClientBannerController;
-use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Redis;
 
 /*
 |--------------------------------------------------------------------------
@@ -62,6 +63,35 @@ Route::middleware('throttle:5,1')->group(function () {
 
 Route::middleware('throttle:10,1')->group(function () {
     Route::post('/contact/messages', [ContactMessagesController::class, 'store']);
+});
+
+Route::get('/health', function () {
+    $services = [
+        'database' => 'unknown',
+        'redis' => 'unknown',
+    ];
+
+    try {
+        DB::connection()->getPdo();
+        $services['database'] = 'ok';
+    } catch (\Throwable $exception) {
+        $services['database'] = 'error';
+    }
+
+    try {
+        $pong = Redis::connection()->ping();
+        $services['redis'] = $pong === 'PONG' || $pong === '+PONG' ? 'ok' : 'error';
+    } catch (\Throwable $exception) {
+        $services['redis'] = 'error';
+    }
+
+    $ok = $services['database'] === 'ok' && $services['redis'] === 'ok';
+
+    return response()->json([
+        'status' => $ok ? 'ok' : 'error',
+        'services' => $services,
+        'timestamp' => now()->toISOString(),
+    ], $ok ? 200 : 503);
 });
 
 Route::middleware('auth:sanctum')->group(function () {
