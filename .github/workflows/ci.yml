@@ -59,10 +59,10 @@ jobs:
           DB_DATABASE: etech
           DB_USERNAME: postgres
           DB_PASSWORD: postgres
-          CACHE_DRIVER=redis
-          SESSION_DRIVER=redis
-          REDIS_HOST=127.0.0.1
-          REDIS_PORT=6379
+          CACHE_DRIVER: redis
+          SESSION_DRIVER: redis
+          REDIS_HOST: 127.0.0.1
+          REDIS_PORT: 6379
 
       - name: Run backend tests
         run: vendor/bin/phpunit --colors=never
