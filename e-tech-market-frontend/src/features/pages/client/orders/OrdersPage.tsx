@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import '@/styles/pages/OrdersPage.css'
-import { apiFetch } from '@/configs/api.config'
+import { apiFetch, API_BASE_URL } from '@/configs/api.config'
 import Skeleton from '@/components/Skeleton'
 
 type OrderListRow = {
@@ -11,8 +11,8 @@ type OrderListRow = {
   total_amount?: number | string
   status?: string | null
   items?: Array<
-    | { product_name_snapshot?: string | null }
-    | { product?: { name?: string | null } | null }
+    | { product_name_snapshot?: string | null; main_image_url?: string | null }
+    | { product?: { name?: string | null; main_image_url?: string | null } | null }
     | null
   >
 }
@@ -34,7 +34,6 @@ function fmtDateVi(iso?: string | null) {
   const t = Date.parse(iso)
   if (!Number.isFinite(t)) return '—'
   const d = new Date(t)
-  // "24 Tháng 10, 2024"
   const m = d.getMonth() + 1
   return `${d.getDate()} Tháng ${m}, ${d.getFullYear()}`
 }
@@ -61,6 +60,17 @@ export default function OrdersPage() {
   const [error, setError] = useState<string | null>(null)
   const [res, setRes] = useState<OrdersIndexResponse | null>(null)
   const [page, setPage] = useState(1)
+  // filters
+  const [q, setQ] = useState('')
+  const [statusFilter, setStatusFilter] = useState<string>('all')
+  const [timeRange, setTimeRange] = useState<string>('all')
+  const [customFrom, setCustomFrom] = useState<string | null>(null)
+  const [customTo, setCustomTo] = useState<string | null>(null)
+  // current time captured after mount to avoid impure calls during render
+  const [now, setNow] = useState<number | null>(null)
+  useEffect(() => {
+    setNow(Date.now())
+  }, [])
 
   const pager = useMemo(() => {
     const last = res?.last_page ?? 1
@@ -96,6 +106,52 @@ export default function OrdersPage() {
   }, [navigate, page, token])
 
   const rows = useMemo(() => res?.data ?? [], [res?.data])
+  const filteredRows = useMemo(() => {
+    const current = now
+    return rows.filter((r) => {
+      // search
+      if (q.trim()) {
+        const hay = ((r.order_code || '') + ' ' + ((r.items || [])
+          .map((it) => {
+            if (!it) return ''
+            if ('product_name_snapshot' in it) return it.product_name_snapshot ?? ''
+            if ('product' in it) return it.product?.name ?? ''
+            return ''
+          }).join(' '))).toLowerCase()
+        if (!hay.includes(q.trim().toLowerCase())) return false
+      }
+
+      // status filter
+      if (statusFilter !== 'all') {
+        if (((r.status || '') as string).toLowerCase() !== statusFilter) return false
+      }
+
+      // time filter
+      if (timeRange !== 'all') {
+        if (timeRange === 'custom') {
+          if (customFrom && customTo && r.created_at) {
+            const t = Date.parse(r.created_at)
+            const f = Date.parse(customFrom)
+            const to = Date.parse(customTo)
+            if (!Number.isFinite(t) || t < f || t > to) return false
+          }
+        } else {
+          // days option
+          const days = Number.parseInt(timeRange, 10)
+          if (!Number.isFinite(days)) return true
+          if (!r.created_at) return false
+          const t = Date.parse(r.created_at)
+          if (!Number.isFinite(t)) return false
+          // if current time not set yet (pre-mount), skip time-based filtering
+          if (current == null) return true
+          const diffDays = (current - t) / (1000 * 60 * 60 * 24)
+          if (diffDays > days) return false
+        }
+      }
+
+      return true
+    })
+  }, [rows, q, statusFilter, timeRange, customFrom, customTo])
   const inProfile = (location.pathname || '').toLowerCase().startsWith('/profile/')
   const detailHref = (id: number) => (inProfile ? `/profile/orders/${id}` : `/orders/${id}`)
   const backHref = inProfile ? '/profile' : '/profile'
@@ -109,6 +165,18 @@ export default function OrdersPage() {
     }, 0)
     return { totalOrders, shippingCount, totalSpend }
   }, [res?.total, rows])
+
+  function resolveMediaUrl(maybeUrl?: string | null) {
+    if (!maybeUrl) return null
+    const s = String(maybeUrl).trim()
+    if (!s) return null
+    if (/^https?:\/\//i.test(s)) return s
+    try {
+      return new URL(s, API_BASE_URL || window.location.origin).toString()
+    } catch {
+      return s
+    }
+  }
 
   return (
     <div className={inProfile ? 'odhWrap' : 'odPage'}>
@@ -198,83 +266,173 @@ export default function OrdersPage() {
                 </div>
               </div>
 
-              <div className="odhTableCard">
-                <table className="odhTable">
-                  <thead>
-                    <tr>
-                      <th>Mã đơn hàng</th>
-                      <th className="odhHideMobile">Ngày mua</th>
-                      <th>Trạng thái</th>
-                      <th style={{ textAlign: 'right' }}>Tổng tiền</th>
-                      <th className="odhHideMobile" style={{ textAlign: 'right' }}>Thao tác</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {rows.map((o) => {
-                      const meta = statusMeta(o.status)
-                      const total = typeof o.total_amount === 'string' ? Number(o.total_amount) : (o.total_amount ?? 0)
-                      const s = (o.status || '').toLowerCase()
-                      const actionText = s === 'processing' || s === 'shipped' ? 'Theo dõi' : 'Xem chi tiết'
-                      const disabled = s === 'cancelled'
-                      return (
-                        <tr key={o.id}>
-                          <td className="odhCodeCell">
-                            <Link className="odhCode" to={detailHref(o.id)}>{o.order_code}</Link>
-                            <div className="odhDateMobile">{fmtDateVi(o.created_at)}</div>
-                          </td>
-                          <td className="odhDate odhHideMobile">{fmtDateVi(o.created_at)}</td>
-                          <td>
-                            <span className={`odhPill tone-${meta.tone}`}>
-                              <span className="odhPillDot" aria-hidden />
-                              {meta.label}
-                            </span>
-                          </td>
-                          <td className="odhMoney">{fmtVnd(Number(total) || 0)}đ</td>
-                          <td className="odhActionCell odhHideMobile">
-                            {disabled ? (
-                              <span className="odhAction disabled">Vô hiệu</span>
-                            ) : (
-                              <Link className="odhAction" to={detailHref(o.id)}>
-                                {actionText}
-                              </Link>
-                            )}
-                          </td>
-                        </tr>
-                      )
-                    })}
-                  </tbody>
-                </table>
+              <div className="odFilters">
+                <input className="odSearch" placeholder="Tìm mã đơn hoặc sản phẩm..." value={q} onChange={(e) => setQ(e.target.value)} />
+                <select className="odSelect" value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
+                  <option value="all">Tất cả trạng thái</option>
+                  <option value="pending">Chờ xác nhận</option>
+                  <option value="processing">Đã xác nhận</option>
+                  <option value="paid">Đang chuẩn bị</option>
+                  <option value="shipped">Đang giao</option>
+                  <option value="delivered">Đã giao</option>
+                  <option value="returned">Hoàn trả</option>
+                  <option value="cancelled">Đã hủy</option>
+                </select>
+
+                <select className="odSelect" value={timeRange} onChange={(e) => setTimeRange(e.target.value)}>
+                  <option value="all">Tất cả thời gian</option>
+                  <option value="7">7 ngày</option>
+                  <option value="15">15 ngày</option>
+                  <option value="30">30 ngày</option>
+                  <option value="custom">Tùy chọn</option>
+                </select>
+
+                {timeRange === 'custom' && (
+                  <div className="odCustomRange">
+                    <input type="date" className="odDate" value={customFrom ?? ''} onChange={(e) => setCustomFrom(e.target.value || null)} />
+                    <span style={{ margin: '0 6px' }}>—</span>
+                    <input type="date" className="odDate" value={customTo ?? ''} onChange={(e) => setCustomTo(e.target.value || null)} />
+                  </div>
+                )}
+              </div>
+
+              <div className="odhList">
+                {filteredRows.map((o) => {
+                  const meta = statusMeta(o.status)
+                  const total = typeof o.total_amount === 'string' ? Number(o.total_amount) : (o.total_amount ?? 0)
+
+                  // build thumbnails similar to ProfilePage
+                  const thumbs = ((o.items ?? []).map((it) => {
+                    const p = (it as any)?.product as any
+                    const candidates = [
+                      (it as any)?.image,
+                      p?.image,
+                      p?.image_url,
+                      p?.main_image_url,
+                      p?.main_image,
+                      p?.thumbnail,
+                      Array.isArray(p?.images) ? p.images[0] : null,
+                      Array.isArray(p?.media) ? p.media[0]?.url ?? p.media[0] : null,
+                      (it as any)?.product?.main_image_url,
+                    ]
+                    let img: any = null
+                    for (const c of candidates) {
+                      if (!c) continue
+                      if (typeof c === 'string') { img = c; break }
+                      if (typeof c === 'object') {
+                        if (typeof c.url === 'string') { img = c.url; break }
+                        if (typeof c.src === 'string') { img = c.src; break }
+                        if (typeof c.path === 'string') { img = c.path; break }
+                      }
+                    }
+                    return resolveMediaUrl(img ?? null) || null
+                  }).filter(Boolean) as string[])
+
+                  const extraCount = Math.max(0, thumbs.length - 4)
+                  const thumbCount = thumbs.length || 1
+                  const layout = thumbCount === 1 ? 'one' : thumbCount === 2 ? 'two' : thumbCount === 3 ? 'three' : 'four'
+
+                  const names = (o.items ?? []).map((it) => {
+                    const p = (it as any)?.product as any
+                    return (p?.name || (it as any)?.product_name_snapshot || '').toString()
+                  }).filter(Boolean) as string[]
+                  const text = names.length > 0 ? names.join(', ') : '—'
+
+                  return (
+                    <div key={o.id} className="odCard odCardWithThumbs">
+                      <div className={`odCardThumbs pfOrderThumbGrid pfThumbLayout-${layout}`}>
+                          {thumbs.length === 0 ? (
+                            <div className={`pfOrderThumbCell odThumbCell odThumbCell-empty`} />
+                          ) : (
+                            thumbs.slice(0, 4).map((src, idx) => (
+                              <div key={idx} className="pfOrderThumbCell odThumbCell" data-idx={idx}>
+                                <img className="pfOrderThumbImg" src={src} alt="" loading="lazy" />
+                                {idx === 3 && extraCount > 0 && (
+                                  <div className="pfThumbOverlay odThumbOverlay">+{extraCount}</div>
+                                )}
+                              </div>
+                            ))
+                          )}
+                      </div>
+
+                      <div className="odCardBody pfOrderMain">
+                        <div className="odCardTop pfOrderHeader">
+                          <div className="odCode pfOrderCode">{o.order_code}</div>
+                          <span className={`odStatus pfOrderStatus tone-${meta.tone}`}>{meta.label}</span>
+                        </div>
+                        <div className="pfOrderName odMetaValue" style={{ whiteSpace: 'normal' }}>{text}</div>
+                        <div className="odMeta">
+
+                          <div className="odMetaValue">{o.items?.length ?? 0} sản phẩm</div>
+                          <div className="odMetaValue">{fmtDateVi(o.created_at)}</div>
+                          <div className="odMetaValue strong">{fmtVnd(Number(total) || 0)}đ</div>
+
+                          <div style={{ marginTop: 8 }}>
+                            <Link className="odhAction" to={detailHref(o.id)}>Chi tiết</Link>
+                          </div>
+                        </div>
+
+                      </div>
+                    </div>
+                  )
+                })}
               </div>
             </>
           ) : (
             <>
               <div className="odList">
-                {rows.map((o) => {
+                {filteredRows.map((o) => {
                   const meta = statusMeta(o.status)
                   const total = typeof o.total_amount === 'string' ? Number(o.total_amount) : (o.total_amount ?? 0)
-                  const firstItem = o.items?.[0] ?? null
-                  const first =
-                    (firstItem && 'product_name_snapshot' in firstItem ? (firstItem.product_name_snapshot ?? '') : '') ||
-                    (firstItem && 'product' in firstItem ? (firstItem.product?.name ?? '') : '') ||
-                    '—'
-                  const more = Math.max(0, (o.items?.length ?? 0) - 1)
+
+                  // collect product names (show all, joined)
+                  const names = (o.items ?? [])
+                    .map((it) => {
+                      if (!it) return ''
+                      if ('product_name_snapshot' in it) return it.product_name_snapshot ?? ''
+                      if ('product' in it) return it.product?.name ?? ''
+                      return ''
+                    })
+                    .filter(Boolean)
+                  const title = names.length ? names.join(', ') : '—'
+
+                  const imgs = (o.items ?? [])
+                    .map((it) => {
+                      if (!it) return null
+                      if ('product' in it) return it.product?.main_image_url ?? null
+                      if ('product_name_snapshot' in it) return (it as any).main_image_url ?? null
+                      return null
+                    })
+                    .map((u) => resolveMediaUrl(u))
+                    .filter(Boolean) as string[]
+
                   return (
-                    <Link key={o.id} to={detailHref(o.id)} className="odCard">
-                      <div className="odCardTop">
-                        <div className="odCode">#{o.order_code}</div>
-                        <span className={`odStatus tone-${meta.tone}`}>{meta.label}</span>
+                    <Link key={o.id} to={detailHref(o.id)} className="odCard odCardWithThumbs">
+                      <div className="odCardThumbs">
+                        {imgs.slice(0, 4).map((src, i) => (
+                          <div key={i} className={`odThumbCell odThumbCell-${Math.min(4, imgs.length)}`} style={{ backgroundImage: `url(${src})` }} />
+                        ))}
+                        {imgs.length < 4 && Array.from({ length: Math.max(0, 4 - imgs.length) }).map((_, i) => (
+                          <div key={`empty-${i}`} className="odThumbCell odThumbCell-empty" />
+                        ))}
+                        {(o.items?.length ?? 0) > 4 && (
+                          <div className="odThumbOverlay">+{(o.items?.length ?? 0) - 4}</div>
+                        )}
                       </div>
-                      <div className="odMetaRow">
-                        <div className="odMeta">
-                          <span className="odMetaLabel">Sản phẩm</span>
-                          <span className="odMetaValue">
-                            {first}
-                            {more > 0 ? ` +${more} SP` : ''}
-                          </span>
+                      <div className="odCardBody">
+                        <div className="odCardTop">
+                          <div className="odCode">#{o.order_code}</div>
+                          <span className={`odStatus tone-${meta.tone}`}>{meta.label}</span>
                         </div>
-                        <div className="odMeta">
-                          <span className="odMetaLabel">Tổng</span>
-                          <span className="odMetaValue strong">{fmtVnd(total)}đ</span>
+                        <div className="odMetaRow">
+                          <div className="odMeta">
+                            <span className="odMetaLabel">Sản phẩm</span>
+                            <span className="odMetaValue">{title}</span>
+                          </div>
+                          <div className="odMeta">
+                            <span className="odMetaLabel">Tổng</span>
+                            <span className="odMetaValue strong">{fmtVnd(total)}đ</span>
+                          </div>
                         </div>
                       </div>
                     </Link>
@@ -305,4 +463,3 @@ export default function OrdersPage() {
     </div>
   )
 }
-

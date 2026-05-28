@@ -87,7 +87,7 @@ export default function DashboardPage({ onCreateProduct }: { onCreateProduct?: (
 
   const dateRangeText = useMemo(() => {
     let start = new Date()
-    let end = new Date()
+    const end = new Date()
     if (analyticsRange === '7d') {
       start.setDate(end.getDate() - 6)
     } else if (analyticsRange === '30d') {
@@ -250,7 +250,7 @@ export default function DashboardPage({ onCreateProduct }: { onCreateProduct?: (
         // Low stock list for table (best-effort, depends on API fields)
         const threshold = res?.kpi?.low_stock_threshold ?? 10
         setLowStockThreshold(threshold)
-        const flat = (products ?? []).flatMap((row) => {
+        const flat = (products ?? []).flatMap((row: any) => {
           const p = (row && typeof row === 'object') ? (row as Record<string, unknown>) : {}
           const base = {
             id: typeof p.id === 'number' ? p.id : Number.NaN,
@@ -293,8 +293,8 @@ export default function DashboardPage({ onCreateProduct }: { onCreateProduct?: (
         })
 
         const low = flat
-          .filter((x) => typeof x.stock_quantity === 'number' && x.stock_quantity <= threshold)
-          .sort((a, b) => (a.stock_quantity ?? 0) - (b.stock_quantity ?? 0))
+          .filter((x: any) => typeof x.stock_quantity === 'number' && x.stock_quantity <= threshold)
+          .sort((a: any, b: any) => (a.stock_quantity ?? 0) - (b.stock_quantity ?? 0))
           .slice(0, 6)
         setLowStockProducts(low)
       } catch (e: unknown) {

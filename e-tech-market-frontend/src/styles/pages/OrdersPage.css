@@ -140,23 +140,24 @@
 }
 
 .odMetaRow {
-  display: grid;
-  grid-template-columns: 1.4fr 1fr;
-  gap: 12px;
-  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 6px;
+  grid-column: 1 / -1;
 }
 
 .odMeta {
   display: flex;
-  flex-direction: column;
-  gap: 4px;
+  align-items: center;
+  gap: 30px;
   min-width: 0;
+  flex-wrap: wrap;
 }
 
-.odMetaLabel {
-  font-size: 11px;
-  font-weight: 900;
-  color: #94a3b8;
+/* In card variant, push the action container to the right */
+.odCardWithThumbs .odMeta > div:last-child {
+  margin-left: auto;
 }
 
 .odMetaValue {
@@ -395,12 +396,6 @@
   color: #475569;
 }
 
-.odSteps {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 10px;
-}
-
 .odStep {
   display: grid;
   grid-template-columns: 28px 1fr;
@@ -410,6 +405,205 @@
   border-radius: 12px;
   border: 1px dashed rgba(15, 23, 42, .12);
   background: #fff;
+}
+
+.odStep {
+  display: grid;
+  grid-template-columns: 28px 1fr;
+  gap: 8px;
+}
+/* Thumbnails layout for orders list */
+.odCardWithThumbs {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  padding: 14px;
+  border-radius: 14px;
+  border: 1px solid rgba(15, 23, 42, 0.153);
+  box-shadow: 0 12px 30px rgba(15,23,42,0.06);
+  margin-bottom: 12px;
+}
+.odCardThumbs {
+  display: grid;
+  gap: 4px;
+  position: relative;
+  align-content: center;
+  justify-items: center;
+  /* sizing delegated to .pfThumbLayout-* and .pfOrderThumbCell rules from ProfilePage.css */
+  flex: 0 0 auto;
+}
+.odThumbCell, .pfOrderThumbCell.odThumbCell {
+  background-size: cover;
+  background-position: center;
+  border-radius: 10px;
+  border: 1px solid rgba(15,23,42,.06);
+  overflow: hidden;
+}
+.odThumbCell-empty {
+  background: rgba(15,23,42,.02);
+}
+.odThumbOverlay {
+  position: absolute;
+  right: 6px;
+  bottom: 6px;
+  background: rgba(15,23,42,.72);
+  color: #fff;
+  padding: 6px 8px;
+  border-radius: 999px;
+  font-weight: 900;
+  font-size: 12px;
+}
+.odCardBody {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+}
+
+.odCardTop {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+/* Filters row */
+.odFilters {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin: 20px 0 20px;
+  flex-wrap: wrap;
+}
+.odSearch {
+  padding: 15px 25px;
+  border-radius: 8px;
+  border: 1px solid rgba(15, 23, 42, 0.211);
+  min-width: 500px;
+}
+.odSelect {
+  padding: 15px 25px;
+  border-radius: 8px;
+  border: 1px solid rgba(15, 23, 42, 0.211);
+  background: #fff;
+}
+
+.odCustomRange {
+  display: flex;
+  align-items: center;
+}
+.odDate {
+  padding: 15px 15px;
+  border-radius: 8px;
+  border: 1px solid rgba(15,23,42,.08);
+}
+
+.odMetaRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 6px;
+}
+
+.odMeta .odMetaValue {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.odMetaValue.strong {
+  font-size: 18px;
+  font-weight: 900;
+}
+
+/* make product title stand out and clamp to 2 lines */
+.pfOrderName.odMetaValue, .odItemName, .pfOrderName {
+  font-weight: 800;
+  font-size: 14px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* small circular overlay for extra count */
+.pfThumbOverlay.odThumbOverlay {
+  position: absolute;
+  right: 0;
+  top: 0;
+  min-width: 36px;
+  height: 46px;
+  padding: 0 6px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.233);
+  color: #fff;
+  font-weight: 800;
+  font-size: 13px;
+  box-shadow: 0 8px 18px rgba(0,0,0,0.25);
+}
+
+.odhAction {
+  margin-left: 12px;
+}
+
+@media (max-width:700px) {
+  .odCardWithThumbs {
+    /* switch to stacked card on small screens */
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .odThumbCell { border-radius: 6px }
+
+   /* Filters: search full-width, other controls arranged in two columns */
+  .odFilters {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    align-items: center;
+  }
+  /* search takes full row */
+  .odSearch {
+    grid-column: 1 / -1;
+    min-width: auto;
+    width: 100%;
+  }
+  .odSelect, .odCustomRange, .odDate {
+    width: 100%;
+  }
+    /* when custom range is visible, make it span full row and layout dates horizontally */
+  .odFilters .odCustomRange {
+    grid-column: 1 / -1;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    padding: 2px 0;
+  }
+  .odFilters .odCustomRange .odDate {
+    flex: 1 1 auto;
+    width: auto;
+  }
+  /* Thumbnails: make a small horizontal strip */
+  .odCardThumbs {
+    display: flex;
+    gap: 8px;
+    padding: 6px 0;
+    justify-content: flex-start;
+  }
+  .odCardThumbs .pfOrderThumbCell, .odCardThumbs .odThumbCell {
+    width: 64px;
+    height: 64px;
+    flex: 0 0 64px;
+  }
+
+  /* Meta area should wrap but keep action button on the right */
+  .odCardBody { padding: 6px 0 0 0; }
+  .odMeta { gap: 12px; }
+  .odMeta .odMetaValue { white-space: normal; }
 }
 
 .odStep.done {

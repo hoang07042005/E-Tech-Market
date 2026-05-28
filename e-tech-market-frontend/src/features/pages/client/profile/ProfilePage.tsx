@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Outlet, useLocation, useNavigate } from 'react-router-dom'
 import '@/styles/pages/ProfilePage.css'
 import { me as fetchMe, logout as apiLogout } from '@/features/services/auth.service'
@@ -33,11 +33,11 @@ type OrderRow = {
 
 const AVATAR_URL =
   (import.meta.env.VITE_PROFILE_AVATAR_URL as string | undefined)?.trim() ||
-  'https://images.unsplash.com/photo-1527430253228-e93688616381?auto=format&fit=crop&w=320&q=80'
+  'https://www.bing.com/images/search?view=detailV2&ccid=Dv9y%2Bpsk&id=BCDC0B0CADEE679EDDD3D170C8FAEE5070B03AE7&thid=OIP.Dv9y-pskOyCDJAhLX2i32wHaHa&mediaurl=https%3A%2F%2Fstatic.vecteezy.com%2Fsystem%2Fresources%2Fpreviews%2F020%2F911%2F740%2Foriginal%2Fuser-profile-icon-profile-avatar-user-icon-male-icon-face-icon-profile-icon-free-png.png&cdnurl=https%3A%2F%2Fth.bing.com%2Fth%2Fid%2FR.0eff72fa9b243b208324084b5f68b7db%3Frik%3D5zqwcFDu%252bshw0Q%26pid%3DImgRaw%26r%3D0&exph=1920&expw=1920&q=user&form=IRPRST&ck=54DFA9937F928AB26214895AAF49827C&selectedindex=9&itb=0&cw=1250&ch=572&ajaxhist=0&ajaxserp=0&vt=0&sim=11'
 
 const PROMO_URL =
   (import.meta.env.VITE_PROFILE_PROMO_IMAGE_URL as string | undefined)?.trim() ||
-  'https://lh3.googleusercontent.com/aida/ADBb0uhHZ_5pRbpgtwJmsvqPlInCJ0xszaBAGlhnvFV6MmoprOJFk8cOzTKk363dkrBMfuuMy6C4MI6uglBXY7ngltTSXv7O-acEAv3yIOzuZZDBi9nRU0ijC77KiCNzVnjYx9Luy4rT3J2f6ImDm-jkqdlRoSidOwHQnrtPBvXCfXHoyquWt6aqNaZYmLZc-yHtwHVD-65QUJCu7EIqL917PA1C2MF2ZEkqEF1_9CwZUS9IFsKGzipaaI5CCRY'
+  '/Screenshot 2026-05-28 091249.png'
 
 
 function formatMoneyVnd(v: number | string) {
@@ -62,6 +62,7 @@ function resolveMediaUrl(maybeUrl: string | null | undefined): string | null {
   } catch {
     return s
   }
+
 }
 
 export default function ProfilePage() {
@@ -83,8 +84,7 @@ export default function ProfilePage() {
           ? 'coupons'
           : tab
   const [twoFa, setTwoFa] = useState(false)
-  const avatarInputRef = useRef<HTMLInputElement | null>(null)
-  const [avatarBusy, setAvatarBusy] = useState(false)
+  
   const [loading, setLoading] = useState(true)
 
   const [me, setMe] = useState<MeUser | null>(null)
@@ -98,8 +98,19 @@ export default function ProfilePage() {
     district: '',
     ward: '',
   })
-  const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle')
   const [saveError, setSaveError] = useState<string | null>(null)
+  const [editOpen, setEditOpen] = useState(false)
+  const [editDraft, setEditDraft] = useState(() => ({
+    name: '',
+    email: '',
+    phone: '',
+    address_line: '',
+    province: '',
+    district: '',
+    ward: '',
+  }))
+  const [editAvatarFile, setEditAvatarFile] = useState<File | null>(null)
+  const [editAvatarPreview, setEditAvatarPreview] = useState<string | null>(null)
 
   const displayName = useMemo(() => {
     const localUser = (() => {
@@ -119,6 +130,68 @@ export default function ProfilePage() {
       'Khách hàng'
     )
   }, [me?.name, me?.username])
+
+  function openEditModal() {
+    setEditDraft({
+      name: (me?.name ?? me?.username ?? '').toString(),
+      email: (me?.email ?? '').toString(),
+      phone: (me?.phone ?? '').toString(),
+      address_line: (me?.address_line ?? '').toString(),
+      province: (me?.province ?? '').toString(),
+      district: (me?.district ?? '').toString(),
+      ward: (me?.ward ?? '').toString(),
+    })
+    setEditAvatarFile(null)
+    setEditAvatarPreview(resolveMediaUrl(me?.avatar_url) || AVATAR_URL)
+    setEditOpen(true)
+  }
+
+  function closeEditModal() {
+    setEditOpen(false)
+    setEditAvatarFile(null)
+    setEditAvatarPreview(null)
+  }
+
+  async function saveFromModal() {
+    setSaveError(null)
+    try {
+      let updated: any = null
+      if (editAvatarFile) {
+        const fd = new FormData()
+        fd.append('file', editAvatarFile)
+        try {
+          updated = await apiFetch<MeUser>('/me/avatar', {
+            method: 'POST',
+            body: fd,
+          })
+        } catch {
+          // ignore avatar upload failure here; continue to profile update
+        }
+      }
+
+      const patched = await apiFetch<MeUser>('/me', {
+        method: 'PATCH',
+        body: JSON.stringify({
+          name: editDraft.name.trim(),
+          email: editDraft.email.trim(),
+          phone: editDraft.phone.trim() || null,
+          address_line: editDraft.address_line.trim() || null,
+          province: editDraft.province.trim() || null,
+          district: editDraft.district.trim() || null,
+          ward: editDraft.ward.trim() || null,
+        }),
+      })
+
+      const next = patched ?? updated ?? (await fetchMe())
+      setMe(next as MeUser)
+      window.localStorage.setItem('user', JSON.stringify(next))
+      window.dispatchEvent(new Event('auth-change'))
+      closeEditModal()
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : 'Cập nhật thất bại.'
+      setSaveError(msg)
+    }
+  }
 
   useEffect(() => {
     let revoked = false
@@ -162,108 +235,9 @@ export default function ProfilePage() {
     }
   }, [navigate])
 
-  const canSave = useMemo(() => {
-    if (tab !== 'profile') return false
-    if (!me) return false
-    const next = {
-      name: profileDraft.name.trim(),
-      email: profileDraft.email.trim(),
-      phone: profileDraft.phone.trim(),
-      address_line: profileDraft.address_line.trim(),
-      province: profileDraft.province.trim(),
-      district: profileDraft.district.trim(),
-      ward: profileDraft.ward.trim(),
-    }
-    const prev = {
-      name: (me.name ?? me.username ?? '').toString().trim(),
-      email: (me.email ?? '').toString().trim(),
-      phone: (me.phone ?? '').toString().trim(),
-      address_line: (me.address_line ?? '').toString().trim(),
-      province: (me.province ?? '').toString().trim(),
-      district: (me.district ?? '').toString().trim(),
-      ward: (me.ward ?? '').toString().trim(),
-    }
-    return (
-      next.name.length > 0 &&
-      next.email.length > 0 &&
-      (next.name !== prev.name ||
-        next.email !== prev.email ||
-        next.phone !== prev.phone ||
-        next.address_line !== prev.address_line ||
-        next.province !== prev.province ||
-        next.district !== prev.district ||
-        next.ward !== prev.ward)
-    )
-  }, [
-    me,
-    profileDraft.address_line,
-    profileDraft.district,
-    profileDraft.email,
-    profileDraft.name,
-    profileDraft.phone,
-    profileDraft.province,
-    profileDraft.ward,
-    tab,
-  ])
+  
 
-  async function saveProfile() {
-    if (!me) return
-    setSaveStatus('saving')
-    setSaveError(null)
-    try {
-      const updated = await apiFetch<MeUser>('/me', {
-        method: 'PATCH',
-        body: JSON.stringify({
-          name: profileDraft.name.trim(),
-          email: profileDraft.email.trim(),
-          phone: profileDraft.phone.trim() || null,
-          address_line: profileDraft.address_line.trim() || null,
-          province: profileDraft.province.trim() || null,
-          district: profileDraft.district.trim() || null,
-          ward: profileDraft.ward.trim() || null,
-        }),
-      })
-      setMe(updated)
-      setProfileDraft({
-        name: (updated?.name ?? updated?.username ?? '').toString(),
-        email: (updated?.email ?? '').toString(),
-        phone: (updated?.phone ?? '').toString(),
-        address_line: (updated?.address_line ?? '').toString(),
-        province: (updated?.province ?? '').toString(),
-        district: (updated?.district ?? '').toString(),
-        ward: (updated?.ward ?? '').toString(),
-      })
-      window.localStorage.setItem('user', JSON.stringify(updated))
-      window.dispatchEvent(new Event('auth-change'))
-      setSaveStatus('saved')
-      window.setTimeout(() => setSaveStatus('idle'), 1500)
-    } catch (e) {
-      const msg = e instanceof Error ? e.message : 'Cập nhật thất bại.'
-      setSaveError(msg)
-      setSaveStatus('error')
-    }
-  }
 
-  async function onPickAvatar(file: File) {
-    setAvatarBusy(true)
-    setSaveError(null)
-    try {
-      const fd = new FormData()
-      fd.append('file', file)
-      const updated = await apiFetch<MeUser>('/me/avatar', {
-        method: 'POST',
-        body: fd,
-      })
-      setMe(updated)
-      window.localStorage.setItem('user', JSON.stringify(updated))
-      window.dispatchEvent(new Event('auth-change'))
-    } catch (e) {
-      const msg = e instanceof Error ? e.message : 'Cập nhật avatar thất bại.'
-      setSaveError(msg)
-    } finally {
-      setAvatarBusy(false)
-    }
-  }
 
   const orderCount = orders.length
   const totalSpent = useMemo(() => {
@@ -314,26 +288,6 @@ export default function ProfilePage() {
                     alt=""
                     loading="lazy"
                   />
-                  <input
-                    ref={avatarInputRef}
-                    type="file"
-                    accept="image/png,image/jpeg,image/jpg,image/webp"
-                    style={{ display: 'none' }}
-                    onChange={(e) => {
-                      const f = e.currentTarget.files?.[0]
-                      e.currentTarget.value = ''
-                      if (f) void onPickAvatar(f)
-                    }}
-                  />
-                  <button
-                    type="button"
-                    className="pfAvatarEdit"
-                    aria-label="Chỉnh avatar"
-                    disabled={avatarBusy}
-                    onClick={() => avatarInputRef.current?.click()}
-                  >
-                    <PencilIcon />
-                  </button>
                 </>
               )}
             </div>
@@ -475,10 +429,9 @@ export default function ProfilePage() {
                   <button
                     type="button"
                     className="pfSaveBtn"
-                    disabled={!canSave || saveStatus === 'saving'}
-                    onClick={saveProfile}
+                    onClick={openEditModal}
                   >
-                    {saveStatus === 'saving' ? 'Đang lưu…' : 'Lưu thay đổi'}
+                    Chỉnh sửa
                   </button>
                 )}
               </div>
@@ -492,83 +445,42 @@ export default function ProfilePage() {
                 <Outlet />
               ) : tab === 'profile' ? (
                 <div className="pfFormGrid">
-                  {loading
-                    ? Array.from({ length: 6 }).map((_, i) => (
+                  {loading ? (
+                    Array.from({ length: 6 }).map((_, i) => (
                       <div key={i} className="pfField">
                         <Skeleton width="100px" height="14px" style={{ marginBottom: '8px' }} />
                         <Skeleton width="100%" height="48px" borderRadius="10px" />
                       </div>
                     ))
-                    : (
-                      <>
-                        <div className="pfField">
-                          <label className="pfLabel">Họ và tên</label>
-                          <input
-                            className="pfInput"
-                            value={profileDraft.name}
-                            onChange={(e) => setProfileDraft((s) => ({ ...s, name: e.target.value }))}
-                            placeholder="Họ và tên"
-                          />
+                  ) : (
+                    <>
+                      <div className="pfSimpleRow">
+                        <div className="pfSimpleLabel">Họ và tên :</div>
+                        <div className="pfSimpleValue">{profileDraft.name || '—'}</div>
+                      </div>
+                      <div className="pfSimpleRow">
+                        <div className="pfSimpleLabel">Email :</div>
+                        <div className="pfSimpleValue">{profileDraft.email || '—'}</div>
+                      </div>
+                      <div className="pfSimpleRow">
+                        <div className="pfSimpleLabel">Số điện thoại :</div>
+                        <div className="pfSimpleValue">{profileDraft.phone || '—'}</div>
+                      </div>
+                      <div className="pfSimpleRow">
+                        <div className="pfSimpleLabel">Địa chỉ :</div>
+                        <div className="pfSimpleValue">
+                          <div style={{ marginTop: 6, color: 'var(--et-text)' }}>
+                            {[
+                              profileDraft.address_line,
+                              profileDraft.ward,
+                              profileDraft.district,
+                              profileDraft.province,
+                            ].filter(Boolean).join(', ')}
+                          </div>
                         </div>
-                        <div className="pfField">
-                          <label className="pfLabel">Số điện thoại</label>
-                          <input
-                            className="pfInput"
-                            value={profileDraft.phone}
-                            onChange={(e) => setProfileDraft((s) => ({ ...s, phone: e.target.value }))}
-                            placeholder="Số điện thoại"
-                          />
-                        </div>
-                        <div className="pfField">
-                          <label className="pfLabel">Email</label>
-                          <input
-                            className="pfInput"
-                            value={profileDraft.email}
-                            onChange={(e) => setProfileDraft((s) => ({ ...s, email: e.target.value }))}
-                            placeholder="Email"
-                            type="email"
-                          />
-                        </div>
-                        <div className="pfField" style={{ gridColumn: '1 / -1' }}>
-                          <label className="pfLabel">Địa chỉ</label>
-                          <input
-                            className="pfInput"
-                            value={profileDraft.address_line}
-                            onChange={(e) =>
-                              setProfileDraft((s) => ({ ...s, address_line: e.target.value }))
-                            }
-                            placeholder="Số nhà, tên đường..."
-                          />
-                        </div>
-                        <div className="pfField">
-                          <label className="pfLabel">Tỉnh/Thành phố</label>
-                          <input
-                            className="pfInput"
-                            value={profileDraft.province}
-                            onChange={(e) => setProfileDraft((s) => ({ ...s, province: e.target.value }))}
-                            placeholder="VD: Hồ Chí Minh"
-                          />
-                        </div>
-                        <div className="pfField">
-                          <label className="pfLabel">Quận/Huyện</label>
-                          <input
-                            className="pfInput"
-                            value={profileDraft.district}
-                            onChange={(e) => setProfileDraft((s) => ({ ...s, district: e.target.value }))}
-                            placeholder="VD: Quận 1"
-                          />
-                        </div>
-                        <div className="pfField">
-                          <label className="pfLabel">Phường/Xã</label>
-                          <input
-                            className="pfInput"
-                            value={profileDraft.ward}
-                            onChange={(e) => setProfileDraft((s) => ({ ...s, ward: e.target.value }))}
-                            placeholder="VD: Phường Bến Nghé"
-                          />
-                        </div>
-                      </>
-                    )}
+                      </div>
+                    </>
+                  )}
                 </div>
               ) : (
                 <div style={{ color: 'var(--et-text-muted)', lineHeight: 1.7, fontSize: 14 }}>
@@ -578,7 +490,7 @@ export default function ProfilePage() {
             </section>
 
             {tab === 'profile' && !ordersRoute && (
-              <>
+              <div className="pfTwoCol">
                 <section className="pfCard" aria-label="Đơn hàng gần đây">
                   <div className="pfCardHead" style={{ marginBottom: 0 }}>
                     <h3 className="pfCardTitle">Đơn hàng gần đây</h3>
@@ -598,60 +510,180 @@ export default function ProfilePage() {
                   </div>
 
                   <div className="pfOrdersWrapper">
-                    <table className="pfTable">
-                      <thead>
-                        <tr>
-                          <th className="pfHideMobile">Mã đơn hàng</th>
-                          <th>Sản phẩm</th>
-                          <th className="pfHideMobile">Ngày đặt</th>
-                          <th>Tổng tiền</th>
-                          <th>Trạng thái</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {orders.slice(0, 3).map((o) => (
-                          <tr key={o.id}>
-                            <td className="pfHideMobile" style={{ fontWeight: 900 }}>{o.order_code}</td>
-                            <td className="pfOrderNameCell">
-                              <div className="pfOrderName">{o.items?.[0]?.product?.name ?? '—'}</div>
-                              <div className="pfOrderMetaMobile">
-                                {o.order_code} • {formatDateShort(o.created_at)}
+                    {orders.length === 0 ? (
+                      <div style={{ padding: 14, color: 'var(--et-text-muted)' }}>
+                        Chưa có đơn hàng nào.
+                      </div>
+                    ) : (
+                      <div className="pfOrderList">
+                        {orders.slice(0, 3).map((o) => {
+                          const thumbs = ((o.items ?? []).map((it) => {
+                            const p = (it as any)?.product as any
+                            // try multiple common fields for an image
+                            const candidates = [
+                              (it as any)?.image,
+                              p?.image,
+                              p?.image_url,
+                              p?.main_image_url,
+                              p?.main_image,
+                              p?.thumbnail,
+                              p?.main_image_url,
+                              Array.isArray(p?.images) ? p.images[0] : null,
+                              Array.isArray(p?.media) ? p.media[0]?.url ?? p.media[0] : null,
+                              (it as any)?.product?.main_image_url,
+                            ]
+                            let img: any = null
+                            for (const c of candidates) {
+                              if (!c) continue
+                              if (typeof c === 'string') { img = c; break }
+                              if (typeof c === 'object') {
+                                if (typeof c.url === 'string') { img = c.url; break }
+                                if (typeof c.src === 'string') { img = c.src; break }
+                                if (typeof c.path === 'string') { img = c.path; break }
+                              }
+                            }
+                            return resolveMediaUrl(img ?? null) || null
+                          }).filter(Boolean) as string[])
+                          const extraCount = Math.max(0, thumbs.length - 4)
+                          const thumbCount = thumbs.length || 1
+                          const layout = thumbCount === 1 ? 'one' : thumbCount === 2 ? 'two' : thumbCount === 3 ? 'three' : 'four'
+                          const statusLabel = o.status === 'pending'
+                            ? 'Chờ xác nhận'
+                            : o.status === 'processing'
+                              ? 'Đã xác nhận'
+                              : o.status === 'shipped'
+                                ? 'Đang giao'
+                                : o.status === 'delivered'
+                                  ? 'Hoàn thành'
+                                  : o.status === 'returned'
+                                    ? 'Hoàn trả'
+                                    : o.status === 'cancelled'
+                                      ? 'Đã hủy'
+                                      : (o.status || '—')
+
+                          return (
+                            <div key={o.id} className="pfOrderItem">
+                              <div className={`pfOrderThumbGrid pfThumbLayout-${layout}`}>
+                                {(() => {
+                                  const display = (thumbs.length === 0 ? [AVATAR_URL] : thumbs.slice(0, 4))
+                                  return display.map((src, idx) => (
+                                    <div key={idx} className="pfOrderThumbCell" data-idx={idx}>
+                                      <img className="pfOrderThumbImg" src={src} alt="" loading="lazy" />
+                                      {idx === 3 && extraCount > 0 && (
+                                        <div className="pfThumbOverlay">+{extraCount}</div>
+                                      )}
+                                    </div>
+                                  ))
+                                })()}
                               </div>
-                            </td>
-                            <td className="pfHideMobile">{formatDateShort(o.created_at)}</td>
-                            <td style={{ fontWeight: 900 }}>{formatMoneyVnd(o.total_amount)}</td>
-                            <td>
-                              <span
-                                className={o.status === 'shipped' ? 'pfStatusPill pfStatusPillWarn' : 'pfStatusPill'}
-                              >
-                                {o.status === 'pending'
-                                  ? 'Chờ xác nhận'
-                                  : o.status === 'processing'
-                                    ? 'Đã xác nhận'
-                                    : o.status === 'shipped'
-                                      ? 'Đang giao'
-                                      : o.status === 'delivered'
-                                        ? 'Hoàn thành'
-                                        : o.status === 'returned'
-                                          ? 'Hoàn trả'
-                                          : o.status === 'cancelled'
-                                            ? 'Đã hủy'
-                                            : (o.status || '—')}
-                              </span>
-                            </td>
-                          </tr>
-                        ))}
-                        {orders.length === 0 && (
-                          <tr>
-                            <td colSpan={5} style={{ padding: 14, color: 'var(--et-text-muted)' }}>
-                              Chưa có đơn hàng nào.
-                            </td>
-                          </tr>
-                        )}
-                      </tbody>
-                    </table>
+                              <div className="pfOrderMain">
+                                <div className="pfOrderHeader">
+                                  <div className="pfOrderCode">{o.order_code}</div>
+                                  <div>
+                                    <span className={o.status === 'shipped' ? 'pfStatusPill pfStatusPillWarn pfOrderStatus' : 'pfStatusPill pfOrderStatus'}>
+                                      {statusLabel}
+                                    </span>
+                                  </div>
+                                </div>
+
+                                {(() => {
+                                  const names = (o.items ?? []).map((it) => {
+                                    const p = (it as any)?.product as any
+                                    return (p?.name || (it as any)?.product_name_snapshot || '').toString()
+                                  }).filter(Boolean) as string[]
+                                  const text = names.length > 0 ? names.join(', ') : '—'
+                                  return (
+                                    <div className="pfOrderName">{text}</div>
+                                  )
+                                })()}
+                                <div className="pfOrderFooter">
+                                  <div className="pfOrderMeta">{o.items?.length ?? 0} sản phẩm</div>
+                                  <div className="pfOrderMeta">{formatDateShort(o.created_at)}</div>
+                                  <div className="pfOrderAmount">{formatMoneyVnd(o.total_amount)}</div>
+
+                                  <div className="pfOrderActions">
+                                    <button type="button" className="pfOrderDetailsBtn" onClick={() => navigate(`/profile/orders/${o.id}`)}>
+                                      Chi tiết
+                                    </button>
+                                  </div>
+                                </div>
+                              </div>
+
+
+                            </div>
+                          )
+                        })}
+                      </div>
+                    )}
                   </div>
                 </section>
+
+                {editOpen && (
+                  <div className="pfModalOverlay" role="dialog" aria-modal="true">
+                    <div className="pfModal">
+                      <div className="pfModalHeader">
+                        <h3 className="pfModalTitle">Chỉnh sửa thông tin</h3>
+                        <button type="button" className="pfModalClose" onClick={closeEditModal} aria-label="Đóng">✕</button>
+                      </div>
+                      <div className="pfModalBody">
+                        <aside className="pfModalSidebar">
+                          <div className="pfModalAvatarWrap">
+                            <img src={editAvatarPreview || AVATAR_URL} alt="" className="pfAvatar" />
+                            <input
+                              id="pf-avatar-input"
+                              type="file"
+                              accept="image/png,image/jpeg,image/jpg,image/webp"
+                              onChange={(e) => {
+                                const f = e.currentTarget.files?.[0] ?? null
+                                setEditAvatarFile(f)
+                                if (f) setEditAvatarPreview(URL.createObjectURL(f))
+                              }}
+                              style={{ display: 'none' }}
+                            />
+                            <label htmlFor="pf-avatar-input" className="pfFileBtn">Chọn ảnh</label>
+                          </div>
+                        </aside>
+                        <div className="pfModalContent">
+                          <div className="pfFormGrid">
+                            <div className="pfField">
+                              <label className="pfLabel">Họ và tên</label>
+                              <input className="pfInput" value={editDraft.name} onChange={(e) => setEditDraft((s) => ({ ...s, name: e.target.value }))} />
+                            </div>
+                            <div className="pfField">
+                              <label className="pfLabel">Số điện thoại</label>
+                              <input className="pfInput" value={editDraft.phone} onChange={(e) => setEditDraft((s) => ({ ...s, phone: e.target.value }))} />
+                            </div>
+                            <div className="pfField">
+                              <label className="pfLabel">Email</label>
+                              <input className="pfInput" value={editDraft.email} onChange={(e) => setEditDraft((s) => ({ ...s, email: e.target.value }))} type="email" />
+                            </div>
+                            <div className="pfField" style={{ gridColumn: '1 / -1' }}>
+                              <label className="pfLabel">Địa chỉ</label>
+                              <input className="pfInput" value={editDraft.address_line} onChange={(e) => setEditDraft((s) => ({ ...s, address_line: e.target.value }))} />
+                            </div>
+                            <div className="pfField">
+                              <label className="pfLabel">Phường/Xã</label>
+                              <input className="pfInput" value={editDraft.ward} onChange={(e) => setEditDraft((s) => ({ ...s, ward: e.target.value }))} />
+                            </div>
+                             <div className="pfField">
+                              <label className="pfLabel">Quận/Huyện</label>
+                              <input className="pfInput" value={editDraft.district} onChange={(e) => setEditDraft((s) => ({ ...s, district: e.target.value }))} />
+                            </div>
+                            <div className="pfField">
+                              <label className="pfLabel">Tỉnh/Thành phố</label>
+                              <input className="pfInput" value={editDraft.province} onChange={(e) => setEditDraft((s) => ({ ...s, province: e.target.value }))} />
+                            </div>
+                          </div>
+
+                          <div className="pfModalActions">
+                            <button type="button" className="pfBtn pfBtnPrimary" onClick={saveFromModal}>Lưu</button>
+                            <button type="button" className="pfBtn" onClick={closeEditModal}>Hủy</button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
 
                 <div className="pfRowGrid">
                   <section className="pfMiniCard" aria-label="Bảo mật">
@@ -708,7 +740,7 @@ export default function ProfilePage() {
                     </div>
                   </section>
                 </div>
-              </>
+              </div>
             )}
           </div>
 
@@ -723,26 +755,6 @@ export default function ProfilePage() {
     </main>
   )
 }
-
-function PencilIcon() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path
-        d="M12 20h9"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-      />
-      <path
-        d="M16.5 3.5a2.1 2.1 0 0 1 3 3L8 18l-4 1 1-4 11.5-11.5Z"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinejoin="round"
-      />
-    </svg>
-  )
-}
-
 
 
 function SideIconWrap({ children }: { children: React.ReactNode }) { return (<span aria-hidden="true" className="pfSideIcon">{children}</span>) }

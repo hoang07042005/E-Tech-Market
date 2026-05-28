@@ -252,8 +252,13 @@
 
 .pfFormGrid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr;
   gap: 14px;
+}
+
+/* Modal-specific form: two columns inside modal */
+.pfModal .pfFormGrid {
+  grid-template-columns: 1fr 1fr;
 }
 
 .pfField {
@@ -279,6 +284,33 @@
   font-size: 14px;
 }
 
+.pfValue {
+  padding: 12px 0;
+  color: var(--et-text);
+  font-size: 14px;
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+}
+
+.pfSimpleRow {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 8px 0;
+  border-bottom: 1px dashed rgba(0,0,0,0.04);
+}
+.pfSimpleLabel {
+  min-width: 160px;
+  font-weight: 700;
+  color: var(--et-text-muted);
+}
+.pfSimpleValue {
+  flex: 1;
+  color: var(--et-text);
+  font-size: 14px;
+}
+
 .pfRowGrid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -286,8 +318,262 @@
   align-items: stretch;
 }
 
+.pfTwoCol {
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  gap: 18px;
+  align-items: start;
+}
+
+.pfTwoCol .pfRowGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
 .pfOrdersWrapper {
   margin-top: 12px;
+}
+
+.pfOrderList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.pfOrderItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px;
+  border: 1px solid var(--et-border);
+  border-radius: 10px;
+  background: #fff;
+  min-height: 84px;
+}
+
+.pfOrderThumb {
+  width: 64px;
+  height: 64px;
+  object-fit: cover;
+  border-radius: 8px;
+  flex: 0 0 64px;
+  background: #f4f4f5;
+}
+
+.pfOrderThumbGrid {
+  display: grid;
+  gap: 6px;
+  flex: 0 0 auto;
+}
+
+.pfOrderThumbCell {
+  position: relative;
+  border-radius: 6px;
+  overflow: hidden;
+  background: #f4f4f5;
+  box-shadow: 0 6px 18px rgba(15,23,42,0.06);
+}
+
+.pfOrderThumbImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Layout variants */
+.pfThumbLayout-one {
+  grid-template-columns: 1fr;
+  grid-auto-rows: 84px;
+}
+.pfThumbLayout-one .pfOrderThumbCell { width: 84px; height: 84px; }
+
+.pfThumbLayout-two {
+  grid-template-columns: repeat(2, 64px);
+  grid-auto-rows: 64px;
+}
+.pfThumbLayout-two .pfOrderThumbCell { width: 64px; height: 64px; }
+
+.pfThumbLayout-three {
+  grid-template-columns: 94px 48px;
+  grid-template-rows: 48px 48px;
+}
+.pfThumbLayout-three .pfOrderThumbCell { width: auto; height: auto; }
+.pfThumbLayout-three .pfOrderThumbCell[data-idx="0"] { grid-row: 1 / span 2; grid-column: 1 / 2; width: 94px; height: 100%; }
+.pfThumbLayout-three .pfOrderThumbCell[data-idx="1"] { grid-row: 1 / 2; grid-column: 2 / 3; width: 48px; height: 48px; }
+.pfThumbLayout-three .pfOrderThumbCell[data-idx="2"] { grid-row: 2 / 3; grid-column: 2 / 3; width: 48px; height: 48px; }
+
+.pfThumbLayout-four {
+  grid-template-columns: repeat(2, 48px);
+  grid-template-rows: repeat(2, 48px);
+}
+.pfThumbLayout-four .pfOrderThumbCell { width: 48px; height: 48px; }
+
+.pfThumbOverlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0,0,0,0.5);
+  color: #fff;
+  font-weight: 800;
+  font-size: 13px;
+}
+
+.pfOrderMain {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  grid-template-rows: auto 1fr auto;
+  gap: 6px;
+  flex: 1 1 auto;
+  /* align-items: center; */
+}
+
+.pfOrderName {
+  font-weight: 700;
+  color: var(--et-text);
+  grid-column: 1 / -1;
+  margin-top: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Modal */
+.pfModalOverlay {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0,0,0,0.45);
+  z-index: 60;
+  padding: 20px;
+}
+.pfModal {
+  width: 820px;
+  max-width: 100%;
+  background: #fff;
+  border-radius: 12px;
+  padding: 18px;
+  box-shadow: 0 30px 80px rgba(15,23,42,0.3);
+}
+.pfModalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.pfModalTitle { margin: 0; font-size: 18px; }
+.pfModalClose {
+  background: var(--et-primary);
+  color: #fff;
+  border: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.pfModalBody {
+  display: grid;
+  grid-template-columns: 140px 1fr;
+  gap: 28px;
+  margin-top: 14px;
+  align-items: start;
+}
+.pfModalSidebar { display:flex; align-items:flex-start; }
+.pfModalAvatarWrap { display:flex; flex-direction:column; align-items:center; gap:12px }
+.pfModalAvatarWrap .pfAvatar { width:96px; height:96px; border-radius:999px; box-shadow:0 12px 30px rgba(15,23,42,0.12)}
+.pfFileBtn {
+  display:inline-block;
+  padding:8px 12px;
+  border-radius:8px;
+  border:1px solid var(--et-border);
+  background:#fff;
+  cursor:pointer;
+  font-size:13px;
+}
+.pfModalContent { }
+.pfModalActions { display:flex; justify-content:flex-end; gap:8px; margin-top:16px }
+.pfBtn { padding:8px 12px; border-radius:8px; border:none; cursor:pointer }
+.pfBtnPrimary { background: var(--et-primary); color:#fff; }
+
+.pfOrderMeta {
+  font-size: 12px;
+  color: var(--et-text-muted);
+}
+
+.pfOrderSubNames {
+  font-size: 12px;
+  color: var(--et-text-muted);
+  margin-top: 4px;
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+.pfOrderRight {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+  min-width: 140px;
+}
+
+.pfOrderAmount {
+  font-weight: 900;
+}
+
+.pfOrderDetailsBtn {
+  border: none;
+  background: transparent;
+  color: var(--et-primary-hover);
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.pfOrderHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.pfOrderCode {
+  font-weight: 900;
+  font-size: 14px;
+}
+
+.pfOrderStatus {
+  font-size: 12px;
+  padding: 6px 8px;
+}
+
+.pfOrderFooter {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 6px;
+  grid-column: 1 / -1;
+}
+
+.pfOrderActions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: 12px;
+  flex: 0 0 auto;
+}
+
+/* ensure amount and actions sit to the right */
+.pfOrderAmount {
+  font-weight: 900;
+  margin-left: auto;
 }
 
 .pfTable {
@@ -692,6 +978,75 @@
     padding: 10px 5px;
     font-size: 11px
   }
+}
+
+@media (max-width: 640px) {
+  .pfModal {
+    width: calc(100% - 24px);
+    max-width: calc(100% - 24px);
+    padding: 12px;
+    border-radius: 10px;
+    max-height: 92vh;
+    overflow: auto;
+  }
+  .pfModalOverlay {
+    padding: 8px;
+    align-items: flex-start;
+  }
+  .pfModalBody {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  .pfModal .pfFormGrid {
+    grid-template-columns: 1fr;
+  }
+  .pfModalSidebar { justify-content: center }
+  .pfModalAvatarWrap .pfAvatar { width: 72px; height: 72px }
+  .pfFileBtn { width: 100%; text-align: center }
+  .pfModalActions { flex-direction: column; gap: 8px }
+  .pfBtn { width: 100% }
+
+  /* Ensure profile two-column blocks collapse */
+  .pfTwoCol { grid-template-columns: 1fr }
+
+  /* Tighten order thumb grids for small screens */
+  .pfThumbLayout-two { grid-template-columns: repeat(2, 56px); grid-auto-rows: 56px }
+  .pfThumbLayout-three { grid-template-columns: 80px 42px; grid-template-rows: 42px 42px }
+  .pfThumbLayout-four { grid-template-columns: repeat(2, 42px); grid-template-rows: repeat(2, 42px) }
+}
+
+/* Recent orders responsive fixes */
+@media (max-width: 520px) {
+  .pfOrderList { gap: 10px }
+  .pfOrderItem {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 10px;
+  }
+  .pfOrderThumbGrid {
+    display: flex;
+    gap: 8px;
+    width: 100%;
+    justify-content: flex-start;
+    align-items: center;
+  }
+  .pfOrderThumbCell { width: 56px; height: 56px }
+  .pfOrderThumbImg { width: 56px; height: 56px }
+  .pfOrderMain { width: 100% }
+  .pfOrderHeader { width: 100%; display: flex; justify-content: space-between; align-items: center }
+  .pfOrderName {
+    font-size: 14px;
+    line-height: 1.25;
+    display: block;
+    white-space: normal;
+    overflow: visible;
+    text-overflow: unset;
+    max-height: none;
+  }
+  .pfOrderFooter { width: 100%; display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap }
+  .pfOrderAmount { font-weight: 800 }
+  .pfThumbOverlay { font-size: 12px }
 }
 
 @media (max-width: 360px) {
