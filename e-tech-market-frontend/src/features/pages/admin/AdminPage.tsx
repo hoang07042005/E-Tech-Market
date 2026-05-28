@@ -2,7 +2,6 @@ import type { ReactNode } from 'react'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
-import '@/styles/admin/AdminPage.css'
 import DashboardContent from './dashboard/DashboardPage'
 import CategoryPage from './categories/CategoryPage'
 import ProductPage from './products/ProductPage'
@@ -144,6 +143,10 @@ export default function AdminPage() {
 
   useEffect(() => {
     const isDark = localStorage.getItem('theme') === 'dark'
+
+    // Dynamically import admin css so it isn't bundled into the main stylesheet
+    // for non-admin users.
+    import('@/styles/admin/AdminPage.css').catch(() => {})
 
     document.documentElement.classList.toggle('dark', isDark)
     setDarkMode(isDark)

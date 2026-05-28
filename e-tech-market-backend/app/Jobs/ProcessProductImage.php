@@ -87,6 +87,12 @@ class ProcessProductImage implements ShouldQueue
             default => null,
         };
 
+        // Additionally, generate a WebP sibling file for browsers that support it
+        if (function_exists('imagewebp') && $mime !== 'image/webp') {
+            $webpPath = preg_replace('/\.[^.]+$/', '.webp', $fullPath);
+            @imagewebp($srcImage, $webpPath, 80);
+        }
+
         imagedestroy($srcImage);
         Log::info("Đã tối ưu hóa và nén ảnh thành công: " . $this->imagePath);
     }

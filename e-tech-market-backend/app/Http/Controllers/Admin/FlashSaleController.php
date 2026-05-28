@@ -97,20 +97,32 @@ class FlashSaleController extends Controller
         $percentage = (float) $validated['discount_percentage'];
         $qtyLimit = $validated['quantity_limit'] ?? null;
 
-        // Lấy toàn bộ sản phẩm cùng với các variants của chúng
-        $products = \App\Models\Product::with('variants')->get();
+        // Process products in chunks to avoid loading all products into memory
         $addedCount = 0;
-
-        foreach ($products as $product) {
-            if ($product->variants && $product->variants->count() > 0) {
-                // Nếu sản phẩm có các phiên bản (variants)
-                foreach ($product->variants as $variant) {
-                    $discountedPrice = round((float)$variant->price * (1 - $percentage / 100));
-                    
+        \App\Models\Product::chunk(200, function ($products) use ($flashSale, $percentage, $qtyLimit, &$addedCount) {
+            $products->load('variants');
+            foreach ($products as $product) {
+                if ($product->variants && $product->variants->count() > 0) {
+                    foreach ($product->variants as $variant) {
+                        $discountedPrice = round((float)$variant->price * (1 - $percentage / 100));
+                        $flashSale->items()->updateOrCreate(
+                            [
+                                'product_id' => $product->id,
+                                'variant_id' => $variant->id,
+                            ],
+                            [
+                                'flash_sale_price' => $discountedPrice,
+                                'quantity_limit' => $qtyLimit,
+                            ]
+                        );
+                        $addedCount++;
+                    }
+                } else {
+                    $discountedPrice = round((float)$product->price * (1 - $percentage / 100));
                     $flashSale->items()->updateOrCreate(
                         [
                             'product_id' => $product->id,
-                            'variant_id' => $variant->id,
+                            'variant_id' => null,
                         ],
                         [
                             'flash_sale_price' => $discountedPrice,
@@ -119,23 +131,8 @@ class FlashSaleController extends Controller
                     );
                     $addedCount++;
                 }
-            } else {
-                // Nếu sản phẩm không có phiên bản nào
-                $discountedPrice = round((float)$product->price * (1 - $percentage / 100));
-                
-                $flashSale->items()->updateOrCreate(
-                    [
-                        'product_id' => $product->id,
-                        'variant_id' => null,
-                    ],
-                    [
-                        'flash_sale_price' => $discountedPrice,
-                        'quantity_limit' => $qtyLimit,
-                    ]
-                );
-                $addedCount++;
             }
-        }
+        });
 
         \Illuminate\Support\Facades\Cache::forget('active_flash_sale');
 

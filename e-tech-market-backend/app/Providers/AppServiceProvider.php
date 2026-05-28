@@ -3,6 +3,8 @@
 namespace App\Providers;
 
 use App\Models\ProductVariant;
+use App\Models\User;
+use App\Models\Role;
 use App\Observers\ProductVariantObserver;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\ServiceProvider;
@@ -110,5 +112,19 @@ class AppServiceProvider extends ServiceProvider
 
         \App\Models\BlogPost::saved($forgetBlogCache);
         \App\Models\BlogPost::deleted($forgetBlogCache);
+
+        // Invalidate cached admin user ids when users or roles change.
+        $forgetAdminUserIds = function () {
+            try {
+                Cache::forget('admin_user_ids');
+            } catch (\Throwable) {
+                // fail-safe
+            }
+        };
+
+        \App\Models\User::saved($forgetAdminUserIds);
+        \App\Models\User::deleted($forgetAdminUserIds);
+        \App\Models\Role::saved($forgetAdminUserIds);
+        \App\Models\Role::deleted($forgetAdminUserIds);
     }
 }
