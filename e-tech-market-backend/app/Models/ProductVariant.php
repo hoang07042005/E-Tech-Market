@@ -9,6 +9,10 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class ProductVariant extends Model
 {
+    /**
+     * @property int $id
+     * @property bool $wasRecentlyCreated
+     */
     use SoftDeletes;
 
     protected $fillable = [

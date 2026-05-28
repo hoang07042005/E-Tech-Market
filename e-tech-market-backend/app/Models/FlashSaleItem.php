@@ -7,6 +7,10 @@ use Illuminate\Database\Eloquent\Model;
 
 class FlashSaleItem extends Model
 {
+    /**
+     * @property int $id
+     * @property int $flash_sale_id
+     */
     use HasFactory;
 
     protected $fillable = [

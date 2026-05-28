@@ -7,6 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 
 class FlashSale extends Model
 {
+    /**
+     * @property int $id
+     */
     use HasFactory;
 
     const STATUS_WAITING = 'waiting';

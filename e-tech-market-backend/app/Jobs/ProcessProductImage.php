@@ -28,7 +28,9 @@ class ProcessProductImage implements ShouldQueue
             return;
         }
 
-        $fullPath = $disk->path($this->imagePath);
+        // Use storage_path for a reliable local filesystem path (works for 'public' local driver).
+        // Using $disk->path() may not be available for all filesystem adapters and static analyzers.
+        $fullPath = storage_path('app/public/' . ltrim($this->imagePath, '/'));
         
         if (!extension_loaded('gd')) {
             Log::info("Không tìm thấy PHP GD Extension. Bỏ qua bước nén ảnh.");

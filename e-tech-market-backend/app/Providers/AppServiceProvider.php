@@ -122,9 +122,9 @@ class AppServiceProvider extends ServiceProvider
             }
         };
 
-        \App\Models\User::saved($forgetAdminUserIds);
-        \App\Models\User::deleted($forgetAdminUserIds);
-        \App\Models\Role::saved($forgetAdminUserIds);
-        \App\Models\Role::deleted($forgetAdminUserIds);
+        User::saved($forgetAdminUserIds);
+        User::deleted($forgetAdminUserIds);
+        Role::saved($forgetAdminUserIds);
+        Role::deleted($forgetAdminUserIds);
     }
 }

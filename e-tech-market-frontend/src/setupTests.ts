@@ -1,8 +1,8 @@
 import '@testing-library/jest-dom'
-import { afterEach } from 'vitest'
 import { cleanup } from '@testing-library/react'
+import { afterEach } from 'vitest'
 
-// Runs a cleanup after each test case
+// Runs a cleanup after each test case (use global `afterEach` provided by Vitest)
 afterEach(() => {
   cleanup()
 })

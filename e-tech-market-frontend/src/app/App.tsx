@@ -1,7 +1,6 @@
 import { BrowserRouter as Router, Routes, Route, useLocation, useNavigate, Navigate } from 'react-router-dom'
 import { useEffect, useState, lazy, Suspense } from 'react'
-import { MutationCache, QueryCache, QueryClient, QueryClientProvider, useQuery } from '@tanstack/react-query'
-import { ApiRequestError, apiFetch, notifyGlobalError } from '@/configs/api.config'
+import { useApiQuery } from '@/features/api/useApiQuery'
 import ErrorBoundary from '@/components/ErrorBoundary'
 import { GlobalToastProvider } from '@/components/GlobalToastProvider'
 
@@ -51,28 +50,7 @@ const FlashSalePage = lazy(() => import('@/features/pages/client/products/FlashS
 const VideoPage = lazy(() => import('@/features/pages/client/video/VideoPage'))
 const VideoDetailPage = lazy(() => import('@/features/pages/client/video/VideoDetailPage'))
 
-const queryClient = new QueryClient({
-  queryCache: new QueryCache({
-    onError: (error) => {
-      if (error instanceof ApiRequestError && error.globalErrorNotified) return
-      notifyGlobalError(error instanceof Error ? error.message : 'Đã xảy ra lỗi khi tải dữ liệu.')
-    },
-  }),
-  mutationCache: new MutationCache({
-    onError: (error) => {
-      if (error instanceof ApiRequestError && error.globalErrorNotified) return
-      notifyGlobalError(error instanceof Error ? error.message : 'Thao tác không thành công.')
-    },
-  }),
-  defaultOptions: {
-    queries: {
-      refetchOnWindowFocus: true,
-      retry: false,
-      staleTime: 1000 * 60 * 2,
-      gcTime: 1000 * 60 * 10,
-    },
-  },
-})
+// Using shared `queryClient` from configs/queryClient.ts
 
 function isStaffOrAdmin(user: unknown): boolean {
   if (!user || typeof user !== 'object') return false
@@ -86,13 +64,10 @@ function useCurrentUser() {
   // 🔒 Token is now in httpOnly cookie, managed by browser automatically
   // We check if user is authenticated by attempting to fetch /api/me
   // The cookie will be sent automatically with credentials: 'include'
-  return useQuery<any>({
-    queryKey: ['currentUser'],
-    queryFn: () => apiFetch('/api/me'),
+  return useApiQuery<any>(['currentUser'], '/api/me', {
     enabled: true, // Always try to fetch, backend will reject with 401 if not authenticated
     retry: false,
     staleTime: 1000 * 60 * 2,
-    gcTime: 1000 * 60 * 5,
   })
 }
 
@@ -148,28 +123,18 @@ function AppFrame() {
   const [maintenanceMode, setMaintenanceMode] = useState<boolean | null>(null)
   const [chatConfig, setChatConfig] = useState<any>(null)
   const currentUserQuery = useCurrentUser()
+  const storeConfigQuery = useApiQuery<{ maintenance_mode: boolean; chat: any }>(['storeConfig'], '/api/store/config', {
+    retry: false,
+    staleTime: 1000 * 60 * 5,
+  })
   const currentUser = currentUserQuery.data
   const isStaffOrAdminUser = isStaffOrAdmin(currentUser)
 
   useEffect(() => {
-    let mounted = true
-    apiFetch<{ maintenance_mode: boolean; chat: any }>('/api/store/config')
-      .then((res) => {
-        if (mounted) {
-          setMaintenanceMode(!!res.maintenance_mode)
-          setChatConfig(res.chat || { service: 'none' })
-        }
-      })
-      .catch(() => {
-        if (mounted) {
-          setMaintenanceMode(false)
-          setChatConfig({ service: 'none' })
-        }
-      })
-    return () => {
-      mounted = false
-    }
-  }, [])
+    if (!storeConfigQuery.data) return
+    setMaintenanceMode(!!storeConfigQuery.data.maintenance_mode)
+    setChatConfig(storeConfigQuery.data.chat || { service: 'none' })
+  }, [storeConfigQuery.data])
 
   /** Phiên đăng nhập 24h: kiểm tra khi đổi route + mỗi phút. */
   useEffect(() => {
@@ -316,11 +281,9 @@ export default function App() {
   return (
     <Router>
       <GlobalToastProvider>
-        <QueryClientProvider client={queryClient}>
-          <ErrorBoundary>
-            <AppFrame />
-          </ErrorBoundary>
-        </QueryClientProvider>
+        <ErrorBoundary>
+          <AppFrame />
+        </ErrorBoundary>
       </GlobalToastProvider>
     </Router>
   )

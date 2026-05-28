@@ -16,7 +16,7 @@ export type CartState = {
 
 const CART_KEY = 'cart'
 
-function safeParseJson<T>(raw: string | null): T | null {
+export function safeParseJson<T>(raw: string | null): T | null {
   if (!raw) return null
   try {
     return JSON.parse(raw) as T
