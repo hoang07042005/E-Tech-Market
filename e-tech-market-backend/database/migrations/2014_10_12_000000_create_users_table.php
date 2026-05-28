@@ -26,7 +26,8 @@ return new class extends Migration
                 $table->string('avatar_url')->nullable();
                 $table->boolean('is_active')->default(true);
                 $table->rememberToken();
-                $table->timestamps();
+                $table->timestampsTz();
+                $table->softDeletesTz();
             });
         }
     }
