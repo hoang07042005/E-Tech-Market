@@ -564,6 +564,9 @@ html.dark .pdpUnifiedOption {
     background: var(--pdp-surface);
     border-color: var(--et-border);
 }
+html.dark .pdpFacetColorChip.is-active {
+    border-color: var(--pdp-primary);
+}
 
 html.dark .pdpFacetColorChip:hover:not(:disabled),
 html.dark .pdpFacetStorageChip:hover:not(:disabled),
