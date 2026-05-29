@@ -98,7 +98,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/me', [AuthController::class, 'me']);
     Route::patch('/me', [AuthController::class, 'updateMe']);
     Route::post('/me/avatar', [AuthController::class, 'updateAvatar']);
-    Route::patch('/me/password', [AuthController::class, 'changePassword']);
+    Route::patch('/me/password', [AuthController::class, 'changePassword'])->middleware('throttle:5,1');
     Route::get('/me/sessions', [AuthController::class, 'sessions']);
     Route::post('/auth/logout', [AuthController::class, 'logout']);
 
@@ -249,7 +249,7 @@ Route::get('/videos', [App\Http\Controllers\Client\VideoController::class, 'inde
 Route::get('/videos/{video}', [App\Http\Controllers\Client\VideoController::class, 'show']);
 
 Route::get('/coupons', [ClientCouponsController::class, 'index']);
-Route::post('/coupons/apply', [ClientCouponsController::class, 'apply']);
+Route::post('/coupons/apply', [ClientCouponsController::class, 'apply'])->middleware('throttle:5,1');
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/products/{product}/reviews', [ReviewsController::class, 'store']);

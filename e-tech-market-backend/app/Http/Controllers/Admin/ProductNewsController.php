@@ -2,12 +2,16 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Http\Resources\Admin\ProductNewsResource;
+
 use App\Http\Controllers\Controller;
 use App\Models\Product;
 use App\Models\ProductNews;
 use App\Support\HtmlSanitizer;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use App\Http\Requests\Admin\StoreProductNewsRequest;
+use App\Http\Requests\Admin\UpdateProductNewsRequest;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
 
@@ -20,19 +24,12 @@ class ProductNewsController extends Controller
             ->orderBy('sort_order')
             ->get();
 
-        return response()->json($items);
+        return response()->json(ProductNewsResource::collection($items)->resolve());
     }
 
-    public function store(Product $product, Request $request): JsonResponse
+    public function store(Product $product, StoreProductNewsRequest $request): JsonResponse
     {
-        $data = $request->validate([
-            'title' => 'required|string|max:255',
-            'content_html' => 'required|string',
-            'thumbnail_url' => 'nullable|string',
-            'sort_order' => 'nullable|integer|min:0',
-            'is_active' => 'boolean',
-            'published_at' => 'nullable|date',
-        ]);
+        $data = $request->validated();
 
         $baseSlug = Str::slug($data['title']) ?: ('news-' . uniqid());
         $slug = $baseSlug;
@@ -56,20 +53,13 @@ class ProductNewsController extends Controller
         return response()->json($news, 201);
     }
 
-    public function update(Product $product, ProductNews $news, Request $request): JsonResponse
+    public function update(Product $product, ProductNews $news, UpdateProductNewsRequest $request): JsonResponse
     {
         if ((int) $news->product_id !== (int) $product->id) {
             return response()->json(['message' => 'Not found'], 404);
         }
 
-        $data = $request->validate([
-            'title' => 'required|string|max:255',
-            'content_html' => 'required|string',
-            'thumbnail_url' => 'nullable|string',
-            'sort_order' => 'nullable|integer|min:0',
-            'is_active' => 'boolean',
-            'published_at' => 'nullable|date',
-        ]);
+        $data = $request->validated();
 
         $news->update([
             'title' => $data['title'],

@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\ShippingZone;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use App\Http\Requests\Admin\StoreShippingZoneRequest;
+use App\Http\Requests\Admin\UpdateShippingZoneRequest;
 
 class ShippingZonesController extends Controller
 {
@@ -26,14 +28,9 @@ class ShippingZonesController extends Controller
         return response()->json($zones);
     }
 
-    public function store(Request $request): JsonResponse
+    public function store(StoreShippingZoneRequest $request): JsonResponse
     {
-        $data = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'eta' => ['nullable', 'string', 'max:100'],
-            'fee' => ['required', 'numeric', 'min:0'],
-            'is_active' => ['nullable', 'boolean'],
-        ]);
+        $data = $request->validated();
 
         $z = ShippingZone::query()->create([
             'name' => $data['name'],
@@ -51,14 +48,9 @@ class ShippingZonesController extends Controller
         ], 201);
     }
 
-    public function update(ShippingZone $zone, Request $request): JsonResponse
+    public function update(ShippingZone $zone, UpdateShippingZoneRequest $request): JsonResponse
     {
-        $data = $request->validate([
-            'name' => ['nullable', 'string', 'max:255'],
-            'eta' => ['nullable', 'string', 'max:100'],
-            'fee' => ['nullable', 'numeric', 'min:0'],
-            'is_active' => ['nullable', 'boolean'],
-        ]);
+        $data = $request->validated();
 
         $zone->fill($data);
         $zone->save();

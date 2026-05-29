@@ -8,6 +8,9 @@ use App\Models\ProductVariant;
 use App\Services\ProductService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use App\Http\Requests\Admin\StoreProductRequest;
+use App\Http\Requests\Admin\UpdateProductRequest;
+use App\Http\Resources\Admin\ProductResource;
 
 class ProductsController extends Controller
 {
@@ -48,6 +51,7 @@ class ProductsController extends Controller
         $perPage = max(5, min($perPage, 100)); // clamp 5–100
 
         $products = $query->orderBy('created_at', 'desc')->paginate($perPage);
+        $products->getCollection()->transform(fn($item) => (new ProductResource($item))->resolve());
         $result = $products->toArray();
         $result['data'] = $this->cleanUtf8($result['data']);
         return response()->json($result);
@@ -55,50 +59,26 @@ class ProductsController extends Controller
 
     public function show(Product $product): JsonResponse
     {
-        return response()->json($this->cleanUtf8($product->load(['category', 'images', 'specs', 'variants', 'faqs', 'inventoryItems'])->toArray()));
+        $product->load(['category', 'images', 'specs', 'variants', 'faqs', 'inventoryItems']);
+        return response()->json($this->cleanUtf8((new ProductResource($product))->resolve()));
     }
 
-    public function store(Request $request): JsonResponse
+    public function store(StoreProductRequest $request): JsonResponse
     {
-        $data = $request->validate([
-            'name' => 'required|string|max:255',
-            'category_id' => 'required|exists:categories,id',
-            'brand' => 'nullable|string|max:100',
-            'description' => 'nullable|string',
-            'rich_html' => 'nullable|string',
-            'is_active' => 'boolean',
-            'images' => 'nullable|array|max:12',
-            'images.*' => 'image|mimes:jpeg,png,jpg,webp|max:2048',
-            'specs' => 'nullable|string', // JSON string
-            'variants' => 'nullable|string', // JSON string
-            'faqs' => 'nullable|string', // JSON string
-        ]);
+        $data = $request->validated();
 
         $product = $this->productService->createProduct($data, $request);
 
-        return response()->json($this->cleanUtf8($product->toArray()), 201);
+        return response()->json($this->cleanUtf8((new ProductResource($product))->resolve()), 201);
     }
 
-    public function update(Request $request, Product $product): JsonResponse
+    public function update(UpdateProductRequest $request, Product $product): JsonResponse
     {
-        $data = $request->validate([
-            'name' => 'required|string|max:255',
-            'category_id' => 'required|exists:categories,id',
-            'brand' => 'nullable|string|max:100',
-            'description' => 'nullable|string',
-            'rich_html' => 'nullable|string',
-            'is_active' => 'boolean',
-            'images' => 'nullable|array|max:12',
-            'images.*' => 'image|mimes:jpeg,png,jpg,webp|max:2048',
-            'keep_existing_images' => 'nullable',
-            'specs' => 'nullable|string', // JSON string
-            'variants' => 'nullable|string', // JSON string
-            'faqs' => 'nullable|string', // JSON string
-        ]);
+        $data = $request->validated();
 
         $product = $this->productService->updateProduct($product, $data, $request);
 
-        return response()->json($this->cleanUtf8($product->toArray()));
+        return response()->json($this->cleanUtf8((new ProductResource($product))->resolve()));
     }
 
     public function destroy(Product $product): JsonResponse

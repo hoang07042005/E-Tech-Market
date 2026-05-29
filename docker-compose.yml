@@ -15,12 +15,12 @@ services:
     build:
       context: ./e-tech-market-backend
       dockerfile: Dockerfile
-    ports:
-      - "8000:8000"
+    expose:
+      - "9000"
     volumes:
       - ./e-tech-market-backend:/var/www
       - backend_vendor:/var/www/vendor
-    command: sh -c "php artisan storage:link && php artisan config:clear && php artisan cache:clear && php artisan route:clear && php artisan view:clear && php artisan serve --host=0.0.0.0 --port=8000"
+    command: sh -c "php artisan storage:link && php artisan config:clear && php artisan cache:clear && php artisan route:clear && php artisan view:clear && php-fpm"
     environment:
       - DB_CONNECTION=pgsql
       - DB_HOST=db
@@ -38,11 +38,21 @@ services:
       - db
       - redis
     healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:8000/api/health || exit 1"]
+      test: ["CMD-SHELL", "php artisan env || exit 1"]
       interval: 30s
       timeout: 10s
       retries: 5
       start_period: 10s
+
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./e-tech-market-backend:/var/www
+      - ./e-tech-market-backend/docker-nginx.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - backend
 
   queue_worker:
     build:

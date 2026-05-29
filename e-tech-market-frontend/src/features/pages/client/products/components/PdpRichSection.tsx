@@ -1,54 +1,63 @@
-import { useRef, useState, useEffect } from 'react'
-import { Link } from 'react-router-dom'
-import type { Product, ProductNews } from '@/features/services/products.service'
-import { sanitizeHtml } from '@/utils/sanitizeHtml'
-import { resolveImageUrl } from './PdpShared'
+import { useRef, useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import type {
+  Product,
+  ProductNews,
+} from "@/features/services/products.service";
+import { sanitizeHtml } from "@/__tests__/utils/sanitizeHtml";
+import { resolveImageUrl } from "./PdpShared";
 
 export function PdpRichSection({
   product,
   visibleNews,
 }: {
-  product: Product
-  visibleNews: ProductNews[]
+  product: Product;
+  visibleNews: ProductNews[];
 }) {
-  const [isRichExpanded, setIsRichExpanded] = useState(false)
-  const [canExpandRich, setCanExpandRich] = useState(false)
-  const richRef = useRef<HTMLDivElement | null>(null)
+  const [isRichExpanded, setIsRichExpanded] = useState(false);
+  const [canExpandRich, setCanExpandRich] = useState(false);
+  const richRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    if (!richRef.current) return
+    if (!richRef.current) return;
     const ro = new ResizeObserver((entries) => {
       for (const entry of entries) {
         if (entry.target.scrollHeight > 600) {
-          setCanExpandRich(true)
+          setCanExpandRich(true);
         } else {
-          setCanExpandRich(false)
+          setCanExpandRich(false);
         }
       }
-    })
-    ro.observe(richRef.current)
-    return () => ro.disconnect()
-  }, [product.rich_html])
+    });
+    ro.observe(richRef.current);
+    return () => ro.disconnect();
+  }, [product.rich_html]);
 
-  if (!product.rich_html) return null
+  if (!product.rich_html) return null;
 
-  const sanitizedHtml = sanitizeHtml(product.rich_html)
+  const sanitizedHtml = sanitizeHtml(product.rich_html);
 
   return (
     <section className="pdpRichSection" aria-label="Nội dung sản phẩm">
       <div
         className={[
-          'pdpRichGrid',
-          isRichExpanded ? 'is-expanded' : '',
-          visibleNews.length > 0 ? '' : 'is-no-news',
-        ].filter(Boolean).join(' ')}
+          "pdpRichGrid",
+          isRichExpanded ? "is-expanded" : "",
+          visibleNews.length > 0 ? "" : "is-no-news",
+        ]
+          .filter(Boolean)
+          .join(" ")}
       >
         <div className="pdpRichLeft">
           <div className="pdpRichCard">
             <div
               ref={richRef}
-              className={`pdpRichContent ${!isRichExpanded ? 'is-collapsed' : ''}`}
-              style={!/<[a-z][\s\S]*>/i.test(sanitizedHtml) ? { whiteSpace: 'pre-wrap' } : undefined}
+              className={`pdpRichContent ${!isRichExpanded ? "is-collapsed" : ""}`}
+              style={
+                !/<[a-z][\s\S]*>/i.test(sanitizedHtml)
+                  ? { whiteSpace: "pre-wrap" }
+                  : undefined
+              }
               dangerouslySetInnerHTML={{ __html: sanitizedHtml }}
             />
             {canExpandRich && (
@@ -59,7 +68,7 @@ export function PdpRichSection({
                   onClick={() => setIsRichExpanded((v) => !v)}
                   aria-expanded={isRichExpanded}
                 >
-                  {isRichExpanded ? 'Thu gọn' : 'Xem thêm'}
+                  {isRichExpanded ? "Thu gọn" : "Xem thêm"}
                 </button>
               </div>
             )}
@@ -67,18 +76,28 @@ export function PdpRichSection({
         </div>
         {visibleNews.length > 0 && (
           <div className="pdpRichRight">
-            <section className="pdpNewsSection" aria-labelledby="pdp-news-title">
+            <section
+              className="pdpNewsSection"
+              aria-labelledby="pdp-news-title"
+            >
               <div className="pdpNewsHead">
                 <h3 id="pdp-news-title" className="pdpNewsTitle">
                   Tin tức sản phẩm
                 </h3>
-                <Link to={`/products/${product.slug}#product-news`} className="pdpNewsAllLink">
+                <Link
+                  to={`/products/${product.slug}#product-news`}
+                  className="pdpNewsAllLink"
+                >
                   Xem tất cả
                 </Link>
               </div>
               <div className="pdpNewsMiniList" id="product-news">
                 {visibleNews.slice(0, 7).map((item) => (
-                  <Link key={item.id} to={`/product-news/${item.slug}`} className="pdpNewsMiniCard">
+                  <Link
+                    key={item.id}
+                    to={`/product-news/${item.slug}`}
+                    className="pdpNewsMiniCard"
+                  >
                     <span className="pdpNewsMiniThumb" aria-hidden>
                       {item.thumbnail_url ? (
                         <img src={resolveImageUrl(item.thumbnail_url)} alt="" />
@@ -95,5 +114,5 @@ export function PdpRichSection({
         )}
       </div>
     </section>
-  )
+  );
 }

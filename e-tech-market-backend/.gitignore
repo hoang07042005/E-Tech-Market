@@ -18,3 +18,7 @@ yarn-error.log
 /.idea
 /.vscode
 /scratch
+out.txt
+output.log
+temp_output.txt
+testout.txt

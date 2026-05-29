@@ -8,6 +8,7 @@ import {
   isAuthSessionExpired,
   performAuthSessionExpiry,
 } from '@/features/store/auth.store'
+import { describe, it, expect, beforeEach } from 'vitest'
 
 beforeEach(() => {
   localStorage.clear()

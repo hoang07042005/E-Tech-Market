@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\ShippingMethod;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use App\Http\Requests\Admin\StoreShippingMethodRequest;
+use App\Http\Requests\Admin\UpdateShippingMethodRequest;
 
 class ShippingMethodsController extends Controller
 {
@@ -28,16 +30,9 @@ class ShippingMethodsController extends Controller
         return response()->json($methods);
     }
 
-    public function store(Request $request): JsonResponse
+    public function store(StoreShippingMethodRequest $request): JsonResponse
     {
-        $data = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'description' => ['nullable', 'string'],
-            'base_fee' => ['required', 'numeric', 'min:0'],
-            'estimated_days_min' => ['nullable', 'integer', 'min:0'],
-            'estimated_days_max' => ['nullable', 'integer', 'min:0'],
-            'is_active' => ['nullable', 'boolean'],
-        ]);
+        $data = $request->validated();
 
         $m = ShippingMethod::query()->create([
             'name' => $data['name'],
@@ -59,16 +54,9 @@ class ShippingMethodsController extends Controller
         ], 201);
     }
 
-    public function update(ShippingMethod $method, Request $request): JsonResponse
+    public function update(ShippingMethod $method, UpdateShippingMethodRequest $request): JsonResponse
     {
-        $data = $request->validate([
-            'name' => ['nullable', 'string', 'max:255'],
-            'description' => ['nullable', 'string'],
-            'base_fee' => ['nullable', 'numeric', 'min:0'],
-            'estimated_days_min' => ['nullable', 'integer', 'min:0'],
-            'estimated_days_max' => ['nullable', 'integer', 'min:0'],
-            'is_active' => ['nullable', 'boolean'],
-        ]);
+        $data = $request->validated();
 
         $method->fill($data);
         $method->save();

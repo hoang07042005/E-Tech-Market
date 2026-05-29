@@ -2,9 +2,13 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Http\Resources\Admin\VideoCategoryResource;
+
 use App\Http\Controllers\Controller;
 use App\Models\VideoCategory;
 use Illuminate\Http\Request;
+use App\Http\Requests\Admin\StoreVideoCategoryRequest;
+use App\Http\Requests\Admin\UpdateVideoCategoryRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Str;
 
@@ -16,15 +20,9 @@ class VideoCategoryController extends Controller
         return response()->json($categories);
     }
 
-    public function store(Request $request): JsonResponse
+    public function store(StoreVideoCategoryRequest $request): JsonResponse
     {
-        $request->validate([
-            'name'        => 'required|string|max:255',
-            'slug'        => 'nullable|string|max:255|unique:video_categories,slug',
-            'description' => 'nullable|string',
-            'is_active'   => 'nullable|boolean',
-            'sort_order'  => 'nullable|integer',
-        ]);
+        
 
         $slug = $request->slug
             ? $request->slug
@@ -45,18 +43,12 @@ class VideoCategoryController extends Controller
             'sort_order'  => $request->sort_order ?? 0,
         ]);
 
-        return response()->json($category, 201);
+        return response()->json((new VideoCategoryResource($category))->resolve(), 201);
     }
 
-    public function update(Request $request, VideoCategory $videoCategory): JsonResponse
+    public function update(UpdateVideoCategoryRequest $request, VideoCategory $videoCategory): JsonResponse
     {
-        $request->validate([
-            'name'        => 'sometimes|string|max:255',
-            'slug'        => 'sometimes|string|max:255|unique:video_categories,slug,' . $videoCategory->id,
-            'description' => 'nullable|string',
-            'is_active'   => 'nullable|boolean',
-            'sort_order'  => 'nullable|integer',
-        ]);
+        
 
         $data = $request->only(['name', 'description', 'sort_order']);
 
@@ -71,7 +63,7 @@ class VideoCategoryController extends Controller
         }
 
         $videoCategory->update($data);
-        return response()->json($videoCategory);
+        return response()->json((new VideoCategoryResource($videoCategory))->resolve());
     }
 
     public function destroy(VideoCategory $videoCategory): JsonResponse

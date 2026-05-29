@@ -4,11 +4,17 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Order;
+use App\Http\Resources\Admin\OrderResource;
+use App\Http\Resources\Admin\OrderListResource;
 use App\Models\OrderReturnRequest;
 use App\Services\AdminOrderService;
 use App\Models\Product;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use App\Http\Requests\Admin\ApproveReturnRequest;
+use App\Http\Requests\Admin\RejectReturnRequest;
+use App\Http\Requests\Admin\MarkReturnRefundedRequest;
+use App\Http\Requests\Admin\UpdateOrderRequest;
 use Illuminate\Support\Carbon;
 
 class OrdersController extends Controller
@@ -20,7 +26,7 @@ class OrdersController extends Controller
         $this->adminOrderService = $adminOrderService;
     }
 
-    public function approveReturnRequest(Order $order, Request $request): JsonResponse
+    public function approveReturnRequest(Order $order, ApproveReturnRequest $request): JsonResponse
     {
         $order->loadMissing(['returnRequest']);
         if (!$order->returnRequest) {
@@ -31,9 +37,7 @@ class OrdersController extends Controller
             return response()->json(['message' => 'Yêu cầu hoàn trả không ở trạng thái chờ duyệt.'], 422);
         }
 
-        $data = $request->validate([
-            'admin_note' => ['nullable', 'string', 'max:4000'],
-        ]);
+        $data = $request->validated();
 
         $adminNote = array_key_exists('admin_note', $data) ? ($data['admin_note'] !== null ? (string) $data['admin_note'] : null) : $order->returnRequest->admin_note;
 
@@ -42,7 +46,7 @@ class OrdersController extends Controller
         return $this->show($order);
     }
 
-    public function rejectReturnRequest(Order $order, Request $request): JsonResponse
+    public function rejectReturnRequest(Order $order, RejectReturnRequest $request): JsonResponse
     {
         $order->loadMissing(['returnRequest']);
         if (!$order->returnRequest) {
@@ -53,16 +57,14 @@ class OrdersController extends Controller
             return response()->json(['message' => 'Yêu cầu hoàn trả không ở trạng thái chờ duyệt.'], 422);
         }
 
-        $data = $request->validate([
-            'admin_note' => ['required', 'string', 'min:2', 'max:4000'],
-        ]);
+        $data = $request->validated();
 
         $order = $this->adminOrderService->rejectReturnRequest($order, (string) $data['admin_note'], $request->user()?->id);
 
         return $this->show($order);
     }
 
-    public function markReturnRefunded(Order $order, Request $request): JsonResponse
+    public function markReturnRefunded(Order $order, MarkReturnRefundedRequest $request): JsonResponse
     {
         $order->loadMissing(['returnRequest']);
         if (!$order->returnRequest) {
@@ -73,11 +75,7 @@ class OrdersController extends Controller
             return response()->json(['message' => 'Chỉ có thể hoàn tiền sau khi đã phê duyệt yêu cầu.'], 422);
         }
 
-        $data = $request->validate([
-            'admin_note' => ['nullable', 'string', 'max:4000'],
-            'refund_proof' => ['nullable', 'array', 'max:8'],
-            'refund_proof.*' => ['file', 'max:51200'],
-        ]);
+        $data = $request->validated();
 
         $files = $request->file('refund_proof', []);
         $adminNote = array_key_exists('admin_note', $data) ? ($data['admin_note'] !== null ? (string) $data['admin_note'] : null) : $order->returnRequest->admin_note;
@@ -87,13 +85,9 @@ class OrdersController extends Controller
         return $this->show($order);
     }
 
-    public function update(Order $order, Request $request): JsonResponse
+    public function update(Order $order, UpdateOrderRequest $request): JsonResponse
     {
-        $data = $request->validate([
-            'status' => ['nullable', 'string', 'max:50'],
-            'notes' => ['nullable', 'string'],
-            'status_note' => ['nullable', 'string'],
-        ]);
+        $data = $request->validated();
 
         $prevStatus = strtolower((string) ($order->status ?? ''));
         $status = isset($data['status']) ? strtolower(trim((string) $data['status'])) : null;
@@ -153,150 +147,7 @@ class OrdersController extends Controller
             'returnRequest:id,order_id,user_id,status,content,media,admin_note,refund_proof,approved_by_user_id,approved_at,refunded_at,customer_confirmed_at,created_at,updated_at',
         ]);
 
-        $statusMeta = static function (?string $s): array {
-            $s = $s ? strtolower($s) : '';
-            return match ($s) {
-                'pending' => ['Chờ xác nhận', 'wait', 1],
-                'paid' => ['Đang chuyển bị hàng', 'info', 3],
-                'processing' => ['Đã xác nhận', 'info', 2],
-                'shipped' => ['Đang giao', 'info', 4],
-                'delivered' => ['Đã giao', 'info', 5],
-                'completed' => ['Hoàn thành', 'ok', 6],
-                'returned' => ['Hoàn trả', 'return', 7],
-                'cancelled' => ['Hủy', 'bad', 0],
-                default => [$s ?: '—', 'muted', 1],
-            };
-        };
-
-        $paymentLabel = static function (?string $m): string {
-            $m = $m ? strtolower($m) : '';
-            return match ($m) {
-                'cod' => 'COD',
-                'momo' => 'Ví MoMo',
-                'vnpay' => 'VNPAY',
-                default => $m ?: '—',
-            };
-        };
-
-        [$statusLabel, $statusTone, $statusStep] = $statusMeta((string) $order->status);
-
-        $items = ($order->items ?? collect())->map(static function ($it) {
-            return [
-                'product_id' => (int) ($it->product_id ?? 0),
-                'name' => (string) ($it->product_name_snapshot ?? '—'),
-                'quantity' => (int) ($it->quantity ?? 0),
-                'unit_price' => (float) ($it->unit_price ?? 0),
-                'total_price' => (float) ($it->total_price ?? 0),
-            ];
-        })->values()->all();
-
-        $productIds = collect($items)->pluck('product_id')->filter(static fn($v) => (int) $v > 0)->unique()->values();
-        $productImages = Product::query()
-            ->whereIn('id', $productIds)
-            ->select(['id', 'main_image_url'])
-            ->get()
-            ->mapWithKeys(static fn($p) => [(int) $p->id => ($p->main_image_url ? (string) $p->main_image_url : null)])
-            ->all();
-
-        $items = array_map(static function (array $it) use ($productImages) {
-            $pid = (int) ($it['product_id'] ?? 0);
-            return [
-                ...$it,
-                'image_url' => $pid > 0 && array_key_exists($pid, $productImages) ? $productImages[$pid] : null,
-            ];
-        }, $items);
-
-        $customerName = (string) ($order->user?->name ?: $order->shipping_name ?: '—');
-        $customerAvatar = $order->user?->avatar_url ? (string) $order->user->avatar_url : null;
-        $customerEmail = $order->user?->email ? (string) $order->user->email : null;
-        $customerPhone = $order->shipping_phone ? (string) $order->shipping_phone : ($order->user?->phone ? (string) $order->user->phone : null);
-
-        $addressParts = array_values(array_filter([
-            $order->shipping_address_line ? (string) $order->shipping_address_line : null,
-            $order->shipping_ward ? (string) $order->shipping_ward : null,
-            $order->shipping_district ? (string) $order->shipping_district : null,
-            $order->shipping_province ? (string) $order->shipping_province : null,
-        ], static fn($v) => $v !== null && trim((string) $v) !== ''));
-        $address = implode(', ', $addressParts);
-
-        $fmtHistory = static function ($h) use ($statusMeta) {
-            [$fromLabel] = $statusMeta($h->from_status ? (string) $h->from_status : null);
-            [$toLabel] = $statusMeta($h->to_status ? (string) $h->to_status : null);
-            return [
-                'id' => (int) $h->id,
-                'from_status' => $h->from_status ? (string) $h->from_status : null,
-                'to_status' => (string) ($h->to_status ?? ''),
-                'from_label' => (string) $fromLabel,
-                'to_label' => (string) $toLabel,
-                'note' => $h->note ? (string) $h->note : null,
-                'changed_at' => $h->created_at ? $h->created_at->toISOString() : null,
-                'changed_by' => $h->changedBy ? [
-                    'id' => (int) $h->changedBy->id,
-                    'name' => (string) ($h->changedBy->name ?? '—'),
-                    'avatar_url' => $h->changedBy->avatar_url ? (string) $h->changedBy->avatar_url : null,
-                ] : null,
-            ];
-        };
-
-        $history = ($order->statusHistories ?? collect())->map($fmtHistory)->values()->all();
-
-        $returnReq = null;
-        if ($order->returnRequest) {
-            $returnReq = [
-                'id' => (int) $order->returnRequest->id,
-                'status' => (string) ($order->returnRequest->status ?? ''),
-                'content' => $order->returnRequest->content ? (string) $order->returnRequest->content : null,
-                'media' => $order->returnRequest->media ?? null,
-                'admin_note' => $order->returnRequest->admin_note ? (string) $order->returnRequest->admin_note : null,
-                'refund_proof' => $order->returnRequest->refund_proof ?? null,
-                'approved_at' => $order->returnRequest->approved_at ? $order->returnRequest->approved_at->toISOString() : null,
-                'refunded_at' => $order->returnRequest->refunded_at ? $order->returnRequest->refunded_at->toISOString() : null,
-                'customer_confirmed_at' => $order->returnRequest->customer_confirmed_at ? $order->returnRequest->customer_confirmed_at->toISOString() : null,
-                'created_at' => $order->returnRequest->created_at ? $order->returnRequest->created_at->toISOString() : null,
-                'updated_at' => $order->returnRequest->updated_at ? $order->returnRequest->updated_at->toISOString() : null,
-            ];
-        }
-
-        return response()->json([
-            'id' => (int) $order->id,
-            'order_code' => (string) ($order->order_code ?: ('ET-' . $order->id)),
-            'created_at' => $order->created_at ? $order->created_at->toISOString() : null,
-            'created_date' => $order->created_at ? $order->created_at->format('d/m/Y') : '',
-            'created_time' => $order->created_at ? $order->created_at->format('H:i') : '',
-            'status' => (string) ($order->status ?? ''),
-            'status_label' => $statusLabel,
-            'status_tone' => $statusTone,
-            'status_step' => (int) $statusStep,
-            'payment_status' => (string) ($order->payment_status ?? ''),
-            'payment' => [
-                'method' => $paymentLabel($order->payment?->method),
-                'raw_method' => $order->payment?->method ? (string) $order->payment->method : null,
-                'status' => $order->payment?->status ? (string) $order->payment->status : null,
-                'transaction_code' => $order->payment?->transaction_code ? (string) $order->payment->transaction_code : null,
-                'paid_at' => $order->payment?->paid_at ? $order->payment->paid_at->toISOString() : null,
-            ],
-            'customer' => [
-                'name' => $customerName,
-                'avatar_url' => $customerAvatar,
-                'email' => $customerEmail,
-                'phone' => $customerPhone,
-            ],
-            'shipping' => [
-                'name' => $order->shipping_name ? (string) $order->shipping_name : null,
-                'phone' => $order->shipping_phone ? (string) $order->shipping_phone : null,
-                'address' => $address,
-            ],
-            'amounts' => [
-                'subtotal' => (float) ($order->subtotal_amount ?? 0),
-                'discount' => (float) ($order->discount_amount ?? 0),
-                'shipping_fee' => (float) ($order->shipping_fee ?? 0),
-                'total' => (float) ($order->total_amount ?? 0),
-            ],
-            'notes' => $order->notes ? (string) $order->notes : null,
-            'items' => $items,
-            'status_history' => $history,
-            'return_request' => $returnReq,
-        ]);
+        return response()->json((new OrderResource($order))->resolve());
     }
 
     public function index(Request $request): JsonResponse
@@ -377,61 +228,8 @@ class OrdersController extends Controller
 
         $paginator = $query->paginate($perPage, ['*'], 'page', $page);
 
-        $statusMeta = static function (?string $s): array {
-            $s = $s ? strtolower($s) : '';
-            return match ($s) {
-                'pending' => ['Chờ xác nhận', 'wait'],
-                'processing' => ['Đã xác nhận', 'info'],
-                'paid' => ['Đang chuyển bị hàng', 'info'],
-                'shipped' => ['Đang giao', 'info'],
-                'delivered' => ['Đã giao', 'ok'],
-                'completed' => ['Hoàn thành', 'ok'],
-                'returned' => ['Hoàn trả', 'return'],
-                'cancelled' => ['Hủy', 'bad'],
-                default => [$s ?: '—', 'muted'],
-            };
-        };
-
-        $paymentLabel = static function (?string $m): string {
-            $m = $m ? strtolower($m) : '';
-            return match ($m) {
-                'cod' => 'COD',
-                'momo' => 'Ví MoMo',
-                'vnpay' => 'VNPAY',
-                default => $m ?: '—',
-            };
-        };
-
-        /** @var \Illuminate\Support\Collection<int, Order> $pageItems */
         $pageItems = collect($paginator->items());
-
-        $data = $pageItems->map(static function (Order $o) use ($statusMeta, $paymentLabel) {
-            $items = $o->items ?? collect();
-            $firstName = (string) ($items->first()->product_name_snapshot ?? '');
-            $itemsCount = (int) $items->count();
-            $productText = $firstName ?: '—';
-            if ($itemsCount > 1) $productText .= ' +' . ($itemsCount - 1) . ' SP';
-
-            [$statusLabel, $statusTone] = $statusMeta((string) $o->status);
-            $customerName = (string) ($o->user?->name ?: $o->shipping_name ?: '—');
-
-            return [
-                'id' => (int) $o->id,
-                'order_code' => (string) ($o->order_code ?: ('ET-' . $o->id)),
-                'customer_name' => $customerName,
-                'customer_avatar_url' => $o->user?->avatar_url ? (string) $o->user->avatar_url : null,
-                'created_date' => $o->created_at ? $o->created_at->format('d/m/Y') : '',
-                'total_amount' => (float) ($o->total_amount ?? 0),
-                'payment_method' => $paymentLabel($o->payment?->method),
-                'status' => (string) ($o->status ?? ''),
-                'status_label' => $statusLabel,
-                'status_tone' => $statusTone,
-                'product' => $productText,
-                'return_request' => $o->returnRequest ? [
-                    'status' => (string) ($o->returnRequest->status ?? ''),
-                ] : null,
-            ];
-        })->values();
+        $data = OrderListResource::collection($pageItems)->resolve();
 
         $statsBase = Order::query();
         $stats = [

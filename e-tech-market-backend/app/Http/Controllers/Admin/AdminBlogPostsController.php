@@ -2,12 +2,17 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Http\Resources\Admin\BlogPostResource;
+
 use App\Http\Controllers\Controller;
 use App\Models\BlogPost;
 use App\Models\BlogCategory;
 use App\Support\HtmlSanitizer;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use App\Http\Requests\Admin\StoreBlogPostRequest;
+use App\Http\Requests\Admin\UpdateBlogPostRequest;
+use App\Http\Requests\Admin\StoreBlogCategoryRequest;
 use Illuminate\Support\Str;
 
 class AdminBlogPostsController extends Controller
@@ -24,19 +29,12 @@ class AdminBlogPostsController extends Controller
     public function show(BlogPost $blogPost): JsonResponse
     {
         $blogPost->load(['category', 'author']);
-        return response()->json($blogPost);
+        return response()->json((new BlogPostResource($blogPost))->resolve());
     }
 
-    public function store(Request $request): JsonResponse
+    public function store(StoreBlogPostRequest $request): JsonResponse
     {
-        $request->validate([
-            'title' => 'required|string|max:255',
-            'blog_category_id' => 'nullable|exists:blog_categories,id',
-            'excerpt' => 'nullable|string',
-            'content' => 'required|string',
-            'thumbnail_url' => 'nullable|string',
-            'is_published' => 'boolean',
-        ]);
+        
 
         $post = new BlogPost();
         $post->title = $request->title;
@@ -62,16 +60,9 @@ class AdminBlogPostsController extends Controller
         return response()->json($post, 201);
     }
 
-    public function update(Request $request, BlogPost $blogPost): JsonResponse
+    public function update(UpdateBlogPostRequest $request, BlogPost $blogPost): JsonResponse
     {
-        $request->validate([
-            'title' => 'sometimes|required|string|max:255',
-            'blog_category_id' => 'nullable|exists:blog_categories,id',
-            'excerpt' => 'nullable|string',
-            'content' => 'sometimes|required|string',
-            'thumbnail_url' => 'nullable|string',
-            'is_published' => 'boolean',
-        ]);
+        
 
         if ($request->has('title')) {
             $blogPost->title = $request->title;
@@ -111,7 +102,7 @@ class AdminBlogPostsController extends Controller
             $this->notifySubscribers($blogPost);
         }
 
-        return response()->json($blogPost);
+        return response()->json((new BlogPostResource($blogPost))->resolve());
     }
 
     public function destroy(BlogPost $blogPost): JsonResponse
@@ -120,19 +111,16 @@ class AdminBlogPostsController extends Controller
         return response()->json(['message' => 'Post deleted successfully']);
     }
 
-    public function storeCategory(Request $request): JsonResponse
+    public function storeCategory(StoreBlogCategoryRequest $request): JsonResponse
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'sort_order' => 'integer'
-        ]);
-        
+        $validated = $request->validated();
+
         $validated['slug'] = Str::slug($validated['name']) . '-' . uniqid();
         $validated['sort_order'] = $validated['sort_order'] ?? 0;
         
         $category = BlogCategory::create($validated);
         
-        return response()->json($category, 201);
+        return response()->json((new BlogPostResource($category))->resolve(), 201);
     }
 
     private function notifySubscribers(BlogPost $post): void

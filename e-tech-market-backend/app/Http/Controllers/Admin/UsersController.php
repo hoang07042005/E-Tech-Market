@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Http\Resources\Admin\UserResource;
+
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use App\Http\Requests\Admin\UpdateUserRequest;
 use Symfony\Component\HttpFoundation\Response;
 
 class UsersController extends Controller
@@ -39,19 +42,17 @@ class UsersController extends Controller
         $perPage = (int) $request->query('per_page', 20);
         $perPage = max(5, min(100, $perPage));
 
-        return response()->json($query->paginate($perPage));
+        $paginator = $query->paginate($perPage);
+        $paginator->getCollection()->transform(fn($item) => (new UserResource($item))->resolve());
+        return response()->json($paginator);
     }
 
     /**
      * Cập nhật is_active và/hoặc đồng bộ vai trò (role_ids).
      */
-    public function update(Request $request, User $user): JsonResponse
+    public function update(UpdateUserRequest $request, User $user): JsonResponse
     {
-        $data = $request->validate([
-            'is_active' => 'sometimes|boolean',
-            'role_ids' => 'sometimes|array|min:1',
-            'role_ids.*' => 'integer|exists:roles,id',
-        ]);
+        $data = $request->validated();
 
         if (!array_key_exists('is_active', $data) && !array_key_exists('role_ids', $data)) {
             return response()->json(
@@ -94,7 +95,7 @@ class UsersController extends Controller
             $user->update(['is_active' => $data['is_active']]);
         }
 
-        return response()->json($user->fresh()->load('roles'));
+        return response()->json((new UserResource($user))->resolve()->fresh()->load('roles'));
     }
 
     /**

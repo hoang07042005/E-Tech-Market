@@ -52,7 +52,7 @@ Hệ thống phân quyền thông minh cho phép các vai trò khác nhau như *
 
 | Thành Phần | Công Nghệ & Thư Viện Cốt Lõi |
 | :--- | :--- |
-| **Frontend** | React 18, Vite, TypeScript, React Router Dom v6, Vanilla CSS (Premium & Custom UI Design), Redux Toolkit (state management) |
+| **Frontend** | React 19, Vite, TypeScript, React Router Dom v6, Vanilla CSS (Premium & Custom UI Design), Zustand (state management) |
 | **Backend** | Laravel 10, Eloquent ORM, RESTful API |
 | **Database** | PostgreSQL 15, Redis (cho Cache & Session) |
 | **Hàng Đợi** | Laravel Queue Worker (`database` driver cho các tác vụ gửi email bất đồng bộ) |

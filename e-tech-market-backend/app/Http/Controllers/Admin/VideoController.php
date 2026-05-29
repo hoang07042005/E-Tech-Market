@@ -2,9 +2,13 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Http\Resources\Admin\VideoResource;
+
 use App\Http\Controllers\Controller;
 use App\Models\Video;
 use Illuminate\Http\Request;
+use App\Http\Requests\Admin\StoreVideoRequest;
+use App\Http\Requests\Admin\UpdateVideoRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Storage;
 
@@ -19,23 +23,12 @@ class VideoController extends Controller
         }
 
         $videos = $query->orderBy('sort_order', 'asc')->get();
-        return response()->json($videos);
+        return response()->json(VideoResource::collection($videos)->resolve());
     }
 
-    public function store(Request $request): JsonResponse
+    public function store(StoreVideoRequest $request): JsonResponse
     {
-        $request->validate([
-            'product_id'        => 'nullable|integer|exists:products,id',
-            'video_category_id' => 'nullable|integer|exists:video_categories,id',
-            'title'             => 'nullable|string|max:255',
-            'description'       => 'nullable|string|max:1000',
-            'video_url'         => 'nullable|string|max:1000',
-            'video_file'        => 'nullable|file|mimetypes:video/mp4,video/quicktime,video/ogg,video/webm|max:51200',
-            'thumbnail_url'     => 'nullable|string|max:1000',
-            'thumbnail_file'    => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120',
-            'sort_order'        => 'nullable|integer',
-            'is_active'         => 'nullable',
-        ]);
+        
 
         $data = $request->except(['video_file', 'thumbnail_file']);
 
@@ -67,31 +60,20 @@ class VideoController extends Controller
         $video = Video::create($data);
         $video->load(['product', 'videoCategory']);
 
-        return response()->json($video, 201);
+        return response()->json((new VideoResource($video))->resolve(), 201);
     }
 
     public function show(string $id): JsonResponse
     {
         $video = Video::with(['product', 'videoCategory'])->findOrFail($id);
-        return response()->json($video);
+        return response()->json((new VideoResource($video))->resolve());
     }
 
-    public function update(Request $request, string $id): JsonResponse
+    public function update(UpdateVideoRequest $request, string $id): JsonResponse
     {
         $video = Video::findOrFail($id);
 
-        $request->validate([
-            'product_id'        => 'nullable|integer|exists:products,id',
-            'video_category_id' => 'nullable|integer|exists:video_categories,id',
-            'title'             => 'nullable|string|max:255',
-            'description'       => 'nullable|string|max:1000',
-            'video_url'         => 'nullable|string|max:1000',
-            'video_file'        => 'nullable|file|mimetypes:video/mp4,video/quicktime,video/ogg,video/webm|max:51200',
-            'thumbnail_url'     => 'nullable|string|max:1000',
-            'thumbnail_file'    => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120',
-            'sort_order'        => 'nullable|integer',
-            'is_active'         => 'nullable',
-        ]);
+        
 
         $data = $request->except(['video_file', 'thumbnail_file']);
 
@@ -137,7 +119,7 @@ class VideoController extends Controller
         $video->update($data);
         $video->load(['product', 'videoCategory']);
 
-        return response()->json($video);
+        return response()->json((new VideoResource($video))->resolve());
     }
 
     public function destroy(string $id): JsonResponse

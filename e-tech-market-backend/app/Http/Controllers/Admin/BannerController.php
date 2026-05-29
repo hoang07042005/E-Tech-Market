@@ -2,9 +2,13 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Http\Resources\Admin\BannerResource;
+
 use App\Http\Controllers\Controller;
 use App\Models\Banner;
 use Illuminate\Http\Request;
+use App\Http\Requests\Admin\StoreBannerRequest;
+use App\Http\Requests\Admin\UpdateBannerRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Storage;
 
@@ -13,19 +17,12 @@ class BannerController extends Controller
     public function index(): JsonResponse
     {
         $banners = Banner::orderBy('sort_order', 'asc')->get();
-        return response()->json($banners);
+        return response()->json(BannerResource::collection($banners)->resolve());
     }
 
-    public function store(Request $request): JsonResponse
+    public function store(StoreBannerRequest $request): JsonResponse
     {
-        $request->validate([
-            'image' => 'required|image|max:5120',
-            'title' => 'nullable|string|max:255',
-            'description' => 'nullable|string',
-            'link_url' => 'nullable|string|max:255',
-            'is_active' => 'nullable',
-            'sort_order' => 'nullable|integer',
-        ]);
+        
 
         $data = $request->except('image');
         $data['is_active'] = $request->has('is_active') ? filter_var($request->is_active, FILTER_VALIDATE_BOOLEAN) : true;
@@ -37,27 +34,20 @@ class BannerController extends Controller
 
         $banner = Banner::create($data);
 
-        return response()->json($banner, 201);
+        return response()->json((new BannerResource($banner))->resolve(), 201);
     }
 
     public function show(string $id): JsonResponse
     {
         $banner = Banner::findOrFail($id);
-        return response()->json($banner);
+        return response()->json((new BannerResource($banner))->resolve());
     }
 
-    public function update(Request $request, string $id): JsonResponse
+    public function update(UpdateBannerRequest $request, string $id): JsonResponse
     {
         $banner = Banner::findOrFail($id);
 
-        $request->validate([
-            'image' => 'nullable|image|max:5120',
-            'title' => 'nullable|string|max:255',
-            'description' => 'nullable|string',
-            'link_url' => 'nullable|string|max:255',
-            'is_active' => 'nullable',
-            'sort_order' => 'nullable|integer',
-        ]);
+        
 
         $data = $request->except('image');
         if ($request->has('is_active')) {
@@ -75,7 +65,7 @@ class BannerController extends Controller
 
         $banner->update($data);
 
-        return response()->json($banner);
+        return response()->json((new BannerResource($banner))->resolve());
     }
 
     public function destroy(string $id): JsonResponse

@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Http\Resources\Admin\ReviewResource;
+
 use App\Http\Controllers\Controller;
 use App\Models\Review;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use App\Http\Requests\Admin\UpdateReviewRequest;
 
 class ReviewsController extends Controller
 {
@@ -21,18 +24,16 @@ class ReviewsController extends Controller
 
         $reviews = $query->orderBy('created_at', 'desc')->paginate((int) $request->input('limit', 20));
 
-        return response()->json($reviews);
+        return response()->json(ReviewResource::collection($reviews)->resolve());
     }
 
-    public function update(Request $request, Review $review): JsonResponse
+    public function update(UpdateReviewRequest $request, Review $review): JsonResponse
     {
-        $request->validate([
-            'status' => 'required|in:pending,approved,rejected',
-        ]);
+        
 
         $review->update(['status' => $request->input('status')]);
 
-        return response()->json($review);
+        return response()->json((new ReviewResource($review))->resolve());
     }
 
     public function destroy(Review $review): JsonResponse

@@ -7,6 +7,7 @@ use App\Models\Product;
 use App\Models\ProductShopQna;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use App\Http\Requests\Admin\ReplyQnaRequest;
 
 class ProductShopQnaController extends Controller
 {
@@ -35,16 +36,13 @@ class ProductShopQnaController extends Controller
         return response()->json($rows);
     }
 
-    public function update(Product $product, ProductShopQna $shopQna, Request $request): JsonResponse
+    public function update(Product $product, ProductShopQna $shopQna, ReplyQnaRequest $request): JsonResponse
     {
         if ((int) $shopQna->product_id !== (int) $product->id) {
             return response()->json(['message' => 'Not found'], 404);
         }
 
-        $data = $request->validate([
-            'answer' => ['nullable', 'string', 'max:10000'],
-            'is_visible' => ['sometimes', 'boolean'],
-        ]);
+        $data = $request->validated();
 
         if (array_key_exists('answer', $data)) {
             $trimmed = $data['answer'] !== null ? trim($data['answer']) : '';

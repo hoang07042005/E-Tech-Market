@@ -1,7 +1,6 @@
 import {
   addToCart,
   getCart,
-  setCart,
   cartCount,
   cartTotal,
   cartItemKey,
@@ -10,6 +9,7 @@ import {
   clearCart,
   safeParseJson,
 } from '@/features/services/cart.service'
+import { describe, it, expect, beforeEach } from 'vitest'
 
 beforeEach(() => {
   localStorage.clear()
