@@ -1,9 +1,6 @@
 name: CD Pipeline
 
 on:
-  push:
-    tags:
-      - 'v*' # Trigger deployment on version tags like v1.0.0
   workflow_dispatch:
     inputs:
       environment:
@@ -14,6 +11,8 @@ on:
         options:
           - staging
           - production
+
+# NOTE: Push/tag triggers are temporarily disabled to pause CD without removing the workflow file.
 
 jobs:
   deploy:
