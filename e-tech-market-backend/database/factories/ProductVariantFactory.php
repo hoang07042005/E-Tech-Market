@@ -25,7 +25,7 @@ class ProductVariantFactory extends Factory
             'variant_name' => fake()->word(),
             'color' => fake()->colorName(),
             'configuration' => fake()->word(),
-            'sku' => fake()->unique()->sku(),
+            'sku' => fake()->unique()->regexify('[A-Z0-9]{8}'),
             'price' => fake()->numberBetween(10000, 5000000),
             'discount_type' => null,
             'discount_value' => 0,
