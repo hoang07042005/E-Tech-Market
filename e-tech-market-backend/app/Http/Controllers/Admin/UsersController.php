@@ -100,6 +100,7 @@ class UsersController extends Controller
 
         // Refresh the model, then return a resolved resource array
         $user = $user->fresh()->load('roles');
+
         return response()->json((new UserResource($user))->resolve());
     }
 
