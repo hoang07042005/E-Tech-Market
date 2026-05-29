@@ -1,0 +1,363 @@
+Note: Using configuration file D:\E-Tech-Market\e-tech-market-backend\phpstan.neon.
+   0/174 [>---------------------------]   0%[1G[2K 174/174 [============================] 100%
+
+ ------ ---------------------------------------------------------------- 
+  Line   Http\Controllers\Admin\AdminBlogPostsController.php             
+ ------ ---------------------------------------------------------------- 
+  :21    Relation 'author' is not found in App\Models\BlogPost model.    
+  :21    Relation 'category' is not found in App\Models\BlogPost model.  
+ ------ ---------------------------------------------------------------- 
+
+ ------ -------------------------------------------------------------------------- 
+  Line   Http\Controllers\Admin\FlashSaleController.php                            
+ ------ -------------------------------------------------------------------------- 
+  :101   Left side of && is always true.                                           
+         💡 Because the type is coming from a PHPDoc, you can turn off this        
+            check by setting treatPhpDocTypesAsCertain: false in your              
+            phpstan.neon.                                                          
+  :117   Access to an undefined property App\Models\Product::$price.               
+         💡 Learn more:                                                            
+            https://phpstan.org/blog/solving-phpstan-access-to-undefined-property  
+ ------ -------------------------------------------------------------------------- 
+
+ ------ ----------------------------------------------------------------------------- 
+  Line   Http\Controllers\Admin\ProductsController.php                                
+ ------ ----------------------------------------------------------------------------- 
+  :54    Parameter #1 $callback of method                                             
+         Illuminate\Support\Collection<(int|string),App\Models\Product>::transform()  
+         expects callable(App\Models\Product, int|string): App\Models\Product,        
+         Closure(mixed): array given.                                                 
+ ------ ----------------------------------------------------------------------------- 
+
+ ------ -------------------------------------------------------------------------- 
+  Line   Http\Controllers\Admin\UsersController.php                                
+ ------ -------------------------------------------------------------------------- 
+  :45    Parameter #1 $callback of method                                          
+         Illuminate\Support\Collection<(int|string),App\Models\User>::transform()  
+         expects callable(App\Models\User, int|string): App\Models\User,           
+         Closure(mixed): array given.                                              
+  :98    Cannot call method fresh() on array.                                      
+ ------ -------------------------------------------------------------------------- 
+
+ ------ -------------------------------------------------------------------------- 
+  Line   Http\Controllers\Auth\AuthController.php                                  
+ ------ -------------------------------------------------------------------------- 
+  :221   Access to an undefined property                                           
+         Illuminate\Database\Eloquent\Model::$created_at.                          
+         💡 Learn more:                                                            
+            https://phpstan.org/blog/solving-phpstan-access-to-undefined-property  
+  :222   Access to an undefined property                                           
+         Illuminate\Database\Eloquent\Model::$last_used_at.                        
+         💡 Learn more:                                                            
+            https://phpstan.org/blog/solving-phpstan-access-to-undefined-property  
+  :233   Call to an undefined method                                               
+         Laravel\Sanctum\Contracts\HasAbilities::delete().                         
+  :233   Using nullsafe method call on non-nullable type                           
+         Laravel\Sanctum\Contracts\HasAbilities. Use -> instead.                   
+  :329   Offset 'name' on array{email: mixed, name: mixed, picture: mixed,         
+         sub: mixed} on left side of ?? always exists and is not nullable.         
+ ------ -------------------------------------------------------------------------- 
+
+ ------ ---------------------------------------------------------------------- 
+  Line   Http\Controllers\Client\CartController.php                            
+ ------ ---------------------------------------------------------------------- 
+  :85    Relation 'flashSale' is not found in App\Models\FlashSaleItem model.  
+ ------ ---------------------------------------------------------------------- 
+
+ ------ ---------------------------------------------------------------- 
+  Line   Http\Controllers\Client\ClientBlogPostsController.php           
+ ------ ---------------------------------------------------------------- 
+  :20    Relation 'author' is not found in App\Models\BlogPost model.    
+  :20    Relation 'category' is not found in App\Models\BlogPost model.  
+  :45    Relation 'author' is not found in App\Models\BlogPost model.    
+  :45    Relation 'category' is not found in App\Models\BlogPost model.  
+  :45    Relation 'comments' is not found in App\Models\BlogPost model.  
+ ------ ---------------------------------------------------------------- 
+
+ ------ ------------------------------------------------------------------- 
+  Line   Http\Controllers\Client\CouponsController.php                      
+ ------ ------------------------------------------------------------------- 
+  :122   Parameter #1 $num of function number_format expects float, string  
+         given.                                                             
+ ------ ------------------------------------------------------------------- 
+
+ ------ -------------------------------------------------------------- 
+  Line   Http\Controllers\Client\FlashSaleController.php               
+ ------ -------------------------------------------------------------- 
+  :23    Relation 'items' is not found in App\Models\FlashSale model.  
+  :33    Relation 'items' is not found in App\Models\FlashSale model.  
+ ------ -------------------------------------------------------------- 
+
+ ------ -------------------------------------------------------------------- 
+  Line   Http\Controllers\Client\OrdersController.php                        
+ ------ -------------------------------------------------------------------- 
+  :113   Else branch is unreachable because ternary operator condition is    
+         always true.                                                        
+  :190   Negated boolean expression is always false.                         
+         💡 Because the type is coming from a PHPDoc, you can turn off this  
+            check by setting treatPhpDocTypesAsCertain: false in your        
+            phpstan.neon.                                                    
+  :200   Expression on left side of ?? is not nullable.                      
+  :202   Expression on left side of ?? is not nullable.                      
+  :312   Cannot clone int.                                                   
+  :313   Cannot clone int.                                                   
+  :314   Cannot clone int.                                                   
+ ------ -------------------------------------------------------------------- 
+
+ ------ ----------------------------------------------------------------------- 
+  Line   Http\Controllers\Client\PaymentsController.php                         
+ ------ ----------------------------------------------------------------------- 
+  :77    Offset 'detail' on array{error: string, code: int} on left side of ??  
+         does not exist.                                                        
+ ------ ----------------------------------------------------------------------- 
+
+ ------ ------------------------------------------------------------ 
+  Line   Http\Controllers\Client\ProductsController.php              
+ ------ ------------------------------------------------------------ 
+  :108   Variable $queue in empty() always exists and is not falsy.  
+ ------ ------------------------------------------------------------ 
+
+ ------ ----------------------------------------------- 
+  Line   Http\Requests\Admin\UpdateCategoryRequest.php  
+ ------ ----------------------------------------------- 
+  :18    Undefined variable: $category                  
+ ------ ----------------------------------------------- 
+
+ ------ --------------------------------------------- 
+  Line   Http\Requests\Admin\UpdateCouponRequest.php  
+ ------ --------------------------------------------- 
+  :17    Undefined variable: $coupon                  
+ ------ --------------------------------------------- 
+
+ ------ ---------------------------------------------------- 
+  Line   Http\Requests\Admin\UpdateVideoCategoryRequest.php  
+ ------ ---------------------------------------------------- 
+  :18    Undefined variable: $videoCategory                  
+ ------ ---------------------------------------------------- 
+
+ ------ -------------------------------------------------------------------------- 
+  Line   Http\Resources\Admin\OrderListResource.php                                
+ ------ -------------------------------------------------------------------------- 
+  :47    Access to an undefined property                                           
+         App\Http\Resources\Admin\OrderListResource::$status.                      
+         💡 Learn more:                                                            
+            https://phpstan.org/blog/solving-phpstan-access-to-undefined-property  
+  :48    Access to an undefined property                                           
+         App\Http\Resources\Admin\OrderListResource::$shipping_name.               
+         💡 Learn more:                                                            
+            https://phpstan.org/blog/solving-phpstan-access-to-undefined-property  
+  :48    Access to an undefined property                                           
+         App\Http\Resources\Admin\OrderListResource::$user.                        
+         💡 Learn more:                                                            
+            https://phpstan.org/blog/solving-phpstan-access-to-undefined-property  
+  :51    Access to an undefined property                                           
+         App\Http\Resources\Admin\OrderListResource::$id.                          
+         💡 Learn more:                                                            
+            https://phpstan.org/blog/solving-phpstan-access-to-undefined-property  
+  :52    Access to an undefined property                                           
+         App\Http\Resources\Admin\OrderListResource::$id.                          
+         💡 Learn more:                                                            
+            https://phpstan.org/blog/solving-phpstan-access-to-undefined-property  
+  :52    Access to an undefined property                                           
+         App\Http\Resources\Admin\OrderListResource::$order_code.                  
+         💡 Learn more:                                                            
+            https://phpstan.org/blog/solving-phpstan-access-to-undefined-property  
+  :54    Access to an undefined property                                           
+         App\Http\Resources\Admin\OrderListResource::$user.                        
+         💡 Learn more:                                                            
+            https://phpstan.org/blog/solving-phpstan-access-to-undefined-property  
+  :55    Access to an undefined property                                           
+         App\Http\Resources\Admin\OrderListResource::$created_at.                  
+         💡 Learn more:                                                            
+            https://phpstan.org/blog/solving-phpstan-access-to-undefined-property  
+  :57    Access to an undefined property                                           
+         App\Http\Resources\Admin\OrderListResource::$payment.                     
+         💡 Learn more:                                                            
+            https://phpstan.org/blog/solving-phpstan-access-to-undefined-property  
+  :62    Access to an undefined property                                           
+         App\Http\Resources\Admin\OrderListResource::$returnRequest.               
+         💡 Learn more:                                                            
+            https://phpstan.org/blog/solving-phpstan-access-to-undefined-property  
+ ------ -------------------------------------------------------------------------- 
+
+ ------ -------------------------------------------------------------------------- 
+  Line   Http\Resources\Admin\OrderResource.php                                    
+ ------ -------------------------------------------------------------------------- 
+  :40    Access to an undefined property                                           
+         App\Http\Resources\Admin\OrderResource::$status.                          
+         💡 Learn more:                                                            
+            https://phpstan.org/blog/solving-phpstan-access-to-undefined-property  
+  :69    Access to an undefined property                                           
+         App\Http\Resources\Admin\OrderResource::$shipping_name.                   
+         💡 Learn more:                                                            
+            https://phpstan.org/blog/solving-phpstan-access-to-undefined-property  
+  :69    Access to an undefined property                                           
+         App\Http\Resources\Admin\OrderResource::$user.                            
+         💡 Learn more:                                                            
+            https://phpstan.org/blog/solving-phpstan-access-to-undefined-property  
+  :70    Access to an undefined property                                           
+         App\Http\Resources\Admin\OrderResource::$user.                            
+         💡 Learn more:                                                            
+            https://phpstan.org/blog/solving-phpstan-access-to-undefined-property  
+  :71    Access to an undefined property                                           
+         App\Http\Resources\Admin\OrderResource::$user.                            
+         💡 Learn more:                                                            
+            https://phpstan.org/blog/solving-phpstan-access-to-undefined-property  
+  :72    Access to an undefined property                                           
+         App\Http\Resources\Admin\OrderResource::$shipping_phone.                  
+         💡 Learn more:                                                            
+            https://phpstan.org/blog/solving-phpstan-access-to-undefined-property  
+  :72    Access to an undefined property                                           
+         App\Http\Resources\Admin\OrderResource::$user.                            
+         💡 Learn more:                                                            
+            https://phpstan.org/blog/solving-phpstan-access-to-undefined-property  
+  :75    Access to an undefined property                                           
+         App\Http\Resources\Admin\OrderResource::$shipping_address_line.           
+         💡 Learn more:                                                            
+            https://phpstan.org/blog/solving-phpstan-access-to-undefined-property  
+  :76    Access to an undefined property                                           
+         App\Http\Resources\Admin\OrderResource::$shipping_ward.                   
+         💡 Learn more:                                                            
+            https://phpstan.org/blog/solving-phpstan-access-to-undefined-property  
+  :77    Access to an undefined property                                           
+         App\Http\Resources\Admin\OrderResource::$shipping_district.               
+         💡 Learn more:                                                            
+            https://phpstan.org/blog/solving-phpstan-access-to-undefined-property  
+  :78    Access to an undefined property                                           
+         App\Http\Resources\Admin\OrderResource::$shipping_province.               
+         💡 Learn more:                                                            
+            https://phpstan.org/blog/solving-phpstan-access-to-undefined-property  
+  :105   Access to an undefined property                                           
+         App\Http\Resources\Admin\OrderResource::$returnRequest.                   
+         💡 Learn more:                                                            
+            https://phpstan.org/blog/solving-phpstan-access-to-undefined-property  
+  :122   Access to an undefined property                                           
+         App\Http\Resources\Admin\OrderResource::$id.                              
+         💡 Learn more:                                                            
+            https://phpstan.org/blog/solving-phpstan-access-to-undefined-property  
+  :123   Access to an undefined property                                           
+         App\Http\Resources\Admin\OrderResource::$id.                              
+         💡 Learn more:                                                            
+            https://phpstan.org/blog/solving-phpstan-access-to-undefined-property  
+  :123   Access to an undefined property                                           
+         App\Http\Resources\Admin\OrderResource::$order_code.                      
+         💡 Learn more:                                                            
+            https://phpstan.org/blog/solving-phpstan-access-to-undefined-property  
+  :124   Access to an undefined property                                           
+         App\Http\Resources\Admin\OrderResource::$created_at.                      
+         💡 Learn more:                                                            
+            https://phpstan.org/blog/solving-phpstan-access-to-undefined-property  
+  :133   Access to an undefined property                                           
+         App\Http\Resources\Admin\OrderResource::$payment.                         
+         💡 Learn more:                                                            
+            https://phpstan.org/blog/solving-phpstan-access-to-undefined-property  
+  :134   Access to an undefined property                                           
+         App\Http\Resources\Admin\OrderResource::$payment.                         
+         💡 Learn more:                                                            
+            https://phpstan.org/blog/solving-phpstan-access-to-undefined-property  
+  :135   Access to an undefined property                                           
+         App\Http\Resources\Admin\OrderResource::$payment.                         
+         💡 Learn more:                                                            
+            https://phpstan.org/blog/solving-phpstan-access-to-undefined-property  
+  :136   Access to an undefined property                                           
+         App\Http\Resources\Admin\OrderResource::$payment.                         
+         💡 Learn more:                                                            
+            https://phpstan.org/blog/solving-phpstan-access-to-undefined-property  
+  :137   Access to an undefined property                                           
+         App\Http\Resources\Admin\OrderResource::$payment.                         
+         💡 Learn more:                                                            
+            https://phpstan.org/blog/solving-phpstan-access-to-undefined-property  
+  :146   Access to an undefined property                                           
+         App\Http\Resources\Admin\OrderResource::$shipping_name.                   
+         💡 Learn more:                                                            
+            https://phpstan.org/blog/solving-phpstan-access-to-undefined-property  
+  :156   Access to an undefined property                                           
+         App\Http\Resources\Admin\OrderResource::$notes.                           
+         💡 Learn more:                                                            
+            https://phpstan.org/blog/solving-phpstan-access-to-undefined-property  
+ ------ -------------------------------------------------------------------------- 
+
+ ------ -------------------------------------------------------------------------- 
+  Line   Http\Resources\UserResource.php                                           
+ ------ -------------------------------------------------------------------------- 
+  :13    Access to an undefined property App\Http\Resources\UserResource::$id.     
+         💡 Learn more:                                                            
+            https://phpstan.org/blog/solving-phpstan-access-to-undefined-property  
+  :14    Access to an undefined property                                           
+         App\Http\Resources\UserResource::$name.                                   
+         💡 Learn more:                                                            
+            https://phpstan.org/blog/solving-phpstan-access-to-undefined-property  
+  :15    Access to an undefined property                                           
+         App\Http\Resources\UserResource::$email.                                  
+         💡 Learn more:                                                            
+            https://phpstan.org/blog/solving-phpstan-access-to-undefined-property  
+  :16    Access to an undefined property                                           
+         App\Http\Resources\UserResource::$phone.                                  
+         💡 Learn more:                                                            
+            https://phpstan.org/blog/solving-phpstan-access-to-undefined-property  
+  :17    Access to an undefined property                                           
+         App\Http\Resources\UserResource::$avatar_url.                             
+         💡 Learn more:                                                            
+            https://phpstan.org/blog/solving-phpstan-access-to-undefined-property  
+  :18    Access to an undefined property                                           
+         App\Http\Resources\UserResource::$address_line.                           
+         💡 Learn more:                                                            
+            https://phpstan.org/blog/solving-phpstan-access-to-undefined-property  
+  :19    Access to an undefined property                                           
+         App\Http\Resources\UserResource::$province.                               
+         💡 Learn more:                                                            
+            https://phpstan.org/blog/solving-phpstan-access-to-undefined-property  
+  :20    Access to an undefined property                                           
+         App\Http\Resources\UserResource::$district.                               
+         💡 Learn more:                                                            
+            https://phpstan.org/blog/solving-phpstan-access-to-undefined-property  
+  :21    Access to an undefined property                                           
+         App\Http\Resources\UserResource::$ward.                                   
+         💡 Learn more:                                                            
+            https://phpstan.org/blog/solving-phpstan-access-to-undefined-property  
+  :22    Access to an undefined property                                           
+         App\Http\Resources\UserResource::$is_active.                              
+         💡 Learn more:                                                            
+            https://phpstan.org/blog/solving-phpstan-access-to-undefined-property  
+  :24    Access to an undefined property                                           
+         App\Http\Resources\UserResource::$created_at.                             
+         💡 Learn more:                                                            
+            https://phpstan.org/blog/solving-phpstan-access-to-undefined-property  
+ ------ -------------------------------------------------------------------------- 
+
+ ------ ------------------------------------------------------------------- 
+  Line   Notifications\OrderConfirmationNotification.php                    
+ ------ ------------------------------------------------------------------- 
+  :39    Parameter #1 $num of function number_format expects float, string  
+         given.                                                             
+ ------ ------------------------------------------------------------------- 
+
+ ------ -------------------------------------------------------------------------- 
+  Line   Services\OrderService.php                                                 
+ ------ -------------------------------------------------------------------------- 
+  :63    Relation 'flashSale' is not found in App\Models\FlashSaleItem model.      
+  :285   Access to an undefined property App\Models\AdminSetting::$type.           
+         💡 Learn more:                                                            
+            https://phpstan.org/blog/solving-phpstan-access-to-undefined-property  
+  :286   Ternary operator condition is always false.                               
+         💡 Because the type is coming from a PHPDoc, you can turn off this        
+            check by setting treatPhpDocTypesAsCertain: false in your              
+            phpstan.neon.                                                          
+ ------ -------------------------------------------------------------------------- 
+
+ ------ ------------------------------------------------------------------ 
+  Line   Services\PaymentService.php                                       
+ ------ ------------------------------------------------------------------ 
+  :249   Strict comparison using === between non-empty-string and '' will  
+         always evaluate to false.                                         
+ ------ ------------------------------------------------------------------ 
+
+ -- -------------------------------------------------------------------- 
+     Error                                                               
+ -- -------------------------------------------------------------------- 
+     Ignored error pattern missingType.iterableValue was not matched in  
+     reported errors.                                                    
+ -- -------------------------------------------------------------------- 
+
+ [ERROR] Found 83 errors                                                       
+

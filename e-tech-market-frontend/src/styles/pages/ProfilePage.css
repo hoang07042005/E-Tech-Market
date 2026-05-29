@@ -436,7 +436,6 @@
   color: var(--et-text);
   grid-column: 1 / -1;
   margin-top: 2px;
-  white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
@@ -547,6 +546,7 @@
 .pfOrderCode {
   font-weight: 900;
   font-size: 14px;
+  color: var(--et-primary);
 }
 
 .pfOrderStatus {
