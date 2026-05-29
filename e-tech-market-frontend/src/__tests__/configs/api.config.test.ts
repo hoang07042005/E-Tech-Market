@@ -31,7 +31,7 @@ describe('api.config', () => {
       await apiFetch('/test', { token: 'test-token' });
 
       expect(globalThis.fetch).toHaveBeenCalledWith(
-        expect.stringContaining('/api/test'),
+        expect.stringContaining('/api/v1/test'),
         expect.objectContaining({
           headers: expect.objectContaining({
             Authorization: 'Bearer test-token',
