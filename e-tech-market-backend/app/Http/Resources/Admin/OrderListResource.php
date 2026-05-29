@@ -11,6 +11,7 @@ class OrderListResource extends JsonResource
     {
         $statusMeta = static function (?string $s): array {
             $s = $s ? strtolower($s) : '';
+
             return match ($s) {
                 'pending' => ['Chờ xác nhận', 'wait'],
                 'processing' => ['Đã xác nhận', 'info'],
@@ -26,6 +27,7 @@ class OrderListResource extends JsonResource
 
         $paymentLabel = static function (?string $m): string {
             $m = $m ? strtolower($m) : '';
+
             return match ($m) {
                 'cod' => 'COD',
                 'momo' => 'Ví MoMo',
@@ -38,14 +40,16 @@ class OrderListResource extends JsonResource
         $firstName = (string) ($items->first()->product_name_snapshot ?? '');
         $itemsCount = (int) $items->count();
         $productText = $firstName ?: '—';
-        if ($itemsCount > 1) $productText .= ' +' . ($itemsCount - 1) . ' SP';
+        if ($itemsCount > 1) {
+            $productText .= ' +'.($itemsCount - 1).' SP';
+        }
 
         [$statusLabel, $statusTone] = $statusMeta((string) $this->status);
         $customerName = (string) ($this->user?->name ?: $this->shipping_name ?: '—');
 
         return [
             'id' => (int) $this->id,
-            'order_code' => (string) ($this->order_code ?: ('ET-' . $this->id)),
+            'order_code' => (string) ($this->order_code ?: ('ET-'.$this->id)),
             'customer_name' => $customerName,
             'customer_avatar_url' => $this->user?->avatar_url ? (string) $this->user->avatar_url : null,
             'created_date' => $this->created_at ? $this->created_at->format('d/m/Y') : '',

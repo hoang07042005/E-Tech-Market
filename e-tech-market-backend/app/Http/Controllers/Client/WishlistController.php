@@ -17,7 +17,7 @@ class WishlistController extends Controller
 
         $items = Wishlist::query()
             ->where('user_id', $user->id)
-            ->with(['product' => fn($q) => $q->where('is_active', true)->with('category')])
+            ->with(['product' => fn ($q) => $q->where('is_active', true)->with('category')])
             ->orderBy('id', 'desc')
             ->get();
 
@@ -33,7 +33,7 @@ class WishlistController extends Controller
         ]);
 
         $product = Product::query()->where('id', $data['product_id'])->where('is_active', true)->first();
-        if (!$product) {
+        if (! $product) {
             throw ValidationException::withMessages([
                 'product_id' => ['Product not found or inactive.'],
             ]);
@@ -46,6 +46,7 @@ class WishlistController extends Controller
 
         if ($exists) {
             $exists->delete();
+
             return response()->json(['status' => 'removed']);
         }
 
@@ -57,4 +58,3 @@ class WishlistController extends Controller
         return response()->json(['status' => 'added']);
     }
 }
-

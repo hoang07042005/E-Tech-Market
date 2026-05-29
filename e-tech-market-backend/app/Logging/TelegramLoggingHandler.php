@@ -2,8 +2,8 @@
 
 namespace App\Logging;
 
-use Monolog\Handler\AbstractProcessingHandler;
 use Illuminate\Support\Facades\Http;
+use Monolog\Handler\AbstractProcessingHandler;
 
 class TelegramLoggingHandler extends AbstractProcessingHandler
 {
@@ -42,8 +42,8 @@ class TelegramLoggingHandler extends AbstractProcessingHandler
 
         $text = "🚨 *[{$appName} - {$env}] CẢNH BÁO LỖI HỆ THỐNG*\n";
         $text .= "• *Mức độ:* `{$levelName}`\n";
-        $text .= "• *Thời gian:* " . now()->toDateTimeString() . "\n";
-        
+        $text .= '• *Thời gian:* '.now()->toDateTimeString()."\n";
+
         $cleanMsg = mb_substr(strip_tags((string) $message), 0, 1000, 'UTF-8');
         $text .= "• *Thông tin lỗi:* `{$cleanMsg}`\n";
 
@@ -56,7 +56,7 @@ class TelegramLoggingHandler extends AbstractProcessingHandler
                 $trace = mb_substr($e->getTraceAsString(), 0, 800, 'UTF-8');
                 $text .= "• *Trace:* \n```\n{$trace}\n```\n";
             }
-        } elseif (!empty($context)) {
+        } elseif (! empty($context)) {
             $ctxStr = mb_substr(json_encode($context, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE), 0, 800, 'UTF-8');
             $text .= "• *Context:* \n```json\n{$ctxStr}\n```\n";
         }

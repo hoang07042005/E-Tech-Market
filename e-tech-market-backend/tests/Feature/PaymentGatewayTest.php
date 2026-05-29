@@ -18,7 +18,9 @@ class PaymentGatewayTest extends TestCase
     use DatabaseTransactions;
 
     private User $customerUser;
+
     private Order $vnpayOrder;
+
     private Order $momoOrder;
 
     protected function setUp(): void
@@ -105,9 +107,9 @@ class PaymentGatewayTest extends TestCase
         $i = 0;
         foreach ($params as $key => $value) {
             if ($i === 1) {
-                $hashData .= '&' . urlencode($key) . '=' . urlencode($value);
+                $hashData .= '&'.urlencode($key).'='.urlencode($value);
             } else {
-                $hashData .= urlencode($key) . '=' . urlencode($value);
+                $hashData .= urlencode($key).'='.urlencode($value);
                 $i = 1;
             }
         }
@@ -115,7 +117,7 @@ class PaymentGatewayTest extends TestCase
         $secureHash = hash_hmac('sha512', $hashData, 'vnpaysecretkey');
         $params['vnp_SecureHash'] = $secureHash;
 
-        $response = $this->getJson('/api/payments/vnpay/ipn?' . http_build_query($params));
+        $response = $this->getJson('/api/payments/vnpay/ipn?'.http_build_query($params));
 
         $response->assertOk()
             ->assertJsonPath('RspCode', '00')
@@ -151,7 +153,7 @@ class PaymentGatewayTest extends TestCase
             'vnp_SecureHash' => 'wrongsignature',
         ];
 
-        $response = $this->getJson('/api/payments/vnpay/ipn?' . http_build_query($params));
+        $response = $this->getJson('/api/payments/vnpay/ipn?'.http_build_query($params));
 
         $response->assertOk()
             ->assertJsonPath('RspCode', '97')
@@ -189,19 +191,19 @@ class PaymentGatewayTest extends TestCase
         ];
 
         // Build MoMo signature raw string
-        $rawHash = 'accessKey=momoaccesskey' .
-            '&amount=' . $payload['amount'] .
-            '&extraData=' . $payload['extraData'] .
-            '&message=' . $payload['message'] .
-            '&orderId=' . $payload['orderId'] .
-            '&orderInfo=' . $payload['orderInfo'] .
-            '&orderType=' . $payload['orderType'] .
-            '&partnerCode=' . $payload['partnerCode'] .
-            '&payType=' . $payload['payType'] .
-            '&requestId=' . $payload['requestId'] .
-            '&responseTime=' . $payload['responseTime'] .
-            '&resultCode=' . $payload['resultCode'] .
-            '&transId=' . $payload['transId'];
+        $rawHash = 'accessKey=momoaccesskey'.
+            '&amount='.$payload['amount'].
+            '&extraData='.$payload['extraData'].
+            '&message='.$payload['message'].
+            '&orderId='.$payload['orderId'].
+            '&orderInfo='.$payload['orderInfo'].
+            '&orderType='.$payload['orderType'].
+            '&partnerCode='.$payload['partnerCode'].
+            '&payType='.$payload['payType'].
+            '&requestId='.$payload['requestId'].
+            '&responseTime='.$payload['responseTime'].
+            '&resultCode='.$payload['resultCode'].
+            '&transId='.$payload['transId'];
 
         $signature = hash_hmac('sha256', $rawHash, 'momosecretkey');
         $payload['signature'] = $signature;
@@ -258,19 +260,19 @@ class PaymentGatewayTest extends TestCase
         ];
 
         // Build MoMo signature raw string
-        $rawHash = 'accessKey=momoaccesskey' .
-            '&amount=' . $payload['amount'] .
-            '&extraData=' . $payload['extraData'] .
-            '&message=' . $payload['message'] .
-            '&orderId=' . $payload['orderId'] .
-            '&orderInfo=' . $payload['orderInfo'] .
-            '&orderType=' . $payload['orderType'] .
-            '&partnerCode=' . $payload['partnerCode'] .
-            '&payType=' . $payload['payType'] .
-            '&requestId=' . $payload['requestId'] .
-            '&responseTime=' . $payload['responseTime'] .
-            '&resultCode=' . $payload['resultCode'] .
-            '&transId=' . $payload['transId'];
+        $rawHash = 'accessKey=momoaccesskey'.
+            '&amount='.$payload['amount'].
+            '&extraData='.$payload['extraData'].
+            '&message='.$payload['message'].
+            '&orderId='.$payload['orderId'].
+            '&orderInfo='.$payload['orderInfo'].
+            '&orderType='.$payload['orderType'].
+            '&partnerCode='.$payload['partnerCode'].
+            '&payType='.$payload['payType'].
+            '&requestId='.$payload['requestId'].
+            '&responseTime='.$payload['responseTime'].
+            '&resultCode='.$payload['resultCode'].
+            '&transId='.$payload['transId'];
 
         $signature = hash_hmac('sha256', $rawHash, 'momosecretkey');
         $payload['signature'] = $signature;

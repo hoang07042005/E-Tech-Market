@@ -28,4 +28,3 @@ class ShippingMethod extends Model
         return $this->hasMany(Order::class, 'shipping_method_id');
     }
 }
-

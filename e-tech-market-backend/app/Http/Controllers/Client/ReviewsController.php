@@ -35,7 +35,7 @@ class ReviewsController extends Controller
     {
         $user = $request->user();
 
-        if (!$product->is_active) {
+        if (! $product->is_active) {
             return response()->json(['message' => 'Product not active'], 404);
         }
 
@@ -77,6 +77,7 @@ class ReviewsController extends Controller
         );
 
         $review->load(['product']);
+
         return response()->json($review, 201);
     }
 }

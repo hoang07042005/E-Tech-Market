@@ -2,14 +2,12 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Resources\Admin\CategoryResource;
-
 use App\Http\Controllers\Controller;
-use App\Models\Category;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use App\Http\Requests\Admin\StoreCategoryRequest;
 use App\Http\Requests\Admin\UpdateCategoryRequest;
+use App\Http\Resources\Admin\CategoryResource;
+use App\Models\Category;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
@@ -23,6 +21,7 @@ class CategoriesController extends Controller
             $query->where('type', $type);
         }
         $categories = $query->orderBy('name')->get();
+
         return response()->json($categories);
     }
 
@@ -36,7 +35,7 @@ class CategoriesController extends Controller
 
         if ($request->hasFile('image')) {
             $path = $request->file('image')->store('categories', 'public');
-            $data['image'] = '/storage/' . $path;
+            $data['image'] = '/storage/'.$path;
         }
 
         $category = Category::create($data);
@@ -53,7 +52,7 @@ class CategoriesController extends Controller
                 Storage::disk('public')->delete(str_replace('/storage/', '', $category->image));
             }
             $path = $request->file('image')->store('categories', 'public');
-            $data['image'] = '/storage/' . $path;
+            $data['image'] = '/storage/'.$path;
         }
 
         $category->update($data);

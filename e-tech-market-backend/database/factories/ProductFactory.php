@@ -26,7 +26,7 @@ class ProductFactory extends Factory
             'slug' => $this->faker->slug(),
             'brand' => $this->faker->words(2, true),
             'description' => $this->faker->paragraph(),
-            'rich_html' => '<p>' . $this->faker->paragraph() . '</p>',
+            'rich_html' => '<p>'.$this->faker->paragraph().'</p>',
             'main_image_url' => $this->faker->imageUrl(),
             'is_active' => true,
         ];
@@ -47,7 +47,7 @@ class ProductFactory extends Factory
     /**
      * State for products in a specific category
      */
-    public function inCategory(Category $category = null): static
+    public function inCategory(?Category $category = null): static
     {
         return $this->state(function (array $attributes) use ($category) {
             return [

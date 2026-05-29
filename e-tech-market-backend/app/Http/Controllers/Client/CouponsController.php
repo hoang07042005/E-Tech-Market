@@ -26,7 +26,7 @@ class CouponsController extends Controller
             ->orderBy('id', 'desc')
             ->get();
 
-        $filtered = $coupons->filter(function($coupon) use ($userId, $excludeSaved) {
+        $filtered = $coupons->filter(function ($coupon) use ($userId, $excludeSaved) {
             if ($userId && $excludeSaved && $coupon->savedByUsers->where('id', $userId)->isNotEmpty()) {
                 return false;
             }
@@ -38,6 +38,7 @@ class CouponsController extends Controller
             if ($coupon->max_uses && $coupon->usages_count >= $coupon->max_uses) {
                 return false;
             }
+
             return true;
         })->values();
 
@@ -61,10 +62,11 @@ class CouponsController extends Controller
             ->orderBy('user_coupons.created_at', 'desc')
             ->get();
 
-        $filtered = $coupons->filter(function($coupon) {
+        $filtered = $coupons->filter(function ($coupon) {
             if ($coupon->max_uses && $coupon->usages_count >= $coupon->max_uses) {
                 return false;
             }
+
             return true;
         })->values();
 
@@ -77,8 +79,12 @@ class CouponsController extends Controller
         $user = $request->user();
         $coupon = Coupon::where('code', $request->code)->first();
 
-        if (!$coupon) return response()->json(['message' => 'Mã không tồn tại.'], 404);
-        if (!$coupon->isValidNow()) return response()->json(['message' => 'Mã đã hết hạn hoặc chưa được kích hoạt.'], 400);
+        if (! $coupon) {
+            return response()->json(['message' => 'Mã không tồn tại.'], 404);
+        }
+        if (! $coupon->isValidNow()) {
+            return response()->json(['message' => 'Mã đã hết hạn hoặc chưa được kích hoạt.'], 400);
+        }
 
         if ($user->savedCoupons()->where('coupon_id', $coupon->id)->exists()) {
             return response()->json(['message' => 'Bạn đã lưu mã này rồi.'], 400);
@@ -104,16 +110,16 @@ class CouponsController extends Controller
             ->where('code', $code)
             ->first();
 
-        if (!$coupon) {
+        if (! $coupon) {
             return response()->json(['message' => 'Mã giảm giá không tồn tại.'], 404);
         }
 
-        if (!$coupon->isValidNow()) {
+        if (! $coupon->isValidNow()) {
             return response()->json(['message' => 'Mã giảm giá đã hết hạn hoặc chưa được kích hoạt.'], 400);
         }
 
         if ($coupon->min_order_amount && $orderAmount < $coupon->min_order_amount) {
-            return response()->json(['message' => "Đơn hàng tối thiểu để áp dụng mã này là " . number_format($coupon->min_order_amount) . "đ"], 400);
+            return response()->json(['message' => 'Đơn hàng tối thiểu để áp dụng mã này là '.number_format($coupon->min_order_amount).'đ'], 400);
         }
 
         if ($coupon->max_uses && $coupon->usages_count >= $coupon->max_uses) {
@@ -143,7 +149,7 @@ class CouponsController extends Controller
 
         return response()->json([
             'coupon' => $coupon,
-            'discount_amount' => $discountAmount
+            'discount_amount' => $discountAmount,
         ]);
     }
 }

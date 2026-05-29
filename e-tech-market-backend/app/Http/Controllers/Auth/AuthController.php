@@ -3,22 +3,22 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Models\User;
+use App\Http\Requests\Auth\LoginRequest;
+use App\Http\Requests\Auth\RegisterRequest;
+use App\Http\Resources\UserResource;
 use App\Models\Role;
+use App\Models\User;
 use Carbon\Carbon;
+use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\URL;
-use Illuminate\Validation\ValidationException;
 use Illuminate\Validation\Rule;
-use Illuminate\Auth\Events\Registered;
+use Illuminate\Validation\ValidationException;
 use Laravel\Sanctum\PersonalAccessToken;
-use App\Http\Requests\Auth\LoginRequest;
-use App\Http\Requests\Auth\RegisterRequest;
-use App\Http\Resources\UserResource;
 
 class AuthController extends Controller
 {
@@ -72,7 +72,7 @@ class AuthController extends Controller
             'ward' => $data['ward'] ?? null,
             'is_active' => true,
         ]);
-        
+
         // Gán quyền khách hàng mặc định
         $customerRole = Role::where('slug', 'customer')->first();
         if ($customerRole) {
@@ -85,6 +85,7 @@ class AuthController extends Controller
         event(new Registered($user));
 
         $user->load('roles');
+
         return response()->json([
             'user' => new UserResource($user),
             'token' => $token,
@@ -96,7 +97,7 @@ class AuthController extends Controller
         $data = $request->validated();
 
         $user = User::where('email', $data['email'])->first();
-        if (!$user || !Hash::check($data['password'], $user->password) || !$user->is_active) {
+        if (! $user || ! Hash::check($data['password'], $user->password) || ! $user->is_active) {
             throw ValidationException::withMessages([
                 'email' => ['Email hoặc mật khẩu không đúng.'],
             ]);
@@ -105,6 +106,7 @@ class AuthController extends Controller
         $expiresAt = Carbon::now()->addHours(24);
         $token = $user->createToken('auth_token', ['*'], $expiresAt)->plainTextToken;
         $user->load('roles');
+
         return response()->json([
             'user' => new UserResource($user),
             'token' => $token,
@@ -176,7 +178,7 @@ class AuthController extends Controller
             'new_password' => ['required', 'string', \Illuminate\Validation\Rules\Password::min(8)->mixedCase()->numbers()->symbols()],
         ]);
 
-        if (!Hash::check($data['current_password'], $user->password)) {
+        if (! Hash::check($data['current_password'], $user->password)) {
             throw ValidationException::withMessages([
                 'current_password' => ['Mật khẩu hiện tại không đúng.'],
             ]);
@@ -243,12 +245,12 @@ class AuthController extends Controller
         $idToken = $request->input('token');
         $accessToken = $request->input('access_token');
 
-        if (!$idToken && !$accessToken) {
+        if (! $idToken && ! $accessToken) {
             return response()->json(['message' => 'Thiếu mã xác thực Google.'], 400);
         }
 
         $clientId = config('services.google.client_id');
-        if (!$clientId) {
+        if (! $clientId) {
             return response()->json(['message' => 'Google Client ID chưa được cấu hình.'], 500);
         }
 
@@ -264,13 +266,13 @@ class AuthController extends Controller
 
                 // Verify audience claim matches our client ID
                 $aud = is_array($decoded->aud) ? $decoded->aud : [$decoded->aud];
-                if (!in_array($clientId, $aud, true)) {
+                if (! in_array($clientId, $aud, true)) {
                     return response()->json(['message' => 'Token audience không khớp với ứng dụng.'], 401);
                 }
 
                 // Verify issuer
                 $validIssuers = ['accounts.google.com', 'https://accounts.google.com'];
-                if (!isset($decoded->iss) || !in_array($decoded->iss, $validIssuers, true)) {
+                if (! isset($decoded->iss) || ! in_array($decoded->iss, $validIssuers, true)) {
                     return response()->json(['message' => 'Token issuer không hợp lệ.'], 401);
                 }
 
@@ -328,14 +330,14 @@ class AuthController extends Controller
         $avatar = $payload['picture'] ?? null;
         $googleId = $payload['sub'] ?? null;
 
-        if (!$email) {
+        if (! $email) {
             return response()->json(['message' => 'Không thể lấy email từ Google.'], 401);
         }
 
         // Find or create user
         $user = User::where('email', $email)->first();
 
-        if (!$user) {
+        if (! $user) {
             $user = User::create([
                 'name' => $name,
                 'email' => $email,
@@ -352,13 +354,13 @@ class AuthController extends Controller
             }
         } else {
             // Cập nhật ảnh đại diện nếu user chưa có
-            if (!$user->avatar_url && $avatar) {
+            if (! $user->avatar_url && $avatar) {
                 $user->avatar_url = $avatar;
                 $user->save();
             }
         }
 
-        if (!$user->is_active) {
+        if (! $user->is_active) {
             return response()->json(['message' => 'Tài khoản đã bị khóa.'], 403);
         }
 
@@ -372,4 +374,3 @@ class AuthController extends Controller
         ])->cookie($this->setAuthCookie($token, $expiresAt));
     }
 }
-

@@ -2,11 +2,11 @@
 
 namespace Tests\Feature;
 
-use App\Models\User;
 use App\Models\Role;
-use Spatie\Permission\Models\Permission;
+use App\Models\User;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Laravel\Sanctum\Sanctum;
+use Spatie\Permission\Models\Permission;
 use Tests\TestCase;
 
 class RbacTest extends TestCase
@@ -81,7 +81,7 @@ class RbacTest extends TestCase
 
         // 2. Cannot create a product (POST blocked)
         $response2 = $this->postJson('/api/admin/products', [
-            'name' => 'New Test Product'
+            'name' => 'New Test Product',
         ]);
         $response2->assertStatus(403);
         $response2->assertJsonPath('message', 'Bạn không có quyền thực hiện hành động này. Yêu cầu quyền: manage-products.');

@@ -28,7 +28,7 @@ class NewsletterController extends Controller
         );
 
         if ($subscription->wasRecentlyCreated) {
-            Notification::route('mail', $subscription->email)->notify(new NewsletterWelcomeNotification());
+            Notification::route('mail', $subscription->email)->notify(new NewsletterWelcomeNotification);
         }
 
         return response()->json([

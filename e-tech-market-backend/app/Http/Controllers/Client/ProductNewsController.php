@@ -17,4 +17,3 @@ class ProductNewsController extends Controller
         return response()->json($news);
     }
 }
-

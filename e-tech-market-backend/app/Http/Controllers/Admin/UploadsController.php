@@ -16,6 +16,7 @@ class UploadsController extends Controller
         ]);
 
         $path = $data['file']->store('product-news', 'public');
+
         return response()->json([
             'url' => Storage::disk('public')->url($path),
         ], 201);
@@ -28,9 +29,9 @@ class UploadsController extends Controller
         ]);
 
         $path = $data['file']->store('blog-thumbnails', 'public');
+
         return response()->json([
             'url' => Storage::disk('public')->url($path),
         ], 201);
     }
 }
-

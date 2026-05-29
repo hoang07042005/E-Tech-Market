@@ -30,4 +30,3 @@ class Transaction extends Model
         return $this->belongsTo(Payment::class, 'payment_id');
     }
 }
-

@@ -30,4 +30,3 @@ class OrderStatusHistory extends Model
         return $this->belongsTo(User::class, 'changed_by_user_id');
     }
 }
-

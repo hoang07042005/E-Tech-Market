@@ -2,13 +2,12 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Resources\Admin\UserResource;
-
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\UpdateUserRequest;
+use App\Http\Resources\Admin\UserResource;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use App\Http\Requests\Admin\UpdateUserRequest;
 use Symfony\Component\HttpFoundation\Response;
 
 class UsersController extends Controller
@@ -31,7 +30,7 @@ class UsersController extends Controller
         $search = trim((string) $request->query('search', ''));
         if ($search !== '') {
             $escaped = addcslashes($search, '%_\\');
-            $like = '%' . $escaped . '%';
+            $like = '%'.$escaped.'%';
             $query->where(function ($q) use ($like) {
                 $q->where('name', 'like', $like)
                     ->orWhere('email', 'like', $like)
@@ -43,7 +42,8 @@ class UsersController extends Controller
         $perPage = max(5, min(100, $perPage));
 
         $paginator = $query->paginate($perPage);
-        $paginator->getCollection()->transform(fn($item) => (new UserResource($item))->resolve());
+        $paginator->getCollection()->transform(fn ($item) => (new UserResource($item))->resolve());
+
         return response()->json($paginator);
     }
 
@@ -54,7 +54,7 @@ class UsersController extends Controller
     {
         $data = $request->validated();
 
-        if (!array_key_exists('is_active', $data) && !array_key_exists('role_ids', $data)) {
+        if (! array_key_exists('is_active', $data) && ! array_key_exists('role_ids', $data)) {
             return response()->json(
                 ['message' => 'Gửi ít nhất một trường: is_active hoặc role_ids.'],
                 Response::HTTP_UNPROCESSABLE_ENTITY,

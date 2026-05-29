@@ -13,8 +13,12 @@ class NotificationsController extends Controller
     {
         $user = $request->user();
         $perPage = (int) $request->query('per_page', 20);
-        if ($perPage < 5) $perPage = 5;
-        if ($perPage > 50) $perPage = 50;
+        if ($perPage < 5) {
+            $perPage = 5;
+        }
+        if ($perPage > 50) {
+            $perPage = 50;
+        }
 
         $unreadOnly = (string) $request->query('unread', '') !== '' &&
             in_array(strtolower((string) $request->query('unread')), ['1', 'true', 'yes'], true);
@@ -70,4 +74,3 @@ class NotificationsController extends Controller
         return response()->json(['ok' => true]);
     }
 }
-

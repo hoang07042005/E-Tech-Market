@@ -48,7 +48,7 @@ class ProductVariantObserver
                 'user_id' => (int) $id,
                 'type' => 'low_stock',
                 'title' => 'Cảnh báo tồn kho',
-                'body' => $pName . ' đang sắp hết hàng (tồn: ' . $newQty . ').',
+                'body' => $pName.' đang sắp hết hàng (tồn: '.$newQty.').',
                 'data' => json_encode([
                     'product_id' => (int) ($variant->product_id ?? 0),
                     'product_slug' => (string) ($variant->product?->slug ?? ''),
@@ -73,7 +73,7 @@ class ProductVariantObserver
                         'user_id' => (int) $id,
                         'type' => 'low_stock',
                         'title' => 'Cảnh báo tồn kho',
-                        'body' => $pName . ' đang sắp hết hàng (tồn: ' . $newQty . ').',
+                        'body' => $pName.' đang sắp hết hàng (tồn: '.$newQty.').',
                         'data' => [
                             'product_id' => (int) ($variant->product_id ?? 0),
                             'product_slug' => (string) ($variant->product?->slug ?? ''),
@@ -91,4 +91,3 @@ class ProductVariantObserver
         }
     }
 }
-

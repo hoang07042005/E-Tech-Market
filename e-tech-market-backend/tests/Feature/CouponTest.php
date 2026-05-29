@@ -4,12 +4,12 @@ namespace Tests\Feature;
 
 use App\Models\Coupon;
 use App\Models\CouponUsage;
-use App\Models\User;
 use App\Models\Role;
+use App\Models\User;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Illuminate\Support\Carbon;
 use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
-use Illuminate\Support\Carbon;
 
 class CouponTest extends TestCase
 {

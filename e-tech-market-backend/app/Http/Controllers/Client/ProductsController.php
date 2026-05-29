@@ -3,9 +3,9 @@
 namespace App\Http\Controllers\Client;
 
 use App\Http\Controllers\Controller;
-use App\Models\Product;
-use App\Models\Category;
 use App\Http\Resources\ProductResource;
+use App\Models\Category;
+use App\Models\Product;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
@@ -49,10 +49,10 @@ class ProductsController extends Controller
 
         $sort = $request->input('sort', 'created_at');
         $order = $request->input('order', 'desc');
-        
+
         // Validate sort field
         $allowedSortFields = ['created_at', 'price', 'name'];
-        if (!in_array($sort, $allowedSortFields)) {
+        if (! in_array($sort, $allowedSortFields)) {
             $sort = 'created_at';
         }
         $order = strtolower($order) === 'asc' ? 'asc' : 'desc';
@@ -71,11 +71,11 @@ class ProductsController extends Controller
             $query->orderBy($sort, $order);
         }
 
-        $cacheKey = 'products_index_' . md5(serialize($request->all()));
+        $cacheKey = 'products_index_'.md5(serialize($request->all()));
 
         // Register this cache key so targeted invalidation can find it
         $registry = \Illuminate\Support\Facades\Cache::get('_cache_registry_products', []);
-        if (!in_array($cacheKey, $registry, true)) {
+        if (! in_array($cacheKey, $registry, true)) {
             $registry[] = $cacheKey;
             // Keep registry max 200 entries to prevent unbounded growth
             $registry = array_slice($registry, -200);
@@ -105,7 +105,7 @@ class ProductsController extends Controller
         $ids = [$categoryId];
         $queue = [$categoryId];
 
-        while (!empty($queue)) {
+        while (! empty($queue)) {
             $childrenIds = Category::whereIn('parent_id', $queue)->pluck('id')->all();
             $queue = array_values(array_diff($childrenIds, $ids));
             if (empty($queue)) {
@@ -128,14 +128,14 @@ class ProductsController extends Controller
             'faqs' => fn ($q) => $q->where('is_active', true)->orderBy('sort_order'),
             'news' => fn ($q) => $q->where('is_active', true)->orderByDesc('published_at')->orderBy('sort_order'),
             'reviews' => fn ($q) => $q->where('status', 'approved')->with('user')->orderBy('created_at', 'desc'),
-            'flashSaleItems' => fn ($q) => $q->whereHas('flashSale', function($query) {
+            'flashSaleItems' => fn ($q) => $q->whereHas('flashSale', function ($query) {
                 $query->where('status', \App\Models\FlashSale::STATUS_ACTIVE)
-                      ->where('start_at', '<=', now())
-                      ->where('end_at', '>=', now());
-            })->with('flashSale')
+                    ->where('start_at', '<=', now())
+                    ->where('end_at', '>=', now());
+            })->with('flashSale'),
         ]);
 
-        if (!$product->is_active) {
+        if (! $product->is_active) {
             return response()->json(['message' => 'Product not active'], 404);
         }
 
@@ -176,10 +176,10 @@ class ProductsController extends Controller
                 ->whereNotIn('id', $boughtTogether->pluck('id'))
                 ->where(function ($q) use ($product) {
                     $q->where('brand', $product->brand)
-                      ->orWhereHas('category', function ($cq) {
-                          $cq->where('name', 'ilike', '%phụ kiện%')
-                             ->orWhere('name', 'ilike', '%linh kiện%');
-                      });
+                        ->orWhereHas('category', function ($cq) {
+                            $cq->where('name', 'ilike', '%phụ kiện%')
+                                ->orWhere('name', 'ilike', '%linh kiện%');
+                        });
                 })
                 ->with(['category', 'variants'])
                 ->withCount([
@@ -190,7 +190,7 @@ class ProductsController extends Controller
                 ], 'rating')
                 ->limit(4 - $boughtTogether->count())
                 ->get();
-            
+
             $boughtTogether = $boughtTogether->concat($extra);
         }
 

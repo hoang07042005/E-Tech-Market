@@ -3,12 +3,12 @@
 namespace App\Services;
 
 use App\Models\Order;
+use App\Models\OrderReturnRequest;
 use App\Models\Product;
-use App\Models\ProductVariant;
 use App\Models\ProductShopQna;
+use App\Models\ProductVariant;
 use App\Models\Review;
 use App\Models\User;
-use App\Models\OrderReturnRequest;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
@@ -26,9 +26,9 @@ class AdminDashboardService
             $range = 'month';
         }
 
-        $cacheKey = 'admin_dashboard_stats_' . $range . '_' . $resolution;
+        $cacheKey = 'admin_dashboard_stats_'.$range.'_'.$resolution;
         if ($range === 'custom') {
-            $cacheKey .= '_' . md5($startDateParam . '_' . $endDateParam);
+            $cacheKey .= '_'.md5($startDateParam.'_'.$endDateParam);
         }
 
         return Cache::remember($cacheKey, 60, function () use ($range, $startDateParam, $endDateParam, $resolution) {
@@ -77,6 +77,7 @@ class AdminDashboardService
         if ($range === 'custom' && $startDateParam && $endDateParam) {
             try {
                 $toEnd = Carbon::parse($endDateParam)->endOfDay();
+
                 return Carbon::parse($startDateParam)->startOfDay();
             } catch (\Exception $e) {
                 return $now->copy()->startOfMonth()->startOfDay();
@@ -169,7 +170,7 @@ class AdminDashboardService
                 $itemsCount = (int) $items->count();
                 $productText = $firstName ?: '—';
                 if ($itemsCount > 1) {
-                    $productText .= ' +' . ($itemsCount - 1) . ' SP';
+                    $productText .= ' +'.($itemsCount - 1).' SP';
                 }
 
                 $customerName = (string) ($o->user?->name ?: $o->shipping_name ?: '—');
@@ -178,7 +179,7 @@ class AdminDashboardService
 
                 return [
                     'id' => (int) $o->id,
-                    'order_code' => (string) ($o->order_code ?: ('ET-' . $o->id)),
+                    'order_code' => (string) ($o->order_code ?: ('ET-'.$o->id)),
                     'customer_name' => $customerName,
                     'customer_avatar_url' => $avatarUrl,
                     'product' => $productText,
@@ -205,7 +206,7 @@ class AdminDashboardService
         if ($latestPaid) {
             $recentActivities[] = [
                 'dot' => 'ok',
-                'title' => '#' . $latestPaid->order_code,
+                'title' => '#'.$latestPaid->order_code,
                 'desc' => 'đã thanh toán thành công',
                 'time' => Carbon::parse($latestPaid->updated_at)->diffForHumans(),
             ];
@@ -230,7 +231,7 @@ class AdminDashboardService
         if ($latestQna) {
             $recentActivities[] = [
                 'dot' => 'warn',
-                'title' => '#HQA-' . $latestQna->id,
+                'title' => '#HQA-'.$latestQna->id,
                 'desc' => 'có câu hỏi cần phản hồi',
                 'time' => Carbon::parse($latestQna->created_at)->diffForHumans(),
             ];
@@ -304,13 +305,13 @@ class AdminDashboardService
 
             if ($resolution === 'month') {
                 $bucketKey = $cur->format('Y-m');
-                $bucketLabel = 'Tháng ' . $cur->format('m/Y');
+                $bucketLabel = 'Tháng '.$cur->format('m/Y');
                 $bucketDate = $cur->copy()->startOfMonth()->toDateString();
             } elseif ($resolution === 'week') {
                 $weekStart = $cur->copy()->startOfWeek();
                 $weekEnd = $cur->copy()->endOfWeek();
                 $bucketKey = $weekStart->format('Y-m-d');
-                $bucketLabel = $weekStart->format('d/m') . ' - ' . $weekEnd->format('d/m');
+                $bucketLabel = $weekStart->format('d/m').' - '.$weekEnd->format('d/m');
                 $bucketDate = $bucketKey;
             } else {
                 $bucketKey = $k;
@@ -318,7 +319,7 @@ class AdminDashboardService
                 $bucketDate = $k;
             }
 
-            if (!isset($buckets[$bucketKey])) {
+            if (! isset($buckets[$bucketKey])) {
                 $buckets[$bucketKey] = [
                     'date' => $bucketDate,
                     'label' => $bucketLabel,
@@ -366,6 +367,7 @@ class AdminDashboardService
         return $catRows->map(static function ($r) use ($catTotal) {
             $sum = (float) $r->sum;
             $pct = $catTotal > 0 ? round(($sum / $catTotal) * 100) : 0;
+
             return ['name' => (string) $r->name, 'pct' => $pct];
         })->values()->all();
     }
@@ -382,6 +384,7 @@ class AdminDashboardService
                 $name = (string) ($r->user?->name ?: '—');
                 $avatarUrl = $r->user?->avatar_url ? (string) $r->user->avatar_url : null;
                 $time = $r->created_at ? $r->created_at->diffForHumans() : '';
+
                 return [
                     'id' => (int) $r->id,
                     'user_name' => $name,
@@ -398,8 +401,13 @@ class AdminDashboardService
     private function buildTopCustomers(): array
     {
         $vipOf = static function (float $spent): array {
-            if ($spent >= 40_000_000) return ['VIP GOLD', 'gold'];
-            if ($spent >= 20_000_000) return ['VIP SILVER', 'silver'];
+            if ($spent >= 40_000_000) {
+                return ['VIP GOLD', 'gold'];
+            }
+            if ($spent >= 20_000_000) {
+                return ['VIP SILVER', 'silver'];
+            }
+
             return ['VIP BRONZE', 'bronze'];
         };
 
@@ -422,6 +430,7 @@ class AdminDashboardService
             ->map(static function ($row) use ($vipOf) {
                 $spent = (float) $row->spent;
                 [$vipLabel, $vipTone] = $vipOf($spent);
+
                 return [
                     'user_id' => (int) $row->user_id,
                     'name' => (string) ($row->name ?? '—'),
@@ -440,6 +449,7 @@ class AdminDashboardService
     {
         return static function (?string $s): array {
             $s = $s ? strtolower($s) : '';
+
             return match ($s) {
                 'completed', 'success', 'delivered' => ['Hoàn tất', 'ok'],
                 'cancelled', 'failed' => ['Đã hủy', 'bad'],

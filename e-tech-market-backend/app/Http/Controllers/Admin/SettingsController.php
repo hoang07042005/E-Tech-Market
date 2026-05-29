@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\UpdateSettingsRequest;
 use App\Models\AdminSetting;
 use App\Models\Payment;
 use App\Models\ShippingMethod;
@@ -10,7 +11,6 @@ use App\Models\ShippingZone;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use App\Http\Requests\Admin\UpdateSettingsRequest;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 
@@ -19,6 +19,7 @@ class SettingsController extends Controller
     private function getSetting(string $key, mixed $default = null): mixed
     {
         $row = AdminSetting::query()->where('key', $key)->first();
+
         return $row ? ($row->value ?? $default) : $default;
     }
 
@@ -44,7 +45,7 @@ class SettingsController extends Controller
             'language' => 'vi',
             'maintenance_mode' => false,
         ]);
-        if (!isset($store['maintenance_mode'])) {
+        if (! isset($store['maintenance_mode'])) {
             $store['maintenance_mode'] = false;
         }
 
@@ -64,7 +65,7 @@ class SettingsController extends Controller
             'apply_global' => true,
         ]);
 
-        $twoFaKey = 'security_2fa_enabled_user_' . (int) $user->id;
+        $twoFaKey = 'security_2fa_enabled_user_'.(int) $user->id;
         $security = (array) $this->getSetting('security', [
             $twoFaKey => false,
         ]);
@@ -77,8 +78,9 @@ class SettingsController extends Controller
             ->get()
             ->map(static function (Payment $p) {
                 $order = $p->order;
+
                 return [
-                    'code' => $order?->order_code ? (string) $order->order_code : ('ET-' . (int) $p->order_id),
+                    'code' => $order?->order_code ? (string) $order->order_code : ('ET-'.(int) $p->order_id),
                     'customer' => (string) ($order?->user?->name ?? '—'),
                     'amount' => (float) ($p->amount ?? 0),
                     'status' => (string) ($p->status ?? 'pending'),
@@ -101,7 +103,7 @@ class SettingsController extends Controller
             ->orderByDesc('is_active')
             ->orderBy('name')
             ->get(['id', 'name', 'description', 'base_fee', 'estimated_days_min', 'estimated_days_max', 'is_active'])
-            ->map(static fn($m) => [
+            ->map(static fn ($m) => [
                 'id' => (int) $m->id,
                 'name' => (string) $m->name,
                 'description' => $m->description ? (string) $m->description : null,
@@ -116,7 +118,7 @@ class SettingsController extends Controller
             ->orderBy('id', 'desc')
             ->limit(20)
             ->get()
-            ->map(static fn(ShippingZone $z) => [
+            ->map(static fn (ShippingZone $z) => [
                 'id' => (int) $z->id,
                 'name' => (string) $z->name,
                 'eta' => $z->eta ? (string) $z->eta : null,
@@ -210,7 +212,7 @@ class SettingsController extends Controller
                 $this->setSetting('shipping_policy', array_merge($current, $data['shipping_policy']), (int) $user->id);
             }
             if (isset($data['security']['two_fa_enabled'])) {
-                $twoFaKey = 'security_2fa_enabled_user_' . (int) $user->id;
+                $twoFaKey = 'security_2fa_enabled_user_'.(int) $user->id;
                 $sec = (array) $this->getSetting('security', []);
                 $sec[$twoFaKey] = (bool) $data['security']['two_fa_enabled'];
                 $this->setSetting('security', $sec, (int) $user->id);
@@ -226,4 +228,3 @@ class SettingsController extends Controller
         return $this->show($request);
     }
 }
-

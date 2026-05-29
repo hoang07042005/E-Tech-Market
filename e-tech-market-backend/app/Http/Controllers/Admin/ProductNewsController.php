@@ -2,16 +2,14 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Resources\Admin\ProductNewsResource;
-
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\StoreProductNewsRequest;
+use App\Http\Requests\Admin\UpdateProductNewsRequest;
+use App\Http\Resources\Admin\ProductNewsResource;
 use App\Models\Product;
 use App\Models\ProductNews;
 use App\Support\HtmlSanitizer;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
-use App\Http\Requests\Admin\StoreProductNewsRequest;
-use App\Http\Requests\Admin\UpdateProductNewsRequest;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
 
@@ -31,11 +29,11 @@ class ProductNewsController extends Controller
     {
         $data = $request->validated();
 
-        $baseSlug = Str::slug($data['title']) ?: ('news-' . uniqid());
+        $baseSlug = Str::slug($data['title']) ?: ('news-'.uniqid());
         $slug = $baseSlug;
         $i = 1;
         while (ProductNews::where('slug', $slug)->exists()) {
-            $slug = $baseSlug . '-' . $i;
+            $slug = $baseSlug.'-'.$i;
             $i++;
         }
 
@@ -44,7 +42,7 @@ class ProductNewsController extends Controller
             'title' => $data['title'],
             'slug' => $slug,
             'content_html' => HtmlSanitizer::sanitize($data['content_html']),
-            'thumbnail_url' => !empty($data['thumbnail_url']) ? trim($data['thumbnail_url']) : null,
+            'thumbnail_url' => ! empty($data['thumbnail_url']) ? trim($data['thumbnail_url']) : null,
             'sort_order' => $data['sort_order'] ?? 0,
             'is_active' => $data['is_active'] ?? true,
             'published_at' => $data['published_at'] ?? Carbon::now(),
@@ -64,7 +62,7 @@ class ProductNewsController extends Controller
         $news->update([
             'title' => $data['title'],
             'content_html' => HtmlSanitizer::sanitize($data['content_html']),
-            'thumbnail_url' => !empty($data['thumbnail_url']) ? trim($data['thumbnail_url']) : null,
+            'thumbnail_url' => ! empty($data['thumbnail_url']) ? trim($data['thumbnail_url']) : null,
             'sort_order' => $data['sort_order'] ?? $news->sort_order,
             'is_active' => $data['is_active'] ?? $news->is_active,
             'published_at' => $data['published_at'] ?? $news->published_at,
@@ -80,7 +78,7 @@ class ProductNewsController extends Controller
         }
 
         $news->delete();
+
         return response()->json(['message' => 'Deleted']);
     }
 }
-

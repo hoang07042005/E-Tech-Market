@@ -46,14 +46,14 @@ class PaymentsController extends Controller
             'order_id' => $result['order_id'] ?? null,
         ]);
 
-        return redirect($frontendUrl . '/checkout?' . $qs);
+        return redirect($frontendUrl.'/checkout?'.$qs);
     }
 
     public function vnpayIpn(Request $request): JsonResponse
     {
         $result = $this->paymentService->handleVnpayCallback($request->query());
 
-        if (!$result['verified']) {
+        if (! $result['verified']) {
             return response()->json(['RspCode' => '97', 'Message' => 'Invalid signature']);
         }
 
@@ -85,7 +85,7 @@ class PaymentsController extends Controller
     public function momoIpn(Request $request): JsonResponse
     {
         $data = $request->all();
-        if (!is_array($data)) {
+        if (! is_array($data)) {
             return response()->json(['message' => 'Invalid payload'], 400);
         }
 
@@ -110,6 +110,6 @@ class PaymentsController extends Controller
             'order_id' => $result['order_id'] ?? null,
         ]);
 
-        return redirect($frontendUrl . '/checkout?' . $qs);
+        return redirect($frontendUrl.'/checkout?'.$qs);
     }
 }

@@ -2,19 +2,19 @@
 
 namespace Tests\Feature;
 
-use App\Models\User;
 use App\Models\Category;
 use App\Models\Product;
 use App\Models\ProductVariant;
-use App\Notifications\PasswordResetLinkNotification;
+use App\Models\User;
 use App\Notifications\NewsletterWelcomeNotification;
 use App\Notifications\OrderConfirmationNotification;
+use App\Notifications\PasswordResetLinkNotification;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
-use Illuminate\Support\Facades\Notification;
 use Illuminate\Notifications\AnonymousNotifiable;
+use Illuminate\Routing\Middleware\ThrottleRequests;
+use Illuminate\Support\Facades\Notification;
 use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
-use Illuminate\Routing\Middleware\ThrottleRequests;
 
 class QueueTest extends TestCase
 {
@@ -23,7 +23,7 @@ class QueueTest extends TestCase
     public function test_password_reset_notification_is_queued(): void
     {
         $this->withoutMiddleware(ThrottleRequests::class);
-        
+
         Notification::fake();
 
         $user = User::factory()->create([
@@ -105,7 +105,7 @@ class QueueTest extends TestCase
                     'product_id' => $product->id,
                     'variant_id' => $variant->id,
                     'quantity' => 2,
-                ]
+                ],
             ],
         ]);
 

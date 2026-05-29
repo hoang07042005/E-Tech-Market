@@ -23,21 +23,22 @@ class FlashSaleController extends Controller
             $sale = FlashSale::where('status', FlashSale::STATUS_ACTIVE)
                 ->where('start_at', '<=', $now)
                 ->where('end_at', '>=', $now)
-                ->with(['items' => function($query) {
+                ->with(['items' => function ($query) {
                     $query->with(['product', 'variant']);
                 }])
                 ->first();
 
-            if (!$sale) {
+            if (! $sale) {
                 // Check for upcoming flash sale if no current one
                 $sale = FlashSale::whereIn('status', [FlashSale::STATUS_ACTIVE, FlashSale::STATUS_WAITING])
                     ->where('start_at', '>', $now)
                     ->orderBy('start_at', 'asc')
-                    ->with(['items' => function($query) {
+                    ->with(['items' => function ($query) {
                         $query->with(['product', 'variant']);
                     }])
                     ->first();
             }
+
             return $sale;
         });
 

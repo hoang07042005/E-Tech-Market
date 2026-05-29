@@ -3,11 +3,10 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\ShippingZone;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use App\Http\Requests\Admin\StoreShippingZoneRequest;
 use App\Http\Requests\Admin\UpdateShippingZoneRequest;
+use App\Models\ShippingZone;
+use Illuminate\Http\JsonResponse;
 
 class ShippingZonesController extends Controller
 {
@@ -17,7 +16,7 @@ class ShippingZonesController extends Controller
             ->orderByDesc('is_active')
             ->orderBy('name')
             ->get()
-            ->map(static fn(ShippingZone $z) => [
+            ->map(static fn (ShippingZone $z) => [
                 'id' => (int) $z->id,
                 'name' => (string) $z->name,
                 'eta' => $z->eta ? (string) $z->eta : null,
@@ -67,7 +66,7 @@ class ShippingZonesController extends Controller
     public function destroy(ShippingZone $zone): JsonResponse
     {
         $zone->delete();
+
         return response()->json(['ok' => true]);
     }
 }
-

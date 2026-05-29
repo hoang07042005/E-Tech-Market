@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\AdminSetting;
 use App\Models\Cart;
 use App\Models\CartItem;
 use App\Models\Coupon;
@@ -15,11 +16,10 @@ use App\Models\ProductVariant;
 use App\Models\ShippingMethod;
 use App\Models\ShippingZone;
 use App\Models\User;
-use App\Models\AdminSetting;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Notification as NotificationFacade;
 use App\Notifications\OrderConfirmationNotification;
 use App\Support\ProductInventorySync;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Notification as NotificationFacade;
 use Illuminate\Validation\ValidationException;
 
 class OrderService
@@ -37,7 +37,7 @@ class OrderService
                 $qty = (int) $it['quantity'];
 
                 $product = Product::query()->where('id', $productId)->where('is_active', true)->first();
-                if (!$product) {
+                if (! $product) {
                     throw ValidationException::withMessages(['items' => 'Sản phẩm không hợp lệ']);
                 }
 
@@ -62,14 +62,14 @@ class OrderService
 
                 $activeFlashSale = FlashSaleItem::query()
                     ->where('product_id', $productId)
-                    ->where(function($q) use ($variantId) {
+                    ->where(function ($q) use ($variantId) {
                         $q->where('variant_id', $variantId)
-                          ->orWhereNull('variant_id');
+                            ->orWhereNull('variant_id');
                     })
-                    ->whereHas('flashSale', function($q) {
+                    ->whereHas('flashSale', function ($q) {
                         $q->where('status', \App\Models\FlashSale::STATUS_ACTIVE)
-                          ->where('start_at', '<=', now())
-                          ->where('end_at', '>=', now());
+                            ->where('start_at', '<=', now())
+                            ->where('end_at', '>=', now());
                     })
                     ->orderByRaw('variant_id IS NULL ASC')
                     ->first();
@@ -80,9 +80,9 @@ class OrderService
                     }
 
                     $originalPrice = (float) $it['unit_price'];
-                    $saving = ($originalPrice - (float)$activeFlashSale->flash_sale_price) * $qty;
+                    $saving = ($originalPrice - (float) $activeFlashSale->flash_sale_price) * $qty;
                     $flashSaleDiscount += max(0, $saving);
-                    
+
                     $activeFlashSale->increment('sold_quantity', $qty);
                 }
             }
@@ -90,14 +90,14 @@ class OrderService
             // 3. Coupon Discount
             $discount = $flashSaleDiscount;
             $coupon = null;
-            if (!empty($data['coupon_code'])) {
+            if (! empty($data['coupon_code'])) {
                 $coupon = Coupon::query()->where('code', $data['coupon_code'])->first();
-                if (!$coupon || !$coupon->isValidNow()) {
+                if (! $coupon || ! $coupon->isValidNow()) {
                     throw ValidationException::withMessages(['coupon_code' => 'Mã giảm giá không hợp lệ hoặc đã hết hạn']);
                 }
-                
+
                 $calcBase = max(0, $subtotal - $flashSaleDiscount);
-                
+
                 if ($calcBase < (float) $coupon->min_order_amount) {
                     throw ValidationException::withMessages(['coupon_code' => 'Giá trị đơn hàng chưa đạt tối thiểu để áp dụng mã này']);
                 }
@@ -128,18 +128,18 @@ class OrderService
             $shippingFee = 0;
             $shippingMethodId = null;
             $shippingZoneId = null;
-            if (!empty($data['shipping_method_id'])) {
+            if (! empty($data['shipping_method_id'])) {
                 $shippingMethodId = (int) $data['shipping_method_id'];
                 $shippingMethod = ShippingMethod::query()->find($shippingMethodId);
-                if (!$shippingMethod || !$shippingMethod->is_active) {
+                if (! $shippingMethod || ! $shippingMethod->is_active) {
                     throw ValidationException::withMessages(['shipping_method_id' => 'Phương thức vận chuyển không hợp lệ']);
                 }
                 $shippingFee = (float) $shippingMethod->base_fee;
             }
-            if (!empty($data['shipping_zone_id'])) {
+            if (! empty($data['shipping_zone_id'])) {
                 $shippingZoneId = (int) $data['shipping_zone_id'];
                 $zone = ShippingZone::query()->find($shippingZoneId);
-                if (!$zone || !$zone->is_active) {
+                if (! $zone || ! $zone->is_active) {
                     throw ValidationException::withMessages(['shipping_zone_id' => 'Khu vực giao hàng không hợp lệ']);
                 }
                 $shippingFee += (float) $zone->fee;
@@ -181,7 +181,7 @@ class OrderService
             ]);
 
             $paymentMethod = (string) ($data['payment_method'] ?? 'cod');
-            if (!in_array($paymentMethod, ['cod', 'vnpay', 'momo'], true)) {
+            if (! in_array($paymentMethod, ['cod', 'vnpay', 'momo'], true)) {
                 $paymentMethod = 'cod';
             }
 
@@ -247,11 +247,12 @@ class OrderService
         }
 
         $variant = $query->first();
-        if (!$variant) {
+        if (! $variant) {
             throw ValidationException::withMessages([
                 'items' => "Phiên bản của sản phẩm {$product->name} không hợp lệ.",
             ]);
         }
+
         return $variant;
     }
 
@@ -277,8 +278,10 @@ class OrderService
     private function getAdminSetting(string $key, $default = null)
     {
         $s = AdminSetting::query()->where('key', $key)->first();
-        if (!$s) return $default;
-        
+        if (! $s) {
+            return $default;
+        }
+
         if ($s->type === 'json' || $s->type === 'array') {
             return is_array($s->value) ? $s->value : (json_decode((string) $s->value, true) ?: $default);
         }
@@ -288,6 +291,7 @@ class OrderService
         if ($s->type === 'integer') {
             return (int) $s->value;
         }
+
         return $s->value ?? $default;
     }
 
@@ -295,12 +299,13 @@ class OrderService
     {
         // Retry up to 5 times to guarantee uniqueness under high concurrency.
         for ($attempt = 0; $attempt < 5; $attempt++) {
-            $code = 'ET-' . strtoupper(bin2hex(random_bytes(4))) . '-' . now()->format('ymd');
-            if (!Order::query()->where('order_code', $code)->exists()) {
+            $code = 'ET-'.strtoupper(bin2hex(random_bytes(4))).'-'.now()->format('ymd');
+            if (! Order::query()->where('order_code', $code)->exists()) {
                 return $code;
             }
         }
+
         // Ultimate fallback: UUID-based code (practically impossible to collide)
-        return 'ET-' . strtoupper(substr(str_replace('-', '', (string) \Illuminate\Support\Str::uuid()), 0, 10));
+        return 'ET-'.strtoupper(substr(str_replace('-', '', (string) \Illuminate\Support\Str::uuid()), 0, 10));
     }
 }

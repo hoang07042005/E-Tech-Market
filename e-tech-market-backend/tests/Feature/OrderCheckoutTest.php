@@ -5,10 +5,6 @@ namespace Tests\Feature;
 use App\Models\AdminSetting;
 use App\Models\Category;
 use App\Models\Coupon;
-use App\Models\CouponUsage;
-use App\Models\Order;
-use App\Models\OrderItem;
-use App\Models\Payment;
 use App\Models\Product;
 use App\Models\ProductVariant;
 use App\Models\Role;
@@ -16,17 +12,20 @@ use App\Models\ShippingMethod;
 use App\Models\ShippingZone;
 use App\Models\User;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Illuminate\Support\Carbon;
 use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
-use Illuminate\Support\Carbon;
 
 class OrderCheckoutTest extends TestCase
 {
     use DatabaseTransactions;
 
     private User $customerUser;
+
     private Category $category;
+
     private Product $product;
+
     private ProductVariant $variant;
 
     protected function setUp(): void
@@ -79,8 +78,8 @@ class OrderCheckoutTest extends TestCase
                     'product_id' => $this->product->id,
                     'variant_id' => $this->variant->id,
                     'quantity' => 2,
-                ]
-            ]
+                ],
+            ],
         ]);
 
         $response->assertCreated();
@@ -127,13 +126,13 @@ class OrderCheckoutTest extends TestCase
                     'product_id' => $this->product->id,
                     'variant_id' => $this->variant->id,
                     'quantity' => 15, // Out of stock (only 10 available)
-                ]
-            ]
+                ],
+            ],
         ]);
 
         $response->assertStatus(422)
             ->assertJsonValidationErrors(['items']);
-            
+
         // Check that stock is intact
         $this->assertEquals(10, $this->variant->fresh()->stock_quantity);
     }
@@ -162,7 +161,7 @@ class OrderCheckoutTest extends TestCase
                 'value' => [
                     'free_shipping_min' => 10000000,
                     'apply_global' => true,
-                ]
+                ],
             ]
         );
 
@@ -178,8 +177,8 @@ class OrderCheckoutTest extends TestCase
                     'product_id' => $this->product->id,
                     'variant_id' => $this->variant->id,
                     'quantity' => 1, // Subtotal = 30,000,000 >= 10,000,000
-                ]
-            ]
+                ],
+            ],
         ]);
 
         $response->assertCreated()
@@ -212,8 +211,8 @@ class OrderCheckoutTest extends TestCase
                     'product_id' => $this->product->id,
                     'variant_id' => $this->variant->id,
                     'quantity' => 1,
-                ]
-            ]
+                ],
+            ],
         ]);
 
         $response->assertCreated();

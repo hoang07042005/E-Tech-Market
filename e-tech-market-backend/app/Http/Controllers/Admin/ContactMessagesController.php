@@ -12,9 +12,9 @@ class ContactMessagesController extends Controller
     public function index(Request $request): JsonResponse
     {
         $handled = $request->input('handled');
-        
+
         $query = ContactMessage::query()->with('handledBy');
-        
+
         if ($handled === 'yes') {
             $query->whereNotNull('handled_at');
         } elseif ($handled === 'no') {
@@ -41,6 +41,7 @@ class ContactMessagesController extends Controller
     {
         $contact_message = ContactMessage::findOrFail($id);
         $contact_message->delete();
+
         return response()->json(['message' => 'Message deleted successfully']);
     }
 }

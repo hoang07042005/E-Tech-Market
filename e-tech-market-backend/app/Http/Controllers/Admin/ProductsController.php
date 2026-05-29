@@ -3,14 +3,14 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\StoreProductRequest;
+use App\Http\Requests\Admin\UpdateProductRequest;
+use App\Http\Resources\Admin\ProductResource;
 use App\Models\Product;
 use App\Models\ProductVariant;
 use App\Services\ProductService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use App\Http\Requests\Admin\StoreProductRequest;
-use App\Http\Requests\Admin\UpdateProductRequest;
-use App\Http\Resources\Admin\ProductResource;
 
 class ProductsController extends Controller
 {
@@ -40,10 +40,10 @@ class ProductsController extends Controller
             $search = $request->query('search');
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('brand', 'like', "%{$search}%")
-                  ->orWhereHas('category', function ($catQ) use ($search) {
-                      $catQ->where('name', 'like', "%{$search}%");
-                  });
+                    ->orWhere('brand', 'like', "%{$search}%")
+                    ->orWhereHas('category', function ($catQ) use ($search) {
+                        $catQ->where('name', 'like', "%{$search}%");
+                    });
             });
         }
 
@@ -51,15 +51,17 @@ class ProductsController extends Controller
         $perPage = max(5, min($perPage, 100)); // clamp 5–100
 
         $products = $query->orderBy('created_at', 'desc')->paginate($perPage);
-        $products->getCollection()->transform(fn($item) => (new ProductResource($item))->resolve());
+        $products->getCollection()->transform(fn ($item) => (new ProductResource($item))->resolve());
         $result = $products->toArray();
         $result['data'] = $this->cleanUtf8($result['data']);
+
         return response()->json($result);
     }
 
     public function show(Product $product): JsonResponse
     {
         $product->load(['category', 'images', 'specs', 'variants', 'faqs', 'inventoryItems']);
+
         return response()->json($this->cleanUtf8((new ProductResource($product))->resolve()));
     }
 
@@ -84,6 +86,7 @@ class ProductsController extends Controller
     public function destroy(Product $product): JsonResponse
     {
         $this->productService->deleteProduct($product);
+
         return response()->json(['message' => 'Deleted']);
     }
 
@@ -91,13 +94,14 @@ class ProductsController extends Controller
     {
         if (is_string($data)) {
             // Strip invalid UTF-8 sequences more robustly
-            return iconv("UTF-8", "UTF-8//IGNORE", $data);
+            return iconv('UTF-8', 'UTF-8//IGNORE', $data);
         }
         if (is_array($data)) {
             foreach ($data as $key => $value) {
                 $data[$key] = $this->cleanUtf8($value);
             }
         }
+
         return $data;
     }
 }

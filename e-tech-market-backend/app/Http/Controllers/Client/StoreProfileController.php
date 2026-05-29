@@ -64,7 +64,7 @@ class StoreProfileController extends Controller
             ->orderByDesc('is_active')
             ->orderBy('name')
             ->get(['id', 'name', 'description', 'base_fee', 'estimated_days_min', 'estimated_days_max', 'is_active'])
-            ->map(static fn(ShippingMethod $m) => [
+            ->map(static fn (ShippingMethod $m) => [
                 'id' => (int) $m->id,
                 'name' => (string) $m->name,
                 'description' => $m->description ? (string) $m->description : null,
@@ -78,7 +78,7 @@ class StoreProfileController extends Controller
             ->orderByDesc('is_active')
             ->orderBy('name')
             ->get()
-            ->map(static fn(ShippingZone $z) => [
+            ->map(static fn (ShippingZone $z) => [
                 'id' => (int) $z->id,
                 'name' => (string) $z->name,
                 'eta' => $z->eta ? (string) $z->eta : null,
@@ -99,6 +99,7 @@ class StoreProfileController extends Controller
     private function getSetting(string $key, mixed $default = null): mixed
     {
         $row = AdminSetting::query()->where('key', $key)->first();
+
         return $row ? ($row->value ?? $default) : $default;
     }
 

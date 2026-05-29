@@ -44,7 +44,7 @@ class ContactMessagesController extends Controller
                 'user_id' => (int) $au->id,
                 'type' => 'contact_message',
                 'title' => 'Liên hệ mới',
-                'body' => $row->name . ' • ' . ($row->subject ?: 'Liên hệ') . ' • ' . mb_substr($row->message, 0, 140),
+                'body' => $row->name.' • '.($row->subject ?: 'Liên hệ').' • '.mb_substr($row->message, 0, 140),
                 'data' => [
                     'contact_message_id' => (int) $row->id,
                     'email' => (string) $row->email,
@@ -57,4 +57,3 @@ class ContactMessagesController extends Controller
         return response()->json(['ok' => true, 'id' => (int) $row->id], 201);
     }
 }
-

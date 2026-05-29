@@ -19,7 +19,7 @@ class FlashSaleItem extends Model
         'variant_id',
         'flash_sale_price',
         'quantity_limit',
-        'sold_quantity'
+        'sold_quantity',
     ];
 
     protected $casts = [

@@ -24,7 +24,7 @@ class PasswordResetLinkNotification extends Notification implements ShouldQueue
     public function toMail(object $notifiable): MailMessage
     {
         $frontendUrl = rtrim((string) config('app.frontend_url'), '/');
-        $resetUrl = $frontendUrl . '/reset-password?token=' . urlencode($this->token) . '&email=' . urlencode($this->email);
+        $resetUrl = $frontendUrl.'/reset-password?token='.urlencode($this->token).'&email='.urlencode($this->email);
 
         return (new MailMessage)
             ->subject('Đặt lại mật khẩu')
@@ -34,4 +34,3 @@ class PasswordResetLinkNotification extends Notification implements ShouldQueue
             ->line('Nếu bạn không yêu cầu, bạn có thể bỏ qua email này.');
     }
 }
-

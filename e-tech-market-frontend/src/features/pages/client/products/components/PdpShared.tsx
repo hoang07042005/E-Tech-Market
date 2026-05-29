@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import { useState, useEffect, useMemo } from 'react'
 import { API_BASE_URL } from '@/configs/api.config'
 import type { Product, ProductVariant, ProductShopQnaPublic, Video } from '@/features/services/products.service'

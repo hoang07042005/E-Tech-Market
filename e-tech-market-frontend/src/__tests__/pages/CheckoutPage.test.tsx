@@ -138,8 +138,7 @@ describe('CheckoutPage Integration', () => {
 
     // Mock location.href
     const originalLocation = window.location;
-    // @ts-ignore
-    delete window.location;
+    delete (window as any).location;
     window.location = { ...originalLocation, href: '' } as any;
 
     (apiFetch as any).mockImplementation((url: string) => {
@@ -182,8 +181,7 @@ describe('CheckoutPage Integration', () => {
   it('Payment callback page handles return from gateway success', async () => {
     // Mock the URL search params for gateway return
     const originalLocation = window.location;
-    // @ts-ignore
-    delete window.location;
+    delete (window as any).location;
     window.location = { 
       ...originalLocation, 
       search: '?gateway=vnpay&success=1&order_code=OD-SUCCESS' 
@@ -205,8 +203,7 @@ describe('CheckoutPage Integration', () => {
 
   it('Payment callback page handles return from gateway failure', async () => {
     const originalLocation = window.location;
-    // @ts-ignore
-    delete window.location;
+    delete (window as any).location;
     window.location = { 
       ...originalLocation, 
       search: '?gateway=vnpay&success=0&order_code=OD-FAIL' 

@@ -29,7 +29,7 @@ class ProductInventorySync
         $before = $inv->exists ? (int) $inv->quantity_on_hand : 0;
 
         $inv->quantity_on_hand = $total;
-        if (!$inv->exists) {
+        if (! $inv->exists) {
             $inv->reorder_level = 10;
         }
         if ($total > $before) {

@@ -10,11 +10,11 @@ class ProductResource extends JsonResource
     public function toArray(Request $request): array
     {
         $data = parent::toArray($request);
-        
+
         // Hide sensitive backend information if any exists
         unset($data['cost_price']);
         unset($data['deleted_at']);
-        
+
         return $data;
     }
 }

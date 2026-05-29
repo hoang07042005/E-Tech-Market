@@ -7,8 +7,8 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 
 class ProcessProductImage implements ShouldQueue
 {
@@ -20,25 +20,27 @@ class ProcessProductImage implements ShouldQueue
 
     public function handle(): void
     {
-        Log::info("Bắt đầu xử lý tối ưu hóa ảnh sản phẩm chạy ngầm: " . $this->imagePath);
+        Log::info('Bắt đầu xử lý tối ưu hóa ảnh sản phẩm chạy ngầm: '.$this->imagePath);
 
         $disk = Storage::disk('public');
-        if (!$disk->exists($this->imagePath)) {
-            Log::warning("Không tìm thấy ảnh cần xử lý: " . $this->imagePath);
+        if (! $disk->exists($this->imagePath)) {
+            Log::warning('Không tìm thấy ảnh cần xử lý: '.$this->imagePath);
+
             return;
         }
 
         // Use storage_path for a reliable local filesystem path (works for 'public' local driver).
         // Using $disk->path() may not be available for all filesystem adapters and static analyzers.
-        $fullPath = storage_path('app/public/' . ltrim($this->imagePath, '/'));
-        
-        if (!extension_loaded('gd')) {
-            Log::info("Không tìm thấy PHP GD Extension. Bỏ qua bước nén ảnh.");
+        $fullPath = storage_path('app/public/'.ltrim($this->imagePath, '/'));
+
+        if (! extension_loaded('gd')) {
+            Log::info('Không tìm thấy PHP GD Extension. Bỏ qua bước nén ảnh.');
+
             return;
         }
 
         $info = getimagesize($fullPath);
-        if (!$info) {
+        if (! $info) {
             return;
         }
 
@@ -53,8 +55,9 @@ class ProcessProductImage implements ShouldQueue
             default => null,
         };
 
-        if (!$srcImage) {
-            Log::warning("Định dạng ảnh không được hỗ trợ xử lý GD hoặc file lỗi: " . $mime);
+        if (! $srcImage) {
+            Log::warning('Định dạng ảnh không được hỗ trợ xử lý GD hoặc file lỗi: '.$mime);
+
             return;
         }
 
@@ -96,6 +99,6 @@ class ProcessProductImage implements ShouldQueue
         }
 
         imagedestroy($srcImage);
-        Log::info("Đã tối ưu hóa và nén ảnh thành công: " . $this->imagePath);
+        Log::info('Đã tối ưu hóa và nén ảnh thành công: '.$this->imagePath);
     }
 }

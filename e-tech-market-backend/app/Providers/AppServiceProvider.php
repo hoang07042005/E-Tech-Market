@@ -3,8 +3,8 @@
 namespace App\Providers;
 
 use App\Models\ProductVariant;
-use App\Models\User;
 use App\Models\Role;
+use App\Models\User;
 use App\Observers\ProductVariantObserver;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\ServiceProvider;
@@ -103,7 +103,7 @@ class AppServiceProvider extends ServiceProvider
 
         \App\Models\Product::saved($forgetProductCache);
         \App\Models\Product::deleted($forgetProductCache);
-        
+
         \App\Models\Category::saved($forgetCategoryCache);
         \App\Models\Category::deleted($forgetCategoryCache);
 

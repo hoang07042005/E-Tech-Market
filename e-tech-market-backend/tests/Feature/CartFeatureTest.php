@@ -2,10 +2,10 @@
 
 namespace Tests\Feature;
 
+use App\Models\Cart;
+use App\Models\User;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Tests\TestCase;
-use App\Models\User;
-use App\Models\Cart;
 
 class CartFeatureTest extends TestCase
 {
@@ -16,7 +16,7 @@ class CartFeatureTest extends TestCase
         $user = User::factory()->create();
         Cart::create([
             'user_id' => $user->id,
-            'status' => 'active'
+            'status' => 'active',
         ]);
 
         $response = $this->actingAs($user)->getJson('/api/cart');
@@ -25,7 +25,7 @@ class CartFeatureTest extends TestCase
         $response->assertJsonStructure([
             'id',
             'user_id',
-            'items'
+            'items',
         ]);
     }
 

@@ -3,11 +3,10 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\ReplyQnaRequest;
 use App\Models\Product;
 use App\Models\ProductShopQna;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
-use App\Http\Requests\Admin\ReplyQnaRequest;
 
 class ProductShopQnaController extends Controller
 {

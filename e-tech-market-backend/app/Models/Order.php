@@ -97,4 +97,3 @@ class Order extends Model
         return $this->hasOne(OrderReturnRequest::class, 'order_id');
     }
 }
-

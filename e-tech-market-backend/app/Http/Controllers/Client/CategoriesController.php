@@ -46,8 +46,8 @@ class CategoriesController extends Controller
     public function show(Category $category, Request $request): JsonResponse
     {
         $category->load([
-            'children' => fn($q) => $q->where('is_active', true)->orderBy('sort_order'),
-            'products' => fn($q) => $q->where('is_active', true)->orderBy('created_at', 'desc'),
+            'children' => fn ($q) => $q->where('is_active', true)->orderBy('sort_order'),
+            'products' => fn ($q) => $q->where('is_active', true)->orderBy('created_at', 'desc'),
         ]);
 
         $type = $request->get('type', null);
@@ -55,11 +55,10 @@ class CategoriesController extends Controller
             return response()->json(['message' => 'Category not found'], 404);
         }
 
-        if (!$category->is_active) {
+        if (! $category->is_active) {
             return response()->json(['message' => 'Category not active'], 404);
         }
 
         return response()->json($category);
     }
 }
-

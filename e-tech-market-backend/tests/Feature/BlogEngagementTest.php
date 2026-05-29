@@ -17,7 +17,7 @@ class BlogEngagementTest extends TestCase
     {
         $post = BlogPost::query()->create([
             'title' => 'Test blog post',
-            'slug' => 'test-blog-' . Str::random(8),
+            'slug' => 'test-blog-'.Str::random(8),
             'content' => str_repeat('word ', 500),
             'is_published' => true,
             'published_at' => now(),
@@ -25,12 +25,12 @@ class BlogEngagementTest extends TestCase
             'reading_time' => 0,
         ]);
 
-        $this->getJson('/api/blog/posts/' . $post->slug)
+        $this->getJson('/api/blog/posts/'.$post->slug)
             ->assertOk()
             ->assertJsonPath('views', 1)
             ->assertJsonPath('reading_time', 3);
 
-        $this->postJson('/api/blog/posts/' . $post->slug . '/comments', [
+        $this->postJson('/api/blog/posts/'.$post->slug.'/comments', [
             'author_name' => 'Nguyen Van A',
             'author_email' => 'a@example.com',
             'content' => 'Bai viet huu ich.',
@@ -48,7 +48,7 @@ class BlogEngagementTest extends TestCase
     {
         $post = BlogPost::query()->create([
             'title' => 'Authenticated comment post',
-            'slug' => 'auth-comment-' . Str::random(8),
+            'slug' => 'auth-comment-'.Str::random(8),
             'content' => 'Body',
             'is_published' => true,
             'published_at' => now(),
@@ -61,7 +61,7 @@ class BlogEngagementTest extends TestCase
 
         Sanctum::actingAs($user);
 
-        $this->postJson('/api/blog/posts/' . $post->slug . '/comments', [
+        $this->postJson('/api/blog/posts/'.$post->slug.'/comments', [
             'content' => 'Binh luan tu tai khoan.',
         ])->assertCreated()
             ->assertJsonPath('author_name', 'Tran Thi B')

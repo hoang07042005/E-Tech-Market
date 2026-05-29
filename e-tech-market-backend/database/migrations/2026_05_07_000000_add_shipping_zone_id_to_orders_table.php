@@ -9,7 +9,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('orders', function (Blueprint $table) {
-            if (!Schema::hasColumn('orders', 'shipping_zone_id')) {
+            if (! Schema::hasColumn('orders', 'shipping_zone_id')) {
                 $table->unsignedBigInteger('shipping_zone_id')->nullable()->after('shipping_method_id');
                 $table->index('shipping_zone_id');
             }
@@ -26,4 +26,3 @@ return new class extends Migration
         });
     }
 };
-

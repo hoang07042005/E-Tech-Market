@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Client;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Client\RequestReturnOrderRequest;
+use App\Http\Requests\Client\StoreOrderRequest;
 use App\Models\Cart;
 use App\Models\CartItem;
 use App\Models\Notification;
@@ -16,12 +18,9 @@ use App\Services\OrderService;
 use App\Support\ProductInventorySync;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use App\Http\Requests\Client\StoreOrderRequest;
-use App\Http\Requests\Client\RequestReturnOrderRequest;
 
 class OrdersController extends Controller
 {
-
     public function index(Request $request): JsonResponse
     {
         $user = $request->user();
@@ -81,7 +80,7 @@ class OrdersController extends Controller
         $user = $request->user();
 
         $cur = strtolower((string) ($order->status ?? ''));
-        if (!in_array($cur, ['pending', 'processing'], true)) {
+        if (! in_array($cur, ['pending', 'processing'], true)) {
             return response()->json(['message' => 'Không thể hủy đơn ở trạng thái này.'], 422);
         }
 
@@ -150,7 +149,7 @@ class OrdersController extends Controller
         $user = $request->user();
 
         $order->loadMissing(['payment']);
-        if (!$order->payment || strtolower((string) $order->payment->method) !== 'cod') {
+        if (! $order->payment || strtolower((string) $order->payment->method) !== 'cod') {
             return response()->json(['message' => 'Chỉ có thể xác nhận thanh toán cho đơn hàng COD.'], 422);
         }
 
@@ -188,14 +187,16 @@ class OrdersController extends Controller
         $files = $request->file('media', []);
         $mediaMeta = [];
         foreach ($files as $f) {
-            if (!$f) continue;
+            if (! $f) {
+                continue;
+            }
             $mime = (string) ($f->getMimeType() ?? '');
             $isVideo = str_starts_with(strtolower($mime), 'video/');
             $type = $isVideo ? 'video' : 'image';
-            $path = $f->storePublicly('returns/' . (int) $order->id, ['disk' => 'public']);
+            $path = $f->storePublicly('returns/'.(int) $order->id, ['disk' => 'public']);
             $mediaMeta[] = [
                 'type' => $type,
-                'url' => '/storage/' . ltrim($path, '/'),
+                'url' => '/storage/'.ltrim($path, '/'),
                 'original_name' => (string) ($f->getClientOriginalName() ?? ''),
                 'mime' => $mime !== '' ? $mime : null,
                 'size' => (int) ($f->getSize() ?? 0),
@@ -223,10 +224,10 @@ class OrdersController extends Controller
                 'user_id' => (int) $au->id,
                 'type' => 'order_return_request',
                 'title' => 'Yêu cầu hoàn trả mới',
-                'body' => 'Đơn #' . ($order->order_code ?: ('ET-' . $order->id)) . ' vừa có yêu cầu hoàn trả.',
+                'body' => 'Đơn #'.($order->order_code ?: ('ET-'.$order->id)).' vừa có yêu cầu hoàn trả.',
                 'data' => [
                     'order_id' => (int) $order->id,
-                    'order_code' => (string) ($order->order_code ?: ('ET-' . $order->id)),
+                    'order_code' => (string) ($order->order_code ?: ('ET-'.$order->id)),
                 ],
                 'read_at' => null,
             ]);
@@ -234,6 +235,7 @@ class OrdersController extends Controller
 
         // Reload with returnRequest
         $order->load(['returnRequest']);
+
         return $this->show($order, $request);
     }
 
@@ -243,7 +245,7 @@ class OrdersController extends Controller
         $user = $request->user();
 
         $order->loadMissing(['returnRequest']);
-        if (!$order->returnRequest) {
+        if (! $order->returnRequest) {
             return response()->json(['message' => 'Đơn hàng này chưa có yêu cầu hoàn trả.'], 422);
         }
 
@@ -272,16 +274,17 @@ class OrdersController extends Controller
                 'user_id' => (int) $au->id,
                 'type' => 'order_refund_confirmed',
                 'title' => 'Khách đã xác nhận nhận tiền hoàn',
-                'body' => 'Đơn #' . ($order->order_code ?: ('ET-' . $order->id)) . ' đã được khách xác nhận nhận tiền hoàn.',
+                'body' => 'Đơn #'.($order->order_code ?: ('ET-'.$order->id)).' đã được khách xác nhận nhận tiền hoàn.',
                 'data' => [
                     'order_id' => (int) $order->id,
-                    'order_code' => (string) ($order->order_code ?: ('ET-' . $order->id)),
+                    'order_code' => (string) ($order->order_code ?: ('ET-'.$order->id)),
                 ],
                 'read_at' => null,
             ]);
         }
 
         $order->load(['returnRequest']);
+
         return $this->show($order, $request);
     }
 
@@ -291,7 +294,7 @@ class OrdersController extends Controller
         $data = $request->validated();
 
         $cart = Cart::query()->where('user_id', $user->id)->first();
-        if (!$cart) {
+        if (! $cart) {
             return response()->json(['message' => 'Không tìm thấy giỏ hàng'], 422);
         }
 
@@ -314,7 +317,7 @@ class OrdersController extends Controller
 
         // Pass actual array of values without relying on eloquent mapping clone issues
         $cleanItemsInput = [];
-        foreach($itemsInput as $it) {
+        foreach ($itemsInput as $it) {
             $cleanItemsInput[] = [
                 'product_id' => (int) $it['product_id'],
                 'variant_id' => $it['variant_id'] ? (int) $it['variant_id'] : null,
@@ -337,7 +340,7 @@ class OrdersController extends Controller
         $data = $request->validated();
 
         $paymentMethod = (string) $data['payment_method'];
-        if (!in_array($paymentMethod, ['cod', 'vnpay', 'momo'], true)) {
+        if (! in_array($paymentMethod, ['cod', 'vnpay', 'momo'], true)) {
             return response()->json(['message' => 'Phương thức thanh toán không hợp lệ'], 422);
         }
 

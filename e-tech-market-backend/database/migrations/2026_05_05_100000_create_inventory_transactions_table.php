@@ -8,7 +8,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        if (!Schema::hasTable('inventory_transactions')) {
+        if (! Schema::hasTable('inventory_transactions')) {
             Schema::create('inventory_transactions', function (Blueprint $table) {
                 $table->id();
                 $table->foreignId('product_id')->constrained()->onDelete('cascade');

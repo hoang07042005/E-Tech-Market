@@ -23,24 +23,24 @@ class OrderConfirmationNotification extends Notification implements ShouldQueue
 
     public function toMail(object $notifiable): MailMessage
     {
-        $orderCode = $this->order->order_code ?: ('ET-' . $this->order->id);
-        $totalAmount = number_format($this->order->total_amount, 0, ',', '.') . ' VND';
+        $orderCode = $this->order->order_code ?: ('ET-'.$this->order->id);
+        $totalAmount = number_format($this->order->total_amount, 0, ',', '.').' VND';
 
         $mailMessage = (new MailMessage)
-            ->subject('Xác nhận đơn hàng #' . $orderCode . ' từ E-Tech Market!')
-            ->greeting('Xin chào ' . ($this->order->shipping_name ?: 'quý khách') . '!')
+            ->subject('Xác nhận đơn hàng #'.$orderCode.' từ E-Tech Market!')
+            ->greeting('Xin chào '.($this->order->shipping_name ?: 'quý khách').'!')
             ->line('Cảm ơn bạn đã mua sắm tại E-Tech Market. Đơn hàng của bạn đã được xác nhận thanh toán thành công!')
-            ->line('Mã đơn hàng: #' . $orderCode)
-            ->line('Tổng giá trị đơn hàng: ' . $totalAmount)
-            ->line('Địa chỉ giao hàng: ' . $this->order->shipping_address_line);
+            ->line('Mã đơn hàng: #'.$orderCode)
+            ->line('Tổng giá trị đơn hàng: '.$totalAmount)
+            ->line('Địa chỉ giao hàng: '.$this->order->shipping_address_line);
 
         $this->order->loadMissing('items');
         foreach ($this->order->items as $item) {
-            $mailMessage->line('- ' . $item->product_name_snapshot . ' (x' . $item->quantity . '): ' . number_format($item->total_price, 0, ',', '.') . ' VND');
+            $mailMessage->line('- '.$item->product_name_snapshot.' (x'.$item->quantity.'): '.number_format($item->total_price, 0, ',', '.').' VND');
         }
 
         $frontendUrl = rtrim((string) config('app.frontend_url'), '/');
-        $orderUrl = $frontendUrl . '/profile/orders';
+        $orderUrl = $frontendUrl.'/profile/orders';
 
         return $mailMessage
             ->action('Xem chi tiết đơn hàng', $orderUrl)

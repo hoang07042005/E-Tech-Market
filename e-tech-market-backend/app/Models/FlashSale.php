@@ -13,8 +13,11 @@ class FlashSale extends Model
     use HasFactory;
 
     const STATUS_WAITING = 'waiting';
+
     const STATUS_ACTIVE = 'active';
+
     const STATUS_ENDED = 'ended';
+
     const STATUS_PAUSED = 'paused';
 
     protected $fillable = ['name', 'start_at', 'end_at', 'status'];

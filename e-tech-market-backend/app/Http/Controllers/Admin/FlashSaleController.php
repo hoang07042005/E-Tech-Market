@@ -2,16 +2,15 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Resources\Admin\FlashSaleResource;
-
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\StoreFlashSaleItemRequest;
+use App\Http\Requests\Admin\StoreFlashSaleRequest;
+use App\Http\Requests\Admin\UpdateFlashSaleRequest;
+use App\Http\Resources\Admin\FlashSaleResource;
 use App\Models\FlashSale;
 use App\Models\FlashSaleItem;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use App\Http\Requests\Admin\StoreFlashSaleRequest;
-use App\Http\Requests\Admin\UpdateFlashSaleRequest;
-use App\Http\Requests\Admin\StoreFlashSaleItemRequest;
 
 class FlashSaleController extends Controller
 {
@@ -23,6 +22,7 @@ class FlashSaleController extends Controller
             ->update(['status' => FlashSale::STATUS_ENDED]);
 
         $sales = FlashSale::withCount('items')->orderBy('start_at', 'desc')->get();
+
         return response()->json(FlashSaleResource::collection($sales)->resolve());
     }
 
@@ -32,12 +32,14 @@ class FlashSaleController extends Controller
 
         \Illuminate\Support\Facades\Cache::forget('active_flash_sale');
         $sale = FlashSale::create($validated);
+
         return response()->json((new FlashSaleResource($sale))->resolve(), 201);
     }
 
     public function show(FlashSale $flashSale): JsonResponse
     {
         $flashSale->load('items.product', 'items.variant');
+
         return response()->json((new FlashSaleResource($flashSale))->resolve());
     }
 
@@ -47,6 +49,7 @@ class FlashSaleController extends Controller
 
         \Illuminate\Support\Facades\Cache::forget('active_flash_sale');
         $flashSale->update($validated);
+
         return response()->json((new FlashSaleResource($flashSale))->resolve());
     }
 
@@ -54,6 +57,7 @@ class FlashSaleController extends Controller
     {
         \Illuminate\Support\Facades\Cache::forget('active_flash_sale');
         $flashSale->delete();
+
         return response()->json(['message' => 'Flash Sale deleted successfully']);
     }
 
@@ -64,6 +68,7 @@ class FlashSaleController extends Controller
 
         \Illuminate\Support\Facades\Cache::forget('active_flash_sale');
         $item = $flashSale->items()->create($validated);
+
         return response()->json((new FlashSaleResource($item))->resolve(), 201);
     }
 
@@ -74,6 +79,7 @@ class FlashSaleController extends Controller
         }
         \Illuminate\Support\Facades\Cache::forget('active_flash_sale');
         $item->delete();
+
         return response()->json(['message' => 'Item removed successfully']);
     }
 
@@ -94,7 +100,7 @@ class FlashSaleController extends Controller
             foreach ($products as $product) {
                 if ($product->variants && $product->variants->count() > 0) {
                     foreach ($product->variants as $variant) {
-                        $discountedPrice = round((float)$variant->price * (1 - $percentage / 100));
+                        $discountedPrice = round((float) $variant->price * (1 - $percentage / 100));
                         $flashSale->items()->updateOrCreate(
                             [
                                 'product_id' => $product->id,
@@ -108,7 +114,7 @@ class FlashSaleController extends Controller
                         $addedCount++;
                     }
                 } else {
-                    $discountedPrice = round((float)$product->price * (1 - $percentage / 100));
+                    $discountedPrice = round((float) $product->price * (1 - $percentage / 100));
                     $flashSale->items()->updateOrCreate(
                         [
                             'product_id' => $product->id,
@@ -128,7 +134,7 @@ class FlashSaleController extends Controller
 
         return response()->json([
             'message' => "Đã áp dụng giảm giá {$percentage}% cho {$addedCount} sản phẩm/phiên bản thành công!",
-            'added_count' => $addedCount
+            'added_count' => $addedCount,
         ]);
     }
 }

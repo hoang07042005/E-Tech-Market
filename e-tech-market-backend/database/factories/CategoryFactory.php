@@ -46,7 +46,7 @@ class CategoryFactory extends Factory
     /**
      * State for categories with a parent
      */
-    public function withParent(Category $parent = null): static
+    public function withParent(?Category $parent = null): static
     {
         return $this->state(function (array $attributes) use ($parent) {
             return [

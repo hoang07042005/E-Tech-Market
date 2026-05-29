@@ -20,7 +20,9 @@ class PaymentFlowIntegrationTest extends TestCase
     use RefreshDatabase;
 
     private User $customerUser;
+
     private Order $vnpayOrder;
+
     private Order $momoOrder;
 
     protected function setUp(): void
@@ -28,7 +30,7 @@ class PaymentFlowIntegrationTest extends TestCase
         parent::setUp();
 
         $role = Role::query()->firstOrCreate(
-            ['slug' => 'customer'], 
+            ['slug' => 'customer'],
             ['name' => 'Customer', 'description' => 'Customer']
         );
 
@@ -103,7 +105,7 @@ class PaymentFlowIntegrationTest extends TestCase
             'app.frontend_url' => 'https://frontend.example.test',
         ]);
 
-        $createResponse = $this->postJson('/api/payments/vnpay/' . $this->vnpayOrder->id . '/create');
+        $createResponse = $this->postJson('/api/payments/vnpay/'.$this->vnpayOrder->id.'/create');
 
         $createResponse->assertOk()
             ->assertJsonPath('order_id', $this->vnpayOrder->id)
@@ -132,16 +134,16 @@ class PaymentFlowIntegrationTest extends TestCase
         $i = 0;
         foreach ($params as $key => $value) {
             if ($i === 1) {
-                $hashData .= '&' . urlencode($key) . '=' . urlencode($value);
+                $hashData .= '&'.urlencode($key).'='.urlencode($value);
             } else {
-                $hashData .= urlencode($key) . '=' . urlencode($value);
+                $hashData .= urlencode($key).'='.urlencode($value);
                 $i = 1;
             }
         }
 
         $params['vnp_SecureHash'] = hash_hmac('sha512', $hashData, 'vnpaysecretkey');
 
-        $ipnResponse = $this->getJson('/api/payments/vnpay/ipn?' . http_build_query($params));
+        $ipnResponse = $this->getJson('/api/payments/vnpay/ipn?'.http_build_query($params));
 
         $ipnResponse->assertOk()
             ->assertJsonPath('RspCode', '00')
@@ -177,7 +179,7 @@ class PaymentFlowIntegrationTest extends TestCase
             ], 200),
         ]);
 
-        $createResponse = $this->postJson('/api/payments/momo/' . $this->momoOrder->id . '/create', [
+        $createResponse = $this->postJson('/api/payments/momo/'.$this->momoOrder->id.'/create', [
             'request_type' => 'payWithMethod',
         ]);
 
@@ -216,19 +218,19 @@ class PaymentFlowIntegrationTest extends TestCase
             'extraData' => $extraData,
         ];
 
-        $rawHash = 'accessKey=' . 'MOMO_ACCESS' .
-            '&amount=' . $payload['amount'] .
-            '&extraData=' . $payload['extraData'] .
-            '&message=' . $payload['message'] .
-            '&orderId=' . $payload['orderId'] .
-            '&orderInfo=' . $payload['orderInfo'] .
-            '&orderType=' . $payload['orderType'] .
-            '&partnerCode=' . $payload['partnerCode'] .
-            '&payType=' . $payload['payType'] .
-            '&requestId=' . $payload['requestId'] .
-            '&responseTime=' . $payload['responseTime'] .
-            '&resultCode=' . $payload['resultCode'] .
-            '&transId=' . $payload['transId'];
+        $rawHash = 'accessKey='.'MOMO_ACCESS'.
+            '&amount='.$payload['amount'].
+            '&extraData='.$payload['extraData'].
+            '&message='.$payload['message'].
+            '&orderId='.$payload['orderId'].
+            '&orderInfo='.$payload['orderInfo'].
+            '&orderType='.$payload['orderType'].
+            '&partnerCode='.$payload['partnerCode'].
+            '&payType='.$payload['payType'].
+            '&requestId='.$payload['requestId'].
+            '&responseTime='.$payload['responseTime'].
+            '&resultCode='.$payload['resultCode'].
+            '&transId='.$payload['transId'];
 
         $payload['signature'] = hash_hmac('sha256', $rawHash, 'MOMO_SECRET');
 
@@ -273,7 +275,7 @@ class PaymentFlowIntegrationTest extends TestCase
             'status' => 'pending',
         ]);
 
-        $response = $this->patchJson('/api/orders/' . $order->id . '/confirm-payment');
+        $response = $this->patchJson('/api/orders/'.$order->id.'/confirm-payment');
 
         $response->assertOk();
         $this->assertEquals('paid', $order->fresh()->payment_status);

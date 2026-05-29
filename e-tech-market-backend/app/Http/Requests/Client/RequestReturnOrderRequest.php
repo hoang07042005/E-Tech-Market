@@ -21,7 +21,7 @@ class RequestReturnOrderRequest extends FormRequest
     {
         return [
             'content' => ['required', 'string', 'min:5', 'max:4000'],
-            'media'   => ['nullable', 'array', 'max:8'],
+            'media' => ['nullable', 'array', 'max:8'],
             'media.*' => ['file', 'max:51200'], // 50MB each (images/videos)
         ];
     }

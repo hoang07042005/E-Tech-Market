@@ -13,7 +13,7 @@ class BannerController extends Controller
         $banners = Banner::where('is_active', true)
             ->orderBy('sort_order', 'asc')
             ->get();
-            
+
         return response()->json($banners);
     }
 }

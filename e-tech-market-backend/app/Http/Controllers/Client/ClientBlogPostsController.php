@@ -3,9 +3,9 @@
 namespace App\Http\Controllers\Client;
 
 use App\Http\Controllers\Controller;
-use App\Models\BlogPost;
 use App\Models\BlogCategory;
 use App\Models\BlogComment;
+use App\Models\BlogPost;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -14,7 +14,7 @@ class ClientBlogPostsController extends Controller
 {
     public function index(Request $request): JsonResponse
     {
-        $cacheKey = 'blog_posts_index_' . md5(serialize($request->all()));
+        $cacheKey = 'blog_posts_index_'.md5(serialize($request->all()));
 
         $posts = \Illuminate\Support\Facades\Cache::remember($cacheKey, 300, function () use ($request) {
             $query = BlogPost::with(['category', 'author'])
@@ -43,12 +43,12 @@ class ClientBlogPostsController extends Controller
     public function show(string $slug): JsonResponse
     {
         $post = BlogPost::with([
-                'category',
-                'author',
-                'comments' => function ($q) {
-                    $q->with('user:id,name,avatar_url')->where('status', 'approved')->orderByDesc('created_at');
-                },
-            ])
+            'category',
+            'author',
+            'comments' => function ($q) {
+                $q->with('user:id,name,avatar_url')->where('status', 'approved')->orderByDesc('created_at');
+            },
+        ])
             ->withCount(['comments' => function ($q) {
                 $q->where('status', 'approved');
             }])
@@ -102,6 +102,7 @@ class ClientBlogPostsController extends Controller
         $categories = \Illuminate\Support\Facades\Cache::remember('blog_categories_all', 300, function () {
             return BlogCategory::orderBy('sort_order', 'asc')->get();
         });
+
         return response()->json($categories);
     }
 

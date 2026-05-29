@@ -1,72 +1,69 @@
 <?php
 header('Content-type: text/html; charset=utf-8');
 
-
 function execPostRequest($url, $data)
 {
     $ch = curl_init($url);
-    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
+    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
     curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-            'Content-Type: application/json',
-            'Content-Length: ' . strlen($data))
+    curl_setopt($ch, CURLOPT_HTTPHEADER, [
+        'Content-Type: application/json',
+        'Content-Length: '.strlen($data)]
     );
     curl_setopt($ch, CURLOPT_TIMEOUT, 5);
     curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
-    //execute post
+    // execute post
     $result = curl_exec($ch);
-    //close connection
+    // close connection
     curl_close($ch);
+
     return $result;
 }
 
-$endpoint = "https://test-payment.momo.vn/v2/gateway/api/query";
+$endpoint = 'https://test-payment.momo.vn/v2/gateway/api/query';
 $partnerCode = 'MOMOBKUN20180529';
 $accessKey = 'klm05TvNBzhg7h7j';
 $secretKey = 'at67qH6mk8w5Y1nAyMoYKMWACiEi2bsa';
-$requestId = time()."";
+$requestId = time().'';
 
+if (! empty($_POST)) {
+    $orderId = $_POST['orderId']; // Mã đơn hàng cần kiểm tra trạng thái
 
-
-if (!empty($_POST)) {
-    $orderId = $_POST["orderId"];;// Mã đơn hàng cần kiểm tra trạng thái
-
-    //before sign HMAC SHA256 signature
-    $rawHash = "accessKey=".$accessKey."&orderId=".$orderId."&partnerCode=".$partnerCode."&requestId=".$requestId;
+    // before sign HMAC SHA256 signature
+    $rawHash = 'accessKey='.$accessKey.'&orderId='.$orderId.'&partnerCode='.$partnerCode.'&requestId='.$requestId;
     // echo "<script>console.log('Debug Objects: " . $rawHash . "' );</script>";
 
-    $signature = hash_hmac("sha256", $rawHash, $secretKey);
+    $signature = hash_hmac('sha256', $rawHash, $secretKey);
 
-    $data = array('partnerCode' => $partnerCode,
+    $data = ['partnerCode' => $partnerCode,
         'requestId' => $requestId,
         'orderId' => $orderId,
         'requestType' => $requestType,
         'signature' => $signature,
-        'lang' => 'vi');
+        'lang' => 'vi'];
     $result = execPostRequest($endpoint, json_encode($data));
     $jsonResult = json_decode($result, true);  // decode json
     $response = json_encode($jsonResult, JSON_PRETTY_PRINT);
     // check signature response
-    if(!empty($result)){
-        $partnerCode = $jsonResult["partnerCode"];
-        $accessKey = $jsonResult["accessKey"];
-        $requestId = $jsonResult["requestId"];
-        $orderId = $jsonResult["orderId"];
-        $errorCode = $jsonResult["errorCode"];
-        $transId = $jsonResult["transId"];
-        $amount = $jsonResult["amount"];
-        $message = $jsonResult["message"];
-        $localMessage = $jsonResult["localMessage"];
-        $requestType = $jsonResult["requestType"];
-        $payType = $jsonResult["payType"];
-        $extraData = ($jsonResult["extraData"] ? $jsonResult["extraData"] : "");
-        $m2signature = $jsonResult["signature"];
+    if (! empty($result)) {
+        $partnerCode = $jsonResult['partnerCode'];
+        $accessKey = $jsonResult['accessKey'];
+        $requestId = $jsonResult['requestId'];
+        $orderId = $jsonResult['orderId'];
+        $errorCode = $jsonResult['errorCode'];
+        $transId = $jsonResult['transId'];
+        $amount = $jsonResult['amount'];
+        $message = $jsonResult['message'];
+        $localMessage = $jsonResult['localMessage'];
+        $requestType = $jsonResult['requestType'];
+        $payType = $jsonResult['payType'];
+        $extraData = ($jsonResult['extraData'] ? $jsonResult['extraData'] : '');
+        $m2signature = $jsonResult['signature'];
 
-        //before sign HMAC SHA256 signature
-        $rawHash = "partnerCode=".$partnerCode."&accessKey=".$accessKey."&requestId=".$requestId."&orderId=".$orderId."&errorCode=".$errorCode."&transId=".$transId."&amount=".$amount."&message=".$message."&localMessage=".$localMessage."&requestType=".$requestType."&payType=".$payType."&extraData=".$extraData;
-        $partnerSignature = hash_hmac("sha256", $rawHash, $secretKey);
-
+        // before sign HMAC SHA256 signature
+        $rawHash = 'partnerCode='.$partnerCode.'&accessKey='.$accessKey.'&requestId='.$requestId.'&orderId='.$orderId.'&errorCode='.$errorCode.'&transId='.$transId.'&amount='.$amount.'&message='.$message.'&localMessage='.$localMessage.'&requestType='.$requestType.'&payType='.$payType.'&extraData='.$extraData;
+        $partnerSignature = hash_hmac('sha256', $rawHash, $secretKey);
 
     }
 }
@@ -131,8 +128,8 @@ if (!empty($_POST)) {
                 <div class="panel-body">
 
                     <?php
-                    echo '<b> Response: </b><pre>' .$response . '</pre></br>';
-                    ?>
+                    echo '<b> Response: </b><pre>'.$response.'</pre></br>';
+?>
                 </div>
             </div>
         </div>

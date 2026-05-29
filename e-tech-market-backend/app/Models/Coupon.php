@@ -48,7 +48,7 @@ class Coupon extends Model
     public function isValidNow(): bool
     {
         $now = Carbon::now();
-        if (!$this->is_active) {
+        if (! $this->is_active) {
             return false;
         }
         if ($this->start_at && $now->lt($this->start_at)) {
@@ -57,7 +57,7 @@ class Coupon extends Model
         if ($this->end_at && $now->gt($this->end_at)) {
             return false;
         }
+
         return true;
     }
 }
-

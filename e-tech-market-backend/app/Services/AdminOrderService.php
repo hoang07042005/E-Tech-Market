@@ -2,15 +2,12 @@
 
 namespace App\Services;
 
+use App\Models\Notification;
 use App\Models\Order;
-use App\Models\OrderReturnRequest;
+use App\Models\OrderStatusHistory;
 use App\Models\Product;
 use App\Models\ProductVariant;
-use App\Models\OrderStatusHistory;
-use App\Models\Notification;
 use App\Support\ProductInventorySync;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Carbon;
 
 class AdminOrderService
 {
@@ -28,10 +25,10 @@ class AdminOrderService
             'user_id' => (int) $order->user_id,
             'type' => 'order_return_approved',
             'title' => 'Yêu cầu hoàn trả đã được phê duyệt',
-            'body' => 'Admin đã phê duyệt yêu cầu hoàn trả cho đơn #' . ($order->order_code ?: ('ET-' . $order->id)) . '.',
+            'body' => 'Admin đã phê duyệt yêu cầu hoàn trả cho đơn #'.($order->order_code ?: ('ET-'.$order->id)).'.',
             'data' => [
                 'order_id' => (int) $order->id,
-                'order_code' => (string) ($order->order_code ?: ('ET-' . $order->id)),
+                'order_code' => (string) ($order->order_code ?: ('ET-'.$order->id)),
                 'return_request_status' => 'approved',
             ],
             'read_at' => null,
@@ -52,10 +49,10 @@ class AdminOrderService
             'user_id' => (int) $order->user_id,
             'type' => 'order_return_rejected',
             'title' => 'Yêu cầu hoàn trả bị từ chối',
-            'body' => 'Admin đã từ chối yêu cầu hoàn trả cho đơn #' . ($order->order_code ?: ('ET-' . $order->id)) . '.',
+            'body' => 'Admin đã từ chối yêu cầu hoàn trả cho đơn #'.($order->order_code ?: ('ET-'.$order->id)).'.',
             'data' => [
                 'order_id' => (int) $order->id,
-                'order_code' => (string) ($order->order_code ?: ('ET-' . $order->id)),
+                'order_code' => (string) ($order->order_code ?: ('ET-'.$order->id)),
                 'return_request_status' => 'rejected',
                 'admin_note' => $adminNote,
             ],
@@ -69,14 +66,16 @@ class AdminOrderService
     {
         $proofMeta = [];
         foreach ($files as $f) {
-            if (!$f) continue;
+            if (! $f) {
+                continue;
+            }
             $mime = (string) ($f->getMimeType() ?? '');
             $isVideo = str_starts_with(strtolower($mime), 'video/');
             $type = $isVideo ? 'video' : 'image';
-            $path = $f->storePublicly('returns/' . (int) $order->id . '/refund-proof', ['disk' => 'public']);
+            $path = $f->storePublicly('returns/'.(int) $order->id.'/refund-proof', ['disk' => 'public']);
             $proofMeta[] = [
                 'type' => $type,
-                'url' => '/storage/' . ltrim($path, '/'),
+                'url' => '/storage/'.ltrim($path, '/'),
                 'original_name' => (string) ($f->getClientOriginalName() ?? ''),
                 'mime' => $mime !== '' ? $mime : null,
                 'size' => (int) ($f->getSize() ?? 0),
@@ -95,10 +94,10 @@ class AdminOrderService
             'user_id' => (int) $order->user_id,
             'type' => 'order_return_refunded',
             'title' => 'Đơn hàng đã được hoàn tiền',
-            'body' => 'Admin đã hoàn tiền cho yêu cầu hoàn trả của đơn #' . ($order->order_code ?: ('ET-' . $order->id)) . '.',
+            'body' => 'Admin đã hoàn tiền cho yêu cầu hoàn trả của đơn #'.($order->order_code ?: ('ET-'.$order->id)).'.',
             'data' => [
                 'order_id' => (int) $order->id,
-                'order_code' => (string) ($order->order_code ?: ('ET-' . $order->id)),
+                'order_code' => (string) ($order->order_code ?: ('ET-'.$order->id)),
                 'return_request_status' => 'refunded',
                 'refund_proof' => $proofMeta,
                 'admin_note' => $order->returnRequest->admin_note,

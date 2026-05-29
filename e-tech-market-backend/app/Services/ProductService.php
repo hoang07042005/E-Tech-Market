@@ -2,13 +2,13 @@
 
 namespace App\Services;
 
+use App\Jobs\ProcessProductImage;
 use App\Models\Product;
 use App\Models\ProductImage;
 use App\Models\ProductSpec;
 use App\Models\ProductVariant;
 use App\Support\HtmlSanitizer;
 use App\Support\ProductInventorySync;
-use App\Jobs\ProcessProductImage;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -20,7 +20,7 @@ class ProductService
         $data = $this->cleanUtf8($data);
 
         return DB::transaction(function () use ($data, $request) {
-            $data['slug'] = Str::slug($data['name']) . '-' . uniqid();
+            $data['slug'] = Str::slug($data['name']).'-'.uniqid();
             $data['rich_html'] = HtmlSanitizer::sanitize($data['rich_html'] ?? null);
             $product = Product::create($data);
 
@@ -63,7 +63,7 @@ class ProductService
             }
             $product->images()->delete();
             $product->specs()->delete();
-            
+
             foreach ($product->variants as $v) {
                 if ($v->image_url) {
                     $vPath = str_replace('/storage/', '', $v->image_url);
@@ -71,7 +71,7 @@ class ProductService
                 }
             }
             $product->variants()->delete();
-            
+
             $product->delete();
         });
     }
@@ -82,7 +82,7 @@ class ProductService
             ProductVariant::query()
                 ->where('id', $variant->id)
                 ->update([
-                    'stock_quantity' => DB::raw('COALESCE(stock_quantity, 0) + ' . $add),
+                    'stock_quantity' => DB::raw('COALESCE(stock_quantity, 0) + '.$add),
                 ]);
         });
 
@@ -96,7 +96,7 @@ class ProductService
                 $path = $image->store('products', 'public');
                 ProcessProductImage::dispatch($path);
                 $url = Storage::disk('public')->url($path);
-                
+
                 if ($index === 0) {
                     $product->update(['main_image_url' => $url]);
                 }
@@ -127,8 +127,8 @@ class ProductService
                 $path = $image->store('products', 'public');
                 ProcessProductImage::dispatch($path);
                 $url = Storage::disk('public')->url($path);
-                
-                if ($index === 0 && !$product->main_image_url) {
+
+                if ($index === 0 && ! $product->main_image_url) {
                     $product->update(['main_image_url' => $url]);
                 }
 
@@ -150,15 +150,15 @@ class ProductService
             $variants = $this->cleanUtf8($variants);
             if (is_array($variants)) {
                 foreach ($variants as $index => $vData) {
-                    $sku = strtoupper(mb_substr($productName, 0, 3, 'UTF-8')) . '-' . $product->id . '-' . strtoupper(dechex(time())) . '-' . ($index + 1);
-                    if (!empty($vData['sku']) && !str_starts_with($vData['sku'], strtoupper(mb_substr($productName, 0, 3, 'UTF-8')))) {
+                    $sku = strtoupper(mb_substr($productName, 0, 3, 'UTF-8')).'-'.$product->id.'-'.strtoupper(dechex(time())).'-'.($index + 1);
+                    if (! empty($vData['sku']) && ! str_starts_with($vData['sku'], strtoupper(mb_substr($productName, 0, 3, 'UTF-8')))) {
                         $sku = $vData['sku'];
                     }
-                    
+
                     $vPrice = (isset($vData['price']) && $vData['price'] !== '') ? $vData['price'] : 0;
                     $vDiscountValue = (isset($vData['discount_value']) && $vData['discount_value'] !== '') ? $vData['discount_value'] : null;
-                    $vDiscountStart = !empty($vData['discount_start_at']) ? $vData['discount_start_at'] : null;
-                    $vDiscountEnd = !empty($vData['discount_end_at']) ? $vData['discount_end_at'] : null;
+                    $vDiscountStart = ! empty($vData['discount_start_at']) ? $vData['discount_start_at'] : null;
+                    $vDiscountEnd = ! empty($vData['discount_end_at']) ? $vData['discount_end_at'] : null;
                     $vDiscountType = (isset($vData['discount_type']) && $vData['discount_type'] !== '') ? $vData['discount_type'] : null;
 
                     $variant = ProductVariant::create([
@@ -186,6 +186,7 @@ class ProductService
                 }
             }
         }
+
         return $variantIdsByIndex;
     }
 
@@ -228,8 +229,8 @@ class ProductService
                 foreach ($variants as $index => $vData) {
                     $vPrice = (isset($vData['price']) && $vData['price'] !== '') ? $vData['price'] : 0;
                     $vDiscountValue = (isset($vData['discount_value']) && $vData['discount_value'] !== '') ? $vData['discount_value'] : null;
-                    $vDiscountStart = !empty($vData['discount_start_at']) ? $vData['discount_start_at'] : null;
-                    $vDiscountEnd = !empty($vData['discount_end_at']) ? $vData['discount_end_at'] : null;
+                    $vDiscountStart = ! empty($vData['discount_start_at']) ? $vData['discount_start_at'] : null;
+                    $vDiscountEnd = ! empty($vData['discount_end_at']) ? $vData['discount_end_at'] : null;
                     $vDiscountType = (isset($vData['discount_type']) && $vData['discount_type'] !== '') ? $vData['discount_type'] : null;
 
                     $existing = null;
@@ -259,7 +260,7 @@ class ProductService
                         ]);
                         $variant = $existing;
                     } else {
-                        $sku = $prefix . '-' . $product->id . '-' . strtoupper(dechex(time())) . '-' . ($index + 1);
+                        $sku = $prefix.'-'.$product->id.'-'.strtoupper(dechex(time())).'-'.($index + 1);
                         if (! empty($vData['sku']) && ! str_starts_with($vData['sku'], $prefix)) {
                             $sku = $vData['sku'];
                         }
@@ -292,6 +293,7 @@ class ProductService
                 }
             }
         }
+
         return $variantIdsByIndex;
     }
 
@@ -403,13 +405,14 @@ class ProductService
     private function cleanUtf8(mixed $data): mixed
     {
         if (is_string($data)) {
-            return iconv("UTF-8", "UTF-8//IGNORE", $data);
+            return iconv('UTF-8', 'UTF-8//IGNORE', $data);
         }
         if (is_array($data)) {
             foreach ($data as $key => $value) {
                 $data[$key] = $this->cleanUtf8($value);
             }
         }
+
         return $data;
     }
 }

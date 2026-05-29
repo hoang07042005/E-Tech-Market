@@ -14,11 +14,11 @@ class StoreVideoCategoryRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name'        => 'required|string|max:255',
-            'slug'        => 'nullable|string|max:255|unique:video_categories,slug',
+            'name' => 'required|string|max:255',
+            'slug' => 'nullable|string|max:255|unique:video_categories,slug',
             'description' => 'nullable|string',
-            'is_active'   => 'nullable|boolean',
-            'sort_order'  => 'nullable|integer',
+            'is_active' => 'nullable|boolean',
+            'sort_order' => 'nullable|integer',
         ];
     }
 }

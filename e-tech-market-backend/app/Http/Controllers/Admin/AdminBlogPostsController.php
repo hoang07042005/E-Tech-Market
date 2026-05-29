@@ -2,17 +2,16 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Resources\Admin\BlogPostResource;
-
 use App\Http\Controllers\Controller;
-use App\Models\BlogPost;
+use App\Http\Requests\Admin\StoreBlogCategoryRequest;
+use App\Http\Requests\Admin\StoreBlogPostRequest;
+use App\Http\Requests\Admin\UpdateBlogPostRequest;
+use App\Http\Resources\Admin\BlogPostResource;
 use App\Models\BlogCategory;
+use App\Models\BlogPost;
 use App\Support\HtmlSanitizer;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use App\Http\Requests\Admin\StoreBlogPostRequest;
-use App\Http\Requests\Admin\UpdateBlogPostRequest;
-use App\Http\Requests\Admin\StoreBlogCategoryRequest;
 use Illuminate\Support\Str;
 
 class AdminBlogPostsController extends Controller
@@ -29,22 +28,22 @@ class AdminBlogPostsController extends Controller
     public function show(BlogPost $blogPost): JsonResponse
     {
         $blogPost->load(['category', 'author']);
+
         return response()->json((new BlogPostResource($blogPost))->resolve());
     }
 
     public function store(StoreBlogPostRequest $request): JsonResponse
     {
-        
 
-        $post = new BlogPost();
+        $post = new BlogPost;
         $post->title = $request->title;
-        $post->slug = Str::slug($request->title) . '-' . uniqid();
+        $post->slug = Str::slug($request->title).'-'.uniqid();
         $post->blog_category_id = $request->blog_category_id;
         $post->excerpt = $request->excerpt;
         $post->content = HtmlSanitizer::sanitize($request->content) ?? '';
         $post->thumbnail_url = $request->thumbnail_url;
         $post->author_id = $request->user()->id;
-        
+
         $isPublished = $request->boolean('is_published');
         if ($isPublished) {
             $post->published_at = now();
@@ -62,35 +61,34 @@ class AdminBlogPostsController extends Controller
 
     public function update(UpdateBlogPostRequest $request, BlogPost $blogPost): JsonResponse
     {
-        
 
         if ($request->has('title')) {
             $blogPost->title = $request->title;
-            $blogPost->slug = Str::slug($request->title) . '-' . uniqid();
+            $blogPost->slug = Str::slug($request->title).'-'.uniqid();
         }
-        
+
         if ($request->has('blog_category_id')) {
             $blogPost->blog_category_id = $request->blog_category_id;
         }
-        
+
         if ($request->has('excerpt')) {
             $blogPost->excerpt = $request->excerpt;
         }
-        
+
         if ($request->has('content')) {
             $blogPost->content = HtmlSanitizer::sanitize($request->content) ?? '';
         }
-        
+
         if ($request->has('thumbnail_url')) {
             $blogPost->thumbnail_url = $request->thumbnail_url;
         }
-        
+
         $wasPublished = $blogPost->is_published;
         if ($request->has('is_published')) {
             $isPublished = $request->boolean('is_published');
-            if ($isPublished && !$wasPublished) {
+            if ($isPublished && ! $wasPublished) {
                 $blogPost->published_at = now();
-            } elseif (!$isPublished) {
+            } elseif (! $isPublished) {
                 $blogPost->published_at = null;
             }
             $blogPost->is_published = $isPublished;
@@ -98,7 +96,7 @@ class AdminBlogPostsController extends Controller
 
         $blogPost->save();
 
-        if ($request->has('is_published') && $isPublished && !$wasPublished) {
+        if ($request->has('is_published') && $isPublished && ! $wasPublished) {
             $this->notifySubscribers($blogPost);
         }
 
@@ -108,6 +106,7 @@ class AdminBlogPostsController extends Controller
     public function destroy(BlogPost $blogPost): JsonResponse
     {
         $blogPost->delete();
+
         return response()->json(['message' => 'Post deleted successfully']);
     }
 
@@ -115,11 +114,11 @@ class AdminBlogPostsController extends Controller
     {
         $validated = $request->validated();
 
-        $validated['slug'] = Str::slug($validated['name']) . '-' . uniqid();
+        $validated['slug'] = Str::slug($validated['name']).'-'.uniqid();
         $validated['sort_order'] = $validated['sort_order'] ?? 0;
-        
+
         $category = BlogCategory::create($validated);
-        
+
         return response()->json((new BlogPostResource($category))->resolve(), 201);
     }
 
@@ -145,11 +144,11 @@ class AdminBlogPostsController extends Controller
                 'user_id' => $user->id,
                 'type' => 'blog',
                 'title' => 'Tin tức công nghệ mới!',
-                'body' => 'Bài viết mới "' . $post->title . '" vừa được xuất bản. Xem ngay!',
+                'body' => 'Bài viết mới "'.$post->title.'" vừa được xuất bản. Xem ngay!',
                 'data' => [
                     'post_id' => $post->id,
                     'post_slug' => $post->slug,
-                    'action_url' => '/blog/' . $post->slug,
+                    'action_url' => '/blog/'.$post->slug,
                 ],
             ]);
         }

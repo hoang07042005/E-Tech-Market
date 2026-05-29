@@ -15,7 +15,7 @@ class UpdateCategoryRequest extends FormRequest
     {
         return [
             'name' => 'required|string|max:255',
-            'slug' => 'required|string|max:255|unique:categories,slug,' . $category->id,
+            'slug' => 'required|string|max:255|unique:categories,slug,'.$category->id,
             'type' => 'nullable|string|in:product,video',
             'parent_id' => 'nullable|exists:categories,id',
             'description' => 'nullable|string',

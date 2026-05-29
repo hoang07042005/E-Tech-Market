@@ -15,7 +15,7 @@ class StoreBlogCategoryRequest extends FormRequest
     {
         return [
             'name' => 'required|string|max:255',
-            'sort_order' => 'integer'
+            'sort_order' => 'integer',
         ];
     }
 }

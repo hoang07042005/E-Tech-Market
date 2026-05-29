@@ -69,8 +69,7 @@ describe('ErrorBoundary Component', () => {
   it('should navigate to home on "Về trang chủ" click', () => {
     // Mock window.location
     const originalLocation = window.location;
-    // @ts-ignore
-    delete window.location;
+    delete (window as any).location;
     window.location = { ...originalLocation, href: '' } as any;
 
     render(
@@ -92,8 +91,7 @@ describe('ErrorBoundary Component', () => {
     // Mock window.location.reload
     const originalLocation = window.location;
     const reloadMock = vi.fn();
-    // @ts-ignore
-    delete window.location;
+    delete (window as any).location;
     window.location = { ...originalLocation, reload: reloadMock } as any;
 
     render(

@@ -2,11 +2,11 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class ProductVariant extends Model
 {
@@ -33,13 +33,13 @@ class ProductVariant extends Model
     ];
 
     protected $casts = [
-        'product_id'        => 'integer',
-        'price'             => 'decimal:2',
-        'discount_value'    => 'decimal:2',
+        'product_id' => 'integer',
+        'price' => 'decimal:2',
+        'discount_value' => 'decimal:2',
         'discount_start_at' => 'datetime',
-        'discount_end_at'   => 'datetime',
-        'stock_quantity'    => 'integer',
-        'is_active'         => 'boolean',
+        'discount_end_at' => 'datetime',
+        'stock_quantity' => 'integer',
+        'is_active' => 'boolean',
     ];
 
     /**
@@ -56,7 +56,7 @@ class ProductVariant extends Model
             empty($this->discount_type) ||
             empty($this->discount_value) ||
             ($this->discount_start_at && now()->lt($this->discount_start_at)) ||
-            ($this->discount_end_at   && now()->gt($this->discount_end_at))
+            ($this->discount_end_at && now()->gt($this->discount_end_at))
         ) {
             return (float) $this->price;
         }

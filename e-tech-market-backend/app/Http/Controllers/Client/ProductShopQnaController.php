@@ -3,13 +3,13 @@
 namespace App\Http\Controllers\Client;
 
 use App\Http\Controllers\Controller;
+use App\Models\Notification;
 use App\Models\Product;
 use App\Models\ProductShopQna;
-use App\Models\Notification;
 use App\Models\User;
+use App\Models\User as UserModel;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use App\Models\User as UserModel;
 use Laravel\Sanctum\PersonalAccessToken;
 
 class ProductShopQnaController extends Controller
@@ -96,7 +96,7 @@ class ProductShopQnaController extends Controller
                 'user_id' => (int) $au->id,
                 'type' => 'shop_qna_new',
                 'title' => 'Câu hỏi mới (Hỏi đáp)',
-                'body' => ($displayName ?: 'Khách') . ' vừa hỏi về ' . ($product->name ?: 'sản phẩm') . '.',
+                'body' => ($displayName ?: 'Khách').' vừa hỏi về '.($product->name ?: 'sản phẩm').'.',
                 'data' => [
                     'product_id' => (int) $product->id,
                     'product_slug' => (string) ($product->slug ?? ''),

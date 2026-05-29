@@ -16,7 +16,7 @@
     </head>
 
     <body>
-        <?php require_once("./config.php"); ?>             
+        <?php require_once './config.php'; ?>             
         <div class="container">
         <h3>Tạo mới đơn hàng</h3>
             <div class="table-responsive">

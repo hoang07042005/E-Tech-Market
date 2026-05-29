@@ -14,11 +14,11 @@ class UpdateVideoCategoryRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name'        => 'sometimes|string|max:255',
-            'slug'        => 'sometimes|string|max:255|unique:video_categories,slug,' . $videoCategory->id,
+            'name' => 'sometimes|string|max:255',
+            'slug' => 'sometimes|string|max:255|unique:video_categories,slug,'.$videoCategory->id,
             'description' => 'nullable|string',
-            'is_active'   => 'nullable|boolean',
-            'sort_order'  => 'nullable|integer',
+            'is_active' => 'nullable|boolean',
+            'sort_order' => 'nullable|integer',
         ];
     }
 }

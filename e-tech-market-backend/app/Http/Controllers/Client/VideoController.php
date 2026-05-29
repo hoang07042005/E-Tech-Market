@@ -5,8 +5,8 @@ namespace App\Http\Controllers\Client;
 use App\Http\Controllers\Controller;
 use App\Models\Video;
 use App\Models\VideoCategory;
-use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 class VideoController extends Controller
 {
@@ -25,15 +25,17 @@ class VideoController extends Controller
         }
 
         $videos = $query->orderBy('sort_order', 'asc')->get();
+
         return response()->json($videos);
     }
 
     public function show(Video $video): JsonResponse
     {
-        if (!$video->is_active) {
+        if (! $video->is_active) {
             return response()->json(['message' => 'Video không hoạt động'], 404);
         }
         $video->load(['product', 'videoCategory']);
+
         return response()->json($video);
     }
 
@@ -42,6 +44,7 @@ class VideoController extends Controller
         $categories = VideoCategory::where('is_active', true)
             ->orderBy('sort_order', 'asc')
             ->get();
+
         return response()->json($categories);
     }
 }

@@ -27,7 +27,7 @@ $allowedOrigins = $allowedOrigins
     ->all();
 
 /*
-| When no explicit origins were configured via env/local defaults, fall back to false 
+| When no explicit origins were configured via env/local defaults, fall back to false
 | instead of '*' to prevent wild-card origin attacks.
 */
 if ($allowedOrigins === []) {

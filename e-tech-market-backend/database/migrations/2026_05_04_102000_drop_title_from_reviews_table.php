@@ -18,10 +18,9 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('reviews', function (Blueprint $table) {
-            if (!Schema::hasColumn('reviews', 'title')) {
+            if (! Schema::hasColumn('reviews', 'title')) {
                 $table->string('title', 255)->nullable()->after('rating');
             }
         });
     }
 };
-

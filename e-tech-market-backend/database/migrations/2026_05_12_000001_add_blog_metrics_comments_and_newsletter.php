@@ -17,7 +17,7 @@ return new class extends Migration
             }
         });
 
-        if (!Schema::hasTable('blog_comments')) {
+        if (! Schema::hasTable('blog_comments')) {
             Schema::create('blog_comments', function (Blueprint $table) {
                 $table->id();
                 $table->foreignId('blog_post_id')->constrained('blog_posts')->cascadeOnDelete();
@@ -31,7 +31,7 @@ return new class extends Migration
             });
         }
 
-        if (!Schema::hasTable('newsletter_subscriptions')) {
+        if (! Schema::hasTable('newsletter_subscriptions')) {
             Schema::create('newsletter_subscriptions', function (Blueprint $table) {
                 $table->id();
                 $table->string('email')->unique();

@@ -29,16 +29,16 @@ class HtmlSanitizer
         $dangerousTags = ['script', 'style', 'iframe', 'object', 'embed', 'form', 'input', 'textarea', 'button', 'select', 'base', 'meta', 'link', 'applet'];
         foreach ($dangerousTags as $tag) {
             // Paired tags with content
-            $html = preg_replace('~<' . $tag . '\b[^>]*>[\s\S]*?</' . $tag . '>~iu', '', $html) ?? $html;
+            $html = preg_replace('~<'.$tag.'\b[^>]*>[\s\S]*?</'.$tag.'>~iu', '', $html) ?? $html;
             // Self-closing / orphan opening tags
-            $html = preg_replace('~<' . $tag . '\b[^>]*/?>~iu', '', $html) ?? $html;
+            $html = preg_replace('~<'.$tag.'\b[^>]*/?>~iu', '', $html) ?? $html;
         }
 
         // 2. Allowlist tags (keep img/a/table etc.)
         $allowed = '<p><br><b><strong><i><em><u><s><span><div><ul><ol><li><h1><h2><h3><h4><h5><h6>'
-            . '<blockquote><pre><code><hr><sup><sub><abbr><mark><del><ins><figure><figcaption>'
-            . '<table><thead><tbody><tfoot><tr><th><td><caption><colgroup><col>'
-            . '<a><img><picture><source><video>';
+            .'<blockquote><pre><code><hr><sup><sub><abbr><mark><del><ins><figure><figcaption>'
+            .'<table><thead><tbody><tfoot><tr><th><td><caption><colgroup><col>'
+            .'<a><img><picture><source><video>';
         $html = strip_tags($html, $allowed);
 
         // 3. Remove ALL event handler attributes (onclick, onload, onerror, etc.)
@@ -50,13 +50,13 @@ class HtmlSanitizer
         foreach ($dangerousAttrs as $attr) {
             // javascript:, vbscript:, data: (except data:image/...) URLs
             $html = preg_replace(
-                '/\s' . preg_quote($attr, '/') . '\s*=\s*(["\'])\s*(?:javascript|vbscript|data(?!:image\/)):[^"\']*\1/iu',
+                '/\s'.preg_quote($attr, '/').'\s*=\s*(["\'])\s*(?:javascript|vbscript|data(?!:image\/)):[^"\']*\1/iu',
                 '',
                 $html
             ) ?? $html;
             // Unquoted variant
             $html = preg_replace(
-                '/\s' . preg_quote($attr, '/') . '\s*=\s*(?:javascript|vbscript|data(?!:image\/)):[^\s>]*/iu',
+                '/\s'.preg_quote($attr, '/').'\s*=\s*(?:javascript|vbscript|data(?!:image\/)):[^\s>]*/iu',
                 '',
                 $html
             ) ?? $html;

@@ -38,7 +38,7 @@ class PaymentService
         }
 
         $appUrl = rtrim((string) config('app.url'), '/');
-        $returnUrl = $appUrl . '/api/payments/vnpay/return';
+        $returnUrl = $appUrl.'/api/payments/vnpay/return';
 
         $amountVnd = (int) round((float) $order->total_amount);
         $startTime = Carbon::now('Asia/Ho_Chi_Minh');
@@ -53,7 +53,7 @@ class PaymentService
             'vnp_CurrCode' => 'VND',
             'vnp_IpAddr' => $clientIp,
             'vnp_Locale' => 'vn',
-            'vnp_OrderInfo' => 'Thanh toan don ' . $order->order_code,
+            'vnp_OrderInfo' => 'Thanh toan don '.$order->order_code,
             'vnp_OrderType' => 'other',
             'vnp_ReturnUrl' => $returnUrl,
             'vnp_TxnRef' => $order->order_code,
@@ -64,12 +64,12 @@ class PaymentService
         $hashData = $this->buildVnpayHashData($inputData);
         $query = '';
         foreach ($inputData as $key => $value) {
-            $query .= urlencode((string) $key) . '=' . urlencode((string) $value) . '&';
+            $query .= urlencode((string) $key).'='.urlencode((string) $value).'&';
         }
 
-        $vnpUrl = rtrim($baseUrl, '?') . '?' . $query;
+        $vnpUrl = rtrim($baseUrl, '?').'?'.$query;
         $secureHash = hash_hmac('sha512', $hashData, $hashSecret);
-        $vnpUrl .= 'vnp_SecureHash=' . $secureHash;
+        $vnpUrl .= 'vnp_SecureHash='.$secureHash;
 
         return [
             'order_id' => $order->id,
@@ -114,7 +114,7 @@ class PaymentService
         if ($verified && $orderCode !== '') {
             DB::transaction(function () use ($orderCode, $success, $vnpTransactionNo, $amount, $inputData) {
                 $order = Order::query()->where('order_code', $orderCode)->lockForUpdate()->first();
-                if (!$order) {
+                if (! $order) {
                     return;
                 }
 
@@ -174,16 +174,16 @@ class PaymentService
         }
 
         $appUrl = rtrim((string) config('app.url'), '/');
-        $redirectUrl = $appUrl . '/api/payments/momo/return';
-        $ipnUrl = $appUrl . '/api/payments/momo/ipn';
+        $redirectUrl = $appUrl.'/api/payments/momo/return';
+        $ipnUrl = $appUrl.'/api/payments/momo/ipn';
 
         $amountVnd = (string) ((int) round((float) $order->total_amount));
-        $orderId = $order->order_code . '__' . Str::uuid()->toString();
+        $orderId = $order->order_code.'__'.Str::uuid()->toString();
         $momoRequestId = Str::uuid()->toString();
-        $orderInfo = 'Thanh toán đơn ' . $order->order_code;
+        $orderInfo = 'Thanh toán đơn '.$order->order_code;
 
         $requestType = (string) ($requestType ?? 'payWithMethod');
-        if (!in_array($requestType, ['captureWallet', 'payWithATM', 'payWithMethod'], true)) {
+        if (! in_array($requestType, ['captureWallet', 'payWithATM', 'payWithMethod'], true)) {
             $requestType = 'payWithMethod';
         }
 
@@ -192,16 +192,16 @@ class PaymentService
             'order_id' => $order->id,
         ], JSON_UNESCAPED_UNICODE));
 
-        $rawHash = 'accessKey=' . $accessKey .
-            '&amount=' . $amountVnd .
-            '&extraData=' . $extraData .
-            '&ipnUrl=' . $ipnUrl .
-            '&orderId=' . $orderId .
-            '&orderInfo=' . $orderInfo .
-            '&partnerCode=' . $partnerCode .
-            '&redirectUrl=' . $redirectUrl .
-            '&requestId=' . $momoRequestId .
-            '&requestType=' . $requestType;
+        $rawHash = 'accessKey='.$accessKey.
+            '&amount='.$amountVnd.
+            '&extraData='.$extraData.
+            '&ipnUrl='.$ipnUrl.
+            '&orderId='.$orderId.
+            '&orderInfo='.$orderInfo.
+            '&partnerCode='.$partnerCode.
+            '&redirectUrl='.$redirectUrl.
+            '&requestId='.$momoRequestId.
+            '&requestType='.$requestType;
 
         $signature = hash_hmac('sha256', $rawHash, $secretKey);
 
@@ -222,18 +222,19 @@ class PaymentService
         ];
 
         $resp = Http::timeout(10)->acceptJson()->asJson()->post($endpoint, $payload);
-        if (!$resp->ok()) {
+        if (! $resp->ok()) {
             return ['error' => 'MoMo create payment failed', 'detail' => $resp->body(), 'code' => 502];
         }
 
         $json = $resp->json();
-        if (!is_array($json)) {
+        if (! is_array($json)) {
             return ['error' => 'MoMo invalid response', 'detail' => $json, 'code' => 502];
         }
 
         $resultCode = isset($json['resultCode']) ? (string) $json['resultCode'] : null;
         if ($resultCode !== null && $resultCode !== '' && $resultCode !== '0') {
             $message = isset($json['message']) ? (string) $json['message'] : 'MoMo error';
+
             return ['error' => $message, 'detail' => $json, 'code' => 502];
         }
 
@@ -245,7 +246,7 @@ class PaymentService
                 break;
             }
         }
-        if (!is_string($payUrl) || $payUrl === '') {
+        if (! is_string($payUrl) || $payUrl === '') {
             return ['error' => 'MoMo redirect url missing', 'detail' => $json, 'code' => 502];
         }
 
@@ -282,19 +283,19 @@ class PaymentService
         $accessKey = (string) config('services.momo.access_key');
         $secretKey = (string) config('services.momo.secret_key');
 
-        $rawHash = 'accessKey=' . $accessKey .
-            '&amount=' . $amount .
-            '&extraData=' . $extraData .
-            '&message=' . $message .
-            '&orderId=' . $orderIdRaw .
-            '&orderInfo=' . $orderInfo .
-            '&orderType=' . $orderType .
-            '&partnerCode=' . $partnerCode .
-            '&payType=' . $payType .
-            '&requestId=' . $requestId .
-            '&responseTime=' . $responseTime .
-            '&resultCode=' . $resultCode .
-            '&transId=' . $transId;
+        $rawHash = 'accessKey='.$accessKey.
+            '&amount='.$amount.
+            '&extraData='.$extraData.
+            '&message='.$message.
+            '&orderId='.$orderIdRaw.
+            '&orderInfo='.$orderInfo.
+            '&orderType='.$orderType.
+            '&partnerCode='.$partnerCode.
+            '&payType='.$payType.
+            '&requestId='.$requestId.
+            '&responseTime='.$responseTime.
+            '&resultCode='.$resultCode.
+            '&transId='.$transId;
 
         $partnerSignature = hash_hmac('sha256', $rawHash, $secretKey);
         $verified = hash_equals($partnerSignature, $momoSignature);
@@ -318,7 +319,7 @@ class PaymentService
         if ($verified && $orderCode !== '') {
             DB::transaction(function () use ($orderCode, $success, $transId, $amount, $data, &$orderId) {
                 $order = Order::query()->where('order_code', $orderCode)->lockForUpdate()->first();
-                if (!$order) {
+                if (! $order) {
                     return;
                 }
 
@@ -399,12 +400,13 @@ class PaymentService
         $hashData = '';
         foreach ($inputData as $key => $value) {
             if ($i === 1) {
-                $hashData .= '&' . urlencode((string) $key) . '=' . urlencode((string) $value);
+                $hashData .= '&'.urlencode((string) $key).'='.urlencode((string) $value);
             } else {
-                $hashData .= urlencode((string) $key) . '=' . urlencode((string) $value);
+                $hashData .= urlencode((string) $key).'='.urlencode((string) $value);
                 $i = 1;
             }
         }
+
         return $hashData;
     }
 }

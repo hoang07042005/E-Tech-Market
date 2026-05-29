@@ -16,24 +16,24 @@
     </head>
     <body>
         <?php
-        require_once("./config.php");
+        require_once './config.php';
         $vnp_SecureHash = $_GET['vnp_SecureHash'];
-        $inputData = array();
+        $inputData = [];
         foreach ($_GET as $key => $value) {
-            if (substr($key, 0, 4) == "vnp_") {
+            if (substr($key, 0, 4) == 'vnp_') {
                 $inputData[$key] = $value;
             }
         }
-        
+
         unset($inputData['vnp_SecureHash']);
         ksort($inputData);
         $i = 0;
-        $hashData = "";
+        $hashData = '';
         foreach ($inputData as $key => $value) {
             if ($i == 1) {
-                $hashData = $hashData . '&' . urlencode($key) . "=" . urlencode($value);
+                $hashData = $hashData.'&'.urlencode($key).'='.urlencode($value);
             } else {
-                $hashData = $hashData . urlencode($key) . "=" . urlencode($value);
+                $hashData = $hashData.urlencode($key).'='.urlencode($value);
                 $i = 1;
             }
         }
@@ -89,7 +89,7 @@
                         } else {
                             echo "<span style='color:red'>Chu ky khong hop le</span>";
                         }
-                        ?>
+        ?>
 
                     </label>
                 </div> 

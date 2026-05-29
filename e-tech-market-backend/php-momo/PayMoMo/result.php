@@ -1,41 +1,38 @@
 <?php
 header('Content-type: text/html; charset=utf-8');
 
+$secretKey = 'at67qH6mk8w5Y1nAyMoYKMWACiEi2bsa'; // Put your secret key in there
 
-$secretKey = 'at67qH6mk8w5Y1nAyMoYKMWACiEi2bsa'; //Put your secret key in there
+if (! empty($_GET)) {
+    $partnerCode = $_POST['partnerCode'];
+    $orderId = $_POST['orderId'];
+    $requestId = $_POST['requestId'];
+    $amount = $_POST['amount'];
+    $orderInfo = $_POST['orderInfo'];
+    $orderType = $_POST['orderType'];
+    $transId = $_POST['transId'];
+    $resultCode = $_POST['resultCode'];
+    $message = $_POST['message'];
+    $payType = $_POST['payType'];
+    $responseTime = $_POST['responseTime'];
+    $extraData = $_POST['extraData'];
+    $m2signature = $_POST['signature']; // MoMo signature
 
-if (!empty($_GET)) {
-	$partnerCode = $_POST["partnerCode"];
-	$orderId = $_POST["orderId"];
-	$requestId = $_POST["requestId"];
-	$amount = $_POST["amount"];	
-	$orderInfo = $_POST["orderInfo"];
-	$orderType = $_POST["orderType"];
-	$transId = $_POST["transId"];
-	$resultCode = $_POST["resultCode"];
-	$message = $_POST["message"];
-	$payType = $_POST["payType"];
-	$responseTime = $_POST["responseTime"];
-	$extraData = $_POST["extraData"];
-	$m2signature = $_POST["signature"]; //MoMo signature
-	
+    // Checksum
+    $rawHash = 'accessKey='.$accessKey.'&amount='.$amount.'&extraData='.$extraData.'&message='.$message.'&orderId='.$orderId.'&orderInfo='.$orderInfo.
+        '&orderType='.$orderType.'&partnerCode='.$partnerCode.'&payType='.$payType.'&requestId='.$requestId.'&responseTime='.$responseTime.
+        '&resultCode='.$resultCode.'&transId='.$transId;
 
-	//Checksum
-	$rawHash = "accessKey=" . $accessKey . "&amount=" . $amount . "&extraData=" . $extraData . "&message=" . $message . "&orderId=" . $orderId . "&orderInfo=" . $orderInfo .
-		"&orderType=" . $orderType . "&partnerCode=" . $partnerCode . "&payType=" . $payType . "&requestId=" . $requestId . "&responseTime=" . $responseTime .
-		"&resultCode=" . $resultCode . "&transId=" . $transId;
+    $partnerSignature = hash_hmac('sha256', $rawHash, $secretKey);
 
-    $partnerSignature = hash_hmac("sha256", $rawHash, $secretKey);
-
-    echo "<script>console.log('Debug huhu Objects: " . $rawHash . "' );</script>";
-    echo "<script>console.log('Debug huhu Objects: " . $partnerSignature . "' );</script>";
-
+    echo "<script>console.log('Debug huhu Objects: ".$rawHash."' );</script>";
+    echo "<script>console.log('Debug huhu Objects: ".$partnerSignature."' );</script>";
 
     if ($m2signature == $partnerSignature) {
         if ($errorCode == '0') {
             $result = '<div class="alert alert-success"><strong>Payment status: </strong>Success</div>';
         } else {
-            $result = '<div class="alert alert-danger"><strong>Payment status: </strong>' . $message .'/'.$localMessage. '</div>';
+            $result = '<div class="alert alert-danger"><strong>Payment status: </strong>'.$message.'/'.$localMessage.'</div>';
         }
     } else {
         $result = '<div class="alert alert-danger">This transaction could be hacked, please check your signature and returned signature</div>';
@@ -209,20 +206,20 @@ if (!empty($_GET)) {
                 <div class="panel-body">
                     <?php
 
-                    echo '<b> SecretKey:</b> (This value is hard-coded in the php file. If you need to change it, do it manually)<pre>' . $secretKey . '</pre></br>';
+                    echo '<b> SecretKey:</b> (This value is hard-coded in the php file. If you need to change it, do it manually)<pre>'.$secretKey.'</pre></br>';
 
-                    echo '<b> RawData: </b><pre>' . $rawHash . '</pre></br>';
+echo '<b> RawData: </b><pre>'.$rawHash.'</pre></br>';
 
-                    echo '<b>MoMo signature: </b><pre>' . $m2signature . '</pre></br>';
+echo '<b>MoMo signature: </b><pre>'.$m2signature.'</pre></br>';
 
-                    echo '<b>Partner signature: </b><pre>' . $partnerSignature . '</pre></br>';
+echo '<b>Partner signature: </b><pre>'.$partnerSignature.'</pre></br>';
 
-                    if($m2signature == $partnerSignature){
-                        echo '<div class="alert alert-success"><strong>INFO: </strong>Pass Checksum</div>';
-                    }else{
-                        echo '<div class="alert alert-danger" role="alert"> <strong>ERROR!:</strong> Fail checksum</div>';
-                    }
-                    ?>
+if ($m2signature == $partnerSignature) {
+    echo '<div class="alert alert-success"><strong>INFO: </strong>Pass Checksum</div>';
+} else {
+    echo '<div class="alert alert-danger" role="alert"> <strong>ERROR!:</strong> Fail checksum</div>';
+}
+?>
                 </div>
             </div>
         </div>

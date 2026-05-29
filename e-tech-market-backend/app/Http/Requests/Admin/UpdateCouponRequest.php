@@ -14,7 +14,7 @@ class UpdateCouponRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'code' => 'required|string|unique:coupons,code,' . $coupon->id,
+            'code' => 'required|string|unique:coupons,code,'.$coupon->id,
             'coupon_type' => 'required|in:percentage,fixed',
             'value' => 'required|numeric|min:0',
             'min_order_amount' => 'nullable|numeric|min:0',

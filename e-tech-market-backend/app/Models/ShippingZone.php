@@ -18,4 +18,3 @@ class ShippingZone extends Model
         'is_active' => 'boolean',
     ];
 }
-

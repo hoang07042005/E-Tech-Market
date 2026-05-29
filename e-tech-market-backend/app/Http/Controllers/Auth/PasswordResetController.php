@@ -23,7 +23,7 @@ class PasswordResetController extends Controller
         $user = User::where('email', $data['email'])->first();
 
         // Always respond OK to avoid user enumeration.
-        if (!$user) {
+        if (! $user) {
             return response()->json(['ok' => true]);
         }
 
@@ -70,4 +70,3 @@ class PasswordResetController extends Controller
         return response()->json(['ok' => true]);
     }
 }
-

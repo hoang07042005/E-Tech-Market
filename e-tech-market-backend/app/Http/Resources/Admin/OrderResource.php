@@ -2,9 +2,9 @@
 
 namespace App\Http\Resources\Admin;
 
+use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
-use App\Models\Product;
 
 class OrderResource extends JsonResource
 {
@@ -12,6 +12,7 @@ class OrderResource extends JsonResource
     {
         $statusMeta = static function (?string $s): array {
             $s = $s ? strtolower($s) : '';
+
             return match ($s) {
                 'pending' => ['Chờ xác nhận', 'wait', 1],
                 'paid' => ['Đang chuyển bị hàng', 'info', 3],
@@ -27,6 +28,7 @@ class OrderResource extends JsonResource
 
         $paymentLabel = static function (?string $m): string {
             $m = $m ? strtolower($m) : '';
+
             return match ($m) {
                 'cod' => 'COD',
                 'momo' => 'Ví MoMo',
@@ -47,16 +49,17 @@ class OrderResource extends JsonResource
             ];
         })->values()->all();
 
-        $productIds = collect($items)->pluck('product_id')->filter(static fn($v) => (int) $v > 0)->unique()->values();
+        $productIds = collect($items)->pluck('product_id')->filter(static fn ($v) => (int) $v > 0)->unique()->values();
         $productImages = Product::query()
             ->whereIn('id', $productIds)
             ->select(['id', 'main_image_url'])
             ->get()
-            ->mapWithKeys(static fn($p) => [(int) $p->id => ($p->main_image_url ? (string) $p->main_image_url : null)])
+            ->mapWithKeys(static fn ($p) => [(int) $p->id => ($p->main_image_url ? (string) $p->main_image_url : null)])
             ->all();
 
         $items = array_map(static function (array $it) use ($productImages) {
             $pid = (int) ($it['product_id'] ?? 0);
+
             return [
                 ...$it,
                 'image_url' => $pid > 0 && array_key_exists($pid, $productImages) ? $productImages[$pid] : null,
@@ -73,12 +76,13 @@ class OrderResource extends JsonResource
             $this->shipping_ward ? (string) $this->shipping_ward : null,
             $this->shipping_district ? (string) $this->shipping_district : null,
             $this->shipping_province ? (string) $this->shipping_province : null,
-        ], static fn($v) => $v !== null && trim((string) $v) !== ''));
+        ], static fn ($v) => $v !== null && trim((string) $v) !== ''));
         $address = implode(', ', $addressParts);
 
         $fmtHistory = static function ($h) use ($statusMeta) {
             [$fromLabel] = $statusMeta($h->from_status ? (string) $h->from_status : null);
             [$toLabel] = $statusMeta($h->to_status ? (string) $h->to_status : null);
+
             return [
                 'id' => (int) $h->id,
                 'from_status' => $h->from_status ? (string) $h->from_status : null,
@@ -116,7 +120,7 @@ class OrderResource extends JsonResource
 
         return [
             'id' => (int) $this->id,
-            'order_code' => (string) ($this->order_code ?: ('ET-' . $this->id)),
+            'order_code' => (string) ($this->order_code ?: ('ET-'.$this->id)),
             'created_at' => $this->created_at ? $this->created_at->toISOString() : null,
             'created_date' => $this->created_at ? $this->created_at->format('d/m/Y') : '',
             'created_time' => $this->created_at ? $this->created_at->format('H:i') : '',

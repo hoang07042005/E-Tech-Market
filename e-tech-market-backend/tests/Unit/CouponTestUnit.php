@@ -3,9 +3,9 @@
 namespace Tests\Unit;
 
 use App\Models\Coupon;
+use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
-use Carbon\Carbon;
 
 class CouponTestUnit extends TestCase
 {

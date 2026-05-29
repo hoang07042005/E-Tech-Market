@@ -9,13 +9,13 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('reviews', function (Blueprint $table) {
-            if (!Schema::hasColumn('reviews', 'exp_performance')) {
+            if (! Schema::hasColumn('reviews', 'exp_performance')) {
                 $table->unsignedSmallInteger('exp_performance')->nullable()->after('rating');
             }
-            if (!Schema::hasColumn('reviews', 'exp_battery')) {
+            if (! Schema::hasColumn('reviews', 'exp_battery')) {
                 $table->unsignedSmallInteger('exp_battery')->nullable()->after('exp_performance');
             }
-            if (!Schema::hasColumn('reviews', 'exp_camera')) {
+            if (! Schema::hasColumn('reviews', 'exp_camera')) {
                 $table->unsignedSmallInteger('exp_camera')->nullable()->after('exp_battery');
             }
         });
@@ -36,4 +36,3 @@ return new class extends Migration
         });
     }
 };
-

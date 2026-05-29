@@ -2,14 +2,13 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Resources\Admin\CouponResource;
-
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\StoreCouponRequest;
+use App\Http\Requests\Admin\UpdateCouponRequest;
+use App\Http\Resources\Admin\CouponResource;
 use App\Models\Coupon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use App\Http\Requests\Admin\StoreCouponRequest;
-use App\Http\Requests\Admin\UpdateCouponRequest;
 
 class CouponsController extends Controller
 {
@@ -28,6 +27,7 @@ class CouponsController extends Controller
         $validated = $request->validated();
 
         $coupon = Coupon::create($validated);
+
         return response()->json((new CouponResource($coupon))->resolve(), 201);
     }
 
@@ -36,12 +36,14 @@ class CouponsController extends Controller
         $validated = $request->validated();
 
         $coupon->update($validated);
+
         return response()->json((new CouponResource($coupon))->resolve());
     }
 
     public function destroy(Coupon $coupon): JsonResponse
     {
         $coupon->delete();
+
         return response()->json(['message' => 'Coupon deleted successfully']);
     }
 }

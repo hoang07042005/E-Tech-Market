@@ -2,14 +2,13 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Resources\Admin\VideoResource;
-
 use App\Http\Controllers\Controller;
-use App\Models\Video;
-use Illuminate\Http\Request;
 use App\Http\Requests\Admin\StoreVideoRequest;
 use App\Http\Requests\Admin\UpdateVideoRequest;
+use App\Http\Resources\Admin\VideoResource;
+use App\Models\Video;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
 class VideoController extends Controller
@@ -23,34 +22,34 @@ class VideoController extends Controller
         }
 
         $videos = $query->orderBy('sort_order', 'asc')->get();
+
         return response()->json(VideoResource::collection($videos)->resolve());
     }
 
     public function store(StoreVideoRequest $request): JsonResponse
     {
-        
 
         $data = $request->except(['video_file', 'thumbnail_file']);
 
-        $data['is_active']  = $request->has('is_active') ? filter_var($request->is_active, FILTER_VALIDATE_BOOLEAN) : true;
+        $data['is_active'] = $request->has('is_active') ? filter_var($request->is_active, FILTER_VALIDATE_BOOLEAN) : true;
         $data['sort_order'] = $request->has('sort_order') ? (int) $request->sort_order : 0;
 
         if ($request->product_id) {
-            $data['product_id']        = (int) $request->product_id;
+            $data['product_id'] = (int) $request->product_id;
             $data['video_category_id'] = null;
         } else {
-            $data['product_id']        = null;
+            $data['product_id'] = null;
             $data['video_category_id'] = $request->video_category_id ? (int) $request->video_category_id : null;
         }
 
         if ($request->hasFile('video_file')) {
             $path = $request->file('video_file')->store('videos', 'public');
-            $data['video_url'] = '/storage/' . $path;
+            $data['video_url'] = '/storage/'.$path;
         }
 
         if ($request->hasFile('thumbnail_file')) {
             $path = $request->file('thumbnail_file')->store('videos/thumbnails', 'public');
-            $data['thumbnail_url'] = '/storage/' . $path;
+            $data['thumbnail_url'] = '/storage/'.$path;
         }
 
         if (empty($data['video_url'])) {
@@ -66,14 +65,13 @@ class VideoController extends Controller
     public function show(string $id): JsonResponse
     {
         $video = Video::with(['product', 'videoCategory'])->findOrFail($id);
+
         return response()->json((new VideoResource($video))->resolve());
     }
 
     public function update(UpdateVideoRequest $request, string $id): JsonResponse
     {
         $video = Video::findOrFail($id);
-
-        
 
         $data = $request->except(['video_file', 'thumbnail_file']);
 
@@ -86,7 +84,7 @@ class VideoController extends Controller
 
         if ($request->has('product_id')) {
             if ($request->product_id) {
-                $data['product_id']        = (int) $request->product_id;
+                $data['product_id'] = (int) $request->product_id;
                 $data['video_category_id'] = null;
             } else {
                 $data['product_id'] = null;
@@ -105,7 +103,7 @@ class VideoController extends Controller
                 Storage::disk('public')->delete(str_replace('/storage/', '', $video->video_url));
             }
             $path = $request->file('video_file')->store('videos', 'public');
-            $data['video_url'] = '/storage/' . $path;
+            $data['video_url'] = '/storage/'.$path;
         }
 
         if ($request->hasFile('thumbnail_file')) {
@@ -113,7 +111,7 @@ class VideoController extends Controller
                 Storage::disk('public')->delete(str_replace('/storage/', '', $video->thumbnail_url));
             }
             $path = $request->file('thumbnail_file')->store('videos/thumbnails', 'public');
-            $data['thumbnail_url'] = '/storage/' . $path;
+            $data['thumbnail_url'] = '/storage/'.$path;
         }
 
         $video->update($data);
@@ -134,6 +132,7 @@ class VideoController extends Controller
         }
 
         $video->delete();
+
         return response()->json(['message' => 'Video deleted successfully']);
     }
 }

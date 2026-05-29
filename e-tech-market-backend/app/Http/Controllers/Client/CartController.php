@@ -23,7 +23,7 @@ class CartController extends Controller
         );
 
         $cart->load([
-            'items.product' => fn($p) => $p->where('is_active', true),
+            'items.product' => fn ($p) => $p->where('is_active', true),
             'items.variant',
         ]);
 
@@ -43,25 +43,25 @@ class CartController extends Controller
         ]);
 
         $product = Product::query()->where('id', $data['product_id'])->where('is_active', true)->first();
-        if (!$product) {
+        if (! $product) {
             return response()->json(['message' => 'Product not found or inactive'], 404);
         }
 
         $variant = null;
-        if (!empty($data['variant_id'])) {
+        if (! empty($data['variant_id'])) {
             $variant = ProductVariant::query()
                 ->where('id', (int) $data['variant_id'])
                 ->where('product_id', $product->id)
                 ->where('is_active', true)
                 ->first();
-            if (!$variant) {
+            if (! $variant) {
                 return response()->json(['message' => 'Variant not found or inactive'], 404);
             }
         } else {
             $variant = $product->variants()->where('is_active', true)->orderBy('id')->first();
         }
 
-        if (!$variant) {
+        if (! $variant) {
             return response()->json(['message' => 'Product variant not found'], 422);
         }
 
@@ -82,10 +82,10 @@ class CartController extends Controller
                 $cartItem->save();
             } else {
                 // Check for active Flash Sale
-                $activeFlashSaleItem = $product->flashSaleItems()->whereHas('flashSale', function($q) {
+                $activeFlashSaleItem = $product->flashSaleItems()->whereHas('flashSale', function ($q) {
                     $q->where('status', \App\Models\FlashSale::STATUS_ACTIVE)
-                      ->where('start_at', '<=', now())
-                      ->where('end_at', '>=', now());
+                        ->where('start_at', '<=', now())
+                        ->where('end_at', '>=', now());
                 })->first();
 
                 $unitPrice = $activeFlashSaleItem ? $activeFlashSaleItem->flash_sale_price : $variant->effective_price;
@@ -100,6 +100,7 @@ class CartController extends Controller
             }
 
             $cart->load(['items.product', 'items.variant']);
+
             return response()->json($cart);
         });
     }
@@ -120,7 +121,7 @@ class CartController extends Controller
             ->where('product_id', $product->id)
             ->first();
 
-        if (!$item) {
+        if (! $item) {
             return response()->json(['message' => 'Item not found in cart'], 404);
         }
 
@@ -143,6 +144,7 @@ class CartController extends Controller
             ->delete();
 
         $cart->load(['items.product', 'items.variant']);
+
         return response()->json($cart);
     }
 }

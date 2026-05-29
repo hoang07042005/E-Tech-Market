@@ -8,7 +8,9 @@ return new class extends Migration
 {
     public function up(): void
     {
-        if (Schema::hasTable('order_status_histories')) return;
+        if (Schema::hasTable('order_status_histories')) {
+            return;
+        }
 
         Schema::create('order_status_histories', function (Blueprint $table) {
             $table->bigIncrements('id');
@@ -32,4 +34,3 @@ return new class extends Migration
         Schema::dropIfExists('order_status_histories');
     }
 };
-

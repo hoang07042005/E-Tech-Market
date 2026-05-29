@@ -3,18 +3,17 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Order;
-use App\Http\Resources\Admin\OrderResource;
+use App\Http\Requests\Admin\ApproveReturnRequest;
+use App\Http\Requests\Admin\MarkReturnRefundedRequest;
+use App\Http\Requests\Admin\RejectReturnRequest;
+use App\Http\Requests\Admin\UpdateOrderRequest;
 use App\Http\Resources\Admin\OrderListResource;
+use App\Http\Resources\Admin\OrderResource;
+use App\Models\Order;
 use App\Models\OrderReturnRequest;
 use App\Services\AdminOrderService;
-use App\Models\Product;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use App\Http\Requests\Admin\ApproveReturnRequest;
-use App\Http\Requests\Admin\RejectReturnRequest;
-use App\Http\Requests\Admin\MarkReturnRefundedRequest;
-use App\Http\Requests\Admin\UpdateOrderRequest;
 use Illuminate\Support\Carbon;
 
 class OrdersController extends Controller
@@ -29,7 +28,7 @@ class OrdersController extends Controller
     public function approveReturnRequest(Order $order, ApproveReturnRequest $request): JsonResponse
     {
         $order->loadMissing(['returnRequest']);
-        if (!$order->returnRequest) {
+        if (! $order->returnRequest) {
             return response()->json(['message' => 'Đơn hàng chưa có yêu cầu hoàn trả.'], 422);
         }
 
@@ -49,7 +48,7 @@ class OrdersController extends Controller
     public function rejectReturnRequest(Order $order, RejectReturnRequest $request): JsonResponse
     {
         $order->loadMissing(['returnRequest']);
-        if (!$order->returnRequest) {
+        if (! $order->returnRequest) {
             return response()->json(['message' => 'Đơn hàng chưa có yêu cầu hoàn trả.'], 422);
         }
 
@@ -67,7 +66,7 @@ class OrdersController extends Controller
     public function markReturnRefunded(Order $order, MarkReturnRefundedRequest $request): JsonResponse
     {
         $order->loadMissing(['returnRequest']);
-        if (!$order->returnRequest) {
+        if (! $order->returnRequest) {
             return response()->json(['message' => 'Đơn hàng chưa có yêu cầu hoàn trả.'], 422);
         }
 
@@ -93,12 +92,13 @@ class OrdersController extends Controller
         $status = isset($data['status']) ? strtolower(trim((string) $data['status'])) : null;
         if ($status !== null && $status !== '') {
             $allowed = ['pending', 'paid', 'processing', 'shipped', 'delivered', 'completed', 'cancelled', 'returned'];
-            if (!in_array($status, $allowed, true)) {
+            if (! in_array($status, $allowed, true)) {
                 return response()->json(['message' => 'Status invalid'], 422);
             }
 
             $statusStep = static function (?string $s): int {
                 $s = $s ? strtolower($s) : '';
+
                 return match ($s) {
                     'pending' => 1,
                     'paid' => 3,
@@ -120,7 +120,7 @@ class OrdersController extends Controller
                 return response()->json(['message' => 'Không thể cập nhật đơn đã kết thúc (hoàn thành/hủy/hoàn trả).'], 422);
             }
 
-            if (!in_array($status, ['cancelled', 'returned'], true) && $curStep > 0 && $nextStep > 0 && $nextStep < $curStep) {
+            if (! in_array($status, ['cancelled', 'returned'], true) && $curStep > 0 && $nextStep > 0 && $nextStep < $curStep) {
                 return response()->json(['message' => 'Không thể cập nhật trạng thái lùi về trước.'], 422);
             }
 
@@ -153,11 +153,17 @@ class OrdersController extends Controller
     public function index(Request $request): JsonResponse
     {
         $perPage = (int) $request->query('per_page', 10);
-        if ($perPage < 5) $perPage = 5;
-        if ($perPage > 50) $perPage = 50;
+        if ($perPage < 5) {
+            $perPage = 5;
+        }
+        if ($perPage > 50) {
+            $perPage = 50;
+        }
 
         $page = (int) $request->query('page', 1);
-        if ($page < 1) $page = 1;
+        if ($page < 1) {
+            $page = 1;
+        }
 
         $qCode = trim((string) $request->query('order_code', ''));
         $qCustomer = trim((string) $request->query('customer', ''));
@@ -175,14 +181,14 @@ class OrdersController extends Controller
             ->orderByDesc('created_at');
 
         if ($qCode !== '') {
-            $query->where('order_code', 'ilike', '%' . $qCode . '%');
+            $query->where('order_code', 'ilike', '%'.$qCode.'%');
         }
 
         if ($qCustomer !== '') {
             $query->where(function ($qq) use ($qCustomer) {
-                $qq->where('shipping_name', 'ilike', '%' . $qCustomer . '%')
+                $qq->where('shipping_name', 'ilike', '%'.$qCustomer.'%')
                     ->orWhereHas('user', function ($u) use ($qCustomer) {
-                        $u->where('name', 'ilike', '%' . $qCustomer . '%');
+                        $u->where('name', 'ilike', '%'.$qCustomer.'%');
                     });
             });
         }
@@ -213,8 +219,13 @@ class OrdersController extends Controller
 
         $parseDate = static function (string $s): ?Carbon {
             try {
-                if (preg_match('/^\d{4}-\d{2}-\d{2}$/', $s)) return Carbon::parse($s);
-                if (preg_match('/^\d{2}\/\d{2}\/\d{4}$/', $s)) return Carbon::createFromFormat('d/m/Y', $s);
+                if (preg_match('/^\d{4}-\d{2}-\d{2}$/', $s)) {
+                    return Carbon::parse($s);
+                }
+                if (preg_match('/^\d{2}\/\d{2}\/\d{4}$/', $s)) {
+                    return Carbon::createFromFormat('d/m/Y', $s);
+                }
+
                 return null;
             } catch (\Throwable) {
                 return null;
@@ -223,8 +234,12 @@ class OrdersController extends Controller
 
         $from = $dateFrom !== '' ? $parseDate($dateFrom) : null;
         $to = $dateTo !== '' ? $parseDate($dateTo) : null;
-        if ($from) $query->where('created_at', '>=', $from->startOfDay());
-        if ($to) $query->where('created_at', '<=', $to->endOfDay());
+        if ($from) {
+            $query->where('created_at', '>=', $from->startOfDay());
+        }
+        if ($to) {
+            $query->where('created_at', '<=', $to->endOfDay());
+        }
 
         $paginator = $query->paginate($perPage, ['*'], 'page', $page);
 

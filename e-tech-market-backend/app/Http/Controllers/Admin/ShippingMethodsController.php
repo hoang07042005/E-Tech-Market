@@ -3,11 +3,10 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\ShippingMethod;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use App\Http\Requests\Admin\StoreShippingMethodRequest;
 use App\Http\Requests\Admin\UpdateShippingMethodRequest;
+use App\Models\ShippingMethod;
+use Illuminate\Http\JsonResponse;
 
 class ShippingMethodsController extends Controller
 {
@@ -17,7 +16,7 @@ class ShippingMethodsController extends Controller
             ->orderByDesc('is_active')
             ->orderBy('name')
             ->get(['id', 'name', 'description', 'base_fee', 'estimated_days_min', 'estimated_days_max', 'is_active'])
-            ->map(static fn(ShippingMethod $m) => [
+            ->map(static fn (ShippingMethod $m) => [
                 'id' => (int) $m->id,
                 'name' => (string) $m->name,
                 'description' => $m->description ? (string) $m->description : null,
@@ -75,7 +74,7 @@ class ShippingMethodsController extends Controller
     public function destroy(ShippingMethod $method): JsonResponse
     {
         $method->delete();
+
         return response()->json(['ok' => true]);
     }
 }
-

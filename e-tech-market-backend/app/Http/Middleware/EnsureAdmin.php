@@ -14,27 +14,27 @@ class EnsureAdmin
      * so every route name already starts with "admin.".
      */
     private const ROUTE_PERMISSION_MAP = [
-        'admin.orders'           => 'manage-orders',
-        'admin.products'         => 'manage-products',
+        'admin.orders' => 'manage-orders',
+        'admin.products' => 'manage-products',
         'admin.product-variants' => 'manage-products',
-        'admin.categories'       => 'manage-products',
+        'admin.categories' => 'manage-products',
         'admin.video-categories' => 'manage-products',
-        'admin.videos'           => 'manage-products',
-        'admin.shop-qna'         => 'manage-products',
-        'admin.coupons'          => 'manage-coupons',
-        'admin.blog-posts'       => 'manage-blog',
-        'admin.blog-categories'  => 'manage-blog',
-        'admin.news'             => 'manage-blog',
-        'admin.uploads'          => 'manage-blog',
-        'admin.users'            => 'manage-users',
-        'admin.roles'            => 'manage-users',
-        'admin.settings'         => 'manage-settings',
-        'admin.shipping'         => 'manage-settings',
-        'admin.banners'          => 'manage-settings',
-        'admin.flash-sales'      => 'manage-products',
-        'admin.reviews'          => 'manage-products',
+        'admin.videos' => 'manage-products',
+        'admin.shop-qna' => 'manage-products',
+        'admin.coupons' => 'manage-coupons',
+        'admin.blog-posts' => 'manage-blog',
+        'admin.blog-categories' => 'manage-blog',
+        'admin.news' => 'manage-blog',
+        'admin.uploads' => 'manage-blog',
+        'admin.users' => 'manage-users',
+        'admin.roles' => 'manage-users',
+        'admin.settings' => 'manage-settings',
+        'admin.shipping' => 'manage-settings',
+        'admin.banners' => 'manage-settings',
+        'admin.flash-sales' => 'manage-products',
+        'admin.reviews' => 'manage-products',
         'admin.contact-messages' => 'manage-settings',
-        'admin.dashboard'        => null, // any admin permission
+        'admin.dashboard' => null, // any admin permission
     ];
 
     /**
@@ -49,7 +49,7 @@ class EnsureAdmin
     {
         $user = $request->user();
 
-        if (!$user) {
+        if (! $user) {
             return response()->json(['message' => 'Unauthenticated'], 401);
         }
 
@@ -63,11 +63,11 @@ class EnsureAdmin
         $permission = $requiredPermission;
 
         // Otherwise resolve permission from route name
-        if (!$permission) {
+        if (! $permission) {
             $permission = $this->resolvePermissionFromRoute($request);
         }
 
-        if (!$permission) {
+        if (! $permission) {
             // General admin dashboard or other generic admin endpoints
             try {
                 if ($user->hasAnyPermission([
@@ -79,6 +79,7 @@ class EnsureAdmin
             } catch (\Throwable) {
                 // Missing permissions table/record
             }
+
             return response()->json(['message' => 'Forbidden - Requires Admin privileges'], 403);
         }
 
@@ -96,7 +97,7 @@ class EnsureAdmin
         }
 
         try {
-            if (!$user->hasPermissionTo($permission)) {
+            if (! $user->hasPermissionTo($permission)) {
                 return response()->json([
                     'message' => "Bạn không có quyền thực hiện hành động này. Yêu cầu quyền: {$permission}.",
                 ], 403);
