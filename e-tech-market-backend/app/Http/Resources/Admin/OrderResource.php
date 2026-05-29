@@ -2,10 +2,14 @@
 
 namespace App\Http\Resources\Admin;
 
+use App\Models\Order;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
+/**
+ * @mixin Order
+ */
 class OrderResource extends JsonResource
 {
     public function toArray(Request $request): array
@@ -58,7 +62,7 @@ class OrderResource extends JsonResource
             ->all();
 
         $items = array_map(static function (array $it) use ($productImages) {
-            $pid = (int) ($it['product_id'] ?? 0);
+            $pid = (int) $it['product_id'];
 
             return [
                 ...$it,

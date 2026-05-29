@@ -211,26 +211,27 @@ class AuthController extends Controller
         /** @var PersonalAccessToken|null $current */
         $current = $user->currentAccessToken();
 
-        $rows = $user->tokens()
-            ->orderByDesc('created_at')
-            ->get(['id', 'name', 'created_at', 'last_used_at'])
-            ->map(function ($t) use ($current) {
-                return [
-                    'id' => (string) $t->getKey(),
-                    'name' => (string) ($t->name ?? 'Thiết bị'),
-                    'created_at' => optional($t->created_at)->toIso8601String(),
-                    'last_used_at' => optional($t->last_used_at)->toIso8601String(),
-                    'is_current' => $current ? ((int) $t->getKey() === (int) $current->getKey()) : false,
-                ];
-            })
-            ->values();
+        $rows = [];
+        foreach ($user->tokens()->orderByDesc('created_at')->get(['id', 'name', 'created_at', 'last_used_at']) as $t) {
+            $rows[] = [
+                'id' => (string) $t->getKey(),
+                'name' => (string) ($t->name ?? 'Thiết bị'),
+                'created_at' => optional($t->created_at)->toIso8601String(),
+                'last_used_at' => optional($t->last_used_at)->toIso8601String(),
+                'is_current' => $current ? ((int) $t->getKey() === (int) $current->getKey()) : false,
+            ];
+        }
 
         return response()->json(['data' => $rows]);
     }
 
     public function logout(Request $request): JsonResponse
     {
-        $request->user()->currentAccessToken()?->delete();
+        // currentAccessToken() returns a PersonalAccessToken instance; guard its type
+        $curr = $request->user()->currentAccessToken();
+        if ($curr instanceof PersonalAccessToken) {
+            $curr->delete();
+        }
 
         return response()->json(['ok' => true])->withoutCookie('auth_token');
     }
@@ -326,7 +327,7 @@ class AuthController extends Controller
         }
 
         $email = $payload['email'] ?? null;
-        $name = $payload['name'] ?? 'Google User';
+        $name = $payload['name'];
         $avatar = $payload['picture'] ?? null;
         $googleId = $payload['sub'] ?? null;
 

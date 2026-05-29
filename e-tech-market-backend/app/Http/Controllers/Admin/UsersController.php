@@ -42,7 +42,10 @@ class UsersController extends Controller
         $perPage = max(5, min(100, $perPage));
 
         $paginator = $query->paginate($perPage);
-        $paginator->getCollection()->transform(fn ($item) => (new UserResource($item))->resolve());
+        $collection = $paginator->getCollection()->map(function (User $item) {
+            return (new UserResource($item))->resolve();
+        });
+        $paginator->setCollection($collection);
 
         return response()->json($paginator);
     }
@@ -95,7 +98,9 @@ class UsersController extends Controller
             $user->update(['is_active' => $data['is_active']]);
         }
 
-        return response()->json((new UserResource($user))->resolve()->fresh()->load('roles'));
+        // Refresh the model, then return a resolved resource array
+        $user = $user->fresh()->load('roles');
+        return response()->json((new UserResource($user))->resolve());
     }
 
     /**

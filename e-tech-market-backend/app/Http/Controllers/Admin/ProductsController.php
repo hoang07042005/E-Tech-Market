@@ -51,7 +51,10 @@ class ProductsController extends Controller
         $perPage = max(5, min($perPage, 100)); // clamp 5–100
 
         $products = $query->orderBy('created_at', 'desc')->paginate($perPage);
-        $products->getCollection()->transform(fn ($item) => (new ProductResource($item))->resolve());
+        $collection = $products->getCollection()->map(function (Product $item) {
+            return (new ProductResource($item))->resolve();
+        });
+        $products->setCollection($collection);
         $result = $products->toArray();
         $result['data'] = $this->cleanUtf8($result['data']);
 

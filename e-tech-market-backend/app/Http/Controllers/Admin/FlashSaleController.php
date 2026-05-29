@@ -98,7 +98,7 @@ class FlashSaleController extends Controller
         \App\Models\Product::chunk(200, function ($products) use ($flashSale, $percentage, $qtyLimit, &$addedCount) {
             $products->load('variants');
             foreach ($products as $product) {
-                if ($product->variants && $product->variants->count() > 0) {
+                if ($product->variants->isNotEmpty()) {
                     foreach ($product->variants as $variant) {
                         $discountedPrice = round((float) $variant->price * (1 - $percentage / 100));
                         $flashSale->items()->updateOrCreate(
@@ -114,7 +114,9 @@ class FlashSaleController extends Controller
                         $addedCount++;
                     }
                 } else {
-                    $discountedPrice = round((float) $product->price * (1 - $percentage / 100));
+                    // Products without variants may not have a direct `price` attribute
+                    $basePrice = (float) $product->getAttribute('price');
+                    $discountedPrice = round($basePrice * (1 - $percentage / 100));
                     $flashSale->items()->updateOrCreate(
                         [
                             'product_id' => $product->id,
