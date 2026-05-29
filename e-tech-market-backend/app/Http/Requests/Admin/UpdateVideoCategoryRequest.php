@@ -2,7 +2,6 @@
 
 namespace App\Http\Requests\Admin;
 
-use App\Models\VideoCategory;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateVideoCategoryRequest extends FormRequest

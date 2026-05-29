@@ -2,7 +2,6 @@
 
 namespace App\Http\Requests\Admin;
 
-use App\Models\Coupon;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateCouponRequest extends FormRequest
