@@ -17,6 +17,7 @@ use App\Support\ProductInventorySync;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use App\Http\Requests\Client\StoreOrderRequest;
+use App\Http\Requests\Client\RequestReturnOrderRequest;
 
 class OrdersController extends Controller
 {
@@ -167,7 +168,7 @@ class OrdersController extends Controller
         return $this->show($order, $request);
     }
 
-    public function requestReturn(Order $order, Request $request): JsonResponse
+    public function requestReturn(Order $order, RequestReturnOrderRequest $request): JsonResponse
     {
         $this->authorize('update', $order);
         $user = $request->user();
@@ -182,11 +183,7 @@ class OrdersController extends Controller
             return response()->json(['message' => 'Đơn hàng này đã có yêu cầu hoàn trả.'], 422);
         }
 
-        $data = $request->validate([
-            'content' => ['required', 'string', 'min:5', 'max:4000'],
-            'media' => ['nullable', 'array', 'max:8'],
-            'media.*' => ['file', 'max:51200'], // 50MB each (images/videos)
-        ]);
+        $data = $request->validated();
 
         $files = $request->file('media', []);
         $mediaMeta = [];

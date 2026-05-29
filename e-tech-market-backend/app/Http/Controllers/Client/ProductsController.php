@@ -5,12 +5,14 @@ namespace App\Http\Controllers\Client;
 use App\Http\Controllers\Controller;
 use App\Models\Product;
 use App\Models\Category;
+use App\Http\Resources\ProductResource;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class ProductsController extends Controller
 {
-    public function index(Request $request): JsonResponse
+    public function index(Request $request): JsonResponse|AnonymousResourceCollection
     {
         $query = Product::query()
             ->where('is_active', true);
@@ -92,7 +94,7 @@ class ProductsController extends Controller
                 ->paginate((int) $request->input('limit', 12));
         });
 
-        return response()->json($products);
+        return ProductResource::collection($products);
     }
 
     /**
@@ -137,7 +139,7 @@ class ProductsController extends Controller
             return response()->json(['message' => 'Product not active'], 404);
         }
 
-        return response()->json($product);
+        return response()->json(new ProductResource($product));
     }
 
     public function related(Product $product): JsonResponse
@@ -209,8 +211,8 @@ class ProductsController extends Controller
             ->get();
 
         return response()->json([
-            'bought_together' => $boughtTogether,
-            'similar' => $similar,
+            'bought_together' => ProductResource::collection($boughtTogether),
+            'similar' => ProductResource::collection($similar),
         ]);
     }
 }

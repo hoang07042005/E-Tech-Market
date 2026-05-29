@@ -132,80 +132,80 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::patch('/notifications/read-all', [ClientNotificationsController::class, 'markReadAll']);
 
     // Admin Routes
-    Route::prefix('admin')->middleware(['admin', 'throttle:30,1'])->group(function () {
-        Route::get('/dashboard/stats', [AdminDashboardController::class, 'stats']);
-        Route::get('/orders', [AdminOrdersController::class, 'index']);
-        Route::get('/orders/{order}', [AdminOrdersController::class, 'show']);
-        Route::patch('/orders/{order}', [AdminOrdersController::class, 'update']);
-        Route::post('/orders/{order}/return-request/approve', [AdminOrdersController::class, 'approveReturnRequest']);
-        Route::post('/orders/{order}/return-request/reject', [AdminOrdersController::class, 'rejectReturnRequest']);
-        Route::post('/orders/{order}/return-request/refunded', [AdminOrdersController::class, 'markReturnRefunded']);
-        Route::get('/settings', [AdminSettingsController::class, 'show']);
-        Route::patch('/settings', [AdminSettingsController::class, 'update']);
-        Route::get('/shipping/zones', [AdminShippingZonesController::class, 'index']);
-        Route::post('/shipping/zones', [AdminShippingZonesController::class, 'store']);
-        Route::patch('/shipping/zones/{zone}', [AdminShippingZonesController::class, 'update']);
-        Route::delete('/shipping/zones/{zone}', [AdminShippingZonesController::class, 'destroy']);
-        Route::get('/shipping/methods', [AdminShippingMethodsController::class, 'index']);
-        Route::post('/shipping/methods', [AdminShippingMethodsController::class, 'store']);
-        Route::patch('/shipping/methods/{method}', [AdminShippingMethodsController::class, 'update']);
-        Route::delete('/shipping/methods/{method}', [AdminShippingMethodsController::class, 'destroy']);
+    Route::prefix('admin')->name('admin.')->middleware(['admin', 'throttle:30,1'])->group(function () {
+        Route::get('/dashboard/stats', [AdminDashboardController::class, 'stats'])->name('dashboard.stats'); 
+        Route::get('/orders', [AdminOrdersController::class, 'index'])->name('orders'); 
+        Route::get('/orders/{order}', [AdminOrdersController::class, 'show'])->name('orders'); 
+        Route::patch('/orders/{order}', [AdminOrdersController::class, 'update'])->name('orders'); 
+        Route::post('/orders/{order}/return-request/approve', [AdminOrdersController::class, 'approveReturnRequest'])->name('orders.return-request.approve'); 
+        Route::post('/orders/{order}/return-request/reject', [AdminOrdersController::class, 'rejectReturnRequest'])->name('orders.return-request.reject'); 
+        Route::post('/orders/{order}/return-request/refunded', [AdminOrdersController::class, 'markReturnRefunded'])->name('orders.return-request.refunded'); 
+        Route::get('/settings', [AdminSettingsController::class, 'show'])->name('settings'); 
+        Route::patch('/settings', [AdminSettingsController::class, 'update'])->name('settings'); 
+        Route::get('/shipping/zones', [AdminShippingZonesController::class, 'index'])->name('shipping.zones'); 
+        Route::post('/shipping/zones', [AdminShippingZonesController::class, 'store'])->name('shipping.zones'); 
+        Route::patch('/shipping/zones/{zone}', [AdminShippingZonesController::class, 'update'])->name('shipping.zones'); 
+        Route::delete('/shipping/zones/{zone}', [AdminShippingZonesController::class, 'destroy'])->name('shipping.zones'); 
+        Route::get('/shipping/methods', [AdminShippingMethodsController::class, 'index'])->name('shipping.methods'); 
+        Route::post('/shipping/methods', [AdminShippingMethodsController::class, 'store'])->name('shipping.methods'); 
+        Route::patch('/shipping/methods/{method}', [AdminShippingMethodsController::class, 'update'])->name('shipping.methods'); 
+        Route::delete('/shipping/methods/{method}', [AdminShippingMethodsController::class, 'destroy'])->name('shipping.methods'); 
 
-        Route::get('/categories', [AdminCategoriesController::class, 'index']);
-        Route::post('/categories', [AdminCategoriesController::class, 'store']);
-        Route::put('/categories/{category}', [AdminCategoriesController::class, 'update']);
-        Route::delete('/categories/{category}', [AdminCategoriesController::class, 'destroy']);
+        Route::get('/categories', [AdminCategoriesController::class, 'index'])->name('categories'); 
+        Route::post('/categories', [AdminCategoriesController::class, 'store'])->name('categories'); 
+        Route::put('/categories/{category}', [AdminCategoriesController::class, 'update'])->name('categories'); 
+        Route::delete('/categories/{category}', [AdminCategoriesController::class, 'destroy'])->name('categories'); 
 
         Route::apiResource('video-categories', App\Http\Controllers\Admin\VideoCategoryController::class);
 
-        Route::get('/roles', [AdminRolesController::class, 'index']);
+        Route::get('/roles', [AdminRolesController::class, 'index'])->name('roles'); 
 
-        Route::get('/users', [AdminUsersController::class, 'index']);
-        Route::patch('/users/{user}', [AdminUsersController::class, 'update']);
-        Route::delete('/users/{user}', [AdminUsersController::class, 'destroy']);
+        Route::get('/users', [AdminUsersController::class, 'index'])->name('users'); 
+        Route::patch('/users/{user}', [AdminUsersController::class, 'update'])->name('users'); 
+        Route::delete('/users/{user}', [AdminUsersController::class, 'destroy'])->name('users'); 
 
-        Route::get('/products', [AdminProductsController::class, 'index']);
-        Route::get('/products/{product}', [AdminProductsController::class, 'show']);
-        Route::post('/products', [AdminProductsController::class, 'store']);
-        Route::post('/products/{product}', [AdminProductsController::class, 'update']); // Use POST for multipart/form-data support in PHP for updates
-        Route::delete('/products/{product}', [AdminProductsController::class, 'destroy']);
-        Route::patch('/product-variants/{variant}/restock', [AdminProductsController::class, 'restockVariant']);
+        Route::get('/products', [AdminProductsController::class, 'index'])->name('products'); 
+        Route::get('/products/{product}', [AdminProductsController::class, 'show'])->name('products'); 
+        Route::post('/products', [AdminProductsController::class, 'store'])->name('products'); 
+        Route::post('/products/{product}', [AdminProductsController::class, 'update'])->name('products'); // Use POST for multipart/form-data support in PHP for updates
+        Route::delete('/products/{product}', [AdminProductsController::class, 'destroy'])->name('products'); 
+        Route::patch('/product-variants/{variant}/restock', [AdminProductsController::class, 'restockVariant'])->name('product-variants.restock'); 
 
-        Route::get('/shop-qna/pending', [AdminProductShopQnaController::class, 'pendingAll']);
-        Route::get('/products/{product}/shop-qna', [AdminProductShopQnaController::class, 'index']);
-        Route::patch('/products/{product}/shop-qna/{shopQna}', [AdminProductShopQnaController::class, 'update']);
+        Route::get('/shop-qna/pending', [AdminProductShopQnaController::class, 'pendingAll'])->name('shop-qna.pending'); 
+        Route::get('/products/{product}/shop-qna', [AdminProductShopQnaController::class, 'index'])->name('products.shop-qna'); 
+        Route::patch('/products/{product}/shop-qna/{shopQna}', [AdminProductShopQnaController::class, 'update'])->name('products.shop-qna'); 
 
-        Route::get('/reviews', [AdminReviewsController::class, 'index']);
-        Route::patch('/reviews/{review}', [AdminReviewsController::class, 'update']);
-        Route::delete('/reviews/{review}', [AdminReviewsController::class, 'destroy']);
+        Route::get('/reviews', [AdminReviewsController::class, 'index'])->name('reviews'); 
+        Route::patch('/reviews/{review}', [AdminReviewsController::class, 'update'])->name('reviews'); 
+        Route::delete('/reviews/{review}', [AdminReviewsController::class, 'destroy'])->name('reviews'); 
 
-        Route::get('/contact-messages', [AdminContactMessagesController::class, 'index']);
-        Route::patch('/contact-messages/{contact_message}/handle', [AdminContactMessagesController::class, 'handle']);
-        Route::delete('/contact-messages/{contact_message}', [AdminContactMessagesController::class, 'destroy']);
+        Route::get('/contact-messages', [AdminContactMessagesController::class, 'index'])->name('contact-messages'); 
+        Route::patch('/contact-messages/{contact_message}/handle', [AdminContactMessagesController::class, 'handle'])->name('contact-messages.handle'); 
+        Route::delete('/contact-messages/{contact_message}', [AdminContactMessagesController::class, 'destroy'])->name('contact-messages'); 
 
-        Route::get('/coupons', [AdminCouponsController::class, 'index']);
-        Route::post('/coupons', [AdminCouponsController::class, 'store']);
-        Route::put('/coupons/{coupon}', [AdminCouponsController::class, 'update']);
-        Route::delete('/coupons/{coupon}', [AdminCouponsController::class, 'destroy']);
+        Route::get('/coupons', [AdminCouponsController::class, 'index'])->name('coupons'); 
+        Route::post('/coupons', [AdminCouponsController::class, 'store'])->name('coupons'); 
+        Route::put('/coupons/{coupon}', [AdminCouponsController::class, 'update'])->name('coupons'); 
+        Route::delete('/coupons/{coupon}', [AdminCouponsController::class, 'destroy'])->name('coupons'); 
 
         // Product News (per product)
-        Route::get('/products/{product}/news', [AdminProductNewsController::class, 'index']);
-        Route::post('/products/{product}/news', [AdminProductNewsController::class, 'store']);
-        Route::put('/products/{product}/news/{news}', [AdminProductNewsController::class, 'update']);
-        Route::delete('/products/{product}/news/{news}', [AdminProductNewsController::class, 'destroy']);
+        Route::get('/products/{product}/news', [AdminProductNewsController::class, 'index'])->name('products.news'); 
+        Route::post('/products/{product}/news', [AdminProductNewsController::class, 'store'])->name('products.news'); 
+        Route::put('/products/{product}/news/{news}', [AdminProductNewsController::class, 'update'])->name('products.news'); 
+        Route::delete('/products/{product}/news/{news}', [AdminProductNewsController::class, 'destroy'])->name('products.news'); 
 
         // Tech Blog (Global)
         Route::apiResource('blog-posts', App\Http\Controllers\Admin\AdminBlogPostsController::class);
-        Route::post('/blog-categories', [App\Http\Controllers\Admin\AdminBlogPostsController::class, 'storeCategory']);
+        Route::post('/blog-categories', [App\Http\Controllers\Admin\AdminBlogPostsController::class, 'storeCategory'])->name('blog-categories'); 
 
         Route::apiResource('flash-sales', App\Http\Controllers\Admin\FlashSaleController::class);
-        Route::post('flash-sales/{flash_sale}/items', [App\Http\Controllers\Admin\FlashSaleController::class, 'addItem']);
-        Route::delete('flash-sales/{flash_sale}/items/{item}', [App\Http\Controllers\Admin\FlashSaleController::class, 'removeItem']);
-        Route::post('flash-sales/{flash_sale}/bulk-discount', [App\Http\Controllers\Admin\FlashSaleController::class, 'addBulkItems']);
+        Route::post('flash-sales/{flash_sale}/items', [App\Http\Controllers\Admin\FlashSaleController::class, 'addItem'])->name('flash-sales.items'); 
+        Route::delete('flash-sales/{flash_sale}/items/{item}', [App\Http\Controllers\Admin\FlashSaleController::class, 'removeItem'])->name('flash-sales.items'); 
+        Route::post('flash-sales/{flash_sale}/bulk-discount', [App\Http\Controllers\Admin\FlashSaleController::class, 'addBulkItems'])->name('flash-sales.bulk-discount'); 
 
         // Uploads
-        Route::post('/uploads/product-news-thumbnail', [AdminUploadsController::class, 'storeProductNewsThumbnail']);
-        Route::post('/uploads/blog-thumbnail', [AdminUploadsController::class, 'storeBlogThumbnail']);
+        Route::post('/uploads/product-news-thumbnail', [AdminUploadsController::class, 'storeProductNewsThumbnail'])->name('uploads.product-news-thumbnail'); 
+        Route::post('/uploads/blog-thumbnail', [AdminUploadsController::class, 'storeBlogThumbnail'])->name('uploads.blog-thumbnail'); 
 
         // Banners
         Route::apiResource('banners', AdminBannerController::class);

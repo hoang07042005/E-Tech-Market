@@ -247,23 +247,82 @@ class AuthController extends Controller
             return response()->json(['message' => 'Thiếu mã xác thực Google.'], 400);
         }
 
-        if ($accessToken) {
-            // Verify with UserInfo endpoint for access_token
-            $response = Http::get("https://www.googleapis.com/oauth2/v3/userinfo", [
-                'access_token' => $accessToken
-            ]);
+        $clientId = config('services.google.client_id');
+        if (!$clientId) {
+            return response()->json(['message' => 'Google Client ID chưa được cấu hình.'], 500);
+        }
+
+        $payload = null;
+        if ($idToken) {
+            // Verify ID token using firebase/php-jwt with Google's public JWKS keys.
+            // This securely checks: signature, expiration, issuer, and audience (aud) claim.
+            try {
+                $jwksUrl = 'https://www.googleapis.com/oauth2/v3/certs';
+                $jwksJson = Http::get($jwksUrl)->json();
+                $keys = \Firebase\JWT\JWK::parseKeySet($jwksJson, 'RS256');
+                $decoded = \Firebase\JWT\JWT::decode($idToken, $keys);
+
+                // Verify audience claim matches our client ID
+                $aud = is_array($decoded->aud) ? $decoded->aud : [$decoded->aud];
+                if (!in_array($clientId, $aud, true)) {
+                    return response()->json(['message' => 'Token audience không khớp với ứng dụng.'], 401);
+                }
+
+                // Verify issuer
+                $validIssuers = ['accounts.google.com', 'https://accounts.google.com'];
+                if (!isset($decoded->iss) || !in_array($decoded->iss, $validIssuers, true)) {
+                    return response()->json(['message' => 'Token issuer không hợp lệ.'], 401);
+                }
+
+                $payload = [
+                    'email' => $decoded->email ?? null,
+                    'name' => $decoded->name ?? 'Google User',
+                    'picture' => $decoded->picture ?? null,
+                    'sub' => $decoded->sub ?? null,
+                ];
+            } catch (\Exception $e) {
+                return response()->json(['message' => 'Xác thực Google thất bại hoặc mã đã hết hạn.'], 401);
+            }
         } else {
-            // Verify with TokenInfo endpoint for id_token
-            $response = Http::get("https://oauth2.googleapis.com/tokeninfo", [
-                'id_token' => $idToken
-            ]);
+            // Verify access_token via Google's tokeninfo endpoint (includes audience check)
+            try {
+                $response = Http::get('https://oauth2.googleapis.com/tokeninfo', [
+                    'access_token' => $accessToken,
+                ]);
+
+                if ($response->failed()) {
+                    return response()->json(['message' => 'Xác thực Access Token Google thất bại.'], 401);
+                }
+
+                $tokenInfo = $response->json();
+
+                // SECURITY: Verify the token was issued for OUR application
+                $tokenAud = $tokenInfo['aud'] ?? null;
+                if ($tokenAud !== $clientId) {
+                    return response()->json(['message' => 'Access token không thuộc ứng dụng này.'], 401);
+                }
+
+                // Fetch user info using the validated access_token
+                $userInfoResponse = Http::get('https://www.googleapis.com/oauth2/v3/userinfo', [
+                    'access_token' => $accessToken,
+                ]);
+
+                if ($userInfoResponse->failed()) {
+                    return response()->json(['message' => 'Không thể lấy thông tin người dùng từ Google.'], 401);
+                }
+
+                $userInfo = $userInfoResponse->json();
+                $payload = [
+                    'email' => $userInfo['email'] ?? null,
+                    'name' => $userInfo['name'] ?? 'Google User',
+                    'picture' => $userInfo['picture'] ?? null,
+                    'sub' => $userInfo['sub'] ?? null,
+                ];
+            } catch (\Exception $e) {
+                return response()->json(['message' => 'Xác thực Access Token Google thất bại.'], 401);
+            }
         }
 
-        if ($response->failed()) {
-            return response()->json(['message' => 'Xác thực Google thất bại hoặc mã đã hết hạn.'], 401);
-        }
-
-        $payload = $response->json();
         $email = $payload['email'] ?? null;
         $name = $payload['name'] ?? 'Google User';
         $avatar = $payload['picture'] ?? null;

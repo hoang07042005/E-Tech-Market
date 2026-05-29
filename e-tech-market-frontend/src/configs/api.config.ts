@@ -55,7 +55,9 @@ export async function apiFetch<T>(
   const effectivePath =
     baseHasApi && pathHasApi ? normalizedPath.slice(4) || '/' : !baseHasApi && !pathHasApi ? `/api${normalizedPath}` : normalizedPath
 
-  const url = `${API_BASE_URL}${effectivePath}`
+  // Apply v1 versioning automatically to all requests
+  const versionedPath = effectivePath.replace(/^\/api\//, '/api/v1/');
+  const url = `${API_BASE_URL}${versionedPath}`
 
   // Validate token expiry only for legacy token-based requests.
   if (typeof window !== 'undefined' && options.token) {

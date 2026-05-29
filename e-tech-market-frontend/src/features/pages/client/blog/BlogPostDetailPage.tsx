@@ -3,7 +3,7 @@ import { useParams, Link } from "react-router-dom";
 import { apiFetch, API_BASE_URL } from "@/configs/api.config";
 import { Helmet } from "react-helmet-async";
 import "@/styles/pages/BlogPostDetailPage.css";
-import { sanitizeHtml } from "@/__tests__/utils/sanitizeHtml";
+import { sanitizeHtml } from "@/utils/sanitizeHtml";
 
 type BlogPost = {
   id: number;

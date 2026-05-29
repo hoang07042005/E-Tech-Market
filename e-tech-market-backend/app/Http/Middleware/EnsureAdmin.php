@@ -127,47 +127,6 @@ class EnsureAdmin
             }
         }
 
-        // Fallback: path-based matching for routes without explicit names.
-        // ⚠️ SECURITY NOTE: This is less secure and should only be used temporarily
-        // for backward compatibility. All new admin routes should use explicit route names
-        // via Route::get(...)->name('admin.resource.action') or middleware parameters.
-        // Future routes that bypass this fallback will require explicit route names.
-        $path = $request->path();
-
-        return match (true) {
-            str_contains($path, 'admin/products'),
-            str_contains($path, 'product-variants'),
-            str_contains($path, 'admin/categories'),
-            str_contains($path, 'admin/videos'),
-            str_contains($path, 'admin/video-categories'),
-            str_contains($path, 'admin/flash-sales'),
-            str_contains($path, 'admin/reviews'),
-            str_contains($path, 'admin/shop-qna')
-                => 'manage-products',
-
-            str_contains($path, 'admin/orders')
-                => 'manage-orders',
-
-            str_contains($path, 'admin/coupons')
-                => 'manage-coupons',
-
-            str_contains($path, 'admin/blog-posts'),
-            str_contains($path, 'admin/blog-categories'),
-            str_contains($path, '/news'),
-            str_contains($path, 'product-news-thumbnail'),
-            str_contains($path, 'blog-thumbnail')
-                => 'manage-blog',
-
-            str_contains($path, 'admin/users'),
-            str_contains($path, 'admin/roles')
-                => 'manage-users',
-
-            str_contains($path, 'admin/settings'),
-            str_contains($path, 'admin/shipping'),
-            str_contains($path, 'admin/banners')
-                => 'manage-settings',
-
-            default => null,
-        };
+        return null;
     }
 }

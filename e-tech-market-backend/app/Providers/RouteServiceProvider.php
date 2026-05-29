@@ -34,7 +34,9 @@ class RouteServiceProvider extends ServiceProvider
                 ->prefix('api/v1')
                 ->group(base_path('routes/api.php'));
 
-            // Backward-compatible alias: /api/* → same routes (no breaking change)
+            // Backward-compatible alias: /api/* → same routes
+            // Keeps existing tests, payment gateway callbacks, and external integrations working.
+            // New clients should use /api/v1/*.
             Route::middleware('api')
                 ->prefix('api')
                 ->group(base_path('routes/api.php'));

@@ -6,7 +6,7 @@ import {
   type ProductNews,
 } from "@/features/services/products.service";
 import "@/styles/pages/ProductDetailPage.css";
-import { sanitizeHtml } from "@/__tests__/utils/sanitizeHtml";
+import { sanitizeHtml } from "@/utils/sanitizeHtml";
 
 const resolveImageUrl = (url: string | null) => {
   if (!url) return "";

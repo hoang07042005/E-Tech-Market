@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { apiFetch, API_BASE_URL } from "@/configs/api.config";
 import "@/styles/admin/ProductNewsPage.css";
-import { sanitizeHtml } from "@/__tests__/utils/sanitizeHtml";
+import { sanitizeHtml } from "@/utils/sanitizeHtml";
 
 type ProductLite = {
   id: number;

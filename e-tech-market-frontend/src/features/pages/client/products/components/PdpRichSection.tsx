@@ -4,7 +4,7 @@ import type {
   Product,
   ProductNews,
 } from "@/features/services/products.service";
-import { sanitizeHtml } from "@/__tests__/utils/sanitizeHtml";
+import { sanitizeHtml } from "@/utils/sanitizeHtml";
 import { resolveImageUrl } from "./PdpShared";
 
 export function PdpRichSection({
