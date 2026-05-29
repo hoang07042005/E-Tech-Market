@@ -232,7 +232,7 @@ class PaymentService
         }
 
         $resultCode = isset($json['resultCode']) ? (string) $json['resultCode'] : null;
-        if ($resultCode !== null && $resultCode !== '' && $resultCode !== '0') {
+        if ($resultCode !== null && $resultCode !== '0') {
             $message = isset($json['message']) ? (string) $json['message'] : 'MoMo error';
 
             return ['error' => $message, 'detail' => $json, 'code' => 502];
@@ -246,7 +246,7 @@ class PaymentService
                 break;
             }
         }
-        if (! is_string($payUrl) || $payUrl === '') {
+        if (! is_string($payUrl)) {
             return ['error' => 'MoMo redirect url missing', 'detail' => $json, 'code' => 502];
         }
 

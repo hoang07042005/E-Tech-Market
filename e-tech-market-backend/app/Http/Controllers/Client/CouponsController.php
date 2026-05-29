@@ -119,7 +119,7 @@ class CouponsController extends Controller
         }
 
         if ($coupon->min_order_amount && $orderAmount < $coupon->min_order_amount) {
-            return response()->json(['message' => 'Đơn hàng tối thiểu để áp dụng mã này là '.number_format($coupon->min_order_amount).'đ'], 400);
+            return response()->json(['message' => 'Đơn hàng tối thiểu để áp dụng mã này là '.number_format((float) $coupon->min_order_amount, 0, ',', '.').'đ'], 400);
         }
 
         if ($coupon->max_uses && $coupon->usages_count >= $coupon->max_uses) {

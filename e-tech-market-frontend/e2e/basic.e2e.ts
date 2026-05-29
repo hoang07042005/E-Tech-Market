@@ -1,6 +1,24 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('E-Tech Market Basic Flow', () => {
+  test.beforeEach(async ({ page }) => {
+    await page.route('**/api/v1/store/config', async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ maintenance_mode: false, chat: { service: 'none' } }),
+      })
+    });
+
+    await page.route('**/api/v1/me', async (route) => {
+      await route.fulfill({
+        status: 401,
+        contentType: 'application/json',
+        body: JSON.stringify({ message: 'Unauthenticated.' }),
+      })
+    });
+  });
+
   test('homepage loads and shows products', async ({ page }) => {
     // Navigate to homepage
     await page.goto('/');

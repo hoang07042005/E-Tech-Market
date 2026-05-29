@@ -213,6 +213,7 @@ class AuthController extends Controller
 
         $rows = [];
         foreach ($user->tokens()->orderByDesc('created_at')->get(['id', 'name', 'created_at', 'last_used_at']) as $t) {
+            /** @var PersonalAccessToken $t */
             $rows[] = [
                 'id' => (string) $t->getKey(),
                 'name' => (string) ($t->name ?? 'Thiết bị'),

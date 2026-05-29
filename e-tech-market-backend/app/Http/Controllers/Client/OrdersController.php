@@ -110,7 +110,7 @@ class OrdersController extends Controller
 
         OrderStatusHistory::create([
             'order_id' => (int) $order->id,
-            'from_status' => $prevStatus !== '' ? $prevStatus : null,
+            'from_status' => $prevStatus,
             'to_status' => 'cancelled',
             'changed_by_user_id' => $user->id,
             'note' => null,
@@ -309,9 +309,9 @@ class OrdersController extends Controller
 
         $itemsInput = $items->map(function ($it) {
             return [
-                'product_id' => clone $it->product_id,
-                'variant_id' => clone $it->variant_id,
-                'quantity' => clone $it->quantity,
+                'product_id' => $it->product_id,
+                'variant_id' => $it->variant_id,
+                'quantity' => $it->quantity,
             ];
         })->toArray();
 

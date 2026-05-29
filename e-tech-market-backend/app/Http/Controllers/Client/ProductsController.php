@@ -105,7 +105,7 @@ class ProductsController extends Controller
         $ids = [$categoryId];
         $queue = [$categoryId];
 
-        while (! empty($queue)) {
+        while ($queue !== []) {
             $childrenIds = Category::whereIn('parent_id', $queue)->pluck('id')->all();
             $queue = array_values(array_diff($childrenIds, $ids));
             if (empty($queue)) {

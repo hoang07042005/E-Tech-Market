@@ -24,7 +24,7 @@ class OrderConfirmationNotification extends Notification implements ShouldQueue
     public function toMail(object $notifiable): MailMessage
     {
         $orderCode = $this->order->order_code ?: ('ET-'.$this->order->id);
-        $totalAmount = number_format($this->order->total_amount, 0, ',', '.').' VND';
+        $totalAmount = number_format((float) $this->order->total_amount, 0, ',', '.').' VND';
 
         $mailMessage = (new MailMessage)
             ->subject('Xác nhận đơn hàng #'.$orderCode.' từ E-Tech Market!')
@@ -36,7 +36,7 @@ class OrderConfirmationNotification extends Notification implements ShouldQueue
 
         $this->order->loadMissing('items');
         foreach ($this->order->items as $item) {
-            $mailMessage->line('- '.$item->product_name_snapshot.' (x'.$item->quantity.'): '.number_format($item->total_price, 0, ',', '.').' VND');
+            $mailMessage->line('- '.$item->product_name_snapshot.' (x'.$item->quantity.'): '.number_format((float) $item->total_price, 0, ',', '.').' VND');
         }
 
         $frontendUrl = rtrim((string) config('app.frontend_url'), '/');

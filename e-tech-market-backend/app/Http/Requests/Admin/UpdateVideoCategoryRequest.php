@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Admin;
 
+use App\Models\VideoCategory;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateVideoCategoryRequest extends FormRequest
@@ -13,9 +14,11 @@ class UpdateVideoCategoryRequest extends FormRequest
 
     public function rules(): array
     {
+        $videoCategory = $this->route('videoCategory');
+
         return [
             'name' => 'sometimes|string|max:255',
-            'slug' => 'sometimes|string|max:255|unique:video_categories,slug,'.$videoCategory->id,
+            'slug' => 'sometimes|string|max:255|unique:video_categories,slug,'.($videoCategory?->id ?? ''),
             'description' => 'nullable|string',
             'is_active' => 'nullable|boolean',
             'sort_order' => 'nullable|integer',

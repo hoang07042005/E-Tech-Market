@@ -45,8 +45,8 @@ export default defineConfig({
 
   /* Run your local dev server before starting the tests */
   webServer: {
-    command: 'npm run dev',
-    port: 5173,
+    command: `npm run dev -- --port=${process.env.PLAYWRIGHT_PORT || 5173}`,
+    port: Number(process.env.PLAYWRIGHT_PORT || 5173),
     reuseExistingServer: !process.env.CI,
   },
 });

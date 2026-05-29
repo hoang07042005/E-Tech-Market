@@ -278,7 +278,7 @@ class OrderService
     private function getAdminSetting(string $key, $default = null)
     {
         $s = AdminSetting::query()->where('key', $key)->first();
-        if (! $s) {
+        if (! $s instanceof AdminSetting) {
             return $default;
         }
 
