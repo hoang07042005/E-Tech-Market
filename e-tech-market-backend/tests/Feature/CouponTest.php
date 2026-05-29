@@ -113,7 +113,7 @@ class CouponTest extends TestCase
         ]);
 
         $response->assertStatus(400)
-            ->assertJsonPath('message', 'Đơn hàng tối thiểu để áp dụng mã này là 500,000đ');
+            ->assertJsonPath('message', 'Đơn hàng tối thiểu để áp dụng mã này là 500.000đ');
     }
 
     public function test_apply_coupon_fails_when_max_uses_reached(): void
