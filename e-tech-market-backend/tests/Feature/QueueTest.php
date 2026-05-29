@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Notification;
 use Illuminate\Notifications\AnonymousNotifiable;
 use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
+use Illuminate\Routing\Middleware\ThrottleRequests;
 
 class QueueTest extends TestCase
 {
@@ -21,6 +22,8 @@ class QueueTest extends TestCase
 
     public function test_password_reset_notification_is_queued(): void
     {
+        $this->withoutMiddleware(ThrottleRequests::class);
+        
         Notification::fake();
 
         $user = User::factory()->create([
