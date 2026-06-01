@@ -31,6 +31,10 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    'google' => [
+        'client_id' => env('GOOGLE_CLIENT_ID'),
+    ],
+
     'vnpay' => [
         'tmn_code' => env('VNPAY_TMN_CODE', 'MCLYG8VX'),
         'hash_secret' => env('VNPAY_HASH_SECRET', 'UMVLCZOYI2THB0WO8NJJJU7LC3I5Z7FE'),
