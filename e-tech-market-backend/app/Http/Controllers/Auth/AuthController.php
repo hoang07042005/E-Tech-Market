@@ -97,9 +97,16 @@ class AuthController extends Controller
         $data = $request->validated();
 
         $user = User::where('email', $data['email'])->first();
-        if (! $user || ! Hash::check($data['password'], $user->password) || ! $user->is_active) {
+
+        if (! $user || ! Hash::check($data['password'], $user->password)) {
             throw ValidationException::withMessages([
                 'email' => ['Email hoặc mật khẩu không đúng.'],
+            ]);
+        }
+
+        if (! $user->is_active) {
+            throw ValidationException::withMessages([
+                'email' => ['Tài khoản của bạn đã bị khóa.'],
             ]);
         }
 
@@ -217,8 +224,8 @@ class AuthController extends Controller
             $rows[] = [
                 'id' => (string) $t->getKey(),
                 'name' => (string) ($t->name ?? 'Thiết bị'),
-                'created_at' => optional($t->created_at)->toIso8601String(),
-                'last_used_at' => optional($t->last_used_at)->toIso8601String(),
+                'created_at' => optional($t->getAttribute('created_at'))->toIso8601String(),
+                'last_used_at' => optional($t->getAttribute('last_used_at'))->toIso8601String(),
                 'is_current' => $current ? ((int) $t->getKey() === (int) $current->getKey()) : false,
             ];
         }

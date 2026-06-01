@@ -282,17 +282,20 @@ class OrderService
             return $default;
         }
 
-        if ($s->type === 'json' || $s->type === 'array') {
-            return is_array($s->value) ? $s->value : (json_decode((string) $s->value, true) ?: $default);
+        $type = $s->getAttribute('type');
+        $value = $s->getAttribute('value');
+
+        if ($type === 'json' || $type === 'array') {
+            return is_array($value) ? $value : (json_decode((string) $value, true) ?: $default);
         }
-        if ($s->type === 'boolean') {
-            return filter_var($s->value, FILTER_VALIDATE_BOOLEAN);
+        if ($type === 'boolean') {
+            return filter_var($value, FILTER_VALIDATE_BOOLEAN);
         }
-        if ($s->type === 'integer') {
-            return (int) $s->value;
+        if ($type === 'integer') {
+            return (int) $value;
         }
 
-        return $s->value ?? $default;
+        return $value ?? $default;
     }
 
     private function generateOrderCode(): string

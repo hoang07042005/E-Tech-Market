@@ -78,7 +78,7 @@
     padding: 0 16px;
     display: flex;
     flex-direction: column;
-    gap: 3px;
+    gap: 6px;
     overflow-y: auto;
     overscroll-behavior: contain;
 }
@@ -2212,7 +2212,7 @@
     height: 34px;
     border-radius: 10px;
     border: 1px solid rgba(15, 23, 42, .08);
-    background: #fff;
+    background: none;
     cursor: pointer;
     margin-left: 8px;
 }
@@ -5057,7 +5057,7 @@ html.dark .adminLayout :is(.prodTableWrap,
     .prodPaginationBar,
     .pSideCard,
     .pTabsNav,
-    .pTabContent,
+    .pTabPane.active,
     .pFormSection,
     .pModalContent,
     .pQuickPasteArea,
@@ -5325,7 +5325,8 @@ html.dark .adminLayout :is([class*="Card"],
     border-color: var(--admin-border) !important;
 }
 
-html.dark .adminLayout :is([class*="Card"],
+html.dark .adminLayout :is(
+    [class*="Card"],
     [class*="card"],
     [class*="Panel"],
     [class*="panel"],
@@ -5333,8 +5334,8 @@ html.dark .adminLayout :is([class*="Card"],
     [class*="box"],
     [class*="Modal"],
     [class*="modal"],
-    [class*="Table"],
-    [class*="table"],
+    /* [class*="Table"],
+    [class*="table"], */
     [class*="Wrap"],
     [class*="wrap"],
     [class*="Form"],
@@ -5351,10 +5352,27 @@ html.dark .adminLayout :is([class*="Card"],
     [class*="section"],
     [class*="style-"],
     [class*="Style-"]) {
-    background-color: var(--admin-card-bg) !important;
+    /* background-color: var(--admin-card-bg) !important; */
     color: var(--admin-text-p) !important;
 }
 
+html.dark .adminLayout .admOrdersTableWrap table, html.dark .adminLayout .pnModalOverlay{
+    background-color: var(--admin-card-bg) !important;
+}
+html.dark .adminLayout .prodStatCard {
+    background: var(--admin-card-bg) !important;
+    border-color: var(--admin-border) !important;
+}
+
+html.dark .adminLayout .pInventorySyncNote {
+    background: rgba(249, 115, 22, .10) !important;
+    border-color: rgba(249, 115, 22, .22) !important;
+    color: var(--admin-accent) !important;
+}
+html.dark .adminLayout .pnProdItem.active {
+    background-color: var(--admin-accent) !important;
+    color: var(--admin-accent) !important;
+}
 html.dark .adminLayout :is([style*="background: rgb(255"],
     [style*="background: white"],
     [style*="background: #fff"],
@@ -5522,7 +5540,7 @@ html.dark .adminLayout :is(.admDashTop,
     .admOrdersCard,
     .admReviewCard,
     .admLoyalCard) {
-    background: var(--admin-card-bg) !important;
+    /* background: var(--admin-card-bg) !important; */
     border-color: var(--admin-border) !important;
     color: var(--admin-text-p) !important;
 }
@@ -5619,6 +5637,6 @@ html.dark .adminLayout :is([class*="Avatar"],
     [class*="img"],
     img,
     video) {
-    background-color: #0f172a !important;
+    /* background-color: #0f172a !important; */
     border-color: var(--admin-border) !important;
 }

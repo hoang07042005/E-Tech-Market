@@ -1,5 +1,6 @@
 import React, { useState, useEffect, Fragment } from 'react'
 import { API_BASE_URL } from '@/configs/api.config'
+import ConfirmModal from '@/components/ConfirmModal'
 import '@/styles/admin/CategoryPage.css'
 
 const resolveImageUrl = (url?: string | null) => {
@@ -18,6 +19,8 @@ export default function CategoryPage() {
   const [error, setError] = useState<string | null>(null)
   const [imageFile, setImageFile] = useState<File | null>(null)
   const [expandedIds, setExpandedIds] = useState<number[]>([])
+  const [confirmOpen, setConfirmOpen] = useState(false)
+  const [pendingDeleteCategory, setPendingDeleteCategory] = useState<Category | null>(null)
 
   const toggleExpand = (id: number) => {
     setExpandedIds(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id])
@@ -92,14 +95,26 @@ export default function CategoryPage() {
     }
   }
 
-  const handleDelete = async (id: number) => {
-    if (confirm('Xóa danh mục này?')) {
-      try {
-        await deleteAdminCategory(id, token)
-        fetchCategories()
-      } catch (err: any) {
-        alert(err.message || 'Xóa danh mục thất bại.')
-      }
+  const handleDelete = (category: Category) => {
+    setPendingDeleteCategory(category)
+    setConfirmOpen(true)
+  }
+
+  const handleCancelDelete = () => {
+    setConfirmOpen(false)
+    setPendingDeleteCategory(null)
+  }
+
+  const handleConfirmDelete = async () => {
+    if (!pendingDeleteCategory) return
+    setConfirmOpen(false)
+
+    try {
+      await deleteAdminCategory(pendingDeleteCategory.id, token)
+      setPendingDeleteCategory(null)
+      fetchCategories()
+    } catch (err: any) {
+      alert(err.message || 'Xóa danh mục thất bại.')
     }
   }
 
@@ -153,7 +168,7 @@ export default function CategoryPage() {
           <td>
             <div className="catActions">
               <button className="catEdit" onClick={(e) => { e.stopPropagation(); handleOpenModal(cat); }}><EditIcon /></button>
-              <button className="catDelete" onClick={(e) => { e.stopPropagation(); handleDelete(cat.id); }}><TrashIcon /></button>
+              <button className="catDelete" onClick={(e) => { e.stopPropagation(); handleDelete(cat); }}><TrashIcon /></button>
             </div>
           </td>
         </tr>
@@ -208,6 +223,7 @@ export default function CategoryPage() {
           <table className="catTable">
             <thead>
               <tr>
+                <th>ẢNH</th>
                 <th>TÊN DANH MỤC</th>
                 <th>SLUG URL</th>
                 <th>CHA</th>
@@ -309,6 +325,35 @@ export default function CategoryPage() {
           </div>
         </div>
       )}
+
+      <ConfirmModal
+        open={confirmOpen}
+        title="Xác nhận xóa danh mục"
+        message={
+          pendingDeleteCategory ? (
+            <div style={{ display: 'grid', gap: 12 }}>
+              <p>Bạn có chắc chắn muốn xóa danh mục này không?</p>
+              <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+                <img
+                  src={resolveImageUrl(pendingDeleteCategory.image)}
+                  alt={pendingDeleteCategory.name}
+                  style={{ width: 72, height: 72, objectFit: 'cover', borderRadius: 8, border: '1px solid #e5e7eb' }}
+                />
+                <div>
+                  <strong>{pendingDeleteCategory.name}</strong>
+                  <div style={{ color: '#6b7280', marginTop: 4 }}>
+                    {pendingDeleteCategory.parent_id ? `Danh mục con của ${categories.find(c => c.id === pendingDeleteCategory.parent_id)?.name || '...'}` : 'Danh mục gốc'}
+                  </div>
+                </div>
+              </div>
+            </div>
+          ) : (
+            'Bạn có chắc chắn muốn xóa danh mục này?'
+          )
+        }
+        onConfirm={handleConfirmDelete}
+        onCancel={handleCancelDelete}
+      />
     </div>
   )
 }

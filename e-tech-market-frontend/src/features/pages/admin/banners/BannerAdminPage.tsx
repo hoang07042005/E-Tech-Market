@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { API_BASE_URL } from '@/configs/api.config'
+import ConfirmModal from '@/components/ConfirmModal'
 import '@/styles/admin/CategoryPage.css' // Reuse CategoryPage CSS since it fits the admin layout perfectly
 import { fetchAdminBanners, deleteAdminBanner, saveAdminBanner, type Banner } from '@/features/services/admin/banners.admin.service'
 
@@ -16,6 +17,8 @@ export default function BannerAdminPage() {
   const [editingBanner, setEditingBanner] = useState<Banner | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [imageFile, setImageFile] = useState<File | null>(null)
+  const [confirmOpen, setConfirmOpen] = useState(false)
+  const [pendingDeleteBanner, setPendingDeleteBanner] = useState<Banner | null>(null)
   
   const token = localStorage.getItem('token')
 
@@ -92,14 +95,21 @@ export default function BannerAdminPage() {
     }
   }
 
-  const handleDelete = async (id: number) => {
-    if (confirm('Xóa banner này?')) {
-      try {
-        await deleteAdminBanner(id, token)
-        fetchBanners()
-      } catch (err: any) {
-        alert(err.message || 'Xóa banner thất bại.')
-      }
+  const handleDelete = (banner: Banner) => {
+    setPendingDeleteBanner(banner)
+    setConfirmOpen(true)
+  }
+
+  const confirmDelete = async () => {
+    if (!pendingDeleteBanner) return
+    const id = pendingDeleteBanner.id
+    setConfirmOpen(false)
+    setPendingDeleteBanner(null)
+    try {
+      await deleteAdminBanner(id, token)
+      fetchBanners()
+    } catch (err: any) {
+      alert(err.message || 'Xóa banner thất bại.')
     }
   }
 
@@ -183,7 +193,7 @@ export default function BannerAdminPage() {
                     <td>
                       <div className="catActions">
                         <button className="catEdit" onClick={() => handleOpenModal(banner)}><EditIcon /></button>
-                        <button className="catDelete" onClick={() => handleDelete(banner.id)}><TrashIcon /></button>
+                        <button className="catDelete" onClick={() => handleDelete(banner)}><TrashIcon /></button>
                       </div>
                     </td>
                   </tr>
@@ -283,6 +293,39 @@ export default function BannerAdminPage() {
           </div>
         </div>
       )}
+
+      <ConfirmModal
+        open={confirmOpen}
+        title="Xác nhận xóa banner"
+        message={
+          pendingDeleteBanner ? (
+            <div style={{ display: 'grid', gap: 12 }}>
+              <p>Bạn có chắc chắn muốn xóa banner này không?</p>
+              <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+                <img
+                  src={resolveImageUrl(pendingDeleteBanner.image_url)}
+                  alt={pendingDeleteBanner.title || 'Banner'}
+                  style={{ width: 96, height: 48, objectFit: 'cover', borderRadius: 8, border: '1px solid #e5e7eb' }}
+                />
+                <div>
+                  <strong>{pendingDeleteBanner.title || 'Banner không tên'}</strong>
+                  <div style={{ color: '#6b7280', marginTop: 4 }}>{pendingDeleteBanner.link_url || 'Không có liên kết'}</div>
+                  {pendingDeleteBanner.description ? (
+                    <div style={{ marginTop: 4, color: '#64748b' }}>{pendingDeleteBanner.description}</div>
+                  ) : null}
+                </div>
+              </div>
+            </div>
+          ) : (
+            'Bạn có chắc chắn muốn xóa banner này?'
+          )
+        }
+        onConfirm={confirmDelete}
+        onCancel={() => {
+          setConfirmOpen(false)
+          setPendingDeleteBanner(null)
+        }}
+      />
     </div>
   )
 }

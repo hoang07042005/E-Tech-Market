@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate, useParams } from 'react-router-dom'
 import '@/styles/pages/OrdersPage.css'
 import { API_BASE_URL, apiFetch } from '@/configs/api.config'
 import Skeleton from '@/components/Skeleton'
+import ConfirmModal from '@/components/ConfirmModal'
 
 type OrderDetail = {
   id: number
@@ -123,6 +124,11 @@ export default function OrderDetailPage() {
   const [actionBusy, setActionBusy] = useState(false)
   const [actionError, setActionError] = useState<string | null>(null)
   const [showReturnForm, setShowReturnForm] = useState(false)
+  const [showConfirmPayment, setShowConfirmPayment] = useState(false)
+  const [showConfirmCancel, setShowConfirmCancel] = useState(false)
+  const [showConfirmReceivedModal, setShowConfirmReceivedModal] = useState(false)
+  const [showConfirmReturnSubmit, setShowConfirmReturnSubmit] = useState(false)
+  const [showConfirmRefundReceived, setShowConfirmRefundReceived] = useState(false)
   const [returnContent, setReturnContent] = useState('')
   const [returnFiles, setReturnFiles] = useState<File[]>([])
 
@@ -225,7 +231,9 @@ export default function OrderDetailPage() {
   // "Yêu cầu hoàn trả" chỉ hiển thị khi đã giao, và sẽ ẩn sau khi user xác nhận nhận hàng (completed)
   const hasReturnRequest = !!order.return_request
   // Nếu đã tạo yêu cầu hoàn trả thì không cho xác nhận đã nhận hàng nữa.
+  const isCodOrder = (order.payment?.method || '').toString().toLowerCase() === 'cod'
   const showConfirmReceived = status === 'delivered' && !hasReturnRequest
+  const canConfirmReceived = showConfirmReceived && (!isCodOrder || order.payment?.status === 'paid')
   const showRequestReturn = status === 'delivered' && !hasReturnRequest
   const hasAdminResponse =
     !!order.return_request?.admin_note ||
@@ -243,8 +251,7 @@ export default function OrderDetailPage() {
 
   async function onCancelOrder() {
     if (!order || !token) return
-    if (!window.confirm('Bạn có chắc muốn hủy đơn hàng này không?')) return
-
+    // perform cancel (called from modal confirm)
     setActionBusy(true)
     setActionError(null)
     try {
@@ -254,6 +261,7 @@ export default function OrderDetailPage() {
         body: JSON.stringify({}),
       })
       setOrder(updated)
+      setShowConfirmCancel(false)
     } catch (e) {
       setActionError(e instanceof Error ? e.message : 'Hủy đơn thất bại.')
     } finally {
@@ -263,8 +271,7 @@ export default function OrderDetailPage() {
 
   async function onConfirmReceived() {
     if (!order || !token) return
-    if (!window.confirm('Xác nhận bạn đã nhận được hàng? Trạng thái sẽ chuyển sang Hoàn thành.')) return
-
+    // called from modal confirm
     setActionBusy(true)
     setActionError(null)
     try {
@@ -274,6 +281,7 @@ export default function OrderDetailPage() {
         body: JSON.stringify({}),
       })
       setOrder(updated)
+      setShowConfirmReceivedModal(false)
     } catch (e) {
       setActionError(e instanceof Error ? e.message : 'Xác nhận nhận hàng thất bại.')
     } finally {
@@ -282,13 +290,8 @@ export default function OrderDetailPage() {
   }
 
   async function onSubmitReturnRequest() {
+    // performs submission (called from modal confirm)
     if (!order || !token) return
-    if (!returnContent.trim() || returnContent.trim().length < 5) {
-      setActionError('Vui lòng nhập nội dung yêu cầu (tối thiểu 5 ký tự).')
-      return
-    }
-    if (!window.confirm('Gửi yêu cầu hoàn trả cho admin phê duyệt?')) return
-
     setActionBusy(true)
     setActionError(null)
     try {
@@ -304,6 +307,7 @@ export default function OrderDetailPage() {
       setShowReturnForm(false)
       setReturnContent('')
       setReturnFiles([])
+      setShowConfirmReturnSubmit(false)
     } catch (e) {
       setActionError(e instanceof Error ? e.message : 'Gửi yêu cầu hoàn trả thất bại.')
     } finally {
@@ -311,9 +315,18 @@ export default function OrderDetailPage() {
     }
   }
 
+  function requestSubmitReturnRequest() {
+    if (!order || !token) return
+    if (!returnContent.trim() || returnContent.trim().length < 5) {
+      setActionError('Vui lòng nhập nội dung yêu cầu (tối thiểu 5 ký tự).')
+      return
+    }
+    setShowConfirmReturnSubmit(true)
+  }
+
   async function onConfirmRefundReceived() {
     if (!order || !token) return
-    if (!window.confirm('Xác nhận bạn đã nhận được tiền hoàn?')) return
+    // called from modal confirm
     setActionBusy(true)
     setActionError(null)
     try {
@@ -323,6 +336,7 @@ export default function OrderDetailPage() {
         body: JSON.stringify({}),
       })
       setOrder(updated)
+      setShowConfirmRefundReceived(false)
     } catch (e) {
       setActionError(e instanceof Error ? e.message : 'Xác nhận nhận tiền hoàn thất bại.')
     } finally {
@@ -333,8 +347,7 @@ export default function OrderDetailPage() {
   async function onConfirmPayment() {
     if (!order || !token) return
     if (order.payment?.status === 'paid') return
-    if (!window.confirm('Xác nhận bạn đã thanh toán cho đơn hàng này?')) return
-
+    // This function is invoked by modal confirm — proceed with API call
     setActionBusy(true)
     setActionError(null)
     try {
@@ -344,6 +357,7 @@ export default function OrderDetailPage() {
         body: JSON.stringify({}),
       })
       setOrder(updated)
+      setShowConfirmPayment(false)
     } catch (e) {
       setActionError(e instanceof Error ? e.message : 'Xác nhận thanh toán thất bại.')
     } finally {
@@ -470,7 +484,8 @@ export default function OrderDetailPage() {
                   checked={order.payment?.status === 'paid'}
                   onChange={() => {
                     if (order.payment?.status !== 'paid') {
-                      void onConfirmPayment()
+                      // open modal to confirm payment instead of native confirm
+                      setShowConfirmPayment(true)
                     }
                   }}
                   disabled={actionBusy || order.payment?.status === 'paid'}
@@ -491,12 +506,17 @@ export default function OrderDetailPage() {
 
             <div className="oudActions">
               {showConfirmReceived && (
-                <button type="button" className="oudBtn primary full" disabled={actionBusy} onClick={() => void onConfirmReceived()}>
+                <button type="button" className="oudBtn primary full" disabled={actionBusy || !canConfirmReceived} onClick={() => setShowConfirmReceivedModal(true)}>
                   Xác nhận đã nhận hàng
                 </button>
               )}
+              {showConfirmReceived && !canConfirmReceived && isCodOrder ? (
+                <div style={{ marginTop: 10, color: 'var(--et-text-muted)', fontSize: 12, fontWeight: 700 }}>
+                  Với đơn COD, vui lòng tích vào "Xác nhận đã thanh toán" trước khi xác nhận đã nhận hàng.
+                </div>
+              ) : null}
               {showCancel && (
-                <button type="button" className="oudBtn ghost full" disabled={actionBusy} onClick={() => void onCancelOrder()}>
+                <button type="button" className="oudBtn ghost full" disabled={actionBusy} onClick={() => setShowConfirmCancel(true)}>
                   Hủy đơn hàng
                 </button>
               )}
@@ -668,13 +688,61 @@ export default function OrderDetailPage() {
               <button type="button" className="oudBtn ghost" disabled={actionBusy} onClick={() => setShowReturnForm(false)}>
                 Hủy
               </button>
-              <button type="button" className="oudBtn outline" disabled={actionBusy} onClick={() => void onSubmitReturnRequest()}>
+              <button type="button" className="oudBtn outline" disabled={actionBusy} onClick={() => requestSubmitReturnRequest()}>
                 {actionBusy ? 'Đang gửi…' : 'Gửi yêu cầu'}
               </button>
             </div>
           </div>
         </div>
       ) : null}
+      <ConfirmModal
+        open={showConfirmPayment}
+        title="Xác nhận thanh toán"
+        message="Xác nhận bạn đã thanh toán cho đơn hàng này?"
+        confirmLabel="Xác nhận"
+        cancelLabel="Huỷ"
+        onConfirm={() => void onConfirmPayment()}
+        onCancel={() => setShowConfirmPayment(false)}
+      />
+      <ConfirmModal
+        open={showConfirmCancel}
+        title="Xác nhận huỷ đơn"
+        message="Bạn có chắc muốn hủy đơn hàng này không?"
+        confirmLabel="Huỷ đơn"
+        cancelLabel="Không"
+        onConfirm={() => void onCancelOrder()}
+        onCancel={() => setShowConfirmCancel(false)}
+      />
+
+      <ConfirmModal
+        open={showConfirmReceivedModal}
+        title="Xác nhận đã nhận hàng"
+        message="Xác nhận bạn đã nhận được hàng? Trạng thái sẽ chuyển sang Hoàn thành."
+        confirmLabel="Đã nhận"
+        cancelLabel="Huỷ"
+        onConfirm={() => void onConfirmReceived()}
+        onCancel={() => setShowConfirmReceivedModal(false)}
+      />
+
+      <ConfirmModal
+        open={showConfirmReturnSubmit}
+        title="Gửi yêu cầu hoàn trả"
+        message="Gửi yêu cầu hoàn trả cho admin phê duyệt?"
+        confirmLabel="Gửi"
+        cancelLabel="Huỷ"
+        onConfirm={() => void onSubmitReturnRequest()}
+        onCancel={() => setShowConfirmReturnSubmit(false)}
+      />
+
+      <ConfirmModal
+        open={showConfirmRefundReceived}
+        title="Xác nhận đã nhận tiền hoàn"
+        message="Xác nhận bạn đã nhận được tiền hoàn?"
+        confirmLabel="Xác nhận"
+        cancelLabel="Huỷ"
+        onConfirm={() => void onConfirmRefundReceived()}
+        onCancel={() => setShowConfirmRefundReceived(false)}
+      />
     </div>
   )
 }

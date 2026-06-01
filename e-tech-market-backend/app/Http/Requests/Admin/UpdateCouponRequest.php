@@ -13,6 +13,7 @@ class UpdateCouponRequest extends FormRequest
 
     public function rules(): array
     {
+        /** @var \App\Models\Coupon|null $coupon */
         $coupon = $this->route('coupon');
 
         return [

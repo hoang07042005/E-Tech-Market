@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { apiFetch, API_BASE_URL } from '@/configs/api.config'
+import ConfirmModal from '@/components/ConfirmModal'
 import '@/styles/admin/AdminPage.css' // Reuse styles
 import '@/styles/admin/AdminBlogPage.css'
 
@@ -48,6 +49,8 @@ export default function AdminBlogPage() {
     meta_description: ''
   })
   const [submitting, setSubmitting] = useState(false)
+  const [confirmOpen, setConfirmOpen] = useState(false)
+  const [pendingDeletePost, setPendingDeletePost] = useState<BlogPost | null>(null)
 
   const loadData = async () => {
     if (!token) return
@@ -133,9 +136,17 @@ export default function AdminBlogPage() {
     }
   }
 
-  const handleDelete = async (id: number) => {
+  const handleDelete = (post: BlogPost) => {
     if (!token) return
-    if (!confirm('Bạn có chắc chắn muốn xóa bài viết này?')) return
+    setPendingDeletePost(post)
+    setConfirmOpen(true)
+  }
+
+  const confirmDelete = async () => {
+    if (!token || !pendingDeletePost) return
+    const id = pendingDeletePost.id
+    setConfirmOpen(false)
+    setPendingDeletePost(null)
     try {
       await apiFetch(`/api/admin/blog-posts/${id}`, { method: 'DELETE', token })
       loadData()
@@ -216,13 +227,54 @@ export default function AdminBlogPage() {
                 <td>{new Date(p.published_at || new Date()).toLocaleDateString('vi-VN')}</td>
                 <td>
                   <button className="adminBtnSecondary adminblogpage-style-13"  onClick={() => handleOpenForm(p)}>Sửa</button>
-                  <button className="adminBtnDanger" onClick={() => handleDelete(p.id)}>Xóa</button>
+                  <button className="adminBtnDanger" onClick={() => handleDelete(p)}>Xóa</button>
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
+
+      <ConfirmModal
+        open={confirmOpen}
+        title="Xác nhận xóa bài viết"
+        message={
+          pendingDeletePost ? (
+            <div style={{ display: 'grid', gap: 12 }}>
+              <p>Bạn có chắc chắn muốn xóa bài viết này không?</p>
+              <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+                {pendingDeletePost.thumbnail_url ? (
+                  <img
+                    src={resolveImageUrl(pendingDeletePost.thumbnail_url)}
+                    alt={pendingDeletePost.title}
+                    style={{ width: 84, height: 56, objectFit: 'cover', borderRadius: 8, border: '1px solid #e5e7eb' }}
+                  />
+                ) : (
+                  <div style={{ width: 84, height: 56, borderRadius: 8, background: '#f3f4f6', display: 'grid', placeItems: 'center', color: '#6b7280', fontSize: 12 }}>
+                    Không có ảnh
+                  </div>
+                )}
+                <div>
+                  <strong>{pendingDeletePost.title}</strong>
+                  <div style={{ color: '#6b7280' }}>
+                    {pendingDeletePost.slug}
+                  </div>
+                  <div style={{ marginTop: 4, color: '#64748b' }}>
+                    {pendingDeletePost.category?.name || 'Không có danh mục'}
+                  </div>
+                </div>
+              </div>
+            </div>
+          ) : (
+            'Bạn có chắc chắn muốn xóa bài viết này?'
+          )
+        }
+        onConfirm={confirmDelete}
+        onCancel={() => {
+          setConfirmOpen(false)
+          setPendingDeletePost(null)
+        }}
+      />
 
       {isFormOpen && (
         <div  className="adminblogpage-style-14">

@@ -1721,6 +1721,17 @@ html.dark .pfNavSep {
     background: var(--et-border);
 }
 
+html.dark .pfOrderItem {
+    background: rgba(255, 255, 255, .02);
+    border-color: var(--et-border);
+}
+
+html.dark .pfStatusPill {
+    background: rgb(107 228 32 / 21%);
+    border-color: var(--et-border);
+    color: #2af606;
+}
+
 /* ORDERS & ORDER DETAIL PAGE DARK MODE OVERRIDES */
 html.dark .odEmpty,
 html.dark .odhEmpty {

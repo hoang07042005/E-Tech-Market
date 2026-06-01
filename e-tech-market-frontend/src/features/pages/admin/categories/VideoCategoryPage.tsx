@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import '@/styles/admin/CategoryPage.css'
+import ConfirmModal from '@/components/ConfirmModal'
 
 import {
   fetchAdminVideoCategories,
@@ -14,6 +15,8 @@ export default function VideoCategoryPage() {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [editingCategory, setEditingCategory] = useState<Category | null>(null)
   const [error, setError] = useState<string | null>(null)
+  const [confirmOpen, setConfirmOpen] = useState(false)
+  const [pendingDeleteCategory, setPendingDeleteCategory] = useState<Category | null>(null)
 
   const token = localStorage.getItem('token')
 
@@ -85,11 +88,23 @@ export default function VideoCategoryPage() {
     }
   }
 
-  const handleDelete = async (id: number) => {
-    if (!confirm('Xóa danh mục video này?')) return
+  const handleDelete = (category: Category) => {
+    setPendingDeleteCategory(category)
+    setConfirmOpen(true)
+  }
+
+  const handleCancelDelete = () => {
+    setConfirmOpen(false)
+    setPendingDeleteCategory(null)
+  }
+
+  const handleConfirmDelete = async () => {
+    if (!pendingDeleteCategory) return
+    setConfirmOpen(false)
 
     try {
-      await deleteAdminVideoCategory(id, token)
+      await deleteAdminVideoCategory(pendingDeleteCategory.id, token)
+      setPendingDeleteCategory(null)
       fetchCategories()
     } catch (err: any) {
       alert(err.message || 'Xóa danh mục video thất bại.')
@@ -178,7 +193,7 @@ export default function VideoCategoryPage() {
                     <td>
                       <div className="catActions">
                         <button className="catEdit" onClick={() => openModal(cat)}><EditIcon /></button>
-                        <button className="catDelete" onClick={() => handleDelete(cat.id)}><TrashIcon /></button>
+                        <button className="catDelete" onClick={() => handleDelete(cat)}><TrashIcon /></button>
                       </div>
                     </td>
                   </tr>
@@ -266,6 +281,33 @@ export default function VideoCategoryPage() {
           </div>
         </div>
       )}
+
+      <ConfirmModal
+        open={confirmOpen}
+        title="Xác nhận xóa danh mục video"
+        message={
+          pendingDeleteCategory ? (
+            <div style={{ display: 'grid', gap: 12 }}>
+              <p>Bạn có chắc chắn muốn xóa danh mục video này không?</p>
+              <div>
+                <strong>{pendingDeleteCategory.name}</strong>
+                <div style={{ color: '#6b7280', marginTop: 4 }}>
+                  <code>{pendingDeleteCategory.slug || 'Không có slug'}</code>
+                </div>
+                {pendingDeleteCategory.description ? (
+                  <div style={{ marginTop: 8, color: '#374151' }}>
+                    {pendingDeleteCategory.description}
+                  </div>
+                ) : null}
+              </div>
+            </div>
+          ) : (
+            'Bạn có chắc chắn muốn xóa danh mục video này?'
+          )
+        }
+        onConfirm={handleConfirmDelete}
+        onCancel={handleCancelDelete}
+      />
     </div>
   )
 }

@@ -19,7 +19,7 @@ class CouponsController extends Controller
             ->orderBy('created_at', 'desc')
             ->paginate((int) $request->input('limit', 20));
 
-        return response()->json(CouponResource::collection($coupons)->resolve());
+        return CouponResource::collection($coupons)->response();
     }
 
     public function store(StoreCouponRequest $request): JsonResponse

@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { apiFetch, API_BASE_URL } from "@/configs/api.config";
+import ConfirmModal from "@/components/ConfirmModal";
 import "@/styles/admin/ProductNewsPage.css";
 import { sanitizeHtml } from "@/utils/sanitizeHtml";
 
@@ -42,6 +43,8 @@ export default function ProductNewsPage() {
   const [loadingProducts, setLoadingProducts] = useState(false);
   const [loadingNews, setLoadingNews] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [pendingDeleteNews, setPendingDeleteNews] = useState<NewsItem | null>(null);
 
   const selectedProduct = useMemo(
     () => products.find((p) => p.id === selectedProductId) || null,
@@ -211,17 +214,28 @@ export default function ProductNewsPage() {
     }
   };
 
-  const remove = async (item: NewsItem) => {
-    if (!selectedProductId) return;
-    if (!confirm("Xóa tin tức này?")) return;
+  const remove = (item: NewsItem) => {
+    setPendingDeleteNews(item);
+    setConfirmOpen(true);
+  };
+
+  const handleCancelDelete = () => {
+    setConfirmOpen(false);
+    setPendingDeleteNews(null);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!selectedProductId || !pendingDeleteNews) return;
+    setConfirmOpen(false);
     try {
       await apiFetch(
-        `/api/admin/products/${selectedProductId}/news/${item.id}`,
+        `/api/admin/products/${selectedProductId}/news/${pendingDeleteNews.id}`,
         {
           method: "DELETE",
           token,
         },
       );
+      setPendingDeleteNews(null);
       fetchNews(selectedProductId);
     } catch (e: unknown) {
       alert(e instanceof Error ? e.message : "Xóa thất bại.");
@@ -492,6 +506,60 @@ export default function ProductNewsPage() {
           </div>
         </div>
       )}
+
+      <ConfirmModal
+        open={confirmOpen}
+        title="Xác nhận xóa tin tức"
+        message={
+          pendingDeleteNews ? (
+            <div style={{ display: "grid", gap: 12 }}>
+              <p>Bạn có chắc chắn muốn xóa tin tức này không?</p>
+              <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
+                {pendingDeleteNews.thumbnail_url ? (
+                  <img
+                    src={resolveImageUrl(pendingDeleteNews.thumbnail_url)}
+                    alt={pendingDeleteNews.title}
+                    style={{
+                      width: 72,
+                      height: 72,
+                      objectFit: "cover",
+                      borderRadius: 8,
+                      border: "1px solid #e5e7eb",
+                    }}
+                  />
+                ) : (
+                  <div
+                    style={{
+                      width: 72,
+                      height: 72,
+                      borderRadius: 8,
+                      background: "#f3f4f6",
+                      display: "grid",
+                      placeItems: "center",
+                      color: "#6b7280",
+                      fontSize: 12,
+                      textAlign: "center",
+                      padding: 8,
+                    }}
+                  >
+                    No image
+                  </div>
+                )}
+                <div>
+                  <strong>{pendingDeleteNews.title}</strong>
+                  <div style={{ color: "#6b7280", marginTop: 4 }}>
+                    {pendingDeleteNews.slug}
+                  </div>
+                </div>
+              </div>
+            </div>
+          ) : (
+            "Bạn có chắc chắn muốn xóa tin tức này?"
+          )
+        }
+        onConfirm={handleConfirmDelete}
+        onCancel={handleCancelDelete}
+      />
     </div>
   );
 }

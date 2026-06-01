@@ -1365,7 +1365,7 @@ className="admResolutionSelect"
         <section className="admCard">
           <div className="admCardHead">
             <h3 className="admCardTitle">Tồn kho sản phẩm thấp</h3>
-            <button type="button" className="admBtn admBtnGhostSm">Quản lý kho</button>
+            {/* <button type="button" className="admBtn admBtnGhostSm">Quản lý kho</button> */}
           </div>
           <div className="admTableWrap">
             <table className="admTable">

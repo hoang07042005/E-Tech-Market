@@ -13,6 +13,7 @@ class UpdateCategoryRequest extends FormRequest
 
     public function rules(): array
     {
+        /** @var \App\Models\Category|null $category */
         $category = $this->route('category');
 
         return [

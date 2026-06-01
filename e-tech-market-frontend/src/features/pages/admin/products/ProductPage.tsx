@@ -3,6 +3,7 @@ import { API_BASE_URL } from '@/configs/api.config'
 import { fetchAdminProducts, deleteAdminProduct } from '@/features/services/admin/products.admin.service'
 import ProductForm from './ProductForm'
 import ProductVariantsDetail from './ProductVariantsDetail'
+import ConfirmModal from '@/components/ConfirmModal'
 import '@/styles/admin/ProductPage.css'
 
 interface ProductImage {
@@ -132,20 +133,35 @@ export default function ProductPage({
     setViewMode('variants_detail')
   }
 
+  const [confirmOpen, setConfirmOpen] = useState(false)
+  const [pendingDeleteProduct, setPendingDeleteProduct] = useState<Product | null>(null)
+
+  const handleDelete = (product: Product) => {
+    setPendingDeleteProduct(product)
+    setConfirmOpen(true)
+  }
+
+  const handleCancelDelete = () => {
+    setConfirmOpen(false)
+    setPendingDeleteProduct(null)
+  }
+
+  const handleConfirmDelete = async () => {
+    if (!pendingDeleteProduct) return
+    setConfirmOpen(false)
+
+    try {
+      await deleteAdminProduct(pendingDeleteProduct.id, token)
+      setPendingDeleteProduct(null)
+      fetchData()
+    } catch (err: unknown) {
+      alert(getErrMsg(err))
+    }
+  }
+
   const handleSave = () => {
     setViewMode('list')
     fetchData()
-  }
-
-  const handleDelete = async (id: number) => {
-    if (confirm('Xóa vĩnh viễn sản phẩm này?')) {
-      try {
-        await deleteAdminProduct(id, token)
-        fetchData()
-      } catch (err: unknown) {
-        alert(getErrMsg(err))
-      }
-    }
   }
 
   const categories = useMemo(() => {
@@ -477,7 +493,7 @@ export default function ProductPage({
                           </button>
                           <button
                             className="pIconBtn pDelete"
-                            onClick={() => handleDelete(p.id)}
+                            onClick={() => handleDelete(p)}
                             title="Xóa"
                             aria-label="Xóa"
                             type="button"
@@ -546,6 +562,54 @@ export default function ProductPage({
           </>
         )}
       </div>
+
+      <ConfirmModal
+        open={confirmOpen}
+        title="Xác nhận xóa sản phẩm"
+        message={
+          pendingDeleteProduct ? (
+            <div style={{ display: 'grid', gap: 12 }}>
+              <p>Bạn có chắc chắn muốn xóa sản phẩm này không?</p>
+              <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+                {pendingDeleteProduct.main_image_url ? (
+                  <img
+                    src={resolveImageUrl(pendingDeleteProduct.main_image_url)}
+                    alt={pendingDeleteProduct.name}
+                    style={{ width: 72, height: 72, objectFit: 'cover', borderRadius: 8, border: '1px solid #e5e7eb' }}
+                  />
+                ) : (
+                  <div
+                    style={{
+                      width: 72,
+                      height: 72,
+                      borderRadius: 8,
+                      background: '#f3f4f6',
+                      display: 'grid',
+                      placeItems: 'center',
+                      color: '#6b7280',
+                      fontSize: 12,
+                      textAlign: 'center',
+                      padding: 8,
+                    }}
+                  >
+                    Không có ảnh
+                  </div>
+                )}
+                <div>
+                  <strong>{pendingDeleteProduct.name}</strong>
+                  <div style={{ color: '#6b7280', marginTop: 4 }}>
+                    {pendingDeleteProduct.brand || 'Chưa có thương hiệu'}
+                  </div>
+                </div>
+              </div>
+            </div>
+          ) : (
+            'Bạn có chắc chắn muốn xóa sản phẩm này vĩnh viễn? Hành động này không thể hoàn tác.'
+          )
+        }
+        onConfirm={handleConfirmDelete}
+        onCancel={handleCancelDelete}
+      />
     </div>
   )
 }

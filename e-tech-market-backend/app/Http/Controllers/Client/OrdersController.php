@@ -307,15 +307,15 @@ class OrdersController extends Controller
             return response()->json(['message' => 'Giỏ hàng của bạn đang trống'], 422);
         }
 
-        $itemsInput = $items->map(function ($it) {
-            return [
+        $itemsInput = [];
+        foreach ($items as $it) {
+            $itemsInput[] = [
                 'product_id' => $it->product_id,
                 'variant_id' => $it->variant_id,
                 'quantity' => $it->quantity,
             ];
-        })->toArray();
+        }
 
-        // Pass actual array of values without relying on eloquent mapping clone issues
         $cleanItemsInput = [];
         foreach ($itemsInput as $it) {
             $cleanItemsInput[] = [

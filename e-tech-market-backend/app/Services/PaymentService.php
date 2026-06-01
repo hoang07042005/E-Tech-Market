@@ -305,7 +305,7 @@ class PaymentService
         if ($orderIdRaw !== '' && str_contains($orderIdRaw, '__')) {
             $orderCode = explode('__', $orderIdRaw, 2)[0];
         }
-        if ($orderCode === '' && $extraData !== '') {
+        if ($orderCode === '') {
             $decoded = base64_decode($extraData, true);
             if (is_string($decoded) && $decoded !== '') {
                 $parsed = json_decode($decoded, true);

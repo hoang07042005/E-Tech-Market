@@ -5,6 +5,7 @@ import { fetchAdminVideoCategories } from '@/features/services/admin/video-categ
 import { fetchAdminVideos, deleteAdminVideo, saveAdminVideo, type Video } from '@/features/services/admin/videos.admin.service'
 import type { VideoCategory } from '@/features/services/admin/video-categories.admin.service'
 import '@/styles/admin/VideoAdminPage.css'
+import ConfirmModal from '@/components/ConfirmModal'
 
 interface SimpleProduct {
   id: number
@@ -155,14 +156,24 @@ export default function VideoAdminPage() {
     }
   }
 
-  const handleDelete = async (id: number) => {
-    if (confirm('Bạn có chắc chắn muốn xóa video này?')) {
-      try {
-        await deleteAdminVideo(id, token)
-        loadData()
-      } catch (err: any) {
-        alert(err.message || 'Xóa video thất bại.')
-      }
+  const [confirmOpen, setConfirmOpen] = useState(false)
+  const [pendingDeleteVideo, setPendingDeleteVideo] = useState<Video | null>(null)
+
+  const handleDelete = (video: Video) => {
+    setPendingDeleteVideo(video)
+    setConfirmOpen(true)
+  }
+
+  const confirmDelete = async () => {
+    const video = pendingDeleteVideo
+    setConfirmOpen(false)
+    setPendingDeleteVideo(null)
+    if (!video) return
+    try {
+      await deleteAdminVideo(video.id, token)
+      loadData()
+    } catch (err: any) {
+      alert(err.message || 'Xóa video thất bại.')
     }
   }
 
@@ -281,7 +292,7 @@ export default function VideoAdminPage() {
                       <td>
                         <div className="catActions">
                           <button className="catEdit" onClick={() => handleOpenModal(video)}><EditIcon /></button>
-                          <button className="catDelete" onClick={() => handleDelete(video.id)}><TrashIcon /></button>
+                          <button className="catDelete" onClick={() => handleDelete(video)}><TrashIcon /></button>
                         </div>
                       </td>
                     </tr>
@@ -479,6 +490,39 @@ export default function VideoAdminPage() {
           </div>
         </div>
       )}
+
+      <ConfirmModal
+        open={confirmOpen}
+        title="Xoá video"
+        message={
+          pendingDeleteVideo ? (
+            <div style={{ display: 'grid', gap: 12 }}>
+              <p>Bạn có chắc chắn muốn xóa video này không?</p>
+              <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+                {pendingDeleteVideo.thumbnail_url ? (
+                  <img
+                    src={resolveThumbnailUrl(pendingDeleteVideo.thumbnail_url) || undefined}
+                    alt={pendingDeleteVideo.title || 'Video thumbnail'}
+                    style={{ width: 84, height: 56, objectFit: 'cover', borderRadius: 8, border: '1px solid #e5e7eb' }}
+                  />
+                ) : (
+                  <div style={{ width: 84, height: 56, borderRadius: 8, background: '#f3f4f6', display: 'grid', placeItems: 'center', color: '#6b7280', fontSize: 12 }}>
+                    Không có ảnh
+                  </div>
+                )}
+                <div>
+                  <strong>{pendingDeleteVideo.title || 'Video không tên'}</strong>
+                  <div style={{ color: '#6b7280', marginTop: 4 }}>{pendingDeleteVideo.video_url || 'Không có URL'}</div>
+                </div>
+              </div>
+            </div>
+          ) : (
+            'Bạn có chắc chắn muốn xóa video này?'
+          )
+        }
+        onConfirm={confirmDelete}
+        onCancel={() => { setConfirmOpen(false); setPendingDeleteVideo(null) }}
+      />
     </div>
   )
 }

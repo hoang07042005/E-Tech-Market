@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { apiFetch } from '@/configs/api.config'
+import ConfirmModal from '@/components/ConfirmModal'
 import '@/styles/admin/CouponsAdmin.css'
 
 type Coupon = {
@@ -23,16 +24,24 @@ export default function CouponsAdminPage() {
   const [totalPages, setTotalPages] = useState(1)
   const [showModal, setShowModal] = useState(false)
   const [editData, setEditData] = useState<Partial<Coupon> | null>(null)
+  const [showDeleteModal, setShowDeleteModal] = useState(false)
+  const [couponToDelete, setCouponToDelete] = useState<Coupon | null>(null)
   
   const token = typeof window !== 'undefined' ? window.localStorage.getItem('token') : null
 
   const fetchCoupons = async (currentPage: number) => {
-    if (!token) return
+    if (!token) {
+      setLoading(false)
+      return
+    }
+
     setLoading(true)
     try {
       const res = await apiFetch<any>(`/api/admin/coupons?page=${currentPage}&limit=10`, { token })
-      setCoupons(res.data || [])
-      setTotalPages(res.last_page || 1)
+      const fetchedCoupons = Array.isArray(res?.data) ? res.data : Array.isArray(res) ? res : []
+
+      setCoupons(fetchedCoupons)
+      setTotalPages(res?.last_page || res?.meta?.last_page || 1)
     } catch (err) {
       console.error(err)
     } finally {
@@ -67,14 +76,20 @@ export default function CouponsAdminPage() {
   }
 
   const deleteCoupon = async (id: number) => {
-    if (!confirm('Bạn có chắc chắn muốn xoá mã giảm giá này?')) return
     if (!token) return
     try {
       await apiFetch(`/api/admin/coupons/${id}`, { method: 'DELETE', token })
       setCoupons((prev) => prev.filter((c) => c.id !== id))
+      setShowDeleteModal(false)
+      setCouponToDelete(null)
     } catch {
       alert('Lỗi khi xoá.')
     }
+  }
+
+  const requestDeleteCoupon = (coupon: Coupon) => {
+    setCouponToDelete(coupon)
+    setShowDeleteModal(true)
   }
 
   const openNew = () => {
@@ -162,7 +177,7 @@ export default function CouponsAdminPage() {
                   <td>
                     <div style={{ display: 'flex', gap: 0 }}>
                       <button className="adminBtnSecondary" onClick={() => { setEditData(c); setShowModal(true) }}><PencilIcon /></button>
-                      <button className="adminBtnDanger" onClick={() => deleteCoupon(c.id)}><TrashIcon /></button>
+                      <button className="adminBtnDanger" onClick={() => requestDeleteCoupon(c)}><TrashIcon /></button>
                     </div>
                   </td>
                 </tr>
@@ -177,6 +192,27 @@ export default function CouponsAdminPage() {
         <span>Trang {page} / {totalPages}</span>
         <button disabled={page >= totalPages} onClick={() => setPage((p) => p + 1)}>Sau</button>
       </div>
+
+      <ConfirmModal
+        open={showDeleteModal}
+        title="Xác nhận xoá mã giảm giá"
+        message={couponToDelete ? (
+          <div>
+            <p>Bạn có chắc chắn muốn xoá mã giảm giá <strong>{couponToDelete.code}</strong> không?</p>
+            <p>Loại: {couponToDelete.coupon_type === 'percentage' ? 'Phần trăm' : 'Cố định'}</p>
+            <p>Giá trị: {couponToDelete.coupon_type === 'percentage' ? `${Number(couponToDelete.value)}%` : `${Number(couponToDelete.value).toLocaleString('vi-VN')}đ`}</p>
+          </div>
+        ) : 'Bạn có chắc chắn muốn xoá mã giảm giá này?'}
+        onConfirm={() => {
+          if (couponToDelete) {
+            void deleteCoupon(couponToDelete.id)
+          }
+        }}
+        onCancel={() => {
+          setShowDeleteModal(false)
+          setCouponToDelete(null)
+        }}
+      />
 
       {showModal && editData && (
         <div className="adminModalOverlay" onClick={() => setShowModal(false)}>

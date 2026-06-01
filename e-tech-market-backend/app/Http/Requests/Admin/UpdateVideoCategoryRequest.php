@@ -13,6 +13,7 @@ class UpdateVideoCategoryRequest extends FormRequest
 
     public function rules(): array
     {
+        /** @var \App\Models\VideoCategory|null $videoCategory */
         $videoCategory = $this->route('videoCategory');
 
         return [

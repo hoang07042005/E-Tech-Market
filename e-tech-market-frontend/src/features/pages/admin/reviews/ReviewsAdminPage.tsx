@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import type { ChangeEvent } from 'react'
 import { apiFetch, API_BASE_URL } from '@/configs/api.config'
+import ConfirmModal from '@/components/ConfirmModal'
 import '@/styles/admin/ReviewsAdminPage.css'
 
 type Review = {
@@ -29,6 +30,9 @@ type ReviewListResponse = {
   data: Review[]
   last_page: number
   total?: number
+  meta?: {
+    last_page?: number
+  }
 }
 
 function resolveReviewImageUrl(url: string | null | undefined) {
@@ -47,6 +51,8 @@ export default function ReviewsAdminPage() {
   const [sortBy, setSortBy] = useState<SortOption>('latest')
   const [page, setPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
+  const [showDeleteModal, setShowDeleteModal] = useState(false)
+  const [reviewToDelete, setReviewToDelete] = useState<Review | null>(null)
   const token = typeof window !== 'undefined' ? window.localStorage.getItem('token') : null
 
   const fetchReviews = useCallback(
@@ -55,7 +61,10 @@ export default function ReviewsAdminPage() {
       status: 'all' | 'pending' | 'approved' | 'rejected',
       sort: SortOption,
     ) => {
-      if (!token) return
+      if (!token) {
+        setLoading(false)
+        return
+      }
       setLoading(true)
       try {
         let url = `/api/admin/reviews?page=${currentPage}&limit=10`
@@ -63,7 +72,7 @@ export default function ReviewsAdminPage() {
           url += `&status=${status}`
         }
         const res = await apiFetch<ReviewListResponse>(url, { token })
-        const items = res.data || []
+        const items = Array.isArray(res?.data) ? res.data : Array.isArray(res) ? res : []
         const sorted = [...items].sort((a, b) => {
           if (sort === 'oldest') {
             return new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
@@ -77,7 +86,7 @@ export default function ReviewsAdminPage() {
           return new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
         })
         setReviews(sorted)
-        setTotalPages(res.last_page || 1)
+        setTotalPages(res?.last_page || res?.meta?.last_page || 1)
         setTotalReviews(Number(res.total ?? items.length) || 0)
       } catch (err) {
         console.error(err)
@@ -112,14 +121,21 @@ export default function ReviewsAdminPage() {
   }
 
   const deleteReview = async (id: number) => {
-    if (!confirm('Bạn có chắc chắn muốn xoá đánh giá này?')) return
     if (!token) return
     try {
       await apiFetch(`/api/admin/reviews/${id}`, { method: 'DELETE', token })
       setReviews((prev) => prev.filter((r) => r.id !== id))
+      setTotalReviews((prev) => Math.max(prev - 1, 0))
+      setShowDeleteModal(false)
+      setReviewToDelete(null)
     } catch {
       alert('Lỗi khi xoá.')
     }
+  }
+
+  const requestDeleteReview = (review: Review) => {
+    setReviewToDelete(review)
+    setShowDeleteModal(true)
   }
 
   const pendingCount = reviews.filter((r) => r.status === 'pending').length
@@ -319,7 +335,7 @@ export default function ReviewsAdminPage() {
                           <line x1="16" y1="8" x2="8" y2="16" />
                         </svg></button>
                       )}
-                      <button className="reviewActionBtn danger" onClick={() => deleteReview(r.id)}><svg xmlns="http://www.w3.org/2000/svg"
+                      <button className="reviewActionBtn danger" onClick={() => requestDeleteReview(r)}><svg xmlns="http://www.w3.org/2000/svg"
                         width="20"
                         height="20"
                         viewBox="0 0 24 24"
@@ -354,6 +370,30 @@ export default function ReviewsAdminPage() {
           Sau
         </button>
       </div>
+
+      <ConfirmModal
+        open={showDeleteModal}
+        title="Xác nhận xoá đánh giá"
+        message={
+          reviewToDelete ? (
+            <div>
+              <p>Bạn có chắc chắn muốn xoá đánh giá này?</p>
+              <p><strong>Sản phẩm:</strong> {reviewToDelete.product?.name || '—'}</p>
+              <p><strong>Khách hàng:</strong> {reviewToDelete.user?.name || '—'}</p>
+              <p><strong>Nội dung:</strong> {reviewToDelete.comment || 'Không có nội dung'}</p>
+            </div>
+          ) : 'Bạn có chắc chắn muốn xoá đánh giá này?'
+        }
+        onConfirm={() => {
+          if (reviewToDelete) {
+            deleteReview(reviewToDelete.id)
+          }
+        }}
+        onCancel={() => {
+          setShowDeleteModal(false)
+          setReviewToDelete(null)
+        }}
+      />
 
       <div className="reviewSummaryGrid">
         <div className="reviewSummaryCard">
