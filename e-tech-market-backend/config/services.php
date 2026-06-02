@@ -33,6 +33,7 @@ return [
 
     'google' => [
         'client_id' => env('GOOGLE_CLIENT_ID'),
+        'android_client_id' => env('GOOGLE_CLIENT_ID_ANDROID'),
     ],
 
     'vnpay' => [

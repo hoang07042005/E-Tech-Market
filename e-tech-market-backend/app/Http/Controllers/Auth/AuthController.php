@@ -9,30 +9,52 @@ use App\Http\Resources\UserResource;
 use App\Models\Role;
 use App\Models\User;
 use Carbon\Carbon;
+use Firebase\JWT\JWK;
+use Firebase\JWT\JWT;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Cookie;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\URL;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rules\Password;
 use Illuminate\Validation\ValidationException;
 use Laravel\Sanctum\PersonalAccessToken;
+use Symfony\Component\HttpFoundation\Cookie as SymfonyCookie;
+use Throwable;
 
 class AuthController extends Controller
 {
+    private function authenticatedUser(Request $request): User
+    {
+        $user = $request->user();
+
+        if (! $user instanceof User) {
+            abort(401);
+        }
+
+        return $user;
+    }
+
     /**
      * Set authentication token as httpOnly cookie (more secure than localStorage).
      */
-    private function setAuthCookie(string $token, Carbon $expiresAt): \Symfony\Component\HttpFoundation\Cookie
+    private function setAuthCookie(string $token, Carbon $expiresAt): SymfonyCookie
     {
         // Calculate minutes until expiration
-        $minutes = (int) now()->diffInMinutes($expiresAt);
+        $minutes = (int) Carbon::now()->diffInMinutes($expiresAt);
 
         // Decide secure / sameSite based on environment or app URL scheme
-        $appEnv = config('app.env', 'production');
-        $appUrl = config('app.url', '');
+        $appEnv = (string) Config::get('app.env', 'production');
+        $appUrl = (string) Config::get('app.url', '');
         $isHttps = (strpos($appUrl, 'https://') === 0);
 
         if ($appEnv === 'production' || $isHttps) {
@@ -44,7 +66,7 @@ class AuthController extends Controller
             $sameSite = 'lax';
         }
 
-        return cookie(
+        return Cookie::make(
             'auth_token',   // name
             $token,         // value
             $minutes,       // minutes until expiration
@@ -82,11 +104,11 @@ class AuthController extends Controller
         $expiresAt = Carbon::now()->addHours(24);
         $token = $user->createToken('auth_token', ['*'], $expiresAt)->plainTextToken;
 
-        event(new Registered($user));
+        Event::dispatch(new Registered($user));
 
         $user->load('roles');
 
-        return response()->json([
+        return Response::json([
             'user' => new UserResource($user),
             'token' => $token,
         ])->cookie($this->setAuthCookie($token, $expiresAt));
@@ -114,7 +136,7 @@ class AuthController extends Controller
         $token = $user->createToken('auth_token', ['*'], $expiresAt)->plainTextToken;
         $user->load('roles');
 
-        return response()->json([
+        return Response::json([
             'user' => new UserResource($user),
             'token' => $token,
         ])->cookie($this->setAuthCookie($token, $expiresAt));
@@ -122,13 +144,14 @@ class AuthController extends Controller
 
     public function me(Request $request): JsonResponse
     {
-        return response()->json(new UserResource($request->user()->load('roles')));
+        $user = $this->authenticatedUser($request);
+
+        return Response::json(new UserResource($user->load('roles')));
     }
 
     public function updateMe(Request $request): JsonResponse
     {
-        /** @var User $user */
-        $user = $request->user();
+        $user = $this->authenticatedUser($request);
 
         $data = $request->validate([
             'name' => ['nullable', 'string', 'max:255'],
@@ -153,36 +176,43 @@ class AuthController extends Controller
         }
         $user->save();
 
-        return response()->json(new UserResource($user->fresh()->load('roles')));
+        $user->refresh();
+
+        return Response::json(new UserResource($user->load('roles')));
     }
 
     public function updateAvatar(Request $request): JsonResponse
     {
-        /** @var User $user */
-        $user = $request->user();
+        $user = $this->authenticatedUser($request);
 
         $data = $request->validate([
             'file' => 'required|image|mimes:jpeg,png,jpg,webp|max:4096',
         ]);
 
-        $path = $data['file']->store('avatars', 'public');
+        $file = $data['file'];
+        if (! $file instanceof UploadedFile) {
+            abort(422);
+        }
+
+        $path = $file->store('avatars', 'public');
         /** @var \Illuminate\Filesystem\FilesystemAdapter $disk */
         $disk = Storage::disk('public');
         // Return an absolute URL so the frontend can render across origins.
         $user->avatar_url = URL::to($disk->url($path));
         $user->save();
 
-        return response()->json(new UserResource($user->fresh()->load('roles')));
+        $user->refresh();
+
+        return Response::json(new UserResource($user->load('roles')));
     }
 
     public function changePassword(Request $request): JsonResponse
     {
-        /** @var User $user */
-        $user = $request->user();
+        $user = $this->authenticatedUser($request);
 
         $data = $request->validate([
             'current_password' => ['required', 'string'],
-            'new_password' => ['required', 'string', \Illuminate\Validation\Rules\Password::min(8)->mixedCase()->numbers()->symbols()],
+            'new_password' => ['required', 'string', Password::min(8)->mixedCase()->numbers()->symbols()],
         ]);
 
         if (! Hash::check($data['current_password'], $user->password)) {
@@ -208,40 +238,47 @@ class AuthController extends Controller
             $user->tokens()->where('id', '!=', $current->getKey())->delete();
         }
 
-        return response()->json(['ok' => true]);
+        return Response::json(['ok' => true]);
     }
 
     public function sessions(Request $request): JsonResponse
     {
-        /** @var User $user */
-        $user = $request->user();
+        $user = $this->authenticatedUser($request);
         /** @var PersonalAccessToken|null $current */
         $current = $user->currentAccessToken();
 
         $rows = [];
         foreach ($user->tokens()->orderByDesc('created_at')->get(['id', 'name', 'created_at', 'last_used_at']) as $t) {
             /** @var PersonalAccessToken $t */
+            if (! $t instanceof PersonalAccessToken) {
+                continue;
+            }
+
+            $createdAt = $t->getAttribute('created_at');
+            $lastUsedAt = $t->getAttribute('last_used_at');
+
             $rows[] = [
                 'id' => (string) $t->getKey(),
-                'name' => (string) ($t->name ?? 'Thiết bị'),
-                'created_at' => optional($t->getAttribute('created_at'))->toIso8601String(),
-                'last_used_at' => optional($t->getAttribute('last_used_at'))->toIso8601String(),
+                'name' => (string) ($t->getAttribute('name') ?? 'Thiết bị'),
+                'created_at' => $createdAt instanceof Carbon ? $createdAt->toIso8601String() : null,
+                'last_used_at' => $lastUsedAt instanceof Carbon ? $lastUsedAt->toIso8601String() : null,
                 'is_current' => $current ? ((int) $t->getKey() === (int) $current->getKey()) : false,
             ];
         }
 
-        return response()->json(['data' => $rows]);
+        return Response::json(['data' => $rows]);
     }
 
     public function logout(Request $request): JsonResponse
     {
         // currentAccessToken() returns a PersonalAccessToken instance; guard its type
-        $curr = $request->user()->currentAccessToken();
+        $user = $this->authenticatedUser($request);
+        $curr = $user->currentAccessToken();
         if ($curr instanceof PersonalAccessToken) {
             $curr->delete();
         }
 
-        return response()->json(['ok' => true])->withoutCookie('auth_token');
+        return Response::json(['ok' => true])->withoutCookie('auth_token');
     }
 
     public function googleLogin(Request $request): JsonResponse
@@ -255,12 +292,15 @@ class AuthController extends Controller
         $accessToken = $request->input('access_token');
 
         if (! $idToken && ! $accessToken) {
-            return response()->json(['message' => 'Thiếu mã xác thực Google.'], 400);
+            return Response::json(['message' => 'Thiếu mã xác thực Google.'], 400);
         }
 
-        $clientId = config('services.google.client_id');
-        if (! $clientId) {
-            return response()->json(['message' => 'Google Client ID chưa được cấu hình.'], 500);
+        $clientIds = array_filter([
+            Config::get('services.google.client_id'),
+            Config::get('services.google.android_client_id'),
+        ]);
+        if (empty($clientIds)) {
+            return Response::json(['message' => 'Google Client ID chưa được cấu hình.'], 500);
         }
 
         $payload = null;
@@ -270,19 +310,26 @@ class AuthController extends Controller
             try {
                 $jwksUrl = 'https://www.googleapis.com/oauth2/v3/certs';
                 $jwksJson = Http::get($jwksUrl)->json();
-                $keys = \Firebase\JWT\JWK::parseKeySet($jwksJson, 'RS256');
-                $decoded = \Firebase\JWT\JWT::decode($idToken, $keys);
+                $keys = JWK::parseKeySet($jwksJson, 'RS256');
+                $decoded = JWT::decode($idToken, $keys);
 
-                // Verify audience claim matches our client ID
+                // Verify audience claim matches one of our client IDs
                 $aud = is_array($decoded->aud) ? $decoded->aud : [$decoded->aud];
-                if (! in_array($clientId, $aud, true)) {
-                    return response()->json(['message' => 'Token audience không khớp với ứng dụng.'], 401);
+                $match = false;
+                foreach ($clientIds as $id) {
+                    if (in_array($id, $aud, true)) {
+                        $match = true;
+                        break;
+                    }
+                }
+                if (! $match) {
+                    return Response::json(['message' => 'Token audience không khớp với ứng dụng.'], 401);
                 }
 
                 // Verify issuer
                 $validIssuers = ['accounts.google.com', 'https://accounts.google.com'];
                 if (! isset($decoded->iss) || ! in_array($decoded->iss, $validIssuers, true)) {
-                    return response()->json(['message' => 'Token issuer không hợp lệ.'], 401);
+                    return Response::json(['message' => 'Token issuer không hợp lệ.'], 401);
                 }
 
                 $payload = [
@@ -291,8 +338,8 @@ class AuthController extends Controller
                     'picture' => $decoded->picture ?? null,
                     'sub' => $decoded->sub ?? null,
                 ];
-            } catch (\Exception $e) {
-                return response()->json(['message' => 'Xác thực Google thất bại hoặc mã đã hết hạn.'], 401);
+            } catch (Throwable $e) {
+                return Response::json(['message' => 'Xác thực Google thất bại hoặc mã đã hết hạn.'], 401);
             }
         } else {
             // Verify access_token via Google's tokeninfo endpoint (includes audience check)
@@ -302,15 +349,29 @@ class AuthController extends Controller
                 ]);
 
                 if ($response->failed()) {
-                    return response()->json(['message' => 'Xác thực Access Token Google thất bại.'], 401);
+                    return Response::json(['message' => 'Xác thực Access Token Google thất bại.'], 401);
                 }
 
                 $tokenInfo = $response->json();
 
                 // SECURITY: Verify the token was issued for OUR application
                 $tokenAud = $tokenInfo['aud'] ?? null;
-                if ($tokenAud !== $clientId) {
-                    return response()->json(['message' => 'Access token không thuộc ứng dụng này.'], 401);
+                $match = false;
+                if (is_array($tokenAud)) {
+                    foreach ($tokenAud as $audItem) {
+                        if (in_array($audItem, $clientIds, true)) {
+                            $match = true;
+                            break;
+                        }
+                    }
+                } else {
+                    if (in_array($tokenAud, $clientIds, true)) {
+                        $match = true;
+                    }
+                }
+
+                if (! $match) {
+                    return Response::json(['message' => 'Access token không thuộc ứng dụng này.'], 401);
                 }
 
                 // Fetch user info using the validated access_token
@@ -319,7 +380,7 @@ class AuthController extends Controller
                 ]);
 
                 if ($userInfoResponse->failed()) {
-                    return response()->json(['message' => 'Không thể lấy thông tin người dùng từ Google.'], 401);
+                    return Response::json(['message' => 'Không thể lấy thông tin người dùng từ Google.'], 401);
                 }
 
                 $userInfo = $userInfoResponse->json();
@@ -329,8 +390,8 @@ class AuthController extends Controller
                     'picture' => $userInfo['picture'] ?? null,
                     'sub' => $userInfo['sub'] ?? null,
                 ];
-            } catch (\Exception $e) {
-                return response()->json(['message' => 'Xác thực Access Token Google thất bại.'], 401);
+            } catch (Throwable $e) {
+                return Response::json(['message' => 'Xác thực Access Token Google thất bại.'], 401);
             }
         }
 
@@ -340,7 +401,7 @@ class AuthController extends Controller
         $googleId = $payload['sub'] ?? null;
 
         if (! $email) {
-            return response()->json(['message' => 'Không thể lấy email từ Google.'], 401);
+            return Response::json(['message' => 'Không thể lấy email từ Google.'], 401);
         }
 
         // Find or create user
@@ -350,10 +411,10 @@ class AuthController extends Controller
             $user = User::create([
                 'name' => $name,
                 'email' => $email,
-                'password' => Hash::make(str()->random(24)),
+                'password' => Hash::make(Str::random(24)),
                 'avatar_url' => $avatar,
                 'is_active' => true,
-                'email_verified_at' => now(),
+                'email_verified_at' => Carbon::now(),
             ]);
 
             // Assign default role
@@ -370,14 +431,14 @@ class AuthController extends Controller
         }
 
         if (! $user->is_active) {
-            return response()->json(['message' => 'Tài khoản đã bị khóa.'], 403);
+            return Response::json(['message' => 'Tài khoản đã bị khóa.'], 403);
         }
 
         $expiresAt = Carbon::now()->addHours(24);
         $token = $user->createToken('auth_token', ['*'], $expiresAt)->plainTextToken;
         $user->load('roles');
 
-        return response()->json([
+        return Response::json([
             'user' => new UserResource($user),
             'token' => $token,
         ])->cookie($this->setAuthCookie($token, $expiresAt));

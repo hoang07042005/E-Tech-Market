@@ -1,0 +1,37 @@
+{
+  "project_info": {
+    "project_number": "127154449756",
+    "project_id": "e-tech-market-app",
+    "storage_bucket": "e-tech-market-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:127154449756:android:abcdef0123456789",
+        "android_client_info": {
+          "package_name": "com.example.e_tech_market_app",
+          "certificate_hash": [
+            "0061ac1285b8cea6211ded371171d2c81a514462"
+          ]
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "127154449756-s9bu7gcgkb3ii7fpfmtu4q4cihve91hj.apps.googleusercontent.com",
+          "client_type": 3,
+          "android_info": {
+            "package_name": "com.example.e_tech_market_app",
+            "certificate_hash": "0061ac1285b8cea6211ded371171d2c81a514462"
+          }
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "PLACEHOLDER_API_KEY",
+          "key_string": "PLACEHOLDER_API_KEY"
+        }
+      ]
+    }
+  ],
+  "configuration_version": "1"
+}

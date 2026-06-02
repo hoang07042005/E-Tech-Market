@@ -1,0 +1,366 @@
+import 'package:flutter/material.dart';
+
+import '../../services/auth_service.dart';
+import '../home_screen.dart';
+
+class RegisterScreen extends StatefulWidget {
+  const RegisterScreen({super.key});
+
+  @override
+  State<RegisterScreen> createState() => _RegisterScreenState();
+}
+
+class _RegisterScreenState extends State<RegisterScreen> {
+  final _formKey = GlobalKey<FormState>();
+  final _nameController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _phoneController = TextEditingController();
+  final _passwordController = TextEditingController();
+  final _confirmController = TextEditingController();
+  bool _agree = true;
+  bool _isLoading = false;
+  String? _error;
+
+  Future<void> _submit() async {
+    if (!_formKey.currentState!.validate()) return;
+    if (_passwordController.text != _confirmController.text) {
+      setState(() {
+        _error = 'Mật khẩu xác nhận không khớp.';
+      });
+      return;
+    }
+    if (!_agree) {
+      setState(() {
+        _error = 'Bạn cần đồng ý điều khoản và chính sách bảo mật.';
+      });
+      return;
+    }
+
+    setState(() {
+      _isLoading = true;
+      _error = null;
+    });
+
+    try {
+      await AuthService.register(
+        name: _nameController.text.trim(),
+        email: _emailController.text.trim(),
+        password: _passwordController.text,
+        phone: _phoneController.text.trim(),
+      );
+      if (!mounted) return;
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (_) => const HomeScreen()),
+      );
+    } catch (exception) {
+      setState(() {
+        _error = exception.toString().replaceFirst('Exception: ', '');
+      });
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
+  }
+
+  InputDecoration _inputDecoration(String label) {
+    return InputDecoration(
+      hintText: label,
+      hintStyle: const TextStyle(color: Color(0xFF9CA3AF)),
+      isDense: true,
+      contentPadding: const EdgeInsets.symmetric(vertical: 12),
+      enabledBorder: const UnderlineInputBorder(
+        borderSide: BorderSide(color: Color(0xFFBDBDBD)),
+      ),
+      focusedBorder: const UnderlineInputBorder(
+        borderSide: BorderSide(color: Color(0xFFEF7A45), width: 2),
+      ),
+    );
+  }
+
+  Widget _buildHeroIntro(bool isWide, Color accent) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 18.0),
+      child: isWide
+          ? Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      RichText(
+                        text: TextSpan(
+                          children: [
+                            TextSpan(
+                              text: 'Chào mừng\n',
+                              style: TextStyle(color: Colors.black, fontSize: 42, fontWeight: FontWeight.w800),
+                            ),
+                            TextSpan(
+                              text: 'đến E-TECH MARKET',
+                              style: TextStyle(color: accent, fontSize: 42, fontWeight: FontWeight.w800),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      const Text(
+                        'Tạo tài khoản để mua sắm và theo dõi đơn hàng cùng sản phẩm công nghệ tốt nhất.',
+                        style: TextStyle(color: Color(0xFF9CA3AF), fontSize: 14, height: 1.6),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 12),
+                SizedBox(
+                  width: 140,
+                  height: 140,
+                  child: Image.asset(
+                    'assets/images/mascot.png',
+                    width: 140,
+                    height: 140,
+                    fit: BoxFit.contain,
+                    errorBuilder: (context, error, stack) {
+                      return const Center(child: Icon(Icons.pets, size: 86, color: Color(0xFFEF7A45)));
+                    },
+                  ),
+                ),
+              ],
+            )
+          : Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      RichText(
+                        text: TextSpan(
+                          children: [
+                            TextSpan(text: 'Cùng\n', style: TextStyle(color: Colors.black, fontSize: 34, fontWeight: FontWeight.w800)),
+                            TextSpan(text: 'đồng hành.', style: TextStyle(color: accent, fontSize: 34, fontWeight: FontWeight.w800)),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      const Text(
+                        'Trải nghiệm chuỗi bán lẻ công nghệ — sản phẩm được tuyển chọn cho người yêu thích sự chính xác và hiệu năng.',
+                        style: TextStyle(color: Color(0xFF9CA3AF), fontSize: 13, height: 1.6),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 12),
+                SizedBox(
+                  width: 120,
+                  height: 120,
+                  child: Image.asset(
+                    'assets/images/mascot.png',
+                    width: 120,
+                    height: 120,
+                    fit: BoxFit.contain,
+                    errorBuilder: (context, error, stack) {
+                      return const Center(child: Icon(Icons.pets, size: 72, color: Color(0xFFEF7A45)));
+                    },
+                  ),
+                ),
+              ],
+            ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    const accent = Color(0xFFEF7A45);
+    return Scaffold(
+      backgroundColor: const Color(0xFFFAF1EB),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(vertical: 36, horizontal: 20),
+          child: Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 360),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  const SizedBox(height: 8),
+                  Center(
+                    child: Text(
+                      'E-TECH MARKET',
+                      style: const TextStyle(
+                        color: Color(0xFFBFAF9F),
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: 2,
+                        fontSize: 12,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 18),
+                  Builder(builder: (ctx) {
+                    final width = MediaQuery.of(ctx).size.width;
+                    final isWide = width >= 600;
+                    return _buildHeroIntro(isWide, accent);
+                  }),
+                  const SizedBox(height: 10),
+                  Center(
+                    child: Text(
+                      'Đăng ký',
+                      style: TextStyle(
+                        color: accent,
+                        fontSize: 30,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Center(
+                    child: Text(
+                      'Tạo tài khoản để mua sắm và theo dõi đơn hàng.',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(color: Colors.black54, fontSize: 14),
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  Container(
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFFAF1EB),
+                    ),
+                    padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 18),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Form(
+                          key: _formKey,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              const Text('Họ và tên', style: TextStyle(color: Color(0xFF7C6B61), fontSize: 13)),
+                              TextFormField(
+                                controller: _nameController,
+                                decoration: _inputDecoration(''),
+                                validator: (value) {
+                                  if (value == null || value.trim().isEmpty) return 'Vui lòng nhập họ tên.';
+                                  return null;
+                                },
+                              ),
+                              const SizedBox(height: 16),
+                              const Text('Email', style: TextStyle(color: Color(0xFF7C6B61), fontSize: 13)),
+                              TextFormField(
+                                controller: _emailController,
+                                keyboardType: TextInputType.emailAddress,
+                                decoration: _inputDecoration(''),
+                                validator: (value) {
+                                  if (value == null || value.trim().isEmpty) return 'Vui lòng nhập email.';
+                                  if (!value.contains('@')) return 'Email không hợp lệ.';
+                                  return null;
+                                },
+                              ),
+                              const SizedBox(height: 16),
+                              const Text('Số điện thoại', style: TextStyle(color: Color(0xFF7C6B61), fontSize: 13)),
+                              TextFormField(
+                                controller: _phoneController,
+                                keyboardType: TextInputType.phone,
+                                decoration: _inputDecoration(''),
+                                validator: (value) {
+                                  if (value == null || value.trim().isEmpty) return 'Vui lòng nhập số điện thoại.';
+                                  return null;
+                                },
+                              ),
+                              const SizedBox(height: 16),
+                              const Text('Mật khẩu', style: TextStyle(color: Color(0xFF7C6B61), fontSize: 13)),
+                              TextFormField(
+                                controller: _passwordController,
+                                obscureText: true,
+                                decoration: _inputDecoration(''),
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) return 'Vui lòng nhập mật khẩu.';
+                                  if (value.length < 6) return 'Mật khẩu cần ít nhất 6 ký tự.';
+                                  return null;
+                                },
+                              ),
+                              const SizedBox(height: 16),
+                              const Text('Xác nhận mật khẩu', style: TextStyle(color: Color(0xFF7C6B61), fontSize: 13)),
+                              TextFormField(
+                                controller: _confirmController,
+                                obscureText: true,
+                                decoration: _inputDecoration(''),
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) return 'Vui lòng nhập xác nhận mật khẩu.';
+                                  return null;
+                                },
+                              ),
+                              const SizedBox(height: 12),
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Checkbox(
+                                    value: _agree,
+                                    onChanged: _isLoading
+                                        ? null
+                                        : (value) {
+                                            setState(() {
+                                              _agree = value ?? false;
+                                            });
+                                          },
+                                    activeColor: accent,
+                                  ),
+                                  const Expanded(
+                                    child: Text(
+                                      'Tôi đồng ý điều khoản và chính sách bảo mật.',
+                                      style: TextStyle(color: Color(0xFF6B7280), fontSize: 13),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                        if (_error != null) ...[
+                          const SizedBox(height: 16),
+                          Container(
+                            decoration: BoxDecoration(color: const Color(0xFFFEE2E2), borderRadius: BorderRadius.circular(12)),
+                            padding: const EdgeInsets.all(12),
+                            child: Text(_error!, style: const TextStyle(color: Color(0xFFB91C1C))),
+                          ),
+                        ],
+                        const SizedBox(height: 28),
+                        ElevatedButton(
+                          onPressed: (_isLoading || !_agree) ? null : _submit,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFFF7E8DE),
+                            foregroundColor: accent,
+                            disabledBackgroundColor: const Color(0xFFEDEDED),
+                            disabledForegroundColor: const Color(0xFF9CA3AF),
+                            padding: const EdgeInsets.symmetric(vertical: 16),
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                            elevation: 0,
+                          ),
+                          child: _isLoading
+                              ? const SizedBox(height: 18, width: 18, child: CircularProgressIndicator(color: Color(0xFFEF7A45), strokeWidth: 2))
+                              : const Text('TẠO TÀI KHOẢN', style: TextStyle(letterSpacing: 2, fontWeight: FontWeight.w700)),
+                        ),
+                        const SizedBox(height: 16),
+                        OutlinedButton(
+                          onPressed: _isLoading ? null : () => Navigator.of(context).pop(),
+                          style: OutlinedButton.styleFrom(
+                            side: const BorderSide(color: Color(0x00FFFFFF)),
+                            foregroundColor: const Color(0xFF374151),
+                            padding: const EdgeInsets.symmetric(vertical: 14),
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                          ),
+                          child: const Text('Đã có tài khoản? Đăng nhập', style: TextStyle(fontWeight: FontWeight.w600)),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
