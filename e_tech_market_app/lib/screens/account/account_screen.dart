@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import '../../utils/network_utils.dart';
-import 'orders/order_list_screen.dart';
+import 'clause/terms_screen.dart';
+import '../orders/order_list_screen.dart';
+import 'security/security_screen.dart';
 import 'profile/profile_screen.dart';
+import 'voucher_warehouse/voucher_warehouse_screen.dart';
 
 class AccountScreen extends StatelessWidget {
   final Map<String, dynamic> user;
@@ -34,7 +37,7 @@ class AccountScreen extends StatelessWidget {
         user['image'] as String?;
     
     if (avatarUrl != null && avatarUrl.isNotEmpty) {
-      avatarUrl = fixDeviceUrl(avatarUrl);
+      avatarUrl = NetworkUtils.fixDeviceUrl(avatarUrl);
     } else {
       avatarUrl = null;
     }
@@ -93,7 +96,9 @@ class AccountScreen extends StatelessWidget {
                 _buildMenuItem(Icons.receipt_long_outlined, 'Đơn hàng', () {
                   Navigator.push(context, MaterialPageRoute(builder: (_) => const OrderListScreen()));
                 }),
-                _buildMenuItem(Icons.local_activity_outlined, 'Kho voucher', () {}),
+                _buildMenuItem(Icons.local_activity_outlined, 'Kho voucher', () {
+                  Navigator.push(context, MaterialPageRoute(builder: (_) => const VoucherWarehouseScreen()));
+                }),
               ],
             ),
             
@@ -103,8 +108,12 @@ class AccountScreen extends StatelessWidget {
             _buildMenuSection(
               title: 'THIẾT LẬP',
               children: [
-                _buildMenuItem(Icons.security_outlined, 'Bảo mật', () {}),
-                _buildMenuItem(Icons.article_outlined, 'Các điều khoản', () {}),
+                    _buildMenuItem(Icons.security_outlined, 'Bảo mật', () {
+                  Navigator.push(context, MaterialPageRoute(builder: (_) => const SecurityScreen()));
+                }),
+                _buildMenuItem(Icons.article_outlined, 'Các điều khoản', () {
+                  Navigator.push(context, MaterialPageRoute(builder: (_) => const TermsScreen()));
+                }),
                 _buildMenuItem(Icons.settings_outlined, 'Cài đặt', () {}),
               ],
             ),

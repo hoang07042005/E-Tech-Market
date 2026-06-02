@@ -44,7 +44,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
     final rawUrl = widget.user['avatar_url']?.toString() ?? '';
     if (rawUrl.isNotEmpty) {
-      _avatarNetworkUrl = fixDeviceUrl(rawUrl);
+      _avatarNetworkUrl = NetworkUtils.fixDeviceUrl(rawUrl);
     }
   }
 

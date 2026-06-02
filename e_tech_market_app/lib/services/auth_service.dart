@@ -114,6 +114,89 @@ class AuthService {
     await prefs.setString(_userKey, jsonEncode(user));
   }
 
+  static Future<List<Map<String, dynamic>>> fetchSessions(String token) async {
+    final uri = Uri.parse('$_baseUrl/me/sessions');
+    final response = await _get(uri, token);
+
+    if (response.statusCode >= 200 && response.statusCode < 300) {
+      final body = jsonDecode(response.body) as Map<String, dynamic>;
+      final data = body['data'];
+      if (data is List) {
+        return data
+            .map((item) => Map<String, dynamic>.from(item as Map<String, dynamic>))
+            .toList();
+      }
+      return [];
+    }
+
+    final body = response.body.isNotEmpty
+        ? jsonDecode(response.body) as Map<String, dynamic>
+        : <String, dynamic>{};
+    final message = body['message'] ?? _findFirstError(body) ?? 'Đã xảy ra lỗi khi lấy danh sách phiên.';
+    throw Exception(message);
+  }
+
+  static Future<void> changePassword({
+    required String token,
+    required String currentPassword,
+    required String newPassword,
+  }) async {
+    final uri = Uri.parse('$_baseUrl/me/password');
+    final response = await _patch(uri, token, {
+      'current_password': currentPassword,
+      'new_password': newPassword,
+    });
+
+    if (response.statusCode >= 200 && response.statusCode < 300) {
+      return;
+    }
+
+    final body = response.body.isNotEmpty
+        ? jsonDecode(response.body) as Map<String, dynamic>
+        : <String, dynamic>{};
+    final message = body['message'] ?? _findFirstError(body) ?? 'Đổi mật khẩu thất bại.';
+    throw Exception(message);
+  }
+
+  static Future<http.Response> _get(Uri uri, String token) async {
+    try {
+      return await http.get(
+        uri,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+      ).timeout(const Duration(seconds: 15));
+    } on TimeoutException {
+      throw Exception('Không thể kết nối tới máy chủ $uri. Vui lòng kiểm tra API và mạng.');
+    } on SocketException {
+      throw Exception('Lỗi mạng. Không thể kết nối tới $uri. Kiểm tra kết nối và địa chỉ API.');
+    } on http.ClientException {
+      throw Exception('Lỗi kết nối HTTP tới $uri. Kiểm tra địa chỉ API và mạng.');
+    }
+  }
+
+  static Future<http.Response> _patch(Uri uri, String token, Map<String, dynamic> body) async {
+    try {
+      return await http
+          .patch(
+            uri,
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': 'Bearer $token',
+            },
+            body: jsonEncode(body),
+          )
+          .timeout(const Duration(seconds: 15));
+    } on TimeoutException {
+      throw Exception('Không thể kết nối tới máy chủ $uri. Vui lòng kiểm tra API và mạng.');
+    } on SocketException {
+      throw Exception('Lỗi mạng. Không thể kết nối tới $uri. Kiểm tra kết nối và địa chỉ API.');
+    } on http.ClientException {
+      throw Exception('Lỗi kết nối HTTP tới $uri. Kiểm tra địa chỉ API và mạng.');
+    }
+  }
+
   static Future<void> clearSession() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(_tokenKey);

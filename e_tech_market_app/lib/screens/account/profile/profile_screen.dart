@@ -48,7 +48,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
     String? avatarUrl = _user!['avatar_url'] as String?;
     if (avatarUrl != null && avatarUrl.isNotEmpty) {
-      avatarUrl = fixDeviceUrl(avatarUrl);
+      avatarUrl = NetworkUtils.fixDeviceUrl(avatarUrl);
     } else {
       avatarUrl = null;
     }

@@ -68,8 +68,27 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
   }
 
   String _formatMoney(dynamic amount) {
-    final value = amount is num ? amount : int.tryParse(amount?.toString() ?? '') ?? 0;
+    final value = amount is num
+        ? amount.toDouble()
+        : double.tryParse(amount?.toString() ?? '') ?? 0.0;
     return value.toStringAsFixed(0).replaceAllMapped(RegExp(r'\B(?=(\d{3})+(?!\d))'), (match) => '.');
+  }
+
+  String _resolveOrderItemImageUrl(dynamic item) {
+    final product = item is Map<String, dynamic> ? item['product'] as Map<String, dynamic>? : null;
+    final candidates = <String?>[
+      product?['main_image_url']?.toString(),
+      product?['image_url']?.toString(),
+      item['image_url']?.toString(),
+      item['product_main_image_url']?.toString(),
+      item['product_image_url']?.toString(),
+    ];
+    for (final url in candidates) {
+      if (url != null && url.trim().isNotEmpty) {
+        return NetworkUtils.fixDeviceUrl(url);
+      }
+    }
+    return '';
   }
 
   String _formatDateTime(String? iso) {
@@ -287,7 +306,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
       children: items.map((item) {
         final product = item['product'] as Map<String, dynamic>?;
         final name = (product?['name'] ?? item['product_name_snapshot'] ?? 'Sản phẩm không xác định').toString();
-        final imageUrl = fixDeviceUrl(product?['main_image_url'] as String? ?? '');
+        final imageUrl = _resolveOrderItemImageUrl(item);
         final quantity = item['quantity']?.toString() ?? '0';
         final total = _formatMoney(item['total_price']);
         return Container(
@@ -378,11 +397,11 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
     final total = _formatMoney(_order!['total_amount']);
     return Column(
       children: [
-        _buildSummaryRow('Tổng tiền hàng', '$subtotalđ'),
-        _buildSummaryRow('Giảm giá', '$discountđ'),
-        _buildSummaryRow('Phí vận chuyển', '$shippingđ'),
+        _buildSummaryRow('Tổng tiền hàng', '${subtotal}đ'),
+        _buildSummaryRow('Giảm giá', '${discount}đ'),
+        _buildSummaryRow('Phí vận chuyển', '${shipping}đ'),
         const Divider(height: 24, color: Colors.black12),
-        _buildSummaryRow('Tổng thanh toán', '$totalđ', bold: true),
+        _buildSummaryRow('Tổng thanh toán', '${total}đ', bold: true),
       ],
     );
   }
@@ -479,7 +498,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
               if (url.isEmpty) return const SizedBox.shrink();
               return ClipRRect(
                 borderRadius: BorderRadius.circular(16),
-                child: Image.network(fixDeviceUrl(url), width: 80, height: 80, fit: BoxFit.cover, errorBuilder: (_, __, ___) => Container(color: Colors.grey.shade200, width: 80, height: 80)),
+                child: Image.network(NetworkUtils.fixDeviceUrl(url), width: 80, height: 80, fit: BoxFit.cover, errorBuilder: (_, __, ___) => Container(color: Colors.grey.shade200, width: 80, height: 80)),
               );
             }).toList(),
           ),
@@ -496,7 +515,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
               if (url.isEmpty) return const SizedBox.shrink();
               return ClipRRect(
                 borderRadius: BorderRadius.circular(16),
-                child: Image.network(fixDeviceUrl(url), width: 80, height: 80, fit: BoxFit.cover, errorBuilder: (_, __, ___) => Container(color: Colors.grey.shade200, width: 80, height: 80)),
+                child: Image.network(NetworkUtils.fixDeviceUrl(url), width: 80, height: 80, fit: BoxFit.cover, errorBuilder: (_, __, ___) => Container(color: Colors.grey.shade200, width: 80, height: 80)),
               );
             }).toList(),
           ),
