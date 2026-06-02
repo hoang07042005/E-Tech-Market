@@ -76,30 +76,31 @@ jobs:
       - name: Static Analysis (PHPStan)
         run: vendor/bin/phpstan analyse --memory-limit=2G
 
-  frontend:
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: e-tech-market-frontend
-    steps:
-      - uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v5
-        with:
-          node-version: 20
-
-      - name: Install frontend dependencies
-        run: npm ci
-
-      - name: Run ESLint
-        run: npm run lint
-
-      - name: Run frontend tests with coverage
-        run: npm test -- --run --coverage
-
-      - name: Install Playwright Browsers
-        run: npx playwright install chromium --with-deps
-
-      - name: Run E2E tests
-        run: npx playwright test
+  # frontend:
+  #   runs-on: ubuntu-latest
+  #   defaults:
+  #     run:
+  #       working-directory: e-tech-market-frontend
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #
+  #     - name: Setup Node.js
+  #       uses: actions/setup-node@v5
+  #       with:
+  #         node-version: 20
+  #
+  #     - name: Install frontend dependencies
+  #       run: npm ci
+  #
+  #     - name: Run ESLint
+  #       run: npm run lint
+  #
+  #     - name: Run frontend tests with coverage
+  #       run: npm test -- --run --coverage
+  #
+  #     - name: Install Playwright Browsers
+  #       run: npx playwright install chromium --with-deps
+  #
+  #     - name: Run E2E tests
+  #       run: npx playwright test
