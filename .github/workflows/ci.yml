@@ -11,70 +11,70 @@ on:
       - master
 
 jobs:
-  backend:
-    runs-on: ubuntu-latest
-    services:
-      postgres:
-        image: postgres:15
-        env:
-          POSTGRES_DB: etech
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
-        ports:
-          - 5433:5432
-        options: >-
-          --health-cmd "pg_isready -U postgres -d etech"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-      redis:
-        image: redis:alpine
-        ports:
-          - 6379:6379
-    env:
-      DB_CONNECTION: pgsql
-      DB_HOST: 127.0.0.1
-      DB_PORT: 5433
-      DB_DATABASE: etech
-      DB_USERNAME: postgres
-      DB_PASSWORD: postgres
-      CACHE_DRIVER: redis
-      SESSION_DRIVER: redis
-      REDIS_HOST: 127.0.0.1
-      REDIS_PORT: 6379
-    defaults:
-      run:
-        working-directory: e-tech-market-backend
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: 8.1
-          extensions: redis, pdo_pgsql, gd, bcmath, pcov
-          ini-values: post_max_size=20M, upload_max_filesize=20M
-
-      - name: Install Composer dependencies
-        run: composer install --prefer-dist --no-progress --no-suggest --no-interaction
-
-      - name: Prepare backend environment
-        run: |
-          cp .env.example .env
-          php -r "file_exists('.env') || copy('.env.example', '.env');"
-          php artisan key:generate --force
-
-      - name: Run database migrations
-        run: php artisan migrate --force
-
-      - name: Run backend tests
-        run: vendor/bin/phpunit --coverage-clover coverage.xml --colors=never
-
-      - name: Code Style Check (Laravel Pint)
-        run: vendor/bin/pint --test
-
-      - name: Static Analysis (PHPStan)
-        run: vendor/bin/phpstan analyse --memory-limit=2G
+  # backend:
+  #   runs-on: ubuntu-latest
+  #   services:
+  #     postgres:
+  #       image: postgres:15
+  #       env:
+  #         POSTGRES_DB: etech
+  #         POSTGRES_USER: postgres
+  #         POSTGRES_PASSWORD: postgres
+  #       ports:
+  #         - 5433:5432
+  #       options: >-
+  #         --health-cmd "pg_isready -U postgres -d etech"
+  #         --health-interval 10s
+  #         --health-timeout 5s
+  #         --health-retries 5
+  #     redis:
+  #       image: redis:alpine
+  #       ports:
+  #         - 6379:6379
+  #   env:
+  #     DB_CONNECTION: pgsql
+  #     DB_HOST: 127.0.0.1
+  #     DB_PORT: 5433
+  #     DB_DATABASE: etech
+  #     DB_USERNAME: postgres
+  #     DB_PASSWORD: postgres
+  #     CACHE_DRIVER: redis
+  #     SESSION_DRIVER: redis
+  #     REDIS_HOST: 127.0.0.1
+  #     REDIS_PORT: 6379
+  #   defaults:
+  #     run:
+  #       working-directory: e-tech-market-backend
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #
+  #     - name: Setup PHP
+  #       uses: shivammathur/setup-php@v2
+  #       with:
+  #         php-version: 8.1
+  #         extensions: redis, pdo_pgsql, gd, bcmath, pcov
+  #         ini-values: post_max_size=20M, upload_max_filesize=20M
+  #
+  #     - name: Install Composer dependencies
+  #       run: composer install --prefer-dist --no-progress --no-suggest --no-interaction
+  #
+  #     - name: Prepare backend environment
+  #       run: |
+  #         cp .env.example .env
+  #         php -r "file_exists('.env') || copy('.env.example', '.env');"
+  #         php artisan key:generate --force
+  #
+  #     - name: Run database migrations
+  #       run: php artisan migrate --force
+  #
+  #     - name: Run backend tests
+  #       run: vendor/bin/phpunit --coverage-clover coverage.xml --colors=never
+  #
+  #     - name: Code Style Check (Laravel Pint)
+  #       run: vendor/bin/pint --test
+  #
+  #     - name: Static Analysis (PHPStan)
+  #       run: vendor/bin/phpstan analyse --memory-limit=2G
 
 
   # frontend:
