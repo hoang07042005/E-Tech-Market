@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import '../../services/products_service.dart';
 import '../../services/wishlist_service.dart';
 import '../../utils/network_utils.dart';
+import 'product_detail_screen.dart';
 
 class ProductsScreen extends StatefulWidget {
   final int? initialCategoryId;
@@ -690,6 +691,20 @@ class _ProductsScreenState extends State<ProductsScreen> {
     return DateTime.now().difference(createdAt).inDays <= 10;
   }
 
+  void _navigateToProductDetail(Map<String, dynamic> product) {
+    final slug = product['slug']?.toString() ?? '';
+    if (slug.isEmpty) return;
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ProductDetailScreen(
+          slug: slug,
+          variantId: null,
+        ),
+      ),
+    );
+  }
+
   Widget _buildProductCard(Map<String, dynamic> product) {
     final displayPrice = _getDisplayPrice(product);
     final displayOldPrice = _getDisplayOldPrice(product);
@@ -707,20 +722,22 @@ class _ProductsScreenState extends State<ProductsScreen> {
 
     final imageUrl = _resolveProductImageUrl(product);
 
-    return Container(
-      margin: const EdgeInsets.only(bottom: 20),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(5),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Column(
+    return GestureDetector(
+      onTap: () => _navigateToProductDetail(product),
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 20),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(5),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           // Image and badges
@@ -932,6 +949,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
             ),
           ),
         ],
+      ),
       ),
     );
   }

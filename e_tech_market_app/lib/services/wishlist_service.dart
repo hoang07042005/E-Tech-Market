@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 import 'auth_service.dart';
 
 class WishlistService {
-  static const String _defaultBaseUrl = 'http://192.168.24.17:8000/api';
+  static const String _defaultBaseUrl = 'http://192.168.24.16:8000/api';
   static const String _baseUrl = String.fromEnvironment('API_BASE_URL', defaultValue: _defaultBaseUrl);
 
   static Future<List<dynamic>> fetchWishlist() async {

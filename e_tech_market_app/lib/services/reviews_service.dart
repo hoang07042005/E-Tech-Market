@@ -5,7 +5,7 @@ import 'dart:io';
 import 'package:http/http.dart' as http;
 
 class ReviewsService {
-  static const String _defaultBaseUrl = 'http://192.168.24.17:8000/api';
+  static const String _defaultBaseUrl = 'http://192.168.24.16:8000/api';
   static const String _baseUrl =
       String.fromEnvironment('API_BASE_URL', defaultValue: _defaultBaseUrl);
 

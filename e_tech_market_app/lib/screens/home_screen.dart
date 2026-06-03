@@ -17,6 +17,7 @@ import 'blogs/blog_screen.dart';
 import 'orders/order_list_screen.dart';
 import 'auth/login_screen.dart';
 import 'products/products_screen.dart';
+import 'products/product_detail_screen.dart';
 import 'home_sections/hero_banner_section.dart';
 import 'home_sections/coupon_section.dart';
 import 'home_sections/category_section.dart';
@@ -312,13 +313,27 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  void _navigateToProductDetail(Map<String, dynamic> product) {
+    final slug = product['slug']?.toString() ?? '';
+    if (slug.isEmpty) return;
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ProductDetailScreen(
+          slug: slug,
+          variantId: null,
+        ),
+      ),
+    );
+  }
+
   Widget _buildFeaturedProductSection() {
     return ProductSection(
       products: _featuredProducts,
       wishedProductIds: _wishSet,
       isLoading: _isHomeLoading,
       onViewAll: () => _onTabSelected(1),
-      onProductSelected: (_) => _onTabSelected(1),
+      onProductSelected: _navigateToProductDetail,
       onToggleWishlist: _toggleWishlist,
       onAddToCart: (_) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -350,7 +365,7 @@ class _HomeScreenState extends State<HomeScreen> {
           });
         }
       },
-      onProductSelected: (_) => _onTabSelected(1),
+      onProductSelected: _navigateToProductDetail,
       onToggleWishlist: _toggleWishlist,
       onAddToCart: (_) {
         ScaffoldMessenger.of(context).showSnackBar(
