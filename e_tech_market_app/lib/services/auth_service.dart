@@ -158,6 +158,53 @@ class AuthService {
     throw Exception(message);
   }
 
+  static Future<void> forgotPassword(String email) async {
+    final uri = Uri.parse('$_baseUrl/auth/forgot-password');
+    final response = await http.post(
+      uri,
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({'email': email}),
+    );
+
+    if (response.statusCode >= 200 && response.statusCode < 300) {
+      return;
+    }
+
+    final body = response.body.isNotEmpty
+        ? jsonDecode(response.body) as Map<String, dynamic>
+        : <String, dynamic>{};
+    final message = body['message'] ?? _findFirstError(body) ?? 'Gửi yêu cầu thất bại. Vui lòng thử lại.';
+    throw Exception(message);
+  }
+
+  static Future<void> resetPassword({
+    required String email,
+    required String token,
+    required String password,
+  }) async {
+    final uri = Uri.parse('$_baseUrl/auth/reset-password');
+    final response = await http.post(
+      uri,
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({
+        'email': email,
+        'token': token,
+        'password': password,
+        'password_confirmation': password,
+      }),
+    );
+
+    if (response.statusCode >= 200 && response.statusCode < 300) {
+      return;
+    }
+
+    final body = response.body.isNotEmpty
+        ? jsonDecode(response.body) as Map<String, dynamic>
+        : <String, dynamic>{};
+    final message = body['message'] ?? _findFirstError(body) ?? 'Đặt lại mật khẩu thất bại.';
+    throw Exception(message);
+  }
+
   static Future<http.Response> _get(Uri uri, String token) async {
     try {
       return await http.get(

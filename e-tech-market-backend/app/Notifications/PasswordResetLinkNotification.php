@@ -30,6 +30,10 @@ class PasswordResetLinkNotification extends Notification implements ShouldQueue
             ->subject('Đặt lại mật khẩu')
             ->greeting('Xin chào!')
             ->line('Bạn (hoặc ai đó) đã yêu cầu đặt lại mật khẩu cho tài khoản này.')
+            ->line('Nếu bạn đang dùng điện thoại, hãy sao chép mã bên dưới và dán vào ứng dụng:')
+            ->line('**Mã xác nhận:** ' . $this->token)
+            ->line('---')
+            ->line('Hoặc bạn có thể bấm nút bên dưới nếu đang dùng máy tính:')
             ->action('Đặt lại mật khẩu', $resetUrl)
             ->line('Nếu bạn không yêu cầu, bạn có thể bỏ qua email này.');
     }
