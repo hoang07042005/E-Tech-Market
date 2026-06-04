@@ -296,15 +296,15 @@ class _LoginScreenState extends State<LoginScreen> {
                         ElevatedButton(
                           onPressed: _isLoading ? null : _submit,
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFFF7E8DE),
+                            backgroundColor: const Color(0xFFF26522),
                             foregroundColor: accent,
                             padding: const EdgeInsets.symmetric(vertical: 16),
                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                             elevation: 0,
                           ),
                           child: _isLoading
-                              ? const SizedBox(height: 18, width: 18, child: CircularProgressIndicator(color: Color(0xFFEF7A45), strokeWidth: 2))
-                              : const Text('ĐĂNG NHẬP', style: TextStyle(letterSpacing: 2, fontWeight: FontWeight.w700)),
+                              ? const SizedBox(height: 18, width: 18, child: CircularProgressIndicator(color: Color(0xFFFFFFFF), strokeWidth: 2))
+                              : const Text('ĐĂNG NHẬP', style: TextStyle(letterSpacing: 2, fontWeight: FontWeight.w700, color: Color(0xFFFFFFFF))),
                         ),
                         const SizedBox(height: 20),
                         Row(children: const [Expanded(child: Divider(color: Color(0xFFEDE6E0))), Padding(padding: EdgeInsets.symmetric(horizontal: 12), child: Text('HOẶC', style: TextStyle(color: Color(0xFFBDBDBD), fontWeight: FontWeight.w600, fontSize: 12))), Expanded(child: Divider(color: Color(0xFFEDE6E0))) ]),

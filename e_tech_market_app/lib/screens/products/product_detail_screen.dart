@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import '../../services/auth_service.dart';
@@ -466,6 +467,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   bool isLoading = true;
   String? error;
 
+  final ValueNotifier<int> _currentImageIndex = ValueNotifier<int>(0);
   final PageController _pageController = PageController();
   final TextEditingController _qaQuestionController = TextEditingController();
   final TextEditingController _qaGuestNameController = TextEditingController();
@@ -1015,75 +1017,92 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
       ),
     );
   }
+Widget _buildGallery(Product current, List<ProductImage> images) {
+  return Stack(
+    children: [
+      SizedBox(
+        height: 350,
+        child: PageView.builder(
+          controller: _pageController,
+          itemCount: images.length,
+          physics: const ClampingScrollPhysics(), // Giúp phản hồi vuốt mượt và dứt khoát hơn
+          onPageChanged: (index) {
+            // Chỉ cập nhật index cục bộ cho bộ đếm, không Rebuild cả màn hình
+            _currentImageIndex.value = index; 
+            
+            // Cập nhật selectedImg một cách an toàn để đồng bộ với danh sách ảnh nhỏ phía dưới
+            if (selectedImg != images[index].imageUrl) {
+              selectedImg = images[index].imageUrl;
+            }
+          },
+          itemBuilder: (context, index) {
+            final url = images[index].imageUrl;
+            if (url.isEmpty) {
+              return Center(
+                child: Icon(Icons.computer, size: 88, color: Colors.grey.shade300),
+              );
+            }
 
-  Widget _buildGallery(Product current, List<ProductImage> images) {
-    return Stack(
-      children: [
-        SizedBox(
-          height: 350,
-          child: PageView.builder(
-            controller: _pageController,
-            itemCount: images.length,
-            onPageChanged: (index) {
-              setState(() => selectedImg = images[index].imageUrl);
-            },
-            itemBuilder: (context, index) {
-              final url = images[index].imageUrl;
-              if (url.isEmpty) {
-                return Center(
-                  child: Icon(Icons.computer,
-                      size: 88, color: Colors.grey.shade300),
-                );
-              }
-              return InteractiveViewer(
-                child: Image.network(
-                  url,
-                  fit: BoxFit.contain,
-                  errorBuilder: (_, __, ___) => Center(
-                    child: Icon(Icons.computer,
-                        size: 88, color: Colors.grey.shade300),
-                  ),
+            return InteractiveViewer(
+              // Khóa chức năng zoom/kéo trục ngang nếu không zoom, tránh tranh chấp với PageView
+              transformationController: TransformationController(),
+              minScale: 1.0,
+              maxScale: 2.5,
+              child: Image.network(
+                url,
+                fit: BoxFit.contain,
+                gaplessPlayback: true, // Giữ ảnh cũ, không bị nháy trắng khi lướt
+                filterQuality: FilterQuality.low, // Tăng hiệu năng render khi đang lướt animation
+                errorBuilder: (_, __, ___) => Center(
+                  child: Icon(Icons.computer, size: 88, color: Colors.grey.shade300),
+                ),
+              ),
+            );
+          },
+        ),
+      ),
+      
+      // Chỉ Rebuild duy nhất cục bộ cái Text hiển thị số trang (Ví dụ: 1/4)
+      if (images.length > 1)
+        Positioned(
+          bottom: 10,
+          right: 16,
+          child: ValueListenableBuilder<int>(
+            valueListenable: _currentImageIndex,
+            builder: (context, activeIndex, child) {
+              return Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(
+                  color: Colors.black.withValues(alpha: 0.5),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Text(
+                  '${activeIndex + 1}/${images.length}',
+                  style: const TextStyle(color: Colors.white, fontSize: 12),
                 ),
               );
             },
           ),
         ),
-        if (images.length > 1)
-          Positioned(
-            bottom: 10,
-            right: 16,
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-              decoration: BoxDecoration(
-                color: Colors.black.withValues(alpha: 0.5),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Text(
-                '${images.indexWhere((img) => img.imageUrl == selectedImg) + 1}/${images.length}',
-                style: const TextStyle(color: Colors.white, fontSize: 12),
-              ),
-            ),
-          ),
-        Positioned(
-          top: 10,
-          right: 16,
-          child: IconButton(
-            onPressed: () => _toggleWishlist(current.id),
-            icon: CircleAvatar(
-              backgroundColor: Colors.white.withValues(alpha: 0.85),
-              child: Icon(
-                wishSet.contains(current.id)
-                    ? Icons.favorite
-                    : Icons.favorite_border,
-                color: wishSet.contains(current.id) ? Colors.red : Colors.grey,
-              ),
+
+      // Nút Wishlist giữ nguyên
+      Positioned(
+        top: 10,
+        right: 16,
+        child: IconButton(
+          onPressed: () => _toggleWishlist(current.id),
+          icon: CircleAvatar(
+            backgroundColor: Colors.white.withValues(alpha: 0.85),
+            child: Icon(
+              wishSet.contains(current.id) ? Icons.favorite : Icons.favorite_border,
+              color: wishSet.contains(current.id) ? Colors.red : Colors.grey,
             ),
           ),
         ),
-      ],
-    );
-  }
-
+      ),
+    ],
+  );
+}
   Widget _buildHeader(Product current, double displayPrice, bool hasFlashSale) {
     final oldPrice = selectedVariant?.price ?? current.price;
     return Padding(
@@ -1729,7 +1748,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     );
   }
 
-  Widget _buildFaqItem(ProductFaq faq) {
+Widget _buildFaqItem(ProductFaq faq) {
     final isOpen = openFaqId == faq.id;
     return Column(
       children: [
@@ -1739,13 +1758,21 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
             faq.question,
             style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
           ),
-          trailing: Icon(isOpen ? Icons.remove : Icons.add, size: 20),
+          // Thay đổi phần Icon tại đây thành hình tam giác đặc
+          trailing: Icon(
+            isOpen ? Icons.arrow_drop_up : Icons.arrow_drop_down, 
+            size: 26, // Kích thước được tăng lên một chút để rõ ràng như ảnh mẫu
+            color: Colors.black87, // Màu tối đặc phù hợp với giao diện
+          ),
           onTap: () => setState(() => openFaqId = isOpen ? null : faq.id),
         ),
         if (isOpen)
           Padding(
             padding: const EdgeInsets.only(bottom: 12),
-            child: Text(faq.answer, style: TextStyle(color: Colors.grey[700])),
+            child: Text(
+              faq.answer, 
+              style: TextStyle(color: Colors.grey[600], height: 1.4),
+            ),
           ),
         Divider(height: 1, color: Colors.grey[200]),
       ],

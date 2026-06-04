@@ -175,7 +175,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                           ElevatedButton(
                             onPressed: _isLoading ? null : _submit,
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFFF7E8DE),
+                              backgroundColor: const Color(0xFFF26522),
                               foregroundColor: accent,
                               padding: const EdgeInsets.symmetric(vertical: 16),
                               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
@@ -183,7 +183,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                             ),
                             child: _isLoading
                                 ? const SizedBox(height: 18, width: 18, child: CircularProgressIndicator(color: Color(0xFFEF7A45), strokeWidth: 2))
-                                : const Text('GỬI YÊU CẦU', style: TextStyle(letterSpacing: 2, fontWeight: FontWeight.w700)),
+                                : const Text('GỬI YÊU CẦU', style: TextStyle(letterSpacing: 2, fontWeight: FontWeight.w700, color: Color(0xFFFFFFFF))),
                           ),
                         ],
                       ),

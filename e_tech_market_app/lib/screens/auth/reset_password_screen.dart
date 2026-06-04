@@ -284,7 +284,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
           ElevatedButton(
             onPressed: _isLoading ? null : _submit,
             style: ElevatedButton.styleFrom(
-              backgroundColor: accent,
+              backgroundColor: const Color(0xFFF26522),
               foregroundColor: Colors.white,
               padding: const EdgeInsets.symmetric(vertical: 16),
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
@@ -292,7 +292,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
             ),
             child: _isLoading
                 ? const SizedBox(height: 18, width: 18, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-                : const Text('ĐẶT LẠI MẬT KHẨU', style: TextStyle(letterSpacing: 2, fontWeight: FontWeight.w700)),
+                : const Text('ĐẶT LẠI MẬT KHẨU', style: TextStyle(letterSpacing: 2, fontWeight: FontWeight.w700, color: Color(0xFFFFFFFF))),
           ),
         ],
       ),
