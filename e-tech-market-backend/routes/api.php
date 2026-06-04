@@ -230,6 +230,7 @@ Route::get('/products', [ProductsController::class, 'index']);
 Route::get('/products/{product:slug}', [ProductsController::class, 'show']);
 Route::get('/products/{product:slug}/related', [ProductsController::class, 'related']);
 Route::get('/products/{product:slug}/shop-qna', [ClientProductShopQnaController::class, 'index']);
+Route::post('/products/{product:slug}/shop-qna', [ClientProductShopQnaController::class, 'store']);
 Route::get('/product-news/{news:slug}', [ProductNewsController::class, 'show']);
 Route::get('/reviews', [ReviewsController::class, 'index']);
 
@@ -256,6 +257,4 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/me/coupons', [ClientCouponsController::class, 'saved']);
     Route::post('/me/coupons/save', [ClientCouponsController::class, 'save']);
 
-    // Moved from public routes
-    Route::post('/products/{product:slug}/shop-qna', [ClientProductShopQnaController::class, 'store']);
 });

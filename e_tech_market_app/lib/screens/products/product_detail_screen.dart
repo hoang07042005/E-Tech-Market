@@ -1,36 +1,92 @@
-import 'package:flutter/material.dart';
+import 'dart:async';
 
-// Currency formatter helper
+import 'package:flutter/material.dart';
+import 'package:flutter_html/flutter_html.dart';
+import '../../services/auth_service.dart';
+import '../../services/cart_service.dart';
+import '../../services/products_service.dart';
+import '../../services/reviews_service.dart';
+import '../../services/wishlist_service.dart';
+import '../../utils/network_utils.dart';
+import '../../utils/app_snackbar.dart';
+import 'product_new_detail_screen.dart';
+
 String formatCurrency(double value) {
-  final formatter = value.toInt();
-  return formatter.toString().replaceAllMapped(
-    RegExp(r'(\d)(?=(\d{3})+(?!\d))'),
-    (match) => '${match[1]},',
-  );
+  return value.toStringAsFixed(0).replaceAllMapped(
+        RegExp(r'(\d)(?=(\d{3})+(?!\d))'),
+        (match) => '${match[1]}.',
+      );
 }
 
-// Models (assuming these exist in your models)
-// If not, you'll need to create them
+double _toDouble(dynamic value) {
+  if (value is num) return value.toDouble();
+  return double.tryParse(value?.toString().replaceAll(',', '') ?? '') ?? 0;
+}
+
+int _toInt(dynamic value) {
+  if (value is num) return value.toInt();
+  return int.tryParse(value?.toString() ?? '') ?? 0;
+}
+
+String _imageFrom(dynamic value) {
+  final raw = value?.toString().trim() ?? '';
+  return raw.isEmpty ? '' : NetworkUtils.fixDeviceUrl(raw);
+}
+
+String _plainTextFromHtml(String value) {
+  return value
+      .replaceAll(RegExp(r'<br\s*/?>', caseSensitive: false), '\n')
+      .replaceAll(RegExp(r'</p\s*>', caseSensitive: false), '\n\n')
+      .replaceAll(RegExp(r'<[^>]*>'), '')
+      .replaceAll('&nbsp;', ' ')
+      .replaceAll('&amp;', '&')
+      .replaceAll('&lt;', '<')
+      .replaceAll('&gt;', '>')
+      .replaceAll('&quot;', '"')
+      .trim();
+}
+
+String _timeAgoVi(String value) {
+  final date = DateTime.tryParse(value);
+  if (date == null) return '';
+  final diff = DateTime.now().difference(date);
+  if (diff.inDays >= 30) return '${(diff.inDays / 30).floor()} tháng trước';
+  if (diff.inDays >= 1) return '${diff.inDays} ngày trước';
+  if (diff.inHours >= 1) return '${diff.inHours} giờ trước';
+  if (diff.inMinutes >= 1) return '${diff.inMinutes} phút trước';
+  return 'vừa xong';
+}
+
+String _ratingLabel(num value) {
+  if (value >= 5) return 'Tuyệt vời';
+  if (value >= 4) return 'Tốt';
+  if (value >= 3) return 'Bình thường';
+  if (value >= 2) return 'Tệ';
+  return 'Rất tệ';
+}
+
 class Product {
   final int id;
   final String name;
   final String slug;
   final String? shortDescription;
   final String? description;
+  final String? richHtml;
   final String mainImageUrl;
   final List<ProductImage> images;
-  final List<ProductVideo>? videos;
   final double price;
   final String? sku;
   final int stockQuantity;
   final String? brand;
+  final String? categoryName;
+  final String? categorySlug;
   final int categoryId;
   final List<ProductVariant> variants;
   final List<ProductSpecRow> specs;
-  final List<ProductFaq>? faqs;
-  final List<ProductNews>? news;
-  final List<ProductReview>? reviews;
-  final List<FlashSaleItem>? flashSaleItems;
+  final List<ProductFaq> faqs;
+  final List<ProductNews> news;
+  final List<ProductReview> reviews;
+  final List<FlashSaleItem> flashSaleItems;
 
   Product({
     required this.id,
@@ -38,21 +94,82 @@ class Product {
     required this.slug,
     this.shortDescription,
     this.description,
+    this.richHtml,
     required this.mainImageUrl,
     required this.images,
-    this.videos,
     required this.price,
     this.sku,
     required this.stockQuantity,
     this.brand,
+    this.categoryName,
+    this.categorySlug,
     required this.categoryId,
     required this.variants,
     required this.specs,
-    this.faqs,
-    this.news,
-    this.reviews,
-    this.flashSaleItems,
+    this.faqs = const [],
+    this.news = const [],
+    this.reviews = const [],
+    this.flashSaleItems = const [],
   });
+
+  factory Product.fromJson(Map<String, dynamic> json) {
+    final images = (json['images'] as List<dynamic>? ?? [])
+        .map((item) => ProductImage.fromJson(item as Map<String, dynamic>))
+        .where((image) => image.imageUrl.isNotEmpty)
+        .toList();
+    final variants = (json['variants'] as List<dynamic>? ?? [])
+        .map((item) => ProductVariant.fromJson(item as Map<String, dynamic>))
+        .toList();
+    final mainImage = _resolveMainImage(json, images, variants);
+    final category = json['category'] as Map<String, dynamic>?;
+
+    return Product(
+      id: _toInt(json['id']),
+      name: json['name']?.toString() ?? '',
+      slug: json['slug']?.toString() ?? '',
+      shortDescription: json['short_description']?.toString(),
+      description: json['description']?.toString(),
+      richHtml: json['rich_html']?.toString(),
+      mainImageUrl: mainImage,
+      images: images,
+      price: _toDouble(json['price']),
+      sku: json['sku']?.toString(),
+      stockQuantity: _toInt(json['stock_quantity']),
+      brand: json['brand']?.toString(),
+      categoryName: category?['name']?.toString(),
+      categorySlug: category?['slug']?.toString(),
+      categoryId: _toInt(json['category_id']),
+      variants: variants,
+      specs: (json['specs'] as List<dynamic>? ?? [])
+          .map((item) => ProductSpecRow.fromJson(item as Map<String, dynamic>))
+          .toList(),
+      faqs: (json['faqs'] as List<dynamic>? ?? [])
+          .map((item) => ProductFaq.fromJson(item as Map<String, dynamic>))
+          .toList(),
+      news: (json['news'] as List<dynamic>? ?? [])
+          .map((item) => ProductNews.fromJson(item as Map<String, dynamic>))
+          .toList(),
+      reviews: (json['reviews'] as List<dynamic>? ?? [])
+          .map((item) => ProductReview.fromJson(item as Map<String, dynamic>))
+          .toList(),
+      flashSaleItems: (json['flash_sale_items'] as List<dynamic>? ?? [])
+          .map((item) => FlashSaleItem.fromJson(item as Map<String, dynamic>))
+          .toList(),
+    );
+  }
+
+  static String _resolveMainImage(
+    Map<String, dynamic> json,
+    List<ProductImage> images,
+    List<ProductVariant> variants,
+  ) {
+    final direct = _imageFrom(json['main_image_url']);
+    if (direct.isNotEmpty) return direct;
+    for (final variant in variants) {
+      if ((variant.imageUrl ?? '').isNotEmpty) return variant.imageUrl!;
+    }
+    return images.isNotEmpty ? images.first.imageUrl : '';
+  }
 }
 
 class ProductImage {
@@ -60,22 +177,13 @@ class ProductImage {
   final String imageUrl;
 
   ProductImage({required this.id, required this.imageUrl});
-}
 
-class ProductVideo {
-  final int id;
-  final String videoUrl;
-  final String? thumbnailUrl;
-  final String? title;
-  final bool isActive;
-
-  ProductVideo({
-    required this.id,
-    required this.videoUrl,
-    this.thumbnailUrl,
-    this.title,
-    this.isActive = true,
-  });
+  factory ProductImage.fromJson(Map<String, dynamic> json) {
+    return ProductImage(
+      id: _toInt(json['id']),
+      imageUrl: _imageFrom(json['image_url'] ?? json['url']),
+    );
+  }
 }
 
 class ProductVariant {
@@ -83,7 +191,7 @@ class ProductVariant {
   final String name;
   final String? color;
   final String? storage;
-  final String price;
+  final double price;
   final double effectivePrice;
   final int stockQuantity;
   final String? imageUrl;
@@ -98,6 +206,30 @@ class ProductVariant {
     required this.stockQuantity,
     this.imageUrl,
   });
+
+  factory ProductVariant.fromJson(Map<String, dynamic> json) {
+    final price = _toDouble(json['price']);
+    final effectivePrice = _toDouble(json['effective_price']);
+    final name = json['variant_name']?.toString() ??
+        json['name']?.toString() ??
+        [
+          json['color']?.toString(),
+          json['storage']?.toString(),
+        ].where((part) => part != null && part.isNotEmpty).join(' - ');
+
+    return ProductVariant(
+      id: _toInt(json['id']),
+      name: name.isEmpty ? 'Phiên bản mặc định' : name,
+      color: json['color']?.toString(),
+      storage: json['storage']?.toString(),
+      price: price,
+      effectivePrice: effectivePrice > 0 ? effectivePrice : price,
+      stockQuantity: _toInt(json['stock_quantity']),
+      imageUrl: _imageFrom(json['image_url']).isEmpty
+          ? null
+          : _imageFrom(json['image_url']),
+    );
+  }
 }
 
 class ProductSpecRow {
@@ -105,6 +237,7 @@ class ProductSpecRow {
   final String? specGroup;
   final String? specKey;
   final String? specValue;
+  final String? specUnit;
   final int? productVariantId;
 
   ProductSpecRow({
@@ -112,8 +245,22 @@ class ProductSpecRow {
     this.specGroup,
     this.specKey,
     this.specValue,
+    this.specUnit,
     this.productVariantId,
   });
+
+  factory ProductSpecRow.fromJson(Map<String, dynamic> json) {
+    return ProductSpecRow(
+      id: _toInt(json['id']),
+      specGroup: json['spec_group']?.toString(),
+      specKey: json['spec_key']?.toString(),
+      specValue: json['spec_value']?.toString(),
+      specUnit: json['spec_unit']?.toString(),
+      productVariantId: json['product_variant_id'] == null
+          ? null
+          : _toInt(json['product_variant_id']),
+    );
+  }
 }
 
 class ProductFaq {
@@ -130,13 +277,24 @@ class ProductFaq {
     required this.sortOrder,
     this.isActive = true,
   });
+
+  factory ProductFaq.fromJson(Map<String, dynamic> json) {
+    return ProductFaq(
+      id: _toInt(json['id']),
+      question: json['question']?.toString() ?? '',
+      answer: json['answer']?.toString() ?? '',
+      sortOrder: _toInt(json['sort_order']),
+      isActive: json['is_active'] != false,
+    );
+  }
 }
 
 class ProductNews {
   final int id;
   final String title;
+  final String slug;
   final String content;
-  final String? imageUrl;
+  final String? thumbnailUrl;
   final DateTime? publishedAt;
   final int sortOrder;
   final bool isActive;
@@ -144,12 +302,29 @@ class ProductNews {
   ProductNews({
     required this.id,
     required this.title,
+    required this.slug,
     required this.content,
-    this.imageUrl,
+    this.thumbnailUrl,
     this.publishedAt,
     required this.sortOrder,
     this.isActive = true,
   });
+
+  factory ProductNews.fromJson(Map<String, dynamic> json) {
+    return ProductNews(
+      id: _toInt(json['id']),
+      title: json['title']?.toString() ?? '',
+      slug: json['slug']?.toString() ?? '',
+      content: (json['content_html'] ?? json['content'])?.toString() ?? '',
+      thumbnailUrl:
+          _imageFrom(json['thumbnail_url'] ?? json['image_url']).isEmpty
+              ? null
+              : _imageFrom(json['thumbnail_url'] ?? json['image_url']),
+      publishedAt: DateTime.tryParse(json['published_at']?.toString() ?? ''),
+      sortOrder: _toInt(json['sort_order']),
+      isActive: json['is_active'] != false,
+    );
+  }
 }
 
 class ProductReview {
@@ -161,6 +336,8 @@ class ProductReview {
   final int? expPerformance;
   final int? expBattery;
   final int? expCamera;
+  final String? userName;
+  final String? userAvatarUrl;
 
   ProductReview({
     required this.id,
@@ -171,7 +348,67 @@ class ProductReview {
     this.expPerformance,
     this.expBattery,
     this.expCamera,
+    this.userName,
+    this.userAvatarUrl,
   });
+
+  factory ProductReview.fromJson(Map<String, dynamic> json) {
+    final user = json['user'] as Map<String, dynamic>?;
+    return ProductReview(
+      id: _toInt(json['id']),
+      rating: _toInt(json['rating']).clamp(1, 5),
+      comment: json['comment']?.toString(),
+      createdAt: json['created_at']?.toString() ?? '',
+      orderId: json['order_id']?.toString(),
+      expPerformance: json['exp_performance'] == null
+          ? null
+          : _toInt(json['exp_performance']),
+      expBattery:
+          json['exp_battery'] == null ? null : _toInt(json['exp_battery']),
+      expCamera: json['exp_camera'] == null ? null : _toInt(json['exp_camera']),
+      userName: user?['name']?.toString(),
+      userAvatarUrl: _imageFrom(user?['avatar_url']).isEmpty
+          ? null
+          : _imageFrom(user?['avatar_url']),
+    );
+  }
+}
+
+class ProductShopQna {
+  final int id;
+  final String askerDisplayName;
+  final String question;
+  final String? answer;
+  final String? createdAt;
+  final String? answeredAt;
+  final String? userAvatarUrl;
+
+  ProductShopQna({
+    required this.id,
+    required this.askerDisplayName,
+    required this.question,
+    this.answer,
+    this.createdAt,
+    this.answeredAt,
+    this.userAvatarUrl,
+  });
+
+  factory ProductShopQna.fromJson(Map<String, dynamic> json) {
+    final user = json['user'] as Map<String, dynamic>?;
+    return ProductShopQna(
+      id: _toInt(json['id']),
+      askerDisplayName: json['asker_display_name']?.toString() ??
+          user?['name']?.toString() ??
+          'Người dùng',
+      question: json['question']?.toString() ?? '',
+      answer: json['answer']?.toString(),
+      createdAt: json['created_at']?.toString(),
+      answeredAt: json['answered_at']?.toString(),
+      userAvatarUrl: _imageFrom(user?['avatar_url']).isEmpty
+          ? null
+          : _imageFrom(user?['avatar_url']),
+    );
+  }
 }
 
 class FlashSaleItem {
@@ -184,6 +421,15 @@ class FlashSaleItem {
     required this.flashSalePrice,
     required this.flashSale,
   });
+
+  factory FlashSaleItem.fromJson(Map<String, dynamic> json) {
+    final saleJson = json['flash_sale'] as Map<String, dynamic>? ?? {};
+    return FlashSaleItem(
+      id: _toInt(json['id']),
+      flashSalePrice: _toDouble(json['flash_sale_price']),
+      flashSale: FlashSale.fromJson(saleJson),
+    );
+  }
 }
 
 class FlashSale {
@@ -191,6 +437,14 @@ class FlashSale {
   final DateTime endAt;
 
   FlashSale({required this.id, required this.endAt});
+
+  factory FlashSale.fromJson(Map<String, dynamic> json) {
+    return FlashSale(
+      id: _toInt(json['id']),
+      endAt:
+          DateTime.tryParse(json['end_at']?.toString() ?? '') ?? DateTime.now(),
+    );
+  }
 }
 
 class ProductDetailScreen extends StatefulWidget {
@@ -198,303 +452,454 @@ class ProductDetailScreen extends StatefulWidget {
   final String? variantId;
 
   const ProductDetailScreen({
-    Key? key,
+    super.key,
     required this.slug,
     this.variantId,
-  }) : super(key: key);
+  });
 
   @override
   State<ProductDetailScreen> createState() => _ProductDetailScreenState();
 }
 
 class _ProductDetailScreenState extends State<ProductDetailScreen> {
-  late Product product;
+  Product? product;
   bool isLoading = true;
   String? error;
 
+  final PageController _pageController = PageController();
+  final TextEditingController _qaQuestionController = TextEditingController();
+  final TextEditingController _qaGuestNameController = TextEditingController();
+  Timer? _flashSaleTimer;
   String? selectedImg;
   ProductVariant? selectedVariant;
   int quantity = 1;
   int? openFaqId;
+  Set<int> _wishlistIds = {};
   Set<int> wishSet = {};
   List<Product> relatedProducts = [];
   List<ProductNews> visibleNews = [];
   List<ProductFaq> visibleFaqs = [];
   List<ProductReview> visibleReviews = [];
-
-  String reviewFilter = 'all'; // all, with_images, verified, star_5, star_4, star_3, star_2, star_1
-  bool showReviewModal = false;
-  int reviewRating = 5;
-  String reviewComment = '';
-  int expPerformance = 5;
-  int expBattery = 5;
-  int expCamera = 5;
-
-  String qaQuestion = '';
-  String qaGuestName = '';
-  bool qaSending = false;
-
+  List<ProductShopQna> shopQnas = [];
+  String reviewFilter = 'all';
   Duration? flashTimeLeft;
+  bool qaSending = false;
+  String? qaFlash;
+  String? qaError;
 
   @override
   void initState() {
     super.initState();
     _loadProduct();
-    _startFlashSaleTimer();
+    _loadWishlist();
+    _loadWishlistData();
   }
 
   @override
   void dispose() {
+    _flashSaleTimer?.cancel();
+    _pageController.dispose();
+    _qaQuestionController.dispose();
+    _qaGuestNameController.dispose();
     super.dispose();
   }
 
+  Future<void> _loadWishlistData() async {
+    final list = await WishlistService.fetchWishlist();
+    setState(() {
+      _wishlistIds = list.map((item) => item['product_id'] as int).toSet();
+      wishSet = Set<int>.from(_wishlistIds);
+    });
+  }
+
+  Future<void> _handleToggleFavorite() async {
+    final currentProduct = product; 
+    if (currentProduct != null) {
+      await WishlistService.toggleFavorite(currentProduct.id);
+      if (mounted) setState(() {});
+    }
+  }
+
   Future<void> _loadProduct() async {
+    setState(() {
+      isLoading = true;
+      error = null;
+    });
+
     try {
-      // TODO: Replace with actual API call
-      // final response = await apiClient.get('/products/$widget.slug');
-      // product = Product.fromJson(response);
-
-      // Mock product for now
-      product = Product(
-        id: 1,
-        name: 'iPhone 15 Pro Max',
-        slug: widget.slug,
-        shortDescription: 'Premium flagship smartphone',
-        description: 'The latest iPhone with advanced features',
-        mainImageUrl: 'https://via.placeholder.com/400',
-        images: [],
-        price: 30000000,
-        stockQuantity: 10,
-        categoryId: 1,
-        variants: [],
-        specs: [],
-      );
-
+      final productJson = await ProductsService.fetchProductBySlug(widget.slug);
+      final loaded = Product.fromJson(productJson);
+      if (!mounted) return;
       setState(() {
+        product = loaded;
+        selectedImg = loaded.mainImageUrl;
         isLoading = false;
-        selectedImg = product.mainImageUrl;
-        _initializeVariants();
-        _initializeFaqs();
-        _initializeNews();
-        _loadWishlist();
-        _loadRelatedProducts();
       });
+      _initializeProductState();
+      _startFlashSaleTimer();
+      _loadRelatedProducts();
+      _loadShopQnas();
     } catch (e) {
+      if (!mounted) return;
       setState(() {
         isLoading = false;
-        error = 'Lỗi tải sản phẩm: $e';
+        error = 'Không thể tải dữ liệu sản phẩm: $e';
       });
     }
   }
 
-  void _initializeVariants() {
-    if (product.variants.isNotEmpty) {
-      ProductVariant targetVariant = product.variants[0];
-      if (widget.variantId != null) {
-        final matched = product.variants
-            .firstWhere(
-              (v) => v.id.toString() == widget.variantId,
-              orElse: () => product.variants[0],
-            );
-        targetVariant = matched;
-      }
-      selectedVariant = targetVariant;
-      if (targetVariant.imageUrl != null) {
-        selectedImg = targetVariant.imageUrl;
-      }
-    }
-  }
+  void _initializeProductState() {
+    final current = product;
+    if (current == null) return;
 
-  void _initializeFaqs() {
-    visibleFaqs = (product.faqs ?? [])
-        .where((f) => f.isActive)
-        .toList()
+    visibleFaqs = current.faqs.where((f) => f.isActive).toList()
       ..sort((a, b) => a.sortOrder.compareTo(b.sortOrder));
-    if (visibleFaqs.isNotEmpty) {
-      openFaqId = visibleFaqs[0].id;
-    }
-  }
-
-  void _initializeNews() {
-    visibleNews = (product.news ?? [])
-        .where((n) => n.isActive)
-        .toList()
+    visibleNews = current.news.where((n) => n.isActive).toList()
       ..sort((a, b) {
         final aTime = a.publishedAt?.millisecondsSinceEpoch ?? 0;
         final bTime = b.publishedAt?.millisecondsSinceEpoch ?? 0;
-        if (aTime != bTime) return bTime.compareTo(aTime);
-        return b.sortOrder.compareTo(a.sortOrder);
+        return bTime.compareTo(aTime);
       });
+    visibleReviews = current.reviews;
+    openFaqId = visibleFaqs.isNotEmpty ? visibleFaqs.first.id : null;
+
+    if (current.variants.isNotEmpty) {
+      selectedVariant = current.variants.firstWhere(
+        (v) => v.id.toString() == widget.variantId,
+        orElse: () => current.variants.first,
+      );
+      if ((selectedVariant?.imageUrl ?? '').isNotEmpty) {
+        selectedImg = selectedVariant!.imageUrl;
+      }
+    }
   }
 
   Future<void> _loadWishlist() async {
-    try {
-      // TODO: Replace with actual API call
-      // final token = await storage.read(key: 'auth_token');
-      // final wishlistData = await apiClient.get('/wishlist', headers: {'Authorization': 'Bearer $token'});
-      // setState(() {
-      //   wishSet = Set.from(wishlistData.map((w) => w['product_id'] as int));
-      // });
-    } catch (e) {
-      debugPrint('Error loading wishlist: $e');
-    }
+    final items = await WishlistService.fetchWishlist();
+    if (!mounted) return;
+    setState(() {
+      wishSet = items.map<int>((item) => _toInt(item['product_id'])).toSet();
+      _wishlistIds = Set<int>.from(wishSet);
+    });
   }
 
   Future<void> _loadRelatedProducts() async {
+    final current = product;
+    if (current == null) return;
+
     try {
-      // TODO: Replace with actual API call
-      // final response = await apiClient.get(
-      //   '/products',
-      //   queryParameters: {
-      //     'category_id': product.categoryId,
-      //     'limit': 20,
-      //   },
-      // );
-      // var products = (response['data'] as List)
-      //     .map((p) => Product.fromJson(p))
-      //     .where((p) => p.id != product.id)
-      //     .take(5)
-      //     .toList();
-      // setState(() {
-      //   relatedProducts = products;
-      // });
-    } catch (e) {
-      debugPrint('Error loading related products: $e');
+      final response = await ProductsService.fetchRelatedProducts(current.slug);
+      final similar = response['similar'];
+      final boughtTogether = response['bought_together'];
+      final data = [
+        if (similar is Map<String, dynamic> && similar['data'] is List)
+          ...similar['data'] as List<dynamic>
+        else if (similar is List)
+          ...similar,
+        if (boughtTogether is Map<String, dynamic> &&
+            boughtTogether['data'] is List)
+          ...boughtTogether['data'] as List<dynamic>
+        else if (boughtTogether is List)
+          ...boughtTogether,
+      ];
+
+      final seenIds = <int>{current.id};
+      final products = data
+          .whereType<Map<String, dynamic>>()
+          .map(Product.fromJson)
+          .where((item) => seenIds.add(item.id))
+          .take(5)
+          .toList();
+      if (!mounted) return;
+      setState(() => relatedProducts = products);
+    } catch (_) {
+      // Related products are optional on this screen.
     }
   }
 
-  Future<void> _toggleWishlist(int productId) async {
-    final hasAuth = false; // TODO: Check actual auth status
-    if (!hasAuth) {
-      Navigator.pushNamed(context, '/login');
+  Future<void> _loadShopQnas() async {
+    final current = product;
+    if (current == null) return;
+
+    try {
+      final data = await ProductsService.fetchProductShopQnas(current.slug);
+      final qnas = data
+          .whereType<Map<String, dynamic>>()
+          .map(ProductShopQna.fromJson)
+          .toList();
+      if (!mounted) return;
+      setState(() => shopQnas = qnas);
+    } catch (_) {
+      // Q&A is optional and should not block the product page.
+    }
+  }
+
+  Future<void> _submitQuestion() async {
+    final current = product;
+    if (current == null) return;
+
+    final question = _qaQuestionController.text.trim();
+    final guestName = _qaGuestNameController.text.trim();
+    if (question.length < 5) {
+      setState(() {
+        qaError = 'Vui lòng nhập câu hỏi tối thiểu 5 ký tự.';
+        qaFlash = null;
+      });
+      return;
+    }
+
+    final token = await AuthService.getToken();
+    if ((token == null || token.isEmpty) && guestName.length < 2) {
+      setState(() {
+        qaError = 'Vui lòng nhập tên hiển thị hoặc đăng nhập.';
+        qaFlash = null;
+      });
       return;
     }
 
     setState(() {
-      if (wishSet.contains(productId)) {
-        wishSet.remove(productId);
-      } else {
-        wishSet.add(productId);
-      }
+      qaSending = true;
+      qaError = null;
+      qaFlash = null;
     });
 
     try {
-      // TODO: Replace with actual API call
-      // final token = await storage.read(key: 'auth_token');
-      // await apiClient.post('/wishlist/toggle/$productId', headers: {'Authorization': 'Bearer $token'});
-    } catch (e) {
+      final response = await ProductsService.submitProductShopQna(
+        slug: current.slug,
+        question: question,
+        guestName: token == null || token.isEmpty ? guestName : null,
+        token: token,
+      );
+      _qaQuestionController.clear();
+      if (token == null || token.isEmpty) _qaGuestNameController.clear();
+      if (!mounted) return;
       setState(() {
-        if (wishSet.contains(productId)) {
-          wishSet.remove(productId);
-        } else {
+        qaFlash = response['message']?.toString() ?? 'Đã gửi câu hỏi.';
+        qaSending = false;
+      });
+      await _loadShopQnas();
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        qaSending = false;
+        qaError = e.toString();
+      });
+    }
+  }
+
+  Future<void> _toggleWishlist(int productId) async {
+    final token = await AuthService.getToken();
+    if (token == null || token.isEmpty) {
+      if (!mounted) return;
+      AppSnackBar.showError(context, 'Vui lòng đăng nhập để thêm sản phẩm yêu thích.');
+      return;
+    }
+
+    final wasLiked =
+        wishSet.contains(productId) || _wishlistIds.contains(productId);
+    setState(() {
+      wishSet.contains(productId)
+          ? wishSet.remove(productId)
+          : wishSet.add(productId);
+      _wishlistIds.contains(productId)
+          ? _wishlistIds.remove(productId)
+          : _wishlistIds.add(productId);
+    });
+
+    String? status;
+    Object? toggleError;
+    try {
+      status = await WishlistService.toggleWishlist(productId);
+    } catch (e) {
+      toggleError = e;
+    }
+    if (!mounted) return;
+    if (status == null || toggleError != null) {
+      setState(() {
+        if (wasLiked) {
           wishSet.add(productId);
+          _wishlistIds.add(productId);
+        } else {
+          wishSet.remove(productId);
+          _wishlistIds.remove(productId);
         }
       });
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Lỗi: $e')),
-      );
+      if (toggleError != null) {
+        AppSnackBar.showError(context, toggleError.toString().replaceFirst('Exception: ', ''));
+        return;
+      }
+      AppSnackBar.showError(context, 'Không thể cập nhật yêu thích.');
+    } else {
+      setState(() {
+        if (status == 'added') {
+          wishSet.add(productId);
+          _wishlistIds.add(productId);
+        } else if (status == 'removed') {
+          wishSet.remove(productId);
+          _wishlistIds.remove(productId);
+        }
+      });
     }
   }
 
   void _startFlashSaleTimer() {
-    Future.delayed(const Duration(seconds: 1), () {
-      if (mounted && product.flashSaleItems != null && product.flashSaleItems!.isNotEmpty) {
-        final flashSale = product.flashSaleItems![0];
-        final now = DateTime.now();
-        final endTime = flashSale.flashSale.endAt;
-        final diff = endTime.difference(now);
-
-        if (diff.isNegative) {
-          setState(() {
-            flashTimeLeft = null;
-          });
-        } else {
-          setState(() {
-            flashTimeLeft = diff;
-          });
-          _startFlashSaleTimer();
-        }
-      }
-    });
-  }
-
-  void _addToCart() {
-    if (selectedVariant == null && product.variants.isNotEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Vui lòng chọn một biến thể')),
-      );
-      return;
-    }
-
-    final price = _getDisplayPrice();
-    // TODO: Add to cart logic
-    // addToCart(
-    //   productId: product.id,
-    //   variantId: selectedVariant?.id,
-    //   quantity: quantity,
-    //   price: price,
-    // );
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Đã thêm $quantity sản phẩm vào giỏ hàng')),
+    _flashSaleTimer?.cancel();
+    _updateFlashSaleTime();
+    _flashSaleTimer = Timer.periodic(
+      const Duration(seconds: 1),
+      (_) => _updateFlashSaleTime(),
     );
   }
 
+  void _updateFlashSaleTime() {
+    final current = product;
+    if (current == null || current.flashSaleItems.isEmpty) return;
+
+    final diff =
+        current.flashSaleItems.first.flashSale.endAt.difference(DateTime.now());
+    if (!mounted) return;
+    setState(() {
+      flashTimeLeft = diff.isNegative ? null : diff;
+    });
+  }
+
+  Future<void> _addToCart() async {
+    final current = product;
+    if (current == null) return;
+
+    if (selectedVariant == null && current.variants.isNotEmpty) {
+      AppSnackBar.showError(context, 'Vui lòng chọn đầy đủ Màu sắc & Dung lượng');
+      return;
+    }
+
+    try {
+      await CartService.addToCart(current.id, quantity, variantId: selectedVariant?.id);
+      
+      final variantName =
+          selectedVariant != null ? ' (${selectedVariant!.name})' : '';
+      if (!mounted) return;
+      AppSnackBar.showSuccess(context, 'Đã thêm $quantity sản phẩm$variantName vào giỏ hàng!');
+    } catch (e) {
+      if (!mounted) return;
+      AppSnackBar.showError(context, 'Lỗi: ${e.toString().replaceFirst('Exception: ', '')}');
+    }
+  }
+
   double _getDisplayPrice() {
-    if (product.flashSaleItems != null && product.flashSaleItems!.isNotEmpty) {
-      return product.flashSaleItems![0].flashSalePrice;
+    final current = product;
+    if (current == null) return 0;
+    if (current.flashSaleItems.isNotEmpty) {
+      return current.flashSaleItems.first.flashSalePrice;
     }
-    if (selectedVariant != null) {
-      return selectedVariant!.effectivePrice;
-    }
-    return product.price;
+    if (selectedVariant != null) return selectedVariant!.effectivePrice;
+    return current.price;
   }
 
   List<ProductReview> _getFilteredReviews() {
-    var reviews = List<ProductReview>.from(visibleReviews);
-    reviews.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+    final reviews = List<ProductReview>.from(visibleReviews)
+      ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
 
     switch (reviewFilter) {
       case 'verified':
         return reviews.where((r) => r.orderId != null).toList();
+      case 'with_images':
+        return reviews;
       case 'star_5':
-        return reviews.where((r) => r.rating.toInt() == 5).toList();
       case 'star_4':
-        return reviews.where((r) => r.rating.toInt() == 4).toList();
       case 'star_3':
-        return reviews.where((r) => r.rating.toInt() == 3).toList();
       case 'star_2':
-        return reviews.where((r) => r.rating.toInt() == 2).toList();
       case 'star_1':
-        return reviews.where((r) => r.rating.toInt() == 1).toList();
+        final star = int.parse(reviewFilter.split('_').last);
+        return reviews.where((r) => r.rating == star).toList();
       default:
         return reviews;
     }
   }
 
   Map<String, dynamic> _getReviewStats() {
+    final counts = {1: 0, 2: 0, 3: 0, 4: 0, 5: 0};
     if (visibleReviews.isEmpty) {
       return {
         'total': 0,
         'avg': 0.0,
-        'counts': {1: 0, 2: 0, 3: 0, 4: 0, 5: 0},
+        'counts': counts,
+        'exp': {
+          'performance': {'avg': 0.0, 'count': 0},
+          'battery': {'avg': 0.0, 'count': 0},
+          'camera': {'avg': 0.0, 'count': 0},
+        },
       };
     }
 
-    final counts = {1: 0, 2: 0, 3: 0, 4: 0, 5: 0};
-    double sum = 0;
-
-    for (var review in visibleReviews) {
-      final rating = review.rating.toInt();
-      counts[rating] = (counts[rating] ?? 0) + 1;
-      sum += rating;
+    var sum = 0;
+    var perfSum = 0;
+    var perfCount = 0;
+    var batSum = 0;
+    var batCount = 0;
+    var camSum = 0;
+    var camCount = 0;
+    for (final review in visibleReviews) {
+      counts[review.rating] = (counts[review.rating] ?? 0) + 1;
+      sum += review.rating;
+      if (review.expPerformance != null) {
+        perfSum += review.expPerformance!;
+        perfCount++;
+      }
+      if (review.expBattery != null) {
+        batSum += review.expBattery!;
+        batCount++;
+      }
+      if (review.expCamera != null) {
+        camSum += review.expCamera!;
+        camCount++;
+      }
     }
-
     return {
       'total': visibleReviews.length,
       'avg': sum / visibleReviews.length,
       'counts': counts,
+      'exp': {
+        'performance': {
+          'avg': perfCount == 0 ? 0.0 : perfSum / perfCount,
+          'count': perfCount,
+        },
+        'battery': {
+          'avg': batCount == 0 ? 0.0 : batSum / batCount,
+          'count': batCount,
+        },
+        'camera': {
+          'avg': camCount == 0 ? 0.0 : camSum / camCount,
+          'count': camCount,
+        },
+      },
     };
+  }
+
+  List<ProductSpecRow> _getMergedDisplaySpecs(Product current) {
+    final common = current.specs
+        .where((spec) => spec.productVariantId == null)
+        .toList(growable: false);
+    final variantSpecs = selectedVariant == null
+        ? <ProductSpecRow>[]
+        : current.specs
+            .where((spec) => spec.productVariantId == selectedVariant!.id)
+            .toList(growable: false);
+    final order = <String>[];
+    final byKey = <String, ProductSpecRow>{};
+
+    void addSpec(ProductSpecRow spec) {
+      final key = '${spec.specGroup ?? ''}\u0000${spec.specKey ?? ''}';
+      if (!order.contains(key)) order.add(key);
+      byKey[key] = spec;
+    }
+
+    for (final spec in common) {
+      addSpec(spec);
+    }
+    for (final spec in variantSpecs) {
+      addSpec(spec);
+    }
+    return order.map((key) => byKey[key]!).toList();
   }
 
   @override
@@ -506,14 +911,15 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
       );
     }
 
-    if (error != null) {
+    final current = product;
+    if (error != null || current == null) {
       return Scaffold(
         appBar: AppBar(title: const Text('Chi tiết sản phẩm')),
         body: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text(error!),
+              Text(error ?? 'Không tìm thấy sản phẩm.'),
               const SizedBox(height: 16),
               ElevatedButton(
                 onPressed: () => Navigator.pop(context),
@@ -528,818 +934,81 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     final reviewStats = _getReviewStats();
     final filteredReviews = _getFilteredReviews();
     final displayPrice = _getDisplayPrice();
-    final hasFlashSale =
-        product.flashSaleItems != null && product.flashSaleItems!.isNotEmpty;
+    final hasFlashSale = current.flashSaleItems.isNotEmpty;
+    final mergedSpecs = _getMergedDisplaySpecs(current);
+    final images = current.images.isEmpty
+        ? [ProductImage(id: 0, imageUrl: current.mainImageUrl)]
+        : current.images;
 
     return Scaffold(
       appBar: AppBar(
         title: const Text('Chi tiết sản phẩm'),
         elevation: 0,
       ),
+      bottomNavigationBar: _buildBottomAction(displayPrice),
       body: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.only(bottom: 32),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Breadcrumb
-              Padding(
-                padding: const EdgeInsets.only(bottom: 16.0),
-                child: Wrap(
-                  spacing: 8,
-                  children: [
-                    GestureDetector(
-                      onTap: () => Navigator.pushNamed(context, '/'),
-                      child: const Text(
-                        'Trang chủ',
-                        style: TextStyle(color: Colors.blue),
-                      ),
-                    ),
-                    const Text('/'),
-                    GestureDetector(
-                      onTap: () => Navigator.pushNamed(context, '/products'),
-                      child: const Text(
-                        'Danh sách sản phẩm',
-                        style: TextStyle(color: Colors.blue),
-                      ),
-                    ),
-                    const Text('/'),
-                    Text(product.name),
-                  ],
-                ),
-              ),
-
-              // Product Name
-              Padding(
-                padding: const EdgeInsets.only(bottom: 24.0),
+              _buildGallery(current, images),
+              _buildHeader(current, displayPrice, hasFlashSale),
+              if (hasFlashSale && flashTimeLeft != null) _buildFlashSaleTimer(),
+              _buildVariantSelector(current),
+              const Divider(thickness: 8, color: Color(0xFFF5F5F5)),
+              _buildSection(
+                title: 'Mô tả sản phẩm',
                 child: Text(
-                  product.name,
-                  style: const TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  current.description ??
+                      current.shortDescription ??
+                      'Chưa có mô tả.',
+                  style: const TextStyle(height: 1.5),
                 ),
               ),
-
-              // Flash Sale Timer
-              if (hasFlashSale && flashTimeLeft != null)
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  margin: const EdgeInsets.only(bottom: 16),
-                  decoration: BoxDecoration(
-                    color: Colors.red[50],
-                    border: Border.all(color: Colors.red),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
+              const Divider(thickness: 8, color: Color(0xFFF5F5F5)),
+              _buildCommitmentSection(current),
+              if (mergedSpecs.isNotEmpty) ...[
+                const Divider(thickness: 8, color: Color(0xFFF5F5F5)),
+                _buildSection(
+                  title: 'Thông số kỹ thuật',
+                  child: _buildGroupedSpecs(mergedSpecs),
+                ),
+              ],
+              if (visibleFaqs.isNotEmpty) ...[
+                const Divider(thickness: 8, color: Color(0xFFF5F5F5)),
+                _buildSection(
+                  title: 'Câu hỏi thường gặp',
                   child: Column(
-                    children: [
-                      const Text(
-                        '🔥 FLASH SALE',
-                        style: TextStyle(
-                          color: Colors.red,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          _buildTimeUnit(
-                            flashTimeLeft!.inHours % 24,
-                            'giờ',
-                          ),
-                          const Text(
-                            ':',
-                            style: TextStyle(fontSize: 18),
-                          ),
-                          _buildTimeUnit(
-                            flashTimeLeft!.inMinutes % 60,
-                            'phút',
-                          ),
-                          const Text(
-                            ':',
-                            style: TextStyle(fontSize: 18),
-                          ),
-                          _buildTimeUnit(
-                            flashTimeLeft!.inSeconds % 60,
-                            'giây',
-                          ),
-                        ],
-                      ),
-                    ],
+                    children: visibleFaqs.map(_buildFaqItem).toList(),
                   ),
                 ),
-
-              // Main Grid: Image Gallery + Info
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Image Gallery
-                  Expanded(
-                    flex: 1,
-                    child: Column(
-                      children: [
-                        // Main Image
-                        Container(
-                          color: Colors.grey[200],
-                          height: 300,
-                          width: double.infinity,
-                          child: Image.network(
-                            selectedImg ?? product.mainImageUrl,
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                        const SizedBox(height: 12),
-                        // Thumbnail Strip
-                        if ((product.images.isNotEmpty ||
-                            (product.videos?.isNotEmpty ?? false)))
-                          SizedBox(
-                            height: 80,
-                            child: ListView.builder(
-                              scrollDirection: Axis.horizontal,
-                              itemCount: (product.images.length) +
-                                  ((product.videos?.length ?? 0)),
-                              itemBuilder: (context, index) {
-                                if (index < product.images.length) {
-                                  final image = product.images[index];
-                                  return GestureDetector(
-                                    onTap: () {
-                                      setState(() {
-                                        selectedImg = image.imageUrl;
-                                      });
-                                    },
-                                    child: Container(
-                                      width: 80,
-                                      margin: const EdgeInsets.only(right: 8),
-                                      decoration: BoxDecoration(
-                                        border: Border.all(
-                                          color: selectedImg == image.imageUrl
-                                              ? Colors.blue
-                                              : Colors.grey,
-                                        ),
-                                        borderRadius: BorderRadius.circular(4),
-                                      ),
-                                      child: Image.network(
-                                        image.imageUrl,
-                                        fit: BoxFit.cover,
-                                      ),
-                                    ),
-                                  );
-                                } else {
-                                  final videoIndex =
-                                      index - product.images.length;
-                                  final video = product.videos![videoIndex];
-                                  return GestureDetector(
-                                    onTap: () {
-                                      setState(() {
-                                        selectedImg = video.videoUrl;
-                                      });
-                                    },
-                                    child: Container(
-                                      width: 80,
-                                      margin: const EdgeInsets.only(right: 8),
-                                      decoration: BoxDecoration(
-                                        border: Border.all(
-                                          color: selectedImg == video.videoUrl
-                                              ? Colors.blue
-                                              : Colors.grey,
-                                        ),
-                                        borderRadius: BorderRadius.circular(4),
-                                      ),
-                                      child: Stack(
-                                        alignment: Alignment.center,
-                                        children: [
-                                          Image.network(
-                                            video.thumbnailUrl ??
-                                                'https://via.placeholder.com/80',
-                                            fit: BoxFit.cover,
-                                          ),
-                                          const Icon(
-                                            Icons.play_circle_outline,
-                                            color: Colors.white,
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  );
-                                }
-                              },
-                            ),
-                          ),
-                      ],
-                    ),
-                  ),
-
-                  const SizedBox(width: 24),
-
-                  // Product Info
-                  Expanded(
-                    flex: 1,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // Price
-                        Row(
-                          children: [
-                            Text(
-                              '${formatCurrency(displayPrice)} đ',
-                              style: const TextStyle(
-                                fontSize: 24,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.red,
-                              ),
-                            ),
-                            if (hasFlashSale ||
-                                (selectedVariant != null &&
-                                    selectedVariant!.effectivePrice <
-                                        double.parse(selectedVariant!.price)))
-                              Padding(
-                                padding: const EdgeInsets.only(left: 12.0),
-                                child: Text(
-                                  '${formatCurrency(double.parse(selectedVariant?.price ?? '${product.price}'))} đ',
-                                  style: const TextStyle(
-                                    fontSize: 16,
-                                    decoration: TextDecoration.lineThrough,
-                                    color: Colors.grey,
-                                  ),
-                                ),
-                              ),
-                          ],
-                        ),
-
-                        const SizedBox(height: 24),
-
-                        // Variants
-                        if (product.variants.isNotEmpty)
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Text(
-                                'Chọn phiên bản',
-                                style: TextStyle(fontWeight: FontWeight.bold),
-                              ),
-                              const SizedBox(height: 12),
-                              Wrap(
-                                spacing: 8,
-                                runSpacing: 8,
-                                children: product.variants.map((variant) {
-                                  final isSelected =
-                                      selectedVariant?.id == variant.id;
-                                  return GestureDetector(
-                                    onTap: () {
-                                      setState(() {
-                                        selectedVariant = variant;
-                                        if (variant.imageUrl != null) {
-                                          selectedImg = variant.imageUrl;
-                                        }
-                                      });
-                                    },
-                                    child: Container(
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 12,
-                                        vertical: 8,
-                                      ),
-                                      decoration: BoxDecoration(
-                                        border: Border.all(
-                                          color: isSelected
-                                              ? Colors.blue
-                                              : Colors.grey,
-                                          width: isSelected ? 2 : 1,
-                                        ),
-                                        borderRadius: BorderRadius.circular(4),
-                                        color: isSelected
-                                            ? Colors.blue[50]
-                                            : Colors.white,
-                                      ),
-                                      child: Text(
-                                        variant.name,
-                                        style: TextStyle(
-                                          color: isSelected
-                                              ? Colors.blue
-                                              : Colors.black,
-                                          fontWeight: isSelected
-                                              ? FontWeight.bold
-                                              : FontWeight.normal,
-                                        ),
-                                      ),
-                                    ),
-                                  );
-                                }).toList(),
-                              ),
-                              const SizedBox(height: 24),
-                            ],
-                          ),
-
-                        // Description
-                        Text(
-                          product.description ?? 'Không có mô tả',
-                          style: const TextStyle(fontSize: 14),
-                        ),
-
-                        const SizedBox(height: 24),
-
-                        // Metadata
-                        Column(
-                          children: [
-                            _buildMetaItem('DANH MỤC', product.brand ?? 'N/A'),
-                            _buildMetaItem('SKU', product.sku ?? 'N/A'),
-                            _buildMetaItem(
-                              'TỒN KHO',
-                              (selectedVariant?.stockQuantity ??
-                                          product.stockQuantity) >
-                                      0
-                                  ? 'Còn hàng'
-                                  : 'Hết hàng',
-                              color: (selectedVariant?.stockQuantity ??
-                                          product.stockQuantity) >
-                                      0
-                                  ? Colors.green
-                                  : Colors.red,
-                            ),
-                          ],
-                        ),
-
-                        const SizedBox(height: 24),
-
-                        // Actions
-                        Row(
-                          children: [
-                            // Quantity
-                            Container(
-                              decoration: BoxDecoration(
-                                border: Border.all(color: Colors.grey),
-                                borderRadius: BorderRadius.circular(4),
-                              ),
-                              child: Row(
-                                children: [
-                                  IconButton(
-                                    onPressed: () => setState(
-                                        () => quantity = (quantity - 1).clamp(1, 999)),
-                                    icon: const Icon(Icons.remove),
-                                    iconSize: 18,
-                                  ),
-                                  SizedBox(
-                                    width: 50,
-                                    child: TextField(
-                                      controller: TextEditingController(text: quantity.toString()),
-                                      onChanged: (value) {
-                                        setState(() {
-                                          quantity = int.tryParse(value) ?? 1;
-                                          quantity =
-                                              quantity.clamp(1, 999);
-                                        });
-                                      },
-                                      textAlign: TextAlign.center,
-                                      decoration: const InputDecoration(
-                                        border: InputBorder.none,
-                                      ),
-                                    ),
-                                  ),
-                                  IconButton(
-                                    onPressed: () => setState(
-                                        () => quantity = (quantity + 1).clamp(1, 999)),
-                                    icon: const Icon(Icons.add),
-                                    iconSize: 18,
-                                  ),
-                                ],
-                              ),
-                            ),
-
-                            const SizedBox(width: 12),
-
-                            // Add to Cart Button
-                            Expanded(
-                              child: ElevatedButton(
-                                onPressed: _addToCart,
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.blue,
-                                  foregroundColor: Colors.white,
-                                  padding: const EdgeInsets.symmetric(
-                                      vertical: 12),
-                                ),
-                                child: const Text('THÊM VÀO GIỎ'),
-                              ),
-                            ),
-
-                            const SizedBox(width: 12),
-
-                            // Wishlist Button
-                            IconButton(
-                              onPressed: () =>
-                                  _toggleWishlist(product.id),
-                              icon: Icon(
-                                wishSet.contains(product.id)
-                                    ? Icons.favorite
-                                    : Icons.favorite_border,
-                                color: wishSet.contains(product.id)
-                                    ? Colors.red
-                                    : null,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-
-              const SizedBox(height: 48),
-
-              // Specs Section
-              if (product.specs.isNotEmpty)
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Padding(
-                      padding: EdgeInsets.only(bottom: 16.0),
-                      child: Text(
-                        'Thông số kỹ thuật',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                    Container(
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Colors.grey[300]!),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Column(
-                        children: product.specs.map((spec) {
-                          return Column(
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.all(12.0),
-                                child: Row(
-                                  children: [
-                                    Expanded(
-                                      flex: 1,
-                                      child: Text(
-                                        spec.specKey ?? '',
-                                        style: const TextStyle(
-                                            fontWeight: FontWeight.w500),
-                                      ),
-                                    ),
-                                    Expanded(
-                                      flex: 1,
-                                      child: Text(
-                                        spec.specValue ?? '',
-                                        textAlign: TextAlign.end,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              if (spec != product.specs.last)
-                                Divider(
-                                  height: 0,
-                                  color: Colors.grey[300],
-                                ),
-                            ],
-                          );
-                        }).toList(),
-                      ),
-                    ),
-                    const SizedBox(height: 48),
-                  ],
-                ),
-
-              // FAQ Section
-              if (visibleFaqs.isNotEmpty)
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Padding(
-                      padding: EdgeInsets.only(bottom: 16.0),
-                      child: Text(
-                        'Câu hỏi thường gặp',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                    Column(
-                      children: visibleFaqs.map((faq) {
-                        final isOpen = openFaqId == faq.id;
-                        return GestureDetector(
-                          onTap: () => setState(() {
-                            openFaqId = isOpen ? null : faq.id;
-                          }),
-                          child: Container(
-                            padding: const EdgeInsets.all(12),
-                            decoration: BoxDecoration(
-                              border: Border.all(
-                                color: Colors.grey[300]!,
-                              ),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            margin: const EdgeInsets.only(bottom: 8),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Expanded(
-                                      child: Text(
-                                        faq.question,
-                                        style: const TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                    ),
-                                    Icon(
-                                      isOpen
-                                          ? Icons.expand_less
-                                          : Icons.expand_more,
-                                    ),
-                                  ],
-                                ),
-                                if (isOpen) ...[
-                                  const SizedBox(height: 12),
-                                  Text(faq.answer),
-                                ],
-                              ],
-                            ),
-                          ),
-                        );
-                      }).toList(),
-                    ),
-                    const SizedBox(height: 48),
-                  ],
-                ),
-
-              // Reviews Section
-              if (visibleReviews.isNotEmpty)
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Padding(
-                      padding: EdgeInsets.only(bottom: 16.0),
-                      child: Text(
-                        'Đánh giá sản phẩm',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-
-                    // Review Stats
-                    Container(
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Colors.grey[300]!),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Đánh giá trung bình: ${(reviewStats['avg'] as double).toStringAsFixed(1)} / 5',
-                            style: const TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          Text(
-                            'Tổng số đánh giá: ${reviewStats['total']}',
-                          ),
-                          const SizedBox(height: 12),
-                          ...(reviewStats['counts'] as Map<int, int>)
-                              .entries
-                              .map((e) {
-                            return Padding(
-                              padding: const EdgeInsets.only(bottom: 8.0),
-                              child: Row(
-                                children: [
-                                  Text('${e.key} ⭐'),
-                                  const SizedBox(width: 8),
-                                  Expanded(
-                                    child: LinearProgressIndicator(
-                                      value: reviewStats['total'] > 0
-                                          ? ((e.value as int) /
-                                              (reviewStats['total'] as int))
-                                          : 0.0,
-                                    ),
-                                  ),
-                                  const SizedBox(width: 8),
-                                  Text('${e.value}'),
-                                ],
-                              ),
-                            );
-                          }).toList(),
-                        ],
-                      ),
-                    ),
-
-                    const SizedBox(height: 24),
-
-                    // Review Filter
-                    SingleChildScrollView(
+              ],
+              if (relatedProducts.isNotEmpty) ...[
+                const Divider(thickness: 8, color: Color(0xFFF5F5F5)),
+                _buildSection(
+                  title: 'Sản phẩm liên quan',
+                  child: SizedBox(
+                    height: 250,
+                    child: ListView.builder(
                       scrollDirection: Axis.horizontal,
-                      child: Row(
-                        children: [
-                          'all',
-                          'verified',
-                          'star_5',
-                          'star_4',
-                          'star_3',
-                          'star_2',
-                          'star_1',
-                        ]
-                            .map((filter) {
-                          final filterLabels = {
-                            'all': 'Tất cả',
-                            'verified': 'Đã xác thực',
-                            'star_5': '5 ⭐',
-                            'star_4': '4 ⭐',
-                            'star_3': '3 ⭐',
-                            'star_2': '2 ⭐',
-                            'star_1': '1 ⭐',
-                          };
-                          final isSelected = reviewFilter == filter;
-                          return Padding(
-                            padding: const EdgeInsets.only(right: 8.0),
-                            child: FilterChip(
-                              label: Text(filterLabels[filter] ?? filter),
-                              selected: isSelected,
-                              onSelected: (_) {
-                                setState(() {
-                                  reviewFilter = filter;
-                                });
-                              },
-                            ),
-                          );
-                        }).toList(),
-                      ),
-                    ),
-
-                    const SizedBox(height: 24),
-
-                    // Reviews List
-                    Column(
-                      children: filteredReviews.map((review) {
-                        return Container(
-                          padding: const EdgeInsets.all(12),
-                          margin: const EdgeInsets.only(bottom: 12),
-                          decoration: BoxDecoration(
-                            border: Border.all(color: Colors.grey[300]!),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(
-                                    '⭐ ${review.rating.toStringAsFixed(1)}',
-                                    style: const TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  if (review.orderId != null)
-                                    const Chip(
-                                      label: Text('Đã xác thực'),
-                                      backgroundColor: Colors.green,
-                                    ),
-                                ],
-                              ),
-                              const SizedBox(height: 8),
-                              if (review.comment != null)
-                                Text(review.comment!),
-                              const SizedBox(height: 8),
-                              Text(
-                                review.createdAt,
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: Colors.grey[600],
-                                ),
-                              ),
-                            ],
-                          ),
-                        );
-                      }).toList(),
-                    ),
-
-                    ElevatedButton(
-                      onPressed: () {
-                        setState(() {
-                          showReviewModal = true;
-                        });
-                      },
-                      child: const Text('Viết đánh giá'),
-                    ),
-
-                    const SizedBox(height: 48),
-                  ],
-                ),
-
-              // Related Products Section
-              if (relatedProducts.isNotEmpty)
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Padding(
-                      padding: EdgeInsets.only(bottom: 16.0),
-                      child: Text(
-                        'Sản phẩm liên quan',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                    GridView.builder(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      gridDelegate:
-                          const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 2,
-                        childAspectRatio: 0.8,
-                        crossAxisSpacing: 12,
-                        mainAxisSpacing: 12,
-                      ),
                       itemCount: relatedProducts.length,
-                      itemBuilder: (context, index) {
-                        final related = relatedProducts[index];
-                        return GestureDetector(
-                          onTap: () => Navigator.pushNamed(
-                            context,
-                            '/product/${related.slug}',
-                          ),
-                          child: Container(
-                            decoration: BoxDecoration(
-                              border: Border.all(color: Colors.grey[300]!),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Expanded(
-                                  child: Container(
-                                    color: Colors.grey[200],
-                                    child: Image.network(
-                                      related.mainImageUrl,
-                                      fit: BoxFit.cover,
-                                      width: double.infinity,
-                                    ),
-                                  ),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        related.name,
-                                        maxLines: 2,
-                                        overflow: TextOverflow.ellipsis,
-                                        style: const TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                      const SizedBox(height: 4),
-                                      Text(
-                                        '${formatCurrency(related.price)} đ',
-                                        style: const TextStyle(
-                                          color: Colors.red,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                      const SizedBox(height: 8),
-                                      GestureDetector(
-                                        onTap: () =>
-                                            _toggleWishlist(related.id),
-                                        child: Icon(
-                                          wishSet.contains(related.id)
-                                              ? Icons.favorite
-                                              : Icons.favorite_border,
-                                          color:
-                                              wishSet.contains(related.id)
-                                                  ? Colors.red
-                                                  : null,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        );
-                      },
+                      itemBuilder: (context, index) =>
+                          _buildRelatedCard(relatedProducts[index]),
                     ),
-                    const SizedBox(height: 48),
-                  ],
+                  ),
                 ),
+              ],
+              const Divider(thickness: 8, color: Color(0xFFF5F5F5)),
+              _buildRichContentAndNews(current),
+              const Divider(thickness: 8, color: Color(0xFFF5F5F5)),
+              _buildSection(
+                title: 'Đánh giá ${current.name}',
+                child: _buildVisualReviews(reviewStats, filteredReviews),
+              ),
+              const Divider(thickness: 8, color: Color(0xFFF5F5F5)),
+              _buildSection(
+                  title: 'Hỏi và đáp', child: _buildQaSection(current)),
             ],
           ),
         ),
@@ -1347,52 +1016,2055 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     );
   }
 
-  Widget _buildMetaItem(String label, String value, {Color? color}) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 12.0),
-      child: Row(
-        children: [
-          Text(
-            label,
-            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+  Widget _buildGallery(Product current, List<ProductImage> images) {
+    return Stack(
+      children: [
+        SizedBox(
+          height: 350,
+          child: PageView.builder(
+            controller: _pageController,
+            itemCount: images.length,
+            onPageChanged: (index) {
+              setState(() => selectedImg = images[index].imageUrl);
+            },
+            itemBuilder: (context, index) {
+              final url = images[index].imageUrl;
+              if (url.isEmpty) {
+                return Center(
+                  child: Icon(Icons.computer,
+                      size: 88, color: Colors.grey.shade300),
+                );
+              }
+              return InteractiveViewer(
+                child: Image.network(
+                  url,
+                  fit: BoxFit.contain,
+                  errorBuilder: (_, __, ___) => Center(
+                    child: Icon(Icons.computer,
+                        size: 88, color: Colors.grey.shade300),
+                  ),
+                ),
+              );
+            },
           ),
-          const SizedBox(width: 16),
+        ),
+        if (images.length > 1)
+          Positioned(
+            bottom: 10,
+            right: 16,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              decoration: BoxDecoration(
+                color: Colors.black.withValues(alpha: 0.5),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Text(
+                '${images.indexWhere((img) => img.imageUrl == selectedImg) + 1}/${images.length}',
+                style: const TextStyle(color: Colors.white, fontSize: 12),
+              ),
+            ),
+          ),
+        Positioned(
+          top: 10,
+          right: 16,
+          child: IconButton(
+            onPressed: () => _toggleWishlist(current.id),
+            icon: CircleAvatar(
+              backgroundColor: Colors.white.withValues(alpha: 0.85),
+              child: Icon(
+                wishSet.contains(current.id)
+                    ? Icons.favorite
+                    : Icons.favorite_border,
+                color: wishSet.contains(current.id) ? Colors.red : Colors.grey,
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildHeader(Product current, double displayPrice, bool hasFlashSale) {
+    final oldPrice = selectedVariant?.price ?? current.price;
+    return Padding(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if ((current.brand ?? '').isNotEmpty)
+            Text(
+              current.brand!.toUpperCase(),
+              style: TextStyle(
+                color: Colors.grey.shade600,
+                fontWeight: FontWeight.bold,
+                fontSize: 12,
+              ),
+            ),
+          const SizedBox(height: 6),
           Text(
-            value,
-            style: TextStyle(color: color),
+            current.name,
+            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 8),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Text(
+                '${formatCurrency(displayPrice)} đ',
+                style: const TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.red,
+                ),
+              ),
+              if ((hasFlashSale || oldPrice > displayPrice) &&
+                  oldPrice > displayPrice)
+                Padding(
+                  padding: const EdgeInsets.only(left: 8, bottom: 2),
+                  child: Text(
+                    '${formatCurrency(oldPrice)} đ',
+                    style: const TextStyle(
+                      fontSize: 14,
+                      decoration: TextDecoration.lineThrough,
+                      color: Colors.grey,
+                    ),
+                  ),
+                ),
+            ],
           ),
         ],
       ),
     );
   }
 
-  Widget _buildTimeUnit(int value, String unit) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 8.0),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
+  Widget _buildFlashSaleTimer() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+      color: Colors.red[600],
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-            decoration: BoxDecoration(
-              color: Colors.red,
-              borderRadius: BorderRadius.circular(4),
-            ),
-            child: Text(
-              value.toString().padLeft(2, '0'),
-              style: const TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-                fontSize: 16,
-              ),
+          const Text(
+            'KẾT THÚC SAU',
+            style: TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+              fontSize: 13,
             ),
           ),
-          const SizedBox(height: 4),
-          Text(
-            unit,
-            style: const TextStyle(fontSize: 10),
+          Row(
+            children: [
+              _buildCompactTimeUnit(flashTimeLeft!.inHours % 24),
+              const Text(':', style: TextStyle(color: Colors.white)),
+              _buildCompactTimeUnit(flashTimeLeft!.inMinutes % 60),
+              const Text(':', style: TextStyle(color: Colors.white)),
+              _buildCompactTimeUnit(flashTimeLeft!.inSeconds % 60),
+            ],
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildVariantSelector(Product current) {
+    if (current.variants.isEmpty) return const SizedBox.shrink();
+
+    // 1. Gom nhóm danh sách Màu Sắc duy nhất và sửa URL ảnh tượng trưng qua NetworkUtils
+    final Map<String, String?> colorImages = {};
+    for (var v in current.variants) {
+      final cName = v.color?.trim() ?? '';
+      if (cName.isNotEmpty && !colorImages.containsKey(cName)) {
+        colorImages[cName] =
+            v.imageUrl != null ? NetworkUtils.fixDeviceUrl(v.imageUrl!) : null;
+      }
+    }
+    final colors = colorImages.keys.toList();
+
+    // 2. Gom nhóm danh sách Dung Lượng / Phiên bản (LÀM SẠCH CHỮ MÀU BỊ DÍNH)
+    final storages = current.variants
+        .map((v) {
+          String sValue = v.storage?.trim() ?? '';
+
+          // Nếu trường storage trống, tiến hành bóc tách thông minh từ tên variant (v.name)
+          if (sValue.isEmpty) {
+            sValue = v.name.trim();
+            // Duyệt qua danh sách màu sắc đã lấy được ở trên để xóa tên màu ra khỏi chuỗi dung lượng
+            for (var color in colors) {
+              if (sValue.toLowerCase().contains(color.toLowerCase())) {
+                // Xóa tên màu sắc khỏi chuỗi cấu hình (Ví dụ: "Tím 512G" -> "512G")
+                sValue =
+                    sValue.replaceAll(RegExp(color, caseSensitive: false), '');
+              }
+            }
+
+            // Bóc tách lấy phần text chứa thông số bộ nhớ còn lại
+            final parts = sValue.trim().split(' ');
+            sValue = parts.last.trim();
+          }
+
+          // Chuẩn hóa định dạng hiển thị: Nếu kết thúc bằng chữ "G", tự động chuyển thành "GB" cho chuẩn Web
+          if (sValue.toUpperCase().endsWith('G') &&
+              !sValue.toUpperCase().endsWith('GB')) {
+            sValue = '${sValue}B';
+          }
+
+          return sValue.trim();
+        })
+        .where((s) => s.isNotEmpty)
+        .toSet() // Loại bỏ hoàn toàn các cấu hình trùng lặp
+        .toList();
+
+    // Tự động kích hoạt chọn phiên bản đầu tiên làm mặc định khi mới vào màn hình
+    if (selectedVariant == null && current.variants.isNotEmpty) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        setState(() {
+          selectedVariant = current.variants.first; //
+          if ((selectedVariant!.imageUrl ?? '').isNotEmpty) {
+            selectedImg = NetworkUtils.fixDeviceUrl(selectedVariant!.imageUrl!);
+          }
+          quantity = 1;
+        });
+      });
+    }
+
+    // Hàm cập nhật phiên bản khi click đổi thuộc tính cấu hình
+    void _updateSelectedVariant(String? newColor, String? newStorage) {
+      final targetColor = newColor?.trim().toLowerCase();
+      // Chuyển "GB" ngược lại thành "G" để tìm kiếm chính xác nếu data gốc dùng chữ "G"
+      final targetStorage =
+          newStorage?.trim().toLowerCase().replaceAll('gb', 'g');
+
+      ProductVariant? match;
+      try {
+        match = current.variants.firstWhere(
+          (v) =>
+              (v.color?.trim().toLowerCase() == targetColor) &&
+              ((v.storage?.trim().toLowerCase() == targetStorage) ||
+                  (v.name.toLowerCase().contains(targetStorage ?? ''))),
+        );
+      } catch (_) {
+        try {
+          match = current.variants.firstWhere(
+            (v) =>
+                (v.color?.trim().toLowerCase() == targetColor) ||
+                ((v.storage?.trim().toLowerCase() == targetStorage) ||
+                    (v.name.toLowerCase().contains(targetStorage ?? ''))),
+          );
+        } catch (_) {
+          match = current.variants.first; //
+        }
+      }
+
+      setState(() {
+        selectedVariant = match; //
+        quantity = 1;
+        if (match != null && (match.imageUrl ?? '').isNotEmpty) {
+          selectedImg = NetworkUtils.fixDeviceUrl(match.imageUrl!);
+
+          final idx = current.images.indexWhere(
+            (img) =>
+                NetworkUtils.fixDeviceUrl(img.imageUrl).trim() ==
+                selectedImg!.trim(),
+          );
+          if (idx != -1) {
+            _pageController.jumpToPage(idx); //
+          }
+        }
+      });
+    }
+
+    final int currentStock = selectedVariant?.stockQuantity ?? 0;
+    final bool isAvailable = currentStock > 0;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // ================= HÀNG 1: CHỌN MÀU SẮC =================
+          if (colors.isNotEmpty) ...[
+            const Text(
+              'Màu sắc',
+              style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 14,
+                  color: Color(0xFF374151)),
+            ),
+            const SizedBox(height: 8),
+            Wrap(
+              spacing: 10,
+              runSpacing: 10,
+              children: colors.map((colorName) {
+                final isSelected =
+                    selectedVariant?.color?.trim().toLowerCase() ==
+                        colorName.toLowerCase();
+                final imgUrl = colorImages[colorName];
+
+                return GestureDetector(
+                  onTap: () => _updateSelectedVariant(
+                      colorName, selectedVariant?.storage),
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 150),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                    decoration: BoxDecoration(
+                      color:
+                          isSelected ? const Color(0xFFFFF7ED) : Colors.white,
+                      border: Border.all(
+                        color: isSelected
+                            ? const Color(0xFFF26522)
+                            : const Color(0xFFE5E7EB),
+                        width: isSelected ? 1.5 : 1.0,
+                      ),
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        if (imgUrl != null && imgUrl.isNotEmpty) ...[
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(2),
+                            child: Image.network(
+                              imgUrl,
+                              width: 24,
+                              height: 24,
+                              fit: BoxFit.cover,
+                              errorBuilder: (_, __, ___) =>
+                                  const SizedBox.shrink(),
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                        ],
+                        Text(
+                          colorName,
+                          style: TextStyle(
+                            fontSize: 13,
+                            fontWeight: isSelected
+                                ? FontWeight.w600
+                                : FontWeight.normal,
+                            color: isSelected
+                                ? const Color(0xFFF26522)
+                                : const Color(0xFF1F2937),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              }).toList(),
+            ),
+            const SizedBox(height: 16),
+          ],
+
+          // ================= HÀNG 2: CHỌN DUNG LƯỢNG (ĐÃ LỌC SẠCH CHỮ) =================
+          if (storages.isNotEmpty) ...[
+            const Text(
+              'Dung lượng',
+              style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 14,
+                  color: Color(0xFF374151)),
+            ),
+            const SizedBox(height: 8),
+            Wrap(
+              spacing: 10,
+              runSpacing: 10,
+              children: storages.map((storageSize) {
+                // Logic kiểm tra active thông minh, loại bỏ ký tự rườm rà
+                final cleanSize =
+                    storageSize.toLowerCase().replaceAll('gb', 'g');
+                final isSelected = selectedVariant?.storage
+                            ?.trim()
+                            .toLowerCase() ==
+                        cleanSize ||
+                    (selectedVariant?.name.toLowerCase().contains(cleanSize) ??
+                        false);
+
+                return GestureDetector(
+                  onTap: () => _updateSelectedVariant(
+                      selectedVariant?.color, storageSize),
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 150),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    decoration: BoxDecoration(
+                      color:
+                          isSelected ? const Color(0xFFFFF7ED) : Colors.white,
+                      border: Border.all(
+                        color: isSelected
+                            ? const Color(0xFFF26522)
+                            : const Color(0xFFE5E7EB),
+                        width: isSelected ? 1.5 : 1.0,
+                      ),
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    child: Text(
+                      storageSize, // Sẽ hiển thị sạch đẹp dạng "512GB", "128GB"
+                      style: TextStyle(
+                        fontSize: 13,
+                        fontWeight:
+                            isSelected ? FontWeight.w600 : FontWeight.normal,
+                        color: isSelected
+                            ? const Color(0xFFF26522)
+                            : const Color(0xFF1F2937),
+                      ),
+                    ),
+                  ),
+                );
+              }).toList(),
+            ),
+            const SizedBox(height: 20),
+          ],
+
+          // ================= HÀNG 3: THEO DÕI SỐ LƯỢNG KHO & BỘ TĂNG GIẢM =================
+          const Divider(color: Color(0xFFF3F4F6), height: 1),
+          const SizedBox(height: 16),
+
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Số lượng khả dụng',
+                    style: TextStyle(fontSize: 13, color: Color(0xFF6B7280)),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    isAvailable
+                        ? 'Còn hàng ($currentStock sản phẩm)'
+                        : 'Hết hàng',
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: isAvailable ? Colors.green[600] : Colors.red[600],
+                    ),
+                  ),
+                ],
+              ),
+              if (isAvailable)
+                Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    border: Border.all(color: const Color(0xFFD1D5DB)),
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  child: Row(
+                    children: [
+                      GestureDetector(
+                        onTap: () {
+                          if (quantity > 1) {
+                            setState(() {
+                              quantity--;
+                            });
+                          }
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 14, vertical: 8),
+                          color: Colors.transparent,
+                          child: const Text(
+                            '-',
+                            style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: Color(0xFF4B5563)),
+                          ),
+                        ),
+                      ),
+                      Container(
+                          width: 1, height: 32, color: const Color(0xFFD1D5DB)),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        alignment: Alignment.center,
+                        child: Text(
+                          '$quantity',
+                          style: const TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                              color: Color(0xFF1F2937)),
+                        ),
+                      ),
+                      Container(
+                          width: 1, height: 32, color: const Color(0xFFD1D5DB)),
+                      GestureDetector(
+                        onTap: () {
+                          if (quantity < currentStock) {
+                            setState(() {
+                              quantity++;
+                            });
+                          } else {
+                            AppSnackBar.showError(context, 'Chỉ còn lại $currentStock sản phẩm trong kho!');
+                          }
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 14, vertical: 8),
+                          color: Colors.transparent,
+                          child: const Text(
+                            '+',
+                            style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: Color(0xFF4B5563)),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBottomAction(double displayPrice) {
+    // Lấy giá thực tế của phiên bản đang chọn, nếu chưa chọn thì lấy giá mặc định của sản phẩm
+    final finalPrice = selectedVariant?.effectivePrice ?? displayPrice;
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        boxShadow: [
+          BoxShadow(
+              color: Colors.black12, blurRadius: 10, offset: Offset(0, -5)),
+        ],
+      ),
+      child: SafeArea(
+        child: Row(
+          children: [
+            // KHU VỰC HIỂN THỊ CHI TIẾT GIÁ (GIÁ x SỐ LƯỢNG)
+            Expanded(
+              flex: 4, // Chia tỉ lệ không gian cho cột hiển thị giá
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Dòng hiển thị công thức: [Giá 1 sản phẩm] x [Số lượng]
+                  Text(
+                    '${formatCurrency(finalPrice)} đ x $quantity',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Colors.grey[600],
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  // Chữ "Tổng cộng" nhỏ đi kèm
+                  const Text(
+                    'Tổng cộng',
+                    style: TextStyle(fontSize: 11, color: Colors.grey),
+                  ),
+                  const SizedBox(height: 2),
+                  // Số tiền tổng lớn, nổi bật hiển thị kết quả cuối cùng
+                  Text(
+                    '${formatCurrency(finalPrice * quantity)} đ',
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.red,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(width: 12),
+
+            ElevatedButton.icon(
+            onPressed: () async {
+              await _addToCart();
+            },
+            icon: const Icon(Icons.add_shopping_cart),
+            label: const Text('Thêm vào giỏ hàng'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFFF26522), 
+                foregroundColor: Colors.white,
+              ),
+            )
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSection({required String title, required Widget child}) {
+    return Padding(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(title,
+              style:
+                  const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+          const SizedBox(height: 16),
+          child,
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCommitmentSection(Product current) {
+    final hay = '${current.categorySlug ?? ''} ${current.categoryName ?? ''}'
+        .toLowerCase();
+    final setupText = hay.contains('laptop') ||
+            hay.contains('pc') ||
+            hay.contains('macbook')
+        ? 'Hỗ trợ cài đặt hệ điều hành/driver cơ bản và test máy trước khi giao.'
+        : hay.contains('linh kiện') ||
+                hay.contains('cpu') ||
+                hay.contains('vga') ||
+                hay.contains('mainboard')
+            ? 'Hỗ trợ tư vấn tương thích linh kiện trước khi mua.'
+            : 'Hỗ trợ cài đặt ban đầu, kiểm tra ngoại quan và chức năng trước khi giao.';
+    final items = [
+      (Icons.verified_outlined, 'Hàng mới, chính hãng, serial rõ ràng.'),
+      (
+        Icons.shield_outlined,
+        'Bảo hành 12 tháng theo chính sách hãng/nhà phân phối.'
+      ),
+      (Icons.memory_outlined, setupText),
+      (Icons.sell_outlined, 'Giá sản phẩm đã bao gồm thuế VAT.'),
+    ];
+
+    return _buildSection(
+      title: 'Cam kết sản phẩm',
+      child: Column(
+        children: items.map((item) {
+          return Container(
+            margin: const EdgeInsets.only(bottom: 10),
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: const Color(0xFFF8FAFC),
+              border: Border.all(color: const Color(0xFFE2E8F0)),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Icon(item.$1, color: const Color(0xFFF26522), size: 22),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(item.$2, style: const TextStyle(height: 1.35)),
+                ),
+              ],
+            ),
+          );
+        }).toList(),
+      ),
+    );
+  }
+
+  Widget _buildGroupedSpecs(List<ProductSpecRow> specs) {
+    final grouped = <String, List<ProductSpecRow>>{};
+    for (final spec in specs) {
+      final group = (spec.specGroup ?? '').trim().isEmpty
+          ? 'Thông tin khác'
+          : spec.specGroup!.trim();
+      grouped.putIfAbsent(group, () => []).add(spec);
+    }
+
+    return Column(
+      children: grouped.entries.map((entry) {
+        return Container(
+          margin: const EdgeInsets.only(bottom: 10),
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            border: Border.all(color: const Color(0xFFE5E7EB)),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                flex: 2,
+                child: Text(
+                  entry.key,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF334155),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                flex: 3,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: entry.value.map((spec) {
+                    final unit = (spec.specUnit ?? '').trim();
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 6),
+                      child: RichText(
+                        text: TextSpan(
+                          style: const TextStyle(
+                            color: Color(0xFF0F172A),
+                            height: 1.35,
+                          ),
+                          children: [
+                            TextSpan(
+                              text: '${spec.specKey ?? ''}: ',
+                              style:
+                                  const TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                            TextSpan(
+                              text:
+                                  '${spec.specValue ?? ''}${unit.isEmpty ? '' : ' $unit'}',
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  }).toList(),
+                ),
+              ),
+            ],
+          ),
+        );
+      }).toList(),
+    );
+  }
+
+  Widget _buildFaqItem(ProductFaq faq) {
+    final isOpen = openFaqId == faq.id;
+    return Column(
+      children: [
+        ListTile(
+          contentPadding: EdgeInsets.zero,
+          title: Text(
+            faq.question,
+            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+          ),
+          trailing: Icon(isOpen ? Icons.remove : Icons.add, size: 20),
+          onTap: () => setState(() => openFaqId = isOpen ? null : faq.id),
+        ),
+        if (isOpen)
+          Padding(
+            padding: const EdgeInsets.only(bottom: 12),
+            child: Text(faq.answer, style: TextStyle(color: Colors.grey[700])),
+          ),
+        Divider(height: 1, color: Colors.grey[200]),
+      ],
+    );
+  }
+
+  Widget _buildRichContentAndNews(Product current) {
+    final rich = (current.richHtml ?? '').trim();
+    final hasRich = rich.isNotEmpty;
+    final hasNews = visibleNews.isNotEmpty;
+
+    if (!hasRich && !hasNews) {
+      return _buildSection(
+        title: 'Nội dung chi tiết',
+        child: Text(
+          'Chưa có nội dung chi tiết.',
+          style: TextStyle(color: Colors.grey.shade600),
+        ),
+      );
+    }
+
+    return _buildSection(
+      title: 'Nội dung chi tiết',
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (hasRich)
+            Container(
+              width: double.infinity,
+              // padding: const EdgeInsets.all(14),
+              // decoration: BoxDecoration(
+              //   color: Colors.white,
+              //   border: Border.all(color: const Color(0xFFE5E7EB)),
+              //   borderRadius: BorderRadius.circular(8),
+              // ),
+              // Thay thế widget Text cũ bằng widget Html
+              child: Html(
+                data: rich ?? 'Không có mô tả cho sản phẩm này.',
+                style: {
+                  // Cấu hình định dạng chung cho toàn bộ văn bản
+                  "body": Style(
+                    margin: Margins.zero,
+                    padding: HtmlPaddings.zero,
+                    fontSize: FontSize(14),
+                    lineHeight: const LineHeight(1.55),
+                    color: Colors.black87,
+                  ),
+                  // Cấu hình riêng cho bảng biểu (table) nếu nội dung từ admin có chứa bảng
+                  "table": Style(
+                    backgroundColor: const Color(0xFFF9FAFB),
+                    border: Border.all(color: const Color(0xFFE5E7EB)),
+                  ),
+                  "th": Style(
+                    padding: HtmlPaddings.all(6),
+                    backgroundColor: const Color(0xFFF3F4F6),
+                  ),
+                  "td": Style(
+                    padding: HtmlPaddings.all(6),
+                    border: Border.all(color: const Color(0xFFE5E7EB)),
+                  ),
+                },
+              ),
+            ),
+          if (hasNews) ...[
+            const SizedBox(height: 18),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: const [
+                Text(
+                  'Tin tức sản phẩm',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
+                Text(
+                  'Xem tất cả',
+                  style: TextStyle(
+                      color: Color(0xFFF26522), fontWeight: FontWeight.w600),
+                ),
+              ],
+            ),
+            const SizedBox(height: 10),
+            ...visibleNews.take(7).map(_buildNewsMiniCard),
+          ],
+        ],
+      ),
+    );
+  }
+
+// 1. ĐỊNH VỊ HÀM NÀY NẰM ĐỘC LẬP TRONG CLASS _ProductDetailScreenState
+  String _resolveImageUrl(String? url) {
+    if (url == null || url.isEmpty) return '';
+    if (url.startsWith('http')) return url;
+    // Đồng bộ cấu hình URL IP giống hệt bên ProductsService của bạn
+    const String baseUrl = 'http://192.168.24.18:8000/api';
+    final cleanUrl = url.startsWith('/') ? url.substring(1) : url;
+    return '$baseUrl/$cleanUrl';
+  }
+
+  // 2. HÀM MINI CARD TIN TỨC GỌI ĐẾN PHƯƠNG THỨC TRÊN
+  Widget _buildNewsMiniCard(ProductNews item) {
+    return InkWell(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ProductNewDetailScreen(slug: item.slug),
+          ),
+        );
+      },
+      borderRadius: BorderRadius.circular(8),
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 10),
+        padding: const EdgeInsets.all(10),
+        decoration: BoxDecoration(
+          color: const Color(0xFFF8FAFC),
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: const Color(0xFFE2E8F0), width: 0.5),
+        ),
+        child: Row(
+          children: [
+            ClipRRect(
+              borderRadius: BorderRadius.circular(6),
+              child: Container(
+                width: 58,
+                height: 58,
+                color: const Color(0xFFE2E8F0),
+                child: item.thumbnailUrl == null || item.thumbnailUrl!.isEmpty
+                    ? const Icon(Icons.article_outlined,
+                        color: Color(0xFF94A3B8))
+                    : Image.network(
+                        _resolveImageUrl(
+                            item.thumbnailUrl), // Gọi hàm sạch lỗi hoàn toàn
+                        fit: BoxFit.cover,
+                        errorBuilder: (_, __, ___) => const Icon(
+                          Icons.article_outlined,
+                          color: Color(0xFF94A3B8),
+                        ),
+                      ),
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                item.title,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                  fontSize: 13.5,
+                  color: Color(0xFF1F2937),
+                  height: 1.3,
+                ),
+              ),
+            ),
+            const SizedBox(width: 4),
+            const Icon(Icons.chevron_right, color: Color(0xFF94A3B8), size: 18),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showWriteReviewSheet() {
+    final current = product;
+    if (current == null) return;
+
+    // 1. TRẠNG THÁI LƯU TRỮ CHỌN SAO (Mặc định chọn 5 sao)
+    int localRating = 5; // Đánh giá chung
+    int localPerformance = 5; // Hiệu năng
+    int localBattery = 5; // Thời lượng pin
+    int localCamera = 5; // Chất lượng camera
+
+    final TextEditingController localReviewController = TextEditingController();
+    bool localIsSubmitting = false;
+
+    // Danh sách nhãn cho phần Đánh giá chung
+    final List<String> generalLabels = [
+      'Rất tệ',
+      'Tệ',
+      'Bình thường',
+      'Tốt',
+      'Tuyệt vời'
+    ];
+
+    // 2. LOGIC ĐỔI TEXT ĐỘNG CHO TỪNG TIÊU CHÍ TRẢI NGHIỆM (CHUẨN THEO WEB)
+    String _getPerformanceLabel(int score) {
+      if (score >= 5) return 'Siêu mạnh mẽ';
+      if (score == 4) return 'Mượt mà';
+      if (score == 3) return 'Ổn định';
+      if (score == 2) return 'Hơi lag';
+      return 'Rất chậm';
+    }
+
+    String _getBatteryLabel(int score) {
+      if (score >= 5) return 'Cực khủng';
+      if (score == 4) return 'Trâu bâu';
+      if (score == 3) return 'Đủ dùng';
+      if (score == 2) return 'Yếu';
+      return 'Hao pin nhanh';
+    }
+
+    String _getCameraLabel(int score) {
+      if (score >= 5) return 'Xất sắc';
+      if (score == 4) return 'Sắc nét';
+      if (score == 3) return 'Cơ bản';
+      if (score == 2) return 'Góc mờ';
+      return 'Rất tệ';
+    }
+
+    Widget _buildExperienceRow(String label, int currentValue,
+        String dynamicLabel, Function(int) onStarTap) {
+      return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8),
+        child: Row(
+          crossAxisAlignment:
+              CrossAxisAlignment.center, // SỬA THÀNH ĐOẠN NÀY ĐỂ HẾT LỖI
+          children: [
+            // 1. Tên tiêu chí bên trái (Cố định độ rộng vừa phải)
+            SizedBox(
+              width: 105,
+              child: Text(
+                label,
+                style: const TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                    color: Color(0xFF4B5563)),
+              ),
+            ),
+
+            // 2. Bọc khối sao vào Expanded để tự động tính toán không gian và chống tràn viền
+            Expanded(
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: List.generate(5, (index) {
+                      final starValue = index + 1;
+                      return GestureDetector(
+                        onTap: () => onStarTap(starValue),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 1.5),
+                          child: Icon(
+                            Icons.star,
+                            size: 19,
+                            color: starValue <= currentValue
+                                ? const Color(0xFFF26522)
+                                : const Color(0xFFE5E7EB),
+                          ),
+                        ),
+                      );
+                    }),
+                  ),
+                ),
+              ),
+            ),
+
+            const SizedBox(width: 4),
+
+            // 3. Chữ trạng thái động bên phải ngoài cùng (Ví dụ: "Chụp đẹp, chuyên nghiệp")
+            Text(
+              dynamicLabel,
+              style: const TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF1F2937)),
+            ),
+          ],
+        ),
+      );
+    }
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+          builder: (BuildContext context, StateSetter setModalState) {
+            return AnimatedPadding(
+              padding: MediaQuery.of(context).viewInsets,
+              duration: const Duration(milliseconds: 100),
+              child: Container(
+                width: double.infinity,
+                constraints: BoxConstraints(
+                  maxHeight: MediaQuery.of(context).size.height * 0.85,
+                ),
+                decoration: const BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(16),
+                    topRight: Radius.circular(16),
+                  ),
+                ),
+                padding: const EdgeInsets.all(20),
+                child: SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Thanh gờ kéo trên đầu sheet
+                      Center(
+                        child: Container(
+                          width: 40,
+                          height: 4,
+                          margin: const EdgeInsets.only(bottom: 16),
+                          decoration: BoxDecoration(
+                            color: Colors.grey[300],
+                            borderRadius: BorderRadius.circular(2),
+                          ),
+                        ),
+                      ),
+
+                      // ================= KHỐI 1: ĐÁNH GIÁ CHUNG =================
+                      const Text(
+                        'Đánh giá chung',
+                        style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFF1F2937)),
+                      ),
+                      const SizedBox(height: 16),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: List.generate(5, (index) {
+                          final starValue = index + 1;
+                          return GestureDetector(
+                            onTap: () =>
+                                setModalState(() => localRating = starValue),
+                            child: Column(
+                              children: [
+                                Icon(
+                                  Icons.star,
+                                  size: 28,
+                                  color: starValue <= localRating
+                                      ? const Color(0xFFF26522)
+                                      : const Color(0xFFE5E7EB),
+                                ),
+                                const SizedBox(height: 8),
+                                Text(
+                                  generalLabels[index],
+                                  style: TextStyle(
+                                    fontSize: 11,
+                                    color: starValue == localRating
+                                        ? const Color(0xFFF26522)
+                                        : const Color(0xFF6B7280),
+                                    fontWeight: starValue == localRating
+                                        ? FontWeight.bold
+                                        : FontWeight.normal,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        }),
+                      ),
+                      const SizedBox(height: 16),
+                      const Divider(color: Color(0xFFF3F4F6), thickness: 1),
+
+                      // ================= KHỐI 2: THEO TRẢI NGHIỆM =================
+                      const SizedBox(height: 8),
+                      const Text(
+                        'Theo trải nghiệm',
+                        style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFF1F2937)),
+                      ),
+                      const SizedBox(height: 12),
+                      _buildExperienceRow(
+                          'Hiệu năng',
+                          localPerformance,
+                          _getPerformanceLabel(localPerformance),
+                          (val) => setModalState(() => localPerformance = val)),
+                      _buildExperienceRow(
+                          'Thời lượng pin',
+                          localBattery,
+                          _getBatteryLabel(localBattery),
+                          (val) => setModalState(() => localBattery = val)),
+                      _buildExperienceRow(
+                          'Chất lượng camera',
+                          localCamera,
+                          _getCameraLabel(localCamera),
+                          (val) => setModalState(() => localCamera = val)),
+                      const SizedBox(height: 16),
+                      const Divider(color: Color(0xFFF3F4F6), thickness: 1),
+
+                      // ================= KHỐI 3: NHẬP NỘI DUNG ĐÁNH GIÁ =================
+                      const SizedBox(height: 8),
+                      TextField(
+                        controller: localReviewController,
+                        maxLines: 5,
+                        style: const TextStyle(
+                            fontSize: 13, color: Color(0xFF1F2937)),
+                        decoration: InputDecoration(
+                          hintText:
+                              'Xin mời chia sẻ một số cảm nhận về sản phẩm (nhập tối thiểu 15 kí tự)',
+                          hintStyle:
+                              TextStyle(fontSize: 13, color: Colors.grey[400]),
+                          filled: true,
+                          fillColor: Colors.white,
+                          contentPadding: const EdgeInsets.all(14),
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: const BorderSide(
+                                color: Color(0xFFD1D5DB), width: 1.0),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: const BorderSide(
+                                color: Color(0xFFF26522), width: 1.5),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+
+                      // NÚT BẤM GỬI ĐÁNH GIÁ
+                      SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton(
+                          onPressed: localIsSubmitting
+                              ? null
+                              : () async {
+                                  final commentText =
+                                      localReviewController.text.trim();
+                                  if (commentText.length < 15) {
+                                    AppSnackBar.showError(context, 'Nội dung đánh giá phải nhập tối thiểu 15 kí tự.');
+                                    return;
+                                  }
+
+                                  final token = await AuthService.getToken();
+                                  if (!context.mounted) return;
+                                  if (token == null || token.isEmpty) {
+                                    AppSnackBar.showError(context, 'Vui lòng đăng nhập để viết đánh giá.');
+                                    return;
+                                  }
+
+                                  setModalState(() {
+                                    localIsSubmitting = true;
+                                  });
+
+                                  // Giả lập đẩy dữ liệu Object gồm 4 tham số điểm số lên Backend của bạn
+                                  try {
+                                    await ReviewsService.submitProductReview(
+                                      productId: current.id,
+                                      token: token,
+                                      rating: localRating,
+                                      comment: commentText,
+                                      expPerformance: localPerformance,
+                                      expBattery: localBattery,
+                                      expCamera: localCamera,
+                                    );
+                                  } catch (e) {
+                                    setModalState(() {
+                                      localIsSubmitting = false;
+                                    });
+                                    if (context.mounted) {
+                                      AppSnackBar.showError(context, e.toString().replaceFirst('Exception: ', ''));
+                                    }
+                                    return;
+                                  }
+
+                                  if (context.mounted) {
+                                    Navigator.pop(context);
+                                    AppSnackBar.showSuccess(context, 'Gửi đánh giá thành công! Đang chờ duyệt.');
+                                  }
+                                },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFFF26522),
+                            disabledBackgroundColor: Colors.grey[300],
+                            padding: const EdgeInsets.symmetric(vertical: 14),
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8)),
+                            elevation: 0,
+                          ),
+                          child: localIsSubmitting
+                              ? const SizedBox(
+                                  width: 18,
+                                  height: 18,
+                                  child: CircularProgressIndicator(
+                                      strokeWidth: 2, color: Colors.white),
+                                )
+                              : const Text(
+                                  'GỬI ĐÁNH GIÁ',
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 14),
+                                ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  Widget _buildVisualReviews(
+      Map<String, dynamic> stats, List<ProductReview> filtered) {
+    final avg = stats['avg'] as double;
+    final total = stats['total'] as int;
+    final counts = stats['counts'] as Map<int, int>;
+    final exp = stats['exp'] as Map<String, dynamic>;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          padding: const EdgeInsets.all(14),
+          decoration: BoxDecoration(
+            color: const Color(0xFFFFFBEB),
+            border: Border.all(color: const Color(0xFFFDE68A)),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Column(
+            children: [
+              Row(
+                children: [
+                  Expanded(
+                    flex: 2,
+                    child: Column(
+                      children: [
+                        Text(
+                          avg.toStringAsFixed(1),
+                          style: const TextStyle(
+                            fontSize: 40,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const Text('/ 5', style: TextStyle(color: Colors.grey)),
+                        const SizedBox(height: 4),
+                        _buildStars(avg, size: 17),
+                        const SizedBox(height: 8),
+                        Text('$total lượt đánh giá',
+                            style: const TextStyle(fontSize: 12)),
+                        const SizedBox(height: 10),
+                        // TÌM ĐOẠN NÚT BẤM CŨ TRONG _buildVisualReviews VÀ THAY BẰNG ĐOẠN NÀY:
+                        OutlinedButton(
+                          onPressed:
+                              _showWriteReviewSheet, // KÍCH HOẠT HÀM BẬT BOTTOM SHEET NỔI TỪ DƯỚI LÊN
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFFF26522),
+                            side: const BorderSide(
+                                color: Color(0xFFF26522), width: 1.5),
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 8, vertical: 8),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(
+                                  4), // Định dạng khối vuông bo góc nhẹ đồng bộ Web
+                            ),
+                          ),
+                          child: const FittedBox(
+                            fit: BoxFit.scaleDown,
+                            child: Text(
+                              'Viết đánh giá',
+                              style: TextStyle(
+                                  fontSize: 12, fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: 18),
+                  Expanded(
+                    flex: 3,
+                    child: Column(
+                      children: [5, 4, 3, 2, 1].map((star) {
+                        final count = counts[star] ?? 0;
+                        final percent = total > 0 ? count / total : 0.0;
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 6),
+                          child: Row(
+                            children: [
+                              Text('$star',
+                                  style: const TextStyle(fontSize: 11)),
+                              const SizedBox(width: 3),
+                              const Icon(Icons.star,
+                                  color: Colors.orange, size: 12),
+                              const SizedBox(width: 5),
+                              Expanded(
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(2),
+                                  child: LinearProgressIndicator(
+                                    value: percent,
+                                    minHeight: 7,
+                                    backgroundColor: Colors.white,
+                                    valueColor: const AlwaysStoppedAnimation(
+                                        Colors.orange),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 6),
+                              Text('$count',
+                                  style: const TextStyle(fontSize: 11)),
+                            ],
+                          ),
+                        );
+                      }).toList(),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 14),
+              _buildExperienceStats(exp),
+            ],
+          ),
+        ),
+        const SizedBox(height: 18),
+        const Text(
+          'Lọc đánh giá theo',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
+        const SizedBox(height: 10),
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: [
+            _buildReviewFilterChip('all', 'Tất cả'),
+            _buildReviewFilterChip('with_images', 'Có hình ảnh'),
+            _buildReviewFilterChip('verified', 'Đã mua hàng'),
+            _buildReviewFilterChip('star_5', '5 sao'),
+            _buildReviewFilterChip('star_4', '4 sao'),
+            _buildReviewFilterChip('star_3', '3 sao'),
+            _buildReviewFilterChip('star_2', '2 sao'),
+            _buildReviewFilterChip('star_1', '1 sao'),
+          ],
+        ),
+        const SizedBox(height: 20),
+        if (filtered.isEmpty)
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(18),
+            decoration: BoxDecoration(
+              color: const Color(0xFFF8FAFC),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Text('Chưa có đánh giá nào.',
+                style: TextStyle(color: Colors.grey.shade600)),
+          )
+        else
+          ...filtered.take(5).map(_buildReviewItem),
+      ],
+    );
+  }
+
+  Widget _buildExperienceStats(Map<String, dynamic> exp) {
+    return Column(
+      children: [
+        _buildExperienceStatRow('Hiệu năng', exp['performance']),
+        _buildExperienceStatRow('Thời lượng pin', exp['battery']),
+        _buildExperienceStatRow('Chất lượng camera', exp['camera']),
+      ],
+    );
+  }
+
+  Widget _buildExperienceStatRow(String label, dynamic raw) {
+    final data = raw as Map<String, dynamic>;
+    final avg = data['avg'] as double;
+    final count = data['count'] as int;
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: Row(
+        children: [
+          SizedBox(
+            width: 108,
+            child: Text(label, style: const TextStyle(fontSize: 12)),
+          ),
+          Expanded(child: _buildStars(avg, size: 14)),
+          Text(
+            '${count == 0 ? 0 : avg.toStringAsFixed(0)}/5',
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+          ),
+          Text(' ($count)',
+              style: const TextStyle(fontSize: 11, color: Colors.grey)),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildReviewFilterChip(String value, String label) {
+    final selected = reviewFilter == value;
+    return ChoiceChip(
+      label: Text(label),
+      selected: selected,
+      onSelected: (_) => setState(() => reviewFilter = value),
+      selectedColor: const Color(0xFFFFEDD5),
+      side: BorderSide(
+        color: selected ? const Color(0xFFF26522) : const Color(0xFFE2E8F0),
+      ),
+      labelStyle: TextStyle(
+        color: selected ? const Color(0xFFF26522) : const Color(0xFF334155),
+        fontWeight: FontWeight.w600,
+      ),
+    );
+  }
+
+  Widget _buildStars(num value, {double size = 16}) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: List.generate(
+        5,
+        (i) => Icon(
+          Icons.star,
+          color: i < value.round() ? Colors.orange : Colors.grey[300],
+          size: size,
+        ),
+      ),
+    );
+  }
+
+  String _avatarInitial(String name) {
+    final trimmed = name.trim();
+    if (trimmed.isEmpty) return 'U';
+    return String.fromCharCode(trimmed.runes.first).toUpperCase();
+  }
+
+  Widget _buildReviewPill(String text, {bool verified = false}) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: verified ? const Color(0xFFDCFCE7) : const Color(0xFFEFF6FF),
+        borderRadius: BorderRadius.circular(999),
+      ),
+      child: Text(
+        text,
+        style: TextStyle(
+          color: verified ? const Color(0xFF15803D) : const Color(0xFF1D4ED8),
+          fontSize: 11,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildReviewItem(ProductReview review) {
+    final userName = review.userName ?? 'Người dùng';
+    return Container(
+      margin: const EdgeInsets.only(bottom: 14),
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        border: Border.all(color: const Color(0xFFE5E7EB)),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Column(
+            children: [
+              CircleAvatar(
+                radius: 22,
+                backgroundColor: const Color(0xFFF26522),
+                backgroundImage: review.userAvatarUrl == null
+                    ? null
+                    : NetworkImage(review.userAvatarUrl!),
+                child: review.userAvatarUrl == null
+                    ? Text(
+                        _avatarInitial(userName),
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      )
+                    : null,
+              ),
+              const SizedBox(height: 6),
+              SizedBox(
+                width: 58,
+                child: Text(
+                  userName,
+                  textAlign: TextAlign.center,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                      fontSize: 11, fontWeight: FontWeight.w600),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    _buildStars(review.rating, size: 15),
+                    const SizedBox(width: 8),
+                    Text(
+                      _ratingLabel(review.rating),
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFFF26522),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                Wrap(
+                  spacing: 6,
+                  runSpacing: 6,
+                  children: [
+                    if (review.expPerformance != null)
+                      _buildReviewPill(
+                        'Hiệu năng ${review.expPerformance! >= 5 ? 'Siêu mạnh mẽ' : _ratingLabel(review.expPerformance!)}',
+                      ),
+                    if (review.expBattery != null)
+                      _buildReviewPill(
+                        'Thời lượng pin ${review.expBattery! >= 5 ? 'Cực khủng' : _ratingLabel(review.expBattery!)}',
+                      ),
+                    if (review.expCamera != null)
+                      _buildReviewPill(
+                        'Camera ${review.expCamera! >= 5 ? 'Chụp đẹp' : _ratingLabel(review.expCamera!)}',
+                      ),
+                    if (review.orderId != null)
+                      _buildReviewPill('Đã mua hàng', verified: true),
+                  ],
+                ),
+                if ((review.comment ?? '').isNotEmpty) ...[
+                  const SizedBox(height: 10),
+                  Text(review.comment!, style: const TextStyle(height: 1.4)),
+                ],
+                if (review.createdAt.isNotEmpty) ...[
+                  const SizedBox(height: 8),
+                  Text(
+                    'Đánh giá đã đăng vào ${_timeAgoVi(review.createdAt)}',
+                    style: const TextStyle(color: Colors.grey, fontSize: 12),
+                  ),
+                ],
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildQaSection(Product current) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          padding: const EdgeInsets.all(14),
+          decoration: BoxDecoration(
+            color: const Color(0xFFF8FAFC),
+            border: Border.all(color: const Color(0xFFE2E8F0)),
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // KHỐI TIÊU ĐỀ & MASCOT CHĂM SÓC KHÁCH HÀNG
+              Row(
+                children: [
+                  Image.asset(
+                    'assets/images/mascot.png',
+                    width: 54,
+                    height: 54,
+                    errorBuilder: (_, __, ___) => const CircleAvatar(
+                      backgroundColor: Color(0xFFFFEDD5),
+                      child:
+                          Icon(Icons.support_agent, color: Color(0xFFF26522)),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  const Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Hãy đặt câu hỏi cho chúng tôi',
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 16),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          'Đội ngũ E-Tech Market sẽ phản hồi trong thời gian sớm nhất.',
+                          style:
+                              TextStyle(color: Color(0xFF64748B), fontSize: 12),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 14),
+
+              // KHỐI CHECK TRẠNG THÁI ĐĂNG NHẬP / NHẬP TÊN GUEST
+              FutureBuilder<String?>(
+                future: AuthService.getToken(),
+                builder: (context, snapshot) {
+                  final isLoggedIn = (snapshot.data ?? '').isNotEmpty;
+                  if (isLoggedIn) {
+                    return const Padding(
+                      padding: EdgeInsets.only(bottom: 10),
+                      child: Text(
+                        'Bạn đang đăng nhập, câu hỏi sẽ hiển thị kèm tên tài khoản.',
+                        style:
+                            TextStyle(color: Color(0xFF16A34A), fontSize: 12),
+                      ),
+                    );
+                  }
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 10),
+                    child: TextField(
+                      controller: _qaGuestNameController,
+                      style: const TextStyle(fontSize: 13),
+                      decoration: InputDecoration(
+                        labelText: 'Tên hiển thị',
+                        labelStyle: const TextStyle(fontSize: 13),
+                        filled: true,
+                        fillColor: Colors.white,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide:
+                              const BorderSide(color: Color(0xFFCBD5E1)),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide:
+                              const BorderSide(color: Color(0xFFE2E8F0)),
+                        ),
+                        isDense: true,
+                      ),
+                    ),
+                  );
+                },
+              ),
+
+              // ================= KHỐI SỬA ĐỔI: Ô NHẬP LIỆU LỒNG NÚT GỬI (GẮN STACK) =================
+              Stack(
+                alignment: Alignment
+                    .bottomRight, // Định vị vị trí nút nằm ở góc dưới cùng bên phải
+                children: [
+                  TextField(
+                    controller: _qaQuestionController,
+                    minLines:
+                        4, // Tăng độ cao ô nhập lên để tạo không gian trống phía dưới cho nút
+                    maxLines: 6,
+                    maxLength: 2000,
+                    style:
+                        const TextStyle(fontSize: 13, color: Color(0xFF1F2937)),
+                    decoration: InputDecoration(
+                      hintText: 'Xin mời nhập câu hỏi của bạn tại đây...',
+                      hintStyle:
+                          TextStyle(fontSize: 13, color: Colors.grey[400]),
+                      filled: true,
+                      fillColor: Colors.white,
+                      counterText:
+                          '', // Ẩn bộ đếm mặc định của chân viền để làm trống góc phải
+                      contentPadding: const EdgeInsets.only(
+                        left: 14,
+                        right: 14,
+                        top: 14,
+                        bottom:
+                            54, // Tạo khoảng trống lề dưới lớn (padding-bottom) để chữ không bị nút đè lên
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: const BorderSide(
+                            color: Color(0xFFCBD5E1), width: 1.0),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: const BorderSide(
+                            color: Color(0xFFF26522), width: 1.2),
+                      ),
+                    ),
+                  ),
+
+                  // ĐỊNH VỊ NÚT GỬI NẰM LỌT VÀO TRONG KHU VỰC TEXTFIELD
+                  Padding(
+                    padding: const EdgeInsets.all(
+                        10), // Khoảng cách lề so với góc viền Textfield
+                    child: ElevatedButton(
+                      onPressed: qaSending ? null : _submitQuestion,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFFF26522),
+                        foregroundColor: Colors.white,
+                        elevation: 0,
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 10),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(
+                              6), // Bo góc vuông nhẹ đồng bộ CSS Web
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            qaSending ? 'ĐANG GỬI...' : 'GỬI CÂU HỎI',
+                            style: const TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                                letterSpacing: 0.5),
+                          ),
+                          const SizedBox(width: 6),
+                          if (qaSending)
+                            const SizedBox(
+                              width: 12,
+                              height: 12,
+                              child: CircularProgressIndicator(
+                                  strokeWidth: 2, color: Colors.white),
+                            )
+                          else
+                            const Icon(Icons.send, size: 13),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+
+              // THÔNG BÁO LỖI HOẶC FLASH THÀNH CÔNG (NẾU CÓ)
+              if (qaError != null) ...[
+                const SizedBox(height: 8),
+                Text(qaError!,
+                    style: const TextStyle(color: Colors.red, fontSize: 12)),
+              ],
+              if (qaFlash != null && qaError == null) ...[
+                const SizedBox(height: 8),
+                Text(qaFlash!,
+                    style: const TextStyle(
+                        color: Color(0xFF16A34A), fontSize: 12)),
+              ],
+            ],
+          ),
+        ),
+        const SizedBox(height: 18),
+
+        // DANH SÁCH CÁC CÂU HỎI ĐÃ ĐƯỢC ĐĂNG
+        if (shopQnas.isEmpty)
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: const Color(0xFFF8FAFC),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: const Text(
+              'Chưa có câu hỏi nào. Hãy đặt câu hỏi đầu tiên ở ô phía trên.',
+              style: TextStyle(color: Color(0xFF64748B), fontSize: 13),
+            ),
+          )
+        else
+          ...shopQnas.map(_buildQnaThreadItem),
+      ],
+    );
+  }
+
+  Widget _buildQnaThreadItem(ProductShopQna row) {
+    final hasAnswer = (row.answer ?? '').trim().isNotEmpty;
+    return Container(
+      margin: const EdgeInsets.only(bottom: 14),
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        border: Border.all(color: const Color(0xFFE5E7EB)),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              CircleAvatar(
+                radius: 20,
+                backgroundColor: const Color(0xFFE0F2FE),
+                backgroundImage: row.userAvatarUrl == null
+                    ? null
+                    : NetworkImage(row.userAvatarUrl!),
+                child: row.userAvatarUrl == null
+                    ? Text(
+                        _avatarInitial(row.askerDisplayName),
+                        style: const TextStyle(
+                          color: Color(0xFF0369A1),
+                          fontWeight: FontWeight.bold,
+                        ),
+                      )
+                    : null,
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            row.askerDisplayName,
+                            style: const TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                        if ((row.createdAt ?? '').isNotEmpty)
+                          Text(
+                            _timeAgoVi(row.createdAt!),
+                            style: const TextStyle(
+                                color: Colors.grey, fontSize: 12),
+                          ),
+                      ],
+                    ),
+                    const SizedBox(height: 6),
+                    Text(row.question, style: const TextStyle(height: 1.4)),
+                    const SizedBox(height: 8),
+                    if (!hasAnswer)
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFFFF7ED),
+                          borderRadius: BorderRadius.circular(999),
+                        ),
+                        child: const Text(
+                          'Đang chờ cửa hàng',
+                          style: TextStyle(
+                            color: Color(0xFFC2410C),
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          if (hasAnswer) ...[
+            const SizedBox(height: 14),
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: const Color(0xFFF0FDF4),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const CircleAvatar(
+                    radius: 18,
+                    backgroundColor: Color(0xFF16A34A),
+                    child: Text(
+                      'QT',
+                      style: TextStyle(
+                          color: Colors.white, fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            const Text(
+                              'Quản trị viên',
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                            const SizedBox(width: 6),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 6, vertical: 2),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFFDCFCE7),
+                                borderRadius: BorderRadius.circular(999),
+                              ),
+                              child: const Text(
+                                'QTV',
+                                style: TextStyle(
+                                  color: Color(0xFF15803D),
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 6),
+                        Text(row.answer!, style: const TextStyle(height: 1.45)),
+                        if ((row.answeredAt ?? '').isNotEmpty) ...[
+                          const SizedBox(height: 6),
+                          Text(
+                            _timeAgoVi(row.answeredAt!),
+                            style: const TextStyle(
+                                color: Colors.grey, fontSize: 12),
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _buildRelatedCard(Product p) {
+    final bool isLiked = _wishlistIds.contains(p.id);
+
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => ProductDetailScreen(slug: p.slug)),
+        );
+      },
+      child: Container(
+        width: 160,
+        margin: const EdgeInsets.only(right: 12),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: Colors.grey.shade200),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Stack(
+              children: [
+                ClipRRect(
+                  borderRadius:
+                      const BorderRadius.vertical(top: Radius.circular(12)),
+                  child: SizedBox(
+                    height: 160,
+                    width: 160,
+                    child: p.mainImageUrl.isEmpty
+                        ? Icon(Icons.computer,
+                            size: 50, color: Colors.grey.shade300)
+                        : Image.network(
+                            NetworkUtils.fixDeviceUrl(p.mainImageUrl),
+                            fit: BoxFit.cover,
+                          ),
+                  ),
+                ),
+                Positioned(
+                  top: 8,
+                  right: 8,
+                  child: InkWell(
+                    onTap: () async {
+                      await _toggleWishlist(p.id);
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.all(6),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.9),
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(
+                        isLiked ? Icons.favorite : Icons.favorite_border,
+                        size: 18,
+                        color: isLiked ? Colors.red : Colors.grey.shade700,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            Padding(
+              padding: const EdgeInsets.all(10),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    p.name,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF111827),
+                      height: 1.3,
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    p.shortDescription ??
+                        p.description ??
+                        'Sản phẩm công nghệ cao cấp',
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      fontSize: 11,
+                      color: Color(0xFF6B7280),
+                      height: 1.4,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCompactTimeUnit(int value) {
+    return Container(
+      padding: const EdgeInsets.all(4),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(4),
+      ),
+      child: Text(
+        value.toString().padLeft(2, '0'),
+        style: const TextStyle(
+          color: Colors.red,
+          fontWeight: FontWeight.bold,
+          fontSize: 12,
+        ),
       ),
     );
   }

@@ -108,21 +108,21 @@ class CategorySection extends StatelessWidget {
     return Column(
       children: [
         if (cards.isNotEmpty) cards[0],
-        if (cards.length > 1) const SizedBox(height: 10),
+        if (cards.length > 1) const SizedBox(height: 6),
         if (cards.length > 1)
           Row(
             children: [
               Expanded(child: cards[1]),
-              if (cards.length > 2) const SizedBox(width: 10),
+              if (cards.length > 2) const SizedBox(width: 6),
               if (cards.length > 2) Expanded(child: cards[2]),
             ],
           ),
-        if (cards.length > 3) const SizedBox(height: 10),
+        if (cards.length > 3) const SizedBox(height: 6),
         if (cards.length > 3)
           Row(
             children: [
               Expanded(child: cards[3]),
-              if (cards.length > 4) const SizedBox(width: 10),
+              if (cards.length > 4) const SizedBox(width: 6),
               if (cards.length > 4) Expanded(flex: 2, child: cards[4]),
             ],
           ),
@@ -134,19 +134,19 @@ class CategorySection extends StatelessWidget {
     return Column(
       children: [
         const _CategorySkeleton(height: 190),
-        const SizedBox(height: 10),
+        const SizedBox(height: 6),
         Row(
           children: const [
             Expanded(child: _CategorySkeleton(height: 150)),
-            SizedBox(width: 10),
+            SizedBox(width: 6),
             Expanded(child: _CategorySkeleton(height: 150)),
           ],
         ),
-        const SizedBox(height: 10),
+        const SizedBox(height: 6),
         Row(
           children: const [
             Expanded(child: _CategorySkeleton(height: 165)),
-            SizedBox(width: 10),
+            SizedBox(width: 6),
             Expanded(flex: 2, child: _CategorySkeleton(height: 165)),
           ],
         ),

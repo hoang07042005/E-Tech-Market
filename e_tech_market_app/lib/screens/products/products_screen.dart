@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 
 import '../../services/products_service.dart';
 import '../../services/wishlist_service.dart';
+import '../../services/cart_service.dart';
 import '../../utils/network_utils.dart';
+import '../../utils/app_snackbar.dart';
 import 'product_detail_screen.dart';
 
 class ProductsScreen extends StatefulWidget {
@@ -931,7 +933,16 @@ class _ProductsScreenState extends State<ProductsScreen> {
                   width: double.infinity,
                   height: 40,
                   child: ElevatedButton(
-                    onPressed: () {},
+                    onPressed: () async {
+                      try {
+                        await CartService.addToCart(productId, 1);
+                        if (!mounted) return;
+                        AppSnackBar.showSuccess(context, 'Đã thêm sản phẩm vào giỏ hàng!');
+                      } catch (e) {
+                        if (!mounted) return;
+                        AppSnackBar.showError(context, 'Lỗi: ${e.toString().replaceFirst('Exception: ', '')}');
+                      }
+                    },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFFF26522),
                       foregroundColor: Colors.white,

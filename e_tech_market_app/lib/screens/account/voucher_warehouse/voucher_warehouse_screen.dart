@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../../../utils/network_utils.dart';
+import '../../../utils/app_snackbar.dart';
 import '../../../services/voucher_service.dart';
 
 class VoucherWarehouseScreen extends StatefulWidget {
@@ -121,7 +122,7 @@ class _VoucherWarehouseScreenState extends State<VoucherWarehouseScreen> {
                                             onPressed: () async {
                                               final code = c['code']?.toString() ?? '';
                                               await Clipboard.setData(ClipboardData(text: code));
-                                              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Đã sao chép mã')));
+                                              AppSnackBar.showSuccess(context, 'Đã sao chép mã $code vào bộ nhớ tạm.');
                                             },
                                             child: const Text('Sao chép mã'),
                                           ),

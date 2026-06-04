@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../utils/network_utils.dart';
+import '../../utils/app_snackbar.dart';
 
 class VideoSection extends StatelessWidget {
   final List<dynamic> videos;
@@ -85,11 +86,7 @@ class VideoSection extends StatelessWidget {
                 return _VideoCard(
                   video: video,
                   onTap: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text('Mở video: ${video['title'] ?? 'Video'}'),
-                      ),
-                    );
+                    AppSnackBar.showInfo(context, 'Mở video: ${video['title'] ?? 'Video'}');
                   },
                 );
               },

@@ -13,6 +13,7 @@ class ProductSection extends StatelessWidget {
 
   const ProductSection({
     super.key,
+    
     required this.products,
     required this.wishedProductIds,
     required this.isLoading,
@@ -202,18 +203,6 @@ class _ProductCard extends StatelessWidget {
                                 : const Color(0xFF94A3B8),
                             onTap: onToggleWishlist,
                           ),
-                          const SizedBox(width: 6),
-                          _CircleActionButton(
-                            icon: Icons.compare_arrows_outlined,
-                            color: const Color(0xFF94A3B8),
-                            onTap: () {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                    content: Text(
-                                        'Tính năng so sánh sẽ được cập nhật sau.')),
-                              );
-                            },
-                          ),
                         ],
                       ),
                     ),
@@ -315,11 +304,12 @@ class _ProductCard extends StatelessWidget {
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
+
                       SizedBox(
                         width: double.infinity,
                         height: 30,
                         child: ElevatedButton(
-                          onPressed: onAddToCart,
+                          onPressed: onAddToCart, 
                           style: ElevatedButton.styleFrom(
                             backgroundColor: _brandColor,
                             foregroundColor: Colors.white,

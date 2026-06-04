@@ -130,7 +130,7 @@ class _CouponSectionState extends State<CouponSection> {
                   ],
                 ),
                 child: Text(
-                  '${widget.coupons.length} mã',
+                  '${widget.coupons.length}',
                   style: const TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.w700,

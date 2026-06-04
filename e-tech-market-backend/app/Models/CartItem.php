@@ -8,7 +8,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class CartItem extends Model
 {
     public $timestamps = false; // table only has added_at
-
     protected $fillable = [
         'cart_id',
         'product_id',

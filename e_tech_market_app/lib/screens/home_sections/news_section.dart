@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../utils/network_utils.dart';
+import '../../utils/app_snackbar.dart';
 
 class NewsSection extends StatelessWidget {
   final List<dynamic> articles;
@@ -80,12 +81,7 @@ class NewsSection extends StatelessWidget {
                 return _NewsCard(
                   article: article,
                   onTap: () {
-                    // Can navigate to blog detail page here
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text('Mở bài viết: ${article['title'] ?? 'Không có tiêu đề'}'),
-                      ),
-                    );
+                    AppSnackBar.showInfo(context, 'Mở bài viết: ${article['title'] ?? 'Không có tiêu đề'}');
                   },
                 );
               },

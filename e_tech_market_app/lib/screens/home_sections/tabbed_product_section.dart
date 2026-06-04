@@ -289,28 +289,27 @@ class _TabbedProductCard extends StatelessWidget {
                     ),
                     const SizedBox(height: 8),
                     SizedBox(
-                      width: double.infinity,
-                      height: 32,
-                      child: ElevatedButton(
-                        onPressed: onAddToCart,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: _brandColor,
-                          foregroundColor: Colors.white,
-                          elevation: 0,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(6),
+                        width: double.infinity,
+                        height: 30,
+                        child: ElevatedButton(
+                          onPressed: onAddToCart, 
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: _brandColor,
+                            foregroundColor: Colors.white,
+                            elevation: 0,
+                            padding: EdgeInsets.zero,
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(4)),
                           ),
-                        ),
-                        child: const Text(
-                          'MUA NGAY',
-                          style: TextStyle(
-                            fontSize: 11,
-                            fontWeight: FontWeight.w800,
-                            letterSpacing: 0.3,
+                          child: const Text(
+                            'THÊM VÀO GIỎ',
+                            style: TextStyle(
+                                fontSize: 10,
+                                fontWeight: FontWeight.w800,
+                                letterSpacing: 0.4),
                           ),
                         ),
                       ),
-                    ),
                   ],
                 ),
               ),

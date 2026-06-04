@@ -11,7 +11,9 @@ import '../services/products_service.dart';
 import '../services/reviews_service.dart';
 import '../services/video_service.dart';
 import '../services/wishlist_service.dart';
+import '../services/cart_service.dart';
 import '../utils/network_utils.dart';
+import '../utils/app_snackbar.dart';
 import 'account/account_screen.dart';
 import 'blogs/blog_screen.dart';
 import 'orders/order_list_screen.dart';
@@ -29,6 +31,7 @@ import 'home_sections/video_section.dart';
 import 'home_sections/why_us_section.dart';
 import 'home_sections/reviews_section.dart';
 import 'home_sections/newsletter_section.dart';
+import 'cart/cart_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -40,6 +43,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   Map<String, dynamic>? _user;
   int _selectedIndex = 0;
+  int _cartItemCount = 0;
 
   bool _isHomeLoading = true;
   String? _homeError;
@@ -93,6 +97,18 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() {
       _user = user;
     });
+    _loadCartCount();
+  }
+
+  Future<void> _loadCartCount() async {
+    if (_user == null) return;
+    try {
+      final cartState = await CartService.fetchCart();
+      if (!mounted) return;
+      setState(() {
+        _cartItemCount = cartState.totalQuantity;
+      });
+    } catch (_) {}
   }
 
   Future<void> _loadHomeContent() async {
@@ -154,23 +170,17 @@ class _HomeScreenState extends State<HomeScreen> {
     try {
       final message = await CouponService.saveCoupon(code);
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(message)),
-      );
+      AppSnackBar.showSuccess(context, message);
     } catch (error) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(error.toString())),
-      );
+      AppSnackBar.showError(context, error.toString().replaceFirst('Exception: ', ''));
     }
   }
 
   void _copyCouponCode(String code) {
     Clipboard.setData(ClipboardData(text: code));
     if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Đã sao chép mã voucher vào bộ nhớ tạm.')),
-    );
+    AppSnackBar.showInfo(context, 'Đã sao chép mã voucher vào bộ nhớ tạm.');
   }
 
   void _onTabSelected(int index) {
@@ -262,10 +272,7 @@ class _HomeScreenState extends State<HomeScreen> {
           _wishSet.remove(productId);
         }
       });
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-            content: Text('Không thể cập nhật yêu thích. Vui lòng thử lại.')),
-      );
+      AppSnackBar.showError(context, 'Không thể cập nhật yêu thích. Vui lòng thử lại.');
     }
   }
 
@@ -328,20 +335,31 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildFeaturedProductSection() {
-    return ProductSection(
-      products: _featuredProducts,
-      wishedProductIds: _wishSet,
-      isLoading: _isHomeLoading,
-      onViewAll: () => _onTabSelected(1),
-      onProductSelected: _navigateToProductDetail,
-      onToggleWishlist: _toggleWishlist,
-      onAddToCart: (_) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-              content: Text('Tính năng giỏ hàng sẽ được cập nhật sau.')),
-        );
-      },
-    );
+  return ProductSection(
+    products: _featuredProducts,
+    wishedProductIds: _wishSet,
+    isLoading: _isHomeLoading,
+    onViewAll: () => _onTabSelected(1),
+    onProductSelected: _navigateToProductDetail,
+    onToggleWishlist: _toggleWishlist,
+    
+    // Cập nhật phần này:
+    onAddToCart: (product) async {
+      try {
+        final int productId = (product['id'] as num).toInt();
+        
+        // Gọi dịch vụ giỏ hàng (đảm bảo đã import CartService)
+        await CartService.addToCart(productId, 1);
+        _loadCartCount();
+        
+        if (!mounted) return;
+        AppSnackBar.showSuccess(context, 'Đã thêm vào giỏ hàng thành công!');
+      } catch (e) {
+        if (!mounted) return;
+        AppSnackBar.showError(context, 'Lỗi: ${e.toString().replaceFirst('Exception: ', '')}');
+      }
+    },
+  );
   }
 
   Widget _buildTabbedCategorySection() {
@@ -367,11 +385,22 @@ class _HomeScreenState extends State<HomeScreen> {
       },
       onProductSelected: _navigateToProductDetail,
       onToggleWishlist: _toggleWishlist,
-      onAddToCart: (_) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-              content: Text('Tính năng giỏ hàng sẽ được cập nhật sau.')),
-        );
+      
+      // CẬP NHẬT HÀM DƯỚI ĐÂY:
+      onAddToCart: (product) async {
+        try {
+          final int productId = (product['id'] as num).toInt();
+          
+          // Gọi dịch vụ thêm sản phẩm vào giỏ
+          await CartService.addToCart(productId, 1);
+          _loadCartCount();
+          
+          if (!mounted) return;
+          AppSnackBar.showSuccess(context, 'Đã thêm sản phẩm vào giỏ hàng!');
+        } catch (e) {
+          if (!mounted) return;
+          AppSnackBar.showError(context, 'Lỗi: ${e.toString().replaceFirst('Exception: ', '')}');
+        }
       },
     );
   }
@@ -498,8 +527,17 @@ class _HomeScreenState extends State<HomeScreen> {
                   tooltip: 'Tìm kiếm',
                 ),
                 IconButton(
-                  icon: const Icon(Icons.shopping_cart_outlined),
-                  onPressed: () {},
+                  icon: Badge(
+                    isLabelVisible: _cartItemCount > 0,
+                    label: Text(_cartItemCount.toString()),
+                    child: const Icon(Icons.shopping_cart_outlined),
+                  ),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const CartScreen()),
+                    ).then((_) => _loadCartCount());
+                  },
                   tooltip: 'Giỏ hàng',
                 ),
                 GestureDetector(
