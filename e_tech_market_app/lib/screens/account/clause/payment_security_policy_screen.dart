@@ -1,9 +1,41 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
-class PaymentSecurityPolicyScreen extends StatelessWidget {
+const Color _accent = Color(0xFFF97316);
+
+class PaymentSecurityPolicyScreen extends StatefulWidget {
   const PaymentSecurityPolicyScreen({super.key});
 
-  static const Color _accent = Color(0xFFF97316);
+  
+
+  @override
+  State<PaymentSecurityPolicyScreen> createState() => _PaymentSecurityPolicyScreenState();
+}
+
+class _PaymentSecurityPolicyScreenState extends State<PaymentSecurityPolicyScreen> {
+
+
+  static const String _baseUrl = String.fromEnvironment('API_BASE_URL', defaultValue: 'http://192.168.24.18:8000/api');
+
+  Map<String, dynamic>? _storeContact;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadStoreContact();
+  }
+
+  Future<void> _loadStoreContact() async {
+    try {
+      final res = await http.get(Uri.parse('$_baseUrl/store/contact'));
+      if (mounted && res.statusCode == 200) {
+        setState(() {
+          _storeContact = jsonDecode(res.body);
+        });
+      }
+    } catch (_) {}
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -96,7 +128,10 @@ class PaymentSecurityPolicyScreen extends StatelessWidget {
                       'Thông báo ngay cho E-Tech Market Official khi phát hiện giao dịch bất thường qua hotline hoặc email bảo mật bên dưới.',
                     ]),
                     const SizedBox(height: 12),
-                    _ContactBox(hotline: '1234567890', email: 'e_techmarketsupport@gmail.com'),
+                    _ContactBox(
+                      hotline: _storeContact?['contact_phone']?.toString().trim().isNotEmpty == true ? _storeContact!['contact_phone'] : '1900 8888',
+                      email: _storeContact?['contact_email']?.toString().trim().isNotEmpty == true ? _storeContact!['contact_email'] : 'support@etechmarket.vn',
+                    ),
                   ],
                 ),
 

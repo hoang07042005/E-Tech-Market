@@ -5,6 +5,10 @@ import '../orders/order_list_screen.dart';
 import 'security/security_screen.dart';
 import 'profile/profile_screen.dart';
 import 'voucher_warehouse/voucher_warehouse_screen.dart';
+import '../wishlist/wishlist_screen.dart';
+import 'information/about_screen.dart';
+import 'information/contact_screen.dart';
+import 'setting/setting_screen.dart';
 
 class AccountScreen extends StatelessWidget {
   final Map<String, dynamic> user;
@@ -96,11 +100,31 @@ class AccountScreen extends StatelessWidget {
                 _buildMenuItem(Icons.receipt_long_outlined, 'Đơn hàng', () {
                   Navigator.push(context, MaterialPageRoute(builder: (_) => const OrderListScreen()));
                 }),
+                _buildMenuItem(Icons.favorite_outline, 'Sản phẩm yêu thích', () {
+                  Navigator.push(context, MaterialPageRoute(builder: (_) => const WishlistScreen()));
+                }),
                 _buildMenuItem(Icons.local_activity_outlined, 'Kho voucher', () {
                   Navigator.push(context, MaterialPageRoute(builder: (_) => const VoucherWarehouseScreen()));
                 }),
               ],
             ),
+            
+
+            const SizedBox(height: 24),
+
+            // About Section
+            _buildMenuSection(
+              title: 'VỀ E-TECH MARKET',
+              children: [
+                _buildMenuItem(Icons.info_outline, 'Giới thiệu', () {
+                  Navigator.push(context, MaterialPageRoute(builder: (_) => const AboutScreen()));
+                }),
+                _buildMenuItem(Icons.headset_mic_outlined, 'Liên hệ & Hỗ trợ', () {
+                  Navigator.push(context, MaterialPageRoute(builder: (_) => const ContactScreen()));
+                }),
+              ],
+            ),
+
             
             const SizedBox(height: 24),
             
@@ -108,13 +132,15 @@ class AccountScreen extends StatelessWidget {
             _buildMenuSection(
               title: 'THIẾT LẬP',
               children: [
-                    _buildMenuItem(Icons.security_outlined, 'Bảo mật', () {
+                _buildMenuItem(Icons.security_outlined, 'Bảo mật', () {
                   Navigator.push(context, MaterialPageRoute(builder: (_) => const SecurityScreen()));
                 }),
                 _buildMenuItem(Icons.article_outlined, 'Các điều khoản', () {
                   Navigator.push(context, MaterialPageRoute(builder: (_) => const TermsScreen()));
                 }),
-                _buildMenuItem(Icons.settings_outlined, 'Cài đặt', () {}),
+                _buildMenuItem(Icons.settings_outlined, 'Cài đặt', () {
+                  Navigator.push(context, MaterialPageRoute(builder: (_) => const SettingScreen()));
+                }),
               ],
             ),
 
@@ -135,7 +161,8 @@ class AccountScreen extends StatelessWidget {
                     borderRadius: BorderRadius.circular(16),
                   ),
                 ),
-                icon: const Icon(Icons.logout, size: 22),
+                icon: const Icon(Icons.logout, size: 22, color: Color(0xFFD32F2F)),
+
                 label: const Text('Đăng xuất', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
               ),
             ),

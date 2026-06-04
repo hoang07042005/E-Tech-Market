@@ -14,9 +14,12 @@ import '../services/wishlist_service.dart';
 import '../services/cart_service.dart';
 import '../utils/network_utils.dart';
 import '../utils/app_snackbar.dart';
+import '../services/notification_service.dart';
+import 'notifications/notifications_screen.dart';
 import 'account/account_screen.dart';
 import 'blogs/blog_screen.dart';
 import 'orders/order_list_screen.dart';
+import 'videos/video_screen.dart';
 import 'auth/login_screen.dart';
 import 'products/products_screen.dart';
 import 'products/product_detail_screen.dart';
@@ -32,6 +35,7 @@ import 'home_sections/why_us_section.dart';
 import 'home_sections/reviews_section.dart';
 import 'home_sections/newsletter_section.dart';
 import 'cart/cart_screen.dart';
+import 'search/search_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -41,9 +45,12 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   Map<String, dynamic>? _user;
   int _selectedIndex = 0;
   int _cartItemCount = 0;
+  int _unreadNotifCount = 0;
+  List<dynamic> _recentNotifications = [];
 
   bool _isHomeLoading = true;
   String? _homeError;
@@ -98,6 +105,7 @@ class _HomeScreenState extends State<HomeScreen> {
       _user = user;
     });
     _loadCartCount();
+    _loadNotifications();
   }
 
   Future<void> _loadCartCount() async {
@@ -109,6 +117,165 @@ class _HomeScreenState extends State<HomeScreen> {
         _cartItemCount = cartState.totalQuantity;
       });
     } catch (_) {}
+  }
+
+  Future<void> _loadNotifications() async {
+    if (_user == null) return;
+    try {
+      final response = await NotificationService.fetchNotifications(page: 1, perPage: 10);
+      if (!mounted) return;
+      setState(() {
+        _recentNotifications = response['data'] ?? [];
+        _unreadNotifCount = response['unread'] ?? 0;
+      });
+    } catch (_) {}
+  }
+
+  Future<void> _markAllNotifAsRead() async {
+    try {
+      await NotificationService.markAllAsRead();
+      _loadNotifications();
+    } catch (_) {}
+  }
+
+  Future<void> _markNotifAsRead(int id) async {
+    try {
+      await NotificationService.markAsRead(id);
+      _loadNotifications();
+    } catch (_) {}
+  }
+
+  Widget _buildNotificationDrawer() {
+    int unreadInList = _recentNotifications.where((n) => n['read_at'] == null).length;
+    int remainingUnread = _unreadNotifCount - unreadInList;
+
+    return Drawer(
+      child: SafeArea(
+        child: Column(
+          children: [
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              decoration: const BoxDecoration(
+                border: Border(bottom: BorderSide(color: Color(0xFFE2E8F0))),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text('Thông báo', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                      const SizedBox(height: 4),
+                      Row(
+                        children: [
+                          Container(width: 8, height: 8, decoration: const BoxDecoration(color: Colors.red, shape: BoxShape.circle)),
+                          const SizedBox(width: 4),
+                          const Text('Chưa đọc', style: TextStyle(fontSize: 11, color: Colors.black54)),
+                          const SizedBox(width: 12),
+                          Container(width: 8, height: 8, decoration: const BoxDecoration(color: Colors.blue, shape: BoxShape.circle)),
+                          const SizedBox(width: 4),
+                          const Text('Đã đọc', style: TextStyle(fontSize: 11, color: Colors.black54)),
+                        ],
+                      ),
+                    ],
+                  ),
+                  PopupMenuButton<String>(
+                    icon: const Icon(Icons.more_vert),
+                    onSelected: (value) {
+                      if (value == 'read_all') {
+                        _markAllNotifAsRead();
+                      }
+                    },
+                    itemBuilder: (context) => [
+                      const PopupMenuItem(
+                        value: 'read_all',
+                        child: Text('Đánh dấu đã đọc tất cả'),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            Expanded(
+              child: _recentNotifications.isEmpty
+                  ? const Center(child: Text('Chưa có thông báo nào.', style: TextStyle(color: Colors.black54)))
+                  : ListView.separated(
+                      padding: const EdgeInsets.all(8),
+                      itemCount: _recentNotifications.length,
+                      separatorBuilder: (_, __) => const Divider(height: 1),
+                      itemBuilder: (context, index) {
+                        final notif = _recentNotifications[index];
+                        final isRead = notif['read_at'] != null;
+                        return ListTile(
+                          tileColor: isRead ? Colors.transparent : const Color(0xFFFFF7ED),
+                          leading: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Container(
+                                width: 10,
+                                height: 10,
+                                decoration: BoxDecoration(
+                                  color: isRead ? Colors.blue : Colors.red,
+                                  shape: BoxShape.circle,
+                                ),
+                              ),
+                            ],
+                          ),
+                          title: Text(notif['title']?.toString() ?? 'Thông báo', style: TextStyle(fontWeight: isRead ? FontWeight.normal : FontWeight.bold, fontSize: 14)),
+                          subtitle: Text(notif['body']?.toString() ?? '', maxLines: 2, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 12)),
+                          onTap: () {
+                            if (!isRead) _markNotifAsRead(notif['id'] as int);
+                            // Navigator.pop(context); // close drawer if navigating
+                          },
+                        );
+                      },
+                    ),
+            ),
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(12),
+              decoration: const BoxDecoration(border: Border(top: BorderSide(color: Color(0xFFE2E8F0)))),
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        Navigator.pop(context); // close drawer
+                        Navigator.push(context, MaterialPageRoute(builder: (_) => const NotificationsScreen())).then((_) => _loadNotifications());
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFFF8FAFC),
+                        foregroundColor: const Color(0xFF1E293B),
+                        elevation: 0,
+                        side: const BorderSide(color: Color(0xFFE2E8F0)),
+                      ),
+                      child: const Text('Xem tất cả'),
+                    ),
+                  ),
+                  if (remainingUnread > 0)
+                    Positioned(
+                      right: 12,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                        decoration: BoxDecoration(
+                          color: Colors.red,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Text(
+                          '+$remainingUnread chưa đọc',
+                          style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   Future<void> _loadHomeContent() async {
@@ -421,7 +588,10 @@ class _HomeScreenState extends State<HomeScreen> {
     return VideoSection(
       videos: _homeVideos,
       isLoading: _videosLoading,
-      onViewAll: () => _onTabSelected(1),
+      onViewAll: () => Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => const VideoScreen()),
+      ),
     );
   }
 
@@ -509,12 +679,15 @@ class _HomeScreenState extends State<HomeScreen> {
     }
 
     return Scaffold(
+      key: _scaffoldKey,
+      endDrawer: _buildNotificationDrawer(),
       appBar: (_selectedIndex == 4 || _selectedIndex == 3)
           ? null
           : AppBar(
               backgroundColor: Colors.white,
               foregroundColor: Colors.black,
               elevation: 0,
+
               title: Image.asset(
                 'assets/images/logo.png',
                 height: 40,
@@ -523,13 +696,31 @@ class _HomeScreenState extends State<HomeScreen> {
               actions: [
                 IconButton(
                   icon: const Icon(Icons.search_outlined),
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const SearchScreen()),
+                    );
+                  },
                   tooltip: 'Tìm kiếm',
+                ),
+                IconButton(
+                  icon: Badge(
+                    isLabelVisible: _unreadNotifCount > 0,
+                    label: Text(_unreadNotifCount.toString()),
+                    backgroundColor: const Color(0xFFFF2424),
+                    child: const Icon(Icons.notifications_outlined),
+                  ),
+                  onPressed: () {
+                    _scaffoldKey.currentState?.openEndDrawer();
+                  },
+                  tooltip: 'Thông báo',
                 ),
                 IconButton(
                   icon: Badge(
                     isLabelVisible: _cartItemCount > 0,
                     label: Text(_cartItemCount.toString()),
+                    backgroundColor: const Color(0xFFFF2424),
                     child: const Icon(Icons.shopping_cart_outlined),
                   ),
                   onPressed: () {

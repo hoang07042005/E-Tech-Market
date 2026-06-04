@@ -44,6 +44,7 @@ class SettingsController extends Controller
             'currency' => 'VND',
             'language' => 'vi',
             'maintenance_mode' => false,
+            'products_per_page' => 12,
         ]);
         if (! isset($store['maintenance_mode'])) {
             $store['maintenance_mode'] = false;

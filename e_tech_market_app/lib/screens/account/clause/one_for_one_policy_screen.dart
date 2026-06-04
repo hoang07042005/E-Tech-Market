@@ -1,10 +1,44 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
-class OneForOnePolicyScreen extends StatelessWidget {
+const Color _accent = Color(0xFF7C2E00);
+const Color _surface = Color(0xFFFFF7ED);
+
+class OneForOnePolicyScreen extends StatefulWidget {
   const OneForOnePolicyScreen({super.key});
 
-  static const Color _accent = Color(0xFF7C2E00);
-  static const Color _surface = Color(0xFFFFF7ED);
+  
+  
+
+  @override
+  State<OneForOnePolicyScreen> createState() => _OneForOnePolicyScreenState();
+}
+
+class _OneForOnePolicyScreenState extends State<OneForOnePolicyScreen> {
+
+
+
+  static const String _baseUrl = String.fromEnvironment('API_BASE_URL', defaultValue: 'http://192.168.24.18:8000/api');
+
+  Map<String, dynamic>? _storeContact;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadStoreContact();
+  }
+
+  Future<void> _loadStoreContact() async {
+    try {
+      final res = await http.get(Uri.parse('$_baseUrl/store/contact'));
+      if (mounted && res.statusCode == 200) {
+        setState(() {
+          _storeContact = jsonDecode(res.body);
+        });
+      }
+    } catch (_) {}
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -209,7 +243,7 @@ class OneForOnePolicyScreen extends StatelessWidget {
         const SizedBox(height: 18),
         const Text('HOTLINE MIỄN PHÍ', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, letterSpacing: 0.8, color: Color(0xFF7C2E00))),
         const SizedBox(height: 8),
-        const Text('1234567890', style: TextStyle(fontSize: 22, fontWeight: FontWeight.w900, color: Color(0xFF7C2E00))),
+        Text(_storeContact?['contact_phone']?.toString().trim().isNotEmpty == true ? _storeContact!['contact_phone'] : '1900 8888', style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w900, color: Color(0xFF7C2E00))),
         const SizedBox(height: 16),
         SizedBox(
           width: double.infinity,

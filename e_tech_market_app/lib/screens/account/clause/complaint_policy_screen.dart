@@ -1,9 +1,42 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
-class ComplaintPolicyScreen extends StatelessWidget {
+const Color _accent = Color(0xFF7C2E00);
+
+class ComplaintPolicyScreen extends StatefulWidget {
   const ComplaintPolicyScreen({super.key});
 
-  static const Color _accent = Color(0xFF7C2E00);
+  
+
+  @override
+  State<ComplaintPolicyScreen> createState() => _ComplaintPolicyScreenState();
+}
+
+class _ComplaintPolicyScreenState extends State<ComplaintPolicyScreen> {
+
+
+
+  static const String _baseUrl = String.fromEnvironment('API_BASE_URL', defaultValue: 'http://192.168.24.18:8000/api');
+
+  Map<String, dynamic>? _storeContact;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadStoreContact();
+  }
+
+  Future<void> _loadStoreContact() async {
+    try {
+      final res = await http.get(Uri.parse('$_baseUrl/store/contact'));
+      if (mounted && res.statusCode == 200) {
+        setState(() {
+          _storeContact = jsonDecode(res.body);
+        });
+      }
+    } catch (_) {}
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -181,9 +214,9 @@ class ComplaintPolicyScreen extends StatelessWidget {
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           const Text('KÊNH TIẾP NHẬN CHÍNH THỨC', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: Color(0xFF6B7280))),
           const SizedBox(height: 12),
-          const _ContactRow(icon: Icons.phone_in_talk, label: 'HOTLINE 24/7', value: '1234567890'),
+          _ContactRow(icon: Icons.phone_in_talk, label: 'HOTLINE 24/7', value: _storeContact?['contact_phone']?.toString().trim().isNotEmpty == true ? _storeContact!['contact_phone'] : '1900 8888'),
           const SizedBox(height: 8),
-          const _ContactRow(icon: Icons.mail, label: 'EMAIL HỖ TRỢ', value: 'e_techmarketsupport@gmail.com'),
+          _ContactRow(icon: Icons.mail, label: 'EMAIL HỖ TRỢ', value: _storeContact?['contact_email']?.toString().trim().isNotEmpty == true ? _storeContact!['contact_email'] : 'support@etechmarket.vn'),
           const SizedBox(height: 8),
           const _ContactRow(icon: Icons.forum, label: 'TRÒ CHUYỆN TRỰC TIẾP', value: 'Live Chat trên Website'),
         ]),

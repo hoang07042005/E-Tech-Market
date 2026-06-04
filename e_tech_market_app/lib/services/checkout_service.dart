@@ -189,6 +189,13 @@ class CheckoutService {
     return jsonDecode(response.body) as Map<String, dynamic>;
   }
 
+  static Future<void> cancelOrder(int orderId) async {
+    final token = await AuthService.getToken();
+    if (token == null) return;
+    final uri = Uri.parse('$_baseUrl/orders/$orderId/cancel');
+    await _post(uri, {'_method': 'PATCH'}, token: token);
+  }
+
   static Future<String> createPaymentLink({
     required String paymentMethod,
     required int orderId,

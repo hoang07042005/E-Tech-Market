@@ -7,6 +7,8 @@ import '../../services/voucher_service.dart';
 import '../../utils/network_utils.dart';
 import '../../utils/app_snackbar.dart';
 import '../account/clause/payment_security_policy_screen.dart';
+import 'payment_webview_screen.dart';
+import 'payment_result_screen.dart';
 
 class CheckoutScreen extends StatefulWidget {
   const CheckoutScreen({Key? key}) : super(key: key);
@@ -236,13 +238,39 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       );
 
       final orderId = _toInt(orderRes['id']);
+      final orderCode = orderRes['order_code']?.toString() ?? '';
+
+      void navigateToResult(bool isSuccess) {
+        if (isSuccess) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (_) => PaymentResultScreen(
+                isSuccess: true,
+                orderCode: orderCode,
+                orderId: orderId,
+              ),
+            ),
+          );
+        } else {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => PaymentResultScreen(
+                isSuccess: false,
+                orderCode: orderCode,
+                orderId: orderId,
+              ),
+            ),
+          );
+        }
+      }
 
       if (_selectedPayment == 'cod') {
         // success
         await CartService.clearCart(_cart);
         if (!mounted) return;
-        Navigator.pop(context);
-        AppSnackBar.showSuccess(context, 'Đặt hàng thành công!');
+        navigateToResult(true);
         return;
       }
 
@@ -253,19 +281,67 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       );
 
       if (payUrl.isNotEmpty) {
-        final uri = Uri.parse(payUrl);
-        final launched = await launchUrl(
-          uri, 
-          mode: LaunchMode.inAppWebView,
-          webViewConfiguration: const WebViewConfiguration(enableJavaScript: true),
+        final resultUrl = await Navigator.push<String?>(
+          context,
+          MaterialPageRoute(
+            builder: (context) => PaymentWebViewScreen(url: payUrl),
+          ),
         );
-        if (launched) {
-          // Assuming user pays and we clear cart for demo
-          await CartService.clearCart(_cart);
-          if (!mounted) return;
-          Navigator.pop(context);
+
+        if (!mounted) return;
+
+        if (resultUrl != null && resultUrl.isNotEmpty) {
+          final uri = Uri.parse(resultUrl);
+          final vnpResponseCode = uri.queryParameters['vnp_ResponseCode'];
+          final momoResultCode = uri.queryParameters['resultCode'];
+
+          bool isSuccess = false;
+          if (vnpResponseCode != null) {
+            isSuccess = vnpResponseCode == '00';
+          } else if (momoResultCode != null) {
+            isSuccess = momoResultCode == '0';
+          }
+
+          if (isSuccess) {
+            await CartService.clearCart(_cart);
+            if (!mounted) return;
+            navigateToResult(true);
+          } else {
+            await CheckoutService.cancelOrder(orderId);
+            if (!mounted) return;
+            navigateToResult(false);
+          }
         } else {
-          throw Exception('Không thể mở URL thanh toán.');
+          // User manually closed the webview using the 'X' button
+          final result = await showDialog<bool>(
+            context: context,
+            barrierDismissible: false,
+            builder: (ctx) => AlertDialog(
+              title: const Text('Xác nhận thanh toán', style: TextStyle(fontWeight: FontWeight.bold)),
+              content: const Text('Bạn đã đóng trang thanh toán.\n\nNếu bạn chưa thanh toán hoặc gặp lỗi, vui lòng chọn "Hủy đơn hàng".'),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(ctx, false),
+                  child: const Text('Hủy đơn hàng', style: TextStyle(color: Colors.red)),
+                ),
+                ElevatedButton(
+                  onPressed: () => Navigator.pop(ctx, true),
+                  style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFF26522), foregroundColor: Colors.white),
+                  child: const Text('Đã thanh toán'),
+                ),
+              ],
+            ),
+          );
+
+          if (result == true) {
+            await CartService.clearCart(_cart);
+            if (!mounted) return;
+            navigateToResult(true);
+          } else {
+            await CheckoutService.cancelOrder(orderId);
+            if (!mounted) return;
+            navigateToResult(false);
+          }
         }
       }
     } catch (e) {

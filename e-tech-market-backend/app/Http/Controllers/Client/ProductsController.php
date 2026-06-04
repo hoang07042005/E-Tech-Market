@@ -83,6 +83,13 @@ class ProductsController extends Controller
         }
 
         $products = \Illuminate\Support\Facades\Cache::remember($cacheKey, 300, function () use ($query, $request) {
+            $storeConfig = \App\Models\AdminSetting::query()->where('key', 'store_profile')->first();
+            $defaultLimit = 12;
+            if ($storeConfig && isset($storeConfig->value['products_per_page'])) {
+                $defaultLimit = (int) $storeConfig->value['products_per_page'];
+                if ($defaultLimit < 1) $defaultLimit = 12;
+            }
+
             return $query
                 ->with(['category', 'variants'])
                 ->withCount([
@@ -91,7 +98,7 @@ class ProductsController extends Controller
                 ->withAvg([
                     'reviews as avg_rating' => fn ($q) => $q->where('status', 'approved'),
                 ], 'rating')
-                ->paginate((int) $request->input('limit', 12));
+                ->paginate((int) $request->input('limit', $defaultLimit));
         });
 
         return ProductResource::collection($products);

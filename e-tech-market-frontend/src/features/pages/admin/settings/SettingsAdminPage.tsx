@@ -19,6 +19,7 @@ type SettingsPayload = {
     currency: string
     language: string
     maintenance_mode?: boolean
+    products_per_page?: number
   }
   payments: {
     momo?: { enabled?: boolean; partner_id?: string | null }
@@ -499,8 +500,9 @@ export default function SettingsAdminPage() {
 
       {/* 1) General */}
       <div className="admSettingsGridTop">
-        <section className="admSetCard">
-          <div className="admSetCardHead">
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+          <section className="admSetCard">
+            <div className="admSetCardHead">
             <div className="admSetCardTitle">
               <span className="admSetIcon" aria-hidden>
                 <IconStore />
@@ -527,7 +529,20 @@ export default function SettingsAdminPage() {
               <span>Địa chỉ</span>
               <textarea value={store.warehouse_address} onChange={(e) => setStore((p) => ({ ...p, warehouse_address: e.target.value }))} />
             </label>
-            <div className="admMaintenanceSection">
+          </div>
+        </section>
+
+        <section className="admSetCard">
+          <div className="admSetCardHead">
+            <div className="admSetCardTitle">
+              <span className="admSetIcon" aria-hidden>
+                <IconGlobe /> {/* Or any suitable icon */}
+              </span>{' '}
+              Hệ thống / Bảo trì
+            </div>
+          </div>
+          <div className="admSetForm">
+            <div className="admMaintenanceSection" style={{ borderTop: 'none', paddingTop: 0, marginTop: 0 }}>
               <div className="admMaintenanceRow">
                 <label className="admSwitch">
                   <input
@@ -549,8 +564,9 @@ export default function SettingsAdminPage() {
             </div>
           </div>
         </section>
+      </div>
 
-        <aside className="admSetSide">
+      <aside className="admSetSide">
           <section className="admSetCard" style={{ padding: 12 }}>
             <div className="admSecTitle">
               <span className="admSetIcon" aria-hidden>
@@ -585,6 +601,26 @@ export default function SettingsAdminPage() {
                 </div>
               </div>
             </div>
+          </section>
+
+          <section className="admSetCard" style={{ padding: 8, marginTop: 8 }}>
+            <div className="admSecTitle" style={{ marginBottom: 8 }}>
+              <span className="admSetIcon" aria-hidden>
+                <IconGlobe />
+              </span>{' '}
+              Cấu hình hiển thị
+            </div>
+            <label className="admSetField" style={{ marginBottom: 0 }}>
+              <span style={{ fontSize: '13px', color: '#64748b', fontWeight: 600 }}>Số lượng sản phẩm/trang sẽ áp dụng cho cả giao diện Web và App.</span>
+              <input 
+                type="number" 
+                min="1" 
+                max="100" 
+                style={{ marginTop:2, fontSize: '14px', padding: '5px 5px' }}
+                value={store.products_per_page ?? 12} 
+                onChange={(e) => setStore((p) => ({ ...p, products_per_page: Number(e.target.value) || 12 }))} 
+              />
+            </label>
           </section>
         </aside>
       </div>

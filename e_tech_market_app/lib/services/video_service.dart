@@ -27,6 +27,16 @@ class VideoService {
     return [];
   }
 
+  static Future<Map<String, dynamic>?> fetchVideoById(int id) async {
+    final uri = Uri.parse('$_baseUrl/videos/$id');
+    try {
+      final response = await _get(uri);
+      return jsonDecode(response.body) as Map<String, dynamic>;
+    } catch (_) {
+      return null;
+    }
+  }
+
   static Future<http.Response> _get(Uri uri) async {
     try {
       final response = await http.get(uri, headers: {

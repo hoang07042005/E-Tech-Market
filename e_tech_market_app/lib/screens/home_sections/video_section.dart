@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 
 import '../../utils/network_utils.dart';
-import '../../utils/app_snackbar.dart';
+
+import '../videos/video_detail_screen.dart';
 
 class VideoSection extends StatelessWidget {
   final List<dynamic> videos;
@@ -10,7 +11,7 @@ class VideoSection extends StatelessWidget {
 
   const VideoSection({
     super.key,
-    required this.videos,
+    required this.videos, 
     required this.isLoading,
     required this.onViewAll,
   });
@@ -23,42 +24,71 @@ class VideoSection extends StatelessWidget {
 
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.fromLTRB(20, 24, 20, 30),
+      padding: const EdgeInsets.fromLTRB(20, 24, 0, 30), // Bỏ padding phải để danh sách trượt tự nhiên ra mép
       decoration: const BoxDecoration(
         color: Colors.white,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Padding(
-            padding: const EdgeInsets.only(bottom: 20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                const Text(
-                  'REVIEW THỰC TẾ & TRỰC QUAN',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w700,
-                    color: _brandColor,
-                    letterSpacing: 1.2,
+            Padding(
+              padding: const EdgeInsets.only(bottom: 20, right: 20),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'REVIEW THỰC TẾ & TRỰC QUAN',
+                          style: TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w700,
+                            color: _brandColor,
+                            letterSpacing: 1.2,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        const Text(
+                          'Video nổi bật',
+                          style: TextStyle(
+                            fontSize: 25,
+                            fontWeight: FontWeight.w800,
+                            color: Color(0xFF111827),
+                            height: 1.1,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-                const SizedBox(height: 8),
-                const Text(
-                  'Video nổi bật',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 25,
-                    fontWeight: FontWeight.w800,
-                    color: Color(0xFF111827),
-                    height: 1.1,
+                  TextButton(
+                    onPressed: onViewAll,
+                    style: TextButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                      minimumSize: Size.zero,
+                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: const [
+                        Text(
+                          'Xem tất cả',
+                          style: TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                            color: _brandColor,
+                          ),
+                        ),
+                        SizedBox(width: 4),
+                        Icon(Icons.arrow_forward_ios, size: 12, color: _brandColor),
+                      ],
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
           if (isLoading)
             _buildSkeletonGrid()
           else if (visibleVideos.isEmpty)
@@ -71,25 +101,36 @@ class VideoSection extends StatelessWidget {
               ),
             )
           else
-            GridView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                crossAxisSpacing: 16,
-                mainAxisSpacing: 16,
-                childAspectRatio: 0.85,
+            SizedBox(
+              height: 250,
+              child: ListView.separated(
+                scrollDirection: Axis.horizontal,
+                clipBehavior: Clip.none,
+                itemCount: visibleVideos.length,
+                separatorBuilder: (_, __) => const SizedBox(width: 16),
+                itemBuilder: (context, index) {
+                  final video = visibleVideos[index];
+                  // Thêm khoảng trống padding-right cho item cuối cùng
+                  final isLast = index == visibleVideos.length - 1;
+                  return Padding(
+                    padding: EdgeInsets.only(right: isLast ? 20 : 0),
+                    child: _VideoCard(
+                      video: video,
+                      onTap: () {
+                        final videoId = video['id'] as int?;
+                        if (videoId != null) {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => VideoDetailScreen(videoId: videoId),
+                            ),
+                          );
+                        }
+                      },
+                    ),
+                  );
+                },
               ),
-              itemCount: visibleVideos.length,
-              itemBuilder: (context, index) {
-                final video = visibleVideos[index];
-                return _VideoCard(
-                  video: video,
-                  onTap: () {
-                    AppSnackBar.showInfo(context, 'Mở video: ${video['title'] ?? 'Video'}');
-                  },
-                );
-              },
             ),
         ],
       ),
@@ -97,17 +138,21 @@ class VideoSection extends StatelessWidget {
   }
 
   Widget _buildSkeletonGrid() {
-    return GridView.builder(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        crossAxisSpacing: 16,
-        mainAxisSpacing: 16,
-        childAspectRatio: 0.85,
+    return SizedBox(
+      height: 250,
+      child: ListView.separated(
+        scrollDirection: Axis.horizontal,
+        clipBehavior: Clip.none,
+        itemCount: 4,
+        separatorBuilder: (_, __) => const SizedBox(width: 16),
+        itemBuilder: (context, index) {
+          final isLast = index == 3;
+          return Padding(
+            padding: EdgeInsets.only(right: isLast ? 20 : 0),
+            child: const _VideoCardSkeleton(),
+          );
+        },
       ),
-      itemCount: 4,
-      itemBuilder: (_, __) => const _VideoCardSkeleton(),
     );
   }
 }
@@ -124,22 +169,25 @@ class _VideoCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final title = video['title']?.toString() ?? 'Video giới thiệu';
-    final description = video['description']?.toString() ?? '';
+
     final thumbnail = NetworkUtils.fixDeviceUrl(video['thumbnail_url']?.toString() ?? 
         video['product']?['main_image_url']?.toString() ?? '');
     final productName = video['product']?['name']?.toString() ?? '';
 
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: onTap,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Expanded(
-              child: ClipRRect(
+    return SizedBox(
+      width: 280,
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(12),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              ClipRRect(
                 borderRadius: BorderRadius.circular(12),
                 child: Container(
+                  height: 158, // 16:9 tỷ lệ cho thumbnail
                   decoration: const BoxDecoration(
                     color: Color(0xFFF1F5F9),
                   ),
@@ -192,7 +240,6 @@ class _VideoCard extends StatelessWidget {
                   ),
                 ),
               ),
-            ),
             const SizedBox(height: 12),
             Text(
               title,
@@ -205,19 +252,7 @@ class _VideoCard extends StatelessWidget {
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
             ),
-            if (description.isNotEmpty) ...[
-              const SizedBox(height: 6),
-              Text(
-                description,
-                style: const TextStyle(
-                  fontSize: 12,
-                  color: Color(0xFF64748B),
-                  height: 1.4,
-                ),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ],
+            // Loại bỏ dòng miêu tả để card gọn và tập trung vào tiêu đề hơn
             if (productName.isNotEmpty) ...[
               const SizedBox(height: 8),
               Container(
@@ -260,8 +295,9 @@ class _VideoCard extends StatelessWidget {
           ],
         ),
       ),
-    );
-  }
+    ),
+  );
+}
 }
 
 class _VideoCardSkeleton extends StatelessWidget {
@@ -269,36 +305,38 @@ class _VideoCardSkeleton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Expanded(
-          child: Container(
+    return SizedBox(
+      width: 280,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Container(
+            height: 158,
             decoration: BoxDecoration(
               color: const Color(0xFFE5E7EB),
               borderRadius: BorderRadius.circular(12),
             ),
           ),
-        ),
-        const SizedBox(height: 12),
-        Container(
-          width: double.infinity,
-          height: 16,
-          decoration: BoxDecoration(
-            color: const Color(0xFFE5E7EB),
-            borderRadius: BorderRadius.circular(4),
+          const SizedBox(height: 12),
+          Container(
+            width: double.infinity,
+            height: 16,
+            decoration: BoxDecoration(
+              color: const Color(0xFFE5E7EB),
+              borderRadius: BorderRadius.circular(4),
+            ),
           ),
-        ),
-        const SizedBox(height: 8),
-        Container(
-          width: double.infinity,
-          height: 12,
-          decoration: BoxDecoration(
-            color: const Color(0xFFE5E7EB),
-            borderRadius: BorderRadius.circular(4),
+          const SizedBox(height: 8),
+          Container(
+            width: 140, // width limit
+            height: 16,
+            decoration: BoxDecoration(
+              color: const Color(0xFFE5E7EB),
+              borderRadius: BorderRadius.circular(4),
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

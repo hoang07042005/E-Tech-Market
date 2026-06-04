@@ -462,7 +462,6 @@ export default function ProductsPage() {
     const params: Record<string, unknown> = {
       search: query || undefined,
       page,
-      limit: 12,
     }
 
     if (priceTouched) {

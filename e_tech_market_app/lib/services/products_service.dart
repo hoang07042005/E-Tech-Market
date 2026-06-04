@@ -11,7 +11,7 @@ class ProductsService {
 
   static Future<Map<String, dynamic>> fetchProducts({
     int page = 1,
-    int limit = 12,
+    int? limit,
     String? search,
     String? sort,
     String? order,
@@ -23,8 +23,11 @@ class ProductsService {
   }) async {
     final queryParams = <String, String>{
       'page': page.toString(),
-      'limit': limit.toString(),
     };
+
+    if (limit != null) {
+      queryParams['limit'] = limit.toString();
+    }
 
     if (search != null && search.isNotEmpty) {
       queryParams['search'] = search;

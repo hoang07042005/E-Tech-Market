@@ -1,13 +1,50 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
-class RefundPolicyScreen extends StatelessWidget {
+const Color _background = Color(0xFFF9F2E9);
+const Color _card = Colors.white;
+const Color _accent = Color(0xFF7C2E00);
+const Color _muted = Color(0xFF57534E);
+const Color _mutedDark = Color(0xFF1E293B);
+
+class RefundPolicyScreen extends StatefulWidget {
   const RefundPolicyScreen({super.key});
 
-  static const Color _background = Color(0xFFF9F2E9);
-  static const Color _card = Colors.white;
-  static const Color _accent = Color(0xFF7C2E00);
-  static const Color _muted = Color(0xFF57534E);
-  static const Color _mutedDark = Color(0xFF1E293B);
+  
+  
+  
+  
+  
+
+  @override
+  State<RefundPolicyScreen> createState() => _RefundPolicyScreenState();
+}
+
+class _RefundPolicyScreenState extends State<RefundPolicyScreen> {
+
+
+
+  static const String _baseUrl = String.fromEnvironment('API_BASE_URL', defaultValue: 'http://192.168.24.18:8000/api');
+
+  Map<String, dynamic>? _storeContact;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadStoreContact();
+  }
+
+  Future<void> _loadStoreContact() async {
+    try {
+      final res = await http.get(Uri.parse('$_baseUrl/store/contact'));
+      if (mounted && res.statusCode == 200) {
+        setState(() {
+          _storeContact = jsonDecode(res.body);
+        });
+      }
+    } catch (_) {}
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -116,7 +153,7 @@ class RefundPolicyScreen extends StatelessWidget {
         Row(children: [
           const _CardIcon(icon: Icons.check_circle, backgroundColor: Color(0xFFFEF3C7), iconColor: Color(0xFF92400E)),
           const SizedBox(width: 12),
-          Expanded(child: Text('1. Điều kiện hoàn tiền', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: RefundPolicyScreen._mutedDark))),
+          Expanded(child: Text('1. Điều kiện hoàn tiền', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: _mutedDark))),
         ]),
         const SizedBox(height: 12),
         const Text('Chúng tôi cam kết mang lại sự hài lòng tuyệt đối. Bạn có thể yêu cầu hoàn tiền nếu đáp ứng các tiêu chí sau:', style: TextStyle(color: Color(0xFF57534E), height: 1.6)),
@@ -135,7 +172,7 @@ class RefundPolicyScreen extends StatelessWidget {
         Row(children: const [
           _CardIcon(icon: Icons.close, backgroundColor: Color(0xFFFEE2E2), iconColor: Color(0xFFB45309)),
           SizedBox(width: 12),
-          Expanded(child: Text('2. Sản phẩm không áp dụng', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: RefundPolicyScreen._mutedDark))),
+          Expanded(child: Text('2. Sản phẩm không áp dụng', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: _mutedDark))),
         ]),
         const SizedBox(height: 12),
         const Text('Một số mặt hàng đặc thù sẽ không được áp dụng chính sách hoàn tiền trừ khi có lỗi kỹ thuật nghiêm trọng:', style: TextStyle(color: Color(0xFF57534E), height: 1.6)),
@@ -160,7 +197,7 @@ class RefundPolicyScreen extends StatelessWidget {
         Row(children: const [
           _CardIcon(icon: Icons.add, backgroundColor: Color(0xFFFEEBC8), iconColor: Color(0xFF92400E)),
           SizedBox(width: 12),
-          Expanded(child: Text('3. Quy trình hoàn tiền', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: RefundPolicyScreen._mutedDark))),
+          Expanded(child: Text('3. Quy trình hoàn tiền', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: _mutedDark))),
         ]),
         const SizedBox(height: 16),
         const _ProcessStep(step: 1, title: 'Gửi yêu cầu', subtitle: 'Liên hệ bộ phận CSKH qua email hoặc Hotline để thông báo tình trạng sản phẩm.'),
@@ -189,7 +226,7 @@ class RefundPolicyScreen extends StatelessWidget {
         Row(children: const [
           _CardIcon(icon: Icons.table_chart, backgroundColor: Color(0xFFEFE7FF), iconColor: Color(0xFF5B21B6)),
           SizedBox(width: 12),
-          Expanded(child: Text('4. Phương thức và thời gian', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: RefundPolicyScreen._mutedDark))),
+          Expanded(child: Text('4. Phương thức và thời gian', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: _mutedDark))),
         ]),
         const SizedBox(height: 16),
         Table(
@@ -227,9 +264,9 @@ class RefundPolicyScreen extends StatelessWidget {
           const SizedBox(height: 8),
           const Text('Đội ngũ của chúng tôi luôn sẵn sàng giải đáp mọi thắc mắc về quy trình hoàn tiền, đổi trả và các vấn đề liên quan.', style: TextStyle(color: Color(0xFF57534E), height: 1.6)),
           const SizedBox(height: 16),
-          const _ContactRow(icon: Icons.phone_in_talk, label: '1234567890'),
+          _ContactRow(icon: Icons.phone_in_talk, label: _storeContact?['contact_phone']?.toString().trim().isNotEmpty == true ? _storeContact!['contact_phone'] : '1900 8888'),
           const SizedBox(height: 10),
-          const _ContactRow(icon: Icons.mail, label: 'e_techmarketsupport@gmail.com'),
+          _ContactRow(icon: Icons.mail, label: _storeContact?['contact_email']?.toString().trim().isNotEmpty == true ? _storeContact!['contact_email'] : 'support@etechmarket.vn'),
           const SizedBox(height: 10),
           const _ContactRow(icon: Icons.chat_bubble_outline, label: 'Chat trực tuyến 24/7'),
           const SizedBox(height: 18),

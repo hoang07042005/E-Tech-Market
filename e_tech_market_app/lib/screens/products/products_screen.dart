@@ -18,6 +18,7 @@ class ProductsScreen extends StatefulWidget {
 }
 
 class _ProductsScreenState extends State<ProductsScreen> {
+  final TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
   String _sortValue = 'default';
   bool _useCustomPrice = false;
@@ -36,6 +37,8 @@ class _ProductsScreenState extends State<ProductsScreen> {
   Set<int> _expandedCategories = {};
   Set<int> _wishSet = {};
   bool _isLoading = true;
+  int _currentPage = 1;
+  int _lastPage = 1;
 
   Timer? _debounce;
 
@@ -127,6 +130,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
   @override
   void dispose() {
     _debounce?.cancel();
+    _searchController.dispose();
     super.dispose();
   }
 
@@ -166,8 +170,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
 
     try {
       final response = await ProductsService.fetchProducts(
-        page: 1,
-        limit: 50, // Load more for now instead of pagination
+        page: _currentPage,
         search: _searchQuery,
         sort: sortParams,
         order: orderParams,
@@ -178,10 +181,13 @@ class _ProductsScreenState extends State<ProductsScreen> {
       );
 
       final data = response['data'] as List<dynamic>? ?? [];
+      final meta = response['meta'] as Map<String, dynamic>?;
+      final lastPage = meta != null ? (meta['last_page'] as int?) : (response['last_page'] as int?);
 
       if (mounted) {
         setState(() {
           _products = data;
+          _lastPage = lastPage ?? 1;
           _extractBrands(data);
           _isLoading = false;
         });
@@ -210,7 +216,10 @@ class _ProductsScreenState extends State<ProductsScreen> {
   }
 
   void _onSearchChanged(String val) {
-    setState(() => _searchQuery = val);
+    setState(() {
+      _searchQuery = val;
+      _currentPage = 1;
+    });
     if (_debounce?.isActive ?? false) _debounce!.cancel();
     _debounce = Timer(const Duration(milliseconds: 500), () {
       _fetchProducts();
@@ -1003,13 +1012,25 @@ class _ProductsScreenState extends State<ProductsScreen> {
             children: [
               Expanded(
                 child: TextField(
-                  decoration: const InputDecoration(
-                    hintText: 'Tìm kiếm...',
-                    hintStyle: TextStyle(color: Colors.grey),
+                  controller: _searchController,
+                  decoration: InputDecoration(
+                    hintText: 'Tìm kiếm sản phẩm...',
+                    hintStyle: const TextStyle(color: Colors.grey),
                     border: InputBorder.none,
-                    contentPadding: EdgeInsets.symmetric(horizontal: 16),
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+                    suffixIcon: _searchQuery.isNotEmpty
+                        ? IconButton(
+                            icon: const Icon(Icons.clear, color: Colors.grey, size: 18),
+                            onPressed: () {
+                              _searchController.clear();
+                              _onSearchChanged('');
+                            },
+                          )
+                        : null,
                   ),
+                  textInputAction: TextInputAction.search,
                   onChanged: _onSearchChanged,
+                  onSubmitted: (val) => _fetchProducts(),
                 ),
               ),
               const Padding(
@@ -1056,7 +1077,10 @@ class _ProductsScreenState extends State<ProductsScreen> {
                     }).toList(),
                     onChanged: (String? newValue) {
                       if (newValue != null) {
-                        setState(() => _sortValue = newValue);
+                        setState(() {
+                          _sortValue = newValue;
+                          _currentPage = 1;
+                        });
                         _fetchProducts();
                       }
                     },
@@ -1110,6 +1134,47 @@ class _ProductsScreenState extends State<ProductsScreen> {
             itemBuilder: (context, index) {
               return _buildProductCard(_products[index]);
             },
+          ),
+          
+        if (_lastPage > 1)
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 24),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                OutlinedButton(
+                  onPressed: _currentPage > 1
+                      ? () {
+                          setState(() => _currentPage--);
+                          _fetchProducts();
+                        }
+                      : null,
+                  style: OutlinedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
+                  ),
+                  child: const Text('Trước'),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Text('Trang $_currentPage / $_lastPage',
+                      style: const TextStyle(fontWeight: FontWeight.bold)),
+                ),
+                OutlinedButton(
+                  onPressed: _currentPage < _lastPage
+                      ? () {
+                          setState(() => _currentPage++);
+                          _fetchProducts();
+                        }
+                      : null,
+                  style: OutlinedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
+                  ),
+                  child: const Text('Sau'),
+                ),
+              ],
+            ),
           ),
       ],
     );

@@ -22,6 +22,7 @@ class UpdateSettingsRequest extends FormRequest
             'store.currency' => ['nullable', 'string', 'max:10'],
             'store.language' => ['nullable', 'string', 'max:10'],
             'store.maintenance_mode' => ['nullable', 'boolean'],
+            'store.products_per_page' => ['nullable', 'integer', 'min:1'],
 
             'payments' => ['nullable', 'array'],
             'payments.momo' => ['nullable', 'array'],

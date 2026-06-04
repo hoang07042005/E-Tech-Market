@@ -148,7 +148,7 @@ class _HeroBannerSectionState extends State<HeroBannerSection> {
                         elevation: 8,
                       ),
                       child: const Text(
-                        'Khám Phá Ngay',
+                        'Khám Phá',
                         style: TextStyle(
                           color: Colors.white,
                           fontWeight: FontWeight.w600,
