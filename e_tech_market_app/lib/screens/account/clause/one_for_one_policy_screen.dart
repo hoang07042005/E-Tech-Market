@@ -19,7 +19,7 @@ class _OneForOnePolicyScreenState extends State<OneForOnePolicyScreen> {
 
 
 
-  static const String _baseUrl = String.fromEnvironment('API_BASE_URL', defaultValue: 'http://192.168.24.18:8000/api');
+  static const String _baseUrl = String.fromEnvironment('API_BASE_URL', defaultValue: 'http://192.168.24.14:8000/api');
 
   Map<String, dynamic>? _storeContact;
 

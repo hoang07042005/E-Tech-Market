@@ -4,7 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:url_launcher/url_launcher.dart';
 import '../../../utils/app_snackbar.dart';
 
-const String _baseUrl = String.fromEnvironment('API_BASE_URL', defaultValue: 'http://192.168.24.18:8000/api');
+const String _baseUrl = String.fromEnvironment('API_BASE_URL', defaultValue: 'http://192.168.24.14:8000/api');
 
 const String _fallbackStoreName = 'E-Tech Market';
 const String _fallbackPhone = '1900 8888';

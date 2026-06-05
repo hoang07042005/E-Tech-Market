@@ -82,7 +82,7 @@ class _ProductNewDetailScreenState extends State<ProductNewDetailScreen> {
         if (url.startsWith('http')) return url;
 
         // Đường dẫn gốc của API server
-        const String baseUrl = 'http://192.168.24.18:8000'; 
+        const String baseUrl = 'http://192.168.24.14:8000'; 
         
         // Đảm bảo url không có dấu gạch chéo dư thừa ở đầu
         final cleanUrl = url.startsWith('/') ? url.substring(1) : url;

@@ -1200,29 +1200,20 @@ Widget _buildGallery(Product current, List<ProductImage> images) {
     }
     final colors = colorImages.keys.toList();
 
-    // 2. Gom nhóm danh sách Dung Lượng / Phiên bản (LÀM SẠCH CHỮ MÀU BỊ DÍNH)
     final storages = current.variants
         .map((v) {
           String sValue = v.storage?.trim() ?? '';
-
-          // Nếu trường storage trống, tiến hành bóc tách thông minh từ tên variant (v.name)
           if (sValue.isEmpty) {
             sValue = v.name.trim();
-            // Duyệt qua danh sách màu sắc đã lấy được ở trên để xóa tên màu ra khỏi chuỗi dung lượng
             for (var color in colors) {
               if (sValue.toLowerCase().contains(color.toLowerCase())) {
-                // Xóa tên màu sắc khỏi chuỗi cấu hình (Ví dụ: "Tím 512G" -> "512G")
                 sValue =
                     sValue.replaceAll(RegExp(color, caseSensitive: false), '');
               }
             }
-
-            // Bóc tách lấy phần text chứa thông số bộ nhớ còn lại
             final parts = sValue.trim().split(' ');
             sValue = parts.last.trim();
           }
-
-          // Chuẩn hóa định dạng hiển thị: Nếu kết thúc bằng chữ "G", tự động chuyển thành "GB" cho chuẩn Web
           if (sValue.toUpperCase().endsWith('G') &&
               !sValue.toUpperCase().endsWith('GB')) {
             sValue = '${sValue}B';
@@ -1231,10 +1222,9 @@ Widget _buildGallery(Product current, List<ProductImage> images) {
           return sValue.trim();
         })
         .where((s) => s.isNotEmpty)
-        .toSet() // Loại bỏ hoàn toàn các cấu hình trùng lặp
+        .toSet() 
         .toList();
 
-    // Tự động kích hoạt chọn phiên bản đầu tiên làm mặc định khi mới vào màn hình
     if (selectedVariant == null && current.variants.isNotEmpty) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         setState(() {
@@ -1247,10 +1237,8 @@ Widget _buildGallery(Product current, List<ProductImage> images) {
       });
     }
 
-    // Hàm cập nhật phiên bản khi click đổi thuộc tính cấu hình
     void _updateSelectedVariant(String? newColor, String? newStorage) {
       final targetColor = newColor?.trim().toLowerCase();
-      // Chuyển "GB" ngược lại thành "G" để tìm kiếm chính xác nếu data gốc dùng chữ "G"
       final targetStorage =
           newStorage?.trim().toLowerCase().replaceAll('gb', 'g');
 
@@ -1271,12 +1259,12 @@ Widget _buildGallery(Product current, List<ProductImage> images) {
                     (v.name.toLowerCase().contains(targetStorage ?? ''))),
           );
         } catch (_) {
-          match = current.variants.first; //
+          match = current.variants.first; 
         }
       }
 
       setState(() {
-        selectedVariant = match; //
+        selectedVariant = match;
         quantity = 1;
         if (match != null && (match.imageUrl ?? '').isNotEmpty) {
           selectedImg = NetworkUtils.fixDeviceUrl(match.imageUrl!);
@@ -1287,7 +1275,7 @@ Widget _buildGallery(Product current, List<ProductImage> images) {
                 selectedImg!.trim(),
           );
           if (idx != -1) {
-            _pageController.jumpToPage(idx); //
+            _pageController.jumpToPage(idx); 
           }
         }
       });
@@ -1419,7 +1407,7 @@ Widget _buildGallery(Product current, List<ProductImage> images) {
                       borderRadius: BorderRadius.circular(4),
                     ),
                     child: Text(
-                      storageSize, // Sẽ hiển thị sạch đẹp dạng "512GB", "128GB"
+                      storageSize,
                       style: TextStyle(
                         fontSize: 13,
                         fontWeight:
@@ -1542,7 +1530,6 @@ Widget _buildGallery(Product current, List<ProductImage> images) {
   }
 
   Widget _buildBottomAction(double displayPrice) {
-    // Lấy giá thực tế của phiên bản đang chọn, nếu chưa chọn thì lấy giá mặc định của sản phẩm
     final finalPrice = selectedVariant?.effectivePrice ?? displayPrice;
 
     return Container(
@@ -1557,14 +1544,12 @@ Widget _buildGallery(Product current, List<ProductImage> images) {
       child: SafeArea(
         child: Row(
           children: [
-            // KHU VỰC HIỂN THỊ CHI TIẾT GIÁ (GIÁ x SỐ LƯỢNG)
             Expanded(
-              flex: 4, // Chia tỉ lệ không gian cho cột hiển thị giá
+              flex: 4, 
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Dòng hiển thị công thức: [Giá 1 sản phẩm] x [Số lượng]
                   Text(
                     '${formatCurrency(finalPrice)} đ x $quantity',
                     style: TextStyle(
@@ -1574,13 +1559,11 @@ Widget _buildGallery(Product current, List<ProductImage> images) {
                     ),
                   ),
                   const SizedBox(height: 2),
-                  // Chữ "Tổng cộng" nhỏ đi kèm
                   const Text(
                     'Tổng cộng',
                     style: TextStyle(fontSize: 11, color: Colors.grey),
                   ),
                   const SizedBox(height: 2),
-                  // Số tiền tổng lớn, nổi bật hiển thị kết quả cuối cùng
                   Text(
                     '${formatCurrency(finalPrice * quantity)} đ',
                     style: const TextStyle(
@@ -1865,7 +1848,7 @@ Widget _buildFaqItem(ProductFaq faq) {
     if (url == null || url.isEmpty) return '';
     if (url.startsWith('http')) return url;
     // Đồng bộ cấu hình URL IP giống hệt bên ProductsService của bạn
-    const String baseUrl = 'http://192.168.24.18:8000/api';
+    const String baseUrl = 'http://192.168.24.14:8000/api';
     final cleanUrl = url.startsWith('/') ? url.substring(1) : url;
     return '$baseUrl/$cleanUrl';
   }

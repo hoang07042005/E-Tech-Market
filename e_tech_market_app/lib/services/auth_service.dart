@@ -9,7 +9,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 class AuthService {
   // Android emulator should use 10.0.2.2 to reach the host machine's localhost.
   // If you run on iOS simulator, physical device, or a different host, override with API_BASE_URL.
-  static const String _defaultBaseUrl = 'http://192.168.24.18:8000/api';
+  static const String _defaultBaseUrl = 'http://192.168.24.14:8000/api';
   static const String _baseUrl = String.fromEnvironment('API_BASE_URL', defaultValue: _defaultBaseUrl);
   static const String _tokenKey = 'auth_token';
   static const String _userKey = 'auth_user';

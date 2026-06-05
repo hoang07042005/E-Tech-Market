@@ -5,7 +5,7 @@ import 'dart:io';
 import 'package:http/http.dart' as http;
 
 class BannerService {
-  static const String _defaultBaseUrl = 'http://192.168.24.18:8000/api';
+  static const String _defaultBaseUrl = 'http://192.168.24.14:8000/api';
   static const String _baseUrl = String.fromEnvironment('API_BASE_URL', defaultValue: _defaultBaseUrl);
 
   static Future<List<dynamic>> fetchActiveBanners() async {
