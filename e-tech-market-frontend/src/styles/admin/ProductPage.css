@@ -988,7 +988,7 @@
 
 .pSpecRow {
     display: grid;
-    grid-template-columns: minmax(160px, 1.15fr) minmax(110px, 1fr) minmax(120px, 1fr) minmax(120px, 1fr) minmax(90px, .7fr) 40px;
+    grid-template-columns: minmax(130px, 1fr) minmax(180px, 1.4fr) minmax(180px, 1.8fr) minmax(160px, 1.4fr) minmax(110px, .9fr) 40px;
     gap: 15px;
     align-items: center;
 }
@@ -1001,6 +1001,8 @@
     letter-spacing: .05em;
     padding: 0 5px;
     margin-bottom: -5px;
+    border-bottom: 1px solid rgba(226, 232, 240, .75);
+    padding-bottom: 12px;
 }
 
 .pSpecRow input,

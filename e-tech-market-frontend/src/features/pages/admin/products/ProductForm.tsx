@@ -730,7 +730,7 @@ export default function ProductForm({ productId, onSave, onCancel }: ProductForm
                       ))}
                     </select>
                     <input placeholder="Nhóm" value={spec.spec_group} onChange={e => updateSpec(index, 'spec_group', e.target.value)} />
-                    <input placeholder="Tên" value={spec.spec_key} onChange={e => updateSpec(index, 'spec_key', e.target.value)} />
+                    <input placeholder="Tên thông số" value={spec.spec_key} onChange={e => updateSpec(index, 'spec_key', e.target.value)} />
                     <input placeholder="Giá trị" value={spec.spec_value} onChange={e => updateSpec(index, 'spec_value', e.target.value)} />
                     <input placeholder="Đơn vị" value={spec.spec_unit} onChange={e => updateSpec(index, 'spec_unit', e.target.value)} className="uInput" />
                     <button type="button" onClick={() => removeSpec(index)} className="pRemoveSpec" title="Xóa thông số">×</button>

@@ -3,6 +3,9 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:http/http.dart' as http;
+import '../../../utils/network_utils.dart';
+import 'package:flutter/foundation.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ProductsService {
   static const String _defaultBaseUrl = 'http://192.168.24.14:8000/api';
@@ -23,6 +26,7 @@ class ProductsService {
   }) async {
     final queryParams = <String, String>{
       'page': page.toString(),
+      '_t': DateTime.now().millisecondsSinceEpoch.toString(),
     };
 
     if (limit != null) {
@@ -183,6 +187,49 @@ class ProductsService {
       throw Exception(message ?? 'Server error: ${response.statusCode}');
     } catch (e) {
       throw Exception('Không tải được tin tức sản phẩm: $e');
+    }
+  }
+
+// Hàm xử lý nhập thêm hàng tồn kho (Restock) chuẩn hóa URL
+static Future<Map<String, dynamic>> restock({
+    required int id,
+    required bool isVariant,
+    required int amount,
+  }) async {
+    final String endpoint = isVariant 
+        ? '/admin/product-variants/$id/restock'
+        : '/admin/products/$id/restock';
+
+    try {
+      // 1. LẤY TOKEN ĐĂNG NHẬP CỦA ADMIN TỪ TRÌNH LƯU TRỮ TRÊN THIẾT BỊ
+      final SharedPreferences prefs = await SharedPreferences.getInstance();
+      final String? token = prefs.getString('auth_token'); // Thay 'auth_token' bằng Key lưu token chính xác trong dự án của bạn
+
+      // 2. GỬI REQUEST KÈM THEO HEADER XÁC THỰC
+      final response = await http.patch(
+        Uri.parse('$_baseUrl$endpoint'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          if (token != null) 'Authorization': 'Bearer $token', // Gắn token dạng Bearer phục vụ Sanctum/Passport
+        },
+        body: jsonEncode({'add': amount}),
+      ).timeout(const Duration(seconds: 15));
+
+      final data = jsonDecode(response.body);
+
+      if (response.statusCode >= 200 && response.statusCode < 300) {
+        if (data is Map<String, dynamic> && data['data'] != null) {
+          return data['data'];
+        }
+        return data is Map<String, dynamic> ? data : {};
+      }
+
+      final String? serverMessage = data is Map<String, dynamic> ? data['message']?.toString() : null;
+      throw Exception(serverMessage ?? 'Lỗi hệ thống (Mã: ${response.statusCode})');
+    } catch (e) {
+      print('==> LỖI RESTOCK API: $e');
+      throw Exception(e.toString().replaceAll('Exception: ', ''));
     }
   }
 }

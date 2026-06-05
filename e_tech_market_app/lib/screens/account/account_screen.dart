@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../utils/network_utils.dart';
+import '../../utils/app_snackbar.dart';
 import 'clause/terms_screen.dart';
 import '../orders/order_list_screen.dart';
 import 'security/security_screen.dart';
@@ -9,6 +10,9 @@ import '../wishlist/wishlist_screen.dart';
 import 'information/about_screen.dart';
 import 'information/contact_screen.dart';
 import 'setting/setting_screen.dart';
+import '../admin/inventory/admin_inventory_screen.dart';
+import '../admin/products/admin_product_screen.dart';
+import '../admin/orders/admin_order_screen.dart';
 
 class AccountScreen extends StatelessWidget {
   final Map<String, dynamic> user;
@@ -48,6 +52,13 @@ class AccountScreen extends StatelessWidget {
 
     final name = user['name'] ?? 'Khách hàng';
     final email = user['email'] ?? 'Chưa cập nhật email';
+
+    // Kiểm tra xem người dùng có vai trò là admin không
+    bool isAdmin = false;
+    final roles = user['roles'];
+    if (roles is List) {
+      isAdmin = roles.any((role) => role is Map && role['slug'] == 'admin');
+    }
 
     return SafeArea(
       child: SingleChildScrollView(
@@ -89,6 +100,8 @@ class AccountScreen extends StatelessWidget {
             ),
             
             const SizedBox(height: 32),
+
+            
 
             // Account Section
             _buildMenuSection(
@@ -143,6 +156,25 @@ class AccountScreen extends StatelessWidget {
                 }),
               ],
             ),
+
+            // Management Section for Admins
+            if (isAdmin) ...[
+              _buildMenuSection(
+                title: 'QUẢN TRỊ',
+                children: [
+                  _buildMenuItem(Icons.inventory_2_outlined, 'Tồn kho (Admin)', () {
+                    Navigator.push(context, MaterialPageRoute(builder: (_) => const AdminInventoryScreen()));
+                  }),
+                  _buildMenuItem(Icons.assignment_outlined, 'Quản lý đơn hàng (Admin)', () {
+                    Navigator.push(context, MaterialPageRoute(builder: (_) => const AdminOrdersScreen()));
+                  }),
+                  _buildMenuItem(Icons.inventory_outlined, 'Quản lý sản phẩm (Admin)', () {
+                    Navigator.push(context, MaterialPageRoute(builder: (_) => const AdminProductScreen()));
+                  }),
+                ],
+              ),
+              const SizedBox(height: 24),
+            ],
 
             const SizedBox(height: 32),
             
