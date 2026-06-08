@@ -4,10 +4,10 @@ import 'dart:io';
 
 import 'package:http/http.dart' as http;
 import 'auth_service.dart';
+import '../config/api_config.dart';
 
 class NotificationService {
-  static const String _defaultBaseUrl = 'http://192.168.24.14:8000/api';
-  static const String _baseUrl = String.fromEnvironment('API_BASE_URL', defaultValue: _defaultBaseUrl);
+  static const String _baseUrl = ApiConfig.apiBaseUrl;
 
   static Future<Map<String, dynamic>> fetchNotifications({int page = 1, int perPage = 20}) async {
     final token = await AuthService.getToken();

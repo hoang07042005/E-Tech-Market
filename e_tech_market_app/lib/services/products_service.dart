@@ -6,11 +6,12 @@ import 'package:http/http.dart' as http;
 import '../../../utils/network_utils.dart';
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../config/api_config.dart';
+
 
 class ProductsService {
-  static const String _defaultBaseUrl = 'http://192.168.24.14:8000/api';
-  static const String _baseUrl =
-      String.fromEnvironment('API_BASE_URL', defaultValue: _defaultBaseUrl);
+  static const String _baseUrl = ApiConfig.apiBaseUrl;
+
 
   static Future<Map<String, dynamic>> fetchProducts({
     int page = 1,

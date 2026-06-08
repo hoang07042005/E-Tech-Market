@@ -3,9 +3,11 @@ import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../config/api_config.dart';
+
 class AdminProductsService {
-  static const String _defaultBaseUrl = 'http://192.168.24.14:8000/api';
-  static const String _baseUrl = String.fromEnvironment('API_BASE_URL', defaultValue: _defaultBaseUrl);
+  static const String _baseUrl = ApiConfig.apiBaseUrl;
+
 
   static Future<Map<String, String>> _getHeaders() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();

@@ -101,76 +101,156 @@ class AccountScreen extends StatelessWidget {
             
             const SizedBox(height: 32),
 
-            
-
-            // Account Section
+            // --- TÀI KHOẢN ---
             _buildMenuSection(
               title: 'TÀI KHOẢN',
               children: [
-                _buildMenuItem(Icons.person_outline, 'Thông tin cá nhân', () {
-                  Navigator.push(context, MaterialPageRoute(builder: (_) => const ProfileScreen()));
-                }),
-                _buildMenuItem(Icons.receipt_long_outlined, 'Đơn hàng', () {
-                  Navigator.push(context, MaterialPageRoute(builder: (_) => const OrderListScreen()));
-                }),
-                _buildMenuItem(Icons.favorite_outline, 'Sản phẩm yêu thích', () {
-                  Navigator.push(context, MaterialPageRoute(builder: (_) => const WishlistScreen()));
-                }),
-                _buildMenuItem(Icons.local_activity_outlined, 'Kho voucher', () {
-                  Navigator.push(context, MaterialPageRoute(builder: (_) => const VoucherWarehouseScreen()));
-                }),
+                // Thông tin cá nhân: Màu Xanh Dương (Tin cậy)
+                _buildMenuItem(
+                  Icons.person_outline, 
+                  'Thông tin cá nhân', 
+                  const Color(0xFFE0F2FE), 
+                  const Color(0xFF0284C7), 
+                  () {
+                    Navigator.push(context, MaterialPageRoute(builder: (_) => const ProfileScreen()));
+                  }
+                ),
+                // Đơn hàng: Màu Vàng Cam (Trạng thái giao nhận, vận chuyển)
+                _buildMenuItem(
+                  Icons.receipt_long_outlined, 
+                  'Đơn hàng', 
+                  const Color(0xFFFEF3C7), 
+                  const Color(0xFFD97706), 
+                  () {
+                    Navigator.push(context, MaterialPageRoute(builder: (_) => const OrderListScreen()));
+                  }
+                ),
+                // Sản phẩm yêu thích: Màu Hồng/Đỏ (Yêu thích, tim)
+                _buildMenuItem(
+                  Icons.favorite_outline, 
+                  'Sản phẩm yêu thích', 
+                  const Color(0xFFFCE7F3), 
+                  const Color(0xFFDB2777), 
+                  () {
+                    Navigator.push(context, MaterialPageRoute(builder: (_) => const WishlistScreen()));
+                  }
+                ),
+                // Kho voucher: Màu Tím (Ưu đãi, sự kiện đặc biệt)
+                _buildMenuItem(
+                  Icons.local_activity_outlined, 
+                  'Kho voucher', 
+                  const Color(0xFFF3E8FF), 
+                  const Color(0xFF9333EA), 
+                  () {
+                    Navigator.push(context, MaterialPageRoute(builder: (_) => const VoucherWarehouseScreen()));
+                  }
+                ),
               ],
             ),
             
-
             const SizedBox(height: 24),
 
-            // About Section
+            // --- VỀ E-TECH MARKET ---
             _buildMenuSection(
               title: 'VỀ E-TECH MARKET',
               children: [
-                _buildMenuItem(Icons.info_outline, 'Giới thiệu', () {
-                  Navigator.push(context, MaterialPageRoute(builder: (_) => const AboutScreen()));
-                }),
-                _buildMenuItem(Icons.headset_mic_outlined, 'Liên hệ & Hỗ trợ', () {
-                  Navigator.push(context, MaterialPageRoute(builder: (_) => const ContactScreen()));
-                }),
+                // Giới thiệu: Màu Lam Ngọc/Teal (Thông tin doanh nghiệp)
+                _buildMenuItem(
+                  Icons.info_outline, 
+                  'Giới thiệu', 
+                  const Color(0xFFE0F2F1), 
+                  const Color(0xFF00897B), 
+                  () {
+                    Navigator.push(context, MaterialPageRoute(builder: (_) => const AboutScreen()));
+                  }
+                ),
+                // Liên hệ & Hỗ trợ: Màu Xanh Lá (Tổng đài, hỗ trợ trực tuyến năng động)
+                _buildMenuItem(
+                  Icons.headset_mic_outlined, 
+                  'Liên hệ & Hỗ trợ', 
+                  const Color(0xFFDCFCE7), 
+                  const Color(0xFF16A34A), 
+                  () {
+                    Navigator.push(context, MaterialPageRoute(builder: (_) => const ContactScreen()));
+                  }
+                ),
               ],
             ),
-
             
             const SizedBox(height: 24),
             
-            // Settings Section
+            // --- THIẾT LẬP ---
             _buildMenuSection(
               title: 'THIẾT LẬP',
               children: [
-                _buildMenuItem(Icons.security_outlined, 'Bảo mật', () {
-                  Navigator.push(context, MaterialPageRoute(builder: (_) => const SecurityScreen()));
-                }),
-                _buildMenuItem(Icons.article_outlined, 'Các điều khoản', () {
-                  Navigator.push(context, MaterialPageRoute(builder: (_) => const TermsScreen()));
-                }),
-                _buildMenuItem(Icons.settings_outlined, 'Cài đặt', () {
-                  Navigator.push(context, MaterialPageRoute(builder: (_) => const SettingScreen()));
-                }),
+                // Bảo mật: Màu Xanh Khiên/Xanh Chàm (An toàn, bảo mật)
+                _buildMenuItem(
+                  Icons.security_outlined, 
+                  'Bảo mật', 
+                  const Color(0xFFE0E7FF), 
+                  const Color(0xFF4F46E5), 
+                  () {
+                    Navigator.push(context, MaterialPageRoute(builder: (_) => const SecurityScreen()));
+                  }
+                ),
+                // Các điều khoản: Màu Cam Đất (Văn bản pháp lý, lưu ý)
+                _buildMenuItem(
+                  Icons.article_outlined, 
+                  'Các điều khoản', 
+                  const Color(0xFFFFEDD5), 
+                  const Color(0xFFEA580C), 
+                  () {
+                    Navigator.push(context, MaterialPageRoute(builder: (_) => const TermsScreen()));
+                  }
+                ),
+                // Cài đặt: Màu Xám Slate (Hệ thống, cấu hình)
+                _buildMenuItem(
+                  Icons.settings_outlined, 
+                  'Cài đặt', 
+                  const Color(0xFFF1F5F9), 
+                  const Color(0xFF64748B), 
+                  () {
+                    Navigator.push(context, MaterialPageRoute(builder: (_) => const SettingScreen()));
+                  }
+                ),
               ],
             ),
 
-            // Management Section for Admins
+            // --- QUẢN TRỊ (ADMIN) ---
             if (isAdmin) ...[
               _buildMenuSection(
                 title: 'QUẢN TRỊ',
                 children: [
-                  _buildMenuItem(Icons.inventory_2_outlined, 'Tồn kho (Admin)', () {
-                    Navigator.push(context, MaterialPageRoute(builder: (_) => const AdminInventoryScreen()));
-                  }),
-                  _buildMenuItem(Icons.assignment_outlined, 'Quản lý đơn hàng (Admin)', () {
-                    Navigator.push(context, MaterialPageRoute(builder: (_) => const AdminOrdersScreen()));
-                  }),
-                  _buildMenuItem(Icons.inventory_outlined, 'Quản lý sản phẩm (Admin)', () {
-                    Navigator.push(context, MaterialPageRoute(builder: (_) => const AdminProductScreen()));
-                  }),
+                  // Tồn kho: Màu Nâu/Hổ phách (Kho bãi, lưu trữ)
+                  _buildMenuItem(
+                    Icons.inventory_2_outlined, 
+                    'Tồn kho (Admin)', 
+                    const Color(0xFFFEF3C7), 
+                    const Color(0xFFB45309), 
+                    () {
+                      Navigator.push(context, MaterialPageRoute(builder: (_) => const AdminInventoryScreen()));
+                    }
+                  ),
+                  // Quản lý đơn hàng: Màu Cyan/Xanh biển sáng (Xử lý luồng đơn)
+                  _buildMenuItem(
+                    Icons.assignment_outlined, 
+                    'Quản lý đơn hàng (Admin)', 
+                    const Color(0xFFE0F7FA), 
+                    const Color(0xFF00ACC1), 
+                    () {
+                      Navigator.push(context, MaterialPageRoute(builder: (_) => const AdminOrdersScreen()));
+                    }
+                  ),
+                  // Quản lý sản phẩm: Màu Xanh lục đậm (Sản phẩm, hàng hóa)
+                  _buildMenuItem(
+                    Icons.inventory_outlined, 
+                    'Quản lý sản phẩm (Admin)', 
+                    const Color(0xFFE8F5E9), 
+                    const Color(0xFF2E7D32), 
+                    () {
+                      Navigator.push(context, MaterialPageRoute(builder: (_) => const AdminProductScreen()));
+                    }
+                  ),
                 ],
               ),
               const SizedBox(height: 24),
@@ -185,7 +265,7 @@ class AccountScreen extends StatelessWidget {
               child: ElevatedButton.icon(
                 onPressed: onLogout,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFFFFF0E6),
+                  backgroundColor: const Color(0xFFFEE2E2), 
                   foregroundColor: const Color(0xFFD32F2F),
                   elevation: 0,
                   shadowColor: Colors.transparent,
@@ -194,7 +274,6 @@ class AccountScreen extends StatelessWidget {
                   ),
                 ),
                 icon: const Icon(Icons.logout, size: 22, color: Color(0xFFD32F2F)),
-
                 label: const Text('Đăng xuất', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
               ),
             ),
@@ -233,7 +312,13 @@ class AccountScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildMenuItem(IconData icon, String title, VoidCallback onTap) {
+  Widget _buildMenuItem(
+    IconData icon, 
+    String title, 
+    Color bgColor, 
+    Color iconColor, 
+    VoidCallback onTap
+  ) {
     return InkWell(
       onTap: onTap,
       child: Padding(
@@ -243,10 +328,10 @@ class AccountScreen extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: const Color(0xFFFFF0E6),
+                color: bgColor,
                 borderRadius: BorderRadius.circular(10),
               ),
-              child: Icon(icon, color: const Color(0xFFC45A1A), size: 20),
+              child: Icon(icon, color: iconColor, size: 20),
             ),
             const SizedBox(width: 16),
             Expanded(

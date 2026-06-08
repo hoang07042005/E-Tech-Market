@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:e_tech_market_app/services/admin_products_service.dart';
 import 'admin_product_from_screen.dart';
 import 'admin_product_variant_detail_screen.dart';
+import '../../../config/api_config.dart';
 
 class AdminProductScreen extends StatefulWidget {
   const AdminProductScreen({super.key});
@@ -177,7 +178,7 @@ class _AdminProductScreenState extends State<AdminProductScreen> {
   String _resolveImageUrl(String? url) {
     if (url == null || url.isEmpty) return '';
     
-    const String serviceUrl = String.fromEnvironment('API_BASE_URL', defaultValue: 'http://192.168.24.14:8000/api');
+    const String serviceUrl = String.fromEnvironment('API_BASE_URL', defaultValue: ApiConfig.apiBaseUrl);
     final String domain = serviceUrl.replaceAll('/api', '');
 
     if (url.startsWith('http')) {

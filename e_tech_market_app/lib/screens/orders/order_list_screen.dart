@@ -140,7 +140,7 @@ class _OrderListScreenState extends State<OrderListScreen> {
         ),
       ),
       body: Container(
-        color: const Color(0xFFFAF1EB),
+        color: const Color(0xFFFFFFFF),
         child: RefreshIndicator(
           onRefresh: () => _loadOrders(page: _page),
           child: _loading
@@ -292,142 +292,173 @@ class _OrderListScreenState extends State<OrderListScreen> {
     );
   }
 
-  Widget _buildOrderCard(BuildContext context, dynamic order) {
-    final status = (order['status'] ?? '').toString().toLowerCase();
-    final meta = _statusMeta(status);
-    final items = (order['items'] as List<dynamic>?) ?? [];
-    final summary = items
-        .map((item) {
-          if (item is Map<String, dynamic>) {
-            return (item['product_name_snapshot'] ?? item['product']?['name'] ?? '').toString();
-          }
-          return '';
-        })
-        .where((text) => text.isNotEmpty)
-        .join(', ');
+Widget _buildOrderCard(BuildContext context, dynamic order) {
+  final status = (order['status'] ?? '').toString().toLowerCase();
+  final meta = _statusMeta(status);
+  final items = (order['items'] as List<dynamic>?) ?? [];
+  final summary = items
+      .map((item) {
+        if (item is Map<String, dynamic>) {
+          return (item['product_name_snapshot'] ?? item['product']?['name'] ?? '').toString();
+        }
+        return '';
+      })
+      .where((text) => text.isNotEmpty)
+      .join(', ');
 
-    final totalText = _formatMoney(order['total_amount']);
-    return Card(
-      color: const Color(0xFFFFFFFF),
-      elevation: 0,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
-      margin: const EdgeInsets.symmetric(vertical: 8),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(20),
-        onTap: () {
-          final id = order['id'];
-          if (id is int) {
-            Navigator.push(context, MaterialPageRoute(builder: (_) => OrderDetailScreen(orderId: id))).then((_) {
-              _loadOrders(page: _page);
-            });
-          }
-        },
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(
-                    child: Text(
-                      order['order_code'] ?? 'Đơn hàng #${order['id'] ?? ''}',
-                      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+  final totalText = _formatMoney(order['total_amount']);
+  final statusColor = meta['color'] as Color? ?? Colors.grey;
+
+  return Card(
+    color: const Color(0xFFFFFFFF),
+    elevation: 0,
+    // 1. Thêm viền ngoài (BorderSide) cho Card tại đây
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(8), // Tăng lên 8 nhìn sẽ mượt mà hơn
+      side: BorderSide(
+        color: Colors.grey.shade200, // Màu viền nhẹ nhàng, tinh tế
+        width: 1,
+      ),
+    ),
+    margin: const EdgeInsets.symmetric(vertical: 8),
+    child: InkWell(
+      // 2. Đồng bộ bo góc với Card để hiệu ứng gợn sóng không bị lem ra ngoài
+      borderRadius: BorderRadius.circular(8),
+      onTap: () {
+        final id = order['id'];
+        if (id is int) {
+          Navigator.push(context, MaterialPageRoute(builder: (_) => OrderDetailScreen(orderId: id))).then((_) {
+            _loadOrders(page: _page);
+          });
+        }
+      },
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.center, // Căn giữa theo chiều dọc để cân bằng với Tag trạng thái
+              children: [
+                Expanded(
+                  child: Text(
+                    order['order_code'] ?? 'Đơn hàng #${order['id'] ?? ''}',
+                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
+                ),
+                // 3. Phần hiển thị trạng thái được thiết kế lại cao cấp hơn
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  decoration: BoxDecoration(
+                    // Lấy chính màu trạng thái làm nền mờ (12% opacity)
+                    color: statusColor.withValues(alpha: 0.12),
+                    // Giảm bo góc từ viên thuốc (12) xuống dạng Tag hiện đại (6)
+                    borderRadius: BorderRadius.circular(6), 
+                  ),
+                  child: Text(
+                    meta['label'] as String? ?? 'Không rõ',
+                    style: TextStyle(
+                      color: statusColor, 
+                      fontWeight: FontWeight.w600, // Chữ thanh thoát, không bị quá dày dính vào nhau
+                      fontSize: 12,
                     ),
                   ),
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                    decoration: BoxDecoration(
-                      color: Color.fromRGBO(
-                        ((meta['color'] as Color).r).round(),
-                        ((meta['color'] as Color).g).round(),
-                        ((meta['color'] as Color).b).round(),
-                        0.12,
-                      ),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Text(
-                      meta['label'] as String,
-                      style: TextStyle(color: meta['color'] as Color, fontWeight: FontWeight.w700, fontSize: 12),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 12),
-              // Hiển thị ảnh chính + badge số lượng
-              Row(
-                children: [
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(12),
-                    child: Stack(
-                      children: [
-                        Container(
-                          width: 100,
-                          height: 100,
-                          color: Colors.grey.shade200,
-                          child: (() {
-                            if (items.isNotEmpty) {
-                              final first = items.first;
-                              final url = _resolveOrderImageUrl(first);
-                              if (url.isNotEmpty) {
-                                return Image.network(url, width: 100, height: 100, fit: BoxFit.cover, errorBuilder: (_, __, ___) => const SizedBox.shrink());
-                              }
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            // Hiển thị ảnh chính + badge số lượng
+            Row(
+              children: [
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(12),
+                  child: Stack(
+                    children: [
+                      Container(
+                        width: 100,
+                        height: 100,
+                        color: Colors.grey.shade200,
+                        child: (() {
+                          if (items.isNotEmpty) {
+                            final first = items.first;
+                            final url = _resolveOrderImageUrl(first);
+                            if (url.isNotEmpty) {
+                              return Image.network(
+                                url, 
+                                width: 100, 
+                                height: 100, 
+                                fit: BoxFit.cover, 
+                                errorBuilder: (_, __, ___) => const SizedBox.shrink()
+                              );
                             }
-                            return const Icon(Icons.image_not_supported, color: Colors.grey, size: 40);
-                          })(),
-                        ),
-                        if (items.length > 1)
-                          Positioned(
-                            right: 6,
-                            top: 6,
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                              decoration: BoxDecoration(color: Colors.black.withOpacity(0.7), borderRadius: BorderRadius.circular(16)),
-                              child: Text('+${items.length - 1}', style: const TextStyle(color: Colors.white, fontSize: 12)),
+                          }
+                          return const Icon(Icons.image_not_supported, color: Colors.grey, size: 40);
+                        })(),
+                      ),
+                      if (items.length > 1)
+                        Positioned(
+                          right: 6,
+                          top: 6,
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: Colors.black.withOpacity(0.7), 
+                              borderRadius: BorderRadius.circular(16)
                             ),
+                            child: Text('+${items.length - 1}', style: const TextStyle(color: Colors.white, fontSize: 12)),
                           ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(summary.isEmpty ? 'Không có tên sản phẩm' : summary, maxLines: 2, overflow: TextOverflow.ellipsis),
-                        const SizedBox(height: 8),
-                        Text('${items.length} sản phẩm · ${_formatDate(order['created_at']?.toString())}', style: const TextStyle(color: Colors.grey)),
-                        const SizedBox(height: 8),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text('${totalText}đ', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.red)),
-                            TextButton(
-                              onPressed: () {
-                                final id = order['id'];
-                                if (id is int) {
-                                  Navigator.push(context, MaterialPageRoute(builder: (_) => OrderDetailScreen(orderId: id))).then((_) {
-                                    _loadOrders(page: _page);
-                                  });
-                                }
-                              },
-                              child: const Text('Xem chi tiết', style: TextStyle(color: Colors.black54)),
-                              style: TextButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8)),
-                            )
-                          ],
                         ),
-                      ],
-                    ),
-                  )
-                ],
-              ),
-            ],
-          ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        summary.isEmpty ? 'Không có tên sản phẩm' : summary,
+                         // Giới hạn dòng tránh làm vỡ giao diện card
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        '${items.length} sản phẩm · ${_formatDate(order['created_at']?.toString())}', 
+                        style: const TextStyle(color: Colors.grey, fontSize: 13)
+                      ),
+                      const SizedBox(height: 8),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text('${totalText}đ', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.red)),
+                          TextButton(
+                            onPressed: () {
+                              final id = order['id'];
+                              if (id is int) {
+                                Navigator.push(context, MaterialPageRoute(builder: (_) => OrderDetailScreen(orderId: id))).then((_) {
+                                  _loadOrders(page: _page);
+                                });
+                              }
+                            },
+                            style: TextButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                              minimumSize: Size.zero,
+                              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                            ),
+                            child: const Text('Xem chi tiết', style: TextStyle(color: Colors.black54)),
+                          )
+                        ],
+                      ),
+                    ],
+                  ),
+                )
+              ],
+            ),
+          ],
         ),
       ),
-    );
-  }
+    ),
+  );
+}
 
   Widget _buildPagination() {
     return Row(

@@ -51,7 +51,7 @@ class ProcessProductImage implements ShouldQueue
         $srcImage = match ($mime) {
             'image/jpeg', 'image/jpg' => imagecreatefromjpeg($fullPath),
             'image/png' => imagecreatefrompng($fullPath),
-            'image/webp' => @imagecreatefromwebp($fullPath),
+            'image/webp' => (function_exists('imagecreatefromwebp') ? imagecreatefromwebp($fullPath) : null),
             default => null,
         };
 

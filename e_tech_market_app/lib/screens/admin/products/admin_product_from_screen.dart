@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:e_tech_market_app/services/admin_products_service.dart';
+import '../../../config/api_config.dart';
 
 class AdminProductFormScreen extends StatefulWidget {
   final int? productId;
@@ -931,7 +932,7 @@ class _AdminProductFormScreenState extends State<AdminProductFormScreen> with Si
   String _resolveImageUrl(String? url) {
     if (url == null || url.isEmpty) return '';
 
-    const String serviceUrl = String.fromEnvironment('API_BASE_URL', defaultValue: 'http://192.168.24.14:8000/api');
+    const String serviceUrl = String.fromEnvironment('API_BASE_URL', defaultValue: ApiConfig.apiBaseUrl);
     final String domain = serviceUrl.replaceAll('/api', '');
 
     if (url.startsWith('http')) {

@@ -11,6 +11,7 @@ import '../../services/wishlist_service.dart';
 import '../../utils/network_utils.dart';
 import '../../utils/app_snackbar.dart';
 import 'product_new_detail_screen.dart';
+import '../../../config/api_config.dart';
 
 String formatCurrency(double value) {
   return value.toStringAsFixed(0).replaceAllMapped(
@@ -1848,7 +1849,7 @@ Widget _buildFaqItem(ProductFaq faq) {
     if (url == null || url.isEmpty) return '';
     if (url.startsWith('http')) return url;
     // Đồng bộ cấu hình URL IP giống hệt bên ProductsService của bạn
-    const String baseUrl = 'http://192.168.24.14:8000/api';
+    const String baseUrl = String.fromEnvironment('API_BASE_URL', defaultValue: ApiConfig.apiBaseUrl);
     final cleanUrl = url.startsWith('/') ? url.substring(1) : url;
     return '$baseUrl/$cleanUrl';
   }

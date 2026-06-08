@@ -222,10 +222,25 @@ class _HomeScreenState extends State<HomeScreen> {
                             ],
                           ),
                           title: Text(notif['title']?.toString() ?? 'Thông báo', style: TextStyle(fontWeight: isRead ? FontWeight.normal : FontWeight.bold, fontSize: 14)),
-                          subtitle: Text(notif['body']?.toString() ?? '', maxLines: 2, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 12)),
-                          onTap: () {
-                            if (!isRead) _markNotifAsRead(notif['id'] as int);
-                            // Navigator.pop(context); // close drawer if navigating
+                          // subtitle: Text(notif['body']?.toString() ?? '', maxLines: 2, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 12)),
+                          onTap: () async {
+                            // 1. Đánh dấu đã đọc ngay tại Home (nếu chưa đọc) để UX mượt mà
+                            if (!isRead) {
+                              await _markNotifAsRead(notif['id'] as int);
+                            }
+                            
+                            // Nếu thông báo nằm trong một Drawer hoặc BottomSheet, bạn có thể uncomment dòng dưới
+                            // Navigator.pop(context); 
+
+                            // 2. Điều hướng sang màn hình chi tiết thông báo
+                            if (context.mounted) {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const NotificationsScreen(),
+                                ),
+                              );
+                            }
                           },
                         );
                       },

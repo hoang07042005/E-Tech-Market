@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart'; 
 import 'package:e_tech_market_app/services/products_service.dart';
+import '../../../config/api_config.dart';
 
 class ProductNews {
   final int id;
@@ -82,7 +83,7 @@ class _ProductNewDetailScreenState extends State<ProductNewDetailScreen> {
         if (url.startsWith('http')) return url;
 
         // Đường dẫn gốc của API server
-        const String baseUrl = 'http://192.168.24.14:8000'; 
+        const String baseUrl = String.fromEnvironment('API_BASE_URL', defaultValue: ApiConfig.apiBaseUrl); 
         
         // Đảm bảo url không có dấu gạch chéo dư thừa ở đầu
         final cleanUrl = url.startsWith('/') ? url.substring(1) : url;

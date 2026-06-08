@@ -1,5 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:e_tech_market_app/services/admin_orders_service.dart';
+import '../../../config/api_config.dart';
+// Đảm bảo import đúng đường dẫn chứa file NetworkUtils trong dự án của bạn
+import 'package:e_tech_market_app/utils/network_utils.dart';
+import 'package:image_picker/image_picker.dart';
+import 'dart:io';
+
 
 class AdminOrderDetailScreen extends StatefulWidget {
   final int orderId;
@@ -16,40 +22,53 @@ class _AdminOrderDetailScreenState extends State<AdminOrderDetailScreen> {
   String _selectedStatus = 'pending';
   bool _isSavingStatus = false;
 
+  // Bộ điều khiển ô nhập phản hồi, ghi chú của Admin
+  final TextEditingController _noteController = TextEditingController();
+
+  // Chứng từ hoàn tiền (ảnh)
+  final ImagePicker _picker = ImagePicker();
+  List<XFile> _refundProofFiles = [];
+
+
   @override
   void initState() {
     super.initState();
     _loadDetail();
   }
 
+  @override
+  void dispose() {
+    _noteController.dispose(); // Giải phóng bộ nhớ khi thoát màn hình
+    super.dispose();
+  }
+
   Future<void> _loadDetail() async {
-    setState(() {
-      _isLoading = true;
-      _error = null;
-    });
+    setState(() { _isLoading = true; _error = null; });
     try {
       final data = await AdminOrdersService.fetchAdminOrderDetail(widget.orderId);
+      
+      // DÒNG IN LOG KIỂM TRA: Hãy copy kết quả in ra ở tab Run/Console của VS Code/Android Studio
+      print("===== DỮ LIỆU THÔ TỪ BACKEND GỬI VỀ CHÍNH XÁC LÀ: =====");
+      print(data.toString());
+      print("=====================================================");
+
       setState(() {
         _detail = data;
         _selectedStatus = data['status'] ?? 'pending';
         _isLoading = false;
       });
     } catch (e) {
-      setState(() {
-        _error = e.toString();
-        _isLoading = false;
-      });
+      setState(() { _error = e.toString(); _isLoading = false; });
     }
   }
 
-  // Đồng bộ logic gọi lại _loadDetail() sau khi cập nhật để tự động hiển thị dòng lịch sử mới ở dưới
   Future<void> _saveStatus() async {
     if (_selectedStatus == _detail?['status']) return;
     setState(() => _isSavingStatus = true);
     try {
       await AdminOrdersService.updateAdminOrder(widget.orderId, status: _selectedStatus);
       _showSnackBar('Cập nhật trạng thái thành công', Colors.green);
-      await _loadDetail(); // Tải lại toàn bộ dữ liệu để cập nhật Stepper & Khối Lịch sử
+      await _loadDetail(); 
       setState(() => _isSavingStatus = false);
     } catch (e) {
       setState(() => _isSavingStatus = false);
@@ -63,24 +82,22 @@ class _AdminOrderDetailScreenState extends State<AdminOrderDetailScreen> {
     );
   }
 
-  // ĐÃ SỬA: Sửa hàm phân giải URL ảnh - Trỏ trực tiếp về root domain host, loại bỏ prefix '/api' gây lỗi 404
-  String _getResolvedProductImage(Map<String, dynamic> item) {
-    String? path = item['image_url'] ?? item['image'];
-    
-    if (path == null && item['product'] is Map) {
-      path = item['product']['image_url'] ?? item['product']['image'];
-    }
-    
-    if (path == null || path.isEmpty) return '';
-    if (path.startsWith('http')) return path;
-    
-    const String serviceUrl = String.fromEnvironment('API_BASE_URL', defaultValue: 'http://192.168.24.14:8000/api');
-    final String rootHost = serviceUrl.replaceAll('/api', '');
-    final String cleanPath = path.startsWith('/') ? path : '/$path';
-    return '$rootHost$cleanPath';
+  // Sử dụng NetworkUtils.fixDeviceUrl để xử lý triệt để IP khi dev trên thiết bị thật/mô phỏng
+  String _resolveUrl(String? url) {
+    return NetworkUtils.fixDeviceUrl(url);
   }
 
-  // Đồng bộ logic hiển thị các tuỳ chọn Dropdown tương thích 100% luật chặn từ Web công ty
+  String _getResolvedProductImage(Map<String, dynamic> item) {
+    String? path = item['image_url']?.toString() ?? item['image']?.toString();
+
+    if ((path == null || path.isEmpty) && item['product'] is Map) {
+      final p = item['product'] as Map;
+      path = p['main_image_url']?.toString() ?? p['image_url']?.toString() ?? p['image']?.toString();
+    }
+
+    return _resolveUrl(path);
+  }
+
   List<DropdownMenuItem<String>> _buildDropdownItems() {
     final currentStatus = _detail?['status'] ?? 'pending';
     final currentStep = _detail?['status_step'] ?? 1;
@@ -102,7 +119,6 @@ class _AdminOrderDetailScreenState extends State<AdminOrderDetailScreen> {
       final lbl = opt['label'] as String;
       final step = opt['step'] as int;
 
-      // Áp dụng bộ lọc cấu hình phân quyền từ bản Web:
       if ((val == 'completed' || val == 'returned' || val == 'cancelled') && currentStatus != val) {
         continue; 
       }
@@ -125,7 +141,6 @@ class _AdminOrderDetailScreenState extends State<AdminOrderDetailScreen> {
     return menuItems;
   }
 
-  // Thiết kế Thanh tiến trình trạng thái tuyến tính (Timeline Stepper) theo Web
   Widget _buildOrderStepsTracker() {
     final currentStatus = _detail?['status'] ?? 'pending';
     final currentStep = _detail?['status_step'] ?? 1;
@@ -153,6 +168,8 @@ class _AdminOrderDetailScreenState extends State<AdminOrderDetailScreen> {
       );
     }
 
+    const Color activeStepColor = Color(0xFF10B981); 
+
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 8),
       padding: const EdgeInsets.symmetric(vertical: 4),
@@ -172,31 +189,49 @@ class _AdminOrderDetailScreenState extends State<AdminOrderDetailScreen> {
               children: [
                 Row(
                   children: [
-                    Expanded(child: Divider(color: index == 0 ? Colors.transparent : (isDone ? const Color(0xFF4F46E5) : const Color(0xFFE2E8F0)), thickness: 2.2)),
+                    Expanded(
+                      child: Divider(
+                        color: index == 0 ? Colors.transparent : (isDone ? activeStepColor : const Color(0xFFE2E8F0)), 
+                        thickness: 2.2,
+                      ),
+                    ),
                     Container(
                       width: 22,
                       height: 22,
                       decoration: BoxDecoration(
-                        color: isActive ? const Color(0xFF4F46E5) : (isDone ? const Color(0xFF4F46E5).withOpacity(0.12) : Colors.white),
-                        border: Border.all(color: isDone ? const Color(0xFF4F46E5) : const Color(0xFFCBD5E1), width: 2),
+                        color: isActive ? activeStepColor : (isDone ? activeStepColor.withOpacity(0.12) : Colors.white),
+                        border: Border.all(color: isDone ? activeStepColor : const Color(0xFFCBD5E1), width: 2),
                         shape: BoxShape.circle,
                       ),
                       child: Center(
                         child: isDone && !isActive
-                            ? const Icon(Icons.check, size: 12, color: Color(0xFF4F46E5))
+                            ? const Icon(Icons.check, size: 12, color: activeStepColor)
                             : Text(
                                 '${index + 1}',
-                                style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: isActive ? Colors.white : const Color(0xFF64748B)),
+                                style: TextStyle(
+                                  fontSize: 10, 
+                                  fontWeight: FontWeight.bold, 
+                                  color: isActive ? Colors.white : const Color(0xFF64748B),
+                                ),
                               ),
                       ),
                     ),
-                    Expanded(child: Divider(color: index == stepsList.length - 1 ? Colors.transparent : (currentStep > sStep ? const Color(0xFF4F46E5) : const Color(0xFFE2E8F0)), thickness: 2.2)),
+                    Expanded(
+                      child: Divider(
+                        color: index == stepsList.length - 1 ? Colors.transparent : (currentStep > sStep ? activeStepColor : const Color(0xFFE2E8F0)), 
+                        thickness: 2.2,
+                      ),
+                    ),
                   ],
                 ),
                 const SizedBox(height: 6),
                 Text(
                   sLabel,
-                  style: TextStyle(fontSize: 10, fontWeight: isActive ? FontWeight.bold : FontWeight.w500, color: isActive ? const Color(0xFF4F46E5) : const Color(0xFF64748B)),
+                  style: TextStyle(
+                    fontSize: 10, 
+                    fontWeight: isActive ? FontWeight.bold : FontWeight.w500, 
+                    color: isActive ? activeStepColor : const Color(0xFF64748B),
+                  ),
                   textAlign: TextAlign.center,
                 ),
               ],
@@ -207,7 +242,370 @@ class _AdminOrderDetailScreenState extends State<AdminOrderDetailScreen> {
     );
   }
 
-  // Khối hiển thị chi tiết "Lịch sử chuyển trạng thái" đồng bộ theo Web dưới cùng
+  Color _statusChipColor(String status) {
+    switch (status) {
+      case 'pending':
+        return const Color(0xFFFFB020);
+      case 'approved':
+        return const Color(0xFF3B82F6);
+      case 'refunded':
+        return const Color(0xFF10B981);
+      case 'rejected':
+        return const Color(0xFFE11D48);
+      default:
+        return const Color(0xFF64748B);
+    }
+  }
+
+  String _resolveOrderMediaUrl(dynamic m) {
+    final url = (m is Map) ? (m['url'] ?? m['image_url'] ?? m['image'])?.toString() : null;
+    return _resolveUrl(url);
+  }
+
+  String _resolveCustomerName(Map<String, dynamic>? d) {
+    final customer = d?['customer'];
+    if (customer is Map) {
+      return customer['name']?.toString() ?? '—';
+    }
+    return '—';
+  }
+
+  String _resolveCustomerEmail(Map<String, dynamic>? d) {
+    final customer = d?['customer'];
+    if (customer is Map) {
+      return customer['email']?.toString() ?? '—';
+    }
+    return '—';
+  }
+
+  String _resolveShippingName(Map<String, dynamic>? d) {
+    final shipping = d?['shipping'];
+    if (shipping is Map) {
+      return shipping['name']?.toString() ?? '—';
+    }
+    return '—';
+  }
+
+  String _resolveShippingPhone(Map<String, dynamic>? d) {
+    final shipping = d?['shipping'];
+    if (shipping is Map) {
+      return shipping['phone']?.toString() ?? '—';
+    }
+    return '—';
+  }
+
+  String _resolveShippingAddress(Map<String, dynamic>? d) {
+    final shipping = d?['shipping'];
+    if (shipping is Map) {
+      return shipping['address']?.toString() ?? '—';
+    }
+    return '—';
+  }
+
+  String _resolvePaymentMethod(Map<String, dynamic>? d) {
+    final payment = d?['payment'];
+    if (payment is Map) {
+      final methodStr = payment['method']?.toString().trim().toUpperCase();
+      if (methodStr == 'COD') return 'Thanh toán COD';
+      if (methodStr == 'VNPAY') return 'Ví VNPay';
+      return methodStr ?? '—';
+    }
+    return '—';
+  }
+
+  Widget _buildReturnRequestSection() {
+    final rr = _detail?['return_request'];
+    if (rr == null) {
+      return _buildSectionCard(
+        title: 'Yêu cầu hoàn trả',
+        child: const Padding(
+          padding: EdgeInsets.symmetric(vertical: 16),
+          child: Center(child: Text('Không có yêu cầu hoàn trả.', style: TextStyle(color: Color(0xFF94A3B8), fontSize: 13))),
+        ),
+      );
+    }
+
+    final status = rr['status']?.toString() ?? 'pending';
+    final content = rr['content']?.toString() ?? '';
+    final adminNote = rr['admin_note']?.toString() ?? '';
+
+    final media = (rr['media'] as List?) ?? [];
+    final refundProof = (rr['refund_proof'] as List?) ?? [];
+
+    final Color chipColor = _statusChipColor(status);
+
+    return _buildSectionCard(
+      title: 'Yêu cầu hoàn trả',
+      trailing: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+        decoration: BoxDecoration(color: chipColor.withOpacity(0.12), borderRadius: BorderRadius.circular(999)),
+        child: Text(status, style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: chipColor)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (content.trim().isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 10),
+              child: Text(content, style: const TextStyle(fontSize: 13, color: Color(0xFF1E293B))),
+            ),
+
+          if (media.isNotEmpty) ...[
+            const SizedBox(height: 6),
+            const Text('Hình ảnh', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Color(0xFF0F172A))),
+            const SizedBox(height: 8),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: media.take(8).map<Widget>((m) {
+                final u = _resolveOrderMediaUrl(m);
+                if (u.isEmpty) return const SizedBox.shrink();
+                return ClipRRect(
+                  borderRadius: BorderRadius.circular(8),
+                  child: Image.network(u, width: 76, height: 76, fit: BoxFit.cover, errorBuilder: (c, e, s) {
+                    return const SizedBox(width: 76, height: 76, child: Icon(Icons.broken_image_rounded, color: Color(0xFF94A3B8)));
+                  }),
+                );
+              }).toList(),
+            ),
+          ],
+
+          if (refundProof.isNotEmpty) ...[
+            const SizedBox(height: 10),
+            const Text('Bằng chứng hoàn trả', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Color(0xFF0F172A))),
+            const SizedBox(height: 8),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: refundProof.take(8).map<Widget>((m) {
+                final u = _resolveOrderMediaUrl(m);
+                if (u.isEmpty) return const SizedBox.shrink();
+                return ClipRRect(
+                  borderRadius: BorderRadius.circular(8),
+                  child: Image.network(u, width: 76, height: 76, fit: BoxFit.cover, errorBuilder: (c, e, s) {
+                    return const SizedBox(width: 76, height: 76, child: Icon(Icons.broken_image_rounded, color: Color(0xFF94A3B8)));
+                  }),
+                );
+              }).toList(),
+            ),
+          ],
+
+          if (adminNote.trim().isNotEmpty) ...[
+            const SizedBox(height: 10),
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: const Color(0xFFF8FAFC),
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: const Color(0xFFE2E8F0)),
+              ),
+              child: Text(
+                'Đã lưu phản hồi: $adminNote', 
+                style: const TextStyle(fontSize: 12, color: Color(0xFF334155), fontWeight: FontWeight.w500),
+              ),
+            ),
+          ],
+
+          const SizedBox(height: 12),
+          _buildReturnRequestActions(rr, status: status),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildReturnRequestActions(Map<String, dynamic> rr, {required String status}) {
+    final isPending = status == 'pending';
+    final isApproved = status == 'approved';
+    final isTerminal = status == 'refunded' || status == 'rejected';
+
+    if (isTerminal) {
+      return const SizedBox.shrink();
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'Ghi chú / Lý do phản hồi từ Admin:', 
+          style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Color(0xFF475569)),
+        ),
+        const SizedBox(height: 6),
+        TextField(
+          controller: _noteController,
+          maxLines: 2,
+          style: const TextStyle(fontSize: 13),
+          decoration: InputDecoration(
+            hintText: isPending ? 'Nhập lý do phản hồi (nếu từ chối hoặc cần lưu ý)...' : 'Nhập ghi chú minh chứng hoàn tiền...',
+            hintStyle: const TextStyle(color: Color(0xFF94A3B8), fontSize: 13),
+            contentPadding: const EdgeInsets.all(10),
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
+            ),
+          ),
+        ),
+        const SizedBox(height: 12),
+
+        if (isPending)
+          Row(
+            children: [
+              Expanded(
+                child: ElevatedButton(
+                  onPressed: _isSavingStatus
+                      ? null
+                      : () async {
+                          setState(() => _isSavingStatus = true);
+                          try {
+                            final textNote = _noteController.text.trim();
+                            await AdminOrdersService.processOrderReturn(
+                              widget.orderId, 
+                              'approve',
+                              adminNote: textNote.isNotEmpty ? textNote : null,
+                            );
+                            _showSnackBar('Phê duyệt thành công', Colors.green);
+                            _noteController.clear(); 
+                            await _loadDetail();
+                          } catch (e) {
+                            _showSnackBar('Lỗi: ${e.toString()}', Colors.red);
+                          } finally {
+                            setState(() => _isSavingStatus = false);
+                          }
+                        },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF3B82F6), 
+                    foregroundColor: Colors.white, 
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                  ),
+                  child: const Text('Phê duyệt'),
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: ElevatedButton(
+                  onPressed: _isSavingStatus
+                      ? null
+                      : () async {
+                          setState(() => _isSavingStatus = true);
+                          try {
+                            final textNote = _noteController.text.trim();
+                            await AdminOrdersService.processOrderReturn(
+                              widget.orderId, 
+                              'reject', 
+                              adminNote: textNote.isNotEmpty ? textNote : null,
+                            );
+                            _showSnackBar('Từ chối thành công', Colors.green);
+                            _noteController.clear();
+                            await _loadDetail();
+                          } catch (e) {
+                            _showSnackBar('Lỗi: ${e.toString()}', Colors.red);
+                          } finally {
+                            setState(() => _isSavingStatus = false);
+                          }
+                        },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFFE11D48), 
+                    foregroundColor: Colors.white, 
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                  ),
+                  child: const Text('Từ chối'),
+                ),
+              ),
+            ],
+          ),
+
+        if (isApproved) ...[
+          Row(
+            children: [
+              Expanded(
+                child: OutlinedButton.icon(
+                  onPressed: _isSavingStatus
+                      ? null
+                      : () async {
+                          try {
+                            final picked = await _picker.pickMultiImage(imageQuality: 80);
+                            if (picked != null && picked.isNotEmpty) {
+                              setState(() => _refundProofFiles = picked);
+                            }
+                          } catch (e) {
+                            _showSnackBar('Lỗi chọn ảnh: ${e.toString()}', Colors.red);
+                          }
+                        },
+                  icon: const Icon(Icons.upload_file_rounded),
+                  label: const Text('Chọn chứng từ (ảnh)'),
+                ),
+              ),
+            ],
+          ),
+          if (_refundProofFiles.isNotEmpty) ...[
+            const SizedBox(height: 10),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: _refundProofFiles.map((f) {
+                return ClipRRect(
+                  borderRadius: BorderRadius.circular(8),
+                  child: Image.file(
+                    File(f.path),
+                    width: 76,
+                    height: 76,
+                    fit: BoxFit.cover,
+                    errorBuilder: (c, e, s) {
+                      return const SizedBox(
+                        width: 76,
+                        height: 76,
+                        child: Icon(Icons.broken_image_rounded, color: Color(0xFF94A3B8)),
+                      );
+                    },
+                  ),
+                );
+              }).toList(),
+            ),
+          ],
+          const SizedBox(height: 12),
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton(
+              onPressed: _isSavingStatus
+                  ? null
+                  : () async {
+                      setState(() => _isSavingStatus = true);
+                      try {
+                        final textNote = _noteController.text.trim();
+                        final proofPaths = _refundProofFiles.map((e) => e.path).toList();
+
+                        await AdminOrdersService.processOrderReturn(
+                          widget.orderId,
+                          'refunded',
+                          adminNote: textNote.isNotEmpty ? textNote : null,
+                          refundProofPaths: proofPaths,
+                        );
+
+                        _showSnackBar('Xác nhận hoàn tiền thành công', Colors.green);
+                        _noteController.clear();
+                        setState(() => _refundProofFiles = []);
+                        await _loadDetail();
+                      } catch (e) {
+                        _showSnackBar('Lỗi: ${e.toString()}', Colors.red);
+                      } finally {
+                        setState(() => _isSavingStatus = false);
+                      }
+                    },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF10B981),
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+              ),
+              child: const Text('Xác nhận đã hoàn tiền'),
+            ),
+          ),
+        ],
+
+      ],
+    );
+  }
+
   Widget _buildStatusHistorySection() {
     final history = _detail?['status_history'] as List? ?? [];
     return _buildSectionCard(
@@ -293,7 +691,6 @@ class _AdminOrderDetailScreenState extends State<AdminOrderDetailScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Khối 1: Quản lý trạng thái + Stepper tiến trình
                       _buildSectionCard(
                         title: 'Quản lý trạng thái',
                         child: Column(
@@ -337,25 +734,21 @@ class _AdminOrderDetailScreenState extends State<AdminOrderDetailScreen> {
                       ),
                       const SizedBox(height: 12),
 
-                      // Khối 2: Thông tin giao nhận hàng
                       _buildSectionCard(
                         title: 'Thông tin khách hàng',
                         child: Column(
                           children: [
-                            // Thông tin tài khoản người mua
-                            _buildInfoRow('Tên khách hàng', _detail?['user']?['name'] ?? _detail?['customer_name'] ?? '—'),
-                            _buildInfoRow('Email khách hàng', _detail?['user']?['email'] ?? _detail?['user_email'] ?? '—'),
+                            _buildInfoRow('Tên khách hàng', _resolveCustomerName(_detail)),
+                            _buildInfoRow('Email khách hàng', _resolveCustomerEmail(_detail)),
                             const Divider(height: 16, color: Color(0xFFF1F5F9)),
-                            // Thông tin giao hàng (Người nhận)
-                            _buildInfoRow('Tên người nhận', _detail?['shipping_name'] ?? _detail?['customer_name'] ?? '—'),
-                            _buildInfoRow('Số điện thoại', _detail?['shipping_phone'] ?? '—'),
-                            _buildInfoRow('Địa chỉ giao hàng', _detail?['shipping_address'] ?? '—'),
+                            _buildInfoRow('Tên người nhận', _resolveShippingName(_detail)),
+                            _buildInfoRow('Số điện thoại', _resolveShippingPhone(_detail)),
+                            _buildInfoRow('Địa chỉ giao hàng', _resolveShippingAddress(_detail)),
                           ],
                         ),
                       ),
                       const SizedBox(height: 12),
 
-                      // Khối 3: Danh sách các sản phẩm của đơn hàng
                       _buildSectionCard(
                         title: 'Danh sách sản phẩm (${items.length})',
                         child: Column(
@@ -419,7 +812,6 @@ class _AdminOrderDetailScreenState extends State<AdminOrderDetailScreen> {
                       ),
                       const SizedBox(height: 12),
 
-                      // Khối 4: Chi phí hóa đơn thanh toán
                       _buildSectionCard(
                         title: 'Thanh toán & Chi phí',
                         child: Column(
@@ -434,7 +826,10 @@ class _AdminOrderDetailScreenState extends State<AdminOrderDetailScreen> {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 const Text('Phương thức', style: TextStyle(color: Color(0xFF64748B), fontSize: 13)),
-                                Text(_detail?['payment_method'] ?? '—', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Color(0xFF1E293B))),
+                                Text(
+                                  _resolvePaymentMethod(_detail), 
+                                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Color(0xFF1E293B)),
+                                ),
                               ],
                             )
                           ],
@@ -442,7 +837,9 @@ class _AdminOrderDetailScreenState extends State<AdminOrderDetailScreen> {
                       ),
                       const SizedBox(height: 12),
 
-                      // HIỂN THỊ LỊCH SỬ CHUYỂN TRẠNG THÁI Ở DƯỚI CÙNG THEO WEB
+                      _buildReturnRequestSection(),
+                      const SizedBox(height: 12),
+
                       _buildStatusHistorySection(),
                     ],
                   ),

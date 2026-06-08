@@ -7,6 +7,8 @@ import 'package:http/http.dart' as http;
 import '../utils/network_utils.dart';
 import 'auth_service.dart';
 
+import '../../config/api_config.dart';
+
 class CartItem {
   final int id;
   final int productId;
@@ -92,10 +94,12 @@ class CartState {
   }
 }
 
+
 class CartService {
-  static const String _defaultBaseUrl = 'http://192.168.24.14:8000/api';
-  static const String _baseUrl =
-      String.fromEnvironment('API_BASE_URL', defaultValue: _defaultBaseUrl);
+
+  static const String _baseUrl = ApiConfig.apiBaseUrl;
+
+
 
   static Future<CartState> fetchCart() async {
     final token = await _requireToken();

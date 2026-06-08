@@ -1,8 +1,10 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import '../config/api_config.dart';
 
 class NewsletterService {
-  static const String _baseUrl = 'http://192.168.24.14:8000/api';
+  static const String _baseUrl = ApiConfig.apiBaseUrl;
+
 
   static Future<Map<String, dynamic>> subscribeToNewsletter({
     required String email,

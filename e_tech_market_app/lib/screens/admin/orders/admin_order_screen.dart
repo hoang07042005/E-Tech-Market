@@ -60,7 +60,10 @@ class _AdminOrdersScreenState extends State<AdminOrdersScreen> {
         status: _filterStatus != 'all' ? _filterStatus : null,
         paymentMethod: _filterPaymentMethod != 'all' ? _filterPaymentMethod : null,
         paymentStatus: _filterPaymentStatus != 'all' ? _filterPaymentStatus : null,
-        returnRequests: _activeTab == 'returns' ? 'pending' : null,
+        // Tab “Đơn hoàn trả” phải hiển thị toàn bộ các đơn có yêu cầu hoàn trả
+        // (backend: return_requests=1/true => whereHas('returnRequest')
+        returnRequests: _activeTab == 'returns' ? 'true' : null,
+
       );
       setState(() {
         _response = data;

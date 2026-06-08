@@ -2,8 +2,11 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../config/api_config.dart';
+
 class AdminOrdersService {
-  static const String _baseUrl = 'http://192.168.24.14:8000/api';
+  static const String _baseUrl = ApiConfig.apiBaseUrl;
+
 
   static Future<String?> _getAuthToken() async {
     final prefs = await SharedPreferences.getInstance();
@@ -99,34 +102,64 @@ class AdminOrdersService {
     String? adminNote,
     List<String>? refundProofPaths,
   }) async {
+
     final token = await _getAuthToken();
     if (token == null) throw Exception('Chưa đăng nhập');
 
-    final request = http.MultipartRequest(
-      'POST',
-      Uri.parse('$_baseUrl/admin/orders/$orderId/return-request'),
-    );
+    // Trường hợp 1: Phê duyệt (approve) hoặc Từ chối (reject) không kèm file -> Gửi JSON thông thường
+    if (refundProofPaths == null || refundProofPaths.isEmpty) {
+      final response = await http.post(
+        Uri.parse('$_baseUrl/admin/orders/$orderId/return-request/${action == 'approve' ? 'approve' : (action == 'reject' ? 'reject' : 'refunded')}'),
 
-    request.headers['Authorization'] = 'Bearer $token';
-    request.fields['action'] = action;
-    if (adminNote != null && adminNote.isNotEmpty) {
-      request.fields['admin_note'] = adminNote;
-    }
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode({
+          'action': action,
+          if (adminNote != null && adminNote.isNotEmpty) 'admin_note': adminNote,
+        }),
+      );
 
-    if (refundProofPaths != null && refundProofPaths.isNotEmpty) {
+      if (response.statusCode != 200) {
+        throw Exception('Lỗi xử lý hoàn trả ($action): ${response.statusCode}');
+      }
+
+      final responseBody = jsonDecode(response.body);
+      return responseBody['data'] ?? responseBody;
+    } 
+    
+    // Trường hợp 2: Xác nhận hoàn tiền (refunded) có kèm ảnh/video chứng từ -> Gửi Multipart
+    else {
+      final request = http.MultipartRequest(
+        'POST',
+        Uri.parse('$_baseUrl/admin/orders/$orderId/return-request/refunded'),
+      );
+
+
+      request.headers['Authorization'] = 'Bearer $token';
+      request.headers['Accept'] = 'application/json';
+      
+      request.fields['action'] = action;
+      if (adminNote != null && adminNote.isNotEmpty) {
+        request.fields['admin_note'] = adminNote;
+      }
+
       for (final path in refundProofPaths) {
         request.files.add(await http.MultipartFile.fromPath('refund_proof[]', path));
       }
+
+      final streamedResponse = await request.send();
+      final response = await http.Response.fromStream(streamedResponse);
+
+      if (response.statusCode != 200) {
+        throw Exception('Lỗi xử lý hoàn tiền multipart: ${response.statusCode}');
+      }
+
+      final responseBody = jsonDecode(response.body);
+      return responseBody['data'] ?? responseBody;
     }
-
-    final response = await request.send();
-
-    if (response.statusCode != 200) {
-      throw Exception('Lỗi xử lý hoàn trả: ${response.statusCode}');
-    }
-
-    final responseStr = await response.stream.bytesToString();
-    return jsonDecode(responseStr)['data'] ?? jsonDecode(responseStr);
   }
 
   static String resolveImageUrl(String? url) {

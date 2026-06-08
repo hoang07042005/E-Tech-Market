@@ -288,9 +288,9 @@ class _SecurityScreenState extends State<SecurityScreen> {
               onPressed: _busy ? null : _changePassword,
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFFEF7A45),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
               ),
-              child: Text(_busy ? 'Đang xử lý…' : 'Cập nhật mật khẩu'),
+              child: Text(_busy ? 'Đang xử lý…' : 'Cập nhật mật khẩu', style: const TextStyle(color: Colors.white)),
             ),
           ),
         ],

@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import '../../../config/api_config.dart';
 
 const Color _accent = Color(0xFF7C2E00);
 const Color _surface = Color(0xFFFFF7ED);
@@ -19,7 +20,7 @@ class _OneForOnePolicyScreenState extends State<OneForOnePolicyScreen> {
 
 
 
-  static const String _baseUrl = String.fromEnvironment('API_BASE_URL', defaultValue: 'http://192.168.24.14:8000/api');
+  static const String _baseUrl = String.fromEnvironment('API_BASE_URL', defaultValue: ApiConfig.apiBaseUrl);
 
   Map<String, dynamic>? _storeContact;
 
