@@ -1,29 +1,52 @@
 import 'package:flutter/material.dart';
 
+import 'controllers/theme_controller.dart';
 import 'screens/auth/login_screen.dart';
 import 'screens/home_screen.dart';
 import 'services/auth_service.dart';
 
 void main() {
+  ThemeController.instance.initialize();
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'E-Tech Market',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
-        useMaterial3: true,
-      ),
-      home: const EntryPoint(),
+    final colorSchemeLight = ColorScheme.fromSeed(seedColor: Colors.blue);
+    final colorSchemeDark = ColorScheme.fromSeed(
+      seedColor: Colors.blue,
+      brightness: Brightness.dark,
+    );
+
+    return ListenableBuilder(
+      listenable: ThemeController.instance,
+      builder: (context, _) {
+        return MaterialApp(
+          title: '"'"'E-Tech Market'"'"',
+          theme: ThemeData(
+            colorScheme: colorSchemeLight,
+            useMaterial3: true,
+          ),
+          darkTheme: ThemeData(
+            colorScheme: colorSchemeDark,
+            useMaterial3: true,
+          ),
+          themeMode: ThemeController.instance.themeMode,
+          home: const EntryPoint(),
+        );
+      },
     );
   }
 }
+
 
 class EntryPoint extends StatefulWidget {
   const EntryPoint({super.key});

@@ -24,7 +24,7 @@ class CategorySection extends StatelessWidget {
         categories.take(5).cast<Map<String, dynamic>>().toList();
 
     return Container(
-      color: Colors.white,
+      color: Theme.of(context).colorScheme.surface,
       padding: const EdgeInsets.fromLTRB(20, 26, 20, 28),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -32,7 +32,7 @@ class CategorySection extends StatelessWidget {
           Row(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              const Expanded(
+              Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -51,7 +51,7 @@ class CategorySection extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 25,
                         fontWeight: FontWeight.w800,
-                        color: Color(0xFF111827),
+                        color: Theme.of(context).colorScheme.onSurface,
                         height: 1.1,
                       ),
                     ),
@@ -80,10 +80,10 @@ class CategorySection extends StatelessWidget {
           if (isLoading)
             _buildSkeletonGrid()
           else if (visibleCategories.isEmpty)
-            const Padding(
+            Padding(
               padding: EdgeInsets.symmetric(vertical: 24),
               child: Text('Chưa có danh mục nào.',
-                  style: TextStyle(fontSize: 14, color: Colors.black54)),
+                  style: TextStyle(fontSize: 14, color: Theme.of(context).colorScheme.onSurfaceVariant)),
             )
           else
             _buildCategoryGrid(visibleCategories),

@@ -19,9 +19,7 @@ class ReviewsSection extends StatelessWidget {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.fromLTRB(20, 24, 20, 30),
-      decoration: const BoxDecoration(
-        color: Colors.white,
-      ),
+      color: Theme.of(context).colorScheme.surface,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -30,7 +28,7 @@ class ReviewsSection extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                const Text(
+                Text(
                   'TRẢI NGHIỆM THỰC TẾ',
                   textAlign: TextAlign.center,
                   style: TextStyle(
@@ -41,13 +39,13 @@ class ReviewsSection extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 8),
-                const Text(
+                Text(
                   'Đánh giá từ khách hàng',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 25,
                     fontWeight: FontWeight.w800,
-                    color: Color(0xFF111827),
+                    color: Theme.of(context).colorScheme.onSurface,
                     height: 1.1,
                   ),
                 ),
@@ -57,12 +55,12 @@ class ReviewsSection extends StatelessWidget {
           if (isLoading)
             _buildSkeletonList()
           else if (reviews.isEmpty)
-            const Padding(
+            Padding(
               padding: EdgeInsets.symmetric(vertical: 24),
               child: Text(
                 'Chưa có đánh giá nổi bật.',
                 textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 14, color: Colors.black54),
+                style: TextStyle(fontSize: 14, color: Theme.of(context).colorScheme.onSurfaceVariant),
               ),
             )
           else
@@ -111,7 +109,7 @@ class _ReviewCard extends StatelessWidget {
       decoration: BoxDecoration(
         border: Border(
           bottom: BorderSide(
-            color: const Color(0xFFF1F5F9),
+            color: Theme.of(context).colorScheme.surfaceContainerLow,
             width: 1,
           ),
         ),
@@ -127,7 +125,7 @@ class _ReviewCard extends StatelessWidget {
               height: 64,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: const Color(0xFFEF7A45).withValues(alpha: 0.1),
+                color: Color(0xFFEF7A45).withValues(alpha: 0.1),
               ),
               child: userAvatarUrl.isNotEmpty
                   ? ClipOval(
@@ -148,10 +146,10 @@ class _ReviewCard extends StatelessWidget {
                 children: [
                   Text(
                     userName,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w700,
-                      color: Color(0xFF111827),
+                      color: Theme.of(context).colorScheme.onSurface,
                     ),
                   ),
                   const SizedBox(height: 6),
@@ -162,7 +160,7 @@ class _ReviewCard extends StatelessWidget {
                       const SizedBox(width: 8),
                       Text(
                         _getRatingLabel(rating),
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w600,
                           color: Color(0xFFEF7A45),
@@ -174,9 +172,9 @@ class _ReviewCard extends StatelessWidget {
                   // Comment
                   Text(
                     comment,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 13,
-                      color: Color(0xFF475569),
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
                       height: 1.5,
                     ),
                     maxLines: 4,
@@ -186,9 +184,9 @@ class _ReviewCard extends StatelessWidget {
                   // Time
                   Text(
                     '🕒 Đánh giá đã đăng vào ${_formatDate(createdAt)}',
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 11,
-                      color: Color(0xFFA3A3A3),
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
                     ),
                   ),
                   // Product name
@@ -200,14 +198,14 @@ class _ReviewCard extends StatelessWidget {
                         vertical: 6,
                       ),
                       decoration: BoxDecoration(
-                        color: const Color(0xFFF1F5F9),
+                        color: Theme.of(context).colorScheme.surfaceContainerLow,
                         borderRadius: BorderRadius.circular(6),
                       ),
                       child: Text(
                         'Sản phẩm: $productName',
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 11,
-                          color: Color(0xFF64748B),
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
                         ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
@@ -227,7 +225,7 @@ class _ReviewCard extends StatelessWidget {
     final initial = name.isNotEmpty ? name[0].toUpperCase() : 'U';
     return Text(
       initial,
-      style: const TextStyle(
+      style: TextStyle(
         fontSize: 24,
         fontWeight: FontWeight.w700,
         color: Color(0xFFEF7A45),
@@ -240,7 +238,7 @@ class _ReviewCard extends StatelessWidget {
       children: List.generate(5, (index) {
         return Icon(
           index < rating ? Icons.star : Icons.star_border,
-          color: const Color(0xFFEF7A45),
+          color: Color(0xFFEF7A45),
           size: 14,
         );
       }),
@@ -291,10 +289,7 @@ class _ReviewCardSkeleton extends StatelessWidget {
           Container(
             width: 64,
             height: 64,
-            decoration: const BoxDecoration(
-              shape: BoxShape.circle,
-              color: Color(0xFFE5E7EB),
-            ),
+            color: Theme.of(context).colorScheme.surfaceContainerLow,
           ),
           const SizedBox(width: 16),
           Expanded(
@@ -305,7 +300,7 @@ class _ReviewCardSkeleton extends StatelessWidget {
                   width: 100,
                   height: 14,
                   decoration: BoxDecoration(
-                    color: const Color(0xFFE5E7EB),
+                    color: Theme.of(context).colorScheme.surfaceContainerLow,
                     borderRadius: BorderRadius.circular(4),
                   ),
                 ),
@@ -314,7 +309,7 @@ class _ReviewCardSkeleton extends StatelessWidget {
                   width: double.infinity,
                   height: 50,
                   decoration: BoxDecoration(
-                    color: const Color(0xFFE5E7EB),
+                    color: Theme.of(context).colorScheme.surfaceContainerLow,
                     borderRadius: BorderRadius.circular(4),
                   ),
                 ),
@@ -323,7 +318,7 @@ class _ReviewCardSkeleton extends StatelessWidget {
                   width: 80,
                   height: 12,
                   decoration: BoxDecoration(
-                    color: const Color(0xFFE5E7EB),
+                    color: Theme.of(context).colorScheme.surfaceContainerLow,
                     borderRadius: BorderRadius.circular(4),
                   ),
                 ),

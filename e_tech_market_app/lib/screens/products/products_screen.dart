@@ -239,7 +239,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
             child: Container(
               width: MediaQuery.of(context).size.width * 0.85,
               height: double.infinity,
-              color: Colors.white,
+              color: Theme.of(context).colorScheme.surface,
               child: SafeArea(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -251,7 +251,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          const Text(
+                          Text(
                             'BỘ LỌC',
                             style: TextStyle(
                                 fontSize: 16,
@@ -273,7 +273,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
                           padding: const EdgeInsets.all(16),
                           children: [
                             // DANH MỤC
-                            const Text('DANH MỤC',
+                            Text('DANH MỤC',
                                 style: TextStyle(
                                     fontWeight: FontWeight.bold, fontSize: 14)),
                             const SizedBox(height: 12),
@@ -286,17 +286,17 @@ class _ProductsScreenState extends State<ProductsScreen> {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                const Text('MỨC GIÁ',
+                                Text('MỨC GIÁ',
                                     style: TextStyle(
                                         fontWeight: FontWeight.bold,
                                         fontSize: 14)),
                                 Row(
                                   children: [
-                                    const Text('Nhập khoảng giá',
+                                    Text('Nhập khoảng giá',
                                         style: TextStyle(fontSize: 12)),
                                     Checkbox(
                                       value: _useCustomPrice,
-                                      activeColor: const Color(0xFFF26522),
+                                      activeColor: Color(0xFFF26522),
                                       onChanged: (val) {
                                         setModalState(() {
                                           _useCustomPrice = val ?? false;
@@ -314,11 +314,11 @@ class _ProductsScreenState extends State<ProductsScreen> {
                             if (!_useCustomPrice) ...[
                               SliderTheme(
                                 data: SliderTheme.of(context).copyWith(
-                                  activeTrackColor: const Color(0xFFF26522),
-                                  inactiveTrackColor: Colors.grey.shade300,
-                                  thumbColor: const Color(0xFFF26522),
+                                  activeTrackColor: Color(0xFFF26522),
+                                  inactiveTrackColor: Theme.of(context).colorScheme.outline,
+                                  thumbColor: Color(0xFFF26522),
                                   overlayColor:
-                                      const Color(0xFFF26522).withOpacity(0.2),
+                                      Color(0xFFF26522).withOpacity(0.2),
                                   trackHeight: 4.0,
                                 ),
                                 child: Slider(
@@ -343,12 +343,12 @@ class _ProductsScreenState extends State<ProductsScreen> {
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
                                 children: [
-                                  const Text('0 đ',
+                                  Text('0 đ',
                                       style: TextStyle(
-                                          color: Colors.grey, fontSize: 12)),
+                                          color: Theme.of(context).colorScheme.onSurfaceVariant, fontSize: 12)),
                                   Text('Tối đa ${_formatPrice(_maxPrice)} đ',
                                       style: TextStyle(
-                                          color: Colors.grey, fontSize: 12)),
+                                          color: Theme.of(context).colorScheme.onSurfaceVariant, fontSize: 12)),
                                 ],
                               ),
                             ] else ...[
@@ -417,14 +417,14 @@ class _ProductsScreenState extends State<ProductsScreen> {
 
                             const SizedBox(height: 24),
                             // HÃNG
-                            const Text('HÃNG',
+                            Text('HÃNG',
                                 style: TextStyle(
                                     fontWeight: FontWeight.bold, fontSize: 14)),
                             const SizedBox(height: 12),
                             _brands.isEmpty
-                                ? const Text('Chưa có dữ liệu hãng.',
+                                ? Text('Chưa có dữ liệu hãng.',
                                     style: TextStyle(
-                                        color: Colors.grey, fontSize: 12))
+                                        color: Theme.of(context).colorScheme.onSurfaceVariant, fontSize: 12))
                                 : Wrap(
                                     spacing: 8,
                                     runSpacing: 8,
@@ -460,7 +460,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
                                                     color: _selectedBrand == b
                                                         ? const Color(
                                                             0xFFF26522)
-                                                        : Colors.grey.shade300,
+                                                        : Theme.of(context).colorScheme.outline,
                                                     width: 1,
                                                   ),
                                                   borderRadius:
@@ -475,7 +475,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
                                                     color: _selectedBrand == b
                                                         ? const Color(
                                                             0xFFF26522)
-                                                        : Colors.black87,
+                                                        : Theme.of(context).colorScheme.onSurface,
                                                   ),
                                                 ),
                                               ),
@@ -521,7 +521,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
             Icon(
               isSelected ? Icons.check_box : Icons.check_box_outline_blank,
               color:
-                  isSelected ? const Color(0xFFF26522) : Colors.grey.shade400,
+                  isSelected ? Color(0xFFF26522) : Theme.of(context).colorScheme.onSurfaceVariant,
               size: 20,
             ),
             const SizedBox(width: 12),
@@ -530,7 +530,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
                 'Tất cả sản phẩm',
                 style: TextStyle(
                   fontSize: 14,
-                  color: isSelected ? const Color(0xFFF26522) : Colors.black87,
+                  color: isSelected ? Color(0xFFF26522) : Theme.of(context).colorScheme.onSurface,
                 ),
               ),
             ),
@@ -577,8 +577,8 @@ class _ProductsScreenState extends State<ProductsScreen> {
                         ? Icons.check_box
                         : Icons.check_box_outline_blank,
                     color: isSelected
-                        ? const Color(0xFFF26522)
-                        : Colors.grey.shade400,
+                        ? Color(0xFFF26522)
+                        : Theme.of(context).colorScheme.onSurfaceVariant,
                     size: 20,
                   )
                 else
@@ -594,7 +594,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
                     style: TextStyle(
                       fontSize: 14,
                       color:
-                          isSelected ? const Color(0xFFF26522) : Colors.black87,
+                          isSelected ? Color(0xFFF26522) : Theme.of(context).colorScheme.onSurface,
                       fontWeight:
                           hasChildren ? FontWeight.bold : FontWeight.normal,
                     ),
@@ -602,7 +602,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
                 ),
                 if (hasChildren)
                   Icon(isExpanded ? Icons.arrow_drop_up : Icons.arrow_drop_down,
-                      color: Colors.black54),
+                      color: Theme.of(context).colorScheme.onSurfaceVariant),
               ],
             ),
           ),
@@ -738,7 +738,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
       child: Container(
         margin: const EdgeInsets.only(bottom: 20),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(5),
           boxShadow: [
             BoxShadow(
@@ -747,6 +747,13 @@ class _ProductsScreenState extends State<ProductsScreen> {
               offset: const Offset(0, 4),
             ),
           ],
+            border: Border.all(
+              color: Color.alphaBlend(
+                Theme.of(context).colorScheme.outline.withOpacity(0.3), // 30% màu border
+                Theme.of(context).colorScheme.surface,                 // Trộn trên nền canvas
+              ),
+            ),
+
         ),
         child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -760,11 +767,11 @@ class _ProductsScreenState extends State<ProductsScreen> {
                 child: Container(
                   width: double.infinity,
                   height: 350,
-                  color: Colors.white,
+                  color: Theme.of(context).colorScheme.surface,
                   child: imageUrl.isEmpty
                       ? Center(
                           child: Icon(Icons.computer,
-                              size: 80, color: Colors.grey.shade300))
+                              size: 80, color: Theme.of(context).colorScheme.outline))
                       : Image.network(
                           imageUrl,
                           width: double.infinity,
@@ -773,13 +780,13 @@ class _ProductsScreenState extends State<ProductsScreen> {
                           alignment: Alignment.center,
                           loadingBuilder: (context, child, loadingProgress) {
                             if (loadingProgress == null) return child;
-                            return const Center(
+                            return Center(
                                 child:
                                     CircularProgressIndicator(strokeWidth: 2));
                           },
                           errorBuilder: (_, __, ___) => Center(
                             child: Icon(Icons.computer,
-                                size: 80, color: Colors.grey.shade300),
+                                size: 80, color: Theme.of(context).colorScheme.outline),
                           ),
                         ),
                 ),
@@ -791,12 +798,12 @@ class _ProductsScreenState extends State<ProductsScreen> {
                 child: GestureDetector(
                   onTap: () => _toggleWishlist(productId),
                   child: CircleAvatar(
-                    backgroundColor: Colors.white,
+                    backgroundColor: Theme.of(context).colorScheme.surface,
                     radius: 16,
                     child: Icon(
                       isLiked ? Icons.favorite : Icons.favorite_border,
                       size: 18,
-                      color: isLiked ? Colors.red : Colors.grey.shade600,
+                      color: isLiked ? Colors.red : Theme.of(context).colorScheme.onSurfaceVariant,
                     ),
                   ),
                 ),
@@ -813,9 +820,9 @@ class _ProductsScreenState extends State<ProductsScreen> {
                       color: Colors.green,
                       borderRadius: BorderRadius.circular(4),
                     ),
-                    child: const Text('MỚI',
+                    child: Text('MỚI',
                         style: TextStyle(
-                            color: Colors.white,
+                            color: Theme.of(context).colorScheme.surface,
                             fontSize: 10,
                             fontWeight: FontWeight.bold)),
                   ),
@@ -835,9 +842,9 @@ class _ProductsScreenState extends State<ProductsScreen> {
                           color: Colors.amber.shade700,
                           borderRadius: BorderRadius.circular(4),
                         ),
-                        child: const Text('NỔI BẬT',
+                        child: Text('NỔI BẬT',
                             style: TextStyle(
-                                color: Colors.white,
+                                color: Theme.of(context).colorScheme.surface,
                                 fontSize: 10,
                                 fontWeight: FontWeight.bold)),
                       ),
@@ -850,8 +857,8 @@ class _ProductsScreenState extends State<ProductsScreen> {
                           borderRadius: BorderRadius.circular(4),
                         ),
                         child: Text('-$discountPercent%',
-                            style: const TextStyle(
-                                color: Colors.white,
+                            style: TextStyle(
+                                color: Theme.of(context).colorScheme.surface,
                                 fontSize: 10,
                                 fontWeight: FontWeight.bold)),
                       ),
@@ -873,7 +880,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
                     Text(
                       brand.toString().toUpperCase(),
                       style: TextStyle(
-                          color: Colors.grey.shade600,
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
                           fontSize: 12,
                           fontWeight: FontWeight.bold,
                           letterSpacing: 1),
@@ -888,7 +895,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
                               size: 14, color: Colors.amber);
                         } else {
                           return Icon(Icons.star,
-                              size: 14, color: Colors.grey.shade300);
+                              size: 14, color: Theme.of(context).colorScheme.outline);
                         }
                       }),
                     ),
@@ -897,7 +904,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
                 const SizedBox(height: 8),
                 Text(
                   product['name'] ?? '',
-                  style: const TextStyle(
+                  style: TextStyle(
                       fontSize: 16, fontWeight: FontWeight.bold, height: 1.3),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
@@ -908,7 +915,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
                   children: [
                     Text(
                       '${_formatPrice(displayPrice)} đ',
-                      style: const TextStyle(
+                      style: TextStyle(
                           color: Color(0xFFF26522),
                           fontSize: 18,
                           fontWeight: FontWeight.bold),
@@ -918,8 +925,8 @@ class _ProductsScreenState extends State<ProductsScreen> {
                       const SizedBox(width: 8),
                       Text(
                         '${_formatPrice(displayOldPrice)} đ',
-                        style: const TextStyle(
-                          color: Colors.grey,
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
                           fontSize: 14,
                           decoration: TextDecoration.lineThrough,
                         ),
@@ -933,7 +940,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
                       product['description'] ??
                       'Chưa có mô tả.',
                   style: TextStyle(
-                      color: Colors.grey.shade600, fontSize: 13, height: 1.4),
+                      color: Theme.of(context).colorScheme.onSurfaceVariant, fontSize: 13, height: 1.4),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -954,13 +961,13 @@ class _ProductsScreenState extends State<ProductsScreen> {
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFFF26522),
-                      foregroundColor: Colors.white,
+                      foregroundColor: Theme.of(context).colorScheme.surface,
                       elevation: 0,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(4),
                       ),
                     ),
-                    child: const Text('THÊM VÀO GIỎ',
+                    child: Text('THÊM VÀO GIỎ',
                         style: TextStyle(
                             fontWeight: FontWeight.bold, letterSpacing: 0.5)),
                   ),
@@ -983,7 +990,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
           _selectedCategoryId != null
               ? 'SẢN PHẨM THEO DANH MỤC'
               : 'TẤT CẢ SẢN PHẨM',
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.bold,
             letterSpacing: 1.5,
@@ -994,7 +1001,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
           'Thiết bị công nghệ tuyển chọn với chất lượng chính hãng, hiệu năng ổn định và thiết kế hiện đại. Đáp ứng tốt nhu cầu học tập, làm việc, giải trí và gaming hằng ngày.',
           style: TextStyle(
             fontSize: 14,
-            color: Colors.grey.shade700,
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
             height: 1.5,
           ),
         ),
@@ -1004,8 +1011,8 @@ class _ProductsScreenState extends State<ProductsScreen> {
         Container(
           height: 48,
           decoration: BoxDecoration(
-            color: Colors.white,
-            border: Border.all(color: Colors.grey.shade300),
+            color: Theme.of(context).colorScheme.surface,
+            border: Border.all(color: Theme.of(context).colorScheme.outline),
             borderRadius: BorderRadius.circular(4),
           ),
           child: Row(
@@ -1015,12 +1022,12 @@ class _ProductsScreenState extends State<ProductsScreen> {
                   controller: _searchController,
                   decoration: InputDecoration(
                     hintText: 'Tìm kiếm sản phẩm...',
-                    hintStyle: const TextStyle(color: Colors.grey),
+                    hintStyle: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant),
                     border: InputBorder.none,
                     contentPadding: const EdgeInsets.symmetric(horizontal: 16),
                     suffixIcon: _searchQuery.isNotEmpty
                         ? IconButton(
-                            icon: const Icon(Icons.clear, color: Colors.grey, size: 18),
+                            icon: Icon(Icons.clear, color: Theme.of(context).colorScheme.onSurfaceVariant, size: 18),
                             onPressed: () {
                               _searchController.clear();
                               _onSearchChanged('');
@@ -1033,9 +1040,9 @@ class _ProductsScreenState extends State<ProductsScreen> {
                   onSubmitted: (val) => _fetchProducts(),
                 ),
               ),
-              const Padding(
+              Padding(
                 padding: EdgeInsets.symmetric(horizontal: 16),
-                child: Icon(Icons.search, color: Colors.grey),
+                child: Icon(Icons.search, color: Theme.of(context).colorScheme.onSurfaceVariant),
               ),
             ],
           ),
@@ -1045,11 +1052,11 @@ class _ProductsScreenState extends State<ProductsScreen> {
         // Sort and Filter Row
         Row(
           children: [
-            const Text(
+            Text(
               'SẮP XẾP:',
               style: TextStyle(
                   fontWeight: FontWeight.bold,
-                  color: Colors.black54,
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
                   fontSize: 13),
             ),
             const SizedBox(width: 8),
@@ -1058,8 +1065,8 @@ class _ProductsScreenState extends State<ProductsScreen> {
                 height: 40,
                 padding: const EdgeInsets.symmetric(horizontal: 12),
                 decoration: BoxDecoration(
-                  color: Colors.white,
-                  border: Border.all(color: Colors.grey.shade300),
+                  color: Theme.of(context).colorScheme.surface,
+                  border: Border.all(color: Theme.of(context).colorScheme.outline),
                   borderRadius: BorderRadius.circular(4),
                 ),
                 child: DropdownButtonHideUnderline(
@@ -1071,7 +1078,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
                       return DropdownMenuItem<String>(
                         value: value == 'Mặc định' ? 'default' : value,
                         child: Text(value,
-                            style: const TextStyle(
+                            style: TextStyle(
                                 fontSize: 13, fontWeight: FontWeight.w600)),
                       );
                     }).toList(),
@@ -1093,15 +1100,15 @@ class _ProductsScreenState extends State<ProductsScreen> {
               height: 40,
               child: OutlinedButton.icon(
                 onPressed: _showFilterDrawer,
-                icon: const Icon(Icons.tune, size: 18, color: Colors.black87),
-                label: const Text('BỘ LỌC',
+                icon: Icon(Icons.tune, size: 18, color: Theme.of(context).colorScheme.onSurface),
+                label: Text('BỘ LỌC',
                     style: TextStyle(
-                        color: Colors.black87,
+                        color: Theme.of(context).colorScheme.onSurface,
                         fontWeight: FontWeight.bold,
                         fontSize: 13)),
                 style: OutlinedButton.styleFrom(
-                  backgroundColor: Colors.white,
-                  side: BorderSide(color: Colors.grey.shade300),
+                  backgroundColor: Theme.of(context).colorScheme.surface,
+                  side: BorderSide(color: Theme.of(context).colorScheme.outline),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(4),
                   ),
@@ -1115,13 +1122,13 @@ class _ProductsScreenState extends State<ProductsScreen> {
 
         // Products List
         if (_isLoading)
-          const Padding(
+          Padding(
             padding: EdgeInsets.all(40.0),
             child: Center(
                 child: CircularProgressIndicator(color: Color(0xFFF26522))),
           )
         else if (_products.isEmpty)
-          const Padding(
+          Padding(
             padding: EdgeInsets.all(40.0),
             child: Center(
                 child: Text('Không có sản phẩm phù hợp bộ lọc của bạn.')),
@@ -1153,12 +1160,12 @@ class _ProductsScreenState extends State<ProductsScreen> {
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
                   ),
-                  child: const Text('Trước'),
+                  child: Text('Trước'),
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   child: Text('Trang $_currentPage / $_lastPage',
-                      style: const TextStyle(fontWeight: FontWeight.bold)),
+                      style: TextStyle(fontWeight: FontWeight.bold)),
                 ),
                 OutlinedButton(
                   onPressed: _currentPage < _lastPage
@@ -1171,7 +1178,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
                   ),
-                  child: const Text('Sau'),
+                  child: Text('Sau'),
                 ),
               ],
             ),

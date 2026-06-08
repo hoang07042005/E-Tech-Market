@@ -14,7 +14,7 @@ class FutureSection extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: _surfaceColor,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(5),
         boxShadow: [
           BoxShadow(
@@ -40,21 +40,21 @@ class FutureSection extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 14),
-              const Text(
+              Text(
                 'Công nghệ tương lai\nđược tạo nên một cách tinh xảo',
                 style: TextStyle(
                   fontSize: 26,
                   fontWeight: FontWeight.w800,
-                  color: Color(0xFF111827),
+                    color: Theme.of(context).colorScheme.onSurface,
                   height: 1.1,
                 ),
               ),
               const SizedBox(height: 16),
-              const Text(
+              Text(
                 'Chúng tôi không chỉ bán thiết bị điện tử — chúng tôi chọn lọc những công cụ thúc đẩy sự tiến bộ. Quy trình tuyển chọn dựa trên kiểm định kỹ thuật khắt khe để mỗi sản phẩm đạt tiêu chuẩn “Chất lượng không thỏa hiệp”.',
                 style: TextStyle(
                   fontSize: 14,
-                  color: Color(0xFF4B5563),
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                   height: 1.7,
                 ),
               ),
@@ -147,9 +147,9 @@ class _StatPill extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(18),
-          border: Border.all(color: const Color(0xFFFAE3D1)),
+            border: Border.all(color: Theme.of(context).colorScheme.outline),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withValues(alpha: 0.03),
@@ -162,16 +162,16 @@ class _StatPill extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(value,
-                style: const TextStyle(
+              style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.w800,
-                  color: Color(0xFF111827),
+                    color: Theme.of(context).colorScheme.onSurface,
                 )),
             const SizedBox(height: 4),
             Text(label,
-                style: const TextStyle(
+              style: TextStyle(
                   fontSize: 10,
-                  color: Color(0xFF6B7280),
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                   fontWeight: FontWeight.w600,
                   letterSpacing: 0.3,
                 )),

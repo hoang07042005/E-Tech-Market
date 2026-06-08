@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart'; 
 import 'package:e_tech_market_app/services/products_service.dart';
 import '../../../config/api_config.dart';
@@ -101,8 +101,8 @@ class _ProductNewDetailScreenState extends State<ProductNewDetailScreen> {
   Widget build(BuildContext context) {
     // 1. GIAO DIỆN CHỜ TẢI DỮ LIỆU THỰC TẾ
     if (_isLoading) {
-      return const Scaffold(
-        backgroundColor: Colors.white,
+      return Scaffold(
+        backgroundColor: Theme.of(context).colorScheme.surface,
         body: Center(
           child: CircularProgressIndicator(
             valueColor: AlwaysStoppedAnimation<Color>(Color(0xFFF26522)),
@@ -114,11 +114,11 @@ class _ProductNewDetailScreenState extends State<ProductNewDetailScreen> {
     // 2. GIAO DIỆN BÁO LỖI HOẶC KHÔNG TÌM THẤY BÀI VIẾT TRÊN SERVER
     if (_error != null || _news == null) {
       return Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: Theme.of(context).colorScheme.surface,
         appBar: AppBar(
           elevation: 0, 
-          backgroundColor: Colors.white, 
-          iconTheme: const IconThemeData(color: Colors.black),
+          backgroundColor: Theme.of(context).colorScheme.surface, 
+          iconTheme: IconThemeData(color: Theme.of(context).colorScheme.onSurface),
         ),
         body: Center(
           child: Padding(
@@ -126,22 +126,22 @@ class _ProductNewDetailScreenState extends State<ProductNewDetailScreen> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Icon(Icons.article_outlined, color: Color(0xFF94A3B8), size: 64),
+                Icon(Icons.article_outlined, color: Theme.of(context).colorScheme.outline, size: 64),
                 const SizedBox(height: 16),
                 Text(
                   _error ?? 'Không tìm thấy nội dung tin tức sản phẩm này.',
                   textAlign: TextAlign.center,
-                  style: const TextStyle(color: Color(0xFF4B5563), fontSize: 14.5, height: 1.4),
+                  style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant, fontSize: 14.5, height: 1.4),
                 ),
                 const SizedBox(height: 20),
                 ElevatedButton(
                   onPressed: () => Navigator.pop(context),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFFF26522),
+                    backgroundColor: Color(0xFFF26522),
                     padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                   ),
-                  child: const Text('Quay lại', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                  child: Text('Quay lại', style: TextStyle(color: Theme.of(context).colorScheme.surface, fontWeight: FontWeight.bold)),
                 )
               ],
             ),
@@ -154,16 +154,16 @@ class _ProductNewDetailScreenState extends State<ProductNewDetailScreen> {
 
     // 3. GIAO DIỆN CHI TIẾT TIN TỨC ĐỌC DỮ LIỆU THỰC
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       appBar: AppBar(
-        title: const Text(
+        title: Text(
           'TIN TỨC SẢN PHẨM',
-          style: TextStyle(color: Color(0xFF111827), fontSize: 15, fontWeight: FontWeight.bold, letterSpacing: 0.5),
+          style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 15, fontWeight: FontWeight.bold, letterSpacing: 0.5),
         ),
         centerTitle: true,
-        backgroundColor: Colors.white,
+        backgroundColor: Theme.of(context).colorScheme.surface,
         elevation: 0.5,
-        iconTheme: const IconThemeData(color: Color(0xFF111827)),
+        iconTheme: IconThemeData(color: Theme.of(context).colorScheme.onSurface),
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -174,10 +174,10 @@ class _ProductNewDetailScreenState extends State<ProductNewDetailScreen> {
               // TIÊU ĐỀ TIN TỨC THỰC TẾ
               Text(
                 newsItem.title,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 22, 
                   fontWeight: FontWeight.w900,
-                  color: Color(0xFF111827),
+                  color: Theme.of(context).colorScheme.onSurface,
                   height: 1.3,
                 ),
               ),
@@ -197,7 +197,7 @@ class _ProductNewDetailScreenState extends State<ProductNewDetailScreen> {
                 const SizedBox(height: 18),
               ],
 
-              const Divider(color: Color(0xFFE5E7EB), height: 1),
+              Divider(color: Theme.of(context).colorScheme.outline, height: 1),
               const SizedBox(height: 14),
 
               // KHỐI HIỂN THỊ NỘI DUNG HTML CHI TIẾT
@@ -211,14 +211,14 @@ class _ProductNewDetailScreenState extends State<ProductNewDetailScreen> {
                       padding: HtmlPaddings.zero,
                       fontSize: FontSize(14.5),
                       lineHeight: const LineHeight(1.6),
-                      color: const Color(0xFF374151),
+                      color: Theme.of(context).colorScheme.onSurface,
                     ),
                     "p": Style(
                       margin: Margins.only(bottom: 12),
                     ),
                     "strong": Style(
                       fontWeight: FontWeight.bold,
-                      color: const Color(0xFF111827),
+                      color: Theme.of(context).colorScheme.onSurface,
                     ),
                     "img": Style(
                       width: Width(100, Unit.percent), // Ép ảnh co dãn 100% vùng chứa nội tuyến của thiết bị di động

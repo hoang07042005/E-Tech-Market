@@ -699,8 +699,8 @@ class _HomeScreenState extends State<HomeScreen> {
       appBar: (_selectedIndex == 4 || _selectedIndex == 3)
           ? null
           : AppBar(
-              backgroundColor: Colors.white,
-              foregroundColor: Colors.black,
+              backgroundColor: Theme.of(context).colorScheme.surface,
+              foregroundColor: Theme.of(context).colorScheme.onSurface,
               elevation: 0,
 
               title: Image.asset(
@@ -774,7 +774,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ],
             ),
       body: Container(
-        color: const Color(0xFFFFFFFF),
+        color: Theme.of(context).colorScheme.surface,
         padding:
             (_selectedIndex == 0 || _selectedIndex == 4 || _selectedIndex == 3)
                 ? EdgeInsets.zero
@@ -786,8 +786,8 @@ class _HomeScreenState extends State<HomeScreen> {
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedIndex,
         onTap: _onTabSelected,
-        selectedItemColor: const Color(0xFFEF7A45),
-        unselectedItemColor: Colors.black54,
+        selectedItemColor: Colors.orange, // Đổi thành màu cam khi active
+        unselectedItemColor: Theme.of(context).colorScheme.onSurfaceVariant,
         type: BottomNavigationBarType.fixed,
         items: const [
           BottomNavigationBarItem(

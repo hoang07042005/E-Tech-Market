@@ -33,28 +33,21 @@ class ProductSection extends StatelessWidget {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.fromLTRB(20, 24, 20, 30),
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [Colors.white, Color(0xFFFFFAF5), Colors.white],
-          stops: [0, 0.55, 1],
-        ),
-      ),
+      color: Theme.of(context).colorScheme.surface,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              const Expanded(
+              Expanded(
                 child: Text(
                   'Hàng mới & Nổi bật',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 22,
                     fontWeight: FontWeight.w800,
-                    color: Color(0xFF111827),
+                      color: Theme.of(context).colorScheme.onSurface,
                     height: 1.15,
                   ),
                 ),
@@ -71,12 +64,12 @@ class ProductSection extends StatelessWidget {
           if (isLoading)
             _buildSkeletonGrid()
           else if (visibleProducts.isEmpty)
-            const Padding(
+            Padding(
               padding: EdgeInsets.symmetric(vertical: 24),
               child: Text(
                 'Chưa có sản phẩm nổi bật.',
                 textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 14, color: Colors.black54),
+                  style: TextStyle(fontSize: 14, color: Theme.of(context).colorScheme.onSurfaceVariant),
               ),
             )
           else
@@ -158,14 +151,19 @@ class _ProductCard extends StatelessWidget {
     final isNew = product['is_new'] == true;
 
     return Material(
-      color: Colors.white,
+      color: Theme.of(context).colorScheme.surface,
       borderRadius: BorderRadius.circular(5),
       clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: onTap,
         child: Container(
           decoration: BoxDecoration(
-            border: Border.all(color: const Color(0xFFF1F5F9)),
+            border: Border.all(
+              color: Color.alphaBlend(
+                Theme.of(context).colorScheme.outline.withOpacity(0.3), // 30% màu border
+                Theme.of(context).colorScheme.surface,                 // Trộn trên nền canvas
+              ),
+            ),
             borderRadius: BorderRadius.circular(5),
           ),
           child: Column(
@@ -177,7 +175,7 @@ class _ProductCard extends StatelessWidget {
                   children: [
                     Positioned.fill(
                       child: Container(
-                        color: Colors.white,
+                        color: Theme.of(context).colorScheme.surface,
                         padding: const EdgeInsets.all(10),
                         child: imageUrl.isEmpty
                             ? _buildImageFallback()
@@ -243,8 +241,8 @@ class _ProductCard extends StatelessWidget {
                             child: Text(
                               (brand == null || brand.isEmpty ? 'TECH' : brand)
                                   .toUpperCase(),
-                              style: const TextStyle(
-                                color: Color(0xFF94A3B8),
+                              style: TextStyle(
+                                color: Theme.of(context).colorScheme.onSurfaceVariant,
                                 fontSize: 10,
                                 fontWeight: FontWeight.w800,
                                 letterSpacing: 0.5,
@@ -259,8 +257,8 @@ class _ProductCard extends StatelessWidget {
                       const SizedBox(height: 6),
                       Text(
                         name,
-                        style: const TextStyle(
-                          color: Color(0xFF0F172A),
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.onSurface,
                           fontSize: 13,
                           fontWeight: FontWeight.w800,
                           height: 1.25,
@@ -284,8 +282,8 @@ class _ProductCard extends StatelessWidget {
                           if (oldPrice != null && oldPrice > displayPrice)
                             Text(
                               '${_formatPrice(oldPrice)} đ',
-                              style: const TextStyle(
-                                color: Color(0xFF94A3B8),
+                              style: TextStyle(
+                                color: Theme.of(context).colorScheme.onSurfaceVariant,
                                 fontSize: 11,
                                 decoration: TextDecoration.lineThrough,
                               ),
@@ -296,8 +294,8 @@ class _ProductCard extends StatelessWidget {
                       Expanded(
                         child: Text(
                           excerpt,
-                          style: const TextStyle(
-                              color: Color(0xFF64748B),
+                            style: TextStyle(
+                              color: Theme.of(context).colorScheme.onSurfaceVariant,
                               fontSize: 11,
                               height: 1.35),
                           maxLines: 2,
@@ -440,7 +438,7 @@ class _CircleActionButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: Colors.white,
+      color: Theme.of(context).colorScheme.surface,
       shape: const CircleBorder(),
       child: InkWell(
         onTap: onTap,
@@ -450,7 +448,7 @@ class _CircleActionButton extends StatelessWidget {
           height: 28,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            border: Border.all(color: const Color(0xFFE2E8F0)),
+            border: Border.all(color: Theme.of(context).colorScheme.outline),
           ),
           child: Icon(icon, size: 15, color: color),
         ),
@@ -483,9 +481,9 @@ class _RatingStars extends StatelessWidget {
         const SizedBox(width: 2),
         Text(
           rating > 0 ? rating.toStringAsFixed(1) : '($count)',
-          style: const TextStyle(
+            style: TextStyle(
               fontSize: 9,
-              color: Color(0xFFA3A3A3),
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
               fontWeight: FontWeight.w700),
         ),
       ],
@@ -500,13 +498,13 @@ class _ProductSkeleton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(5),
-        border: Border.all(color: const Color(0xFFF1F5F9)),
+            border: Border.all(color: Theme.of(context).colorScheme.outline),
       ),
       child: Column(
         children: [
-          Expanded(flex: 8, child: Container(color: const Color(0xFFF1F5F9))),
+            Expanded(flex: 8, child: Container(color: Theme.of(context).colorScheme.surfaceContainerHighest)),
           Expanded(
             flex: 9,
             child: Padding(
@@ -544,7 +542,7 @@ class _SkeletonLine extends StatelessWidget {
       child: Container(
         height: height,
         decoration: BoxDecoration(
-          color: const Color(0xFFE5E7EB),
+            color: Theme.of(context).colorScheme.surfaceContainerLow,
           borderRadius: BorderRadius.circular(4),
         ),
       ),

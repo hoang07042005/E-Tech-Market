@@ -24,9 +24,7 @@ class NewsSection extends StatelessWidget {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.fromLTRB(20, 24, 20, 30),
-      decoration: const BoxDecoration(
-        color: Colors.white,
-      ),
+      color: Theme.of(context).colorScheme.surface,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -35,7 +33,7 @@ class NewsSection extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                const Text(
+                Text(
                   'TIN TỨC CÔNG NGHỆ',
                   textAlign: TextAlign.center,
                   style: TextStyle(
@@ -46,13 +44,13 @@ class NewsSection extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 8),
-                const Text(
+                Text(
                   'Bài viết mới nhất',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 25,
                     fontWeight: FontWeight.w800,
-                    color: Color(0xFF111827),
+                    color: Theme.of(context).colorScheme.onSurface,
                     height: 1.1,
                   ),
                 ),
@@ -62,12 +60,12 @@ class NewsSection extends StatelessWidget {
           if (isLoading)
             _buildSkeletonList()
           else if (visibleArticles.isEmpty)
-            const Padding(
+            Padding(
               padding: EdgeInsets.symmetric(vertical: 24),
               child: Text(
                 'Chưa có bài viết nào.',
                 textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 14, color: Colors.black54),
+                style: TextStyle(fontSize: 14, color: Theme.of(context).colorScheme.onSurfaceVariant),
               ),
             )
           else
@@ -128,7 +126,7 @@ class _NewsCard extends StatelessWidget {
           decoration: BoxDecoration(
             border: Border(
               bottom: BorderSide(
-                color: const Color(0xFFF1F5F9),
+                color: Theme.of(context).colorScheme.surfaceContainerLow,
                 width: 1,
               ),
             ),
@@ -146,11 +144,11 @@ class _NewsCard extends StatelessWidget {
                       width: 140,
                       height: 100,
                       fit: BoxFit.cover,
-                      errorBuilder: (_, __, ___) => _buildImageFallback(140, 100),
+                      errorBuilder: (_, __, ___) => _buildImageFallback(context, 140, 100),
                     ),
                   )
                 else
-                  _buildImageFallback(140, 100),
+                  _buildImageFallback(context, 140, 100),
                 const SizedBox(width: 16),
                 Expanded(
                   child: Column(
@@ -165,12 +163,12 @@ class _NewsCard extends StatelessWidget {
                               vertical: 4,
                             ),
                             decoration: BoxDecoration(
-                              color: const Color(0xFFEF7A45).withValues(alpha: 0.1),
+                              color: Color(0xFFEF7A45).withValues(alpha: 0.1),
                               borderRadius: BorderRadius.circular(4),
                             ),
                             child: Text(
                               categoryName,
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 10,
                                 fontWeight: FontWeight.w700,
                                 color: Color(0xFFEF7A45),
@@ -181,10 +179,10 @@ class _NewsCard extends StatelessWidget {
                         ),
                       Text(
                         title,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.w800,
-                          color: Color(0xFF111827),
+                          color: Theme.of(context).colorScheme.onSurface,
                           height: 1.3,
                         ),
                         maxLines: 2,
@@ -193,9 +191,9 @@ class _NewsCard extends StatelessWidget {
                       const SizedBox(height: 6),
                       Text(
                         excerpt,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 12,
-                          color: Color(0xFF64748B),
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
                           height: 1.4,
                         ),
                         maxLines: 2,
@@ -206,31 +204,31 @@ class _NewsCard extends StatelessWidget {
                         children: [
                           Text(
                             publishedAt,
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 11,
-                              color: Color(0xFFA3A3A3),
+                              color: Theme.of(context).colorScheme.onSurfaceVariant,
                             ),
                           ),
                           if (readingTime > 0) ...[
-                            const Text(
+                            Text(
                               ' • ',
                               style: TextStyle(
                                 fontSize: 11,
-                                color: Color(0xFFA3A3A3),
+                                color: Theme.of(context).colorScheme.onSurfaceVariant,
                               ),
                             ),
                             Text(
                               '$readingTime phút đọc',
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 11,
-                                color: Color(0xFFA3A3A3),
+                                color: Theme.of(context).colorScheme.onSurfaceVariant,
                               ),
                             ),
                           ],
                         ],
                       ),
                       const SizedBox(height: 6),
-                      const Text(
+                      Text(
                         'Đọc tiếp →',
                         style: TextStyle(
                           fontSize: 11,
@@ -249,18 +247,18 @@ class _NewsCard extends StatelessWidget {
     );
   }
 
-  Widget _buildImageFallback(double width, double height) {
+  Widget _buildImageFallback(BuildContext context, double width, double height) {
     return Container(
       width: width,
       height: height,
       decoration: BoxDecoration(
-        color: const Color(0xFFF1F5F9),
+        color: Theme.of(context).colorScheme.surfaceContainerLow,
         borderRadius: BorderRadius.circular(8),
       ),
-      child: const Center(
+      child: Center(
         child: Icon(
           Icons.newspaper_outlined,
-          color: Color(0xFFCBD5E1),
+          color: Theme.of(context).colorScheme.outline,
           size: 32,
         ),
       ),
@@ -303,7 +301,7 @@ class _NewsCardSkeleton extends StatelessWidget {
             width: 140,
             height: 100,
             decoration: BoxDecoration(
-              color: const Color(0xFFE5E7EB),
+              color: Theme.of(context).colorScheme.surfaceContainerLow,
               borderRadius: BorderRadius.circular(8),
             ),
           ),
@@ -316,7 +314,7 @@ class _NewsCardSkeleton extends StatelessWidget {
                   width: 80,
                   height: 14,
                   decoration: BoxDecoration(
-                    color: const Color(0xFFE5E7EB),
+                    color: Theme.of(context).colorScheme.surfaceContainerLow,
                     borderRadius: BorderRadius.circular(4),
                   ),
                 ),
@@ -325,7 +323,7 @@ class _NewsCardSkeleton extends StatelessWidget {
                   width: double.infinity,
                   height: 18,
                   decoration: BoxDecoration(
-                    color: const Color(0xFFE5E7EB),
+                    color: Theme.of(context).colorScheme.surfaceContainerLow,
                     borderRadius: BorderRadius.circular(4),
                   ),
                 ),
@@ -334,7 +332,7 @@ class _NewsCardSkeleton extends StatelessWidget {
                   width: double.infinity,
                   height: 12,
                   decoration: BoxDecoration(
-                    color: const Color(0xFFE5E7EB),
+                    color: Theme.of(context).colorScheme.surfaceContainerLow,
                     borderRadius: BorderRadius.circular(4),
                   ),
                 ),

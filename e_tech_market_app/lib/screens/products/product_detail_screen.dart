@@ -909,15 +909,15 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   Widget build(BuildContext context) {
     if (isLoading) {
       return Scaffold(
-        appBar: AppBar(title: const Text('Chi tiết sản phẩm')),
-        body: const Center(child: CircularProgressIndicator()),
+        appBar: AppBar(title: Text('Chi tiết sản phẩm')),
+        body: Center(child: CircularProgressIndicator()),
       );
     }
 
     final current = product;
     if (error != null || current == null) {
       return Scaffold(
-        appBar: AppBar(title: const Text('Chi tiết sản phẩm')),
+        appBar: AppBar(title: Text('Chi tiết sản phẩm')),
         body: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -926,7 +926,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
               const SizedBox(height: 16),
               ElevatedButton(
                 onPressed: () => Navigator.pop(context),
-                child: const Text('Quay lại'),
+                child: Text('Quay lại'),
               ),
             ],
           ),
@@ -945,7 +945,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Chi tiết sản phẩm'),
+        title: Text('Chi tiết sản phẩm'),
         elevation: 0,
       ),
       bottomNavigationBar: _buildBottomAction(displayPrice),
@@ -959,27 +959,27 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
               _buildHeader(current, displayPrice, hasFlashSale),
               if (hasFlashSale && flashTimeLeft != null) _buildFlashSaleTimer(),
               _buildVariantSelector(current),
-              const Divider(thickness: 8, color: Color(0xFFF5F5F5)),
+              Divider(thickness: 8, color: Theme.of(context).colorScheme.surfaceContainerLow),
               _buildSection(
                 title: 'Mô tả sản phẩm',
                 child: Text(
                   current.description ??
                       current.shortDescription ??
                       'Chưa có mô tả.',
-                  style: const TextStyle(height: 1.5),
+                  style: TextStyle(height: 1.5),
                 ),
               ),
-              const Divider(thickness: 8, color: Color(0xFFF5F5F5)),
+              Divider(thickness: 8, color: Theme.of(context).colorScheme.surfaceContainerLow),
               _buildCommitmentSection(current),
               if (mergedSpecs.isNotEmpty) ...[
-                const Divider(thickness: 8, color: Color(0xFFF5F5F5)),
+                Divider(thickness: 8, color: Theme.of(context).colorScheme.surfaceContainerLow),
                 _buildSection(
                   title: 'Thông số kỹ thuật',
                   child: _buildGroupedSpecs(mergedSpecs),
                 ),
               ],
               if (visibleFaqs.isNotEmpty) ...[
-                const Divider(thickness: 8, color: Color(0xFFF5F5F5)),
+                Divider(thickness: 8, color: Theme.of(context).colorScheme.surfaceContainerLow),
                 _buildSection(
                   title: 'Câu hỏi thường gặp',
                   child: Column(
@@ -988,7 +988,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                 ),
               ],
               if (relatedProducts.isNotEmpty) ...[
-                const Divider(thickness: 8, color: Color(0xFFF5F5F5)),
+                Divider(thickness: 8, color: Theme.of(context).colorScheme.surfaceContainerLow),
                 _buildSection(
                   title: 'Sản phẩm liên quan',
                   child: SizedBox(
@@ -1002,14 +1002,14 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                   ),
                 ),
               ],
-              const Divider(thickness: 8, color: Color(0xFFF5F5F5)),
+              Divider(thickness: 8, color: Theme.of(context).colorScheme.surfaceContainerLow),
               _buildRichContentAndNews(current),
-              const Divider(thickness: 8, color: Color(0xFFF5F5F5)),
+              Divider(thickness: 8, color: Theme.of(context).colorScheme.surfaceContainerLow),
               _buildSection(
                 title: 'Đánh giá ${current.name}',
                 child: _buildVisualReviews(reviewStats, filteredReviews),
               ),
-              const Divider(thickness: 8, color: Color(0xFFF5F5F5)),
+              Divider(thickness: 8, color: Theme.of(context).colorScheme.surfaceContainerLow),
               _buildSection(
                   title: 'Hỏi và đáp', child: _buildQaSection(current)),
             ],
@@ -1040,7 +1040,7 @@ Widget _buildGallery(Product current, List<ProductImage> images) {
             final url = images[index].imageUrl;
             if (url.isEmpty) {
               return Center(
-                child: Icon(Icons.computer, size: 88, color: Colors.grey.shade300),
+                child: Icon(Icons.computer, size: 88, color: Theme.of(context).colorScheme.outline),
               );
             }
 
@@ -1055,7 +1055,7 @@ Widget _buildGallery(Product current, List<ProductImage> images) {
                 gaplessPlayback: true, // Giữ ảnh cũ, không bị nháy trắng khi lướt
                 filterQuality: FilterQuality.low, // Tăng hiệu năng render khi đang lướt animation
                 errorBuilder: (_, __, ___) => Center(
-                  child: Icon(Icons.computer, size: 88, color: Colors.grey.shade300),
+                  child: Icon(Icons.computer, size: 88, color: Theme.of(context).colorScheme.outline),
                 ),
               ),
             );
@@ -1079,7 +1079,7 @@ Widget _buildGallery(Product current, List<ProductImage> images) {
                 ),
                 child: Text(
                   '${activeIndex + 1}/${images.length}',
-                  style: const TextStyle(color: Colors.white, fontSize: 12),
+                  style: TextStyle(color: Theme.of(context).colorScheme.surface, fontSize: 12),
                 ),
               );
             },
@@ -1093,10 +1093,10 @@ Widget _buildGallery(Product current, List<ProductImage> images) {
         child: IconButton(
           onPressed: () => _toggleWishlist(current.id),
           icon: CircleAvatar(
-            backgroundColor: Colors.white.withValues(alpha: 0.85),
+            backgroundColor: Theme.of(context).colorScheme.surface.withValues(alpha: 0.85),
             child: Icon(
               wishSet.contains(current.id) ? Icons.favorite : Icons.favorite_border,
-              color: wishSet.contains(current.id) ? Colors.red : Colors.grey,
+              color: wishSet.contains(current.id) ? Colors.red : Theme.of(context).colorScheme.onSurfaceVariant,
             ),
           ),
         ),
@@ -1115,7 +1115,7 @@ Widget _buildGallery(Product current, List<ProductImage> images) {
             Text(
               current.brand!.toUpperCase(),
               style: TextStyle(
-                color: Colors.grey.shade600,
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
                 fontWeight: FontWeight.bold,
                 fontSize: 12,
               ),
@@ -1123,7 +1123,7 @@ Widget _buildGallery(Product current, List<ProductImage> images) {
           const SizedBox(height: 6),
           Text(
             current.name,
-            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 8),
           Row(
@@ -1131,7 +1131,7 @@ Widget _buildGallery(Product current, List<ProductImage> images) {
             children: [
               Text(
                 '${formatCurrency(displayPrice)} đ',
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 22,
                   fontWeight: FontWeight.bold,
                   color: Colors.red,
@@ -1143,10 +1143,10 @@ Widget _buildGallery(Product current, List<ProductImage> images) {
                   padding: const EdgeInsets.only(left: 8, bottom: 2),
                   child: Text(
                     '${formatCurrency(oldPrice)} đ',
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 14,
                       decoration: TextDecoration.lineThrough,
-                      color: Colors.grey,
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
                     ),
                   ),
                 ),
@@ -1165,10 +1165,10 @@ Widget _buildGallery(Product current, List<ProductImage> images) {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          const Text(
+          Text(
             'KẾT THÚC SAU',
             style: TextStyle(
-              color: Colors.white,
+              color: Theme.of(context).colorScheme.surface,
               fontWeight: FontWeight.bold,
               fontSize: 13,
             ),
@@ -1176,9 +1176,9 @@ Widget _buildGallery(Product current, List<ProductImage> images) {
           Row(
             children: [
               _buildCompactTimeUnit(flashTimeLeft!.inHours % 24),
-              const Text(':', style: TextStyle(color: Colors.white)),
+              Text(':', style: TextStyle(color: Theme.of(context).colorScheme.surface)),
               _buildCompactTimeUnit(flashTimeLeft!.inMinutes % 60),
-              const Text(':', style: TextStyle(color: Colors.white)),
+              Text(':', style: TextStyle(color: Theme.of(context).colorScheme.surface)),
               _buildCompactTimeUnit(flashTimeLeft!.inSeconds % 60),
             ],
           ),
@@ -1292,12 +1292,12 @@ Widget _buildGallery(Product current, List<ProductImage> images) {
         children: [
           // ================= HÀNG 1: CHỌN MÀU SẮC =================
           if (colors.isNotEmpty) ...[
-            const Text(
+            Text(
               'Màu sắc',
               style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 14,
-                  color: Color(0xFF374151)),
+                  color: Theme.of(context).colorScheme.onSurface),
             ),
             const SizedBox(height: 8),
             Wrap(
@@ -1318,11 +1318,11 @@ Widget _buildGallery(Product current, List<ProductImage> images) {
                         const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                     decoration: BoxDecoration(
                       color:
-                          isSelected ? const Color(0xFFFFF7ED) : Colors.white,
+                          isSelected ? const Color(0xFFFFF7ED) : Theme.of(context).colorScheme.surface,
                       border: Border.all(
                         color: isSelected
-                            ? const Color(0xFFF26522)
-                            : const Color(0xFFE5E7EB),
+                            ? Color(0xFFF26522)
+                            : Theme.of(context).colorScheme.outline,
                         width: isSelected ? 1.5 : 1.0,
                       ),
                       borderRadius: BorderRadius.circular(4),
@@ -1352,8 +1352,8 @@ Widget _buildGallery(Product current, List<ProductImage> images) {
                                 ? FontWeight.w600
                                 : FontWeight.normal,
                             color: isSelected
-                                ? const Color(0xFFF26522)
-                                : const Color(0xFF1F2937),
+                                ? Color(0xFFF26522)
+                                : Theme.of(context).colorScheme.onSurface,
                           ),
                         ),
                       ],
@@ -1367,12 +1367,12 @@ Widget _buildGallery(Product current, List<ProductImage> images) {
 
           // ================= HÀNG 2: CHỌN DUNG LƯỢNG (ĐÃ LỌC SẠCH CHỮ) =================
           if (storages.isNotEmpty) ...[
-            const Text(
+            Text(
               'Dung lượng',
               style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 14,
-                  color: Color(0xFF374151)),
+                  color: Theme.of(context).colorScheme.onSurface),
             ),
             const SizedBox(height: 8),
             Wrap(
@@ -1398,11 +1398,11 @@ Widget _buildGallery(Product current, List<ProductImage> images) {
                         const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                     decoration: BoxDecoration(
                       color:
-                          isSelected ? const Color(0xFFFFF7ED) : Colors.white,
+                          isSelected ? const Color(0xFFFFF7ED) : Theme.of(context).colorScheme.surface,
                       border: Border.all(
                         color: isSelected
-                            ? const Color(0xFFF26522)
-                            : const Color(0xFFE5E7EB),
+                            ? Color(0xFFF26522)
+                            : Theme.of(context).colorScheme.outline,
                         width: isSelected ? 1.5 : 1.0,
                       ),
                       borderRadius: BorderRadius.circular(4),
@@ -1414,8 +1414,8 @@ Widget _buildGallery(Product current, List<ProductImage> images) {
                         fontWeight:
                             isSelected ? FontWeight.w600 : FontWeight.normal,
                         color: isSelected
-                            ? const Color(0xFFF26522)
-                            : const Color(0xFF1F2937),
+                            ? Color(0xFFF26522)
+                            : Theme.of(context).colorScheme.onSurface,
                       ),
                     ),
                   ),
@@ -1426,7 +1426,7 @@ Widget _buildGallery(Product current, List<ProductImage> images) {
           ],
 
           // ================= HÀNG 3: THEO DÕI SỐ LƯỢNG KHO & BỘ TĂNG GIẢM =================
-          const Divider(color: Color(0xFFF3F4F6), height: 1),
+          Divider(color: Theme.of(context).colorScheme.surfaceContainerLow, height: 1),
           const SizedBox(height: 16),
 
           Row(
@@ -1435,9 +1435,9 @@ Widget _buildGallery(Product current, List<ProductImage> images) {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
+                  Text(
                     'Số lượng khả dụng',
-                    style: TextStyle(fontSize: 13, color: Color(0xFF6B7280)),
+                    style: TextStyle(fontSize: 13, color: Theme.of(context).colorScheme.onSurfaceVariant),
                   ),
                   const SizedBox(height: 4),
                   Text(
@@ -1455,8 +1455,8 @@ Widget _buildGallery(Product current, List<ProductImage> images) {
               if (isAvailable)
                 Container(
                   decoration: BoxDecoration(
-                    color: Colors.white,
-                    border: Border.all(color: const Color(0xFFD1D5DB)),
+                    color: Theme.of(context).colorScheme.surface,
+                    border: Border.all(color: Theme.of(context).colorScheme.outline),
                     borderRadius: BorderRadius.circular(4),
                   ),
                   child: Row(
@@ -1473,30 +1473,30 @@ Widget _buildGallery(Product current, List<ProductImage> images) {
                           padding: const EdgeInsets.symmetric(
                               horizontal: 14, vertical: 8),
                           color: Colors.transparent,
-                          child: const Text(
+                          child: Text(
                             '-',
                             style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,
-                                color: Color(0xFF4B5563)),
+                                color: Theme.of(context).colorScheme.onSurfaceVariant),
                           ),
                         ),
                       ),
                       Container(
-                          width: 1, height: 32, color: const Color(0xFFD1D5DB)),
+                          width: 1, height: 32, color: Theme.of(context).colorScheme.outline),
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 16),
                         alignment: Alignment.center,
                         child: Text(
                           '$quantity',
-                          style: const TextStyle(
+                          style: TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.bold,
-                              color: Color(0xFF1F2937)),
+                              color: Theme.of(context).colorScheme.onSurface),
                         ),
                       ),
                       Container(
-                          width: 1, height: 32, color: const Color(0xFFD1D5DB)),
+                          width: 1, height: 32, color: Theme.of(context).colorScheme.outline),
                       GestureDetector(
                         onTap: () {
                           if (quantity < currentStock) {
@@ -1511,12 +1511,12 @@ Widget _buildGallery(Product current, List<ProductImage> images) {
                           padding: const EdgeInsets.symmetric(
                               horizontal: 14, vertical: 8),
                           color: Colors.transparent,
-                          child: const Text(
+                          child: Text(
                             '+',
                             style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,
-                                color: Color(0xFF4B5563)),
+                                color: Theme.of(context).colorScheme.onSurfaceVariant),
                           ),
                         ),
                       ),
@@ -1535,8 +1535,8 @@ Widget _buildGallery(Product current, List<ProductImage> images) {
 
     return Container(
       padding: const EdgeInsets.all(16),
-      decoration: const BoxDecoration(
-        color: Colors.white,
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surface,
         boxShadow: [
           BoxShadow(
               color: Colors.black12, blurRadius: 10, offset: Offset(0, -5)),
@@ -1555,19 +1555,19 @@ Widget _buildGallery(Product current, List<ProductImage> images) {
                     '${formatCurrency(finalPrice)} đ x $quantity',
                     style: TextStyle(
                       fontSize: 12,
-                      color: Colors.grey[600],
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
                       fontWeight: FontWeight.w500,
                     ),
                   ),
                   const SizedBox(height: 2),
-                  const Text(
+                  Text(
                     'Tổng cộng',
-                    style: TextStyle(fontSize: 11, color: Colors.grey),
+                    style: TextStyle(fontSize: 11, color: Theme.of(context).colorScheme.onSurfaceVariant),
                   ),
                   const SizedBox(height: 2),
                   Text(
                     '${formatCurrency(finalPrice * quantity)} đ',
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
                       color: Colors.red,
@@ -1583,10 +1583,10 @@ Widget _buildGallery(Product current, List<ProductImage> images) {
               await _addToCart();
             },
             icon: const Icon(Icons.add_shopping_cart),
-            label: const Text('Thêm vào giỏ hàng'),
+            label: Text('Thêm vào giỏ hàng'),
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFFF26522), 
-                foregroundColor: Colors.white,
+                backgroundColor: Color(0xFFF26522), 
+                foregroundColor: Theme.of(context).colorScheme.surface,
               ),
             )
           ],
@@ -1603,7 +1603,7 @@ Widget _buildGallery(Product current, List<ProductImage> images) {
         children: [
           Text(title,
               style:
-                  const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                  TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
           const SizedBox(height: 16),
           child,
         ],
@@ -1642,17 +1642,17 @@ Widget _buildGallery(Product current, List<ProductImage> images) {
             margin: const EdgeInsets.only(bottom: 10),
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: const Color(0xFFF8FAFC),
-              border: Border.all(color: const Color(0xFFE2E8F0)),
+              color: Theme.of(context).colorScheme.surfaceContainerLow,
+              border: Border.all(color: Theme.of(context).colorScheme.outline),
               borderRadius: BorderRadius.circular(8),
             ),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Icon(item.$1, color: const Color(0xFFF26522), size: 22),
+                Icon(item.$1, color: Color(0xFFF26522), size: 22),
                 const SizedBox(width: 12),
                 Expanded(
-                  child: Text(item.$2, style: const TextStyle(height: 1.35)),
+                  child: Text(item.$2, style: TextStyle(height: 1.35)),
                 ),
               ],
             ),
@@ -1677,7 +1677,7 @@ Widget _buildGallery(Product current, List<ProductImage> images) {
           margin: const EdgeInsets.only(bottom: 10),
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            border: Border.all(color: const Color(0xFFE5E7EB)),
+            border: Border.all(color: Theme.of(context).colorScheme.outline),
             borderRadius: BorderRadius.circular(8),
           ),
           child: Row(
@@ -1687,9 +1687,9 @@ Widget _buildGallery(Product current, List<ProductImage> images) {
                 flex: 2,
                 child: Text(
                   entry.key,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontWeight: FontWeight.bold,
-                    color: Color(0xFF334155),
+                    color: Theme.of(context).colorScheme.onSurface,
                   ),
                 ),
               ),
@@ -1704,15 +1704,15 @@ Widget _buildGallery(Product current, List<ProductImage> images) {
                       padding: const EdgeInsets.only(bottom: 6),
                       child: RichText(
                         text: TextSpan(
-                          style: const TextStyle(
-                            color: Color(0xFF0F172A),
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.onSurface,
                             height: 1.35,
                           ),
                           children: [
                             TextSpan(
                               text: '${spec.specKey ?? ''}: ',
                               style:
-                                  const TextStyle(fontWeight: FontWeight.bold),
+                                  TextStyle(fontWeight: FontWeight.bold),
                             ),
                             TextSpan(
                               text:
@@ -1740,13 +1740,13 @@ Widget _buildFaqItem(ProductFaq faq) {
           contentPadding: EdgeInsets.zero,
           title: Text(
             faq.question,
-            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+            style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
           ),
           // Thay đổi phần Icon tại đây thành hình tam giác đặc
           trailing: Icon(
             isOpen ? Icons.arrow_drop_up : Icons.arrow_drop_down, 
             size: 26, // Kích thước được tăng lên một chút để rõ ràng như ảnh mẫu
-            color: Colors.black87, // Màu tối đặc phù hợp với giao diện
+            color: Theme.of(context).colorScheme.onSurface
           ),
           onTap: () => setState(() => openFaqId = isOpen ? null : faq.id),
         ),
@@ -1755,10 +1755,10 @@ Widget _buildFaqItem(ProductFaq faq) {
             padding: const EdgeInsets.only(bottom: 12),
             child: Text(
               faq.answer, 
-              style: TextStyle(color: Colors.grey[600], height: 1.4),
+              style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant, height: 1.4),
             ),
           ),
-        Divider(height: 1, color: Colors.grey[200]),
+        Divider(height: 1, color: Theme.of(context).colorScheme.outline),
       ],
     );
   }
@@ -1773,7 +1773,7 @@ Widget _buildFaqItem(ProductFaq faq) {
         title: 'Nội dung chi tiết',
         child: Text(
           'Chưa có nội dung chi tiết.',
-          style: TextStyle(color: Colors.grey.shade600),
+          style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant),
         ),
       );
     }
@@ -1788,8 +1788,8 @@ Widget _buildFaqItem(ProductFaq faq) {
               width: double.infinity,
               // padding: const EdgeInsets.all(14),
               // decoration: BoxDecoration(
-              //   color: Colors.white,
-              //   border: Border.all(color: const Color(0xFFE5E7EB)),
+              //   color: Theme.of(context).colorScheme.surface,
+              //   border: Border.all(color: Theme.of(context).colorScheme.outline),
               //   borderRadius: BorderRadius.circular(8),
               // ),
               // Thay thế widget Text cũ bằng widget Html
@@ -1802,20 +1802,20 @@ Widget _buildFaqItem(ProductFaq faq) {
                     padding: HtmlPaddings.zero,
                     fontSize: FontSize(14),
                     lineHeight: const LineHeight(1.55),
-                    color: Colors.black87,
+                    color: Theme.of(context).colorScheme.onSurface,
                   ),
                   // Cấu hình riêng cho bảng biểu (table) nếu nội dung từ admin có chứa bảng
                   "table": Style(
-                    backgroundColor: const Color(0xFFF9FAFB),
-                    border: Border.all(color: const Color(0xFFE5E7EB)),
+                    backgroundColor: Theme.of(context).colorScheme.surfaceContainerLow,
+                    border: Border.all(color: Theme.of(context).colorScheme.outline),
                   ),
                   "th": Style(
                     padding: HtmlPaddings.all(6),
-                    backgroundColor: const Color(0xFFF3F4F6),
+                    backgroundColor: Theme.of(context).colorScheme.surfaceContainerLow,
                   ),
                   "td": Style(
                     padding: HtmlPaddings.all(6),
-                    border: Border.all(color: const Color(0xFFE5E7EB)),
+                    border: Border.all(color: Theme.of(context).colorScheme.outline),
                   ),
                 },
               ),
@@ -1870,9 +1870,9 @@ Widget _buildFaqItem(ProductFaq faq) {
         margin: const EdgeInsets.only(bottom: 10),
         padding: const EdgeInsets.all(10),
         decoration: BoxDecoration(
-          color: const Color(0xFFF8FAFC),
+          color: Theme.of(context).colorScheme.surfaceContainerLow,
           borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: const Color(0xFFE2E8F0), width: 0.5),
+          border: Border.all(color: Theme.of(context).colorScheme.outline, width: 0.5),
         ),
         child: Row(
           children: [
@@ -1881,17 +1881,15 @@ Widget _buildFaqItem(ProductFaq faq) {
               child: Container(
                 width: 58,
                 height: 58,
-                color: const Color(0xFFE2E8F0),
+                color: Theme.of(context).colorScheme.outline,
                 child: item.thumbnailUrl == null || item.thumbnailUrl!.isEmpty
-                    ? const Icon(Icons.article_outlined,
-                        color: Color(0xFF94A3B8))
+                    ? Icon(Icons.article_outlined, color: Theme.of(context).colorScheme.onSurfaceVariant)
                     : Image.network(
                         _resolveImageUrl(
                             item.thumbnailUrl), // Gọi hàm sạch lỗi hoàn toàn
                         fit: BoxFit.cover,
-                        errorBuilder: (_, __, ___) => const Icon(
-                          Icons.article_outlined,
-                          color: Color(0xFF94A3B8),
+                        errorBuilder: (_, __, ___) => Icon(
+                          Icons.article_outlined, color: Theme.of(context).colorScheme.onSurfaceVariant,
                         ),
                       ),
               ),
@@ -1902,16 +1900,16 @@ Widget _buildFaqItem(ProductFaq faq) {
                 item.title,
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
-                style: const TextStyle(
+                style: TextStyle(
                   fontWeight: FontWeight.w600,
                   fontSize: 13.5,
-                  color: Color(0xFF1F2937),
+                  color: Theme.of(context).colorScheme.onSurface,
                   height: 1.3,
                 ),
               ),
             ),
             const SizedBox(width: 4),
-            const Icon(Icons.chevron_right, color: Color(0xFF94A3B8), size: 18),
+            Icon(Icons.chevron_right, color: Theme.of(context).colorScheme.onSurfaceVariant, size: 18),
           ],
         ),
       ),
@@ -1978,10 +1976,10 @@ Widget _buildFaqItem(ProductFaq faq) {
               width: 105,
               child: Text(
                 label,
-                style: const TextStyle(
+                style: TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.w600,
-                    color: Color(0xFF4B5563)),
+                    color: Theme.of(context).colorScheme.onSurfaceVariant),
               ),
             ),
 
@@ -2003,8 +2001,8 @@ Widget _buildFaqItem(ProductFaq faq) {
                             Icons.star,
                             size: 19,
                             color: starValue <= currentValue
-                                ? const Color(0xFFF26522)
-                                : const Color(0xFFE5E7EB),
+                                ? Color(0xFFF26522)
+                                : Theme.of(context).colorScheme.outline,
                           ),
                         ),
                       );
@@ -2019,10 +2017,10 @@ Widget _buildFaqItem(ProductFaq faq) {
             // 3. Chữ trạng thái động bên phải ngoài cùng (Ví dụ: "Chụp đẹp, chuyên nghiệp")
             Text(
               dynamicLabel,
-              style: const TextStyle(
+              style: TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFF1F2937)),
+                  color: Theme.of(context).colorScheme.onSurface),
             ),
           ],
         ),
@@ -2044,8 +2042,8 @@ Widget _buildFaqItem(ProductFaq faq) {
                 constraints: BoxConstraints(
                   maxHeight: MediaQuery.of(context).size.height * 0.85,
                 ),
-                decoration: const BoxDecoration(
-                  color: Colors.white,
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.surface,
                   borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(16),
                     topRight: Radius.circular(16),
@@ -2063,19 +2061,19 @@ Widget _buildFaqItem(ProductFaq faq) {
                           height: 4,
                           margin: const EdgeInsets.only(bottom: 16),
                           decoration: BoxDecoration(
-                            color: Colors.grey[300],
+                            color: Theme.of(context).colorScheme.outline,
                             borderRadius: BorderRadius.circular(2),
                           ),
                         ),
                       ),
 
                       // ================= KHỐI 1: ĐÁNH GIÁ CHUNG =================
-                      const Text(
+                      Text(
                         'Đánh giá chung',
                         style: TextStyle(
                             fontSize: 15,
                             fontWeight: FontWeight.bold,
-                            color: Color(0xFF1F2937)),
+                            color: Theme.of(context).colorScheme.onSurface),
                       ),
                       const SizedBox(height: 16),
                       Row(
@@ -2091,8 +2089,8 @@ Widget _buildFaqItem(ProductFaq faq) {
                                   Icons.star,
                                   size: 28,
                                   color: starValue <= localRating
-                                      ? const Color(0xFFF26522)
-                                      : const Color(0xFFE5E7EB),
+                                      ? Color(0xFFF26522)
+                                      : Theme.of(context).colorScheme.outline,
                                 ),
                                 const SizedBox(height: 8),
                                 Text(
@@ -2100,8 +2098,8 @@ Widget _buildFaqItem(ProductFaq faq) {
                                   style: TextStyle(
                                     fontSize: 11,
                                     color: starValue == localRating
-                                        ? const Color(0xFFF26522)
-                                        : const Color(0xFF6B7280),
+                                        ? Color(0xFFF26522)
+                                        : Theme.of(context).colorScheme.onSurfaceVariant,
                                     fontWeight: starValue == localRating
                                         ? FontWeight.bold
                                         : FontWeight.normal,
@@ -2113,16 +2111,16 @@ Widget _buildFaqItem(ProductFaq faq) {
                         }),
                       ),
                       const SizedBox(height: 16),
-                      const Divider(color: Color(0xFFF3F4F6), thickness: 1),
+                      Divider(color: Theme.of(context).colorScheme.surfaceContainerLow, thickness: 1),
 
                       // ================= KHỐI 2: THEO TRẢI NGHIỆM =================
                       const SizedBox(height: 8),
-                      const Text(
+                      Text(
                         'Theo trải nghiệm',
                         style: TextStyle(
                             fontSize: 15,
                             fontWeight: FontWeight.bold,
-                            color: Color(0xFF1F2937)),
+                            color: Theme.of(context).colorScheme.onSurface),
                       ),
                       const SizedBox(height: 12),
                       _buildExperienceRow(
@@ -2141,22 +2139,22 @@ Widget _buildFaqItem(ProductFaq faq) {
                           _getCameraLabel(localCamera),
                           (val) => setModalState(() => localCamera = val)),
                       const SizedBox(height: 16),
-                      const Divider(color: Color(0xFFF3F4F6), thickness: 1),
+                      Divider(color: Theme.of(context).colorScheme.surfaceContainerLow, thickness: 1),
 
                       // ================= KHỐI 3: NHẬP NỘI DUNG ĐÁNH GIÁ =================
                       const SizedBox(height: 8),
                       TextField(
                         controller: localReviewController,
                         maxLines: 5,
-                        style: const TextStyle(
-                            fontSize: 13, color: Color(0xFF1F2937)),
+                        style: TextStyle(
+                            fontSize: 13, color: Theme.of(context).colorScheme.onSurface),
                         decoration: InputDecoration(
                           hintText:
                               'Xin mời chia sẻ một số cảm nhận về sản phẩm (nhập tối thiểu 15 kí tự)',
                           hintStyle:
-                              TextStyle(fontSize: 13, color: Colors.grey[400]),
+                              TextStyle(fontSize: 13, color: Theme.of(context).colorScheme.onSurfaceVariant),
                           filled: true,
-                          fillColor: Colors.white,
+                          fillColor: Theme.of(context).colorScheme.surface,
                           contentPadding: const EdgeInsets.all(14),
                           enabledBorder: OutlineInputBorder(
                             borderSide: const BorderSide(
@@ -2224,24 +2222,24 @@ Widget _buildFaqItem(ProductFaq faq) {
                                   }
                                 },
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFFF26522),
-                            disabledBackgroundColor: Colors.grey[300],
+                            backgroundColor: Color(0xFFF26522),
+                            disabledBackgroundColor: Theme.of(context).colorScheme.outline,
                             padding: const EdgeInsets.symmetric(vertical: 14),
                             shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(8)),
                             elevation: 0,
                           ),
                           child: localIsSubmitting
-                              ? const SizedBox(
+                              ? SizedBox(
                                   width: 18,
                                   height: 18,
                                   child: CircularProgressIndicator(
-                                      strokeWidth: 2, color: Colors.white),
+                                      strokeWidth: 2, color: Theme.of(context).colorScheme.surface),
                                 )
-                              : const Text(
+                              : Text(
                                   'GỬI ĐÁNH GIÁ',
                                   style: TextStyle(
-                                      color: Colors.white,
+                                      color: Theme.of(context).colorScheme.surface,
                                       fontWeight: FontWeight.bold,
                                       fontSize: 14),
                                 ),
@@ -2285,27 +2283,27 @@ Widget _buildFaqItem(ProductFaq faq) {
                       children: [
                         Text(
                           avg.toStringAsFixed(1),
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 40,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                        const Text('/ 5', style: TextStyle(color: Colors.grey)),
+                        Text('/ 5', style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant)),
                         const SizedBox(height: 4),
                         _buildStars(avg, size: 17),
                         const SizedBox(height: 8),
                         Text('$total lượt đánh giá',
-                            style: const TextStyle(fontSize: 12)),
+                            style: TextStyle(fontSize: 12)),
                         const SizedBox(height: 10),
                         // TÌM ĐOẠN NÚT BẤM CŨ TRONG _buildVisualReviews VÀ THAY BẰNG ĐOẠN NÀY:
                         OutlinedButton(
                           onPressed:
                               _showWriteReviewSheet, // KÍCH HOẠT HÀM BẬT BOTTOM SHEET NỔI TỪ DƯỚI LÊN
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFFF26522),
+                            backgroundColor: Color(0xFFF26522),
                             side: const BorderSide(
                                 color: Color(0xFFF26522), width: 1.5),
-                            foregroundColor: Colors.white,
+                            foregroundColor: Theme.of(context).colorScheme.surface,
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 8, vertical: 8),
                             shape: RoundedRectangleBorder(
@@ -2337,7 +2335,7 @@ Widget _buildFaqItem(ProductFaq faq) {
                           child: Row(
                             children: [
                               Text('$star',
-                                  style: const TextStyle(fontSize: 11)),
+                                  style: TextStyle(fontSize: 11)),
                               const SizedBox(width: 3),
                               const Icon(Icons.star,
                                   color: Colors.orange, size: 12),
@@ -2348,7 +2346,7 @@ Widget _buildFaqItem(ProductFaq faq) {
                                   child: LinearProgressIndicator(
                                     value: percent,
                                     minHeight: 7,
-                                    backgroundColor: Colors.white,
+                                    backgroundColor: Theme.of(context).colorScheme.surface,
                                     valueColor: const AlwaysStoppedAnimation(
                                         Colors.orange),
                                   ),
@@ -2356,7 +2354,7 @@ Widget _buildFaqItem(ProductFaq faq) {
                               ),
                               const SizedBox(width: 6),
                               Text('$count',
-                                  style: const TextStyle(fontSize: 11)),
+                                  style: TextStyle(fontSize: 11)),
                             ],
                           ),
                         );
@@ -2371,7 +2369,7 @@ Widget _buildFaqItem(ProductFaq faq) {
           ),
         ),
         const SizedBox(height: 18),
-        const Text(
+        Text(
           'Lọc đánh giá theo',
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
@@ -2396,11 +2394,11 @@ Widget _buildFaqItem(ProductFaq faq) {
             width: double.infinity,
             padding: const EdgeInsets.all(18),
             decoration: BoxDecoration(
-              color: const Color(0xFFF8FAFC),
+              color: Theme.of(context).colorScheme.surfaceContainerLow,
               borderRadius: BorderRadius.circular(8),
             ),
             child: Text('Chưa có đánh giá nào.',
-                style: TextStyle(color: Colors.grey.shade600)),
+                style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant)),
           )
         else
           ...filtered.take(5).map(_buildReviewItem),
@@ -2428,15 +2426,15 @@ Widget _buildFaqItem(ProductFaq faq) {
         children: [
           SizedBox(
             width: 108,
-            child: Text(label, style: const TextStyle(fontSize: 12)),
+            child: Text(label, style: TextStyle(fontSize: 12)),
           ),
           Expanded(child: _buildStars(avg, size: 14)),
           Text(
             '${count == 0 ? 0 : avg.toStringAsFixed(0)}/5',
-            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
           ),
           Text(' ($count)',
-              style: const TextStyle(fontSize: 11, color: Colors.grey)),
+              style: TextStyle(fontSize: 11, color: Theme.of(context).colorScheme.onSurfaceVariant)),
         ],
       ),
     );
@@ -2450,10 +2448,10 @@ Widget _buildFaqItem(ProductFaq faq) {
       onSelected: (_) => setState(() => reviewFilter = value),
       selectedColor: const Color(0xFFFFEDD5),
       side: BorderSide(
-        color: selected ? const Color(0xFFF26522) : const Color(0xFFE2E8F0),
+        color: selected ? Color(0xFFF26522) : Theme.of(context).colorScheme.outline,
       ),
       labelStyle: TextStyle(
-        color: selected ? const Color(0xFFF26522) : const Color(0xFF334155),
+        color: selected ? Color(0xFFF26522) : Theme.of(context).colorScheme.onSurface,
         fontWeight: FontWeight.w600,
       ),
     );
@@ -2466,7 +2464,7 @@ Widget _buildFaqItem(ProductFaq faq) {
         5,
         (i) => Icon(
           Icons.star,
-          color: i < value.round() ? Colors.orange : Colors.grey[300],
+          color: i < value.round() ? Colors.orange : Theme.of(context).colorScheme.outline,
           size: size,
         ),
       ),
@@ -2503,7 +2501,7 @@ Widget _buildFaqItem(ProductFaq faq) {
       margin: const EdgeInsets.only(bottom: 14),
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        border: Border.all(color: const Color(0xFFE5E7EB)),
+        border: Border.all(color: Theme.of(context).colorScheme.outline),
         borderRadius: BorderRadius.circular(8),
       ),
       child: Row(
@@ -2513,15 +2511,15 @@ Widget _buildFaqItem(ProductFaq faq) {
             children: [
               CircleAvatar(
                 radius: 22,
-                backgroundColor: const Color(0xFFF26522),
+                backgroundColor: Color(0xFFF26522),
                 backgroundImage: review.userAvatarUrl == null
                     ? null
                     : NetworkImage(review.userAvatarUrl!),
                 child: review.userAvatarUrl == null
                     ? Text(
                         _avatarInitial(userName),
-                        style: const TextStyle(
-                          color: Colors.white,
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.surface,
                           fontWeight: FontWeight.bold,
                         ),
                       )
@@ -2535,7 +2533,7 @@ Widget _buildFaqItem(ProductFaq faq) {
                   textAlign: TextAlign.center,
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
+                  style: TextStyle(
                       fontSize: 11, fontWeight: FontWeight.w600),
                 ),
               ),
@@ -2552,7 +2550,7 @@ Widget _buildFaqItem(ProductFaq faq) {
                     const SizedBox(width: 8),
                     Text(
                       _ratingLabel(review.rating),
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontWeight: FontWeight.bold,
                         color: Color(0xFFF26522),
                       ),
@@ -2582,13 +2580,13 @@ Widget _buildFaqItem(ProductFaq faq) {
                 ),
                 if ((review.comment ?? '').isNotEmpty) ...[
                   const SizedBox(height: 10),
-                  Text(review.comment!, style: const TextStyle(height: 1.4)),
+                  Text(review.comment!, style: TextStyle(height: 1.4)),
                 ],
                 if (review.createdAt.isNotEmpty) ...[
                   const SizedBox(height: 8),
                   Text(
                     'Đánh giá đã đăng vào ${_timeAgoVi(review.createdAt)}',
-                    style: const TextStyle(color: Colors.grey, fontSize: 12),
+                    style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant, fontSize: 12),
                   ),
                 ],
               ],
@@ -2606,8 +2604,8 @@ Widget _buildFaqItem(ProductFaq faq) {
         Container(
           padding: const EdgeInsets.all(14),
           decoration: BoxDecoration(
-            color: const Color(0xFFF8FAFC),
-            border: Border.all(color: const Color(0xFFE2E8F0)),
+            color: Theme.of(context).colorScheme.surfaceContainerLow,
+            border: Border.all(color: Theme.of(context).colorScheme.outline),
             borderRadius: BorderRadius.circular(10),
           ),
           child: Column(
@@ -2627,7 +2625,7 @@ Widget _buildFaqItem(ProductFaq faq) {
                     ),
                   ),
                   const SizedBox(width: 12),
-                  const Expanded(
+                  Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -2640,7 +2638,7 @@ Widget _buildFaqItem(ProductFaq faq) {
                         Text(
                           'Đội ngũ E-Tech Market sẽ phản hồi trong thời gian sớm nhất.',
                           style:
-                              TextStyle(color: Color(0xFF64748B), fontSize: 12),
+                              TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant, fontSize: 12),
                         ),
                       ],
                     ),
@@ -2655,7 +2653,7 @@ Widget _buildFaqItem(ProductFaq faq) {
                 builder: (context, snapshot) {
                   final isLoggedIn = (snapshot.data ?? '').isNotEmpty;
                   if (isLoggedIn) {
-                    return const Padding(
+                    return Padding(
                       padding: EdgeInsets.only(bottom: 10),
                       child: Text(
                         'Bạn đang đăng nhập, câu hỏi sẽ hiển thị kèm tên tài khoản.',
@@ -2668,12 +2666,12 @@ Widget _buildFaqItem(ProductFaq faq) {
                     padding: const EdgeInsets.only(bottom: 10),
                     child: TextField(
                       controller: _qaGuestNameController,
-                      style: const TextStyle(fontSize: 13),
+                      style: TextStyle(fontSize: 13),
                       decoration: InputDecoration(
                         labelText: 'Tên hiển thị',
-                        labelStyle: const TextStyle(fontSize: 13),
+                        labelStyle: TextStyle(fontSize: 13),
                         filled: true,
-                        fillColor: Colors.white,
+                        fillColor: Theme.of(context).colorScheme.surface,
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(8),
                           borderSide:
@@ -2703,13 +2701,13 @@ Widget _buildFaqItem(ProductFaq faq) {
                     maxLines: 6,
                     maxLength: 2000,
                     style:
-                        const TextStyle(fontSize: 13, color: Color(0xFF1F2937)),
+                        TextStyle(fontSize: 13, color: Theme.of(context).colorScheme.onSurface),
                     decoration: InputDecoration(
                       hintText: 'Xin mời nhập câu hỏi của bạn tại đây...',
                       hintStyle:
-                          TextStyle(fontSize: 13, color: Colors.grey[400]),
+                          TextStyle(fontSize: 13, color: Theme.of(context).colorScheme.onSurfaceVariant),
                       filled: true,
-                      fillColor: Colors.white,
+                      fillColor: Theme.of(context).colorScheme.surface,
                       counterText:
                           '', // Ẩn bộ đếm mặc định của chân viền để làm trống góc phải
                       contentPadding: const EdgeInsets.only(
@@ -2739,8 +2737,8 @@ Widget _buildFaqItem(ProductFaq faq) {
                     child: ElevatedButton(
                       onPressed: qaSending ? null : _submitQuestion,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFFF26522),
-                        foregroundColor: Colors.white,
+                        backgroundColor: Color(0xFFF26522),
+                        foregroundColor: Theme.of(context).colorScheme.surface,
                         elevation: 0,
                         padding: const EdgeInsets.symmetric(
                             horizontal: 16, vertical: 10),
@@ -2754,18 +2752,18 @@ Widget _buildFaqItem(ProductFaq faq) {
                         children: [
                           Text(
                             qaSending ? 'ĐANG GỬI...' : 'GỬI CÂU HỎI',
-                            style: const TextStyle(
+                            style: TextStyle(
                                 fontSize: 12,
                                 fontWeight: FontWeight.bold,
                                 letterSpacing: 0.5),
                           ),
                           const SizedBox(width: 6),
                           if (qaSending)
-                            const SizedBox(
+                            SizedBox(
                               width: 12,
                               height: 12,
                               child: CircularProgressIndicator(
-                                  strokeWidth: 2, color: Colors.white),
+                                  strokeWidth: 2, color: Theme.of(context).colorScheme.surface),
                             )
                           else
                             const Icon(Icons.send, size: 13),
@@ -2780,12 +2778,12 @@ Widget _buildFaqItem(ProductFaq faq) {
               if (qaError != null) ...[
                 const SizedBox(height: 8),
                 Text(qaError!,
-                    style: const TextStyle(color: Colors.red, fontSize: 12)),
+                    style: TextStyle(color: Colors.red, fontSize: 12)),
               ],
               if (qaFlash != null && qaError == null) ...[
                 const SizedBox(height: 8),
                 Text(qaFlash!,
-                    style: const TextStyle(
+                    style: TextStyle(
                         color: Color(0xFF16A34A), fontSize: 12)),
               ],
             ],
@@ -2799,12 +2797,12 @@ Widget _buildFaqItem(ProductFaq faq) {
             width: double.infinity,
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: const Color(0xFFF8FAFC),
+              color: Theme.of(context).colorScheme.surfaceContainerLow,
               borderRadius: BorderRadius.circular(8),
             ),
-            child: const Text(
+            child: Text(
               'Chưa có câu hỏi nào. Hãy đặt câu hỏi đầu tiên ở ô phía trên.',
-              style: TextStyle(color: Color(0xFF64748B), fontSize: 13),
+              style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant, fontSize: 13),
             ),
           )
         else
@@ -2819,7 +2817,7 @@ Widget _buildFaqItem(ProductFaq faq) {
       margin: const EdgeInsets.only(bottom: 14),
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        border: Border.all(color: const Color(0xFFE5E7EB)),
+        border: Border.all(color: Theme.of(context).colorScheme.outline),
         borderRadius: BorderRadius.circular(10),
       ),
       child: Column(
@@ -2837,7 +2835,7 @@ Widget _buildFaqItem(ProductFaq faq) {
                 child: row.userAvatarUrl == null
                     ? Text(
                         _avatarInitial(row.askerDisplayName),
-                        style: const TextStyle(
+                        style: TextStyle(
                           color: Color(0xFF0369A1),
                           fontWeight: FontWeight.bold,
                         ),
@@ -2854,19 +2852,19 @@ Widget _buildFaqItem(ProductFaq faq) {
                         Expanded(
                           child: Text(
                             row.askerDisplayName,
-                            style: const TextStyle(fontWeight: FontWeight.bold),
+                            style: TextStyle(fontWeight: FontWeight.bold),
                           ),
                         ),
                         if ((row.createdAt ?? '').isNotEmpty)
                           Text(
                             _timeAgoVi(row.createdAt!),
-                            style: const TextStyle(
-                                color: Colors.grey, fontSize: 12),
+                            style: TextStyle(
+                                color: Theme.of(context).colorScheme.onSurfaceVariant, fontSize: 12),
                           ),
                       ],
                     ),
                     const SizedBox(height: 6),
-                    Text(row.question, style: const TextStyle(height: 1.4)),
+                    Text(row.question, style: TextStyle(height: 1.4)),
                     const SizedBox(height: 8),
                     if (!hasAnswer)
                       Container(
@@ -2876,7 +2874,7 @@ Widget _buildFaqItem(ProductFaq faq) {
                           color: const Color(0xFFFFF7ED),
                           borderRadius: BorderRadius.circular(999),
                         ),
-                        child: const Text(
+                        child: Text(
                           'Đang chờ cửa hàng',
                           style: TextStyle(
                             color: Color(0xFFC2410C),
@@ -2901,13 +2899,13 @@ Widget _buildFaqItem(ProductFaq faq) {
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const CircleAvatar(
+                  CircleAvatar(
                     radius: 18,
                     backgroundColor: Color(0xFF16A34A),
                     child: Text(
                       'QT',
                       style: TextStyle(
-                          color: Colors.white, fontWeight: FontWeight.bold),
+                          color: Theme.of(context).colorScheme.surface, fontWeight: FontWeight.bold),
                     ),
                   ),
                   const SizedBox(width: 10),
@@ -2917,7 +2915,7 @@ Widget _buildFaqItem(ProductFaq faq) {
                       children: [
                         Row(
                           children: [
-                            const Text(
+                            Text(
                               'Quản trị viên',
                               style: TextStyle(fontWeight: FontWeight.bold),
                             ),
@@ -2929,7 +2927,7 @@ Widget _buildFaqItem(ProductFaq faq) {
                                 color: const Color(0xFFDCFCE7),
                                 borderRadius: BorderRadius.circular(999),
                               ),
-                              child: const Text(
+                              child: Text(
                                 'QTV',
                                 style: TextStyle(
                                   color: Color(0xFF15803D),
@@ -2941,13 +2939,13 @@ Widget _buildFaqItem(ProductFaq faq) {
                           ],
                         ),
                         const SizedBox(height: 6),
-                        Text(row.answer!, style: const TextStyle(height: 1.45)),
+                        Text(row.answer!, style: TextStyle(height: 1.45)),
                         if ((row.answeredAt ?? '').isNotEmpty) ...[
                           const SizedBox(height: 6),
                           Text(
                             _timeAgoVi(row.answeredAt!),
-                            style: const TextStyle(
-                                color: Colors.grey, fontSize: 12),
+                            style: TextStyle(
+                                color: Theme.of(context).colorScheme.onSurfaceVariant, fontSize: 12),
                           ),
                         ],
                       ],
@@ -2977,9 +2975,9 @@ Widget _buildFaqItem(ProductFaq faq) {
         width: 160,
         margin: const EdgeInsets.only(right: 12),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: Colors.grey.shade200),
+          border: Border.all(color: Theme.of(context).colorScheme.outline),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -2994,7 +2992,7 @@ Widget _buildFaqItem(ProductFaq faq) {
                     width: 160,
                     child: p.mainImageUrl.isEmpty
                         ? Icon(Icons.computer,
-                            size: 50, color: Colors.grey.shade300)
+                            size: 50, color: Theme.of(context).colorScheme.outline)
                         : Image.network(
                             NetworkUtils.fixDeviceUrl(p.mainImageUrl),
                             fit: BoxFit.cover,
@@ -3011,13 +3009,13 @@ Widget _buildFaqItem(ProductFaq faq) {
                     child: Container(
                       padding: const EdgeInsets.all(6),
                       decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.9),
+                        color: Theme.of(context).colorScheme.surface.withOpacity(0.9),
                         shape: BoxShape.circle,
                       ),
                       child: Icon(
                         isLiked ? Icons.favorite : Icons.favorite_border,
                         size: 18,
-                        color: isLiked ? Colors.red : Colors.grey.shade700,
+                        color: isLiked ? Colors.red : Theme.of(context).colorScheme.onSurfaceVariant,
                       ),
                     ),
                   ),
@@ -3033,10 +3031,10 @@ Widget _buildFaqItem(ProductFaq faq) {
                     p.name,
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 13,
                       fontWeight: FontWeight.bold,
-                      color: Color(0xFF111827),
+                      color: Theme.of(context).colorScheme.onSurface,
                       height: 1.3,
                     ),
                   ),
@@ -3047,9 +3045,9 @@ Widget _buildFaqItem(ProductFaq faq) {
                         'Sản phẩm công nghệ cao cấp',
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 11,
-                      color: Color(0xFF6B7280),
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
                       height: 1.4,
                     ),
                   ),
@@ -3066,12 +3064,12 @@ Widget _buildFaqItem(ProductFaq faq) {
     return Container(
       padding: const EdgeInsets.all(4),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(4),
       ),
       child: Text(
         value.toString().padLeft(2, '0'),
-        style: const TextStyle(
+        style: TextStyle(
           color: Colors.red,
           fontWeight: FontWeight.bold,
           fontSize: 12,

@@ -10,9 +10,7 @@ class WhyUsSection extends StatelessWidget {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
-      decoration: const BoxDecoration(
-        color: Colors.white,
-      ),
+      color: Theme.of(context).colorScheme.surface,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -73,13 +71,13 @@ class _WhyUsItem extends StatelessWidget {
           width: 56,
           height: 56,
           decoration: BoxDecoration(
-            color: const Color(0xFFEF7A45).withValues(alpha: 0.1),
+            color: Color(0xFFEF7A45).withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(12),
           ),
           child: Center(
             child: Icon(
               icon,
-              color: const Color(0xFFEF7A45),
+              color: Color(0xFFEF7A45),
               size: 28,
             ),
           ),
@@ -88,10 +86,10 @@ class _WhyUsItem extends StatelessWidget {
         Text(
           title,
           textAlign: TextAlign.center,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 15,
             fontWeight: FontWeight.w700,
-            color: Color(0xFF111827),
+            color: Theme.of(context).colorScheme.onSurface,
             height: 1.3,
           ),
         ),
@@ -99,9 +97,9 @@ class _WhyUsItem extends StatelessWidget {
         Text(
           description,
           textAlign: TextAlign.center,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 12,
-            color: Color(0xFF64748B),
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
             height: 1.4,
           ),
         ),

@@ -40,23 +40,21 @@ class TabbedProductSection extends StatelessWidget {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.fromLTRB(20, 24, 20, 30),
-      decoration: const BoxDecoration(
-        color: Colors.white,
-      ),
+      color: Theme.of(context).colorScheme.surface,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              const Expanded(
+              Expanded(
                 child: Text(
                   'Sản phẩm theo danh mục',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 22,
                     fontWeight: FontWeight.w800,
-                    color: Color(0xFF111827),
+                    color: Theme.of(context).colorScheme.onSurface,
                     height: 1.15,
                   ),
                 ),
@@ -91,9 +89,9 @@ class TabbedProductSection extends StatelessWidget {
                       ),
                       selected: selected,
                       selectedColor: _brandColor,
-                      backgroundColor: Colors.white,
+                      backgroundColor: Theme.of(context).colorScheme.surface,
                       side: BorderSide(
-                        color: selected ? _brandColor : const Color(0xFFE2E8F0),
+                        color: selected ? _brandColor : Theme.of(context).colorScheme.outline,
                       ),
                       onSelected: onTabSelected == null
                           ? null
@@ -108,12 +106,12 @@ class TabbedProductSection extends StatelessWidget {
           if (isLoading)
             _buildSkeletonGrid()
           else if (visibleProducts.isEmpty)
-            const Padding(
+            Padding(
               padding: EdgeInsets.symmetric(vertical: 24),
               child: Text(
                 'Chưa có sản phẩm nổi bật.',
                 textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 14, color: Colors.black54),
+                style: TextStyle(fontSize: 14, color: Theme.of(context).colorScheme.onSurfaceVariant),
               ),
             )
           else
@@ -183,7 +181,7 @@ class _TabbedProductCard extends StatelessWidget {
     final oldPrice = _getDisplayOldPrice(product);
 
     return Material(
-      color: Colors.white,
+      color: Theme.of(context).colorScheme.surface,
       borderRadius: BorderRadius.circular(10),
       clipBehavior: Clip.antiAlias,
       child: InkWell(
@@ -194,18 +192,18 @@ class _TabbedProductCard extends StatelessWidget {
             Expanded(
               flex: 7,
               child: Container(
-                color: const Color(0xFFF8FAFC),
+                color: Theme.of(context).colorScheme.surfaceContainerLow,
                 child: Stack(
                   children: [
                     Positioned.fill(
                       child: Padding(
                         padding: const EdgeInsets.all(10),
                         child: imageUrl.isEmpty
-                            ? _buildFallback()
+                            ? _buildFallback(context)
                             : Image.network(
                                 imageUrl,
                                 fit: BoxFit.contain,
-                                errorBuilder: (_, __, ___) => _buildFallback(),
+                                errorBuilder: (_, __, ___) => _buildFallback(context),
                               ),
                       ),
                     ),
@@ -213,7 +211,7 @@ class _TabbedProductCard extends StatelessWidget {
                       top: 8,
                       right: 8,
                       child: Material(
-                        color: Colors.white,
+                        color: Theme.of(context).colorScheme.surface,
                         shape: const CircleBorder(),
                         child: InkWell(
                           onTap: onToggleWishlist,
@@ -222,7 +220,7 @@ class _TabbedProductCard extends StatelessWidget {
                             padding: const EdgeInsets.all(6),
                             child: Icon(
                               isWished ? Icons.favorite : Icons.favorite_border,
-                              color: isWished ? _brandColor : const Color(0xFF94A3B8),
+                              color: isWished ? _brandColor : Theme.of(context).colorScheme.onSurfaceVariant,
                               size: 16,
                             ),
                           ),
@@ -242,8 +240,8 @@ class _TabbedProductCard extends StatelessWidget {
                   children: [
                     Text(
                       name,
-                      style: const TextStyle(
-                        color: Color(0xFF111827),
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.onSurface,
                         fontSize: 13,
                         fontWeight: FontWeight.w800,
                       ),
@@ -255,7 +253,7 @@ class _TabbedProductCard extends StatelessWidget {
                       children: [
                         Text(
                           '${_formatPrice(displayPrice)} đ',
-                          style: const TextStyle(
+                          style: TextStyle(
                             color: Color(0xFFEF7A45),
                             fontSize: 13,
                             fontWeight: FontWeight.w800,
@@ -265,8 +263,8 @@ class _TabbedProductCard extends StatelessWidget {
                           const SizedBox(width: 6),
                           Text(
                             '${_formatPrice(oldPrice)} đ',
-                            style: const TextStyle(
-                              color: Color(0xFF94A3B8),
+                            style: TextStyle(
+                              color: Theme.of(context).colorScheme.onSurfaceVariant,
                               fontSize: 10,
                               decoration: TextDecoration.lineThrough,
                             ),
@@ -278,8 +276,8 @@ class _TabbedProductCard extends StatelessWidget {
                     Expanded(
                       child: Text(
                         product['short_description']?.toString() ?? '',
-                        style: const TextStyle(
-                          color: Color(0xFF64748B),
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
                           fontSize: 11,
                           height: 1.3,
                         ),
@@ -295,7 +293,7 @@ class _TabbedProductCard extends StatelessWidget {
                           onPressed: onAddToCart, 
                           style: ElevatedButton.styleFrom(
                             backgroundColor: _brandColor,
-                            foregroundColor: Colors.white,
+                            foregroundColor: Theme.of(context).colorScheme.surface,
                             elevation: 0,
                             padding: EdgeInsets.zero,
                             shape: RoundedRectangleBorder(
@@ -320,10 +318,10 @@ class _TabbedProductCard extends StatelessWidget {
     );
   }
 
-  Widget _buildFallback() {
-    return const Center(
+  Widget _buildFallback(BuildContext context) {
+    return Center(
       child: Icon(Icons.devices_other_outlined,
-          size: 40, color: Color(0xFFCBD5E1)),
+          size: 40, color: Theme.of(context).colorScheme.outline),
     );
   }
 
@@ -398,12 +396,18 @@ class _TabbedProductSkeleton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: const Color(0xFFF8FAFC),
+        color: Theme.of(context).colorScheme.surfaceContainerLow,
         borderRadius: BorderRadius.circular(10),
+        border: Border.all(
+          color: Color.alphaBlend(
+            Theme.of(context).colorScheme.outline.withOpacity(0.3), // 30% màu border
+            Theme.of(context).colorScheme.surface,                 // Trộn trên nền canvas
+          ),
+        ),
       ),
       child: Column(
         children: [
-          Expanded(flex: 7, child: Container(color: const Color(0xFFE5E7EB))),
+          Expanded(flex: 7, child: Container(color: Theme.of(context).colorScheme.surfaceContainerLow)),
           Expanded(
             flex: 6,
             child: Padding(
@@ -441,7 +445,7 @@ class _TabbedSkeletonLine extends StatelessWidget {
       child: Container(
         height: height,
         decoration: BoxDecoration(
-          color: const Color(0xFFE5E7EB),
+          color: Theme.of(context).colorScheme.surfaceContainerLow,
           borderRadius: BorderRadius.circular(6),
         ),
       ),

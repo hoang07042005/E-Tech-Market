@@ -56,7 +56,7 @@ class _NewsletterSectionState extends State<NewsletterSection> {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 48, horizontal: 16),
-      color: const Color(0xFFF8FAFC),
+      color: Theme.of(context).colorScheme.surface,
       child: SingleChildScrollView(
         child: Center(
           child: ConstrainedBox(
@@ -70,7 +70,7 @@ class _NewsletterSectionState extends State<NewsletterSection> {
                   style: Theme.of(context).textTheme.headlineLarge?.copyWith(
                         fontSize: 28,
                         fontWeight: FontWeight.w600,
-                        color: const Color(0xFF0F172A),
+                        color: Theme.of(context).colorScheme.onSurface,
                       ),
                   textAlign: TextAlign.center,
                 ),
@@ -81,7 +81,7 @@ class _NewsletterSectionState extends State<NewsletterSection> {
                   'Tham gia cộng đồng ưu tiên: ưu đãi sớm cho phiên bản giới hạn và tài liệu kỹ thuật chọn lọc.',
                   style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                         fontSize: 16,
-                        color: const Color(0xFF64748B),
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
                         height: 1.6,
                       ),
                   textAlign: TextAlign.center,
@@ -91,11 +91,11 @@ class _NewsletterSectionState extends State<NewsletterSection> {
                 // Form
                 Container(
                   decoration: BoxDecoration(
-                    border: Border.all(color: const Color(0xFFE2E8F0)),
+                    border: Border.all(color: Theme.of(context).colorScheme.outline),
                     borderRadius: BorderRadius.circular(12),
                     boxShadow: [
                       BoxShadow(
-                        color: const Color(0xFF0F172A).withValues(alpha: 0.04),
+                        color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.04),
                         blurRadius: 20,
                         offset: const Offset(0, 4),
                       ),
@@ -112,7 +112,7 @@ class _NewsletterSectionState extends State<NewsletterSection> {
                           decoration: InputDecoration(
                             hintText: 'ĐỊA CHỈ EMAIL',
                             hintStyle: TextStyle(
-                              color: const Color(0xFF0F172A).withValues(alpha: 0.4),
+                              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.4),
                               fontWeight: FontWeight.w600,
                               letterSpacing: 0.05,
                             ),
@@ -121,11 +121,11 @@ class _NewsletterSectionState extends State<NewsletterSection> {
                                 const EdgeInsets.symmetric(horizontal: 22),
                             isDense: true,
                           ),
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 13,
                             fontWeight: FontWeight.w600,
                             letterSpacing: 0.05,
-                            color: Color(0xFF0F172A),
+                            color: Theme.of(context).colorScheme.onSurface,
                           ),
                           onSubmitted: (_) => _handleSubmit(),
                         ),
@@ -169,7 +169,7 @@ class _NewsletterSectionState extends State<NewsletterSection> {
                                           .textTheme
                                           .labelLarge
                                           ?.copyWith(
-                                            color: Colors.white,
+                                            color: Theme.of(context).colorScheme.surface,
                                             fontWeight: FontWeight.w700,
                                             letterSpacing: 0.05,
                                           ),
@@ -190,8 +190,8 @@ class _NewsletterSectionState extends State<NewsletterSection> {
                     style: TextStyle(
                       fontSize: 13,
                       color: _message!.contains('thành công')
-                          ? const Color(0xFF10B981)
-                          : const Color(0xFFEF4444),
+                          ? Color(0xFF10B981)
+                          : Color(0xFFEF4444),
                       fontWeight: FontWeight.w500,
                     ),
                     textAlign: TextAlign.center,

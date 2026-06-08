@@ -106,14 +106,14 @@ class _CouponSectionState extends State<CouponSection> {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
-      color: Colors.white,
+      color: Theme.of(context).colorScheme.surface,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Expanded(
+              Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -122,7 +122,7 @@ class _CouponSectionState extends State<CouponSection> {
                       style: TextStyle(
                         fontSize: 16, 
                         fontWeight: FontWeight.w700,
-                        color: Color(0xFF1A1A1A),
+                        color: Theme.of(context).colorScheme.onSurface,
                         letterSpacing: -0.3,
                       ),
                     ),
@@ -131,7 +131,7 @@ class _CouponSectionState extends State<CouponSection> {
                       'Chạm vào mã để sao chép nhanh',
                       style: TextStyle(
                         fontSize: 12, 
-                        color: Colors.black45,
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
                       ),
                     ),
                   ],
@@ -170,12 +170,12 @@ class _CouponSectionState extends State<CouponSection> {
           if (widget.isLoading)
             _buildLoadingCoupons()
           else if (widget.coupons.isEmpty)
-            const Padding(
+            Padding(
               padding: EdgeInsets.symmetric(vertical: 24),
               child: Center(
                 child: Text(
                   'Hiện tại không có ưu đãi nào phù hợp.',
-                  style: TextStyle(fontSize: 13, color: Colors.black38),
+                    style: TextStyle(fontSize: 13, color: Theme.of(context).colorScheme.onSurfaceVariant),
                 ),
               ),
             )
@@ -265,9 +265,9 @@ class _CouponCard extends StatelessWidget {
         width: 265,
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(10),
-          border: Border.all(color: const Color(0xFFEAEAEA), width: 1),
+          border: Border.all(color: Theme.of(context).colorScheme.outline, width: 1),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withValues(alpha: 0.02),
@@ -288,19 +288,19 @@ class _CouponCard extends StatelessWidget {
                     children: [
                       Text(
                         valueText,
-                        style: const TextStyle(
+                          style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w800,
-                          color: Color(0xFF111111),
+                          color: Theme.of(context).colorScheme.onSurface,
                           height: 1.2,
                         ),
                       ),
                       const SizedBox(height: 3),
                       Text(
                         subtitle,
-                        style: const TextStyle(
+                          style: TextStyle(
                           fontSize: 11, 
-                          color: Colors.black45,
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
                         ),
                       ),
                     ],
@@ -347,7 +347,7 @@ class _CouponCard extends StatelessWidget {
                 height: 34,
                 padding: const EdgeInsets.symmetric(horizontal: 10),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFF6F6F7),
+                  color: Theme.of(context).colorScheme.surface,
                   borderRadius: BorderRadius.circular(6),
                 ),
                 child: Row(
@@ -355,10 +355,10 @@ class _CouponCard extends StatelessWidget {
                   children: [
                     Text(
                       code,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w700,
-                        color: Color(0xFF555555),
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
                         letterSpacing: 0.3,
                       ),
                     ),

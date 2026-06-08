@@ -25,9 +25,7 @@ class VideoSection extends StatelessWidget {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.fromLTRB(20, 24, 0, 30), // Bỏ padding phải để danh sách trượt tự nhiên ra mép
-      decoration: const BoxDecoration(
-        color: Colors.white,
-      ),
+      color: Theme.of(context).colorScheme.surface,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -41,7 +39,7 @@ class VideoSection extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text(
+                        Text(
                           'REVIEW THỰC TẾ & TRỰC QUAN',
                           style: TextStyle(
                             fontSize: 11,
@@ -51,12 +49,12 @@ class VideoSection extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(height: 8),
-                        const Text(
+                        Text(
                           'Video nổi bật',
                           style: TextStyle(
                             fontSize: 25,
                             fontWeight: FontWeight.w800,
-                            color: Color(0xFF111827),
+                            color: Theme.of(context).colorScheme.onSurface,
                             height: 1.1,
                           ),
                         ),
@@ -92,12 +90,12 @@ class VideoSection extends StatelessWidget {
           if (isLoading)
             _buildSkeletonGrid()
           else if (visibleVideos.isEmpty)
-            const Padding(
+            Padding(
               padding: EdgeInsets.symmetric(vertical: 24),
               child: Text(
                 'Chưa có video nào.',
                 textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 14, color: Colors.black54),
+                style: TextStyle(fontSize: 14, color: Theme.of(context).colorScheme.onSurfaceVariant),
               ),
             )
           else
@@ -188,8 +186,8 @@ class _VideoCard extends StatelessWidget {
                 borderRadius: BorderRadius.circular(12),
                 child: Container(
                   height: 158, // 16:9 tỷ lệ cho thumbnail
-                  decoration: const BoxDecoration(
-                    color: Color(0xFFF1F5F9),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.surfaceContainerLow,
                   ),
                   child: Stack(
                     children: [
@@ -199,19 +197,19 @@ class _VideoCard extends StatelessWidget {
                           fit: BoxFit.cover,
                           width: double.infinity,
                           height: double.infinity,
-                          errorBuilder: (_, __, ___) => const Center(
+                          errorBuilder: (_, __, ___) => Center(
                             child: Icon(
                               Icons.play_circle_outlined,
-                              color: Color(0xFFCBD5E1),
+                              color: Theme.of(context).colorScheme.outline,
                               size: 48,
                             ),
                           ),
                         )
                       else
-                        const Center(
+                        Center(
                           child: Icon(
                             Icons.play_circle_outlined,
-                            color: Color(0xFFCBD5E1),
+                            color: Theme.of(context).colorScheme.outline,
                             size: 48,
                           ),
                         ),
@@ -223,10 +221,10 @@ class _VideoCard extends StatelessWidget {
                             width: 56,
                             height: 56,
                             decoration: BoxDecoration(
-                              color: Colors.white.withValues(alpha: 0.9),
+                              color: Theme.of(context).colorScheme.surface.withValues(alpha: 0.9),
                               borderRadius: BorderRadius.circular(50),
                             ),
-                            child: const Center(
+                            child: Center(
                               child: Icon(
                                 Icons.play_arrow,
                                 color: Color(0xFFEF7A45),
@@ -243,10 +241,10 @@ class _VideoCard extends StatelessWidget {
             const SizedBox(height: 12),
             Text(
               title,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w700,
-                color: Color(0xFF111827),
+                color: Theme.of(context).colorScheme.onSurface,
                 height: 1.3,
               ),
               maxLines: 2,
@@ -261,10 +259,10 @@ class _VideoCard extends StatelessWidget {
                   vertical: 6,
                 ),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFEF7A45).withValues(alpha: 0.1),
+                  color: Color(0xFFEF7A45).withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(6),
                   border: Border.all(
-                    color: const Color(0xFFEF7A45).withValues(alpha: 0.2),
+                    color: Color(0xFFEF7A45).withValues(alpha: 0.2),
                     width: 1,
                   ),
                 ),
@@ -279,7 +277,7 @@ class _VideoCard extends StatelessWidget {
                     Expanded(
                       child: Text(
                         productName,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 11,
                           fontWeight: FontWeight.w600,
                           color: Color(0xFFEF7A45),
@@ -313,7 +311,7 @@ class _VideoCardSkeleton extends StatelessWidget {
           Container(
             height: 158,
             decoration: BoxDecoration(
-              color: const Color(0xFFE5E7EB),
+              color: Theme.of(context).colorScheme.surfaceContainerLow,
               borderRadius: BorderRadius.circular(12),
             ),
           ),
@@ -322,7 +320,7 @@ class _VideoCardSkeleton extends StatelessWidget {
             width: double.infinity,
             height: 16,
             decoration: BoxDecoration(
-              color: const Color(0xFFE5E7EB),
+              color: Theme.of(context).colorScheme.surfaceContainerLow,
               borderRadius: BorderRadius.circular(4),
             ),
           ),
@@ -331,7 +329,7 @@ class _VideoCardSkeleton extends StatelessWidget {
             width: 140, // width limit
             height: 16,
             decoration: BoxDecoration(
-              color: const Color(0xFFE5E7EB),
+              color: Theme.of(context).colorScheme.surfaceContainerLow,
               borderRadius: BorderRadius.circular(4),
             ),
           ),
