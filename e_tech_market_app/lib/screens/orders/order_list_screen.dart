@@ -418,7 +418,8 @@ Widget _buildOrderCard(BuildContext context, dynamic order) {
                     children: [
                       Text(
                         summary.isEmpty ? 'Không có tên sản phẩm' : summary,
-                         // Giới hạn dòng tránh làm vỡ giao diện card
+                        maxLines: 3,
+                        overflow: TextOverflow.ellipsis,
                       ),
                       const SizedBox(height: 8),
                       Text(

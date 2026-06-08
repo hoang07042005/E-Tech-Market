@@ -23,18 +23,10 @@ class _AdminInventoryScreenState extends State<AdminInventoryScreen> {
     _loadInventory();
   }
 
-Future<void> _loadInventory() async {
+  Future<void> _loadInventory() async {
     setState(() => _isLoading = true);
     try {
-      // SỬA TẠI ĐÂY: Thêm tham số chống cache bằng Timestamp trực tiếp nếu Service cho phép truyền map ngầm,
-      // hoặc nếu hàm fetchProducts hỗ trợ search/sort.
-      // Để chắc chắn nhất, bạn hãy bổ sung ép tải lại trực tiếp.
-      final response = await ProductsService.fetchProducts(
-        limit: 100,
-        // Nếu file products_service.dart có nhận query params tự do, hãy truyền thêm timestamp.
-        // Nếu không, ta sẽ cập nhật hàm fetchProducts trong service như hướng dẫn bên dưới.
-      );
-      
+      final response = await ProductsService.fetchProducts(limit: 100);
       int threshold = 10; 
 
       if (mounted) {
@@ -52,7 +44,6 @@ Future<void> _loadInventory() async {
               'variant_name': null,
               'sku': p['sku'],
               'price': p['price']?.toString(),
-              // Đảm bảo ép kiểu int chuẩn xác dữ liệu mới
               'stock_quantity': p['stock_quantity'] != null ? int.tryParse(p['stock_quantity'].toString()) : null,
               'main_image_url': p['main_image_url'],
             });
@@ -88,7 +79,6 @@ Future<void> _loadInventory() async {
     }
   }
 
-// Hàm xử lý kích hoạt khi bấm nút "Xác nhận" từ BottomSheet
   Future<void> _restockItem(int id, bool isVariant, int amount) async {
     try {
       await ProductsService.restock(
@@ -99,24 +89,34 @@ Future<void> _loadInventory() async {
 
       if (mounted) {
         AppSnackBar.showSuccess(context, 'Đã cập nhật số lượng tồn kho thành công!');
-        _loadInventory(); // Tải lại danh sách để đồng bộ số lượng mới lên UI
+        _loadInventory();
       }
     } catch (e) {
-      // debugPrint sẽ in lỗi trực tiếp ra cửa sổ Terminal / Run của VS Code / Android Studio
       debugPrint('==> LỖI HIỂN THỊ TRÊN MÀN HÌNH: $e');
-
       if (mounted) {
-        // Trích xuất chuỗi thông báo lỗi thuần túy bằng cách bỏ chữ 'Exception:' nếu có
         final cleanErrorMessage = e.toString().replaceAll('Exception: ', '');
-        
-        // HIỂN THỊ LỖI LÊN MÀN HÌNH APPSNACKBAR CHO ADMIN THẤY
-        AppSnackBar.showError(
-          context, 
-          'Cập nhật thất bại: $cleanErrorMessage',
-        );
+        AppSnackBar.showError(context, 'Cập nhật thất bại: $cleanErrorMessage');
       }
     }
   }
+
+  // --- GETTERS TÍNH TOÁN SỐ LƯỢNG SẢN PHẨM CHO TỪNG BỘ LỌC (Không phụ thuộc vào thanh tìm kiếm) ---
+  int get _countAll => _inventoryItems.length;
+
+  int get _countLowStock {
+    return _inventoryItems.where((item) {
+      final stock = (item['stock_quantity'] ?? 0) as int;
+      return stock > 0 && stock <= _lowStockThreshold;
+    }).length;
+  }
+
+  int get _countOutStock {
+    return _inventoryItems.where((item) {
+      final stock = (item['stock_quantity'] ?? 0) as int;
+      return stock <= 0;
+    }).length;
+  }
+
   List<dynamic> get _filteredItems {
     return _inventoryItems.where((item) {
       final productName = (item['product_name'] ?? '').toLowerCase();
@@ -184,14 +184,18 @@ Future<void> _loadInventory() async {
                   ),
                 ),
                 const SizedBox(height: 12),
-                Wrap(
-                  spacing: 12,
-                  runSpacing: 8,
-                  children: [
-                    _buildFilterChip('Tất cả', 'all'),
-                    _buildFilterChip('Sắp hết hàng', 'low'),
-                    _buildFilterChip('Đã hết hàng', 'out'),
-                  ],
+                // Bọc trong SingleChildScrollView để tránh tràn màn hình khi kích thước badge dài ra
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    children: [
+                      _buildFilterChip('Tất cả', 'all', _countAll),
+                      const SizedBox(width: 8),
+                      _buildFilterChip('Sắp hết hàng', 'low', _countLowStock),
+                      const SizedBox(width: 8),
+                      _buildFilterChip('Đã hết hàng', 'out', _countOutStock),
+                    ],
+                  ),
                 ),
               ],
             ),
@@ -213,10 +217,38 @@ Future<void> _loadInventory() async {
     );
   }
 
-  Widget _buildFilterChip(String label, String value) {
+  // Cập nhật hàm nhận thêm tham số count để hiển thị số lượng badge quả bóng số tròn
+  Widget _buildFilterChip(String label, String value, int count) {
     final isSelected = _filterStatus == value;
     return ChoiceChip(
-      label: Text(label),
+      label: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(label),
+          const SizedBox(width: 6),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+            decoration: BoxDecoration(
+              // Nếu đang chọn thì nền số màu trắng đục, nếu không chọn thì nền màu xám/cam nhẹ
+              color: isSelected 
+                  ? Colors.white.withOpacity(0.25) 
+                  : (value == 'out' && count > 0 ? const Color(0xFFFEE2E2) : const Color(0xFFF1F5F9)),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Text(
+              '$count',
+              style: TextStyle(
+                fontSize: 11,
+                fontWeight: FontWeight.bold,
+                // Đổi màu chữ động theo trạng thái của Tab
+                color: isSelected 
+                    ? Colors.white 
+                    : (value == 'out' && count > 0 ? const Color(0xFFEF4444) : const Color(0xFF475569)),
+              ),
+            ),
+          ),
+        ],
+      ),
       selected: isSelected,
       onSelected: (selected) {
         if (selected) setState(() => _filterStatus = value);
@@ -332,7 +364,6 @@ Future<void> _loadInventory() async {
     );
   }
 
-  // Cửa sổ Bottom Sheet hiển thị full width từ dưới lên cực mượt
   void _showRestockBottomSheet(Map<String, dynamic> item) {
     final TextEditingController amountController = TextEditingController();
 
@@ -348,7 +379,7 @@ Future<void> _loadInventory() async {
           bottom: MediaQuery.of(ctx).viewInsets.bottom,
         ),
         child: Container(
-          width: double.infinity, // Full width màn hình hiển thị
+          width: double.infinity,
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
           child: Column(
             mainAxisSize: MainAxisSize.min,

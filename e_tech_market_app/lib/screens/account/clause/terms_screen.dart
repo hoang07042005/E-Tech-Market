@@ -22,7 +22,7 @@ class TermsScreen extends StatelessWidget {
         elevation: 0,
       ),
       body: Container(
-        color: const Color(0xFFFAF1EB),
+        color: const Color(0xFFFFFFFF),
         child: SafeArea(
           child: SingleChildScrollView(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
@@ -72,18 +72,24 @@ class TermsScreen extends StatelessWidget {
                 _PolicyTile(
                   icon: Icons.shield,
                   title: 'Chính sách bảo mật',
+                  iconColor: const Color(0xFF10B981), // Xanh lá
+                  iconBgColor: const Color(0xFFECFDF5),
                   onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const PrivacyPolicyScreen())),
                 ),
                 const SizedBox(height: 10),
                 _PolicyTile(
                   icon: Icons.description,
                   title: 'Điều khoản dịch vụ',
+                  iconColor: const Color(0xFF3B82F6), // Xanh dương
+                  iconBgColor: const Color(0xFFEFF6FF),
                   onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const TermsOfServiceScreen())),
                 ),
                 const SizedBox(height: 10),
                 _PolicyTile(
                   icon: Icons.lock,
                   title: 'Chính sách bảo mật thanh toán',
+                  iconColor: const Color(0xFFF59E0B), // Vàng cam
+                  iconBgColor: const Color(0xFFFEF3C7),
                   onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const PaymentSecurityPolicyScreen())),
                 ),
                 const SizedBox(height: 24),
@@ -94,18 +100,24 @@ class TermsScreen extends StatelessWidget {
                 _PolicyTile(
                   icon: Icons.assignment,
                   title: 'Giải quyết khiếu nại',
+                  iconColor: const Color(0xFFEF4444), // Đỏ
+                  iconBgColor: const Color(0xFFFEF2F2),
                   onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const ComplaintPolicyScreen())),
                 ),
                 const SizedBox(height: 10),
                 _PolicyTile(
                   icon: Icons.swap_horiz,
                   title: 'Quy định bảo hành 1 đổi 1',
+                  iconColor: const Color(0xFF8B5CF6), // Tím
+                  iconBgColor: const Color(0xFFF5F3FF),
                   onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const OneForOnePolicyScreen())),
                 ),
                 const SizedBox(height: 10),
                 _PolicyTile(
                   icon: Icons.money_off,
                   title: 'Chính sách hoàn tiền',
+                  iconColor: const Color(0xFFEC4899), // Hồng
+                  iconBgColor: const Color(0xFFFDF2F8),
                   onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const RefundPolicyScreen())),
                 ),
                 const SizedBox(height: 24),
@@ -139,11 +151,15 @@ class _SectionHeader extends StatelessWidget {
 class _PolicyTile extends StatelessWidget {
   final IconData icon;
   final String title;
+  final Color iconColor;
+  final Color iconBgColor;
   final VoidCallback onTap;
 
   const _PolicyTile({
     required this.icon,
     required this.title,
+    required this.iconColor,
+    required this.iconBgColor,
     required this.onTap,
   });
 
@@ -166,10 +182,10 @@ class _PolicyTile extends StatelessWidget {
                 width: 40,
                 height: 40,
                 decoration: BoxDecoration(
-                  color: const Color(0xFFFFF7ED),
+                  color: iconBgColor,
                   borderRadius: BorderRadius.circular(10),
                 ),
-                child: Icon(icon, color: const Color(0xFF92400E), size: 20),
+                child: Icon(icon, color: iconColor, size: 20),
               ),
               const SizedBox(width: 12),
               Expanded(
