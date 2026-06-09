@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart'; 
 import 'package:e_tech_market_app/services/products_service.dart';
 import '../../../config/api_config.dart';
@@ -30,8 +30,7 @@ class ProductNews {
 }
 
 class ProductNewDetailScreen extends StatefulWidget {
-  final String slug; // Nhận slug truyền sang từ danh sách tin tức hoặc trang chi tiết sản phẩm
-
+  final String slug;
   const ProductNewDetailScreen({Key? key, required this.slug}) : super(key: key);
 
   @override
@@ -49,7 +48,6 @@ class _ProductNewDetailScreenState extends State<ProductNewDetailScreen> {
     _fetchNewsDetail();
   }
 
-  // Hàm xử lý kết nối dữ liệu thực tế từ API thông qua ProductsService
   Future<void> _fetchNewsDetail() async {
     try {
       if (!mounted) return;
@@ -58,7 +56,6 @@ class _ProductNewDetailScreenState extends State<ProductNewDetailScreen> {
         _error = null;
       });
 
-      // Gọi hàm fetch dữ liệu thực từ service được đồng bộ hóa với hệ thống quản lý backend
       final Map<String, dynamic> responseData = await ProductsService.fetchProductNewsBySlug(widget.slug);
       
       if (mounted) {
@@ -70,7 +67,6 @@ class _ProductNewDetailScreenState extends State<ProductNewDetailScreen> {
     } catch (e) {
       if (mounted) {
         setState(() {
-          // Định dạng lại thông báo lỗi thân thiện để hiển thị lên màn hình ứng dụng
           _error = e.toString().replaceAll('Exception: ', '');
           _isLoading = false;
         });
@@ -82,24 +78,17 @@ class _ProductNewDetailScreenState extends State<ProductNewDetailScreen> {
         if (url == null || url.isEmpty) return '';
         if (url.startsWith('http')) return url;
 
-        // Đường dẫn gốc của API server
+        // �u?ng d?n g?c c?a API server
         const String baseUrl = String.fromEnvironment('API_BASE_URL', defaultValue: ApiConfig.apiBaseUrl); 
-        
-        // Đảm bảo url không có dấu gạch chéo dư thừa ở đầu
         final cleanUrl = url.startsWith('/') ? url.substring(1) : url;
-
-        // Nếu url bắt đầu bằng 'uploads', ghép trực tiếp vào baseUrl gốc (bỏ /api)
         if (cleanUrl.startsWith('uploads')) {
         return '$baseUrl/$cleanUrl';
         }
-
-        // Nếu không phải ảnh (có thể là các endpoint API khác), mới ghép với /api
         return '$baseUrl/api/$cleanUrl';
     }
 
   @override
   Widget build(BuildContext context) {
-    // 1. GIAO DIỆN CHỜ TẢI DỮ LIỆU THỰC TẾ
     if (_isLoading) {
       return Scaffold(
         backgroundColor: Theme.of(context).colorScheme.surface,
@@ -111,7 +100,6 @@ class _ProductNewDetailScreenState extends State<ProductNewDetailScreen> {
       );
     }
 
-    // 2. GIAO DIỆN BÁO LỖI HOẶC KHÔNG TÌM THẤY BÀI VIẾT TRÊN SERVER
     if (_error != null || _news == null) {
       return Scaffold(
         backgroundColor: Theme.of(context).colorScheme.surface,
@@ -152,7 +140,6 @@ class _ProductNewDetailScreenState extends State<ProductNewDetailScreen> {
 
     final newsItem = _news!;
 
-    // 3. GIAO DIỆN CHI TIẾT TIN TỨC ĐỌC DỮ LIỆU THỰC
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
       appBar: AppBar(
@@ -171,7 +158,6 @@ class _ProductNewDetailScreenState extends State<ProductNewDetailScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // TIÊU ĐỀ TIN TỨC THỰC TẾ
               Text(
                 newsItem.title,
                 style: TextStyle(
@@ -182,8 +168,6 @@ class _ProductNewDetailScreenState extends State<ProductNewDetailScreen> {
                 ),
               ),
               const SizedBox(height: 14),
-              
-              // ẢNH ĐẠI DIỆN TIN TỨC TRÊN SERVER (Nếu có)
               if (newsItem.thumbnailUrl != null && newsItem.thumbnailUrl!.isNotEmpty) ...[
                 ClipRRect(
                   borderRadius: BorderRadius.circular(14),
@@ -200,37 +184,29 @@ class _ProductNewDetailScreenState extends State<ProductNewDetailScreen> {
               Divider(color: Theme.of(context).colorScheme.outline, height: 1),
               const SizedBox(height: 14),
 
-              // KHỐI HIỂN THỊ NỘI DUNG HTML CHI TIẾT
               SizedBox(
-                width: MediaQuery.of(context).size.width - 36, // Khống chế độ rộng tuyệt đối chống lỗi tràn màn hình
+                width: double.infinity,
                 child: Html(
                   data: newsItem.contentHtml ?? '',
                   style: {
                     "body": Style(
                       margin: Margins.zero,
                       padding: HtmlPaddings.zero,
-                      fontSize: FontSize(14.5),
-                      lineHeight: const LineHeight(1.6),
+                      fontSize: FontSize(14),
+                      lineHeight: const LineHeight(1.55),
                       color: Theme.of(context).colorScheme.onSurface,
                     ),
-                    "p": Style(
-                      margin: Margins.only(bottom: 12),
+                    "table": Style(
+                      backgroundColor: Theme.of(context).colorScheme.surfaceContainerLow,
+                      border: Border.all(color: Theme.of(context).colorScheme.outline),
                     ),
-                    "strong": Style(
-                      fontWeight: FontWeight.bold,
-                      color: Theme.of(context).colorScheme.onSurface,
+                    "th": Style(
+                      padding: HtmlPaddings.all(6),
+                      backgroundColor: Theme.of(context).colorScheme.surfaceContainerLow,
                     ),
-                    "img": Style(
-                      width: Width(100, Unit.percent), // Ép ảnh co dãn 100% vùng chứa nội tuyến của thiết bị di động
-                      height: Height.auto(),
-                      margin: Margins.only(top: 8, bottom: 8),
-                    ),
-                    "ul": Style(
-                      margin: Margins.only(bottom: 12),
-                      padding: HtmlPaddings.only(left: 20),
-                    ),
-                    "li": Style(
-                      margin: Margins.only(bottom: 4),
+                    "td": Style(
+                      padding: HtmlPaddings.all(6),
+                      border: Border.all(color: Theme.of(context).colorScheme.outline),
                     ),
                   },
                 ),

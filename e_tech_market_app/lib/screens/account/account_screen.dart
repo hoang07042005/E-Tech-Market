@@ -61,6 +61,7 @@ class AccountScreen extends StatelessWidget {
     }
 
     return SafeArea(
+      
       child: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
         child: Column(
@@ -104,6 +105,7 @@ class AccountScreen extends StatelessWidget {
             // --- TÀI KHOẢN ---
             _buildMenuSection(
               title: 'TÀI KHOẢN',
+              
               children: [
                 // Thông tin cá nhân: Màu Xanh Dương (Tin cậy)
                 _buildMenuItem(
@@ -216,6 +218,8 @@ class AccountScreen extends StatelessWidget {
               ],
             ),
 
+            const SizedBox(height: 24),
+            
             // --- QUẢN TRỊ (ADMIN) ---
             if (isAdmin) ...[
               _buildMenuSection(

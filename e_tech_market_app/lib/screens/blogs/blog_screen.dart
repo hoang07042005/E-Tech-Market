@@ -97,7 +97,7 @@ class _BlogScreenState extends State<BlogScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const CircularProgressIndicator(color: Color(0xFFEF7A45)),
+              CircularProgressIndicator(color: Theme.of(context).colorScheme.primary),
               const SizedBox(height: 16),
               Text('Đang tải tin tức mới nhất...'),
             ],
@@ -132,14 +132,14 @@ class _BlogScreenState extends State<BlogScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Tin Tức Công Nghệ'),
+        title: const Text('Tin Tức Công Nghệ',),
         centerTitle: true,
         backgroundColor: Colors.transparent,
-        foregroundColor: const Color(0xFF0F172A),
+        foregroundColor: Theme.of(context).colorScheme.onSurface,
         elevation: 0,
       ),
 
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       body: SingleChildScrollView(
         child: Column(
           children: [
@@ -161,7 +161,7 @@ class _BlogScreenState extends State<BlogScreen> {
                     'Tin tức mới nhất',
                     style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                           fontWeight: FontWeight.w600,
-                          color: const Color(0xFF0F172A),
+                          color: Theme.of(context).colorScheme.onSurface,
                         ),
                   ),
                   const SizedBox(height: 20),
@@ -295,13 +295,13 @@ class _BlogScreenState extends State<BlogScreen> {
                         vertical: 6,
                       ),
                       decoration: BoxDecoration(
-                        color: const Color(0xFFEF7A45),
+                        color: Theme.of(context).colorScheme.primary,
                         borderRadius: BorderRadius.circular(4),
                       ),
                       child: Text(
                         categoryName,
-                        style: const TextStyle(
-                          color: Colors.white,
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.surface,
                           fontSize: 12,
                           fontWeight: FontWeight.w600,
                         ),
@@ -314,8 +314,8 @@ class _BlogScreenState extends State<BlogScreen> {
                       title,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                        color: Colors.white,
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.onSurface,
                         fontSize: 20,
                         fontWeight: FontWeight.w700,
                         height: 1.4,
@@ -328,8 +328,8 @@ class _BlogScreenState extends State<BlogScreen> {
                       excerpt,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                        color: Color(0xFFE2E8F0),
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.outline,
                         fontSize: 13,
                         height: 1.5,
                       ),
@@ -341,16 +341,16 @@ class _BlogScreenState extends State<BlogScreen> {
                       children: [
                         Text(
                           '📅 ${_formatDate(createdAt)}',
-                          style: const TextStyle(
-                            color: Color(0xFFCAD5E2),
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.outlineVariant,
                             fontSize: 12,
                           ),
                         ),
                         const SizedBox(width: 12),
                         Text(
                           '⏱️ $readingTime phút đọc',
-                          style: const TextStyle(
-                            color: Color(0xFFCAD5E2),
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.outlineVariant,
                             fontSize: 12,
                           ),
                         ),
@@ -394,9 +394,9 @@ class _BlogScreenState extends State<BlogScreen> {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
-          color: isActive ? const Color(0xFFEF7A45) : Colors.white,
+          color: isActive ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.surface,
           border: Border.all(
-            color: isActive ? const Color(0xFFEF7A45) : const Color(0xFFE2E8F0),
+            color: isActive ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.outline,
           ),
           borderRadius: BorderRadius.circular(8),
         ),
@@ -405,7 +405,7 @@ class _BlogScreenState extends State<BlogScreen> {
           style: TextStyle(
             fontSize: 13,
             fontWeight: FontWeight.w600,
-            color: isActive ? Colors.white : const Color(0xFF0F172A),
+            color: isActive ? Theme.of(context).colorScheme.surface : Theme.of(context).colorScheme.onSurface,
           ),
         ),
       ),
@@ -475,13 +475,13 @@ class _BlogScreenState extends State<BlogScreen> {
                               vertical: 4,
                             ),
                             decoration: BoxDecoration(
-                              color: const Color(0xFFEF7A45).withValues(alpha: 0.1),
+                              color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
                               borderRadius: BorderRadius.circular(4),
                             ),
                             child: Text(
                               categoryName,
-                              style: const TextStyle(
-                                color: Color(0xFFEF7A45),
+                              style: TextStyle(
+                                color: Theme.of(context).colorScheme.primary,
                                 fontSize: 11,
                                 fontWeight: FontWeight.w600,
                               ),
@@ -489,8 +489,8 @@ class _BlogScreenState extends State<BlogScreen> {
                           ),
                         Text(
                           _formatDate(createdAt),
-                          style: const TextStyle(
-                            color: Color(0xFF94A3B8),
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.onSurfaceVariant,
                             fontSize: 11,
                             fontWeight: FontWeight.w500,
                           ),
@@ -504,10 +504,10 @@ class _BlogScreenState extends State<BlogScreen> {
                       title,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w600,
-                        color: Color(0xFF0F172A),
+                        color: Theme.of(context).colorScheme.onSurface,
                         height: 1.4,
                       ),
                     ),
@@ -518,9 +518,9 @@ class _BlogScreenState extends State<BlogScreen> {
                       excerpt,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 12,
-                        color: Color(0xFF64748B),
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
                       ),
                     ),
                     const SizedBox(height: 8),
@@ -528,10 +528,10 @@ class _BlogScreenState extends State<BlogScreen> {
                     // Read more link
                     Text(
                       'Đọc tiếp →',
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
-                        color: Color(0xFFEF7A45),
+                        color: Theme.of(context).colorScheme.primary,
                       ),
                     ),
                   ],
@@ -552,7 +552,7 @@ class _BlogScreenState extends State<BlogScreen> {
           'Đọc nhiều nhất',
           style: Theme.of(context).textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.w600,
-                color: const Color(0xFF0F172A),
+                color: Theme.of(context).colorScheme.onSurface,
               ),
         ),
         const SizedBox(height: 12),
@@ -598,19 +598,19 @@ class _BlogScreenState extends State<BlogScreen> {
                           title,
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.w600,
-                            color: Color(0xFF0F172A),
+                            color: Theme.of(context).colorScheme.onSurface,
                             height: 1.4,
                           ),
                         ),
                         const SizedBox(height: 4),
                         Text(
                           '$views lượt xem',
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 11,
-                            color: Color(0xFF94A3B8),
+                            color: Theme.of(context).colorScheme.onSurfaceVariant,
                           ),
                         ),
                       ],
@@ -633,7 +633,7 @@ class _BlogScreenState extends State<BlogScreen> {
           'Chuyên mục',
           style: Theme.of(context).textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.w600,
-                color: const Color(0xFF0F172A),
+                color: Theme.of(context).colorScheme.onSurface,
               ),
         ),
         const SizedBox(height: 12),
@@ -650,9 +650,9 @@ class _BlogScreenState extends State<BlogScreen> {
                 children: [
                   Text(
                     cat['name'],
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 13,
-                      color: Color(0xFF0F172A),
+                      color: Theme.of(context).colorScheme.onSurface,
                       fontWeight: FontWeight.w500,
                     ),
                   ),
@@ -662,15 +662,15 @@ class _BlogScreenState extends State<BlogScreen> {
                       vertical: 2,
                     ),
                     decoration: BoxDecoration(
-                      color: const Color(0xFFEF7A45).withValues(alpha: 0.1),
+                      color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(4),
                     ),
                     child: Text(
                       '${cat['count']}',
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
-                        color: Color(0xFFEF7A45),
+                        color: Theme.of(context).colorScheme.primary,
                       ),
                     ),
                   ),

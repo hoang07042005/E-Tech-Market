@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_html/flutter_html.dart';
 import '../../utils/network_utils.dart';
 
 class BlogDetailScreen extends StatelessWidget {
@@ -9,30 +10,35 @@ class BlogDetailScreen extends StatelessWidget {
     required this.post,
   }) : super(key: key);
 
+
   @override
   Widget build(BuildContext context) {
     final imageUrl = NetworkUtils.fixDeviceUrl(post['thumbnail_url'] ?? '');
     final title = post['title'] ?? '';
     final excerpt = post['excerpt'] ?? '';
-    final content = post['content_html'] ?? post['content'] ?? 'Nội dung không có sẵn';
-    final categoryName = post['category']?['name'] ?? 'Tin tức';
+    // API returns content, not content_html
+    final content = post['content'] ?? post['content_html'] ?? 'No content available';
+    final categoryName = post['category']?['name'] ?? 'News';
     final authorName = post['author']?['name'] ?? 'E-Tech Market';
     final createdAt = post['published_at'] ?? '';
     final readingTime = post['reading_time'] ?? 5;
     final views = (post['views'] as num?)?.toInt() ?? 0;
 
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Chi Tiết Bài Viết'),
+        title: Text(
+          'Chi tiết bài viết',
+          style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
+        ),
         centerTitle: true,
-        backgroundColor: Colors.white,
-        foregroundColor: const Color(0xFF0F172A),
+        backgroundColor: Theme.of(context).colorScheme.surface,
+        foregroundColor: Theme.of(context).colorScheme.onSurface,
         elevation: 1,
       ),
       body: SingleChildScrollView(
         child: Column(
           children: [
-            // Hero Image
             Image.network(
               imageUrl,
               width: double.infinity,
@@ -40,56 +46,54 @@ class BlogDetailScreen extends StatelessWidget {
               fit: BoxFit.cover,
               errorBuilder: (_, __, ___) => Container(
                 height: 280,
-                color: Colors.grey[300],
-                child: const Icon(Icons.image_not_supported, size: 64),
+                color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                child: Icon(
+                  Icons.image_not_supported,
+                  size: 64,
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
               ),
             ),
-
-            // Content
             Padding(
               padding: const EdgeInsets.all(20),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Category badge
                   Container(
                     padding: const EdgeInsets.symmetric(
                       horizontal: 12,
                       vertical: 6,
                     ),
                     decoration: BoxDecoration(
-                      color: const Color(0xFFEF7A45).withValues(alpha: 0.1),
+                      color: Theme.of(context).colorScheme.primaryContainer,
                       borderRadius: BorderRadius.circular(6),
-                      border:
-                          Border.all(color: const Color(0xFFEF7A45), width: 1),
+                      border: Border.all(
+                        color: Theme.of(context).colorScheme.primary,
+                        width: 1,
+                      ),
                     ),
                     child: Text(
                       categoryName,
-                      style: const TextStyle(
-                        color: Color(0xFFEF7A45),
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.onPrimaryContainer,
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
                   ),
                   const SizedBox(height: 16),
-
-                  // Title
                   Text(
                     title,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.w700,
-                      color: Color(0xFF0F172A),
+                      color: Theme.of(context).colorScheme.onSurface,
                       height: 1.4,
                     ),
                   ),
                   const SizedBox(height: 16),
-
-                  // Meta info
                   Row(
                     children: [
-                      // Author
                       Row(
                         children: [
                           Container(
@@ -97,13 +101,13 @@ class BlogDetailScreen extends StatelessWidget {
                             height: 32,
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
-                              color: const Color(0xFFEF7A45).withValues(alpha: 0.2),
+                              color: Theme.of(context).colorScheme.primaryContainer,
                             ),
                             child: Center(
                               child: Text(
                                 authorName.isNotEmpty ? authorName[0] : 'E',
-                                style: const TextStyle(
-                                  color: Color(0xFFEF7A45),
+                                style: TextStyle(
+                                  color: Theme.of(context).colorScheme.onPrimaryContainer,
                                   fontWeight: FontWeight.w700,
                                   fontSize: 14,
                                 ),
@@ -116,17 +120,17 @@ class BlogDetailScreen extends StatelessWidget {
                             children: [
                               Text(
                                 authorName,
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontSize: 12,
                                   fontWeight: FontWeight.w600,
-                                  color: Color(0xFF0F172A),
+                                  color: Theme.of(context).colorScheme.onSurface,
                                 ),
                               ),
                               Text(
                                 _formatDate(createdAt),
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontSize: 11,
-                                  color: Color(0xFF94A3B8),
+                                  color: Theme.of(context).colorScheme.onSurfaceVariant,
                                 ),
                               ),
                             ],
@@ -136,51 +140,42 @@ class BlogDetailScreen extends StatelessWidget {
                     ],
                   ),
                   const SizedBox(height: 16),
-
-                  // Meta stats
                   Row(
                     children: [
-                      _buildMetaItem('⏱️ $readingTime phút đọc'),
+                      _buildMetaItem('Thời gian đọc: $readingTime phút', context),
                       const SizedBox(width: 16),
-                      _buildMetaItem('👁️ $views lượt xem'),
+                      _buildMetaItem('Lượt xem: $views', context),
                     ],
                   ),
                   const SizedBox(height: 24),
-
-                  // Divider
                   Container(
                     height: 1,
-                    color: const Color(0xFFE2E8F0),
+                    color: Theme.of(context).colorScheme.outline,
                   ),
                   const SizedBox(height: 24),
-
-                  // Excerpt
                   if (excerpt.isNotEmpty) ...[
                     Container(
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
-                        color: const Color(0xFFEF7A45).withValues(alpha: 0.05),
+                        color: Theme.of(context).colorScheme.primaryContainer.withAlpha(13),
                         borderRadius: BorderRadius.circular(8),
                         border: Border.all(
-                          color: const Color(0xFFEF7A45).withValues(alpha: 0.2),
+                          color: Theme.of(context).colorScheme.primary.withAlpha(51),
                         ),
                       ),
                       child: Text(
                         excerpt,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 14,
                           fontStyle: FontStyle.italic,
-                          color: Color(0xFF64748B),
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
                           height: 1.6,
                         ),
                       ),
                     ),
                     const SizedBox(height: 24),
                   ],
-
-                  // Main content
-                  _buildContent(content),
-
+                  _buildContent(content, context),
                   const SizedBox(height: 40),
                 ],
               ),
@@ -191,41 +186,50 @@ class BlogDetailScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildMetaItem(String text) {
+  Widget _buildMetaItem(String text, BuildContext context) {
     return Text(
       text,
-      style: const TextStyle(
+      style: TextStyle(
         fontSize: 12,
-        color: Color(0xFF64748B),
+        color: Theme.of(context).colorScheme.onSurfaceVariant,
         fontWeight: FontWeight.w500,
       ),
     );
   }
 
-  Widget _buildContent(String htmlContent) {
-    // Simple HTML stripping for display
-    String plainText = htmlContent
-        .replaceAll(RegExp(r'<[^>]*>'), '') // Remove HTML tags
-        .replaceAll('&nbsp;', ' ')
-        .replaceAll('&quot;', '"')
-        .replaceAll('&amp;', '&')
-        .replaceAll('&lt;', '<')
-        .replaceAll('&gt;', '>')
-        .trim();
-
-    if (plainText.isEmpty) {
-      plainText = htmlContent.trim();
-    }
-
-    return Text(
-      plainText,
-      style: const TextStyle(
-        fontSize: 15,
-        color: Color(0xFF0F172A),
-        height: 1.8,
-        fontWeight: FontWeight.w400,
-      ),
+  Widget _buildContent(String htmlContent, BuildContext context) {
+    // Fix relative image URLs
+    final fixedContent = _fixImageUrls(htmlContent);
+    return Html(
+      data: fixedContent,
+      style: {
+        'body': Style(
+          margin: Margins.zero,
+          padding: HtmlPaddings.zero,
+          fontSize: FontSize(15),
+          lineHeight: const LineHeight(1.8),
+          color: Theme.of(context).colorScheme.onSurface,
+        ),
+        'p': Style(
+          margin: Margins.only(bottom: 12),
+        ),
+        'img': Style(
+          width: Width(100, Unit.percent),
+          height: Height.auto(),
+        ),
+      },
     );
+  }
+
+  String _fixImageUrls(String htmlContent) {
+    // Simple fix for relative image URLs
+    final regex = RegExp(r'src="([^"]+)"');
+    return htmlContent.replaceAllMapped(regex, (match) {
+      final url = match.group(1) ?? '';
+      if (url.startsWith('http')) return match.group(0) ?? '';
+      final fixedUrl = NetworkUtils.fixDeviceUrl(url);
+      return 'src="$fixedUrl"';
+    });
   }
 
   String _formatDate(String dateString) {

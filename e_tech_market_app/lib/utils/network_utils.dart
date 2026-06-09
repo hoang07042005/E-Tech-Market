@@ -7,8 +7,8 @@ class NetworkUtils {
     
     // If already a full URL, just replace localhost/127.0.0.1
     if (fixedUrl.startsWith('http://') || fixedUrl.startsWith('https://')) {
-      fixedUrl = fixedUrl.replaceAll('localhost', '192.168.24.17');
-      fixedUrl = fixedUrl.replaceAll('127.0.0.1', '192.168.24.17');
+      fixedUrl = fixedUrl.replaceAll('localhost', '192.168.24.14');
+      fixedUrl = fixedUrl.replaceAll('127.0.0.1', '192.168.24.14');
       return fixedUrl;
     }
     
@@ -22,8 +22,8 @@ class NetworkUtils {
     }
     
     fixedUrl = '$hostUrl$fixedUrl';
-    fixedUrl = fixedUrl.replaceAll('localhost', '192.168.24.17');
-    fixedUrl = fixedUrl.replaceAll('127.0.0.1', '192.168.24.17'); 
+    fixedUrl = fixedUrl.replaceAll('localhost', '192.168.24.14');
+    fixedUrl = fixedUrl.replaceAll('127.0.0.1', '192.168.24.14'); 
     return fixedUrl;
   }
 }

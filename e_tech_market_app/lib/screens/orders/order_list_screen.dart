@@ -170,29 +170,26 @@ class _OrderListScreenState extends State<OrderListScreen> {
                         )
                       : ListView(
                           physics: const AlwaysScrollableScrollPhysics(),
-                              padding: const EdgeInsets.all(16),
-                              children: [
-                                if (_showSearch) _buildSearchBar() else const SizedBox.shrink(),
-                                const SizedBox(height: 12),
-                                _buildStatusChips(),
-                                const SizedBox(height: 12),
-                                ..._filteredOrders.map((order) => _buildOrderCard(context, order)).toList(),
-                                const SizedBox(height: 16),
-                                _buildPagination(),
-                              ],
+                          padding: const EdgeInsets.all(16),
+                          children: [
+                            if (_showSearch) _buildSearchBar() else const SizedBox.shrink(),
+                            const SizedBox(height: 12),
+                            _buildStatusChips(),
+                            const SizedBox(height: 12),
+                            ..._filteredOrders.map((order) => _buildOrderCard(context, order)).toList(),
+                            const SizedBox(height: 16),
+                            _buildPagination(),
+                          ],
                         ),
         ),
       ),
     );
   }
 
-  
-
   Widget _buildSearchSection() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // legacy: kept for compatibility; use _buildSearchBar when shown
         const SizedBox.shrink(),
       ],
     );
@@ -210,11 +207,11 @@ class _OrderListScreenState extends State<OrderListScreen> {
                 decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(12)),
                 child: TextField(
                   autofocus: true,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     hintText: 'Tìm mã đơn hoặc sản phẩm...',
-                    prefixIcon: const Icon(Icons.search_outlined),
+                    prefixIcon: Icon(Icons.search_outlined),
                     border: InputBorder.none,
-                    contentPadding: const EdgeInsets.symmetric(vertical: 14),
+                    contentPadding: EdgeInsets.symmetric(vertical: 14),
                   ),
                   onChanged: (value) => setState(() => _search = value),
                 ),
@@ -285,181 +282,147 @@ class _OrderListScreenState extends State<OrderListScreen> {
       label: Text(label, style: TextStyle(color: selected ? Colors.white : Colors.black, fontSize: 13)),
       selected: selected,
       onSelected: (_) => setState(() => _statusFilter = value),
-      selectedColor: Colors.orange,
-      backgroundColor: Colors.white,
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      selectedColor: const Color(0xFFF26522),
+      backgroundColor: Colors.grey.shade200,
+      side: BorderSide.none,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+      showCheckmark: false,
     );
   }
 
-Widget _buildOrderCard(BuildContext context, dynamic order) {
-  final status = (order['status'] ?? '').toString().toLowerCase();
-  final meta = _statusMeta(status);
-  final items = (order['items'] as List<dynamic>?) ?? [];
-  final summary = items
-      .map((item) {
-        if (item is Map<String, dynamic>) {
-          return (item['product_name_snapshot'] ?? item['product']?['name'] ?? '').toString();
-        }
-        return '';
-      })
-      .where((text) => text.isNotEmpty)
-      .join(', ');
+  Widget _buildOrderCard(BuildContext context, dynamic order) {
+    if (order is! Map<String, dynamic>) return const SizedBox.shrink();
 
-  final totalText = _formatMoney(order['total_amount']);
-  final statusColor = meta['color'] as Color? ?? Colors.grey;
+    final id = order['id'];
+    final code = order['order_code']?.toString() ?? '#$id';
+    final date = _formatDate(order['created_at']?.toString());
+    // Đã sửa đổi: Sửa lỗi NetworkUtils.formatPrice không định nghĩa thành hàm _formatMoney cục bộ
+    final finalPrice = _formatMoney(order['total_final_price']);
+    final status = (order['status'] ?? '').toString().toLowerCase();
+    final meta = _statusMeta(status);
 
-  return Card(
-    color: const Color(0xFFFFFFFF),
-    elevation: 0,
-    // 1. Thêm viền ngoài (BorderSide) cho Card tại đây
-    shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(8), // Tăng lên 8 nhìn sẽ mượt mà hơn
-      side: BorderSide(
-        color: Colors.grey.shade200, // Màu viền nhẹ nhàng, tinh tế
-        width: 1,
+    final items = (order['items'] as List<dynamic>?) ?? [];
+    final hasItems = items.isNotEmpty;
+    final firstItem = hasItems ? items.first : null;
+
+    String prodName = 'Không có sản phẩm';
+    String prodImg = '';
+    String prodQty = '0';
+
+    if (firstItem is Map<String, dynamic>) {
+      final product = firstItem['product'] as Map<String, dynamic>?;
+      prodName = (product?['name'] ?? firstItem['product_name_snapshot'] ?? 'Sản phẩm').toString();
+      // Đã sửa đổi: Sửa lỗi NetworkUtils.buildImage thành Image.network cục bộ dựa trên URL xử lý bằng hàm nội bộ
+      prodImg = _resolveOrderImageUrl(firstItem);
+      prodQty = firstItem['quantity']?.toString() ?? '1';
+    }
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 12, offset: const Offset(0, 4)),
+        ],
       ),
-    ),
-    margin: const EdgeInsets.symmetric(vertical: 8),
-    child: InkWell(
-      // 2. Đồng bộ bo góc với Card để hiệu ứng gợn sóng không bị lem ra ngoài
-      borderRadius: BorderRadius.circular(8),
-      onTap: () {
-        final id = order['id'];
-        if (id is int) {
-          Navigator.push(context, MaterialPageRoute(builder: (_) => OrderDetailScreen(orderId: id))).then((_) {
-            _loadOrders(page: _page);
-          });
-        }
-      },
-      child: Padding(
-        padding: const EdgeInsets.all(16),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(16),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.center, // Căn giữa theo chiều dọc để cân bằng với Tag trạng thái
-              children: [
-                Expanded(
-                  child: Text(
-                    order['order_code'] ?? 'Đơn hàng #${order['id'] ?? ''}',
-                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                  ),
-                ),
-                // 3. Phần hiển thị trạng thái được thiết kế lại cao cấp hơn
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                  decoration: BoxDecoration(
-                    // Lấy chính màu trạng thái làm nền mờ (12% opacity)
-                    color: statusColor.withValues(alpha: 0.12),
-                    // Giảm bo góc từ viên thuốc (12) xuống dạng Tag hiện đại (6)
-                    borderRadius: BorderRadius.circular(6), 
-                  ),
-                  child: Text(
-                    meta['label'] as String? ?? 'Không rõ',
-                    style: TextStyle(
-                      color: statusColor, 
-                      fontWeight: FontWeight.w600, // Chữ thanh thoát, không bị quá dày dính vào nhau
-                      fontSize: 12,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 12),
-            // Hiển thị ảnh chính + badge số lượng
-            Row(
-              children: [
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(12),
-                  child: Stack(
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Container(
-                        width: 100,
-                        height: 100,
-                        color: Colors.grey.shade200,
-                        child: (() {
-                          if (items.isNotEmpty) {
-                            final first = items.first;
-                            final url = _resolveOrderImageUrl(first);
-                            if (url.isNotEmpty) {
-                              return Image.network(
-                                url, 
-                                width: 100, 
-                                height: 100, 
-                                fit: BoxFit.cover, 
-                                errorBuilder: (_, __, ___) => const SizedBox.shrink()
-                              );
-                            }
-                          }
-                          return const Icon(Icons.image_not_supported, color: Colors.grey, size: 40);
-                        })(),
+                      Text('Mã đơn: #$code', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+                      Text(
+                        meta['label'] as String,
+                        style: TextStyle(color: meta['color'] as Color, fontWeight: FontWeight.bold, fontSize: 13),
                       ),
-                      if (items.length > 1)
-                        Positioned(
-                          right: 6,
-                          top: 6,
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                            decoration: BoxDecoration(
-                              color: Colors.black.withOpacity(0.7), 
-                              borderRadius: BorderRadius.circular(16)
-                            ),
-                            child: Text('+${items.length - 1}', style: const TextStyle(color: Colors.white, fontSize: 12)),
-                          ),
-                        ),
                     ],
                   ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                  const SizedBox(height: 4),
+                  Text('Ngày đặt: $date', style: const TextStyle(color: Colors.grey, fontSize: 12)),
+                  const Divider(height: 24),
+                  Row(
                     children: [
-                      Text(
-                        summary.isEmpty ? 'Không có tên sản phẩm' : summary,
-                        maxLines: 3,
-                        overflow: TextOverflow.ellipsis,
+                      if (prodImg.isNotEmpty)
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(12),
+                          child: Image.network(
+                            prodImg,
+                            width: 64,
+                            height: 64,
+                            fit: BoxFit.cover,
+                            errorBuilder: (_, __, ___) => Container(color: Colors.grey.shade100, width: 64, height: 64, child: const Icon(Icons.image_not_supported, color: Colors.grey)),
+                          ),
+                        )
+                      else
+                        Container(
+                          width: 64,
+                          height: 64,
+                          decoration: BoxDecoration(color: Colors.grey.shade100, borderRadius: BorderRadius.circular(12)),
+                          child: const Icon(Icons.image_not_supported, color: Colors.grey),
+                        ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(prodName, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14), maxLines: 2, overflow: TextOverflow.ellipsis),
+                            const SizedBox(height: 4),
+                            Text('Số lượng: $prodQty', style: const TextStyle(color: Colors.grey, fontSize: 13)),
+                          ],
+                        ),
                       ),
-                      const SizedBox(height: 8),
-                      Text(
-                        '${items.length} sản phẩm · ${_formatDate(order['created_at']?.toString())}', 
-                        style: const TextStyle(color: Colors.grey, fontSize: 13)
-                      ),
-                      const SizedBox(height: 8),
+                    ],
+                  ),
+                  if (items.length > 1) ...[
+                    const SizedBox(height: 8),
+                    Align(
+                      alignment: Alignment.center,
+                      child: Text('và ${items.length - 1} sản phẩm khác', style: const TextStyle(color: Colors.grey, fontSize: 12, fontStyle: FontStyle.italic)),
+                    ),
+                  ],
+                  const Divider(height: 24),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
                       Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text('${totalText}đ', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.red)),
-                          TextButton(
-                            onPressed: () {
-                              final id = order['id'];
-                              if (id is int) {
-                                Navigator.push(context, MaterialPageRoute(builder: (_) => OrderDetailScreen(orderId: id))).then((_) {
-                                  _loadOrders(page: _page);
-                                });
-                              }
-                            },
-                            style: TextButton.styleFrom(
-                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                              minimumSize: Size.zero,
-                              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                            ),
-                            child: const Text('Xem chi tiết', style: TextStyle(color: Colors.black54)),
-                          )
+                          const Text('Tổng tiền: ', style: TextStyle(fontSize: 13)),
+                          Text('$finalPriceđ', style: const TextStyle(fontWeight: FontWeight.bold, color: Color(0xFFF26522), fontSize: 16)),
                         ],
                       ),
+                      TextButton(
+                        onPressed: () {
+                          if (id is int) {
+                            Navigator.push(context, MaterialPageRoute(builder: (_) => OrderDetailScreen(orderId: id))).then((_) {
+                              _loadOrders(page: _page);
+                            });
+                          }
+                        },
+                        style: TextButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                          minimumSize: Size.zero,
+                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                        ),
+                        child: const Text('Xem chi tiết', style: TextStyle(color: Colors.black54)),
+                      )
                     ],
                   ),
-                )
-              ],
+                ],
+              ),
             ),
           ],
         ),
       ),
-    ),
-  );
-}
+    );
+  }
 
   Widget _buildPagination() {
     return Row(

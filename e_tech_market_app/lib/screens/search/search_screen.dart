@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../products/products_screen.dart';
 import '../../services/products_service.dart';
 import '../../utils/network_utils.dart';
 import '../products/product_detail_screen.dart';
@@ -127,25 +126,27 @@ class _SearchScreenState extends State<SearchScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Scaffold(
-      // Thay đổi nền xám nhẹ để làm nổi bật các Card trắng
-      backgroundColor: const Color(0xFFF8F9FA), 
+      backgroundColor: colorScheme.surface,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: colorScheme.surface,
+        foregroundColor: colorScheme.onSurface,
         elevation: 0.5, // Giảm độ bóng đổ của AppBar
         titleSpacing: 0,
-        leading: const Icon(Icons.search_rounded, color: Colors.grey),
+        leading: Icon(Icons.search_rounded, color: colorScheme.onSurface.withValues(alpha: 0.5)),
         title: TextField(
           controller: _searchController,
           focusNode: _focusNode,
           decoration: InputDecoration(
             hintText: 'Bạn muốn tìm gì?',
-            hintStyle: const TextStyle(color: Colors.grey, fontSize: 16),
+            hintStyle: TextStyle(color: colorScheme.onSurface.withValues(alpha: 0.5), fontSize: 16),
             border: InputBorder.none,
             // Nút xóa nhanh nội dung tìm kiếm
             suffixIcon: _searchController.text.isNotEmpty
                 ? IconButton(
-                    icon: const Icon(Icons.clear_rounded, color: Colors.grey),
+                    icon: Icon(Icons.clear_rounded, color: colorScheme.onSurface.withValues(alpha: 0.5)),
                     onPressed: () {
                       _searchController.clear();
                       _performSearch('');
@@ -231,7 +232,7 @@ class _SearchScreenState extends State<SearchScreen> {
         return Container(
           margin: const EdgeInsets.only(bottom: 14),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: Theme.of(context).colorScheme.surfaceContainerHighest,
             borderRadius: BorderRadius.circular(16), // Bo góc lớn hơn (16px)
             boxShadow: [
               // Đổ bóng mờ tạo độ nổi khối (Elevated)
@@ -399,7 +400,7 @@ class _SearchScreenState extends State<SearchScreen> {
           margin: const EdgeInsets.only(bottom: 14),
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: Theme.of(context).colorScheme.surfaceContainerHighest,
             borderRadius: BorderRadius.circular(16),
           ),
           child: Row(

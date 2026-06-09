@@ -1321,7 +1321,7 @@ Widget _buildGallery(Product current, List<ProductImage> images) {
                           isSelected ? const Color(0xFFFFF7ED) : Theme.of(context).colorScheme.surface,
                       border: Border.all(
                         color: isSelected
-                            ? Color(0xFFF26522)
+                            ? Theme.of(context).colorScheme.primary
                             : Theme.of(context).colorScheme.outline,
                         width: isSelected ? 1.5 : 1.0,
                       ),
@@ -1352,7 +1352,7 @@ Widget _buildGallery(Product current, List<ProductImage> images) {
                                 ? FontWeight.w600
                                 : FontWeight.normal,
                             color: isSelected
-                                ? Color(0xFFF26522)
+                                ? Theme.of(context).colorScheme.primary
                                 : Theme.of(context).colorScheme.onSurface,
                           ),
                         ),
@@ -1401,7 +1401,7 @@ Widget _buildGallery(Product current, List<ProductImage> images) {
                           isSelected ? const Color(0xFFFFF7ED) : Theme.of(context).colorScheme.surface,
                       border: Border.all(
                         color: isSelected
-                            ? Color(0xFFF26522)
+                            ? Theme.of(context).colorScheme.primary
                             : Theme.of(context).colorScheme.outline,
                         width: isSelected ? 1.5 : 1.0,
                       ),
@@ -1414,7 +1414,7 @@ Widget _buildGallery(Product current, List<ProductImage> images) {
                         fontWeight:
                             isSelected ? FontWeight.w600 : FontWeight.normal,
                         color: isSelected
-                            ? Color(0xFFF26522)
+                            ? Theme.of(context).colorScheme.primary
                             : Theme.of(context).colorScheme.onSurface,
                       ),
                     ),
@@ -1585,7 +1585,7 @@ Widget _buildGallery(Product current, List<ProductImage> images) {
             icon: const Icon(Icons.add_shopping_cart),
             label: Text('Thêm vào giỏ hàng'),
               style: ElevatedButton.styleFrom(
-                backgroundColor: Color(0xFFF26522), 
+                backgroundColor: Theme.of(context).colorScheme.primary,
                 foregroundColor: Theme.of(context).colorScheme.surface,
               ),
             )
@@ -1649,7 +1649,7 @@ Widget _buildGallery(Product current, List<ProductImage> images) {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Icon(item.$1, color: Color(0xFFF26522), size: 22),
+                Icon(item.$1, color: Theme.of(context).colorScheme.primary, size: 22),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(item.$2, style: TextStyle(height: 1.35)),
@@ -1824,7 +1824,7 @@ Widget _buildFaqItem(ProductFaq faq) {
             const SizedBox(height: 18),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: const [
+              children: [
                 Text(
                   'Tin tức sản phẩm',
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
@@ -1832,7 +1832,7 @@ Widget _buildFaqItem(ProductFaq faq) {
                 Text(
                   'Xem tất cả',
                   style: TextStyle(
-                      color: Color(0xFFF26522), fontWeight: FontWeight.w600),
+                      color: Theme.of(context).colorScheme.primary, fontWeight: FontWeight.w600),
                 ),
               ],
             ),
@@ -2001,7 +2001,7 @@ Widget _buildFaqItem(ProductFaq faq) {
                             Icons.star,
                             size: 19,
                             color: starValue <= currentValue
-                                ? Color(0xFFF26522)
+                                ? Theme.of(context).colorScheme.primary
                                 : Theme.of(context).colorScheme.outline,
                           ),
                         ),
@@ -2089,7 +2089,7 @@ Widget _buildFaqItem(ProductFaq faq) {
                                   Icons.star,
                                   size: 28,
                                   color: starValue <= localRating
-                                      ? Color(0xFFF26522)
+                                      ? Theme.of(context).colorScheme.primary
                                       : Theme.of(context).colorScheme.outline,
                                 ),
                                 const SizedBox(height: 8),
@@ -2098,7 +2098,7 @@ Widget _buildFaqItem(ProductFaq faq) {
                                   style: TextStyle(
                                     fontSize: 11,
                                     color: starValue == localRating
-                                        ? Color(0xFFF26522)
+                                        ? Theme.of(context).colorScheme.primary
                                         : Theme.of(context).colorScheme.onSurfaceVariant,
                                     fontWeight: starValue == localRating
                                         ? FontWeight.bold
@@ -2162,8 +2162,8 @@ Widget _buildFaqItem(ProductFaq faq) {
                             borderRadius: BorderRadius.circular(8),
                           ),
                           focusedBorder: OutlineInputBorder(
-                            borderSide: const BorderSide(
-                                color: Color(0xFFF26522), width: 1.5),
+                            borderSide: BorderSide(
+                                color: Theme.of(context).colorScheme.primary, width: 1.5),
                             borderRadius: BorderRadius.circular(8),
                           ),
                         ),
@@ -2222,7 +2222,7 @@ Widget _buildFaqItem(ProductFaq faq) {
                                   }
                                 },
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Color(0xFFF26522),
+                            backgroundColor: Theme.of(context).colorScheme.primary,
                             disabledBackgroundColor: Theme.of(context).colorScheme.outline,
                             padding: const EdgeInsets.symmetric(vertical: 14),
                             shape: RoundedRectangleBorder(
@@ -2300,9 +2300,9 @@ Widget _buildFaqItem(ProductFaq faq) {
                           onPressed:
                               _showWriteReviewSheet, // KÍCH HOẠT HÀM BẬT BOTTOM SHEET NỔI TỪ DƯỚI LÊN
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Color(0xFFF26522),
-                            side: const BorderSide(
-                                color: Color(0xFFF26522), width: 1.5),
+                            backgroundColor: Theme.of(context).colorScheme.primary,
+                            side: BorderSide(
+                                color: Theme.of(context).colorScheme.primary, width: 1.5),
                             foregroundColor: Theme.of(context).colorScheme.surface,
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 8, vertical: 8),
@@ -2448,10 +2448,10 @@ Widget _buildFaqItem(ProductFaq faq) {
       onSelected: (_) => setState(() => reviewFilter = value),
       selectedColor: const Color(0xFFFFEDD5),
       side: BorderSide(
-        color: selected ? Color(0xFFF26522) : Theme.of(context).colorScheme.outline,
+        color: selected ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.outline,
       ),
       labelStyle: TextStyle(
-        color: selected ? Color(0xFFF26522) : Theme.of(context).colorScheme.onSurface,
+        color: selected ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.onSurface,
         fontWeight: FontWeight.w600,
       ),
     );
@@ -2511,7 +2511,7 @@ Widget _buildFaqItem(ProductFaq faq) {
             children: [
               CircleAvatar(
                 radius: 22,
-                backgroundColor: Color(0xFFF26522),
+                backgroundColor: Theme.of(context).colorScheme.primary,
                 backgroundImage: review.userAvatarUrl == null
                     ? null
                     : NetworkImage(review.userAvatarUrl!),
@@ -2552,7 +2552,7 @@ Widget _buildFaqItem(ProductFaq faq) {
                       _ratingLabel(review.rating),
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
-                        color: Color(0xFFF26522),
+                        color: Theme.of(context).colorScheme.primary,
                       ),
                     ),
                   ],
@@ -2618,10 +2618,10 @@ Widget _buildFaqItem(ProductFaq faq) {
                     'assets/images/mascot.png',
                     width: 54,
                     height: 54,
-                    errorBuilder: (_, __, ___) => const CircleAvatar(
-                      backgroundColor: Color(0xFFFFEDD5),
-                      child:
-                          Icon(Icons.support_agent, color: Color(0xFFF26522)),
+                    errorBuilder: (_, __, ___) => CircleAvatar(
+                      backgroundColor: Theme.of(context).colorScheme.tertiaryContainer,
+                      child: Icon(Icons.support_agent, color: Theme.of(context).colorScheme.primary),
+
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -2724,8 +2724,8 @@ Widget _buildFaqItem(ProductFaq faq) {
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
-                        borderSide: const BorderSide(
-                            color: Color(0xFFF26522), width: 1.2),
+                        borderSide: BorderSide(
+                            color: Theme.of(context).colorScheme.primary, width: 1.2),
                       ),
                     ),
                   ),
@@ -2737,7 +2737,7 @@ Widget _buildFaqItem(ProductFaq faq) {
                     child: ElevatedButton(
                       onPressed: qaSending ? null : _submitQuestion,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Color(0xFFF26522),
+                        backgroundColor: Theme.of(context).colorScheme.primary,
                         foregroundColor: Theme.of(context).colorScheme.surface,
                         elevation: 0,
                         padding: const EdgeInsets.symmetric(
@@ -2939,7 +2939,7 @@ Widget _buildFaqItem(ProductFaq faq) {
                           ],
                         ),
                         const SizedBox(height: 6),
-                        Text(row.answer!, style: TextStyle(height: 1.45)),
+                        Text(row.answer!, style: TextStyle(height: 1.45, color: Theme.of(context).colorScheme.onPrimaryContainer)),
                         if ((row.answeredAt ?? '').isNotEmpty) ...[
                           const SizedBox(height: 6),
                           Text(
