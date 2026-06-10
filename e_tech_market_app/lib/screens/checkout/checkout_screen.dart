@@ -9,6 +9,7 @@ import '../../utils/app_snackbar.dart';
 import '../account/clause/payment_security_policy_screen.dart';
 import 'payment_webview_screen.dart';
 import 'payment_result_screen.dart';
+import 'package:flutter/gestures.dart';
 
 class CheckoutScreen extends StatefulWidget {
   const CheckoutScreen({Key? key}) : super(key: key);
@@ -498,8 +499,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Thanh toán', style: TextStyle(fontWeight: FontWeight.bold)),
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.black,
+        backgroundColor: Theme.of(context).colorScheme.surface,
+        foregroundColor: Theme.of(context).colorScheme.onSurface,
         elevation: 0,
       ),
       body: SingleChildScrollView(
@@ -542,14 +543,25 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                     onTap: () => setState(() => _acceptedPolicy = !_acceptedPolicy),
                     child: RichText(
                       text: TextSpan(
-                        style: const TextStyle(fontSize: 13, color: Color(0xFF374151), height: 1.4),
+                        style: TextStyle(
+                          fontSize: 13, 
+                          color: Theme.of(context).colorScheme.onSurface, 
+                          height: 1.4,
+                        ),
                         children: [
                           const TextSpan(text: 'Tôi đã đọc và đồng ý với '),
-                          WidgetSpan(
-                            alignment: PlaceholderAlignment.baseline,
-                            baseline: TextBaseline.alphabetic,
-                            child: GestureDetector(
-                              onTap: () {
+                          TextSpan(
+                            text: 'Chính sách bảo mật thanh toán',
+                            style: const TextStyle(
+                              fontSize: 13,
+                              color: Color(0xFFF26522),
+                              fontWeight: FontWeight.bold,
+                              decoration: TextDecoration.underline,
+                              decorationColor: Color(0xFFF26522),
+                            ),
+                            // Sử dụng TapGestureRecognizer để bắt sự kiện click riêng cho đoạn này
+                            recognizer: TapGestureRecognizer()
+                              ..onTap = () {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
@@ -557,23 +569,13 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                                   ),
                                 );
                               },
-                              child: const Text(
-                                'Chính sách bảo mật thanh toán',
-                                style: TextStyle(
-                                  fontSize: 13,
-                                  color: Color(0xFFF26522),
-                                  fontWeight: FontWeight.bold,
-                                  decoration: TextDecoration.underline,
-                                  decorationColor: Color(0xFFF26522),
-                                ),
-                              ),
-                            ),
                           ),
+                          const TextSpan(text: ' của E-TECH MARKET.'),
                         ],
                       ),
                     ),
                   ),
-                ),
+                )
               ],
             ),
             const SizedBox(height: 16),
@@ -583,12 +585,16 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
               child: ElevatedButton(
                 onPressed: _isSubmitting || _cart.items.isEmpty || !_acceptedPolicy ? null : _submitOrder,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFFF26522),
-                  foregroundColor: Colors.white,
-                  disabledBackgroundColor: Colors.grey.shade300,
+                  backgroundColor: Theme.of(context).colorScheme.error,
+                  foregroundColor: Theme.of(context).colorScheme.onError,
+                  disabledBackgroundColor: Theme.of(context).colorScheme.surface,
+                  side: BorderSide(
+                    color: Theme.of(context).colorScheme.error,
+                    width: 1,
+                  ),
                 ),
                 child: _isSubmitting
-                    ? const CircularProgressIndicator(color: Colors.white)
+                    ? CircularProgressIndicator(color: Theme.of(context).colorScheme.error)
                     : const Text('XÁC NHẬN ĐẶT HÀNG', style: TextStyle(fontWeight: FontWeight.bold)),
               ),
             ),
@@ -646,7 +652,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
       ),
@@ -688,40 +694,53 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   }
 
   Widget _buildDropdownField({
-    required String hint,
-    required String? valueText,
-    required VoidCallback onTap,
-  }) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(8),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
-        decoration: BoxDecoration(
-          border: Border.all(color: const Color(0xFFD1D5DB)),
-          borderRadius: BorderRadius.circular(8),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Expanded(
-              child: Text(
-                valueText ?? hint,
-                style: TextStyle(
-                  fontSize: 13,
-                  color: valueText == null ? Colors.grey : Colors.black,
-                  fontWeight: valueText == null ? FontWeight.normal : FontWeight.w500,
-                ),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-            const Icon(Icons.keyboard_arrow_down, color: Colors.grey, size: 20),
-          ],
-        ),
+  required String hint,
+  required String? valueText,
+  required VoidCallback onTap,
+}) {
+  // Lấy textTheme từ hệ thống để tự động đổi màu theo giao diện Sáng/Tối
+  final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
+  return InkWell(
+    onTap: onTap,
+    borderRadius: BorderRadius.circular(8),
+    child: Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surface,
+        // Đổi màu border: Sử dụng màu mờ nhẹ (onSurface với opacity) để trông tinh tế hơn ở cả 2 chế độ
+        border: Border.all(color: Theme.of(context).colorScheme.onSurface.withOpacity(0.2)),
+        borderRadius: BorderRadius.circular(8),
       ),
-    );
-  }
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Expanded(
+            child: Text(
+              valueText ?? hint,
+              style: TextStyle(
+                fontSize: 13,
+                // SỬA Ở ĐÂY: Nếu valueText có giá trị, lấy màu chữ mặc định của hệ thống (Trắng ở Dark Mode, Đen ở Light Mode)
+                color: valueText == null 
+                    ? (isDarkMode ? Colors.white38 : Colors.grey) // Màu của chữ hint
+                    : Theme.of(context).colorScheme.onSurface,    // Màu chữ hiển thị khi đã chọn
+                fontWeight: valueText == null ? FontWeight.normal : FontWeight.w500,
+              ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+          // Thay đổi màu Icon mũi tên để nó sáng lên một chút khi ở chế độ tối
+          Icon(
+            Icons.keyboard_arrow_down, 
+            color: isDarkMode ? Colors.white60 : Colors.grey, 
+            size: 20
+          ),
+        ],
+      ),
+    ),
+  );
+}
 
   Widget _buildShippingMethod() {
     var selectedZone;
@@ -755,11 +774,12 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                 onTap: () {
                   _showSelectionBottomSheet(
                     title: 'Chọn khu vực giao hàng',
+                    
                     items: _shippingZones.map((z) {
                       final feeStr = _isFreeShipping ? 'Miễn phí' : '+${_formatCurrency(z.fee)}';
                       final isSelected = z.id == _selectedShipZoneId;
                       return ListTile(
-                        title: Text('${z.name} ($feeStr)', style: TextStyle(fontSize: 14, fontWeight: isSelected ? FontWeight.bold : FontWeight.normal, color: isSelected ? const Color(0xFFF26522) : Colors.black87)),
+                        title: Text('${z.name} ($feeStr)', style: TextStyle(fontSize: 14, fontWeight: isSelected ? FontWeight.bold : FontWeight.normal, color: isSelected ? const Color(0xFFF26522) : Theme.of(context).colorScheme.onSurface)),
                         trailing: isSelected ? const Icon(Icons.check, color: Color(0xFFF26522)) : null,
                         onTap: () {
                           setState(() => _selectedShipZoneId = z.id);
@@ -783,7 +803,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                     items: _shippingMethods.map((m) {
                       final isSelected = m.id == _selectedShipMethodId;
                       return ListTile(
-                        title: Text('${m.name} ${m.etaLabel}', style: TextStyle(fontSize: 14, fontWeight: isSelected ? FontWeight.bold : FontWeight.normal, color: isSelected ? const Color(0xFFF26522) : Colors.black87)),
+                        title: Text('${m.name} ${m.etaLabel}', style: TextStyle(fontSize: 14, fontWeight: isSelected ? FontWeight.bold : FontWeight.normal, color: isSelected ? const Color(0xFFF26522) : Theme.of(context).colorScheme.onSurface)),
                         trailing: isSelected ? const Icon(Icons.check, color: Color(0xFFF26522)) : null,
                         onTap: () {
                           setState(() => _selectedShipMethodId = m.id);
@@ -838,7 +858,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
         child: Container(
           height: 140,
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: Theme.of(context).colorScheme.surface,
             border: Border.all(
               color: isSelected ? const Color(0xFFF26522) : Colors.grey.shade200,
               width: isSelected ? 1.5 : 1.0,
@@ -866,10 +886,10 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
               Text(
                 title,
                 textAlign: TextAlign.center,
-                style: const TextStyle(
+                style: TextStyle(
                   fontWeight: FontWeight.w800,
                   fontSize: 12,
-                  color: Color(0xFF111827),
+                  color: Theme.of(context).colorScheme.onSurface,
                   height: 1.2,
                 ),
               ),
@@ -892,7 +912,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                   Container(
                     width: 100, height: 100,
                     decoration: BoxDecoration(
-                      color: const Color(0xFFFFF9F2),
+                      color: Theme.of(context).colorScheme.surface,
                       borderRadius: BorderRadius.circular(10),
                     ),
                     padding: const EdgeInsets.all(4),
@@ -908,7 +928,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                       children: [
                         Text(
                           i.name, 
-                          style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 15, height: 1.3, color: Color(0xFF111827)),
+                          style: TextStyle(fontWeight: FontWeight.w700, fontSize: 15, height: 1.3, color: Theme.of(context).colorScheme.onSurface),
                         ),
                         if (i.variantLabel != null)
                           Padding(
@@ -1046,8 +1066,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(label, style: TextStyle(fontWeight: FontWeight.bold, fontSize: isTotal ? 16 : 14, color: Colors.black)),
-          Text(value, style: TextStyle(fontWeight: FontWeight.w900, fontSize: isTotal ? 20 : 14, color: valueColor ?? (isTotal ? const Color(0xFFF26522) : Colors.black))),
+          Text(label, style: TextStyle(fontWeight: FontWeight.bold, fontSize: isTotal ? 16 : 14, color: Theme.of(context).colorScheme.onSurface)),
+          Text(value, style: TextStyle(fontWeight: FontWeight.w900, fontSize: isTotal ? 20 : 14, color: valueColor ?? (isTotal ? Theme.of(context).colorScheme.error : Theme.of(context).colorScheme.onSurface))),
         ],
       ),
     );

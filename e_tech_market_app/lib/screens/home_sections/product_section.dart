@@ -160,8 +160,8 @@ class _ProductCard extends StatelessWidget {
           decoration: BoxDecoration(
             border: Border.all(
               color: Color.alphaBlend(
-                Theme.of(context).colorScheme.outline.withOpacity(0.3), // 30% màu border
-                Theme.of(context).colorScheme.surface,                 // Trộn trên nền canvas
+                Theme.of(context).colorScheme.outline.withOpacity(0.3), 
+                Theme.of(context).colorScheme.surface,                
               ),
             ),
             borderRadius: BorderRadius.circular(5),
@@ -176,7 +176,7 @@ class _ProductCard extends StatelessWidget {
                     Positioned.fill(
                       child: Container(
                         color: Theme.of(context).colorScheme.surface,
-                        padding: const EdgeInsets.all(10),
+                        padding: const EdgeInsets.all(0),
                         child: imageUrl.isEmpty
                             ? _buildImageFallback()
                             : Image.network(

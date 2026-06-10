@@ -318,9 +318,9 @@ class _AdminOrderDetailScreenState extends State<AdminOrderDetailScreen> {
     if (rr == null) {
       return _buildSectionCard(
         title: 'Yêu cầu hoàn trả',
-        child: const Padding(
-          padding: EdgeInsets.symmetric(vertical: 16),
-          child: Center(child: Text('Không có yêu cầu hoàn trả.', style: TextStyle(color: Color(0xFF94A3B8), fontSize: 13))),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 16),
+          child: Center(child: Text('Không có yêu cầu hoàn trả.', style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 13))),
         ),
       );
     }
@@ -347,7 +347,7 @@ class _AdminOrderDetailScreenState extends State<AdminOrderDetailScreen> {
           if (content.trim().isNotEmpty)
             Padding(
               padding: const EdgeInsets.only(bottom: 10),
-              child: Text(content, style: const TextStyle(fontSize: 13, color: Color(0xFF1E293B))),
+              child: Text(content, style: TextStyle(fontSize: 13, color: Theme.of(context).colorScheme.onSurface)),
             ),
 
           if (media.isNotEmpty) ...[
@@ -396,13 +396,13 @@ class _AdminOrderDetailScreenState extends State<AdminOrderDetailScreen> {
               width: double.infinity,
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
-                color: const Color(0xFFF8FAFC),
+                color: Theme.of(context).colorScheme.surface,
                 borderRadius: BorderRadius.circular(8),
                 border: Border.all(color: const Color(0xFFE2E8F0)),
               ),
               child: Text(
                 'Đã lưu phản hồi: $adminNote', 
-                style: const TextStyle(fontSize: 12, color: Color(0xFF334155), fontWeight: FontWeight.w500),
+                style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.onSurface, fontWeight: FontWeight.w500),
               ),
             ),
           ],
@@ -612,13 +612,13 @@ class _AdminOrderDetailScreenState extends State<AdminOrderDetailScreen> {
       title: 'Lịch sử chuyển trạng thái',
       trailing: Container(
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-        decoration: BoxDecoration(color: const Color(0xFFF1F5F9), borderRadius: BorderRadius.circular(12)),
-        child: Text('${history.length} lần', style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Color(0xFF475569))),
+        decoration: BoxDecoration(color: Theme.of(context).colorScheme.surface, borderRadius: BorderRadius.circular(12)),
+        child: Text('${history.length} lần', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.onSurface)),
       ),
       child: history.isEmpty
-          ? const Padding(
-              padding: EdgeInsets.symmetric(vertical: 16),
-              child: Center(child: Text('Chưa ghi nhận lịch sử biến động.', style: TextStyle(color: Color(0xFF94A3B8), fontSize: 13))),
+          ? Padding(
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              child: Center(child: Text('Chưa ghi nhận lịch sử biến động.', style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 13))),
             )
           : Column(
               children: history.map((h) {
@@ -632,7 +632,7 @@ class _AdminOrderDetailScreenState extends State<AdminOrderDetailScreen> {
                   margin: const EdgeInsets.symmetric(vertical: 6),
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: const Color(0xFFF8FAFC),
+                    color: Theme.of(context).colorScheme.surface,
                     borderRadius: BorderRadius.circular(8),
                     border: Border.all(color: const Color(0xFFE2E8F0)),
                   ),
@@ -643,11 +643,11 @@ class _AdminOrderDetailScreenState extends State<AdminOrderDetailScreen> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('$fromLabel  ➔  $toLabel', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Color(0xFF0F172A))),
+                            Text('$fromLabel  ➔  $toLabel', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Theme.of(context).colorScheme.onSurface)),
                             const SizedBox(height: 4),
                             Text(
                               '${AdminOrdersService.formatViTime(changedAt)} • $changedBy',
-                              style: const TextStyle(fontSize: 11, color: Color(0xFF64748B), fontWeight: FontWeight.w500),
+                              style: TextStyle(fontSize: 11, color: Theme.of(context).colorScheme.onSurface, fontWeight: FontWeight.w500),
                             ),
                             if (note.toString().trim().isNotEmpty) ...[
                               const SizedBox(height: 6),
@@ -670,11 +670,11 @@ class _AdminOrderDetailScreenState extends State<AdminOrderDetailScreen> {
     final amounts = _detail?['amounts'] ?? {};
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
+      backgroundColor: Theme.of(context).colorScheme.surface,
       appBar: AppBar(
         elevation: 0,
-        backgroundColor: Colors.white,
-        foregroundColor: const Color(0xFF0F172A),
+        backgroundColor: Theme.of(context).colorScheme.surface,
+        foregroundColor: Theme.of(context).colorScheme.onSurface,
         centerTitle: true,
         title: Text(
           _detail?['order_code'] != null ? 'Đơn hàng #${_detail!['order_code']}' : 'Chi Tiết Đơn Hàng', 
@@ -787,7 +787,7 @@ class _AdminOrderDetailScreenState extends State<AdminOrderDetailScreen> {
                                       children: [
                                         Text(
                                           item['name'] ?? 'Sản phẩm không tên', 
-                                          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Color(0xFF0F172A)), 
+                                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Theme.of(context).colorScheme.onSurface), 
                                           maxLines: 2, 
                                           overflow: TextOverflow.ellipsis,
                                         ),
@@ -802,7 +802,7 @@ class _AdminOrderDetailScreenState extends State<AdminOrderDetailScreen> {
                                   const SizedBox(width: 8),
                                   Text(
                                     '${AdminOrdersService.formatVnd(item['total_price'] ?? 0)}₫', 
-                                    style: const TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF0F172A), fontSize: 13),
+                                    style: TextStyle(fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.onSurface, fontSize: 13),
                                   ),
                                 ],
                               ),
@@ -825,10 +825,10 @@ class _AdminOrderDetailScreenState extends State<AdminOrderDetailScreen> {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                const Text('Phương thức', style: TextStyle(color: Color(0xFF64748B), fontSize: 13)),
+                                Text('Phương thức', style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 13)),
                                 Text(
                                   _resolvePaymentMethod(_detail), 
-                                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Color(0xFF1E293B)),
+                                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Theme.of(context).colorScheme.onSurface),
                                 ),
                               ],
                             )
@@ -852,9 +852,9 @@ class _AdminOrderDetailScreenState extends State<AdminOrderDetailScreen> {
       width: double.infinity,
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: Colors.white, 
+        color: Theme.of(context).colorScheme.surface, 
         borderRadius: BorderRadius.circular(12), 
-        border: Border.all(color: const Color(0xFFE2E8F0)),
+        border: Border.all(color: Theme.of(context).colorScheme.onSurface, width: 0.5),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start, 
@@ -862,11 +862,11 @@ class _AdminOrderDetailScreenState extends State<AdminOrderDetailScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: Color(0xFF0F172A))),
+              Text(title, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: Theme.of(context).colorScheme.onSurface)),
               if (trailing != null) trailing,
             ],
           ),
-          const Padding(padding: EdgeInsets.symmetric(vertical: 6), child: Divider(height: 1, color: Color(0xFFF1F5F9))),
+          Padding(padding: EdgeInsets.symmetric(vertical: 6), child: Divider(height: 1, color: Theme.of(context).colorScheme.onSurface)),
           child
         ],
       ),
@@ -879,8 +879,8 @@ class _AdminOrderDetailScreenState extends State<AdminOrderDetailScreen> {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(width: 110, child: Text(label, style: const TextStyle(color: Color(0xFF64748B), fontSize: 13))),
-          Expanded(child: Text(value, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13, color: Color(0xFF1E293B)))),
+          SizedBox(width: 110, child: Text(label, style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 13))),
+          Expanded(child: Text(value, style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13, color: Theme.of(context).colorScheme.onSurface))),
         ],
       ),
     );
@@ -892,13 +892,13 @@ class _AdminOrderDetailScreenState extends State<AdminOrderDetailScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(label, style: TextStyle(fontSize: isTotal ? 14 : 13, fontWeight: isTotal ? FontWeight.bold : FontWeight.normal, color: isTotal ? const Color(0xFF0F172A) : const Color(0xFF64748B))),
+          Text(label, style: TextStyle(fontSize: isTotal ? 14 : 13, fontWeight: isTotal ? FontWeight.bold : FontWeight.normal, color: isTotal ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.onSurface)),
           Text(
             '${isDiscount ? "-" : ""}${AdminOrdersService.formatVnd(val)}₫',
             style: TextStyle(
               fontSize: isTotal ? 15 : 13,
               fontWeight: isTotal ? FontWeight.bold : FontWeight.w600,
-              color: isDiscount ? Colors.red : (isTotal ? const Color(0xFF4F46E5) : const Color(0xFF1E293B)),
+              color: isDiscount ? Colors.red : (isTotal ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.onSurface),
             ),
           )
         ],

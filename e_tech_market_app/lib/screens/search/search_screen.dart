@@ -232,8 +232,9 @@ class _SearchScreenState extends State<SearchScreen> {
         return Container(
           margin: const EdgeInsets.only(bottom: 14),
           decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.surfaceContainerHighest,
-            borderRadius: BorderRadius.circular(16), // Bo góc lớn hơn (16px)
+            color: Theme.of(context).colorScheme.surface,
+            borderRadius: BorderRadius.circular(5), // Bo góc lớn hơn (16px)
+            border: Border.all(color: Theme.of(context).colorScheme.outline, width: 0.5),
             boxShadow: [
               // Đổ bóng mờ tạo độ nổi khối (Elevated)
               BoxShadow(
@@ -316,10 +317,10 @@ class _SearchScreenState extends State<SearchScreen> {
                               // Tên sản phẩm (tối đa 2 dòng)
                               Text(
                                 product['name'] ?? '',
-                                style: const TextStyle(
+                                style:  TextStyle(
                                   fontWeight: FontWeight.w600, 
                                   fontSize: 14,
-                                  color: Color(0xFF212121),
+                                  color: Theme.of(context).colorScheme.onSurface,
                                   height: 1.3, // Điều chỉnh giãn dòng
                                 ),
                                 maxLines: 2,
@@ -340,11 +341,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                       style: TextStyle(color: Color(0xFFF26522), fontSize: 9, fontWeight: FontWeight.w600),
                                     ),
                                   ),
-                                  const SizedBox(width: 6),
-                                  Text(
-                                    'Đã bán ${product['sold_count'] ?? '0'}',
-                                    style: TextStyle(color: Colors.grey.shade500, fontSize: 11),
-                                  ),
+                                  
                                 ],
                               ),
                             ],

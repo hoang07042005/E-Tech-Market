@@ -18,10 +18,10 @@ class _SettingScreenState extends State<SettingScreen> {
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
       appBar: AppBar(
+        title: const Text('Cài đặt', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
         backgroundColor: Theme.of(context).colorScheme.surface,
         foregroundColor: Theme.of(context).colorScheme.onSurface,
-        elevation: 1,
-        title: const Text('Cài đặt', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+        elevation: 0,
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
@@ -70,7 +70,7 @@ class _SettingScreenState extends State<SettingScreen> {
             _buildCard(children: [
               _buildActionTile(icon: Icons.delete_outline, iconColor: const Color(0xFFEF4444), iconBgColor: const Color(0xFFFEF2F2), title: 'Xóa bộ nhớ đệm', onTap: () {}),
               const Divider(height: 1, indent: 56),
-              _buildActionTile(icon: Icons.refresh, iconColor: const Color(0xFFF59E0B), iconBgColor: const Color(0xFFFFFBEB), title: 'Làm mới dữ li���u ứng dụng', onTap: () {}),
+              _buildActionTile(icon: Icons.refresh, iconColor: const Color(0xFFF59E0B), iconBgColor: const Color(0xFFFFFBEB), title: 'Làm mới dữ liệu ứng dụng', onTap: () {}),
             ]),
             const SizedBox(height: 24),
             _buildSectionTitle('Thông tin ứng dụng'),

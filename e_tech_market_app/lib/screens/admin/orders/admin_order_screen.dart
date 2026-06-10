@@ -125,11 +125,11 @@ class _AdminOrdersScreenState extends State<AdminOrdersScreen> {
     final pagination = _response?['pagination'] ?? {};
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
+      backgroundColor: Theme.of(context).colorScheme.surface,
       appBar: AppBar(
         elevation: 0,
-        backgroundColor: Colors.white,
-        foregroundColor: const Color(0xFF0F172A),
+        backgroundColor: Theme.of(context).colorScheme.surface,
+        foregroundColor: Theme.of(context).colorScheme.onSurface,
         centerTitle: true,
         title: const Text('Quản Lý Đơn Hàng', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17)),
       ),
@@ -176,10 +176,10 @@ class _AdminOrdersScreenState extends State<AdminOrdersScreen> {
                       height: 38,
                       padding: const EdgeInsets.symmetric(horizontal: 12),
                       decoration: BoxDecoration(
-                        color: _filterExpanded ? const Color(0xFF4F46E5).withOpacity(0.08) : Colors.white,
+                        color: _filterExpanded ? const Color(0xFF4F46E5).withOpacity(0.08) : Theme.of(context).colorScheme.surface,
                         borderRadius: BorderRadius.circular(8),
                         border: Border.all(
-                          color: _filterExpanded ? const Color(0xFF4F46E5) : const Color(0xFFE2E8F0),
+                          color: _filterExpanded ? const Color(0xFF4F46E5) : Theme.of(context).colorScheme.onSurface,
                           width: 1.2,
                         ),
                       ),
@@ -188,7 +188,7 @@ class _AdminOrdersScreenState extends State<AdminOrdersScreen> {
                           Icon(
                             Icons.tune_rounded,
                             size: 16,
-                            color: _filterExpanded ? const Color(0xFF4F46E5) : const Color(0xFF475569),
+                            color: _filterExpanded ? const Color(0xFF4F46E5) : Theme.of(context).colorScheme.onSurface,
                           ),
                           const SizedBox(width: 6),
                           Text(
@@ -196,7 +196,7 @@ class _AdminOrdersScreenState extends State<AdminOrdersScreen> {
                             style: TextStyle(
                               fontSize: 13,
                               fontWeight: FontWeight.w600,
-                              color: _filterExpanded ? const Color(0xFF4F46E5) : const Color(0xFF475569),
+                              color: _filterExpanded ? const Color(0xFF4F46E5) : Theme.of(context).colorScheme.onSurface,
                             ),
                           ),
                         ],
@@ -215,9 +215,9 @@ class _AdminOrdersScreenState extends State<AdminOrdersScreen> {
                         margin: const EdgeInsets.only(top: 12),
                         padding: const EdgeInsets.all(14),
                         decoration: BoxDecoration(
-                          color: Colors.white,
+                          color: Theme.of(context).colorScheme.surface,
                           borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: const Color(0xFFE2E8F0)),
+                          border: Border.all(color: Theme.of(context).colorScheme.onSurface, width: 0.5),
                           boxShadow: [
                             BoxShadow(
                               color: const Color(0xFF0F172A).withOpacity(0.03),
@@ -229,9 +229,9 @@ class _AdminOrdersScreenState extends State<AdminOrdersScreen> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Text(
+                            Text(
                               'Tìm kiếm nâng cao',
-                              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Color(0xFF1E293B)),
+                              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Theme.of(context).colorScheme.onSurface),
                             ),
                             const SizedBox(height: 12),
                             Row(
@@ -366,16 +366,16 @@ class _AdminOrdersScreenState extends State<AdminOrdersScreen> {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: const Color(0xFFE2E8F0)),
+        border: Border.all(color: Theme.of(context).colorScheme.onSurface, width: 0.5),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Icon(icon, color: color, size: 18),
           const SizedBox(height: 6),
-          Text(label, style: const TextStyle(fontSize: 11, color: Color(0xFF64748B))),
+          Text(label, style: TextStyle(fontSize: 11, color: Theme.of(context).colorScheme.onSurface)),
           Text('${count ?? 0}', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: color)),
         ],
       ),
@@ -386,10 +386,10 @@ class _AdminOrdersScreenState extends State<AdminOrdersScreen> {
     return InputDecoration(
       labelText: label,
       isDense: true,
-      labelStyle: const TextStyle(color: Color(0xFF64748B), fontSize: 12),
-      prefixIcon: Icon(icon, size: 16, color: const Color(0xFF94A3B8)),
+      labelStyle: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 12),
+      prefixIcon: Icon(icon, size: 16, color: Theme.of(context).colorScheme.onSurface),
       filled: true,
-      fillColor: const Color(0xFFF8FAFC),
+      fillColor: Theme.of(context).colorScheme.surface,
       contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
       border: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: BorderSide.none),
       enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: const BorderSide(color: Color(0xFFE2E8F0))),
@@ -432,9 +432,9 @@ class _AdminOrdersScreenState extends State<AdminOrdersScreen> {
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: const Color(0xFFE2E8F0)),
+        border: Border.all(color: Theme.of(context).colorScheme.onSurface, width: 0.5),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -451,19 +451,19 @@ class _AdminOrdersScreenState extends State<AdminOrdersScreen> {
             ],
           ),
           const SizedBox(height: 8),
-          Text('Khách hàng: ${row['customer_name'] ?? '—'}', style: const TextStyle(color: Color(0xFF475569), fontSize: 13)),
+          Text('Khách hàng: ${row['customer_name'] ?? '—'}', style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 13)),
           const SizedBox(height: 4),
-          Text('Ngày đặt: ${_formatDisplayDate(row)}', style: const TextStyle(color: Color(0xFF64748B), fontSize: 13)),
+          Text('Ngày đặt: ${_formatDisplayDate(row)}', style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 13)),
           const Divider(height: 18, color: Color(0xFFF1F5F9)),
           
           // ĐÃ SỬA CHÍNH XÁC KEY: Đổi thành 'payment_method' theo đúng API gốc
-          Text('Phương thức thanh toán: ${row['payment_method'] ?? '—'}', style: const TextStyle(color: Color(0xFF475569), fontSize: 13)),
+          Text('Phương thức thanh toán: ${row['payment_method'] ?? '—'}', style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 13)),
           const SizedBox(height: 4),
           
           // ĐÃ SỬA CHÍNH XÁC KEY: Đổi thành 'product' để hiển thị chuỗi danh sách sản phẩm tóm tắt
           Text(
             'Sản phẩm: ${row['product'] ?? '—'}', 
-            style: const TextStyle(color: Color(0xFF475569), fontSize: 13),
+            style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 13),
           ),
           const SizedBox(height: 4),
           

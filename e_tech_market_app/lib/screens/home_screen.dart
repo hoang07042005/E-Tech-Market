@@ -150,6 +150,10 @@ class _HomeScreenState extends State<HomeScreen> {
     int remainingUnread = _unreadNotifCount - unreadInList;
 
     return Drawer(
+      width: MediaQuery.of(context).size.width * 0.75,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.zero,
+      ),
       child: SafeArea(
         child: Column(
           children: [
@@ -170,11 +174,11 @@ class _HomeScreenState extends State<HomeScreen> {
                         children: [
                           Container(width: 8, height: 8, decoration: const BoxDecoration(color: Colors.red, shape: BoxShape.circle)),
                           const SizedBox(width: 4),
-                          const Text('Chưa đọc', style: TextStyle(fontSize: 11, color: Colors.black54)),
+                          Text('Chưa đọc', style: TextStyle(fontSize: 11, color: Theme.of(context).colorScheme.onSurface)),
                           const SizedBox(width: 12),
                           Container(width: 8, height: 8, decoration: const BoxDecoration(color: Colors.blue, shape: BoxShape.circle)),
                           const SizedBox(width: 4),
-                          const Text('Đã đọc', style: TextStyle(fontSize: 11, color: Colors.black54)),
+                          Text('Đã đọc', style: TextStyle(fontSize: 11, color: Theme.of(context).colorScheme.onSurface)),
                         ],
                       ),
                     ],
@@ -198,7 +202,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             Expanded(
               child: _recentNotifications.isEmpty
-                  ? const Center(child: Text('Chưa có thông báo nào.', style: TextStyle(color: Colors.black54)))
+                  ? Center(child: Text('Chưa có thông báo nào.', style: TextStyle(color: Theme.of(context).colorScheme.onSurface)))
                   : ListView.separated(
                       padding: const EdgeInsets.all(8),
                       itemCount: _recentNotifications.length,
@@ -221,7 +225,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               ),
                             ],
                           ),
-                          title: Text(notif['title']?.toString() ?? 'Thông báo', style: TextStyle(fontWeight: isRead ? FontWeight.normal : FontWeight.bold, fontSize: 14)),
+                          title: Text(notif['title']?.toString() ?? 'Thông báo', style: TextStyle(fontWeight: isRead ? FontWeight.normal : FontWeight.bold, fontSize: 14, color: Theme.of(context).colorScheme.primary)),
                           // subtitle: Text(notif['body']?.toString() ?? '', maxLines: 2, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 12)),
                           onTap: () async {
                             // 1. Đánh dấu đã đọc ngay tại Home (nếu chưa đọc) để UX mượt mà
@@ -280,7 +284,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                         child: Text(
                           '+$remainingUnread chưa đọc',
-                          style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
+                          style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 10, fontWeight: FontWeight.bold),
                         ),
                       ),
                     ),
@@ -704,7 +708,9 @@ class _HomeScreenState extends State<HomeScreen> {
               elevation: 0,
 
               title: Image.asset(
-                'assets/images/logo.png',
+                Theme.of(context).brightness == Brightness.dark
+                    ? 'assets/images/logo-trang.png'
+                    : 'assets/images/logo.png',
                 height: 40,
                 fit: BoxFit.contain,
               ),

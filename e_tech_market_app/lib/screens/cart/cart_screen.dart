@@ -80,10 +80,10 @@ class _CartScreenState extends State<CartScreen> {
   Widget build(BuildContext context) {
     const accent = Color(0xFFF26522);
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
+      backgroundColor: Theme.of(context).colorScheme.surface,
       appBar: AppBar(
-        backgroundColor: Colors.white,
-        foregroundColor: const Color(0xFF111827),
+        backgroundColor: Theme.of(context).colorScheme.surface,
+        foregroundColor: Theme.of(context).colorScheme.onSurface,
         elevation: 0,
         title: const Text(
           'Giỏ hàng',
@@ -199,8 +199,8 @@ class _CartScreenState extends State<CartScreen> {
             children: [
               Text(
                 '${_cart.totalQuantity} sản phẩm',
-                style: const TextStyle(
-                  color: Color(0xFF64748B),
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.onSurface,
                   fontWeight: FontWeight.w700,
                 ),
               ),
@@ -225,9 +225,9 @@ class _CartScreenState extends State<CartScreen> {
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: const Color(0xFFE5E7EB)),
+        border: Border.all(color: Theme.of(context).colorScheme.outline, width: 0.5),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -264,9 +264,9 @@ class _CartScreenState extends State<CartScreen> {
                   onTap: () => _openProduct(item),
                   child: Text(
                     item.name,
-                    style: const TextStyle(
+                    style:  TextStyle(
                       fontWeight: FontWeight.w800,
-                      color: Color(0xFF111827),
+                      color: Theme.of(context).colorScheme.onSurface,
                       height: 1.25,
                     ),
                   ),
@@ -277,8 +277,7 @@ class _CartScreenState extends State<CartScreen> {
                     item.variantLabel!,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style:
-                        const TextStyle(fontSize: 12, color: Color(0xFF64748B)),
+                    style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.onSurface),
                   ),
                 ],
                 const SizedBox(height: 8),
@@ -367,9 +366,9 @@ class _CartScreenState extends State<CartScreen> {
     return SafeArea(
       child: Container(
         padding: const EdgeInsets.fromLTRB(16, 10, 16, 12),
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          border: Border(top: BorderSide(color: Color(0xFFE5E7EB))),
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.surface,
+          border: Border(top: BorderSide(color: Theme.of(context).colorScheme.outline, width: 0.5)),
         ),
         child: Row(
           children: [

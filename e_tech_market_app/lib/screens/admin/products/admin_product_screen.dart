@@ -211,9 +211,9 @@ class _AdminProductScreenState extends State<AdminProductScreen> {
             Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: Colors.grey[50],
+                color: Theme.of(context).colorScheme.surface,
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: Colors.grey[200]!),
+                border: Border.all(color: Theme.of(context).colorScheme.outline, width: 0.5),
               ),
               child: Row(
                 children: [
@@ -222,7 +222,7 @@ class _AdminProductScreenState extends State<AdminProductScreen> {
                     child: Container(
                       width: 48,
                       height: 48,
-                      color: Colors.grey[200],
+                      color: Theme.of(context).colorScheme.surface,
                       child: product['main_image_url'] != null
                           ? Image.network(_resolveImageUrl(product['main_image_url']), fit: BoxFit.cover)
                           : const Icon(Icons.image, color: Colors.grey),
@@ -233,7 +233,7 @@ class _AdminProductScreenState extends State<AdminProductScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(product['name'] ?? '', maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontWeight: FontWeight.bold)),
+                        Text(product['name'] ?? '', maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.onSurface)),
                         Text(product['brand'] ?? 'Thương hiệu trống', style: TextStyle(color: Colors.grey[600], fontSize: 12)),
                       ],
                     ),

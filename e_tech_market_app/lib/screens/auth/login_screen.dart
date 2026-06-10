@@ -249,6 +249,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             children: [
                               const Text('Email', style: TextStyle(color: Color(0xFF7C6B61), fontSize: 13)),
                               TextFormField(
+                                style: TextStyle(color: Theme.of(context).colorScheme.surface),
                                 controller: _emailController,
                                 keyboardType: TextInputType.emailAddress,
                                 decoration: _inputDecoration(''),
@@ -261,6 +262,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               const SizedBox(height: 16),
                               const Text('Mật khẩu', style: TextStyle(color: Color(0xFF7C6B61), fontSize: 13)),
                               TextFormField(
+                                style: TextStyle(color: Theme.of(context).colorScheme.surface),
                                 controller: _passwordController,
                                 obscureText: true,
                                 decoration: _inputDecoration(''),

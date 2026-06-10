@@ -384,7 +384,7 @@ class _AdminProductFormScreenState extends State<AdminProductFormScreen> with Si
             ),
       bottomNavigationBar: Container(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-        decoration: BoxDecoration(color: Colors.white, boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, -4))]),
+        decoration: BoxDecoration(color: Theme.of(context).colorScheme.surface, boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, -4))]),
         child: Row(
           children: [
             Expanded(
@@ -543,10 +543,10 @@ class _AdminProductFormScreenState extends State<AdminProductFormScreen> with Si
           margin: const EdgeInsets.only(bottom: 16),
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: Theme.of(context).colorScheme.surface,
             borderRadius: BorderRadius.circular(14),
             boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 10, offset: const Offset(0, 2))],
-            border: Border.all(color: const Color(0xFFE5E7EB)),
+            border: Border.all(color: Theme.of(context).colorScheme.onSurface),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -615,7 +615,7 @@ class _AdminProductFormScreenState extends State<AdminProductFormScreen> with Si
               const SizedBox(height: 14),
               Container(
                 padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(color: const Color(0xFFFAF7FF), borderRadius: BorderRadius.circular(10), border: Border.all(color: const Color(0xFFE9D5FF))),
+                decoration: BoxDecoration(color: Theme.of(context).colorScheme.surface, borderRadius: BorderRadius.circular(10), border: Border.all(color: Theme.of(context).colorScheme.onSurface)),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -626,12 +626,12 @@ class _AdminProductFormScreenState extends State<AdminProductFormScreen> with Si
                         Expanded(
                           child: DropdownButtonFormField<String>(
                             value: item['discount_type'] ?? 'none',
-                            style: const TextStyle(fontSize: 13, color: Color(0xFF1E293B)),
+                            style: TextStyle(fontSize: 13, color: Theme.of(context).colorScheme.onSurface),
                             decoration: const InputDecoration(labelText: 'Kiểu giảm', isDense: true, contentPadding: EdgeInsets.symmetric(vertical: 10, horizontal: 12), border: OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(8)))),
                             items: const [
                               DropdownMenuItem(value: 'none', child: Text('Không ưu đãi')),
                               DropdownMenuItem(value: 'percentage', child: Text('Phần trăm %')),
-                              DropdownMenuItem(value: 'fixed', child: Text('Cố định (đ)')),
+                              DropdownMenuItem(value: 'fixed', child: Text('Cố định (đ)'),),
                             ],
                             onChanged: (v) => setState(() => item['discount_type'] = v),
                           ),
@@ -670,11 +670,11 @@ class _AdminProductFormScreenState extends State<AdminProductFormScreen> with Si
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Row(
+              Row(
                 children: [
                   Icon(Icons.tune_outlined, size: 18, color: Color(0xFF475569)),
                   SizedBox(width: 6),
-                  Text('Bảng thông số kỹ thuật', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Color(0xFF1E293B))),
+                  Text('Bảng thông số kỹ thuật', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.onSurface)),
                 ],
               ),
               TextButton.icon(
@@ -699,7 +699,7 @@ class _AdminProductFormScreenState extends State<AdminProductFormScreen> with Si
             return Container(
               margin: const EdgeInsets.only(bottom: 14),
               padding: const EdgeInsets.all(14),
-              decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(14), border: Border.all(color: const Color(0xFFE5E7EB))),
+              decoration: BoxDecoration(color: Theme.of(context).colorScheme.surface, borderRadius: BorderRadius.circular(14), border: Border.all(color: Theme.of(context).colorScheme.onSurface)),
               child: Column(
                 children: [
                   Row(
@@ -750,11 +750,11 @@ class _AdminProductFormScreenState extends State<AdminProductFormScreen> with Si
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Row(
+              Row(
                 children: [
                   Icon(Icons.quiz_outlined, size: 18, color: Color(0xFF475569)),
                   SizedBox(width: 6),
-                  Text('Hỏi đáp tư vấn khách hàng', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Color(0xFF1E293B))),
+                  Text('Hỏi đáp tư vấn khách hàng', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.onSurface)),
                 ],
               ),
               TextButton.icon(
@@ -779,7 +779,7 @@ class _AdminProductFormScreenState extends State<AdminProductFormScreen> with Si
             return Container(
               margin: const EdgeInsets.only(bottom: 14),
               padding: const EdgeInsets.all(14),
-              decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(14), border: Border.all(color: const Color(0xFFE5E7EB))),
+              decoration: BoxDecoration(color: Theme.of(context).colorScheme.surface, borderRadius: BorderRadius.circular(14), border: Border.all(color: Theme.of(context).colorScheme.onSurface)),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -823,7 +823,7 @@ class _AdminProductFormScreenState extends State<AdminProductFormScreen> with Si
       width: double.infinity,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white, 
+        color: Theme.of(context).colorScheme.surface, 
         borderRadius: BorderRadius.circular(12), 
         boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.02), blurRadius: 6, offset: const Offset(0, 2))],
         border: Border.all(color: const Color(0xFFE2E8F0))
@@ -835,7 +835,7 @@ class _AdminProductFormScreenState extends State<AdminProductFormScreen> with Si
             children: [
               Icon(icon, size: 16, color: const Color(0xFF4F46E5)),
               const SizedBox(width: 6),
-              Text(title, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Color(0xFF1E293B))),
+              Text(title, style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.onSurface)),
             ],
           ),
           const Padding(padding: EdgeInsets.symmetric(vertical: 8), child: Divider(height: 1, color: Color(0xFFF1F5F9))),
@@ -850,7 +850,7 @@ class _AdminProductFormScreenState extends State<AdminProductFormScreen> with Si
       controller: controller,
       maxLines: maxLines,
       keyboardType: isNumber ? TextInputType.number : TextInputType.text,
-      style: const TextStyle(fontSize: 14, color: Color(0xFF1E293B)),
+      style: TextStyle(fontSize: 14, color: Theme.of(context).colorScheme.onSurface),
       decoration: _inputDecoration(label, hint),
       validator: validator,
     );
@@ -859,14 +859,14 @@ class _AdminProductFormScreenState extends State<AdminProductFormScreen> with Si
   Widget _buildItemTextField({required String label, required String? initVal, bool isNum = false, required Function(String) onChanged, String? Function(String?)? validator}) {
     return TextFormField(
       initialValue: initVal,
-      style: const TextStyle(fontSize: 13, color: Color(0xFF1E293B)),
+      style: TextStyle(fontSize: 13, color: Theme.of(context).colorScheme.onSurface),
       keyboardType: isNum ? TextInputType.number : TextInputType.text,
       decoration: InputDecoration(
         labelText: label,
         isDense: true,
         contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-        enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: const BorderSide(color: Color(0xFFE2E8F0))),
+        enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: BorderSide(color: Theme.of(context).colorScheme.onSurface)),
       ),
       onChanged: onChanged,
       validator: validator,

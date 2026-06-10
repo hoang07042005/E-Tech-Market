@@ -182,137 +182,147 @@ class _TabbedProductCard extends StatelessWidget {
 
     return Material(
       color: Theme.of(context).colorScheme.surface,
-      borderRadius: BorderRadius.circular(10),
+      borderRadius: BorderRadius.circular(5),
       clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: onTap,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Expanded(
-              flex: 7,
-              child: Container(
-                color: Theme.of(context).colorScheme.surfaceContainerLow,
-                child: Stack(
-                  children: [
-                    Positioned.fill(
-                      child: Padding(
-                        padding: const EdgeInsets.all(10),
-                        child: imageUrl.isEmpty
-                            ? _buildFallback(context)
-                            : Image.network(
-                                imageUrl,
-                                fit: BoxFit.contain,
-                                errorBuilder: (_, __, ___) => _buildFallback(context),
-                              ),
-                      ),
-                    ),
-                    Positioned(
-                      top: 8,
-                      right: 8,
-                      child: Material(
-                        color: Theme.of(context).colorScheme.surface,
-                        shape: const CircleBorder(),
-                        child: InkWell(
-                          onTap: onToggleWishlist,
-                          customBorder: const CircleBorder(),
-                          child: Padding(
-                            padding: const EdgeInsets.all(6),
-                            child: Icon(
-                              isWished ? Icons.favorite : Icons.favorite_border,
-                              color: isWished ? _brandColor : Theme.of(context).colorScheme.onSurfaceVariant,
-                              size: 16,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
+        child: Container(
+          decoration: BoxDecoration(
+            border: Border.all(
+              color: Color.alphaBlend(
+                Theme.of(context).colorScheme.outline.withOpacity(0.3), 
+                Theme.of(context).colorScheme.surface,                
               ),
             ),
-            Expanded(
-              flex: 6,
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(12, 12, 12, 12),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      name,
-                      style: TextStyle(
-                        color: Theme.of(context).colorScheme.onSurface,
-                        fontSize: 13,
-                        fontWeight: FontWeight.w800,
-                      ),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    const SizedBox(height: 6),
-                    Row(
-                      children: [
-                        Text(
-                          '${_formatPrice(displayPrice)} đ',
-                          style: TextStyle(
-                            color: Color(0xFFEF7A45),
-                            fontSize: 13,
-                            fontWeight: FontWeight.w800,
-                          ),
+            borderRadius: BorderRadius.circular(5),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Expanded(
+                flex: 7,
+                child: Container(
+                  child: Stack(
+                    children: [
+                      Positioned.fill(
+                        child: Padding(
+                          padding: const EdgeInsets.all(0),
+                          child: imageUrl.isEmpty
+                              ? _buildFallback(context)
+                              : Image.network(
+                                  imageUrl,
+                                  fit: BoxFit.contain,
+                                  errorBuilder: (_, __, ___) => _buildFallback(context),
+                                ),
                         ),
-                        if (oldPrice != null && oldPrice > displayPrice) ...[
-                          const SizedBox(width: 6),
-                          Text(
-                            '${_formatPrice(oldPrice)} đ',
-                            style: TextStyle(
-                              color: Theme.of(context).colorScheme.onSurfaceVariant,
-                              fontSize: 10,
-                              decoration: TextDecoration.lineThrough,
+                      ),
+                      Positioned(
+                        top: 8,
+                        right: 8,
+                        child: Material(
+                          color: Theme.of(context).colorScheme.surface,
+                          shape: const CircleBorder(),
+                          child: InkWell(
+                            onTap: onToggleWishlist,
+                            customBorder: const CircleBorder(),
+                            child: Padding(
+                              padding: const EdgeInsets.all(6),
+                              child: Icon(
+                                isWished ? Icons.favorite : Icons.favorite_border,
+                                color: isWished ? _brandColor : Theme.of(context).colorScheme.onSurfaceVariant,
+                                size: 16,
+                              ),
                             ),
                           ),
-                        ],
-                      ],
-                    ),
-                    const SizedBox(height: 8),
-                    Expanded(
-                      child: Text(
-                        product['short_description']?.toString() ?? '',
-                        style: TextStyle(
-                          color: Theme.of(context).colorScheme.onSurfaceVariant,
-                          fontSize: 11,
-                          height: 1.3,
                         ),
-                        maxLines: 3,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              Expanded(
+                flex: 6,
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(12, 12, 12, 12),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        name,
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.onSurface,
+                          fontSize: 13,
+                          fontWeight: FontWeight.w800,
+                        ),
+                        maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                       ),
-                    ),
-                    const SizedBox(height: 8),
-                    SizedBox(
-                        width: double.infinity,
-                        height: 30,
-                        child: ElevatedButton(
-                          onPressed: onAddToCart, 
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: _brandColor,
-                            foregroundColor: Theme.of(context).colorScheme.surface,
-                            elevation: 0,
-                            padding: EdgeInsets.zero,
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(4)),
-                          ),
-                          child: const Text(
-                            'THÊM VÀO GIỎ',
+                      const SizedBox(height: 6),
+                      Row(
+                        children: [
+                          Text(
+                            '${_formatPrice(displayPrice)} đ',
                             style: TextStyle(
-                                fontSize: 10,
-                                fontWeight: FontWeight.w800,
-                                letterSpacing: 0.4),
+                              color: Color(0xFFEF7A45),
+                              fontSize: 13,
+                              fontWeight: FontWeight.w800,
+                            ),
                           ),
+                          if (oldPrice != null && oldPrice > displayPrice) ...[
+                            const SizedBox(width: 6),
+                            Text(
+                              '${_formatPrice(oldPrice)} đ',
+                              style: TextStyle(
+                                color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                fontSize: 10,
+                                decoration: TextDecoration.lineThrough,
+                              ),
+                            ),
+                          ],
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      Expanded(
+                        child: Text(
+                          product['short_description']?.toString() ?? '',
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.onSurfaceVariant,
+                            fontSize: 11,
+                            height: 1.3,
+                          ),
+                          maxLines: 3,
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ),
-                  ],
+                      const SizedBox(height: 8),
+                      SizedBox(
+                          width: double.infinity,
+                          height: 30,
+                          child: ElevatedButton(
+                            onPressed: onAddToCart, 
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: _brandColor,
+                              foregroundColor: Theme.of(context).colorScheme.surface,
+                              elevation: 0,
+                              padding: EdgeInsets.zero,
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(4)),
+                            ),
+                            child: const Text(
+                              'THÊM VÀO GIỎ',
+                              style: TextStyle(
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.w800,
+                                  letterSpacing: 0.4),
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

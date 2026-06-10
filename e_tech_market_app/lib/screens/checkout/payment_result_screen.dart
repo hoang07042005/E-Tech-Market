@@ -17,14 +17,17 @@ class PaymentResultScreen extends StatelessWidget {
     final code = orderCode.isNotEmpty ? orderCode : '#$orderId';
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        backgroundColor: Colors.white,
+        backgroundColor: Theme.of(context).colorScheme.surface,
         elevation: 0,
         actions: [
           IconButton(
-            icon: const Icon(Icons.close, color: Colors.black),
+            icon: Icon(
+              Icons.close, 
+              color: Theme.of(context).colorScheme.onSurface, // Tự động đổi màu theo Sáng/Tối
+            ),
             onPressed: () {
               if (isSuccess) {
                 Navigator.popUntil(context, (route) => route.isFirst);
@@ -98,25 +101,27 @@ class PaymentResultScreen extends StatelessWidget {
                 width: double.infinity,
                 padding: const EdgeInsets.symmetric(vertical: 16),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFF8FAFC),
+                  color: Theme.of(context).colorScheme.surface,
                   borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: const Color(0xFFE2E8F0)),
+                  border: Border.all(
+                    color: Theme.of(context).colorScheme.onSurface.withOpacity(0.1)
+                  ),
                 ),
                 child: Column(
                   children: [
-                    const Text(
+                    Text(
                       'Mã đơn hàng',
                       style: TextStyle(
-                        color: Color(0xFF64748B),
+                        color: Theme.of(context).colorScheme.onSurface,
                         fontSize: 14,
                       ),
                     ),
                     const SizedBox(height: 8),
                     Text(
                       code,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontWeight: FontWeight.w900,
-                        color: Color(0xFF0F172A),
+                        color: Theme.of(context).colorScheme.onSurface,
                         fontSize: 20,
                       ),
                     ),
