@@ -43,13 +43,13 @@ class _ComplaintPolicyScreenState extends State<ComplaintPolicyScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Chính sách khiếu nại'),
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.black,
+        title: const Text('Chính sách khiếu nại', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+        backgroundColor: Theme.of(context).colorScheme.surface,
+        foregroundColor: Theme.of(context).colorScheme.onSurface,
         elevation: 0,
       ),
       body: Container(
-        color: const Color(0xFFF7F4F0),
+        color: Theme.of(context).colorScheme.surface,
         child: SafeArea(
           child: SingleChildScrollView(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
@@ -77,9 +77,9 @@ class _ComplaintPolicyScreenState extends State<ComplaintPolicyScreen> {
                       const SizedBox(height: 12),
                       Text('Giải quyết khiếu nại', style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold, color: _accent)),
                       const SizedBox(height: 8),
-                      const Text(
+                      Text(
                         'Tại E-Tech Market Official, sự hài lòng của bạn là ưu tiên hàng đầu. Chúng tôi cam kết lắng nghe và giải quyết mọi vướng mắc một cách công bằng, nhanh chóng và minh bạch nhất.',
-                        style: TextStyle(fontSize: 14, color: Color(0xFF6B7280)),
+                        style: TextStyle(fontSize: 14, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7)),
                       ),
                       const SizedBox(height: 12),
                       Row(
@@ -87,10 +87,10 @@ class _ComplaintPolicyScreenState extends State<ComplaintPolicyScreen> {
                           Container(
                             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                             decoration: BoxDecoration(
-                              color: const Color(0xFFF3E8FF),
+                              color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
                               borderRadius: BorderRadius.circular(999),
                             ),
-                            child: Row(children: const [Icon(Icons.update, size: 14), SizedBox(width: 6), Text('Cập nhật lần cuối: 24/05/2024', style: TextStyle(fontSize: 12))]),
+                            child: Row(children: [Icon(Icons.update, size: 14, color: Theme.of(context).colorScheme.primary), SizedBox(width: 6), Text('Cập nhật lần cuối: 24/05/2024', style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7)))]),
                           ),
                         ],
                       ),
@@ -173,7 +173,7 @@ class _ComplaintPolicyScreenState extends State<ComplaintPolicyScreen> {
           padding: const EdgeInsets.all(14),
           decoration: BoxDecoration(border: const Border(top: BorderSide(color: Color(0xB5F37706), width: 1)),),
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            const Text('QUY TRÌNH GIẢI QUYẾT', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: Color(0xFF6B7280))),
+            Text('QUY TRÌNH GIẢI QUYẾT', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7))),
             const SizedBox(height: 8),
             Text('Quy trình giải quyết khiếu nại', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800, color: _accent)),
             const SizedBox(height: 12),
@@ -277,9 +277,9 @@ class _ProcessStepCard extends StatelessWidget {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(borderRadius: BorderRadius.circular(12), border: Border.all(color: const Color(0xFFF3E6DE)), color: const Color(0xFFFDF7F3)),
+      decoration: BoxDecoration(borderRadius: BorderRadius.circular(12), border: Border.all(color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.3)), color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1)),
       child: Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
-        CircleAvatar(radius: 18, backgroundColor: const Color(0xFFFEEBC8), child: Text('$stepNumber', style: const TextStyle(color: Color(0xFF7C2E00), fontWeight: FontWeight.w700))),
+        CircleAvatar(radius: 18, backgroundColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.3), child: Text('$stepNumber', style: TextStyle(color: Theme.of(context).colorScheme.primary, fontWeight: FontWeight.w700))),
         const SizedBox(height: 8),
         Text(title, style: const TextStyle(fontWeight: FontWeight.w800)),
         const SizedBox(height: 6),
@@ -298,11 +298,11 @@ class _ContactRow extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(color: const Color(0xFFF7FAFC), borderRadius: BorderRadius.circular(8)),
+      decoration: BoxDecoration(color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(8)),
       child: Row(children: [
-        Container(padding: const EdgeInsets.all(8), decoration: BoxDecoration(color: const Color(0xFFFFF7ED), borderRadius: BorderRadius.circular(8)), child: Icon(icon, size: 20, color: const Color(0xFF92400E))),
+        Container(padding: const EdgeInsets.all(8), decoration: BoxDecoration(color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.3), borderRadius: BorderRadius.circular(8)), child: Icon(icon, size: 20, color: Theme.of(context).colorScheme.primary)),
         const SizedBox(width: 12),
-        Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(label, style: const TextStyle(color: Color(0xFF6B7280), fontSize: 12, fontWeight: FontWeight.w700)), Text(value, style: const TextStyle(fontWeight: FontWeight.w700))])),
+        Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(label, style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7), fontSize: 12, fontWeight: FontWeight.w700)), Text(value, style: const TextStyle(fontWeight: FontWeight.w700))])),
       ]),
     );
   }

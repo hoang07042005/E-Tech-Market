@@ -53,13 +53,13 @@ class _VoucherWarehouseScreenState extends State<VoucherWarehouseScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Kho Voucher'),
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.black,
+        title: const Text('Kho Voucher', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18) ),
+        backgroundColor: Theme.of(context).colorScheme.surface,
+        foregroundColor: Theme.of(context).colorScheme.onSurface,
         elevation: 0,
       ),
       body: Container(
-        color: const Color(0xFFFAF1EB),
+        color: Theme.of(context).colorScheme.surface,
         padding: const EdgeInsets.all(16),
         child: _loading
             ? const Center(child: CircularProgressIndicator())
@@ -82,7 +82,7 @@ class _VoucherWarehouseScreenState extends State<VoucherWarehouseScreen> {
                             return Padding(
                               padding: const EdgeInsets.only(bottom: 12),
                               child: Container(
-                                decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(12)),
+                                decoration: BoxDecoration(color: Theme.of(context).colorScheme.surface, borderRadius: BorderRadius.circular(12), border: Border.all(color: Theme.of(context).colorScheme.outline, width: 0.5)),
                                 padding: const EdgeInsets.all(12),
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,

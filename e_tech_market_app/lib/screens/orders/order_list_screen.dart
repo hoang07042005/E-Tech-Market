@@ -125,8 +125,8 @@ class _OrderListScreenState extends State<OrderListScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.black,
+        backgroundColor: Theme.of(context).colorScheme.surface,
+        foregroundColor: Theme.of(context).colorScheme.onSurface,
         elevation: 0,
         title: Row(
           children: [
@@ -140,7 +140,7 @@ class _OrderListScreenState extends State<OrderListScreen> {
         ),
       ),
       body: Container(
-        color: const Color(0xFFFFFFFF),
+        color: Theme.of(context).colorScheme.surface,
         child: RefreshIndicator(
           onRefresh: () => _loadOrders(page: _page),
           child: _loading
@@ -161,11 +161,11 @@ class _OrderListScreenState extends State<OrderListScreen> {
                           padding: const EdgeInsets.all(24),
                           children: [
                             const SizedBox(height: 40),
-                            const Icon(Icons.receipt_long_outlined, size: 72, color: Colors.grey),
+                            Icon(Icons.receipt_long_outlined, size: 72, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.4)),
                             const SizedBox(height: 24),
                             const Text('Bạn chưa có đơn hàng nào.', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                             const SizedBox(height: 12),
-                            const Text('Mua sắm ngay để tạo đơn hàng đầu tiên.', style: TextStyle(color: Colors.grey)),
+                            Text('Mua s?m ngay d? t?o don h�ng d?u ti�n.', style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6))),
                           ],
                         )
                       : ListView(
@@ -204,7 +204,7 @@ class _OrderListScreenState extends State<OrderListScreen> {
             Expanded(
               child: Container(
                 height: 48,
-                decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(12)),
+                decoration: BoxDecoration(color: Theme.of(context).colorScheme.surfaceContainerHighest, borderRadius: BorderRadius.circular(12)),
                 child: TextField(
                   autofocus: true,
                   decoration: const InputDecoration(
@@ -225,7 +225,7 @@ class _OrderListScreenState extends State<OrderListScreen> {
               }),
               child: Container(
                 padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(12)),
+                decoration: BoxDecoration(color: Theme.of(context).colorScheme.surfaceContainerHighest, borderRadius: BorderRadius.circular(12)),
                 child: const Icon(Icons.close, size: 20),
               ),
             )
@@ -240,7 +240,7 @@ class _OrderListScreenState extends State<OrderListScreen> {
   Widget _buildStatusChips() {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(16)),
+      decoration: BoxDecoration(color: Theme.of(context).colorScheme.surface, borderRadius: BorderRadius.circular(5)),
       child: Row(
         children: [
           const Text('Trạng thái:', style: TextStyle(fontWeight: FontWeight.w600)),
@@ -279,13 +279,13 @@ class _OrderListScreenState extends State<OrderListScreen> {
   Widget _statusChip(String value, String label) {
     final selected = _statusFilter == value;
     return ChoiceChip(
-      label: Text(label, style: TextStyle(color: selected ? Colors.white : Colors.black, fontSize: 13)),
+      label: Text(label, style: TextStyle(color: selected ? Theme.of(context).colorScheme.onPrimary : Theme.of(context).colorScheme.surface, fontSize: 13)),
       selected: selected,
       onSelected: (_) => setState(() => _statusFilter = value),
       selectedColor: const Color(0xFFF26522),
-      backgroundColor: Colors.grey.shade200,
+      backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
       side: BorderSide.none,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
       showCheckmark: false,
     );
   }
@@ -297,7 +297,7 @@ class _OrderListScreenState extends State<OrderListScreen> {
     final code = order['order_code']?.toString() ?? '#$id';
     final date = _formatDate(order['created_at']?.toString());
     // Đã sửa đổi: Sửa lỗi NetworkUtils.formatPrice không định nghĩa thành hàm _formatMoney cục bộ
-    final finalPrice = _formatMoney(order['total_final_price']);
+    final finalPrice = _formatMoney(order['subtotal_amount']);
     final status = (order['status'] ?? '').toString().toLowerCase();
     final meta = _statusMeta(status);
 
@@ -320,8 +320,9 @@ class _OrderListScreenState extends State<OrderListScreen> {
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
+        color: Theme.of(context).colorScheme.surface,
+        borderRadius: BorderRadius.circular(5),
+        border: Border.all(color: Theme.of(context).colorScheme.outline, width: 0.5,),
         boxShadow: [
           BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 12, offset: const Offset(0, 4)),
         ],
@@ -346,27 +347,27 @@ class _OrderListScreenState extends State<OrderListScreen> {
                     ],
                   ),
                   const SizedBox(height: 4),
-                  Text('Ngày đặt: $date', style: const TextStyle(color: Colors.grey, fontSize: 12)),
-                  const Divider(height: 24),
+                  Text('Ngày đặt: $date', style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6), fontSize: 12)),
+                  // const Divider(height: 24),
                   Row(
                     children: [
                       if (prodImg.isNotEmpty)
                         ClipRRect(
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(5),
                           child: Image.network(
                             prodImg,
                             width: 64,
                             height: 64,
                             fit: BoxFit.cover,
-                            errorBuilder: (_, __, ___) => Container(color: Colors.grey.shade100, width: 64, height: 64, child: const Icon(Icons.image_not_supported, color: Colors.grey)),
+                            errorBuilder: (_, __, ___) => Container(color: Theme.of(context).colorScheme.surfaceContainerHighest, width: 64, height: 64, child: Icon(Icons.image_not_supported, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.4))),
                           ),
                         )
                       else
                         Container(
                           width: 64,
                           height: 64,
-                          decoration: BoxDecoration(color: Colors.grey.shade100, borderRadius: BorderRadius.circular(12)),
-                          child: const Icon(Icons.image_not_supported, color: Colors.grey),
+                          decoration: BoxDecoration(color: Theme.of(context).colorScheme.surfaceContainerHighest, borderRadius: BorderRadius.circular(12)),
+                          child: Icon(Icons.image_not_supported, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.4)),
                         ),
                       const SizedBox(width: 12),
                       Expanded(
@@ -375,7 +376,7 @@ class _OrderListScreenState extends State<OrderListScreen> {
                           children: [
                             Text(prodName, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14), maxLines: 2, overflow: TextOverflow.ellipsis),
                             const SizedBox(height: 4),
-                            Text('Số lượng: $prodQty', style: const TextStyle(color: Colors.grey, fontSize: 13)),
+                            Text('Số lượng: $prodQty', style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6), fontSize: 13)),
                           ],
                         ),
                       ),
@@ -385,10 +386,10 @@ class _OrderListScreenState extends State<OrderListScreen> {
                     const SizedBox(height: 8),
                     Align(
                       alignment: Alignment.center,
-                      child: Text('và ${items.length - 1} sản phẩm khác', style: const TextStyle(color: Colors.grey, fontSize: 12, fontStyle: FontStyle.italic)),
+                      child: Text('và ${items.length - 1} sản phẩm khác', style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6), fontSize: 12, fontStyle: FontStyle.italic)),
                     ),
                   ],
-                  const Divider(height: 24),
+                  // const Divider(height: 24),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -411,7 +412,7 @@ class _OrderListScreenState extends State<OrderListScreen> {
                           minimumSize: Size.zero,
                           tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                         ),
-                        child: const Text('Xem chi tiết', style: TextStyle(color: Colors.black54)),
+                        child: Text('Xem chi tiết', style: TextStyle(color: Theme.of(context).colorScheme.primary)),
                       )
                     ],
                   ),

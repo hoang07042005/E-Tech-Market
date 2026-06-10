@@ -124,17 +124,17 @@ class _AdminProductVariantDetailScreenState extends State<AdminProductVariantDet
             slivers: [
               // Header
               SliverAppBar(
-                backgroundColor: Colors.white,
+                backgroundColor: Theme.of(context).colorScheme.surface,
                 elevation: 1,
                 pinned: true,
                 leading: IconButton(
-                  icon: const Icon(Icons.arrow_back, color: Colors.black),
+                  icon: Icon(Icons.arrow_back, color: Theme.of(context).colorScheme.onSurface),
                   onPressed: () => Navigator.pop(context),
                 ),
                 title: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(p['name'] ?? '', style: const TextStyle(color: Colors.black, fontSize: 16, fontWeight: FontWeight.bold)),
+                    Text(p['name'] ?? '', style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 16, fontWeight: FontWeight.bold)),
                     const SizedBox(height: 4),
                     Row(
                       children: [
@@ -286,13 +286,13 @@ class _AdminProductVariantDetailScreenState extends State<AdminProductVariantDet
                           const SizedBox(height: 8),
                           Container(
                             padding: const EdgeInsets.all(12),
-                            decoration: BoxDecoration(color: Colors.grey[50]!, borderRadius: BorderRadius.circular(6)),
-                            child: Text(p['description'], style: const TextStyle(fontSize: 13, color: Colors.black87)),
+                            decoration: BoxDecoration(color: Theme.of(context).colorScheme.surface, borderRadius: BorderRadius.circular(5)),
+                            child: Text(p['description'], style: TextStyle(fontSize: 13, color: Theme.of(context).colorScheme.onSurface)),
                           ),
                           const SizedBox(height: 12),
                         ],
                         if (faqs.isNotEmpty) ...[
-                          Text('Câu hỏi thường gặp (${faqs.length})', style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Colors.grey)),
+                          Text('Câu hỏi thường gặp (${faqs.length})', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Theme.of(context).colorScheme.onSurface)),
                           const SizedBox(height: 8),
                           Column(
                             children: faqs
@@ -305,7 +305,7 @@ class _AdminProductVariantDetailScreenState extends State<AdminProductVariantDet
                                         children: [
                                           Text('Q: ${faq['question']}', style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Colors.blue)),
                                           const SizedBox(height: 8),
-                                          Text('${faq['answer']}', style: const TextStyle(fontSize: 12, color: Colors.black87)),
+                                          Text('${faq['answer']}', style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.onSurface)),
                                         ],
                                       ),
                                     ))
@@ -330,9 +330,9 @@ class _AdminProductVariantDetailScreenState extends State<AdminProductVariantDet
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Colors.white,
-        border: Border.all(color: Colors.grey[200]!),
-        borderRadius: BorderRadius.circular(8),
+        color: Theme.of(context).colorScheme.surface,
+        border: Border.all(color: Theme.of(context).colorScheme.onSurface, width: 0.5),
+        borderRadius: BorderRadius.circular(5),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -532,7 +532,7 @@ class _AdminProductVariantDetailScreenState extends State<AdminProductVariantDet
             Table(
               border: TableBorder(
                 horizontalInside: BorderSide(color: Colors.grey[200]!),
-                bottom: BorderSide(color: Colors.grey[200]!),
+                
               ),
               columnWidths: const {0: FlexColumnWidth(1), 1: FlexColumnWidth(1.5)},
               children: (group['specs'] as List)
@@ -540,11 +540,11 @@ class _AdminProductVariantDetailScreenState extends State<AdminProductVariantDet
                         children: [
                           Padding(
                             padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 4),
-                            child: Text(spec['spec_key'] ?? '', style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500, color: Colors.black87)),
+                            child: Text(spec['spec_key'] ?? '', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w500, color: Theme.of(context).colorScheme.onSurface)),
                           ),
                           Padding(
                             padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 4),
-                            child: Text('${spec['spec_value'] ?? ''} ${spec['spec_unit'] ?? ''}'.trim(), style: const TextStyle(fontSize: 12, color: Colors.grey)),
+                            child: Text('${spec['spec_value'] ?? ''} ${spec['spec_unit'] ?? ''}'.trim(), style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.onSurface)),
                           ),
                         ],
                       ))

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import '../../utils/network_utils.dart';
-import '../../utils/app_snackbar.dart';
 import 'clause/terms_screen.dart';
 import '../orders/order_list_screen.dart';
 import 'security/security_screen.dart';
@@ -92,23 +91,25 @@ class AccountScreen extends StatelessWidget {
             // Name and Email
             Text(
               name,
-              style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Color(0xFF1E293B)),
+              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.onSurface),
             ),
             const SizedBox(height: 4),
             Text(
               email,
-              style: const TextStyle(fontSize: 14, color: Colors.grey),
+              style: TextStyle(fontSize: 14, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6)),
             ),
             
             const SizedBox(height: 32),
 
             // --- TÀI KHOẢN ---
             _buildMenuSection(
-              title: 'TÀI KHOẢN',
+                context: context,
+                title: 'TÀI KHOẢN',
               
               children: [
                 // Thông tin cá nhân: Màu Xanh Dương (Tin cậy)
                 _buildMenuItem(
+                  context,
                   Icons.person_outline, 
                   'Thông tin cá nhân', 
                   const Color(0xFFE0F2FE), 
@@ -119,6 +120,7 @@ class AccountScreen extends StatelessWidget {
                 ),
                 // Đơn hàng: Màu Vàng Cam (Trạng thái giao nhận, vận chuyển)
                 _buildMenuItem(
+                  context,
                   Icons.receipt_long_outlined, 
                   'Đơn hàng', 
                   const Color(0xFFFEF3C7), 
@@ -129,6 +131,7 @@ class AccountScreen extends StatelessWidget {
                 ),
                 // Sản phẩm yêu thích: Màu Hồng/Đỏ (Yêu thích, tim)
                 _buildMenuItem(
+                  context,
                   Icons.favorite_outline, 
                   'Sản phẩm yêu thích', 
                   const Color(0xFFFCE7F3), 
@@ -139,6 +142,7 @@ class AccountScreen extends StatelessWidget {
                 ),
                 // Kho voucher: Màu Tím (Ưu đãi, sự kiện đặc biệt)
                 _buildMenuItem(
+                  context,
                   Icons.local_activity_outlined, 
                   'Kho voucher', 
                   const Color(0xFFF3E8FF), 
@@ -154,10 +158,12 @@ class AccountScreen extends StatelessWidget {
 
             // --- VỀ E-TECH MARKET ---
             _buildMenuSection(
-              title: 'VỀ E-TECH MARKET',
+                context: context,
+                title: 'VỀ E-TECH MARKET',
               children: [
                 // Giới thiệu: Màu Lam Ngọc/Teal (Thông tin doanh nghiệp)
                 _buildMenuItem(
+                  context,
                   Icons.info_outline, 
                   'Giới thiệu', 
                   const Color(0xFFE0F2F1), 
@@ -168,6 +174,7 @@ class AccountScreen extends StatelessWidget {
                 ),
                 // Liên hệ & Hỗ trợ: Màu Xanh Lá (Tổng đài, hỗ trợ trực tuyến năng động)
                 _buildMenuItem(
+                  context,
                   Icons.headset_mic_outlined, 
                   'Liên hệ & Hỗ trợ', 
                   const Color(0xFFDCFCE7), 
@@ -183,10 +190,12 @@ class AccountScreen extends StatelessWidget {
             
             // --- THIẾT LẬP ---
             _buildMenuSection(
-              title: 'THIẾT LẬP',
+                context: context,
+                title: 'THIẾT LẬP',
               children: [
                 // Bảo mật: Màu Xanh Khiên/Xanh Chàm (An toàn, bảo mật)
                 _buildMenuItem(
+                  context,
                   Icons.security_outlined, 
                   'Bảo mật', 
                   const Color(0xFFE0E7FF), 
@@ -197,6 +206,7 @@ class AccountScreen extends StatelessWidget {
                 ),
                 // Các điều khoản: Màu Cam Đất (Văn bản pháp lý, lưu ý)
                 _buildMenuItem(
+                  context,
                   Icons.article_outlined, 
                   'Các điều khoản', 
                   const Color(0xFFFFEDD5), 
@@ -207,6 +217,7 @@ class AccountScreen extends StatelessWidget {
                 ),
                 // Cài đặt: Màu Xám Slate (Hệ thống, cấu hình)
                 _buildMenuItem(
+                  context,
                   Icons.settings_outlined, 
                   'Cài đặt', 
                   const Color(0xFFF1F5F9), 
@@ -223,10 +234,12 @@ class AccountScreen extends StatelessWidget {
             // --- QUẢN TRỊ (ADMIN) ---
             if (isAdmin) ...[
               _buildMenuSection(
+                context: context,
                 title: 'QUẢN TRỊ',
                 children: [
                   // Tồn kho: Màu Nâu/Hổ phách (Kho bãi, lưu trữ)
                   _buildMenuItem(
+                  context,
                     Icons.inventory_2_outlined, 
                     'Tồn kho (Admin)', 
                     const Color(0xFFFEF3C7), 
@@ -237,6 +250,7 @@ class AccountScreen extends StatelessWidget {
                   ),
                   // Quản lý đơn hàng: Màu Cyan/Xanh biển sáng (Xử lý luồng đơn)
                   _buildMenuItem(
+                  context,
                     Icons.assignment_outlined, 
                     'Quản lý đơn hàng (Admin)', 
                     const Color(0xFFE0F7FA), 
@@ -247,6 +261,7 @@ class AccountScreen extends StatelessWidget {
                   ),
                   // Quản lý sản phẩm: Màu Xanh lục đậm (Sản phẩm, hàng hóa)
                   _buildMenuItem(
+                  context,
                     Icons.inventory_outlined, 
                     'Quản lý sản phẩm (Admin)', 
                     const Color(0xFFE8F5E9), 
@@ -288,10 +303,10 @@ class AccountScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildMenuSection({required String title, required List<Widget> children}) {
+  Widget _buildMenuSection({required BuildContext context, required String title, required List<Widget> children}) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(20),
       ),
       child: Column(
@@ -304,7 +319,7 @@ class AccountScreen extends StatelessWidget {
               style: TextStyle(
                 fontSize: 12,
                 fontWeight: FontWeight.bold,
-                color: Colors.grey.shade600,
+                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
                 letterSpacing: 1,
               ),
             ),
@@ -317,6 +332,7 @@ class AccountScreen extends StatelessWidget {
   }
 
   Widget _buildMenuItem(
+    BuildContext context,
     IconData icon, 
     String title, 
     Color bgColor, 
@@ -341,10 +357,10 @@ class AccountScreen extends StatelessWidget {
             Expanded(
               child: Text(
                 title,
-                style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 15, color: Color(0xFF1E293B)),
+                style: TextStyle(fontWeight: FontWeight.w600, fontSize: 15, color: Theme.of(context).colorScheme.onSurface),
               ),
             ),
-            const Icon(Icons.chevron_right, color: Colors.grey, size: 20),
+            Icon(Icons.chevron_right, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5), size: 20),
           ],
         ),
       ),

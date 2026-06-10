@@ -146,11 +146,11 @@ class _WishlistScreenState extends State<WishlistScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
+      backgroundColor: Theme.of(context).colorScheme.surface,
       appBar: AppBar(
         title: const Text('Sản phẩm yêu thích', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.black,
+        backgroundColor: Theme.of(context).colorScheme.surface,
+        foregroundColor: Theme.of(context).colorScheme.onSurface,
         elevation: 1,
       ),
       body: _isLoading
@@ -215,7 +215,7 @@ class _WishlistScreenState extends State<WishlistScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text('Danh sách yêu thích', style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Color(0xFF1E293B))),
+                          Text('Danh sách yêu thích', style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.onSurface)),
                           const SizedBox(height: 4),
                           RichText(
                             text: TextSpan(
@@ -249,13 +249,13 @@ class _WishlistScreenState extends State<WishlistScreen> {
                   width: double.infinity,
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    gradient: const LinearGradient(colors: [Color(0xFFFFF7ED), Color(0xFFFFEDD5)]),
+                    gradient:  LinearGradient(colors:  [Theme.of(context).colorScheme.onSurface.withOpacity(0.1), Theme.of(context).colorScheme.primary.withOpacity(0.05)]),
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(color: const Color(0xFFFDBA74).withOpacity(0.5)),
                   ),
                   child: Row(
                     children: [
-                      const Icon(Icons.local_offer, color: Color(0xFFEA580C)),
+                      Icon(Icons.local_offer, color: Theme.of(context).colorScheme.primary),
                       const SizedBox(width: 12),
                       Expanded(
                         child: Column(
@@ -287,11 +287,10 @@ class _WishlistScreenState extends State<WishlistScreen> {
                             if (selected) setState(() => _selectedCatId = facet['id'] as String);
                           },
                           selectedColor: const Color(0xFFF26522),
+                          backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
                           labelStyle: TextStyle(color: isSelected ? Colors.white : const Color(0xFF64748B), fontWeight: FontWeight.bold),
-                          backgroundColor: Colors.white,
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20),
-                            side: BorderSide(color: isSelected ? const Color(0xFFF26522) : const Color(0xFFE2E8F0)),
+                            borderRadius: BorderRadius.circular(5),
                           ),
                         ),
                       );
@@ -324,7 +323,7 @@ class _WishlistScreenState extends State<WishlistScreen> {
                 final imageUrl = _resolveProductImageUrl(product);
                 final displayPrice = _getDisplayPrice(product);
 
-                return _buildGridCard(product, productId, imageUrl, displayPrice, index);
+                return _buildGridCard(context, product, productId, imageUrl, displayPrice, index);
               },
               childCount: _filteredItems.length,
             ),
@@ -380,7 +379,7 @@ class _WishlistScreenState extends State<WishlistScreen> {
     );
   }
 
-  Widget _buildGridCard(Map<String, dynamic> product, int productId, String imageUrl, double price, int index) {
+  Widget _buildGridCard(BuildContext context, Map<String, dynamic> product, int productId, String imageUrl, double price, int index) {
     return GestureDetector(
       onTap: () {
         Navigator.push(
@@ -395,9 +394,9 @@ class _WishlistScreenState extends State<WishlistScreen> {
       },
       child: Container(
         decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: const Color(0xFFF1F5F9)),
+          color: Theme.of(context).colorScheme.surface,
+          borderRadius: BorderRadius.circular(5),
+          border: Border.all(color: Theme.of(context).colorScheme.outline, width: 0.5),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -406,11 +405,11 @@ class _WishlistScreenState extends State<WishlistScreen> {
             Stack(
               children: [
                 ClipRRect(
-                  borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
+                  borderRadius: const BorderRadius.vertical(top: Radius.circular(5)),
                   child: Container(
                     height: 140,
                     width: double.infinity,
-                    color: Colors.white,
+                    color: Theme.of(context).colorScheme.surface,
                     child: imageUrl.isEmpty
                         ? const Icon(Icons.image, color: Color(0xFFE2E8F0), size: 40)
                         : Image.network(imageUrl, fit: BoxFit.contain),
@@ -423,8 +422,8 @@ class _WishlistScreenState extends State<WishlistScreen> {
                     onTap: () => _removeWishlist(productId, index),
                     child: Container(
                       padding: const EdgeInsets.all(6),
-                      decoration: const BoxDecoration(
-                        color: Colors.white,
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).colorScheme.surface,
                         shape: BoxShape.circle,
                         boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 4)],
                       ),
@@ -444,7 +443,7 @@ class _WishlistScreenState extends State<WishlistScreen> {
                   children: [
                     Text(
                       (product['brand'] ?? 'TECH').toString().toUpperCase(),
-                      style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Color(0xFF64748B)),
+                      style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.outline),
                     ),
                     const SizedBox(height: 4),
                     Expanded(
@@ -452,14 +451,14 @@ class _WishlistScreenState extends State<WishlistScreen> {
                         product['name'] ?? '',
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Color(0xFF0F172A), height: 1.3),
+                        style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Theme.of(context).colorScheme.onSurface, height: 1.3),
                       ),
                     ),
-                    const SizedBox(height: 4),
-                    Text(
-                      '${_formatPrice(price)} đ',
-                      style: const TextStyle(color: Color(0xFFF26522), fontWeight: FontWeight.bold, fontSize: 15),
-                    ),
+                    // const SizedBox(height: 4),
+                    // Text(
+                    //   '${_formatPrice(price)} đ',
+                    //   style: const TextStyle(color: Color(0xFFF26522), fontWeight: FontWeight.bold, fontSize: 15),
+                    // ),
                     const SizedBox(height: 10),
                     SizedBox(
                       width: double.infinity,
@@ -475,12 +474,12 @@ class _WishlistScreenState extends State<WishlistScreen> {
                           }
                         },
                         style: OutlinedButton.styleFrom(
-                          foregroundColor: const Color(0xFFF26522),
-                          side: const BorderSide(color: Color(0xFFF26522)),
+                          foregroundColor: Theme.of(context).colorScheme.primary,
+                          side: BorderSide(color: Theme.of(context).colorScheme.primary),
                           padding: const EdgeInsets.symmetric(vertical: 8),
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                         ),
-                        icon: const Icon(Icons.shopping_cart_outlined, size: 16),
+                        icon: Icon(Icons.shopping_cart_outlined, size: 16, color: Theme.of(context).colorScheme.primary),
                         label: const Text('Thêm giỏ', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
                       ),
                     )

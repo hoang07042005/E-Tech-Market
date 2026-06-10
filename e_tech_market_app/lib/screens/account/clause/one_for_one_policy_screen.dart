@@ -46,12 +46,12 @@ class _OneForOnePolicyScreenState extends State<OneForOnePolicyScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Chính sách 1 đổi 1'),
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.black,
+        backgroundColor: Theme.of(context).colorScheme.surface,
+        foregroundColor: Theme.of(context).colorScheme.onSurface,
         elevation: 0,
       ),
       body: Container(
-        color: const Color(0xFFF9F2E9),
+        color: Theme.of(context).colorScheme.surface,
         child: SafeArea(
           child: SingleChildScrollView(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
@@ -101,9 +101,9 @@ class _OneForOnePolicyScreenState extends State<OneForOnePolicyScreen> {
             style: TextStyle(fontSize: 26, fontWeight: FontWeight.w900, color: _accent),
           ),
           const SizedBox(height: 12),
-          const Text(
+          Text(
             'Tại E-Tech Market Official, sự hài lòng của bạn là ưu tiên hàng đầu. Chúng tôi cam kết mang lại trải nghiệm mua sắm an tâm tuyệt đối với chính sách đổi mới sản phẩm linh hoạt, đảm bảo quyền lợi tối đa cho khách hàng.',
-            style: TextStyle(fontSize: 14, color: Color(0xFF57534E), height: 1.7),
+            style: TextStyle(fontSize: 14, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7), height: 1.7),
           ),
           const SizedBox(height: 16),
           ClipRRect(
@@ -123,12 +123,12 @@ class _OneForOnePolicyScreenState extends State<OneForOnePolicyScreen> {
   Widget _buildConditionCard() {
     return Container(
       width: double.infinity,
-      decoration: BoxDecoration(border: const Border(top: BorderSide(color: Color(0xB5F37706), width: 1)),),
+      decoration: BoxDecoration(border:  Border(top: BorderSide(color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.3), width: 1)),),
       padding: const EdgeInsets.all(18),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('Điều kiện áp dụng', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: Color(0xFF1E293B))),
+          Text('Điều kiện áp dụng', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7))),
           const SizedBox(height: 14),
           _ConditionTile(
             icon: Icons.settings,
@@ -155,24 +155,24 @@ class _OneForOnePolicyScreenState extends State<OneForOnePolicyScreen> {
   Widget _buildDurationCard() {
     return Container(
       width: double.infinity,
-      decoration: BoxDecoration(border: const Border(top: BorderSide(color: Color(0xB5F37706), width: 1)),),
+      decoration: BoxDecoration(border:  Border(top: BorderSide(color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.3), width: 1)),),
       padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 24),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('Thời hạn áp dụng', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: Colors.black87)),
+          Text('Thời hạn áp dụng', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7))),
           const SizedBox(height: 8),
-          const Text('An tâm trải nghiệm sản phẩm trong thời gian dài', style: TextStyle(color: Colors.black54, height: 1.5)),
+          Text('An tâm trải nghiệm sản phẩm trong thời gian dài', style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7), height: 1.5)),
           const SizedBox(height: 18),
           Container(
             width: double.infinity,
-            decoration: BoxDecoration(color: const Color(0x33FFFFFF), borderRadius: BorderRadius.circular(16), border: Border.all(color: const Color(0x80FFFFFF))),
+            decoration: BoxDecoration(color:  Theme.of(context).colorScheme.surface, borderRadius: BorderRadius.circular(16), border: Border.all(color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.3))),
             padding: const EdgeInsets.symmetric(vertical: 20),
             child: Column(
-              children: const [
-                Text('30 Ngày', style: TextStyle(fontSize: 32, fontWeight: FontWeight.w900, color: Colors.black87)),
-                SizedBox(height: 8),
-                Text('Kể từ ngày mua hàng', style: TextStyle(color: Colors.black54)),
+              children: [
+                Text('30 Ngày', style: TextStyle(fontSize: 32, fontWeight: FontWeight.w900, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7))),
+                const SizedBox(height: 8),
+                Text('Kể từ ngày mua hàng', style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7))),
               ],
             ),
           ),
@@ -184,12 +184,12 @@ class _OneForOnePolicyScreenState extends State<OneForOnePolicyScreen> {
   Widget _buildProcessCard() {
     return Container(
       width: double.infinity,
-      decoration: BoxDecoration(border: const Border(top: BorderSide(color: Color(0xB5F37706), width: 1)),),
+      decoration: BoxDecoration(border:  Border(top: BorderSide(color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.3), width: 1)),),
       padding: const EdgeInsets.all(18),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('Quy trình đổi trả', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: Color(0xFF1E293B))),
+          Text('Quy trình đổi trả', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7))),
           const SizedBox(height: 16),
           const _ProcessStepItem(step: 1, title: 'Tiếp nhận', subtitle: 'Liên hệ hotline hoặc ghé cửa hàng trực tiếp.'),
           const SizedBox(height: 12),
@@ -206,12 +206,12 @@ class _OneForOnePolicyScreenState extends State<OneForOnePolicyScreen> {
   Widget _buildExcludedCard() {
     return Container(
       width: double.infinity,
-      decoration: BoxDecoration(border: const Border(top: BorderSide(color: Color(0xB5F37706), width: 1)),),
+      decoration: BoxDecoration(border: Border(top: BorderSide(color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.3), width: 1)),),
       padding: const EdgeInsets.all(18),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('Trường hợp từ chối', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: Color(0xFF1E293B))),
+          Text('Trường hợp từ chối', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7))),
           const SizedBox(height: 14),
           const _ExcludedTile(title: 'Lỗi do người dùng', description: 'Sản phẩm bị vào nước, rơi vỡ, cháy nổ do sử dụng sai nguồn điện.'),
           const SizedBox(height: 10),
@@ -228,23 +228,23 @@ class _OneForOnePolicyScreenState extends State<OneForOnePolicyScreen> {
   Widget _buildSupportCard(BuildContext context) {
     return Container(
       width: double.infinity,
-      decoration: BoxDecoration(border: const Border(top: BorderSide(color: Color(0xB5F37706), width: 1)),),
+      decoration: BoxDecoration(border: Border(top: BorderSide(color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.3), width: 1)),),
       padding: const EdgeInsets.all(18),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Container(
           width: 48,
           height: 48,
-          decoration: const BoxDecoration(shape: BoxShape.circle, color: Color(0xFF7C2E00)),
-          child: const Center(child: Icon(Icons.support_agent, color: Colors.white, size: 24)),
+          decoration: BoxDecoration(shape: BoxShape.circle, color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.3)),
+          child: Icon(Icons.support_agent, color: Theme.of(context).colorScheme.primary, size: 24),
         ),
         const SizedBox(height: 14),
-        const Text('Cần hỗ trợ?', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800)),
+        Text('Cần hỗ trợ?', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7))),
         const SizedBox(height: 8),
-        const Text('Chúng tôi luôn sẵn sàng giải đáp mọi thắc mắc của bạn 24/7.', style: TextStyle(color: Color(0xFF57534E), height: 1.6)),
+        Text('Chúng tôi luôn sẵn sàng giải đáp mọi thắc mắc của bạn 24/7.', style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7), height: 1.6)),
         const SizedBox(height: 18),
-        const Text('HOTLINE MIỄN PHÍ', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, letterSpacing: 0.8, color: Color(0xFF7C2E00))),
+        Text('HOTLINE MIỄN PHÍ', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, letterSpacing: 0.8, color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.3))),
         const SizedBox(height: 8),
-        Text(_storeContact?['contact_phone']?.toString().trim().isNotEmpty == true ? _storeContact!['contact_phone'] : '1900 8888', style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w900, color: Color(0xFF7C2E00))),
+        Text(_storeContact?['contact_phone']?.toString().trim().isNotEmpty == true ? _storeContact!['contact_phone'] : '1900 8888', style: TextStyle(fontSize: 22, fontWeight: FontWeight.w900, color: Theme.of(context).colorScheme.primary)),
         const SizedBox(height: 16),
         SizedBox(
           width: double.infinity,
@@ -265,10 +265,10 @@ class _OneForOnePolicyScreenState extends State<OneForOnePolicyScreen> {
   Widget _buildMoreInfoCard() {
     return Container(
       width: double.infinity,
-      decoration: BoxDecoration(border: const Border(top: BorderSide(color: Color(0xB5F37706), width: 1)),),
+      decoration: BoxDecoration(border: Border(top: BorderSide(color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.3), width: 1)),),
       padding: const EdgeInsets.all(18),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        const Text('Thông tin khác', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: Color(0xFF1E293B))),
+        Text('Thông tin khác', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7))),
         const SizedBox(height: 12),
         _NavTile(label: 'Chính sách hoàn tiền'),
         const SizedBox(height: 10),
@@ -289,21 +289,21 @@ class _ConditionTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: BoxDecoration(color: const Color(0xFFF8F5F1), borderRadius: BorderRadius.circular(14)),
+      decoration: BoxDecoration(color: Theme.of(context).colorScheme.surface, borderRadius: BorderRadius.circular(14)),
       padding: const EdgeInsets.all(14),
       child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Container(
           width: 38,
           height: 38,
-          decoration: BoxDecoration(color: const Color(0xFFFFF2E7), borderRadius: BorderRadius.circular(12)),
-          child: Icon(icon, color: const Color(0xFF92400E), size: 20),
+          decoration: BoxDecoration(color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.3), borderRadius: BorderRadius.circular(12)),
+          child: Icon(icon, color: Theme.of(context).colorScheme.primary, size: 20),
         ),
         const SizedBox(width: 12),
         Expanded(
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Text(title, style: const TextStyle(fontWeight: FontWeight.w700)),
             const SizedBox(height: 6),
-            Text(description, style: const TextStyle(color: Color(0xFF57534E), height: 1.6)),
+            Text(description, style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7), height: 1.6)),
           ]),
         ),
       ]),
@@ -321,14 +321,14 @@ class _ProcessStepItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      decoration: BoxDecoration(color: const Color(0xFFFCF5EC), borderRadius: BorderRadius.circular(16), border: Border.all(color: const Color(0xFFEDD2AC))),
+      decoration: BoxDecoration(color:  Theme.of(context).colorScheme.surface, borderRadius: BorderRadius.circular(16), border: Border.all(color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.3))),
       padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 16),
       child: Column(children: [
-        CircleAvatar(radius: 18, backgroundColor: const Color(0xFF7C2E00), child: Text('$step', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w800))),
+        CircleAvatar(radius: 18, backgroundColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.3), child: Text('$step', style: TextStyle(color: Theme.of(context).colorScheme.primary, fontWeight: FontWeight.w800))),
         const SizedBox(height: 12),
-        Text(title, style: const TextStyle(fontWeight: FontWeight.w700)),
+        Text(title, style: TextStyle(fontWeight: FontWeight.w700, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7))),
         const SizedBox(height: 6),
-        Text(subtitle, textAlign: TextAlign.center, style: const TextStyle(color: Color(0xFF57534E), height: 1.5)),
+        Text(subtitle, textAlign: TextAlign.center, style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7), height: 1.5)),
       ]),
     );
   }
@@ -342,16 +342,16 @@ class _ExcludedTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: BoxDecoration(color: const Color(0xFFF7F3F1), borderRadius: BorderRadius.circular(14), border: Border.all(color: const Color(0xFFF1D7CB))),
+      decoration: BoxDecoration(color: Theme.of(context).colorScheme.surface, borderRadius: BorderRadius.circular(14), border: Border.all(color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.3))),
       padding: const EdgeInsets.all(14),
       child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        const Icon(Icons.close, color: Color(0xFFB45309), size: 20),
+        Icon(Icons.close, color: Theme.of(context).colorScheme.primary, size: 20),
         const SizedBox(width: 12),
         Expanded(
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text(title, style: const TextStyle(fontWeight: FontWeight.w700)),
+            Text(title, style: TextStyle(fontWeight: FontWeight.w700, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7))),
             const SizedBox(height: 6),
-            Text(description, style: const TextStyle(color: Color(0xFF57534E), height: 1.6)),
+            Text(description, style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7), height: 1.6)),
           ]),
         ),
       ]),
@@ -366,11 +366,11 @@ class _NavTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: BoxDecoration(color: const Color(0xFFF9F5F1), borderRadius: BorderRadius.circular(14), border: Border.all(color: const Color(0xFFE7E2DD))),
+      decoration: BoxDecoration(color: Theme.of(context).colorScheme.surface, borderRadius: BorderRadius.circular(14), border: Border.all(color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.3))),
       child: ListTile(
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        title: Text(label, style: const TextStyle(fontWeight: FontWeight.w700)),
-        trailing: const Icon(Icons.chevron_right, color: Color(0xFF7C2E00)),
+        title: Text(label, style: TextStyle(fontWeight: FontWeight.w700, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7))),
+        trailing: Icon(Icons.chevron_right, color: Theme.of(context).colorScheme.primary),
         onTap: () {},
       ),
     );

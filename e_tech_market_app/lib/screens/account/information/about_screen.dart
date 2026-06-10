@@ -7,11 +7,11 @@ class AboutScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
+      backgroundColor: Theme.of(context).colorScheme.surface,
       appBar: AppBar(
         title: const Text('Giới thiệu', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.black,
+        backgroundColor: Theme.of(context).colorScheme.surface,
+        foregroundColor: Theme.of(context).colorScheme.onSurface,
         elevation: 1,
       ),
       body: SingleChildScrollView(
@@ -113,11 +113,11 @@ class AboutScreen extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Container(
                 padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(16)),
+                decoration: BoxDecoration(color: Theme.of(context).colorScheme.surface, borderRadius: BorderRadius.circular(16), border: Border.all(color: Theme.of(context).colorScheme.outline, width: 0.5)),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text('Câu Chuyện Thương Hiệu', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 18, color: Color(0xFF0F172A))),
+                    Text('Câu Chuyện Thương Hiệu', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 18, color: Theme.of(context).colorScheme.onSurface)),
                     const SizedBox(height: 16),
                     ClipRRect(
                       borderRadius: BorderRadius.circular(12),
@@ -130,14 +130,14 @@ class AboutScreen extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 16),
-                    const Text(
+                    Text(
                       'E-Tech Market được sinh ra từ niềm đam mê công nghệ và khát khao mang trải nghiệm mua sắm minh bạch, chính xác đến với khách hàng. Chúng tôi tuyển chọn sản phẩm theo tiêu chí hiệu năng – độ bền – giá trị sử dụng thực tế.',
-                      style: TextStyle(color: Color(0xFF475569), fontSize: 14, height: 1.6),
+                      style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 14, height: 1.6),
                     ),
                     const SizedBox(height: 12),
-                    const Text(
+                    Text(
                       'Chúng tôi tin rằng công nghệ không chỉ là thiết bị, mà là cách cuộc sống trở nên thuận tiện hơn. Mỗi sản phẩm trên kệ E-Tech Market đều được chọn để giải quyết một nhu cầu rõ ràng, tối ưu cho từng nhóm người dùng.',
-                      style: TextStyle(color: Color(0xFF475569), fontSize: 14, height: 1.6),
+                      style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 14, height: 1.6),
                     ),
                   ],
                 ),
@@ -152,10 +152,10 @@ class AboutScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('Giá Trị Cốt Lõi', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 18, color: Color(0xFF0F172A))),
+                   Text('Giá Trị Cốt Lõi', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 18, color: Theme.of(context).colorScheme.onSurface)),
                   const SizedBox(height: 4),
-                  const Text('Những nguyên tắc định hình bản sắc và cách chúng tôi phục vụ khách hàng.',
-                      style: TextStyle(color: Color(0xFF64748B), fontSize: 13)),
+                  Text('Những nguyên tắc định hình bản sắc và cách chúng tôi phục vụ khách hàng.',
+                      style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 13)),
                   const SizedBox(height: 16),
                   Row(
                     children: [

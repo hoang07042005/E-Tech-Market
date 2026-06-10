@@ -16,13 +16,13 @@ class TermsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Các điều khoản'),
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.black,
-        elevation: 0,
+        title: const Text('Các điều khoản',style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18) ),
+        backgroundColor: Theme.of(context).colorScheme.surface,
+        foregroundColor: Theme.of(context).colorScheme.onSurface,
+        elevation: 1,
       ),
       body: Container(
-        color: const Color(0xFFFFFFFF),
+        color: Theme.of(context).colorScheme.surface,
         child: SafeArea(
           child: SingleChildScrollView(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
@@ -33,8 +33,8 @@ class TermsScreen extends StatelessWidget {
                 Container(
                   width: double.infinity,
                   decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(16),
+                    color: Theme.of(context).colorScheme.surface,
+                    borderRadius: BorderRadius.circular(5),
                   ),
                   padding: const EdgeInsets.all(20),
                   child: Column(
@@ -44,8 +44,8 @@ class TermsScreen extends StatelessWidget {
                         width: 60,
                         height: 60,
                         decoration: BoxDecoration(
-                          color: const Color(0xFFFFF7ED),
-                          borderRadius: BorderRadius.circular(14),
+                          color: Theme.of(context).colorScheme.surface,
+                          borderRadius: BorderRadius.circular(5),
                         ),
                         child: const Icon(Icons.gavel, size: 32, color: Color(0xFF92400E)),
                       ),
@@ -167,9 +167,8 @@ class _PolicyTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: const Color(0xFFF3E5D4)),
+        color: Theme.of(context).colorScheme.surface,
+        borderRadius: BorderRadius.circular(5),
       ),
       child: InkWell(
         onTap: onTap,
@@ -191,14 +190,14 @@ class _PolicyTile extends StatelessWidget {
               Expanded(
                 child: Text(
                   title,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.w600,
-                    color: Color(0xFF1F2937),
+                    color: Theme.of(context).colorScheme.onSurface
                   ),
                 ),
               ),
-              const Icon(Icons.chevron_right, color: Color(0xFF92400E), size: 22),
+               Icon(Icons.chevron_right, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5), size: 22),
             ],
           ),
         ),

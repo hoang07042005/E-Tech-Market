@@ -275,11 +275,11 @@ class _AdminProductScreenState extends State<AdminProductScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       appBar: AppBar(
         elevation: 0,
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.black87,
+        backgroundColor: Theme.of(context).colorScheme.surface,
+        foregroundColor: Theme.of(context).colorScheme.onSurface,
         title: const Text('Danh sách sản phẩm', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
         actions: [
           IconButton(
@@ -406,9 +406,9 @@ class _AdminProductScreenState extends State<AdminProductScreen> {
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: Colors.grey[50],
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.grey[200]!),
+        color: Theme.of(context).colorScheme.surface,
+        borderRadius: BorderRadius.circular(5),
+        border: Border.all(color: Theme.of(context).colorScheme.outline, width: 0.5),
       ),
       child: Column(
         children: [
@@ -418,10 +418,10 @@ class _AdminProductScreenState extends State<AdminProductScreen> {
               hintText: 'Tìm theo Tên, Brand, Loại...',
               prefixIcon: const Icon(Icons.search, size: 22, color: Colors.grey),
               filled: true,
-              fillColor: Colors.white,
+              fillColor: Theme.of(context).colorScheme.surface,
               contentPadding: const EdgeInsets.symmetric(vertical: 0),
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: Colors.grey[300]!)),
-              enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: Colors.grey[200]!)),
+              border: OutlineInputBorder(borderRadius: BorderRadius.circular(5), borderSide: BorderSide(color: Theme.of(context).colorScheme.onSurface, width: 0.5)),
+              enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(5), borderSide: BorderSide(color: Theme.of(context).colorScheme.onSurface, width: 0.5)),
             ),
             onChanged: (v) {
               setState(() {
@@ -440,17 +440,17 @@ class _AdminProductScreenState extends State<AdminProductScreen> {
                   decoration: InputDecoration(
                     labelText: 'Danh mục',
                     filled: true,
-                    fillColor: Colors.white,
+                    fillColor: Theme.of(context).colorScheme.surface,
                     contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide(color: Colors.grey[300]!)),
-                    enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: Colors.grey[200]!)),
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(5), borderSide: BorderSide(color: Theme.of(context).colorScheme.onSurface, width: 0.5)),
+                    enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(5), borderSide: BorderSide(color: Theme.of(context).colorScheme.onSurface, width: 0.5)),
                   ),
                   items: [
                     const DropdownMenuItem(value: 'all', child: Text('Tất cả', style: TextStyle(fontSize: 13))),
                     ..._categories.map((c) => DropdownMenuItem(
                           value: c['id'],
                           child: Text(c['name'], overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 13)),
-                        ))
+                        ))  
                   ],
                   onChanged: (val) {
                     setState(() {
@@ -469,10 +469,10 @@ class _AdminProductScreenState extends State<AdminProductScreen> {
                   decoration: InputDecoration(
                     labelText: 'Thương hiệu',
                     filled: true,
-                    fillColor: Colors.white,
+                    fillColor: Theme.of(context).colorScheme.surface,
                     contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide(color: Colors.grey[300]!)),
-                    enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: Colors.grey[200]!)),
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(5), borderSide: BorderSide(color: Theme.of(context).colorScheme.onSurface, width: 0.5)),
+                    enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(5), borderSide: BorderSide(color: Theme.of(context).colorScheme.onSurface, width: 0.5)),
                   ),
                   items: [
                     const DropdownMenuItem(value: 'all', child: Text('Tất cả', style: TextStyle(fontSize: 13))),
@@ -503,10 +503,10 @@ class _AdminProductScreenState extends State<AdminProductScreen> {
 
                     labelText: 'Trạng thái hiển thị',
                     filled: true,
-                    fillColor: Colors.white,
+                    fillColor: Theme.of(context).colorScheme.surface,
                     contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide(color: Colors.grey[300]!)),
-                    enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: Colors.grey[200]!)),
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(5), borderSide: BorderSide(color: Theme.of(context).colorScheme.onSurface, width: 0.5)),
+                    enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(5), borderSide: BorderSide(color: Theme.of(context).colorScheme.onSurface, width: 0.5)),
                   ),
                   items: const [
                     DropdownMenuItem(value: 'all', child: Text('Tất cả trạng thái', style: TextStyle(fontSize: 13))),
@@ -546,10 +546,9 @@ class _AdminProductScreenState extends State<AdminProductScreen> {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: Colors.grey[100]!),
-        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.01), blurRadius: 4, offset: const Offset(0, 1))],
+        color: Theme.of(context).colorScheme.surface,
+        borderRadius: BorderRadius.circular(5),
+        border: Border.all(color: Theme.of(context).colorScheme.onSurface, width: 0.5),
       ),
       child: Padding(
         padding: const EdgeInsets.all(12.0),
@@ -566,7 +565,7 @@ class _AdminProductScreenState extends State<AdminProductScreen> {
                   decoration: BoxDecoration(
                     color: Colors.grey[50],
                     borderRadius: BorderRadius.circular(10),
-                    border: Border.all(color: Colors.grey[100]!),
+                    border: Border.all(color: Theme.of(context).colorScheme.onSurface, width: 0.5),
                   ),
                   child: p['main_image_url'] != null
                       ? ClipRRect(
@@ -597,7 +596,7 @@ class _AdminProductScreenState extends State<AdminProductScreen> {
                               padding: const EdgeInsets.only(right: 65), // Tránh đè trực tiếp lên chữ đầu tiên của Tên
                               child: Text(
                                 p['name'] ?? 'Không tên',
-                                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: Colors.black87),
+                                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: Theme.of(context).colorScheme.onSurface),
                                 maxLines: 2,
                                 overflow: TextOverflow.ellipsis,
                               ),

@@ -52,13 +52,13 @@ static const String _baseUrl = String.fromEnvironment('API_BASE_URL', defaultVal
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Chính sách hoàn tiền'),
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.black,
-        elevation: 0,
+        title: const Text('Chính sách hoàn tiền',style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+        backgroundColor: Theme.of(context).colorScheme.surface,
+        foregroundColor: Theme.of(context).colorScheme.onSurface,
+        elevation: 1,
       ),
       body: Container(
-        color: _background,
+        color: Theme.of(context).colorScheme.surface,
         child: SafeArea(
           child: SingleChildScrollView(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
@@ -99,15 +99,15 @@ static const String _baseUrl = String.fromEnvironment('API_BASE_URL', defaultVal
         children: [
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-            decoration: BoxDecoration(color: const Color(0xFFFDF2E7), borderRadius: BorderRadius.circular(999)),
-            child: const Text('CHÍNH SÁCH & HỖ TRỢ KHÁCH HÀNG', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: Color(0xFF92400E))),
+            decoration: BoxDecoration(color:  Theme.of(context).colorScheme.primary.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(999)),
+            child:  Text('CHÍNH SÁCH & HỖ TRỢ KHÁCH HÀNG', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: Theme.of(context).colorScheme.primary)),
           ),
           const SizedBox(height: 14),
-          Text('Chính sách hoàn tiền', style: TextStyle(fontSize: 28, fontWeight: FontWeight.w900, color: _accent)),
+          Text('Chính sách hoàn tiền', style: TextStyle(fontSize: 28, fontWeight: FontWeight.w900, color: Theme.of(context).colorScheme.primary)),
           const SizedBox(height: 10),
-          const Text(
+          Text(
             'Cập nhật lần cuối: 24 tháng 5, 2024. E-Tech Market Official cam kết hỗ trợ khách hàng một cách minh bạch, nhanh chóng và rõ ràng.',
-            style: TextStyle(fontSize: 14, color: Color(0xFF57534E), height: 1.7),
+            style: TextStyle(fontSize: 14, color:  Theme.of(context).colorScheme.primary.withValues(alpha: 0.7), height: 1.7),
           ),
           const SizedBox(height: 18),
           Row(
@@ -149,16 +149,16 @@ static const String _baseUrl = String.fromEnvironment('API_BASE_URL', defaultVal
 
     return Container(
       width: double.infinity,
-      decoration: BoxDecoration(border: const Border(top: BorderSide(color: Color(0xB5F37706), width: 1)),),
+      decoration: BoxDecoration(border:  Border(top: BorderSide(color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.3), width: 1)),),
       padding: const EdgeInsets.all(18),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Row(children: [
-          const _CardIcon(icon: Icons.check_circle, backgroundColor: Color(0xFFFEF3C7), iconColor: Color(0xFF92400E)),
+           _CardIcon(icon: Icons.check_circle, backgroundColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1), iconColor: Theme.of(context).colorScheme.primary),
           const SizedBox(width: 12),
-          Expanded(child: Text('1. Điều kiện hoàn tiền', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: _mutedDark))),
+          Expanded(child: Text('1. Điều kiện hoàn tiền', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: Theme.of(context).colorScheme.primary))),
         ]),
         const SizedBox(height: 12),
-        const Text('Chúng tôi cam kết mang lại sự hài lòng tuyệt đối. Bạn có thể yêu cầu hoàn tiền nếu đáp ứng các tiêu chí sau:', style: TextStyle(color: Color(0xFF57534E), height: 1.6)),
+        Text('Chúng tôi cam kết mang lại sự hài lòng tuyệt đối. Bạn có thể yêu cầu hoàn tiền nếu đáp ứng các tiêu chí sau:', style: TextStyle(color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.7), height: 1.6)),
         const SizedBox(height: 14),
         Column(children: eligibleItems.map((text) => _BulletRow(text)).toList()),
       ]),
@@ -168,16 +168,16 @@ static const String _baseUrl = String.fromEnvironment('API_BASE_URL', defaultVal
   Widget _buildExcludedCard() {
     return Container(
       width: double.infinity,
-      decoration: BoxDecoration(border: const Border(top: BorderSide(color: Color(0xB5F37706), width: 1)),),
+      decoration: BoxDecoration(border:  Border(top: BorderSide(color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.3), width: 1)),),
       padding: const EdgeInsets.all(18),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Row(children: const [
-          _CardIcon(icon: Icons.close, backgroundColor: Color(0xFFFEE2E2), iconColor: Color(0xFFB45309)),
-          SizedBox(width: 12),
-          Expanded(child: Text('2. Sản phẩm không áp dụng', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: _mutedDark))),
+        Row(children: [
+           _CardIcon(icon: Icons.close, backgroundColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1), iconColor: Theme.of(context).colorScheme.primary),
+          const SizedBox(width: 12),
+          Expanded(child: Text('2. Sản phẩm không áp dụng', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: Theme.of(context).colorScheme.primary))),
         ]),
         const SizedBox(height: 12),
-        const Text('Một số mặt hàng đặc thù sẽ không được áp dụng chính sách hoàn tiền trừ khi có lỗi kỹ thuật nghiêm trọng:', style: TextStyle(color: Color(0xFF57534E), height: 1.6)),
+        Text('Một số mặt hàng đặc thù sẽ không được áp dụng chính sách hoàn tiền trừ khi có lỗi kỹ thuật nghiêm trọng:', style: TextStyle(color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.7), height: 1.6)),
         const SizedBox(height: 16),
         const _ExcludedItemCard(icon: Icons.apps, title: 'Phần mềm & Key', description: 'Các loại mã kích hoạt đã được gửi hoặc sử dụng.'),
         const SizedBox(height: 12),
@@ -193,13 +193,13 @@ static const String _baseUrl = String.fromEnvironment('API_BASE_URL', defaultVal
   Widget _buildProcessCard() {
     return Container(
       width: double.infinity,
-      decoration: BoxDecoration(border: const Border(top: BorderSide(color: Color(0xB5F37706), width: 1)),),
+      decoration: BoxDecoration(border:  Border(top: BorderSide(color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.3), width: 1)),),
       padding: const EdgeInsets.all(18),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Row(children: const [
-          _CardIcon(icon: Icons.add, backgroundColor: Color(0xFFFEEBC8), iconColor: Color(0xFF92400E)),
-          SizedBox(width: 12),
-          Expanded(child: Text('3. Quy trình hoàn tiền', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: _mutedDark))),
+        Row(children: [
+           _CardIcon(icon: Icons.add, backgroundColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1), iconColor: Theme.of(context).colorScheme.primary),
+          const SizedBox(width: 12),
+          Expanded(child: Text('3. Quy trình hoàn tiền', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: Theme.of(context).colorScheme.primary))),
         ]),
         const SizedBox(height: 16),
         const _ProcessStep(step: 1, title: 'Gửi yêu cầu', subtitle: 'Liên hệ bộ phận CSKH qua email hoặc Hotline để thông báo tình trạng sản phẩm.'),
@@ -222,18 +222,18 @@ static const String _baseUrl = String.fromEnvironment('API_BASE_URL', defaultVal
 
     return Container(
       width: double.infinity,
-      decoration: BoxDecoration(border: const Border(top: BorderSide(color: Color(0xB5F37706), width: 1)),),
+      decoration: BoxDecoration(border:  Border(top: BorderSide(color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.3), width: 1)),),
       padding: const EdgeInsets.all(18),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Row(children: const [
-          _CardIcon(icon: Icons.table_chart, backgroundColor: Color(0xFFEFE7FF), iconColor: Color(0xFF5B21B6)),
-          SizedBox(width: 12),
-          Expanded(child: Text('4. Phương thức và thời gian', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: _mutedDark))),
+        Row(children: [
+           _CardIcon(icon: Icons.table_chart, backgroundColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1), iconColor: Theme.of(context).colorScheme.primary),
+          const SizedBox(width: 12),
+          Expanded(child: Text('4. Phương thức và thời gian', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: Theme.of(context).colorScheme.primary))),
         ]),
         const SizedBox(height: 16),
         Table(
           columnWidths: const {0: FlexColumnWidth(1.2), 1: FlexColumnWidth(1.0)},
-          border: TableBorder.all(color: const Color(0xFFF3F4F6)),
+          border: TableBorder.all(color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1)),
           children: [
             const TableRow(children: [
               Padding(padding: EdgeInsets.symmetric(vertical: 12, horizontal: 12), child: Text('Phương thức hoàn tiền', style: TextStyle(fontWeight: FontWeight.w700))),
@@ -241,11 +241,11 @@ static const String _baseUrl = String.fromEnvironment('API_BASE_URL', defaultVal
             ]),
             ...rows.map((row) => TableRow(children: [
                   Container(
-                    color: const Color(0xFFF9FAFB),
+                    color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
                     padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
-                    child: Text(row[0], style: const TextStyle(color: Color(0xFF1E293B))),
+                    child: Text(row[0], style: TextStyle(color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.7))),
                   ),
-                  Padding(padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 12), child: Text(row[1], style: const TextStyle(color: Color(0xFF1E293B)))),
+                  Padding(padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 12), child: Text(row[1], style: TextStyle(color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.7)))),
                 ])),
           ],
         ),
@@ -257,14 +257,14 @@ static const String _baseUrl = String.fromEnvironment('API_BASE_URL', defaultVal
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Container(
         width: double.infinity,
-        decoration: BoxDecoration(border: const Border(top: BorderSide(color: Color(0xB5F37706), width: 1)),),
+        decoration: BoxDecoration(border:  Border(top: BorderSide(color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.3), width: 1)),),
         padding: const EdgeInsets.all(18),
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          const Text('CẦN HỖ TRỢ NGAY?', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: Color(0xFF1E293B))),
+           Text('CẦN HỖ TRỢ NGAY?', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: Theme.of(context).colorScheme.primary)),
           const SizedBox(height: 12),
           const Text('Đội ngũ kỹ thuật sẵn sàng hỗ trợ', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800)),
           const SizedBox(height: 8),
-          const Text('Đội ngũ của chúng tôi luôn sẵn sàng giải đáp mọi thắc mắc về quy trình hoàn tiền, đổi trả và các vấn đề liên quan.', style: TextStyle(color: Color(0xFF57534E), height: 1.6)),
+          Text('Đội ngũ của chúng tôi luôn sẵn sàng giải đáp mọi thắc mắc về quy trình hoàn tiền, đổi trả và các vấn đề liên quan.', style: TextStyle(color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.7), height: 1.6)),
           const SizedBox(height: 16),
           _ContactRow(icon: Icons.phone_in_talk, label: _storeContact?['contact_phone']?.toString().trim().isNotEmpty == true ? _storeContact!['contact_phone'] : '1900 8888'),
           const SizedBox(height: 10),
@@ -289,10 +289,10 @@ static const String _baseUrl = String.fromEnvironment('API_BASE_URL', defaultVal
       const SizedBox(height: 16),
       Container(
         width: double.infinity,
-        decoration: BoxDecoration(border: const Border(top: BorderSide(color: Color(0xB5F37706), width: 1)),),
+        decoration: BoxDecoration(border:  Border(top: BorderSide(color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.3), width: 1)),),
         padding: const EdgeInsets.all(18),
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          const Text('Chính sách liên quan', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: Color(0xFF1E293B))),
+           Text('Chính sách liên quan', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: Theme.of(context).colorScheme.primary)),
           const SizedBox(height: 12),
           const _LinkRow(label: 'Điều khoản dịch vụ'),
           const SizedBox(height: 10),
@@ -315,12 +315,12 @@ static const String _baseUrl = String.fromEnvironment('API_BASE_URL', defaultVal
       Container(
         width: double.infinity,
         padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(border: const Border(top: BorderSide(color: Color(0xB5F37706), width: 1)),),
-        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: const [
-          Text('Customer Service Center', style: TextStyle(color: Colors.black, fontSize: 16, fontWeight: FontWeight.w700)),
-          SizedBox(height: 8),
-          Text('Chăm sóc khách hàng chuyên nghiệp, tận tâm và đáng tin cậy.', style: TextStyle(color: Colors.black54)),
-        ]),
+        decoration: BoxDecoration(border:  Border(top: BorderSide(color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.3), width: 1)),),
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+           Text('Customer Service Center', style: TextStyle(color: Theme.of(context).colorScheme.primary, fontSize: 16, fontWeight: FontWeight.w700)),
+          const SizedBox(height: 8),
+          Text('Chăm sóc khách hàng chuyên nghiệp, tận tâm và đáng tin cậy.', style: TextStyle(color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.7))),
+        ])
       ),
     ]);
   }
@@ -335,12 +335,12 @@ class _HeroStatCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Expanded(
       child: Container(
-        decoration: BoxDecoration(color: const Color(0xFFFFF7ED), borderRadius: BorderRadius.circular(16)),
+        decoration: BoxDecoration(color:  Theme.of(context).colorScheme.primary.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(16)),
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 16),
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text(value, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w900, color: Color(0xFF7C2E00))),
+          Text(value, style: TextStyle(fontSize: 20, fontWeight: FontWeight.w900, color: Theme.of(context).colorScheme.primary)),
           const SizedBox(height: 8),
-          Text(label, style: const TextStyle(fontSize: 12, color: Color(0xFF57534E), height: 1.5)),
+          Text(label, style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.7), height: 1.5)),
         ]),
       ),
     );
@@ -373,9 +373,9 @@ class _BulletRow extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),
       child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        const Padding(padding: EdgeInsets.only(top: 4), child: Icon(Icons.circle, size: 6, color: Color(0xFF7C2E00))),
+         Padding(padding: const EdgeInsets.only(top: 4), child: Icon(Icons.circle, size: 6, color: Theme.of(context).colorScheme.primary)),
         const SizedBox(width: 10),
-        Expanded(child: Text(text, style: const TextStyle(color: Color(0xFF57534E), height: 1.6))),
+        Expanded(child: Text(text, style: TextStyle(color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.7), height: 1.6))),
       ]),
     );
   }
@@ -391,21 +391,21 @@ class _ExcludedItemCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      decoration: BoxDecoration(color: const Color(0xFFF7FAFC), borderRadius: BorderRadius.circular(14), border: Border.all(color: const Color(0xFFE2E8F0))),
+      decoration: BoxDecoration(color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(14), border: Border.all(color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.3))),
       padding: const EdgeInsets.all(14),
       child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Container(
           width: 40,
           height: 40,
-          decoration: BoxDecoration(color: const Color(0xFFFEF3C7), borderRadius: BorderRadius.circular(14)),
-          child: Icon(icon, color: const Color(0xFF92400E), size: 20),
+          decoration: BoxDecoration(color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(14)),
+          child: Icon(icon, color: Theme.of(context).colorScheme.primary, size: 20),
         ),
         const SizedBox(width: 12),
         Expanded(
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text(title, style: const TextStyle(fontWeight: FontWeight.w700)),
+            Text(title, style: TextStyle(fontWeight: FontWeight.w700, color: Theme.of(context).colorScheme.primary)),
             const SizedBox(height: 6),
-            Text(description, style: const TextStyle(color: Color(0xFF57534E), height: 1.6)),
+            Text(description, style: TextStyle(color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.7), height: 1.6)),
           ]),
         ),
       ]),
@@ -420,9 +420,9 @@ class _MinorNote extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      const Icon(Icons.circle, size: 8, color: Color(0xFF7C2E00)),
+      Icon(Icons.circle, size: 8, color: Theme.of(context).colorScheme.primary),
       const SizedBox(width: 10),
-      Expanded(child: Text(text, style: const TextStyle(color: Color(0xFF57534E), height: 1.6))),
+      Expanded(child: Text(text, style: TextStyle(color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.7), height: 1.6))),
     ]);
   }
 }
@@ -437,13 +437,13 @@ class _ProcessStep extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      decoration: BoxDecoration(color: const Color(0xFFF8F2E9), borderRadius: BorderRadius.circular(16), border: Border.all(color: const Color(0xFFF3E5D4))),
+      decoration: BoxDecoration(color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(16), border: Border.all(color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.3))),
       padding: const EdgeInsets.all(14),
       child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Container(
           width: 34,
           height: 34,
-          decoration: BoxDecoration(color: const Color(0xFF7C2E00), borderRadius: BorderRadius.circular(999)),
+          decoration: BoxDecoration(color: Theme.of(context).colorScheme.primary, borderRadius: BorderRadius.circular(999)),
           child: Center(child: Text('$step', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w700))),
         ),
         const SizedBox(width: 14),
@@ -451,7 +451,7 @@ class _ProcessStep extends StatelessWidget {
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Text(title, style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 15)),
             const SizedBox(height: 6),
-            Text(subtitle, style: const TextStyle(color: Color(0xFF57534E), height: 1.6)),
+            Text(subtitle, style: TextStyle(color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.7), height: 1.6)),
           ]),
         ),
       ]),
@@ -470,11 +470,11 @@ class _ContactRow extends StatelessWidget {
       Container(
         width: 36,
         height: 36,
-        decoration: BoxDecoration(color: const Color(0xFFFFF2E7), borderRadius: BorderRadius.circular(12)),
-        child: Icon(icon, color: const Color(0xFF92400E), size: 18),
+        decoration: BoxDecoration(color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(12)),
+        child: Icon(icon, color: Theme.of(context).colorScheme.primary, size: 18),
       ),
       const SizedBox(width: 12),
-      Expanded(child: Text(label, style: const TextStyle(color: Color(0xFF1E293B)))),
+      Expanded(child: Text(label, style: TextStyle(color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.7)))),
     ]);
   }
 }
@@ -490,10 +490,10 @@ class _LinkRow extends StatelessWidget {
       child: Container(
         width: double.infinity,
         padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 14),
-        decoration: BoxDecoration(color: const Color(0xFFF7F9FC), borderRadius: BorderRadius.circular(14)),
+        decoration: BoxDecoration(color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(14)),
         child: Row(children: [
-          Expanded(child: Text(label, style: const TextStyle(fontWeight: FontWeight.w700))),
-          const Icon(Icons.chevron_right, color: Color(0xFF7C2E00)),
+          Expanded(child: Text(label, style: TextStyle(fontWeight: FontWeight.w700, color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.7)))),
+          Icon(Icons.chevron_right, color: Theme.of(context).colorScheme.primary),
         ]),
       ),
     );

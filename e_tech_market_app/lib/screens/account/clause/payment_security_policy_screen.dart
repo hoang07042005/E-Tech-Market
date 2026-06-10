@@ -42,13 +42,13 @@ class _PaymentSecurityPolicyScreenState extends State<PaymentSecurityPolicyScree
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Chính sách bảo mật thanh toán'),
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.black,
+        title: const Text('Chính sách bảo mật thanh toán',  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+        backgroundColor: Theme.of(context).colorScheme.surface,
+        foregroundColor: Theme.of(context).colorScheme.onSurface,
         elevation: 0,
       ),
       body: Container(
-        color: const Color(0xFFF7F4F0),
+        color: Theme.of(context).colorScheme.surface,
         child: SafeArea(
           child: SingleChildScrollView(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
@@ -58,16 +58,16 @@ class _PaymentSecurityPolicyScreenState extends State<PaymentSecurityPolicyScree
                 Container(
                   padding: const EdgeInsets.all(18),
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: Theme.of(context).colorScheme.surface,
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const SizedBox(height: 6),
-                      Text('Chính sách bảo mật thanh toán', style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Color(0xFF111827))),
+                      Text('Chính sách bảo mật thanh toán', style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.onSurface)),
                       const SizedBox(height: 6),
-                      const Text('Cập nhật lần cuối: 25 tháng 5, 2026', style: TextStyle(fontSize: 13, color: Color(0xFF6B7280))),
+                      Text('Cập nhật lần cuối: 25 tháng 5, 2026', style: TextStyle(fontSize: 13, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7))),
                       const SizedBox(height: 12),
                     ],
                   ),
@@ -164,16 +164,16 @@ class _Section extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: const Color(0xFFFFF7ED),
+                color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(999),
               ),
-              child: Text(number, style: const TextStyle(color: Color(0xFFF97316), fontWeight: FontWeight.bold)),
+              child: Text(number, style: TextStyle(color: Theme.of(context).colorScheme.primary, fontWeight: FontWeight.bold)),
             ),
             const SizedBox(width: 10),
             Expanded(
               child: Text(
                 title,
-                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700, color: Color(0xFF1F2937)),
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700, color: Theme.of(context).colorScheme.onSurface),
               ),
             ),
           ],

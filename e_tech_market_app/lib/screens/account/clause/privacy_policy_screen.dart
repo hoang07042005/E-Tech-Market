@@ -142,13 +142,13 @@ class _PrivacyPolicyScreenState extends State<PrivacyPolicyScreen> {
     }
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Chính sách bảo mật'),
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.black,
-        elevation: 0,
+        title: const Text('Chính sách bảo mật', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+        backgroundColor: Theme.of(context).colorScheme.surface,
+        foregroundColor: Theme.of(context).colorScheme.onSurface,
+        elevation: 1,
       ),
       body: Container(
-        color: const Color(0xFFF7F4F0),
+        color: Theme.of(context).colorScheme.surface,
         child: SafeArea(
           child: SingleChildScrollView(
             controller: _scrollController,
@@ -176,17 +176,17 @@ class _PrivacyPolicyScreenState extends State<PrivacyPolicyScreen> {
                     const SizedBox(height: 18),
                     RichText(
                       text: TextSpan(
-                        style: const TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: Color(0xFF1F2937), height: 1.05),
+                        style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.onSurface, height: 1.05),
                         children: [
-                          const TextSpan(text: 'Chính sách '),
+                          TextSpan(text: 'Chính sách ', style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
                           TextSpan(text: 'bảo mật', style: TextStyle(color: _accent)),
                         ],
                       ),
                     ),
                     const SizedBox(height: 16),
-                    const Text(
+                    Text(
                       'E-TECH MARKET cam kết đảm bảo tính toàn vẹn và minh bạch đối với dữ liệu của bạn. Chính sách này mô tả cách chúng tôi thu thập, sử dụng, lưu trữ và bảo vệ thông tin cá nhân khi bạn sử dụng ứng dụng.',
-                      style: TextStyle(fontSize: 15, color: Color(0xFF4B5563), height: 1.7),
+                      style: TextStyle(fontSize: 15, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7), height: 1.7),
                     ),
                     const SizedBox(height: 22),
                     ClipRRect(
@@ -385,11 +385,11 @@ Dữ liệu không được thu thập với mục đích không rõ hoặc vư�
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text('05. Quyền của người dùng', style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Color(0xFF1F2937))),
+                    Text('05. Quyền của người dùng', style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.onSurface)),
                     const SizedBox(height: 12),
-                    const Text(
+                    Text(
                       'Bạn có thể liên hệ chúng tôi để thực hiện các quyền sau trong phạm vi luật hiện hành và tính khả thi kỹ thuật.',
-                      style: TextStyle(fontSize: 15, color: Color(0xFF475569), height: 1.7),
+                      style: TextStyle(fontSize: 15, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7), height: 1.7),
                     ),
                     const SizedBox(height: 16),
                     ..._userRights.map((item) {
@@ -415,21 +415,21 @@ Dữ liệu không được thu thập với mục đích không rõ hoặc vư�
       key: sectionKey,
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-       border: const Border(top: BorderSide(color: Color(0xB5F37706), width: 1)),
+       border:  Border(top: BorderSide(color: Theme.of(context).colorScheme.primary, width: 0.5)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(heading, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Color(0xFF111827))),
+          Text(heading, style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.onSurface)),
           const SizedBox(height: 12),
-          Text(description, style: const TextStyle(fontSize: 15, color: Color(0xFF4B5563), height: 1.75)),
+          Text(description, style: TextStyle(fontSize: 15, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7), height: 1.75)),
           const SizedBox(height: 16),
           if (isImageSection) ...[
             ClipRRect(
               borderRadius: BorderRadius.circular(5),
               child: Container(
                 height: 160,
-                color: const Color(0xFFF1F5F9),
+                color: Theme.of(context).colorScheme.onSurface,
                 alignment: Alignment.center,
                 child: const Icon(Icons.cookie, size: 64, color: Color(0xFF94A3B8)),
               ),
@@ -456,16 +456,16 @@ class _InfoBox extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: const Color(0xFFF8FAFC),
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(5),
-        border: Border.all(color: const Color(0xFFCBD5E1)),
+        border: Border.all(color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.5)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(title, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: Color(0xFF1F2937))),
+          Text(title, style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: Theme.of(context).colorScheme.onSurface)),
           const SizedBox(height: 8),
-          Text(description, style: const TextStyle(fontSize: 14, color: Color(0xFF475569), height: 1.7)),
+          Text(description, style: TextStyle(fontSize: 14, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7), height: 1.7)),
         ],
       ),
     );
@@ -484,13 +484,13 @@ class _BulletItem extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Padding(
-            padding: EdgeInsets.only(top: 6),
-            child: Icon(Icons.circle, size: 8, color: Color(0xFFF97316)),
+          Padding(
+            padding: const EdgeInsets.only(top: 6),
+            child: Icon(Icons.circle, size: 8, color: Theme.of(context).colorScheme.primary),
           ),
           const SizedBox(width: 10),
           Expanded(
-            child: Text(text, style: const TextStyle(fontSize: 14, color: Color(0xFF475569), height: 1.7)),
+            child: Text(text, style: TextStyle(fontSize: 14, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7), height: 1.7)),
           ),
         ],
       ),
@@ -507,7 +507,7 @@ class _Paragraph extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
-      child: Text(text, style: const TextStyle(fontSize: 14, color: Color(0xFF475569), height: 1.7)),
+      child: Text(text, style: TextStyle(fontSize: 14, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7), height: 1.7)),
     );
   }
 }
@@ -524,16 +524,16 @@ class _PartnerRow extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
-        color: const Color(0xFFF8FAFC),
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(5),
-        border: Border.all(color: const Color(0xFFE5E7EB)),
+        border: Border.all(color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.5)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(partner, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Color(0xFF1F2937))),
+          Text(partner, style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.onSurface)),
           const SizedBox(height: 8),
-          Text(purpose, style: const TextStyle(fontSize: 14, color: Color(0xFF475569), height: 1.7)),
+          Text(purpose, style: TextStyle(fontSize: 14, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7), height: 1.7)),
         ],
       ),
     );
@@ -552,16 +552,16 @@ class _RightCard extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(5),
-        border: Border.all(color: const Color(0xFFE5E7EB)),
+        border: Border.all(color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.5)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(title, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Color(0xFF111827))),
+          Text(title, style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.onSurface)),
           const SizedBox(height: 8),
-          Text(description, style: const TextStyle(fontSize: 14, color: Color(0xFF475569), height: 1.7)),
+          Text(description, style: TextStyle(fontSize: 14, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7), height: 1.7)),
         ],
       ),
     );

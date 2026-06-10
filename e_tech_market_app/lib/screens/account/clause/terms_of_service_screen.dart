@@ -60,13 +60,16 @@ class _TermsOfServiceScreenState extends State<TermsOfServiceScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Điều khoản Dịch vụ'),
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.black,
+        title: const Text(
+          'Điều khoản Dịch vụ',
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+        ),
+        backgroundColor: Theme.of(context).colorScheme.surface,
+        foregroundColor: Theme.of(context).colorScheme.onSurface,
         elevation: 0,
       ),
       body: Container(
-        color: const Color(0xFFF7F4F0),
+        color: Theme.of(context).colorScheme.surface,
         child: SafeArea(
           child: SingleChildScrollView(
             controller: _scrollController,
@@ -94,22 +97,22 @@ class _TermsOfServiceScreenState extends State<TermsOfServiceScreen> {
                       const SizedBox(height: 18),
                       RichText(
                         text: TextSpan(
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 32,
                             fontWeight: FontWeight.bold,
-                            color: Color(0xFF1F2937),
+                            color: Theme.of(context).colorScheme.onSurface,
                             height: 1.05,
                           ),
                           children: [
-                            const TextSpan(text: 'Điều khoản '),
+                            TextSpan(text: 'Điều khoản ', style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
                             TextSpan(text: 'Dịch vụ', style: TextStyle(color: _accent)),
                           ],
                         ),
                       ),
                       const SizedBox(height: 14),
-                      const Text(
+                      Text(
                         'E-TECH MARKET cung cấp dịch vụ mua sắm trực tuyến với quy định rõ ràng, minh bạch và bảo vệ quyền lợi khách hàng. Vui lòng đọc kỹ trước khi sử dụng.',
-                        style: TextStyle(fontSize: 15, color: Color(0xFF475569), height: 1.75),
+                        style: TextStyle(fontSize: 15, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7), height: 1.75),
                       ),
                       const SizedBox(height: 20),
                       ClipRRect(
@@ -124,7 +127,7 @@ class _TermsOfServiceScreenState extends State<TermsOfServiceScreen> {
                                   image: NetworkImage(TermsOfServiceScreen._bannerImageUrl),
                                   fit: BoxFit.cover,
                                 ),
-                                color: const Color(0xFFF1F5F9),
+                                color: Theme.of(context).colorScheme.surface,
                               ),
                             ),
                             Container(
@@ -260,20 +263,20 @@ class _TermsOfServiceScreenState extends State<TermsOfServiceScreen> {
     return Container(
       key: sectionKey,
       padding: const EdgeInsets.all(20),
-      decoration: const BoxDecoration(
-        border: const Border(top: BorderSide(color: Color(0xB5F37706), width: 1)),
+      decoration: BoxDecoration(
+        border: Border(top: BorderSide(color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.5), width: 1)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             heading,
-            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Color(0xFF111827)),
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.onSurface),
           ),
           const SizedBox(height: 12),
           Text(
             description,
-            style: const TextStyle(fontSize: 15, color: Color(0xFF475569), height: 1.75),
+            style: TextStyle(fontSize: 15, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7), height: 1.75),
           ),
           if (children.isNotEmpty) ...[
             const SizedBox(height: 18),
@@ -304,19 +307,19 @@ class _IconCard extends StatelessWidget {
             width: 44,
             height: 44,
             decoration: BoxDecoration(
-              color: const Color(0xFFFFF1E5),
+              color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.5),
               borderRadius: BorderRadius.circular(12),
             ),
-            child: Icon(icon, size: 22, color: const Color(0xFFF97316)),
+            child: Icon(icon, size: 22, color: Theme.of(context).colorScheme.primary),
           ),
           const SizedBox(width: 14),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(title, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Color(0xFF1F2937))),
+                Text(title, style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.onSurface)),
                 const SizedBox(height: 8),
-                Text(description, style: const TextStyle(fontSize: 14, color: Color(0xFF475569), height: 1.7)),
+                Text(description, style: TextStyle(fontSize: 14, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7), height: 1.7)),
               ],
             ),
           ),
@@ -362,16 +365,16 @@ class _RiskCard extends StatelessWidget {
             width: 40,
             height: 40,
             decoration: BoxDecoration(
-              color: const Color(0xFFFEE2E2),
+              color: Theme.of(context).colorScheme.error.withValues(alpha: 0.5),
               borderRadius: BorderRadius.circular(12),
             ),
-            child: const Icon(Icons.close, size: 20, color: Color(0xFFDC2626)),
+            child: Icon(Icons.close, size: 20, color: Theme.of(context).colorScheme.error),
           ),
           const SizedBox(width: 14),
           Expanded(
             child: Text(
               title,
-              style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: Color(0xFF111827)),
+              style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: Theme.of(context).colorScheme.onSurface),
             ),
           ),
         ],

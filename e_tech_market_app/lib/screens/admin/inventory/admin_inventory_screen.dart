@@ -152,11 +152,11 @@ class _AdminInventoryScreenState extends State<AdminInventoryScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
+      backgroundColor: Theme.of(context).colorScheme.surface,
       appBar: AppBar(
         title: const Text('Quản lý tồn kho', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.black,
+        backgroundColor: Theme.of(context).colorScheme.surface,
+        foregroundColor: Theme.of(context).colorScheme.onSurface,
         elevation: 0,
         actions: [
           IconButton(
@@ -168,7 +168,7 @@ class _AdminInventoryScreenState extends State<AdminInventoryScreen> {
       body: Column(
         children: [
           Container(
-            color: Colors.white,
+            color: Theme.of(context).colorScheme.surface,
             padding: const EdgeInsets.all(16),
             child: Column(
               children: [
@@ -177,9 +177,9 @@ class _AdminInventoryScreenState extends State<AdminInventoryScreen> {
                   decoration: InputDecoration(
                     hintText: 'Tìm theo tên, biến thể hoặc SKU...',
                     prefixIcon: const Icon(Icons.search),
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(5), borderSide: BorderSide.none),
                     filled: true,
-                    fillColor: const Color(0xFFF1F5F9),
+                    fillColor: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.1),
                     isDense: true,
                   ),
                 ),
@@ -229,11 +229,10 @@ class _AdminInventoryScreenState extends State<AdminInventoryScreen> {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
             decoration: BoxDecoration(
-              // Nếu đang chọn thì nền số màu trắng đục, nếu không chọn thì nền màu xám/cam nhẹ
-              color: isSelected 
-                  ? Colors.white.withOpacity(0.25) 
-                  : (value == 'out' && count > 0 ? const Color(0xFFFEE2E2) : const Color(0xFFF1F5F9)),
-              borderRadius: BorderRadius.circular(10),
+                color: isSelected 
+                    ? Colors.white.withOpacity(0.25) 
+                    : (value == 'out' && count > 0 ?  Theme.of(context).colorScheme.error.withValues(alpha: 0.1) : Theme.of(context).colorScheme.primary.withValues(alpha: 0.1)),
+              borderRadius: BorderRadius.circular(5),
             ),
             child: Text(
               '$count',
@@ -243,7 +242,7 @@ class _AdminInventoryScreenState extends State<AdminInventoryScreen> {
                 // Đổi màu chữ động theo trạng thái của Tab
                 color: isSelected 
                     ? Colors.white 
-                    : (value == 'out' && count > 0 ? const Color(0xFFEF4444) : const Color(0xFF475569)),
+                    : (value == 'out' && count > 0 ?  Theme.of(context).colorScheme.error : Theme.of(context).colorScheme.onSurface),
               ),
             ),
           ),
@@ -255,14 +254,14 @@ class _AdminInventoryScreenState extends State<AdminInventoryScreen> {
       },
       selectedColor: const Color(0xFFF26522),
       labelStyle: TextStyle(
-        color: isSelected ? Colors.white : const Color(0xFF64748B),
+        color: isSelected ? Colors.white : Theme.of(context).colorScheme.onSurface,
         fontWeight: FontWeight.bold,
         fontSize: 13
       ),
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-        side: BorderSide(color: isSelected ? Colors.transparent : const Color(0xFFE2E8F0)),
+        borderRadius: BorderRadius.circular(5),
+        side: BorderSide(color: isSelected ? Colors.transparent : Theme.of(context).colorScheme.onSurface, width: 0.5,),
       ),
     );
   }
@@ -276,12 +275,12 @@ class _AdminInventoryScreenState extends State<AdminInventoryScreen> {
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0xFFF1F5F9)),
+        color: Theme.of(context).colorScheme.surface,
+        borderRadius: BorderRadius.circular(5),
+          border: Border.all(color: Theme.of(context).colorScheme.outline, width: 0.5,),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.02),
+            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.02),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -295,9 +294,9 @@ class _AdminInventoryScreenState extends State<AdminInventoryScreen> {
             child: Container(
               width: 80,
               height: 80,
-              color: const Color(0xFFF8FAFC),
+              color: Theme.of(context).colorScheme.surface,
               child: imageUrl.isEmpty 
-                ? const Icon(Icons.image_not_supported_outlined, color: Color(0xFFCBD5E1), size: 30) 
+                ? Icon(Icons.image_not_supported_outlined, color: Theme.of(context).colorScheme.onSurface, size: 30) 
                 : Image.network(imageUrl, fit: BoxFit.contain),
             ),
           ),
@@ -308,30 +307,30 @@ class _AdminInventoryScreenState extends State<AdminInventoryScreen> {
               children: [
                 Text(
                   item['product_name'] ?? 'Không tên',
-                  style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 15, color: Color(0xFF1E293B)),
+                  style: TextStyle(fontWeight: FontWeight.w700, fontSize: 15, color: Theme.of(context).colorScheme.onSurface),
                 ),
                 if (hasVariant) ...[
                   const SizedBox(height: 2),
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                     decoration: BoxDecoration(
-                      color: const Color(0xFFF1F5F9),
+                      color: Theme.of(context).colorScheme.surface,
                       borderRadius: BorderRadius.circular(6),
                     ),
                     child: Text(
                       'Phân loại: ${item['variant_name']}',
-                      style: const TextStyle(fontSize: 12, color: Color(0xFF475569), fontWeight: FontWeight.w500),
+                      style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.onSurface, fontWeight: FontWeight.w500),
                     ),
                   ),
                 ],
                 const SizedBox(height: 6),
                 Row(
                   children: [
-                    const Icon(Icons.qr_code_rounded, size: 14, color: Color(0xFF94A3B8)),
+                    Icon(Icons.qr_code_rounded, size: 14, color: Theme.of(context).colorScheme.onSurface),
                     const SizedBox(width: 4),
                     Text(
                       item['sku'] ?? 'Chưa cấu hình SKU',
-                      style: const TextStyle(fontSize: 12, color: Color(0xFF64748B), fontFamily: 'monospace'),
+                      style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.onSurface, fontFamily: 'monospace'),
                     ),
                   ],
                 ),
@@ -370,9 +369,9 @@ class _AdminInventoryScreenState extends State<AdminInventoryScreen> {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true, 
-      backgroundColor: Colors.white,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      backgroundColor: Theme.of(context).colorScheme.surface,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(5)),
       ),
       builder: (ctx) => Padding(
         padding: EdgeInsets.only(
@@ -391,19 +390,19 @@ class _AdminInventoryScreenState extends State<AdminInventoryScreen> {
                   height: 4,
                   margin: const EdgeInsets.only(bottom: 20),
                   decoration: BoxDecoration(
-                    color: const Color(0xFFE2E8F0),
+                    color: Theme.of(context).colorScheme.outline,
                     borderRadius: BorderRadius.circular(2),
                   ),
                 ),
               ),
-              const Text(
+             Text(
                 'Nhập thêm hàng kho',
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: Color(0xFF1E293B)),
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: Theme.of(context).colorScheme.onSurface),
               ),
               const SizedBox(height: 4),
               Text(
                 '${item['product_name']}${item['variant_name'] != null ? " (${item['variant_name']})" : ""}',
-                style: const TextStyle(fontSize: 13, color: Color(0xFF64748B), fontWeight: FontWeight.normal),
+                style: TextStyle(fontSize: 13, color: Theme.of(context).colorScheme.onSurface, fontWeight: FontWeight.normal),
               ),
               const SizedBox(height: 24),
               TextField(
@@ -413,15 +412,15 @@ class _AdminInventoryScreenState extends State<AdminInventoryScreen> {
                 decoration: InputDecoration(
                   labelText: 'Số lượng thêm vào',
                   hintText: 'Ví dụ: 10, 20, 50...',
-                  labelStyle: const TextStyle(color: Color(0xFF64748B)),
-                  floatingLabelStyle: const TextStyle(color: Color(0xFFF26522)),
+                  labelStyle:  TextStyle(color: Theme.of(context).colorScheme.onSurface),
+                  floatingLabelStyle: TextStyle(color: Theme.of(context).colorScheme.onSurface),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
-                    borderSide: const BorderSide(color: Color(0xFFF26522), width: 2),
+                    borderSide:  BorderSide(color: Theme.of(context).colorScheme.onSurface, width: 2),
                   ),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
-                    borderSide: const BorderSide(color: Color(0xFFE2E8F0), width: 1),
+                    borderSide: BorderSide(color: Theme.of(context).colorScheme.onSurface, width: 1),
                   ),
                 ),
               ),

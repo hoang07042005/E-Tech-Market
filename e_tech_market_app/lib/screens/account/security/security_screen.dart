@@ -168,13 +168,13 @@ class _SecurityScreenState extends State<SecurityScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Bảo mật tài khoản'),
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.black,
-        elevation: 0,
+        title: const Text('Bảo mật tài khoản', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18) ),
+        backgroundColor: Theme.of(context).colorScheme.surface,
+        foregroundColor: Theme.of(context).colorScheme.onSurface,
+        elevation: 1,
       ),
       body: Container(
-        color: const Color(0xFFFAF1EB),
+        color: Theme.of(context).colorScheme.surface,
         child: SafeArea(
           child: SingleChildScrollView(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
@@ -202,8 +202,9 @@ class _SecurityScreenState extends State<SecurityScreen> {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(24),
+        color: Theme.of(context).colorScheme.surface,
+        borderRadius: BorderRadius.circular(5),
+        border: Border.all(color: Theme.of(context).colorScheme.outline, width: 0.5,),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -223,8 +224,9 @@ class _SecurityScreenState extends State<SecurityScreen> {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(24),
+        color: Theme.of(context).colorScheme.surface,
+        borderRadius: BorderRadius.circular(5),
+        border: Border.all(color: Theme.of(context).colorScheme.outline, width: 0.5,),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -302,8 +304,9 @@ class _SecurityScreenState extends State<SecurityScreen> {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(24),
+        color: Theme.of(context).colorScheme.surface,
+        borderRadius: BorderRadius.circular(5),
+        border: Border.all(color: Theme.of(context).colorScheme.outline, width: 0.5,),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -356,8 +359,9 @@ class _SecurityScreenState extends State<SecurityScreen> {
                         (code) => Container(
                           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                           decoration: BoxDecoration(
-                            color: const Color(0xFFF8F3EB),
-                            borderRadius: BorderRadius.circular(14),
+                            color: Theme.of(context).colorScheme.surface,
+                            borderRadius: BorderRadius.circular(5),
+                            border: Border.all(color: Theme.of(context).colorScheme.outline, width: 0.5,),
                           ),
                           child: Text(code, style: const TextStyle(fontWeight: FontWeight.w600)),
                         ),
@@ -375,8 +379,9 @@ class _SecurityScreenState extends State<SecurityScreen> {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(24),
+        color: Theme.of(context).colorScheme.surface,
+        borderRadius: BorderRadius.circular(5),
+        border: Border.all(color: Theme.of(context).colorScheme.outline, width: 0.5,),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
