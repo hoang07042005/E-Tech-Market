@@ -36,6 +36,8 @@ import 'home_sections/reviews_section.dart';
 import 'home_sections/newsletter_section.dart';
 import 'cart/cart_screen.dart';
 import 'search/search_screen.dart';
+import 'home_sections/flash_sale_section.dart';
+import 'products/flash_sale_product_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -435,6 +437,8 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  
+
   Future<void> _toggleWishlist(int productId) async {
     if (productId <= 0) return;
 
@@ -520,6 +524,27 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  void _navigateToFlashSaleProductDetail(Map<String, dynamic> item) {
+    final product = item['product'] as Map<String, dynamic>? ?? {};
+    final variant = item['variant'] as Map<String, dynamic>?;
+    final slug = product['slug']?.toString() ?? '';
+    if (slug.isEmpty) return;
+
+    // Lấy flashSalePrice từ item
+    final flashSalePrice = double.tryParse(item['flash_sale_price']?.toString() ?? '');
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ProductDetailScreen(
+          slug: slug,
+          variantId: variant?['id']?.toString(),
+          flashSalePrice: flashSalePrice,
+        ),
+      ),
+    );
+  }
+
   Widget _buildFeaturedProductSection() {
   return ProductSection(
     products: _featuredProducts,
@@ -591,6 +616,36 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  Widget _buildFlashSaleSection() {
+    return FlashSaleSection(
+      onViewAll: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const FlashSaleProductScreen()),
+        );
+      },
+      onFlashSaleItemSelected: (item) {
+        _navigateToFlashSaleProductDetail(item);
+      },
+      onAddToCart: (item) async {
+        try {
+          final variantId = item['variant_id'] as int?;
+          final productId = (item['product_id'] as num?)?.toInt() ?? 0;
+          if (productId <= 0) return;
+
+          await CartService.addToCart(productId, 1, variantId: variantId);
+          _loadCartCount();
+
+          if (!mounted) return;
+          AppSnackBar.showSuccess(context, 'Đã thêm vào giỏ hàng thành công!');
+        } catch (e) {
+          if (!mounted) return;
+          AppSnackBar.showError(context, 'Lỗi: ${e.toString().replaceFirst('Exception: ', '')}');
+        }
+      },
+    );
+  }
+
   Widget _buildFutureSection() {
     return const FutureSection();
   }
@@ -635,6 +690,8 @@ class _HomeScreenState extends State<HomeScreen> {
               _buildHeroSection(),
               const SizedBox(height: 20),
               _buildCouponSection(),
+              const SizedBox(height: 20),
+              _buildFlashSaleSection(),
               const SizedBox(height: 20),
               _buildCategorySection(),
               const SizedBox(height: 20),

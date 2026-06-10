@@ -40,6 +40,7 @@ class CartController extends Controller
             'product_id' => ['required', 'integer', 'min:1'],
             'variant_id' => ['nullable', 'integer', 'min:1'],
             'quantity' => ['required', 'integer', 'min:1'],
+            'unit_price' => ['nullable', 'numeric', 'min:0'],
         ]);
 
         $product = Product::query()->where('id', $data['product_id'])->where('is_active', true)->first();
@@ -81,14 +82,20 @@ class CartController extends Controller
                 $cartItem->quantity = $cartItem->quantity + (int) $data['quantity'];
                 $cartItem->save();
             } else {
-                // Check for active Flash Sale
-                $activeFlashSaleItem = $product->flashSaleItems()->whereHas('flashSale', function ($q) {
-                    $q->where('status', \App\Models\FlashSale::STATUS_ACTIVE)
-                        ->where('start_at', '<=', now())
-                        ->where('end_at', '>=', now());
-                })->first();
+                // Use unit_price from request if provided (from flash sale page), otherwise calculate based on flash sale
+                $unitPrice = null;
+                if (! empty($data['unit_price']) && $data['unit_price'] > 0) {
+                    $unitPrice = (float) $data['unit_price'];
+                } else {
+                    // Check for active Flash Sale only if no price provided
+                    $activeFlashSaleItem = $product->flashSaleItems()->whereHas('flashSale', function ($q) {
+                        $q->where('status', \App\Models\FlashSale::STATUS_ACTIVE)
+                            ->where('start_at', '<=', now())
+                            ->where('end_at', '>=', now());
+                    })->first();
 
-                $unitPrice = $activeFlashSaleItem ? $activeFlashSaleItem->flash_sale_price : $variant->effective_price;
+                    $unitPrice = $activeFlashSaleItem ? $activeFlashSaleItem->flash_sale_price : $variant->effective_price;
+                }
 
                 CartItem::create([
                     'cart_id' => $cart->id,

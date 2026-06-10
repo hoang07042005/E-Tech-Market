@@ -216,7 +216,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
             controller: _tokenController,
             decoration: _inputDecoration('Dán mã xác nhận từ email vào đây'),
             maxLines: 2,
-            style: const TextStyle(fontSize: 13, fontFamily: 'monospace'),
+            style: TextStyle(fontSize: 13, fontFamily: 'monospace', color: Theme.of(context).colorScheme.surface),
             validator: (value) {
               if (value == null || value.trim().isEmpty) return 'Vui lòng nhập mã xác nhận.';
               return null;
@@ -228,6 +228,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
           const Text('Mật khẩu mới', style: TextStyle(color: Color(0xFF7C6B61), fontSize: 13, fontWeight: FontWeight.w600)),
           const SizedBox(height: 6),
           TextFormField(
+            style: TextStyle(color: Theme.of(context).colorScheme.surface),
             controller: _passwordController,
             obscureText: _obscurePassword,
             decoration: _inputDecoration(
@@ -249,6 +250,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
           const Text('Xác nhận mật khẩu', style: TextStyle(color: Color(0xFF7C6B61), fontSize: 13, fontWeight: FontWeight.w600)),
           const SizedBox(height: 6),
           TextFormField(
+            style: TextStyle(color: Theme.of(context).colorScheme.surface),
             controller: _confirmPasswordController,
             obscureText: _obscureConfirm,
             decoration: _inputDecoration(

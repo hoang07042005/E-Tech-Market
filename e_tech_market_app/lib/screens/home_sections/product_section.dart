@@ -175,7 +175,6 @@ class _ProductCard extends StatelessWidget {
                   children: [
                     Positioned.fill(
                       child: Container(
-                        color: Theme.of(context).colorScheme.surface,
                         padding: const EdgeInsets.all(0),
                         child: imageUrl.isEmpty
                             ? _buildImageFallback()

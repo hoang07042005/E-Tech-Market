@@ -238,6 +238,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             children: [
                               const Text('Họ và tên', style: TextStyle(color: Color(0xFF7C6B61), fontSize: 13)),
                               TextFormField(
+                                style: TextStyle(color: Theme.of(context).colorScheme.surface),
                                 controller: _nameController,
                                 decoration: _inputDecoration(''),
                                 validator: (value) {
@@ -248,6 +249,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               const SizedBox(height: 16),
                               const Text('Email', style: TextStyle(color: Color(0xFF7C6B61), fontSize: 13)),
                               TextFormField(
+                                style: TextStyle(color: Theme.of(context).colorScheme.surface),
                                 controller: _emailController,
                                 keyboardType: TextInputType.emailAddress,
                                 decoration: _inputDecoration(''),
@@ -260,6 +262,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               const SizedBox(height: 16),
                               const Text('Số điện thoại', style: TextStyle(color: Color(0xFF7C6B61), fontSize: 13)),
                               TextFormField(
+                                style: TextStyle(color: Theme.of(context).colorScheme.surface),
                                 controller: _phoneController,
                                 keyboardType: TextInputType.phone,
                                 decoration: _inputDecoration(''),
@@ -271,6 +274,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               const SizedBox(height: 16),
                               const Text('Mật khẩu', style: TextStyle(color: Color(0xFF7C6B61), fontSize: 13)),
                               TextFormField(
+                                style: TextStyle(color: Theme.of(context).colorScheme.surface),
                                 controller: _passwordController,
                                 obscureText: true,
                                 decoration: _inputDecoration(''),
@@ -283,6 +287,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               const SizedBox(height: 16),
                               const Text('Xác nhận mật khẩu', style: TextStyle(color: Color(0xFF7C6B61), fontSize: 13)),
                               TextFormField(
+                                style: TextStyle(color: Theme.of(context).colorScheme.surface),
                                 controller: _confirmController,
                                 obscureText: true,
                                 decoration: _inputDecoration(''),

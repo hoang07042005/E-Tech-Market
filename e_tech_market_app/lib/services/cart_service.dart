@@ -113,6 +113,7 @@ class CartService {
     required int productId,
     int? variantId,
     int quantity = 1,
+    double? price,
   }) async {
     final token = await _requireToken();
     final response = await _send(
@@ -123,6 +124,7 @@ class CartService {
           'product_id': productId,
           if (variantId != null) 'variant_id': variantId,
           'quantity': quantity.clamp(1, 999),
+          if (price != null) 'unit_price': price,
         }),
       ),
     );
@@ -207,8 +209,8 @@ class CartService {
     return null;
   }
 
-  static Future<void> addToCart(int productId, int quantity, {int? variantId}) async {
-    await addItem(productId: productId, quantity: quantity, variantId: variantId);
+  static Future<void> addToCart(int productId, int quantity, {int? variantId, double? price}) async {
+    await addItem(productId: productId, quantity: quantity, variantId: variantId, price: price);
   }
 }
 

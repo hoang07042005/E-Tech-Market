@@ -452,11 +452,15 @@ class FlashSale {
 class ProductDetailScreen extends StatefulWidget {
   final String slug;
   final String? variantId;
+  final double? flashSalePrice;
+  final bool showFlashSale;
 
   const ProductDetailScreen({
     super.key,
     required this.slug,
     this.variantId,
+    this.flashSalePrice,
+    this.showFlashSale = false,
   });
 
   @override
@@ -775,9 +779,14 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
       return;
     }
 
+    // Chỉ dùng flashSalePrice khi vào từ trang flashsale để thêm vào giỏ
+    final cartPrice = (widget.showFlashSale && widget.flashSalePrice != null && widget.flashSalePrice! > 0)
+        ? widget.flashSalePrice!
+        : (selectedVariant?.effectivePrice ?? current.price);
+
     try {
-      await CartService.addToCart(current.id, quantity, variantId: selectedVariant?.id);
-      
+      await CartService.addToCart(current.id, quantity, variantId: selectedVariant?.id, price: cartPrice);
+
       final variantName =
           selectedVariant != null ? ' (${selectedVariant!.name})' : '';
       if (!mounted) return;
@@ -791,10 +800,22 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   double _getDisplayPrice() {
     final current = product;
     if (current == null) return 0;
-    if (current.flashSaleItems.isNotEmpty) {
+    // Chỉ dùng flashSalePrice khi vào từ trang flashsale
+    if (widget.showFlashSale && widget.flashSalePrice != null && widget.flashSalePrice! > 0) {
+      return widget.flashSalePrice!;
+    }
+    if (widget.showFlashSale && current.flashSaleItems.isNotEmpty) {
       return current.flashSaleItems.first.flashSalePrice;
     }
     if (selectedVariant != null) return selectedVariant!.effectivePrice;
+    return current.price;
+  }
+
+  double _getOriginalPrice() {
+    final current = product;
+    if (current == null) return 0;
+    // Khi có flash sale price truyền vào, lấy giá gốc từ variant hoặc product
+    if (selectedVariant != null) return selectedVariant!.price;
     return current.price;
   }
 
@@ -937,7 +958,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     final reviewStats = _getReviewStats();
     final filteredReviews = _getFilteredReviews();
     final displayPrice = _getDisplayPrice();
-    final hasFlashSale = current.flashSaleItems.isNotEmpty;
+    final hasFlashSale = widget.showFlashSale && current.flashSaleItems.isNotEmpty;
     final mergedSpecs = _getMergedDisplaySpecs(current);
     final images = current.images.isEmpty
         ? [ProductImage(id: 0, imageUrl: current.mainImageUrl)]
@@ -992,7 +1013,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                 _buildSection(
                   title: 'Sản phẩm liên quan',
                   child: SizedBox(
-                    height: 250,
+                    height: 270,
                     child: ListView.builder(
                       scrollDirection: Axis.horizontal,
                       itemCount: relatedProducts.length,
@@ -1166,7 +1187,7 @@ Widget _buildGallery(Product current, List<ProductImage> images) {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(
-            'KẾT THÚC SAU',
+            '⚡KẾT THÚC SAU',
             style: TextStyle(
               color: Theme.of(context).colorScheme.surface,
               fontWeight: FontWeight.bold,
@@ -1321,7 +1342,7 @@ Widget _buildGallery(Product current, List<ProductImage> images) {
                           isSelected ? const Color(0xFFFFF7ED) : Theme.of(context).colorScheme.surface,
                       border: Border.all(
                         color: isSelected
-                            ? Theme.of(context).colorScheme.primary
+                            ? Colors.orange
                             : Theme.of(context).colorScheme.outline,
                         width: isSelected ? 1.5 : 1.0,
                       ),
@@ -1401,7 +1422,7 @@ Widget _buildGallery(Product current, List<ProductImage> images) {
                           isSelected ? const Color(0xFFFFF7ED) : Theme.of(context).colorScheme.surface,
                       border: Border.all(
                         color: isSelected
-                            ? Theme.of(context).colorScheme.primary
+                            ? Colors.orange
                             : Theme.of(context).colorScheme.outline,
                         width: isSelected ? 1.5 : 1.0,
                       ),
@@ -1531,7 +1552,10 @@ Widget _buildGallery(Product current, List<ProductImage> images) {
   }
 
   Widget _buildBottomAction(double displayPrice) {
-    final finalPrice = selectedVariant?.effectivePrice ?? displayPrice;
+    // Chỉ dùng flashSalePrice khi vào từ trang flashsale
+    final finalPrice = (widget.showFlashSale && widget.flashSalePrice != null && widget.flashSalePrice! > 0)
+        ? widget.flashSalePrice!
+        : (selectedVariant?.effectivePrice ?? displayPrice);
 
     return Container(
       padding: const EdgeInsets.all(16),
@@ -1579,16 +1603,16 @@ Widget _buildGallery(Product current, List<ProductImage> images) {
             const SizedBox(width: 12),
 
             ElevatedButton.icon(
-            onPressed: () async {
-              await _addToCart();
-            },
-            icon: const Icon(Icons.add_shopping_cart),
-            label: Text('Thêm vào giỏ hàng'),
+              onPressed: () async {
+                await _addToCart();
+              },
+              icon: const Icon(Icons.add_shopping_cart, color: Colors.white),
+              label: const Text('Thêm vào giỏ hàng'),
               style: ElevatedButton.styleFrom(
-                backgroundColor: Theme.of(context).colorScheme.primary,
-                foregroundColor: Theme.of(context).colorScheme.surface,
+                backgroundColor: Colors.orange, // Đổi thành màu cam tại đây
+                foregroundColor: Colors.white,  // Đổi chữ và icon thành màu trắng cho nổi bật
               ),
-            )
+            ),
           ],
         ),
       ),
@@ -2300,9 +2324,9 @@ Widget _buildFaqItem(ProductFaq faq) {
                           onPressed:
                               _showWriteReviewSheet, // KÍCH HOẠT HÀM BẬT BOTTOM SHEET NỔI TỪ DƯỚI LÊN
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Theme.of(context).colorScheme.primary,
+                            backgroundColor: Colors.orange,
                             side: BorderSide(
-                                color: Theme.of(context).colorScheme.primary, width: 1.5),
+                                color: Colors.orange, width: 1.5),
                             foregroundColor: Theme.of(context).colorScheme.surface,
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 8, vertical: 8),
@@ -2737,8 +2761,8 @@ Widget _buildFaqItem(ProductFaq faq) {
                     child: ElevatedButton(
                       onPressed: qaSending ? null : _submitQuestion,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Theme.of(context).colorScheme.primary,
-                        foregroundColor: Theme.of(context).colorScheme.surface,
+                        backgroundColor: Colors.orange,
+                        foregroundColor: Colors.white,
                         elevation: 0,
                         padding: const EdgeInsets.symmetric(
                             horizontal: 16, vertical: 10),
@@ -2766,7 +2790,7 @@ Widget _buildFaqItem(ProductFaq faq) {
                                   strokeWidth: 2, color: Theme.of(context).colorScheme.surface),
                             )
                           else
-                            const Icon(Icons.send, size: 13),
+                            const Icon(Icons.send, size: 13, color: Colors.white),
                         ],
                       ),
                     ),
