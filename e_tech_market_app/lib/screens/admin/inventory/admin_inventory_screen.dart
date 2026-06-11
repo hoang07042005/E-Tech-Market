@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../services/products_service.dart';
 import '../../../utils/network_utils.dart';
 import '../../../utils/app_snackbar.dart';
+import '../../../utils/translation.dart';
 
 class AdminInventoryScreen extends StatefulWidget {
   const AdminInventoryScreen({super.key});
@@ -154,7 +155,7 @@ class _AdminInventoryScreenState extends State<AdminInventoryScreen> {
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
       appBar: AppBar(
-        title: const Text('Quản lý tồn kho', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+        title: Text(Trans.inventoryManagement, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
         backgroundColor: Theme.of(context).colorScheme.surface,
         foregroundColor: Theme.of(context).colorScheme.onSurface,
         elevation: 0,
@@ -430,7 +431,7 @@ class _AdminInventoryScreenState extends State<AdminInventoryScreen> {
                 children: [
                   TextButton(
                     onPressed: () => Navigator.pop(ctx),
-                    child: const Text('Hủy bỏ', style: TextStyle(color: Color(0xFF64748B), fontWeight: FontWeight.w600)),
+                    child: Text(Trans.cancel, style: const TextStyle(color: Color(0xFF64748B), fontWeight: FontWeight.w600)),
                   ),
                   const SizedBox(width: 12),
                   Expanded(
@@ -450,7 +451,7 @@ class _AdminInventoryScreenState extends State<AdminInventoryScreen> {
                         padding: const EdgeInsets.symmetric(vertical: 14),
                         elevation: 0,
                       ),
-                      child: const Text('Xác nhận', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 15)),
+                      child: Text(Trans.confirm, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 15)),
                     ),
                   ),
                 ],
@@ -464,7 +465,7 @@ class _AdminInventoryScreenState extends State<AdminInventoryScreen> {
 
   Widget _buildEmptyState() {
     return Center(
-      child: Text('Không tìm thấy sản phẩm hoặc biến thể nào.', style: TextStyle(color: Colors.grey.shade500)),
+      child: Text(Trans.noProductOrVariant, style: TextStyle(color: Colors.grey.shade500)),
     );
   }
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../utils/network_utils.dart';
+import '../../utils/translation.dart';
 
 import '../videos/video_detail_screen.dart';
 
@@ -40,7 +41,7 @@ class VideoSection extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'REVIEW THỰC TẾ & TRỰC QUAN',
+                          Trans.reviewSection,
                           style: TextStyle(
                             fontSize: 11,
                             fontWeight: FontWeight.w700,
@@ -50,7 +51,7 @@ class VideoSection extends StatelessWidget {
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          'Video nổi bật',
+                          Trans.featuredVideo,
                           style: TextStyle(
                             fontSize: 25,
                             fontWeight: FontWeight.w800,
@@ -70,9 +71,9 @@ class VideoSection extends StatelessWidget {
                     ),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
-                      children: const [
+                      children: [
                         Text(
-                          'Xem tất cả',
+                          Trans.viewAll,
                           style: TextStyle(
                             fontSize: 13,
                             fontWeight: FontWeight.w600,
@@ -93,7 +94,7 @@ class VideoSection extends StatelessWidget {
             Padding(
               padding: EdgeInsets.symmetric(vertical: 24),
               child: Text(
-                'Chưa có video nào.',
+                Trans.noVideosYet,
                 textAlign: TextAlign.center,
                 style: TextStyle(fontSize: 14, color: Theme.of(context).colorScheme.onSurfaceVariant),
               ),

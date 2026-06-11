@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../utils/translation.dart';
+
 class WhyUsSection extends StatelessWidget {
   const WhyUsSection({super.key});
 
@@ -24,23 +26,23 @@ class WhyUsSection extends StatelessWidget {
             children: [
               _WhyUsItem(
                 icon: Icons.local_shipping_outlined,
-                title: 'Miễn phí vận chuyển',
-                description: 'Áp dụng đơn từ 5 triệu đồng',
+                title: Trans.freeShippingTitle,
+                description: Trans.freeShippingOver,
               ),
               _WhyUsItem(
                 icon: Icons.verified_outlined,
-                title: 'Bảo hành 24 tháng',
-                description: 'Bảo vệ trọn vẹn thiết bị của bạn',
+                title: Trans.warranty24,
+                description: Trans.warranty24Desc,
               ),
               _WhyUsItem(
                 icon: Icons.support_agent_outlined,
-                title: 'Hỗ trợ chuyên gia',
-                description: 'Đội ngũ kỹ thuật đồng hành 24/7',
+                title: Trans.supportExpert,
+                description: Trans.supportExpertDesc,
               ),
               _WhyUsItem(
                 icon: Icons.credit_card_outlined,
-                title: 'Thanh toán an toàn',
-                description: 'Giao dịch được mã hóa 100%',
+                title: Trans.securePayment,
+                description: Trans.transactionsEncrypted,
               ),
             ],
           ),

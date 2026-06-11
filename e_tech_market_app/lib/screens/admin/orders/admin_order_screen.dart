@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:e_tech_market_app/services/admin_orders_service.dart';
 import 'admin_order_detail_screen.dart';
+import '../../../utils/translation.dart';
 
 class AdminOrdersScreen extends StatefulWidget {
   const AdminOrdersScreen({super.key});
@@ -131,7 +132,7 @@ class _AdminOrdersScreenState extends State<AdminOrdersScreen> {
         backgroundColor: Theme.of(context).colorScheme.surface,
         foregroundColor: Theme.of(context).colorScheme.onSurface,
         centerTitle: true,
-        title: const Text('Quản Lý Đơn Hàng', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17)),
+        title: Text(Trans.orderManagementAdmin, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 17)),
       ),
       body: SingleChildScrollView(
         physics: const BouncingScrollPhysics(),

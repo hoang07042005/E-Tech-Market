@@ -10,6 +10,7 @@ import '../../services/reviews_service.dart';
 import '../../services/wishlist_service.dart';
 import '../../utils/network_utils.dart';
 import '../../utils/app_snackbar.dart';
+import '../../utils/translation.dart';
 import 'product_new_detail_screen.dart';
 import '../../../config/api_config.dart';
 
@@ -52,19 +53,19 @@ String _timeAgoVi(String value) {
   final date = DateTime.tryParse(value);
   if (date == null) return '';
   final diff = DateTime.now().difference(date);
-  if (diff.inDays >= 30) return '${(diff.inDays / 30).floor()} tháng trước';
-  if (diff.inDays >= 1) return '${diff.inDays} ngày trước';
-  if (diff.inHours >= 1) return '${diff.inHours} giờ trước';
-  if (diff.inMinutes >= 1) return '${diff.inMinutes} phút trước';
-  return 'vừa xong';
+  if (diff.inDays >= 30) return '${(diff.inDays / 30).floor()} ${Trans.monthsAgo}';
+  if (diff.inDays >= 1) return '${diff.inDays} ${Trans.daysAgo}';
+  if (diff.inHours >= 1) return '${diff.inHours} ${Trans.hoursAgo}';
+  if (diff.inMinutes >= 1) return '${diff.inMinutes} ${Trans.minutesAgo}';
+  return Trans.justNow;
 }
 
 String _ratingLabel(num value) {
-  if (value >= 5) return 'Tuyệt vời';
-  if (value >= 4) return 'Tốt';
-  if (value >= 3) return 'Bình thường';
-  if (value >= 2) return 'Tệ';
-  return 'Rất tệ';
+  if (value >= 5) return Trans.ratingExcellent;
+  if (value >= 4) return Trans.ratingGood;
+  if (value >= 3) return Trans.ratingAverage;
+  if (value >= 2) return Trans.ratingBad;
+  return Trans.ratingTerrible;
 }
 
 class Product {
@@ -221,7 +222,7 @@ class ProductVariant {
 
     return ProductVariant(
       id: _toInt(json['id']),
-      name: name.isEmpty ? 'Phiên bản mặc định' : name,
+      name: name.isEmpty ? Trans.defaultVariant : name,
       color: json['color']?.toString(),
       storage: json['storage']?.toString(),
       price: price,
@@ -401,7 +402,7 @@ class ProductShopQna {
       id: _toInt(json['id']),
       askerDisplayName: json['asker_display_name']?.toString() ??
           user?['name']?.toString() ??
-          'Người dùng',
+          Trans.user,
       question: json['question']?.toString() ?? '',
       answer: json['answer']?.toString(),
       createdAt: json['created_at']?.toString(),
@@ -698,7 +699,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     final token = await AuthService.getToken();
     if (token == null || token.isEmpty) {
       if (!mounted) return;
-      AppSnackBar.showError(context, 'Vui lòng đăng nhập để thêm sản phẩm yêu thích.');
+      AppSnackBar.showError(context, Trans.loginToWishlist);
       return;
     }
 
@@ -790,7 +791,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
       final variantName =
           selectedVariant != null ? ' (${selectedVariant!.name})' : '';
       if (!mounted) return;
-      AppSnackBar.showSuccess(context, 'Đã thêm $quantity sản phẩm$variantName vào giỏ hàng!');
+      AppSnackBar.showSuccess(context, Trans.productAddedWithQuantity(quantity, variantName));
     } catch (e) {
       if (!mounted) return;
       AppSnackBar.showError(context, 'Lỗi: ${e.toString().replaceFirst('Exception: ', '')}');
@@ -982,11 +983,11 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
               _buildVariantSelector(current),
               Divider(thickness: 8, color: Theme.of(context).colorScheme.surfaceContainerLow),
               _buildSection(
-                title: 'Mô tả sản phẩm',
+                title: Trans.productDescription,
                 child: Text(
                   current.description ??
                       current.shortDescription ??
-                      'Chưa có mô tả.',
+                      Trans.noDescription,
                   style: TextStyle(height: 1.5),
                 ),
               ),
@@ -995,7 +996,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
               if (mergedSpecs.isNotEmpty) ...[
                 Divider(thickness: 8, color: Theme.of(context).colorScheme.surfaceContainerLow),
                 _buildSection(
-                  title: 'Thông số kỹ thuật',
+                  title: Trans.specifications,
                   child: _buildGroupedSpecs(mergedSpecs),
                 ),
               ],
@@ -1027,7 +1028,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
               _buildRichContentAndNews(current),
               Divider(thickness: 8, color: Theme.of(context).colorScheme.surfaceContainerLow),
               _buildSection(
-                title: 'Đánh giá ${current.name}',
+                title: Trans.ratingTitle(current.name),
                 child: _buildVisualReviews(reviewStats, filteredReviews),
               ),
               Divider(thickness: 8, color: Theme.of(context).colorScheme.surfaceContainerLow),
@@ -1457,14 +1458,14 @@ Widget _buildGallery(Product current, List<ProductImage> images) {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Số lượng khả dụng',
+                    Trans.availableQuantity,
                     style: TextStyle(fontSize: 13, color: Theme.of(context).colorScheme.onSurfaceVariant),
                   ),
                   const SizedBox(height: 4),
                   Text(
                     isAvailable
                         ? 'Còn hàng ($currentStock sản phẩm)'
-                        : 'Hết hàng',
+                        : Trans.outOfStock,
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
@@ -1607,7 +1608,7 @@ Widget _buildGallery(Product current, List<ProductImage> images) {
                 await _addToCart();
               },
               icon: const Icon(Icons.add_shopping_cart, color: Colors.white),
-              label: const Text('Thêm vào giỏ hàng'),
+              label: Text(Trans.addToCart),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.orange, // Đổi thành màu cam tại đây
                 foregroundColor: Colors.white,  // Đổi chữ và icon thành màu trắng cho nổi bật
@@ -1655,7 +1656,7 @@ Widget _buildGallery(Product current, List<ProductImage> images) {
         'Bảo hành 12 tháng theo chính sách hãng/nhà phân phối.'
       ),
       (Icons.memory_outlined, setupText),
-      (Icons.sell_outlined, 'Giá sản phẩm đã bao gồm thuế VAT.'),
+      (Icons.sell_outlined, Trans.vatIncluded),
     ];
 
     return _buildSection(
@@ -2093,7 +2094,7 @@ Widget _buildFaqItem(ProductFaq faq) {
 
                       // ================= KHỐI 1: ĐÁNH GIÁ CHUNG =================
                       Text(
-                        'Đánh giá chung',
+                        Trans.overallRating,
                         style: TextStyle(
                             fontSize: 15,
                             fontWeight: FontWeight.bold,
@@ -2204,14 +2205,14 @@ Widget _buildFaqItem(ProductFaq faq) {
                                   final commentText =
                                       localReviewController.text.trim();
                                   if (commentText.length < 15) {
-                                    AppSnackBar.showError(context, 'Nội dung đánh giá phải nhập tối thiểu 15 kí tự.');
+                                    AppSnackBar.showError(context, Trans.reviewContentMinLength);
                                     return;
                                   }
 
                                   final token = await AuthService.getToken();
                                   if (!context.mounted) return;
                                   if (token == null || token.isEmpty) {
-                                    AppSnackBar.showError(context, 'Vui lòng đăng nhập để viết đánh giá.');
+                                    AppSnackBar.showError(context, Trans.loginToWriteReview);
                                     return;
                                   }
 
@@ -2242,7 +2243,7 @@ Widget _buildFaqItem(ProductFaq faq) {
 
                                   if (context.mounted) {
                                     Navigator.pop(context);
-                                    AppSnackBar.showSuccess(context, 'Gửi đánh giá thành công! Đang chờ duyệt.');
+                                    AppSnackBar.showSuccess(context, Trans.reviewSubmittedSuccess);
                                   }
                                 },
                           style: ElevatedButton.styleFrom(
@@ -2261,7 +2262,7 @@ Widget _buildFaqItem(ProductFaq faq) {
                                       strokeWidth: 2, color: Theme.of(context).colorScheme.surface),
                                 )
                               : Text(
-                                  'GỬI ĐÁNH GIÁ',
+                                  Trans.submitReviewButton,
                                   style: TextStyle(
                                       color: Theme.of(context).colorScheme.surface,
                                       fontWeight: FontWeight.bold,
@@ -2316,7 +2317,7 @@ Widget _buildFaqItem(ProductFaq faq) {
                         const SizedBox(height: 4),
                         _buildStars(avg, size: 17),
                         const SizedBox(height: 8),
-                        Text('$total lượt đánh giá',
+                        Text(Trans.totalReviews(total),
                             style: TextStyle(fontSize: 12)),
                         const SizedBox(height: 10),
                         // TÌM ĐOẠN NÚT BẤM CŨ TRONG _buildVisualReviews VÀ THAY BẰNG ĐOẠN NÀY:
@@ -2335,11 +2336,11 @@ Widget _buildFaqItem(ProductFaq faq) {
                                   4), // Định dạng khối vuông bo góc nhẹ đồng bộ Web
                             ),
                           ),
-                          child: const FittedBox(
+                          child: FittedBox(
                             fit: BoxFit.scaleDown,
                             child: Text(
-                              'Viết đánh giá',
-                              style: TextStyle(
+                              Trans.writeReview,
+                              style: const TextStyle(
                                   fontSize: 12, fontWeight: FontWeight.bold),
                             ),
                           ),
@@ -2394,7 +2395,7 @@ Widget _buildFaqItem(ProductFaq faq) {
         ),
         const SizedBox(height: 18),
         Text(
-          'Lọc đánh giá theo',
+          Trans.filterReviewsBy,
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 10),
@@ -2421,7 +2422,7 @@ Widget _buildFaqItem(ProductFaq faq) {
               color: Theme.of(context).colorScheme.surfaceContainerLow,
               borderRadius: BorderRadius.circular(8),
             ),
-            child: Text('Chưa có đánh giá nào.',
+            child: Text(Trans.noReviewsYet,
                 style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant)),
           )
         else
@@ -2609,7 +2610,7 @@ Widget _buildFaqItem(ProductFaq faq) {
                 if (review.createdAt.isNotEmpty) ...[
                   const SizedBox(height: 8),
                   Text(
-                    'Đánh giá đã đăng vào ${_timeAgoVi(review.createdAt)}',
+                    Trans.reviewPostedAt(_timeAgoVi(review.createdAt)),
                     style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant, fontSize: 12),
                   ),
                 ],

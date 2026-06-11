@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../utils/network_utils.dart';
+import '../../utils/translation.dart';
 
 const _brandColor = Color(0xFFEF7A45);
 
@@ -49,7 +50,7 @@ class TabbedProductSection extends StatelessWidget {
             children: [
               Expanded(
                 child: Text(
-                  'Sản phẩm theo danh mục',
+                  Trans.productsByCategory,
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 22,
@@ -63,7 +64,7 @@ class TabbedProductSection extends StatelessWidget {
                 onPressed: onViewAll,
                 icon: const Icon(Icons.arrow_forward_outlined),
                 color: _brandColor,
-                tooltip: 'Xem tất cả sản phẩm',
+                tooltip: Trans.viewAllProducts,
               ),
             ],
           ),
@@ -308,8 +309,8 @@ class _TabbedProductCard extends StatelessWidget {
                               shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(4)),
                             ),
-                            child: const Text(
-                              'THÊM VÀO GIỎ',
+                            child: Text(
+                              Trans.addToCartBtn,
                               style: TextStyle(
                                   fontSize: 10,
                                   fontWeight: FontWeight.w800,

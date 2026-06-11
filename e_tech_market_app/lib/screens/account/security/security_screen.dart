@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../services/auth_service.dart';
+import '../../../utils/translation.dart';
 
 class SecurityScreen extends StatefulWidget {
   const SecurityScreen({super.key});
@@ -15,9 +16,15 @@ class _SecurityScreenState extends State<SecurityScreen> {
   bool _loadingSessions = true;
   String? _error;
   String? _success;
+  
   String _currentPassword = '';
   String _newPassword = '';
   String _confirmPassword = '';
+  
+  bool _obscureCurrent = true;
+  bool _obscureNew = true;
+  bool _obscureConfirm = true;
+
   final TextEditingController _currentPasswordController = TextEditingController();
   final TextEditingController _newPasswordController = TextEditingController();
   final TextEditingController _confirmPasswordController = TextEditingController();
@@ -30,6 +37,10 @@ class _SecurityScreenState extends State<SecurityScreen> {
     'YZAB-3456-CDEF',
     'GHIJ-7890-KLMN',
   ];
+
+  // Màu sắc chủ đạo đồng bộ toàn màn hình
+  final Color primaryColor = const Color(0xFFEF7A45);
+  final Color dangerColor = const Color(0xFFB91C1C);
 
   @override
   void initState() {
@@ -166,32 +177,41 @@ class _SecurityScreenState extends State<SecurityScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Scaffold(
+      backgroundColor: theme.colorScheme.surface,
       appBar: AppBar(
-        title: const Text('Bảo mật tài khoản', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18) ),
-        backgroundColor: Theme.of(context).colorScheme.surface,
-        foregroundColor: Theme.of(context).colorScheme.onSurface,
-        elevation: 1,
+        title: Text(Trans.accountSecurity, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+        backgroundColor: theme.colorScheme.surface,
+        foregroundColor: theme.colorScheme.onSurface,
+        elevation: 0,
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(1),
+          child: Container(color: theme.colorScheme.outlineVariant.withOpacity(0.4), height: 1),
+        ),
       ),
-      body: Container(
-        color: Theme.of(context).colorScheme.surface,
-        child: SafeArea(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                _buildTopCard(),
-                const SizedBox(height: 20),
-                _buildPasswordSection(),
-                const SizedBox(height: 20),
-                _buildTwoFaSection(),
-                const SizedBox(height: 20),
-                _buildSessionsSection(),
-                const SizedBox(height: 20),
-                _buildDangerSection(),
-              ],
-            ),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              _buildTopCard(),
+              const SizedBox(height: 16),
+              
+              // Thông báo lỗi/thành công tổng quát nếu có
+              if (_success != null) _buildStatusAlert(_success!, const Color(0xFFDDF6E7), const Color(0xFF0F5132), Icons.check_circle_outline),
+              if (_error != null) _buildStatusAlert(_error!, const Color(0xFFF8D7DA), const Color(0xFF842029), Icons.error_outline),
+              if (_success != null || _error != null) const SizedBox(height: 16),
+
+              _buildPasswordSection(),
+              const SizedBox(height: 16),
+              _buildTwoFaSection(),
+              const SizedBox(height: 16),
+              _buildSessionsSection(),
+              const SizedBox(height: 16),
+              _buildDangerSection(),
+            ],
           ),
         ),
       ),
@@ -199,100 +219,116 @@ class _SecurityScreenState extends State<SecurityScreen> {
   }
 
   Widget _buildTopCard() {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface,
-        borderRadius: BorderRadius.circular(5),
-        border: Border.all(color: Theme.of(context).colorScheme.outline, width: 0.5,),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: const [
-          Text('Bảo mật tài khoản', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-          SizedBox(height: 8),
-          Text(
-            'Quản lý mật khẩu, xác thực và các phiên đăng nhập để bảo vệ an toàn cho tài khoản của bạn.',
-            style: TextStyle(fontSize: 14, color: Colors.grey),
-          ),
-        ],
-      ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(Trans.accountSecurity, style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+        const SizedBox(height: 4),
+        const Text(
+          'Quản lý mật khẩu, bảo mật 2 lớp và giám sát các phiên đăng nhập để giữ tài khoản luôn an toàn.',
+          style: TextStyle(fontSize: 14, color: Colors.grey),
+        ),
+        const SizedBox(height: 8),
+        const Divider(),
+      ],
     );
   }
 
-  Widget _buildPasswordSection() {
+  Widget _buildSectionWrapper({required String title, required String subtitle, required IconData icon, required Widget child}) {
+    final theme = Theme.of(context);
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface,
-        borderRadius: BorderRadius.circular(5),
-        border: Border.all(color: Theme.of(context).colorScheme.outline, width: 0.5,),
+        color: theme.colorScheme.surface,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: theme.colorScheme.outlineVariant.withOpacity(0.5), width: 1),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: const [
-              Icon(Icons.warning_amber_outlined, color: Color(0xFFEF7A45), size: 24),
-              SizedBox(width: 12),
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: primaryColor.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Icon(icon, color: primaryColor, size: 20),
+              ),
+              const SizedBox(width: 12),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Thay đổi mật khẩu', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                    SizedBox(height: 4),
-                    Text('Cập nhật mật khẩu để an toàn hơn.', style: TextStyle(fontSize: 14, color: Colors.grey)),
+                    Text(title, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                    const SizedBox(height: 2),
+                    Text(subtitle, style: const TextStyle(fontSize: 13, color: Colors.grey)),
                   ],
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 20),
-          TextField(
+          const Padding(
+            padding: EdgeInsets.symmetric(vertical: 12),
+            child: Divider(height: 1),
+          ),
+          child,
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPasswordSection() {
+    return _buildSectionWrapper(
+      title: Trans.changePassword,
+      subtitle: Trans.updatePasswordSecurity,
+      icon: Icons.lock_outline,
+      child: Column(
+        children: [
+          _buildCustomTextField(
             controller: _currentPasswordController,
-            obscureText: true,
-            decoration: const InputDecoration(labelText: 'Mật khẩu hiện tại'),
-            onChanged: (value) => setState(() => _currentPassword = value),
+            label: 'Mật khẩu hiện tại',
+            obscureText: _obscureCurrent,
+            onChanged: (value) => _currentPassword = value,
+            onToggleVisibility: () => setState(() => _obscureCurrent = !_obscureCurrent),
           ),
           const SizedBox(height: 12),
-          TextField(
+          _buildCustomTextField(
             controller: _newPasswordController,
-            obscureText: true,
-            decoration: const InputDecoration(labelText: 'Mật khẩu mới'),
-            onChanged: (value) => setState(() => _newPassword = value),
+            label: 'Mật khẩu mới',
+            obscureText: _obscureNew,
+            onChanged: (value) => _newPassword = value,
+            onToggleVisibility: () => setState(() => _obscureNew = !_obscureNew),
           ),
           const SizedBox(height: 12),
-          TextField(
+          _buildCustomTextField(
             controller: _confirmPasswordController,
-            obscureText: true,
-            decoration: const InputDecoration(labelText: 'Xác nhận mật khẩu mới'),
-            onChanged: (value) => setState(() => _confirmPassword = value),
+            label: 'Xác nhận mật khẩu mới',
+            obscureText: _obscureConfirm,
+            onChanged: (value) => _confirmPassword = value,
+            onToggleVisibility: () => setState(() => _obscureConfirm = !_obscureConfirm),
           ),
           const SizedBox(height: 16),
-          if (_success != null)
-            Container(
-              margin: const EdgeInsets.only(bottom: 12),
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(color: const Color(0xFFDDF6E7), borderRadius: BorderRadius.circular(16)),
-              child: Text(_success!, style: const TextStyle(color: Color(0xFF0F5132))),
-            ),
-          if (_error != null)
-            Container(
-              margin: const EdgeInsets.only(bottom: 12),
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(color: const Color(0xFFF8D7DA), borderRadius: BorderRadius.circular(16)),
-              child: Text(_error!, style: const TextStyle(color: Color(0xFF842029))),
-            ),
           SizedBox(
             width: double.infinity,
+            height: 46,
             child: ElevatedButton(
               onPressed: _busy ? null : _changePassword,
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFFEF7A45),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
+                backgroundColor: primaryColor,
+                foregroundColor: Colors.white,
+                elevation: 0,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
               ),
-              child: Text(_busy ? 'Đang xử lý…' : 'Cập nhật mật khẩu', style: const TextStyle(color: Colors.white)),
+              child: _busy
+                  ? const SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                    )
+                  : const Text('Cập nhật mật khẩu', style: TextStyle(fontWeight: FontWeight.bold)),
             ),
           ),
         ],
@@ -301,129 +337,94 @@ class _SecurityScreenState extends State<SecurityScreen> {
   }
 
   Widget _buildTwoFaSection() {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface,
-        borderRadius: BorderRadius.circular(5),
-        border: Border.all(color: Theme.of(context).colorScheme.outline, width: 0.5,),
-      ),
+    return _buildSectionWrapper(
+      title: Trans.twoFactorAuth,
+      subtitle: Trans.enableDisable2FA,
+      icon: Icons.shield_outlined,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: const [
-              Icon(Icons.shield_outlined, color: Color(0xFFEF7A45), size: 24),
-              SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('Xác thực 2 lớp (2FA)', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                    SizedBox(height: 4),
-                    Text('Bật hoặc tắt bảo vệ 2FA cho tài khoản của bạn.', style: TextStyle(fontSize: 14, color: Colors.grey)),
-                  ],
-                ),
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(
+                children: [
+                  Container(
+                    width: 10,
+                    height: 10,
+                    decoration: BoxDecoration(
+                      color: _twoFaEnabled ? Colors.green : Colors.grey,
+                      shape: BoxShape.circle,
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    _twoFaEnabled ? Trans.twoFAStatusOn : Trans.twoFAStatusOff,
+                    style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+                  ),
+                ],
+              ),
+              Switch.adaptive(
+                activeColor: primaryColor,
+                value: _twoFaEnabled,
+                onChanged: (value) => setState(() => _twoFaEnabled = value),
               ),
             ],
           ),
-          const SizedBox(height: 20),
-          Text('Hiện tại ${_twoFaEnabled ? 'đang bật' : 'đang tắt'} bảo vệ 2FA.', style: const TextStyle(fontSize: 14)),
-          const SizedBox(height: 16),
-          SizedBox(
-            width: double.infinity,
-            child: OutlinedButton(
-              onPressed: () => setState(() => _twoFaEnabled = !_twoFaEnabled),
-              style: OutlinedButton.styleFrom(
-                foregroundColor: _twoFaEnabled ? Colors.white : const Color(0xFFEF7A45),
-                backgroundColor: _twoFaEnabled ? const Color(0xFFEF7A45) : Colors.transparent,
-                side: const BorderSide(color: Color(0xFFEF7A45)),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-              ),
-              child: Text(_twoFaEnabled ? 'Tắt 2FA' : 'Bật 2FA'),
+          if (_twoFaEnabled) ...[
+            const SizedBox(height: 16),
+            Text(Trans.backupCode, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 8),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: _backupCodes.map((code) => _buildCodeChip(code)).toList(),
             ),
-          ),
-          const SizedBox(height: 20),
-          if (_twoFaEnabled)
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text('Mã backup', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                const SizedBox(height: 12),
-                Wrap(
-                  spacing: 8,
-                  runSpacing: 8,
-                  children: _backupCodes
-                      .map(
-                        (code) => Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                          decoration: BoxDecoration(
-                            color: Theme.of(context).colorScheme.surface,
-                            borderRadius: BorderRadius.circular(5),
-                            border: Border.all(color: Theme.of(context).colorScheme.outline, width: 0.5,),
-                          ),
-                          child: Text(code, style: const TextStyle(fontWeight: FontWeight.w600)),
-                        ),
-                      )
-                      .toList(),
-                ),
-              ],
-            ),
+          ],
         ],
       ),
     );
   }
 
   Widget _buildSessionsSection() {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface,
-        borderRadius: BorderRadius.circular(5),
-        border: Border.all(color: Theme.of(context).colorScheme.outline, width: 0.5,),
-      ),
+    return _buildSectionWrapper(
+      title: Trans.manageLoginSessions,
+      subtitle: Trans.manageDevicesDesc,
+      icon: Icons.devices_outlined,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: const [
-              Icon(Icons.device_hub_outlined, color: Color(0xFFEF7A45), size: 24),
-              SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('Quản lý phiên đăng nhập', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                    SizedBox(height: 4),
-                    Text('Xem và quản lý các thiết bị đang đăng nhập.', style: TextStyle(fontSize: 14, color: Colors.grey)),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
           if (_loadingSessions)
-            const Center(child: CircularProgressIndicator())
+            const Padding(
+              padding: EdgeInsets.symmetric(vertical: 20),
+              child: Center(child: CircularProgressIndicator()),
+            )
           else ...[
-            Text('Có ${_sessions.length} phiên đăng nhập đang hoạt động.', style: const TextStyle(fontSize: 14)),
-            const SizedBox(height: 16),
+            Text(
+              Trans.activeSessions(_sessions.length),
+              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+            ),
+            const SizedBox(height: 12),
             if (_sessions.isEmpty)
-              const Text('Không có phiên đăng nhập nào.', style: TextStyle(color: Colors.grey))
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                child: Text(Trans.noSessions, style: const TextStyle(color: Colors.grey)),
+              )
             else
               ..._sessions.map(_buildSessionCard).toList(),
-            const SizedBox(height: 16),
+            const SizedBox(height: 8),
             SizedBox(
               width: double.infinity,
-              child: OutlinedButton(
+              height: 44,
+              child: OutlinedButton.icon(
+                icon: const Icon(Icons.logout_outlined, size: 18),
                 onPressed: _sessions.isEmpty ? null : _logoutAllSessions,
                 style: OutlinedButton.styleFrom(
-                  foregroundColor: Colors.red,
-                  side: const BorderSide(color: Colors.red),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                  foregroundColor: dangerColor,
+                  side: BorderSide(color: dangerColor.withOpacity(0.5)),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                 ),
-                child: const Text('Đăng xuất khỏi tất cả thiết bị'),
+                label: Text(Trans.logoutAllDevices, style: const TextStyle(fontWeight: FontWeight.bold)),
               ),
             ),
           ],
@@ -434,49 +435,65 @@ class _SecurityScreenState extends State<SecurityScreen> {
 
   Widget _buildSessionCard(Map<String, dynamic> session) {
     final isCurrent = session['is_current'] == true;
+    final theme = Theme.of(context);
 
     return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(16),
+      margin: const EdgeInsets.only(bottom: 10),
+      padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: const Color(0xFFF8F3EB),
-        borderRadius: BorderRadius.circular(18),
+        color: theme.colorScheme.surfaceVariant.withOpacity(0.3),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: theme.colorScheme.outlineVariant.withOpacity(0.3)),
       ),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          Icon(
+            session['name'].toString().toLowerCase().contains('iphone') || 
+            session['name'].toString().toLowerCase().contains('android') 
+                ? Icons.phone_android_outlined 
+                : Icons.computer_outlined,
+            color: Colors.grey[600],
+            size: 28,
+          ),
+          const SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(session['name']?.toString() ?? 'Thiết bị', style: const TextStyle(fontWeight: FontWeight.bold)),
-                const SizedBox(height: 6),
-                Text('Đăng nhập: ${_formatDateTime(session['created_at']?.toString())}', style: const TextStyle(color: Colors.grey, fontSize: 12)),
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        session['name']?.toString() ?? 'Thiết bị không rõ',
+                        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    if (isCurrent) const SizedBox(width: 6),
+                    if (isCurrent)
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFD1FAE5),
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        child: Text(Trans.active, style: const TextStyle(color: Color(0xFF0F5132), fontSize: 10, fontWeight: FontWeight.bold)),
+                      ),
+                  ],
+                ),
                 const SizedBox(height: 4),
-                Text('Hoạt động gần nhất: ${_formatDateTime(session['last_used_at']?.toString())}', style: const TextStyle(color: Colors.grey, fontSize: 12)),
+                Text('Đăng nhập: ${_formatDateTime(session['created_at']?.toString())}', style: const TextStyle(color: Colors.grey, fontSize: 11)),
+                Text('Hoạt động: ${_formatDateTime(session['last_used_at']?.toString())}', style: const TextStyle(color: Colors.grey, fontSize: 11)),
               ],
             ),
           ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              if (isCurrent)
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFD1FAE5),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: const Text('Đang hoạt động', style: TextStyle(color: Color(0xFF0F5132), fontSize: 12)),
-                ),
-              const SizedBox(height: 8),
-              if (!isCurrent)
-                TextButton(
-                  onPressed: () => _revokeSession(session['id']?.toString() ?? ''),
-                  child: const Text('Thu hồi', style: TextStyle(color: Color(0xFFEF7A45))),
-                ),
-            ],
-          ),
+          if (!isCurrent)
+            IconButton(
+              icon: Icon(Icons.cancel_outlined, color: primaryColor, size: 20),
+              onPressed: () => _revokeSession(session['id']?.toString() ?? ''),
+              tooltip: Trans.revoke,
+            ),
         ],
       ),
     );
@@ -484,41 +501,114 @@ class _SecurityScreenState extends State<SecurityScreen> {
 
   Widget _buildDangerSection() {
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: const Color(0xFFFFF1F0),
-        borderRadius: BorderRadius.circular(24),
+        color: dangerColor.withOpacity(0.04),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: dangerColor.withOpacity(0.15)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('Khu vực nguy hiểm', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFFB91C1C))),
-          const SizedBox(height: 8),
-          const Text('Thao tác dưới đây có thể làm ảnh hưởng tài khoản của bạn.', style: TextStyle(color: Colors.grey)),
-          const SizedBox(height: 20),
+          Row(
+            children: [
+              Icon(Icons.gpp_bad_outlined, color: dangerColor, size: 22),
+              const SizedBox(width: 8),
+              Text(Trans.dangerZone, style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: dangerColor)),
+            ],
+          ),
+          const SizedBox(height: 4),
+          const Text('Thao tác này sẽ xóa vĩnh viễn toàn bộ dữ liệu tài khoản và không thể hoàn tác.', style: TextStyle(color: Colors.grey, fontSize: 13)),
+          const SizedBox(height: 14),
           SizedBox(
             width: double.infinity,
-            child: OutlinedButton(
+            height: 44,
+            child: ElevatedButton(
               onPressed: () {
                 showDialog<void>(
                   context: context,
                   builder: (context) => AlertDialog(
-                    title: const Text('Chức năng chưa hoàn thiện'),
-                    content: const Text('Chức năng sẽ được hoàn thiện ở bản sau.'),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    title: Text(Trans.featureNotReady),
+                    content: const Text('Chức năng xóa tài khoản đang được phát triển và sẽ ra mắt ở phiên bản tiếp theo.'),
                     actions: [
-                      TextButton(onPressed: () => Navigator.of(context).pop(), child: const Text('Đóng')),
+                      TextButton(onPressed: () => Navigator.of(context).pop(), child: Text(Trans.close)),
                     ],
                   ),
                 );
               },
-              style: OutlinedButton.styleFrom(
-                foregroundColor: const Color(0xFFB91C1C),
-                side: const BorderSide(color: Color(0xFFB91C1C)),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: dangerColor,
+                foregroundColor: Colors.white,
+                elevation: 0,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
               ),
-              child: const Text('Xóa khỏi tài khoản'),
+              child: Text(Trans.deleteAccount, style: const TextStyle(fontWeight: FontWeight.bold)),
             ),
           ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCustomTextField({
+    required TextEditingController controller,
+    required String label,
+    required bool obscureText,
+    required Function(String) onChanged,
+    required VoidCallback onToggleVisibility,
+  }) {
+    return TextField(
+      controller: controller,
+      obscureText: obscureText,
+      onChanged: onChanged,
+      style: const TextStyle(fontSize: 14),
+      decoration: InputDecoration(
+        labelText: label,
+        labelStyle: const TextStyle(fontSize: 13),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: BorderSide(color: Colors.grey.shade300),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: BorderSide(color: primaryColor, width: 1.5),
+        ),
+        suffixIcon: IconButton(
+          icon: Icon(obscureText ? Icons.visibility_off_outlined : Icons.visibility_outlined, size: 18),
+          onPressed: onToggleVisibility,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCodeChip(String code) {
+    final theme = Theme.of(context);
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surfaceVariant.withOpacity(0.5),
+        borderRadius: BorderRadius.circular(6),
+        border: Border.all(color: theme.colorScheme.outlineVariant.withOpacity(0.5)),
+      ),
+      child: Text(
+        code,
+        style: const TextStyle(fontWeight: FontWeight.w600, fontFamily: 'monospace', fontSize: 12, letterSpacing: 0.5),
+      ),
+    );
+  }
+
+  Widget _buildStatusAlert(String message, Color bgColor, Color textColor, IconData icon) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      decoration: BoxDecoration(color: bgColor, borderRadius: BorderRadius.circular(8)),
+      child: Row(
+        children: [
+          Icon(icon, color: textColor, size: 18),
+          const SizedBox(width: 8),
+          Expanded(child: Text(message, style: TextStyle(color: textColor, fontSize: 13, fontWeight: FontWeight.w500))),
         ],
       ),
     );

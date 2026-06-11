@@ -4,6 +4,7 @@ import 'package:webview_flutter/webview_flutter.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 import '../../services/video_service.dart';
 import '../../utils/network_utils.dart';
+import '../../utils/translation.dart';
 import '../products/product_detail_screen.dart';
 
 class VideoDetailScreen extends StatefulWidget {
@@ -48,7 +49,7 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
 
         if (videoObj == null) {
           setState(() {
-            _error = 'Không tìm thấy video yêu cầu';
+            _error = Trans.videoNotFound;
             _isLoading = false;
           });
           return;
@@ -68,7 +69,7 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
     } catch (e) {
       if (mounted) {
         setState(() {
-          _error = 'Lỗi tải chi tiết video: $e';
+          _error = Trans.errorLoadingDetail('video', e.toString());
           _isLoading = false;
         });
       }
@@ -224,11 +225,11 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
             children: [
               const Icon(Icons.error_outline, color: Colors.red, size: 48),
               const SizedBox(height: 16),
-              Text(_error ?? 'Lỗi không xác định', style: const TextStyle(fontSize: 16)),
+              Text(_error ?? Trans.videoUnknownError, style: const TextStyle(fontSize: 16)),
               const SizedBox(height: 16),
               ElevatedButton(
                 onPressed: () => Navigator.pop(context),
-                child: const Text('Quay lại danh sách'),
+                child: Text(Trans.backToVideoList),
               )
             ],
           ),
@@ -236,11 +237,11 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
       );
     }
 
-    final title = _video!['title']?.toString() ?? 'Video giới thiệu sản phẩm';
+    final title = _video!['title']?.toString() ?? Trans.videoIntroProduct;
     final product = _video!['product'] as Map<String, dynamic>?;
     String? desc = _video!['description']?.toString();
     if (desc == null || desc.isEmpty) {
-      desc = product?['short_description']?.toString() ?? 'Đây là video giới thiệu trực quan, giúp bạn có cái nhìn khách quan và rõ nét nhất về thiết kế, tính năng và hiệu năng thực tế của sản phẩm. Video được tổng hợp và phân phối bởi E-Tech Market.';
+      desc = product?['short_description']?.toString() ?? Trans.videoDescriptionDefault;
     }
 
     return Scaffold(
@@ -307,7 +308,7 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
                           color: const Color(0xFFEF4444).withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(20),
                         ),
-                        child: const Text('Phát sóng trực tuyến', style: TextStyle(color: Color(0xFFEF4444), fontWeight: FontWeight.bold, fontSize: 12)),
+                        child: Text(Trans.videoBroadcast, style: const TextStyle(color: Color(0xFFEF4444), fontWeight: FontWeight.bold, fontSize: 12)),
                       ),
                     ],
                   ),
@@ -315,7 +316,7 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
                     padding: EdgeInsets.symmetric(vertical: 16),
                     child: Divider(height: 1, color: Color(0xFFE2E8F0)),
                   ),
-                  const Text('Mô tả video', style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Color(0xFF1E293B))),
+                  Text(Trans.videoDescriptionLabel, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Color(0xFF1E293B))),
                   const SizedBox(height: 8),
                   Text(desc, style: const TextStyle(fontSize: 13, color: Color(0xFF64748B), height: 1.5)),
                 ],
@@ -331,7 +332,7 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text('Sản phẩm trong video', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFF0F172A))),
+                    Text(Trans.productsInVideo, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFF0F172A))),
                     const SizedBox(height: 12),
                     InkWell(
                       onTap: () {
@@ -375,7 +376,7 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
                                       ),
                                       const SizedBox(height: 6),
                                       Text(
-                                        (product['short_description']?.toString() ?? product['description']?.toString() ?? 'Đang cập nhật mô tả...').replaceAll(RegExp(r'<[^>]*>|&[^;]+;'), ''),
+                                        (product['short_description']?.toString() ?? product['description']?.toString() ?? Trans.updatingDescription).replaceAll(RegExp(r'<[^>]*>|&[^;]+;'), ''),
                                         style: const TextStyle(color: Color(0xFF64748B), fontSize: 12, height: 1.4),
                                         maxLines: 4,
                                         overflow: TextOverflow.ellipsis,
@@ -407,10 +408,10 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: const [
-                    Text('Sản phẩm', style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Color(0xFF1E293B))),
-                    SizedBox(height: 8),
-                    Text('Video tổng quan giới thiệu các giải pháp công nghệ tại E-Tech Market.', style: TextStyle(fontSize: 13, color: Color(0xFF64748B))),
+                  children: [
+                    Text(Trans.productLabel, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Color(0xFF1E293B))),
+                    const SizedBox(height: 8),
+                    Text(Trans.videoOverview, style: const TextStyle(fontSize: 13, color: Color(0xFF64748B))),
                   ],
                 ),
               ),
@@ -418,9 +419,9 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
             // Recommended Videos
             if (_recommendations.isNotEmpty) ...[
               const SizedBox(height: 24),
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16),
-                child: Text('Video đề xuất', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFF0F172A))),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Text(Trans.suggestedVideos, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFF0F172A))),
               ),
               const SizedBox(height: 12),
               ListView.separated(
@@ -469,14 +470,14 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                rec['title']?.toString() ?? 'Video đề xuất',
+                                rec['title']?.toString() ?? Trans.videoSuggested,
                                 maxLines: 2,
                                 overflow: TextOverflow.ellipsis,
                                 style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Color(0xFF1E293B)),
                               ),
                               const SizedBox(height: 4),
                               Text(
-                                (rec['description']?.toString() ?? 'Đang cập nhật mô tả...').replaceAll(RegExp(r'<[^>]*>|&[^;]+;'), ''),
+                                (rec['description']?.toString() ?? Trans.updatingDescription).replaceAll(RegExp(r'<[^>]*>|&[^;]+;'), ''),
                                 maxLines: 2,
                                 overflow: TextOverflow.ellipsis,
                                 style: const TextStyle(fontSize: 11, color: Color(0xFF64748B), height: 1.3),

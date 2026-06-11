@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import '../../services/flash_sale_service.dart';
 import '../../utils/network_utils.dart';
+import '../../utils/translation.dart';
 
 class FlashSaleSection extends StatefulWidget {
   final VoidCallback onViewAll;
@@ -27,6 +28,8 @@ class _FlashSaleSectionState extends State<FlashSaleSection> {
   int _minutes = 0;
   int _seconds = 0;
   Timer? _timer;
+  int _startIndex = 0;
+  int _tickCount = 0;
 
   @override
   void initState() {
@@ -101,6 +104,17 @@ class _FlashSaleSectionState extends State<FlashSaleSection> {
         final m = (diff ~/ (1000 * 60)) % 60;
         final s = (diff ~/ 1000) % 60;
 
+        _tickCount++;
+        if (_tickCount >= 30) {
+          _tickCount = 0;
+          final allItems = (_flashSale?['items'] as List<dynamic>?)
+                  ?.where((item) => item != null && item['product'] != null)
+                  .toList() ?? [];
+          if (allItems.isNotEmpty) {
+            _startIndex = (_startIndex + 5) % allItems.length;
+          }
+        }
+
         setState(() {
           _isCurrentlyActive = true;
           _hours = h;
@@ -115,14 +129,20 @@ class _FlashSaleSectionState extends State<FlashSaleSection> {
   Widget build(BuildContext context) {
     if (_isLoading) return const SizedBox.shrink();
 
-    final items = (_flashSale?['items'] as List<dynamic>?)
+    final allItems = (_flashSale?['items'] as List<dynamic>?)
             ?.where((item) => item != null && item['product'] != null)
-            .take(5)
             .toList() ??
         [];
 
-    if (!_isCurrentlyActive || items.isEmpty) {
+    if (!_isCurrentlyActive || allItems.isEmpty) {
       return const SizedBox.shrink();
+    }
+
+    final List<dynamic> items = [];
+    for (int i = 0; i < 5; i++) {
+      if (i < allItems.length) {
+        items.add(allItems[(_startIndex + i) % allItems.length]);
+      }
     }
 
     return Container(
@@ -166,9 +186,9 @@ class _FlashSaleSectionState extends State<FlashSaleSection> {
                   foregroundColor: const Color(0xFFFF2424),
                   padding: const EdgeInsets.symmetric(horizontal: 4),
                 ),
-                child: const Row(
+                child: Row(
                   children: [
-                    Text('Xem tất cả', style: TextStyle(fontSize: 14)),
+                    Text(Trans.viewAll, style: TextStyle(fontSize: 14)),
                     Icon(Icons.arrow_forward, size: 16),
                   ],
                 ),
@@ -445,7 +465,7 @@ class _FlashSaleCard extends StatelessWidget {
         const SizedBox(height: 4),
         // Chữ trạng thái số lượng đã bán
         Text(
-          sold == 0 ? 'Vừa mở bán' : 'Đã bán $sold',
+          Trans.soldCount(sold),
           style: TextStyle(
             fontSize: 10,
             fontWeight: FontWeight.w500,

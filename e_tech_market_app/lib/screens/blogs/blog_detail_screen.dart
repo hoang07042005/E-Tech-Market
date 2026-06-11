@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import '../../utils/network_utils.dart';
+import '../../utils/translation.dart';
 
 class BlogDetailScreen extends StatelessWidget {
   final dynamic post;
@@ -28,7 +29,7 @@ class BlogDetailScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'Chi tiết bài viết',
+          Trans.articleDetail,
           style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
         ),
         centerTitle: true,
@@ -142,9 +143,9 @@ class BlogDetailScreen extends StatelessWidget {
                   const SizedBox(height: 16),
                   Row(
                     children: [
-                      _buildMetaItem('Thời gian đọc: $readingTime phút', context),
+                      _buildMetaItem(Trans.readingTimeLabel(readingTime), context),
                       const SizedBox(width: 16),
-                      _buildMetaItem('Lượt xem: $views', context),
+                      _buildMetaItem(Trans.viewsLabel(views), context),
                     ],
                   ),
                   const SizedBox(height: 24),

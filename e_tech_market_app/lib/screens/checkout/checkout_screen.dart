@@ -6,6 +6,7 @@ import '../../services/checkout_service.dart';
 import '../../services/voucher_service.dart';
 import '../../utils/network_utils.dart';
 import '../../utils/app_snackbar.dart';
+import '../../utils/translation.dart';
 import '../account/clause/payment_security_policy_screen.dart';
 import 'payment_webview_screen.dart';
 import 'payment_result_screen.dart';
@@ -204,13 +205,13 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
 
   Future<void> _submitOrder() async {
     if (_cart.items.isEmpty) {
-      AppSnackBar.showError(context, 'Giỏ hàng đang trống.');
+      AppSnackBar.showError(context, Trans.emptyCartError);
       return;
     }
     if (_nameCtrl.text.trim().isEmpty ||
         _phoneCtrl.text.trim().isEmpty ||
         _addressCtrl.text.trim().isEmpty) {
-      AppSnackBar.showError(context, 'Vui lòng điền đầy đủ thông tin nhận hàng.');
+      AppSnackBar.showError(context, Trans.fillFullInfo);
       return;
     }
 
@@ -318,17 +319,17 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
             context: context,
             barrierDismissible: false,
             builder: (ctx) => AlertDialog(
-              title: const Text('Xác nhận thanh toán', style: TextStyle(fontWeight: FontWeight.bold)),
-              content: const Text('Bạn đã đóng trang thanh toán.\n\nNếu bạn chưa thanh toán hoặc gặp lỗi, vui lòng chọn "Hủy đơn hàng".'),
+              title: Text(Trans.closePaymentTitle, style: TextStyle(fontWeight: FontWeight.bold)),
+              content: Text(Trans.closePaymentMessage),
               actions: [
                 TextButton(
                   onPressed: () => Navigator.pop(ctx, false),
-                  child: const Text('Hủy đơn hàng', style: TextStyle(color: Colors.red)),
+                  child: Text(Trans.cancelOrderButton, style: TextStyle(color: Colors.red)),
                 ),
                 ElevatedButton(
                   onPressed: () => Navigator.pop(ctx, true),
                   style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFF26522), foregroundColor: Colors.white),
-                  child: const Text('Đã thanh toán'),
+                  child: Text(Trans.paidButton),
                 ),
               ],
             ),
@@ -375,7 +376,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text('Chọn mã giảm giá', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+                    Text(Trans.selectCoupon, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
                     IconButton(
                       icon: const Icon(Icons.close),
                       onPressed: () => Navigator.pop(ctx),
@@ -484,14 +485,14 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   Widget build(BuildContext context) {
     if (_isLoading) {
       return Scaffold(
-        appBar: AppBar(title: const Text('Thanh toán')),
+        appBar: AppBar(title: Text(Trans.checkoutTitle)),
         body: const Center(child: CircularProgressIndicator()),
       );
     }
 
     if (_error != null && _cart.items.isEmpty) {
       return Scaffold(
-        appBar: AppBar(title: const Text('Thanh toán')),
+        appBar: AppBar(title: Text(Trans.checkoutTitle)),
         body: Center(child: Text(_error!)),
       );
     }
@@ -508,19 +509,19 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildSectionTitle('THÔNG TIN & ĐỊA CHỈ NHẬN HÀNG'),
-            _buildTextField('Họ và tên', _nameCtrl),
-            _buildTextField('Số điện thoại', _phoneCtrl, keyboardType: TextInputType.phone),
-            _buildTextField('Địa chỉ', _addressCtrl, hintText: 'Số nhà, tên đường, phường/xã, quận/huyện, tỉnh/thành…'),
-            _buildTextField('Ghi chú đơn hàng', _notesCtrl, maxLines: 3, hintText: 'Ví dụ: giao giờ hành chính…'),
+            _buildSectionTitle(Trans.shippingInfo),
+            _buildTextField(Trans.fullName, _nameCtrl),
+            _buildTextField(Trans.phone, _phoneCtrl, keyboardType: TextInputType.phone),
+            _buildTextField(Trans.address, _addressCtrl, hintText: Trans.addressHint),
+            _buildTextField(Trans.orderNote, _notesCtrl, maxLines: 3, hintText: Trans.noteHint),
             const SizedBox(height: 16),
             _buildShippingMethod(),
             const SizedBox(height: 24),
-            _buildSectionTitle('PHƯƠNG THỨC THANH TOÁN'),
+            _buildSectionTitle(Trans.paymentSection),
             _buildPaymentMethods(),
             const SizedBox(height: 24),
             const SizedBox(height: 8),
-            Text('Tóm tắt đơn hàng (${_cart.totalQuantity})', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+            Text('${Trans.orderSummaryLabel} (${_cart.totalQuantity} ${Trans.productsCount})', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
             const SizedBox(height: 16),
             _buildOrderSummary(),
             const SizedBox(height: 20),
@@ -549,9 +550,9 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                           height: 1.4,
                         ),
                         children: [
-                          const TextSpan(text: 'Tôi đã đọc và đồng ý với '),
+                          TextSpan(text: Trans.iHaveRead),
                           TextSpan(
-                            text: 'Chính sách bảo mật thanh toán',
+                            text: Trans.paymentSecurityPolicy,
                             style: const TextStyle(
                               fontSize: 13,
                               color: Color(0xFFF26522),
@@ -595,7 +596,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                 ),
                 child: _isSubmitting
                     ? CircularProgressIndicator(color: Theme.of(context).colorScheme.error)
-                    : const Text('XÁC NHẬN ĐẶT HÀNG', style: TextStyle(fontWeight: FontWeight.bold)),
+                    : Text(Trans.confirmOrder, style: TextStyle(fontWeight: FontWeight.bold)),
               ),
             ),
           ],
@@ -748,7 +749,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       if (z.id == _selectedShipZoneId) selectedZone = z;
     }
     final selectedZoneText = selectedZone != null 
-        ? '${selectedZone.name} (${_isFreeShipping ? 'Miễn phí' : '+${_formatCurrency(selectedZone.fee)}'})' 
+        ? '${selectedZone.name} (${_isFreeShipping ? Trans.freeShipping : '+${_formatCurrency(selectedZone.fee)}'})' 
         : null;
 
     var selectedMethod;
@@ -762,21 +763,21 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text('Phương thức vận chuyển', style: TextStyle(fontWeight: FontWeight.bold)),
+        Text(Trans.shippingMethodTitle, style: TextStyle(fontWeight: FontWeight.bold)),
         const SizedBox(height: 8),
         Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Expanded(
               child: _buildDropdownField(
-                hint: 'Khu vực',
+                hint: Trans.zone,
                 valueText: selectedZoneText,
                 onTap: () {
                   _showSelectionBottomSheet(
                     title: 'Chọn khu vực giao hàng',
                     
                     items: _shippingZones.map((z) {
-                      final feeStr = _isFreeShipping ? 'Miễn phí' : '+${_formatCurrency(z.fee)}';
+                      final feeStr = _isFreeShipping ? Trans.freeShipping : '+${_formatCurrency(z.fee)}';
                       final isSelected = z.id == _selectedShipZoneId;
                       return ListTile(
                         title: Text('${z.name} ($feeStr)', style: TextStyle(fontSize: 14, fontWeight: isSelected ? FontWeight.bold : FontWeight.normal, color: isSelected ? const Color(0xFFF26522) : Theme.of(context).colorScheme.onSurface)),
@@ -819,9 +820,9 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
           ],
         ),
         if (_isFreeShipping)
-          const Padding(
-            padding: EdgeInsets.only(top: 8),
-            child: Text('Miễn phí vận chuyển (đủ điều kiện).', style: TextStyle(color: Colors.green)),
+          Padding(
+            padding: const EdgeInsets.only(top: 8),
+            child: Text(Trans.shippingFeeLabel, style: const TextStyle(color: Colors.green)),
           ),
       ],
     );
@@ -832,15 +833,15 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       children: [
         Row(
           children: [
-            Expanded(child: _paymentTile('cod', 'THANH TOÁN KHI\nNHẬN', 'assets/images/COD.png', _payAvail.cod)),
+            Expanded(child: _paymentTile('cod', Trans.codLabel, 'assets/images/COD.png', _payAvail.cod)),
             const SizedBox(width: 12),
-            Expanded(child: _paymentTile('vnpay', 'VNPAY\n(ATM/CREDIT)', 'assets/images/vnpay-logo.png', _payAvail.vnpay)),
+            Expanded(child: _paymentTile('vnpay', Trans.vnpayLabel, 'assets/images/vnpay-logo.png', _payAvail.vnpay)),
           ],
         ),
         const SizedBox(height: 12),
         Row(
           children: [
-            Expanded(child: _paymentTile('momo', 'VÍ ĐIỆN TỬ MOMO', 'assets/images/logo-momo.png', _payAvail.momo)),
+            Expanded(child: _paymentTile('momo', Trans.momoLabel, 'assets/images/logo-momo.png', _payAvail.momo)),
             const SizedBox(width: 12),
             const Expanded(child: SizedBox()),
           ],
@@ -955,10 +956,10 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
               ),
             )),
         const SizedBox(height: 8),
-        _summaryRow('Tạm tính', _formatCurrency(_totalPrice)),
-        _summaryRow('Phí vận chuyển', _isFreeShipping ? 'Miễn phí' : _formatCurrency(_shippingFee), valueColor: const Color(0xFF16A34A)),
+        _summaryRow(Trans.subtotal, _formatCurrency(_totalPrice)),
+        _summaryRow(Trans.shippingFee, _isFreeShipping ? Trans.freeShipping : _formatCurrency(_shippingFee), valueColor: const Color(0xFF16A34A)),
         if (_appliedCoupon != null)
-          _summaryRow('Giảm giá', '-${_formatCurrency(_discountAmount)}', valueColor: const Color(0xFF16A34A)),
+          _summaryRow(Trans.discount, '-${_formatCurrency(_discountAmount)}', valueColor: const Color(0xFF16A34A)),
         const SizedBox(height: 16),
         
         if (_appliedCoupon == null)
@@ -972,7 +973,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                       child: TextField(
                         controller: _couponCtrl,
                         decoration: InputDecoration(
-                          hintText: 'Nhập mã giảm giá',
+                          hintText: Trans.couponCode,
                           hintStyle: const TextStyle(color: Colors.grey, fontSize: 14),
                           contentPadding: const EdgeInsets.symmetric(horizontal: 16),
                           border: OutlineInputBorder(
@@ -998,7 +999,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                         elevation: 0,
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
                       ),
-                      child: const Text('Áp dụng', style: TextStyle(fontWeight: FontWeight.bold)),
+                      child: Text(Trans.apply, style: TextStyle(fontWeight: FontWeight.bold)),
                     ),
                   ),
                 ],
@@ -1010,7 +1011,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                 child: OutlinedButton.icon(
                   onPressed: _showVoucherModal,
                   icon: const Icon(Icons.card_giftcard, color: Color(0xFFF26522), size: 18),
-                  label: const Text('Chọn mã có sẵn', style: TextStyle(color: Color(0xFFF26522), fontWeight: FontWeight.bold)),
+                  label: Text(Trans.selectCoupon, style: TextStyle(color: Color(0xFFF26522), fontWeight: FontWeight.bold)),
                   style: OutlinedButton.styleFrom(
                     side: BorderSide(color: const Color(0xFFF26522).withOpacity(0.5), width: 1),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
@@ -1040,7 +1041,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                 ),
                 InkWell(
                   onTap: _removeCoupon,
-                  child: const Text('Bỏ mã', style: TextStyle(color: Colors.grey, fontWeight: FontWeight.bold, fontSize: 13)),
+                  child: Text(Trans.removeCoupon, style: TextStyle(color: Colors.grey, fontWeight: FontWeight.bold, fontSize: 13)),
                 ),
               ],
             ),
@@ -1055,7 +1056,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
         const SizedBox(height: 24),
         const Divider(height: 1, color: Color(0xFFEEEEEE)),
         const SizedBox(height: 16),
-        _summaryRow('Tổng cộng', _formatCurrency(_grandTotal), isTotal: true),
+        _summaryRow(Trans.total, _formatCurrency(_grandTotal), isTotal: true),
       ],
     );
   }

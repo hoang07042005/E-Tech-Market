@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../services/auth_service.dart';
 import '../../../utils/network_utils.dart';
+import '../../../utils/translation.dart';
 import 'edit_profile_screen.dart';
 import '_purchased_products_widget.dart';
 
@@ -57,7 +58,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Thông tin cá nhân'),
+        title: Text(Trans.profile),
         backgroundColor: Theme.of(context).colorScheme.surface,
         foregroundColor: Theme.of(context).colorScheme.onSurface,
         elevation: 0,
@@ -73,9 +74,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 _loadUser(); // reload if updated
               }
             },
-            child: const Text(
-              'Sửa',
-              style: TextStyle(
+            child: Text(
+              Trans.edit,
+              style: const TextStyle(
                 color: Color(0xFFF26522),
                 fontWeight: FontWeight.bold,
                 fontSize: 16,
@@ -143,13 +144,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
       child: SingleChildScrollView(          
         child: Column(
           children: [
-            _buildInfoRow('Họ và tên', _user!['name'] ?? '—'),
+            _buildInfoRow(Trans.fullName, _user!['name'] ?? '—'),
             const Divider(height: 32, color: Colors.black12),
-            _buildInfoRow('Email', _user!['email'] ?? '—'),
+            _buildInfoRow(Trans.email, _user!['email'] ?? '—'),
             const Divider(height: 32, color: Colors.black12),
-            _buildInfoRow('Số điện thoại', _user!['phone'] ?? '—'),
+            _buildInfoRow(Trans.phone, _user!['phone'] ?? '—'),
             const Divider(height: 32, color: Colors.black12),
-            _buildInfoRow('Địa chỉ', _buildAddress()),
+            _buildInfoRow(Trans.address, _buildAddress()),
           ],
         ),
       ),

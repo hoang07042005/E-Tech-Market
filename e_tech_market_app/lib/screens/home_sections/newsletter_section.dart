@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+
 import '../../services/newsletter_service.dart';
+import '../../utils/translation.dart';
 
 class NewsletterSection extends StatefulWidget {
   const NewsletterSection({Key? key}) : super(key: key);
@@ -34,7 +36,7 @@ class _NewsletterSectionState extends State<NewsletterSection> {
     try {
       await NewsletterService.subscribeToNewsletter(email: email);
       setState(() {
-        _message = 'Đăng ký thành công! Cảm ơn bạn.';
+        _message = Trans.registerSuccessThanks;
         _emailController.clear();
       });
 

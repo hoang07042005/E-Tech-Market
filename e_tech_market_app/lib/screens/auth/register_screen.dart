@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../services/auth_service.dart';
+import '../../utils/translation.dart';
 import '../home_screen.dart';
 
 class RegisterScreen extends StatefulWidget {
@@ -25,13 +26,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
     if (!_formKey.currentState!.validate()) return;
     if (_passwordController.text != _confirmController.text) {
       setState(() {
-        _error = 'Mật khẩu xác nhận không khớp.';
+        _error = Trans.passwordNotMatch;
       });
       return;
     }
     if (!_agree) {
       setState(() {
-        _error = 'Bạn cần đồng ý điều khoản và chính sách bảo mật.';
+        _error = Trans.agreeToTerms;
       });
       return;
     }
@@ -95,7 +96,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         text: TextSpan(
                           children: [
                             TextSpan(
-                              text: 'Chào mừng\n',
+                              text: Trans.welcome + '\n',
                               style: TextStyle(color: Colors.black, fontSize: 42, fontWeight: FontWeight.w800),
                             ),
                             TextSpan(
@@ -106,8 +107,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         ),
                       ),
                       const SizedBox(height: 12),
-                      const Text(
-                        'Tạo tài khoản để mua sắm và theo dõi đơn hàng cùng sản phẩm công nghệ tốt nhất.',
+                      Text(
+                        Trans.subtitle,
                         style: TextStyle(color: Color(0xFF9CA3AF), fontSize: 14, height: 1.6),
                       ),
                     ],
@@ -145,8 +146,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         ),
                       ),
                       const SizedBox(height: 8),
-                      const Text(
-                        'Trải nghiệm chuỗi bán lẻ công nghệ — sản phẩm được tuyển chọn cho người yêu thích sự chính xác và hiệu năng.',
+                      Text(
+                        Trans.subtitle,
                         style: TextStyle(color: Color(0xFF9CA3AF), fontSize: 13, height: 1.6),
                       ),
                     ],
@@ -206,7 +207,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   const SizedBox(height: 10),
                   Center(
                     child: Text(
-                      'Đăng ký',
+                      Trans.registerTitle,
                       style: TextStyle(
                         color: accent,
                         fontSize: 30,
@@ -217,7 +218,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   const SizedBox(height: 8),
                   Center(
                     child: Text(
-                      'Tạo tài khoản để mua sắm và theo dõi đơn hàng.',
+                      Trans.registerSubtitle,
                       textAlign: TextAlign.center,
                       style: TextStyle(color: Colors.black54, fontSize: 14),
                     ),
@@ -236,63 +237,63 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: [
-                              const Text('Họ và tên', style: TextStyle(color: Color(0xFF7C6B61), fontSize: 13)),
+                              Text(Trans.fullName, style: TextStyle(color: Color(0xFF7C6B61), fontSize: 13)),
                               TextFormField(
-                                style: TextStyle(color: Theme.of(context).colorScheme.surface),
+                                style: TextStyle(color: Color(0xFF7C6B61)),
                                 controller: _nameController,
                                 decoration: _inputDecoration(''),
                                 validator: (value) {
-                                  if (value == null || value.trim().isEmpty) return 'Vui lòng nhập họ tên.';
+                                  if (value == null || value.trim().isEmpty) return Trans.pleaseEnterName;
                                   return null;
                                 },
                               ),
                               const SizedBox(height: 16),
-                              const Text('Email', style: TextStyle(color: Color(0xFF7C6B61), fontSize: 13)),
+                              Text(Trans.email, style: TextStyle(color: Color(0xFF7C6B61), fontSize: 13)),
                               TextFormField(
-                                style: TextStyle(color: Theme.of(context).colorScheme.surface),
+                                style: TextStyle(color: Color(0xFF7C6B61)),
                                 controller: _emailController,
                                 keyboardType: TextInputType.emailAddress,
                                 decoration: _inputDecoration(''),
                                 validator: (value) {
-                                  if (value == null || value.trim().isEmpty) return 'Vui lòng nhập email.';
-                                  if (!value.contains('@')) return 'Email không hợp lệ.';
+                                  if (value == null || value.trim().isEmpty) return Trans.pleaseEnterEmail;
+                                  if (!value.contains('@')) return Trans.invalidEmailFormat;
                                   return null;
                                 },
                               ),
                               const SizedBox(height: 16),
-                              const Text('Số điện thoại', style: TextStyle(color: Color(0xFF7C6B61), fontSize: 13)),
+                              Text(Trans.phoneNumber, style: TextStyle(color: Color(0xFF7C6B61), fontSize: 13)),
                               TextFormField(
-                                style: TextStyle(color: Theme.of(context).colorScheme.surface),
+                                style: TextStyle(color: Color(0xFF7C6B61)),
                                 controller: _phoneController,
                                 keyboardType: TextInputType.phone,
                                 decoration: _inputDecoration(''),
                                 validator: (value) {
-                                  if (value == null || value.trim().isEmpty) return 'Vui lòng nhập số điện thoại.';
+                                  if (value == null || value.trim().isEmpty) return Trans.pleaseEnterPhone;
                                   return null;
                                 },
                               ),
                               const SizedBox(height: 16),
-                              const Text('Mật khẩu', style: TextStyle(color: Color(0xFF7C6B61), fontSize: 13)),
+                              Text(Trans.password, style: TextStyle(color: Color(0xFF7C6B61), fontSize: 13)),
                               TextFormField(
-                                style: TextStyle(color: Theme.of(context).colorScheme.surface),
+                                style: TextStyle(color: Color(0xFF7C6B61)),
                                 controller: _passwordController,
                                 obscureText: true,
                                 decoration: _inputDecoration(''),
                                 validator: (value) {
-                                  if (value == null || value.isEmpty) return 'Vui lòng nhập mật khẩu.';
-                                  if (value.length < 6) return 'Mật khẩu cần ít nhất 6 ký tự.';
+                                  if (value == null || value.isEmpty) return Trans.pleaseEnterPassword;
+                                  if (value.length < 6) return Trans.passwordMinLength;
                                   return null;
                                 },
                               ),
                               const SizedBox(height: 16),
-                              const Text('Xác nhận mật khẩu', style: TextStyle(color: Color(0xFF7C6B61), fontSize: 13)),
+                              Text(Trans.confirmPassword, style: TextStyle(color: Color(0xFF7C6B61), fontSize: 13)),
                               TextFormField(
-                                style: TextStyle(color: Theme.of(context).colorScheme.surface),
+                                style: TextStyle(color: Color(0xFF7C6B61)),
                                 controller: _confirmController,
                                 obscureText: true,
                                 decoration: _inputDecoration(''),
                                 validator: (value) {
-                                  if (value == null || value.isEmpty) return 'Vui lòng nhập xác nhận mật khẩu.';
+                                  if (value == null || value.isEmpty) return Trans.pleaseConfirmPassword;
                                   return null;
                                 },
                               ),
@@ -311,9 +312,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                           },
                                     activeColor: accent,
                                   ),
-                                  const Expanded(
+                                  Expanded(
                                     child: Text(
-                                      'Tôi đồng ý điều khoản và chính sách bảo mật.',
+                                      Trans.agreeToTermsText,
                                       style: TextStyle(color: Color(0xFF6B7280), fontSize: 13),
                                     ),
                                   ),
@@ -344,7 +345,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           ),
                           child: _isLoading
                               ? const SizedBox(height: 18, width: 18, child: CircularProgressIndicator(color: Color(0xFFFFFFFF), strokeWidth: 2))
-                              : const Text('TẠO TÀI KHOẢN', style: TextStyle(letterSpacing: 2, fontWeight: FontWeight.w700, color: Color(0xFFFFFFFF))),
+                              : Text(Trans.registerButton, style: TextStyle(letterSpacing: 2, fontWeight: FontWeight.w700, color: Color(0xFFFFFFFF))),
                         ),
                         const SizedBox(height: 16),
                         OutlinedButton(
@@ -355,7 +356,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             padding: const EdgeInsets.symmetric(vertical: 14),
                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                           ),
-                          child: const Text('Đã có tài khoản? Đăng nhập', style: TextStyle(fontWeight: FontWeight.w600)),
+                          child: Text(Trans.alreadyHaveAccountLogin, style: TextStyle(fontWeight: FontWeight.w600)),
                         ),
                       ],
                     ),

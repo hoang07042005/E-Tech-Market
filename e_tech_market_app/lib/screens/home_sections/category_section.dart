@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../utils/network_utils.dart';
+import '../../utils/translation.dart';
 
 class CategorySection extends StatelessWidget {
   final List<dynamic> categories;
@@ -66,8 +67,8 @@ class CategorySection extends StatelessWidget {
                   minimumSize: Size.zero,
                   tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                 ),
-                child: const Text(
-                  'XEM TẤT CẢ',
+                child: Text(
+                  Trans.viewAllCaps,
                   style: TextStyle(
                       fontSize: 11,
                       fontWeight: FontWeight.w800,

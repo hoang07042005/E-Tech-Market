@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../services/order_service.dart';
 import '../../../utils/network_utils.dart';
+import '../../../utils/translation.dart';
 import 'order_detail_screen.dart';
 
 class OrderListScreen extends StatefulWidget {
@@ -130,7 +131,7 @@ class _OrderListScreenState extends State<OrderListScreen> {
         elevation: 0,
         title: Row(
           children: [
-            const Text('Đơn hàng'),
+            Text(Trans.myOrders, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 17)),
             const Spacer(),
             IconButton(
               icon: const Icon(Icons.search_outlined),
@@ -163,9 +164,9 @@ class _OrderListScreenState extends State<OrderListScreen> {
                             const SizedBox(height: 40),
                             Icon(Icons.receipt_long_outlined, size: 72, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.4)),
                             const SizedBox(height: 24),
-                            const Text('Bạn chưa có đơn hàng nào.', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                            Text(Trans.noOrdersYet, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                             const SizedBox(height: 12),
-                            Text('Mua s?m ngay d? t?o don h�ng d?u ti�n.', style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6))),
+                            Text(Trans.shopNowToCreateFirstOrder, style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6))),
                           ],
                         )
                       : ListView(
@@ -243,7 +244,7 @@ class _OrderListScreenState extends State<OrderListScreen> {
       decoration: BoxDecoration(color: Theme.of(context).colorScheme.surface, borderRadius: BorderRadius.circular(5)),
       child: Row(
         children: [
-          const Text('Trạng thái:', style: TextStyle(fontWeight: FontWeight.w600)),
+          Text(Trans.orderStatus, style: const TextStyle(fontWeight: FontWeight.w600)),
           const SizedBox(width: 12),
           Expanded(
             child: SingleChildScrollView(
@@ -339,7 +340,7 @@ class _OrderListScreenState extends State<OrderListScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text('Mã đơn: #$code', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+                      Text('${Trans.orderCodeLabel}$code', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
                       Text(
                         meta['label'] as String,
                         style: TextStyle(color: meta['color'] as Color, fontWeight: FontWeight.bold, fontSize: 13),
@@ -347,7 +348,7 @@ class _OrderListScreenState extends State<OrderListScreen> {
                     ],
                   ),
                   const SizedBox(height: 4),
-                  Text('Ngày đặt: $date', style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6), fontSize: 12)),
+                  Text(Trans.orderDateLabel(date), style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6), fontSize: 12)),
                   // const Divider(height: 24),
                   Row(
                     children: [
@@ -376,7 +377,7 @@ class _OrderListScreenState extends State<OrderListScreen> {
                           children: [
                             Text(prodName, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14), maxLines: 2, overflow: TextOverflow.ellipsis),
                             const SizedBox(height: 4),
-                            Text('Số lượng: $prodQty', style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6), fontSize: 13)),
+                            Text(Trans.quantityLabel(int.tryParse(prodQty) ?? 1), style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6), fontSize: 13)),
                           ],
                         ),
                       ),
@@ -386,7 +387,7 @@ class _OrderListScreenState extends State<OrderListScreen> {
                     const SizedBox(height: 8),
                     Align(
                       alignment: Alignment.center,
-                      child: Text('và ${items.length - 1} sản phẩm khác', style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6), fontSize: 12, fontStyle: FontStyle.italic)),
+                      child: Text(Trans.andOtherProducts(items.length - 1), style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6), fontSize: 12, fontStyle: FontStyle.italic)),
                     ),
                   ],
                   // const Divider(height: 24),
@@ -395,7 +396,7 @@ class _OrderListScreenState extends State<OrderListScreen> {
                     children: [
                       Row(
                         children: [
-                          const Text('Tổng tiền: ', style: TextStyle(fontSize: 13)),
+                          Text(Trans.totalLabel, style: const TextStyle(fontSize: 13)),
                           Text('$finalPriceđ', style: const TextStyle(fontWeight: FontWeight.bold, color: Color(0xFFF26522), fontSize: 16)),
                         ],
                       ),
@@ -412,7 +413,7 @@ class _OrderListScreenState extends State<OrderListScreen> {
                           minimumSize: Size.zero,
                           tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                         ),
-                        child: Text('Xem chi tiết', style: TextStyle(color: Theme.of(context).colorScheme.primary)),
+                        child: Text(Trans.viewDetails, style: TextStyle(color: Theme.of(context).colorScheme.primary)),
                       )
                     ],
                   ),
@@ -433,7 +434,7 @@ class _OrderListScreenState extends State<OrderListScreen> {
           onPressed: _page > 1 ? () => _loadOrders(page: _page - 1) : null,
           icon: const Icon(Icons.chevron_left),
         ),
-        Text('Trang $_page / $_lastPage'),
+        Text(Trans.pageOf(_page, _lastPage)),
         IconButton(
           onPressed: _page < _lastPage ? () => _loadOrders(page: _page + 1) : null,
           icon: const Icon(Icons.chevron_right),

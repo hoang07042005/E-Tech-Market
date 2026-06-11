@@ -1,5 +1,7 @@
 ﻿import 'package:flutter/material.dart';
+import '../../../controllers/locale_controller.dart';
 import '../../../controllers/theme_controller.dart';
+import '../../../l10n/app_localizations.dart';
 
 class SettingScreen extends StatefulWidget {
   const SettingScreen({super.key});
@@ -15,10 +17,11 @@ class _SettingScreenState extends State<SettingScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
       appBar: AppBar(
-        title: const Text('Cài đặt', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+        title: Text(l10n.settings, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
         backgroundColor: Theme.of(context).colorScheme.surface,
         foregroundColor: Theme.of(context).colorScheme.onSurface,
         elevation: 0,
@@ -28,7 +31,7 @@ class _SettingScreenState extends State<SettingScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildSectionTitle('Giao diện'),
+            _buildSectionTitle('Interface'),
             _buildCard(children: [
               ListenableBuilder(
                 listenable: ThemeController.instance,
@@ -36,53 +39,58 @@ class _SettingScreenState extends State<SettingScreen> {
                   final isDark = ThemeController.instance.isDark;
                   return _buildSwitchTile(
                     icon: Icons.dark_mode_outlined,
-                    title: 'Chế độ tối (Dark Mode)',
+                    title: l10n.darkMode,
                     value: isDark,
                     onChanged: (val) => ThemeController.instance.setDarkMode(val),
                   );
                 },
               ),
               const Divider(height: 1, indent: 56),
-              ListTile(
-                leading: Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(color: const Color(0xFFEFF6FF), borderRadius: BorderRadius.circular(8)),
-                  child: const Icon(Icons.language, color: Color(0xFF3B82F6), size: 20),
-                ),
-                title: const Text('Ngôn ngữ', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500)),
-                trailing: const Row(mainAxisSize: MainAxisSize.min, children: [
-                  Text('Tiếng Việt', style: TextStyle(color: Color(0xFF64748B), fontSize: 14)),
-                  SizedBox(width: 8),
-                  Icon(Icons.chevron_right, color: Color(0xFFCBD5E1)),
-                ]),
-                onTap: () {},
+              ListenableBuilder(
+                listenable: LocaleController.instance,
+                builder: (context, _) {
+                  return ListTile(
+                    leading: Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(color: const Color(0xFFEFF6FF), borderRadius: BorderRadius.circular(8)),
+                      child: const Icon(Icons.language, color: Color(0xFF3B82F6), size: 20),
+                    ),
+                    title: Text(l10n.language, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w500)),
+                    trailing: Row(mainAxisSize: MainAxisSize.min, children: [
+                      Text(LocaleController.instance.getLanguageName(), style: const TextStyle(color: Color(0xFF64748B), fontSize: 14)),
+                      const SizedBox(width: 8),
+                      const Icon(Icons.chevron_right, color: Color(0xFFCBD5E1)),
+                    ]),
+                    onTap: () => _showLanguageDialog(context),
+                  );
+                },
               ),
             ]),
             const SizedBox(height: 24),
-            _buildSectionTitle('Riêng tư'),
+            _buildSectionTitle(l10n.privacy),
             _buildCard(children: [
-              _buildSwitchTile(icon: Icons.phone_android_outlined, iconColor: const Color(0xFF10B981), iconBgColor: const Color(0xFFECFDF5), title: 'Hiện thị số điện thoại', value: _showPhoneNumber, onChanged: (val) => setState(() => _showPhoneNumber = val)),
+              _buildSwitchTile(icon: Icons.phone_android_outlined, iconColor: const Color(0xFF10B981), iconBgColor: const Color(0xFFECFDF5), title: l10n.displayPhoneNumber, value: _showPhoneNumber, onChanged: (val) => setState(() => _showPhoneNumber = val)),
               const Divider(height: 1, indent: 56),
-              _buildSwitchTile(icon: Icons.recommend_outlined, iconColor: const Color(0xFF10B981), iconBgColor: const Color(0xFFECFDF5), title: 'Cho phép cá nhân hóa đề xuất sản phẩm', value: _allowPersonalization, onChanged: (val) => setState(() => _allowPersonalization = val)),
+              _buildSwitchTile(icon: Icons.recommend_outlined, iconColor: const Color(0xFF10B981), iconBgColor: const Color(0xFFECFDF5), title: l10n.allowPersonalization, value: _allowPersonalization, onChanged: (val) => setState(() => _allowPersonalization = val)),
             ]),
             const SizedBox(height: 24),
-            _buildSectionTitle('Dữ liệu'),
+            _buildSectionTitle(l10n.data),
             _buildCard(children: [
-              _buildActionTile(icon: Icons.delete_outline, iconColor: const Color(0xFFEF4444), iconBgColor: const Color(0xFFFEF2F2), title: 'Xóa bộ nhớ đệm', onTap: () {}),
+              _buildActionTile(icon: Icons.delete_outline, iconColor: const Color(0xFFEF4444), iconBgColor: const Color(0xFFFEF2F2), title: l10n.clearCache, onTap: () {}),
               const Divider(height: 1, indent: 56),
-              _buildActionTile(icon: Icons.refresh, iconColor: const Color(0xFFF59E0B), iconBgColor: const Color(0xFFFFFBEB), title: 'Làm mới dữ liệu ứng dụng', onTap: () {}),
+              _buildActionTile(icon: Icons.refresh, iconColor: const Color(0xFFF59E0B), iconBgColor: const Color(0xFFFFFBEB), title: l10n.refreshData, onTap: () {}),
             ]),
             const SizedBox(height: 24),
-            _buildSectionTitle('Thông tin ứng dụng'),
+            _buildSectionTitle(l10n.appInfo),
             _buildCard(children: [
-              ListTile(leading: Container(padding: const EdgeInsets.all(8), decoration: BoxDecoration(color: const Color(0xFFF3E8FF), borderRadius: BorderRadius.circular(8)), child: const Icon(Icons.info_outline, color: Color(0xFFA855F7), size: 20)), title: const Text('Phiên bản ứng dụng', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500)), trailing: const Text('v1.0.0', style: TextStyle(color: Color(0xFF64748B), fontSize: 14))),
+              ListTile(leading: Container(padding: const EdgeInsets.all(8), decoration: BoxDecoration(color: const Color(0xFFF3E8FF), borderRadius: BorderRadius.circular(8)), child: const Icon(Icons.info_outline, color: Color(0xFFA855F7), size: 20)), title: Text(l10n.appVersion, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w500)), trailing: const Text('v1.0.0', style: TextStyle(color: Color(0xFF64748B), fontSize: 14))),
               const Divider(height: 1, indent: 56),
-              _buildActionTile(icon: Icons.system_update_alt, iconColor: const Color(0xFFA855F7), iconBgColor: const Color(0xFFF3E8FF), title: 'Kiểm tra cập nhật', onTap: () {}),
+              _buildActionTile(icon: Icons.system_update_alt, iconColor: const Color(0xFFA855F7), iconBgColor: const Color(0xFFF3E8FF), title: l10n.checkUpdate, onTap: () {}),
             ]),
             const SizedBox(height: 24),
-            _buildSectionTitle('Khu vực nguy hiểm', color: const Color(0xFFEF4444)),
+            _buildSectionTitle(l10n.dangerZone, color: const Color(0xFFEF4444)),
             _buildCard(children: [
-              _buildActionTile(icon: Icons.delete_forever, iconColor: const Color(0xFFEF4444), iconBgColor: const Color(0xFFFEF2F2), titleColor: const Color(0xFFEF4444), title: 'Xóa tài khoản', onTap: () {}),
+              _buildActionTile(icon: Icons.delete_forever, iconColor: const Color(0xFFEF4444), iconBgColor: const Color(0xFFFEF2F2), titleColor: const Color(0xFFEF4444), title: l10n.deleteAccount, onTap: () {}),
             ]),
             const SizedBox(height: 40),
           ],
@@ -119,6 +127,51 @@ class _SettingScreenState extends State<SettingScreen> {
       title: Text(title, style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500, color: titleColor)),
       trailing: Icon(Icons.chevron_right, color: Theme.of(context).colorScheme.outline),
       onTap: onTap,
+    );
+  }
+
+  void _showLanguageDialog(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(l10n.selectLanguage),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              title: Text(l10n.vietnamese),
+              leading: Radio<String>(
+                value: 'vi',
+                groupValue: LocaleController.instance.locale.languageCode,
+                onChanged: (value) {
+                  LocaleController.instance.setLocale(Locale(value!));
+                  Navigator.pop(context);
+                },
+              ),
+              onTap: () {
+                LocaleController.instance.setLocale(const Locale('vi'));
+                Navigator.pop(context);
+              },
+            ),
+            ListTile(
+              title: Text(l10n.english),
+              leading: Radio<String>(
+                value: 'en',
+                groupValue: LocaleController.instance.locale.languageCode,
+                onChanged: (value) {
+                  LocaleController.instance.setLocale(Locale(value!));
+                  Navigator.pop(context);
+                },
+              ),
+              onTap: () {
+                LocaleController.instance.setLocale(const Locale('en'));
+                Navigator.pop(context);
+              },
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../services/products_service.dart';
 import '../../utils/network_utils.dart';
+import '../../utils/translation.dart';
 import '../products/product_detail_screen.dart';
 
 class SearchScreen extends StatefulWidget {
@@ -175,7 +176,7 @@ class _SearchScreenState extends State<SearchScreen> {
             Icon(Icons.search_rounded, size: 100, color: Colors.grey.shade300),
             const SizedBox(height: 16),
             Text(
-              'Bạn tìm sản phẩm gì hôm nay?',
+              Trans.whatAreYouLookingFor,
               style: TextStyle(color: Colors.grey.shade600, fontSize: 16, fontWeight: FontWeight.w500),
             ),
           ],

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../services/cart_service.dart';
+import '../../utils/translation.dart';
 import '../products/product_detail_screen.dart';
 import '../checkout/checkout_screen.dart';
 
@@ -85,8 +86,8 @@ class _CartScreenState extends State<CartScreen> {
         backgroundColor: Theme.of(context).colorScheme.surface,
         foregroundColor: Theme.of(context).colorScheme.onSurface,
         elevation: 0,
-        title: const Text(
-          'Giỏ hàng',
+        title: Text(
+          Trans.cartTitle,
           style: TextStyle(fontWeight: FontWeight.w800),
         ),
         actions: [
@@ -96,7 +97,7 @@ class _CartScreenState extends State<CartScreen> {
                   ? null
                   : () => _runCartAction(() => CartService.clearCart(_cart)),
               icon: const Icon(Icons.delete_outline, size: 18),
-              label: const Text('Xóa tất cả'),
+              label: Text(Trans.clearAll),
               style: TextButton.styleFrom(foregroundColor: accent),
             ),
         ],
@@ -412,8 +413,8 @@ class _CartScreenState extends State<CartScreen> {
                   borderRadius: BorderRadius.circular(10),
                 ),
               ),
-              child: const Text(
-                'Thanh toán',
+              child: Text(
+                Trans.checkoutButton,
                 style: TextStyle(fontWeight: FontWeight.w800),
               ),
             ),

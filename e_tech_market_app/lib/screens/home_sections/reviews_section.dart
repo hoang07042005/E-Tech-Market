@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../utils/network_utils.dart';
+import '../../utils/translation.dart';
 
 class ReviewsSection extends StatelessWidget {
   final List<dynamic> reviews;
@@ -29,7 +30,7 @@ class ReviewsSection extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Text(
-                  'TRẢI NGHIỆM THỰC TẾ',
+                  Trans.experienceReality,
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 11,
@@ -40,7 +41,7 @@ class ReviewsSection extends StatelessWidget {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'Đánh giá từ khách hàng',
+                  Trans.customerReviews,
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 25,
@@ -97,7 +98,7 @@ class _ReviewCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final userName = review['user']?['name']?.toString() ?? 'Người dùng';
+    final userName = review['user']?['name']?.toString() ?? Trans.user;
     final userAvatarUrl =
         NetworkUtils.fixDeviceUrl(review['user']?['avatar_url']?.toString() ?? '');
     final rating = (review['rating'] as num?)?.toInt() ?? 5;
@@ -202,7 +203,7 @@ class _ReviewCard extends StatelessWidget {
                         borderRadius: BorderRadius.circular(6),
                       ),
                       child: Text(
-                        'Sản phẩm: $productName',
+                        Trans.productWithName(productName),
                         style: TextStyle(
                           fontSize: 11,
                           color: Theme.of(context).colorScheme.onSurfaceVariant,
@@ -246,11 +247,11 @@ class _ReviewCard extends StatelessWidget {
   }
 
   String _getRatingLabel(int rating) {
-    if (rating >= 5) return 'Tuyệt vời';
-    if (rating == 4) return 'Rất tốt';
-    if (rating == 3) return 'Tốt';
-    if (rating == 2) return 'Tạm ổn';
-    return 'Chưa hài lòng';
+    if (rating >= 5) return Trans.ratingExcellent;
+    if (rating == 4) return Trans.ratingVeryGood;
+    if (rating == 3) return Trans.ratingGood;
+    if (rating == 2) return Trans.ratingOkay;
+    return Trans.ratingNotSatisfied;
   }
 
   String _formatDate(String isoDate) {
@@ -262,11 +263,11 @@ class _ReviewCard extends StatelessWidget {
 
       if (diff.inDays == 0) {
         if (diff.inHours == 0) {
-          return '${diff.inMinutes} phút trước';
+          return '${diff.inMinutes} ${Trans.minutesAgo}';
         }
-        return '${diff.inHours} giờ trước';
+        return '${diff.inHours} ${Trans.hoursAgo}';
       } else if (diff.inDays < 30) {
-        return '${diff.inDays} ngày trước';
+        return '${diff.inDays} ${Trans.daysAgo}';
       } else {
         return dateTime.toLocal().toString().split(' ')[0];
       }

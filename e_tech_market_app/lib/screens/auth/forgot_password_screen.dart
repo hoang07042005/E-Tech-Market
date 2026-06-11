@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../services/auth_service.dart';
+import '../../utils/translation.dart';
 import 'reset_password_screen.dart';
 
 class ForgotPasswordScreen extends StatefulWidget {
@@ -78,8 +79,8 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   const SizedBox(height: 20),
-                  const Text(
-                    'Quên mật khẩu?',
+                  Text(
+                    Trans.forgotPasswordTitle,
                     style: TextStyle(
                       color: accent,
                       fontSize: 30,
@@ -87,8 +88,8 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                     ),
                   ),
                   const SizedBox(height: 12),
-                  const Text(
-                    'Đừng lo lắng! Nhập email của bạn vào bên dưới, chúng tôi sẽ gửi cho bạn hướng dẫn để khôi phục mật khẩu.',
+                  Text(
+                    Trans.forgotPasswordSubtitle,
                     style: TextStyle(color: Colors.black54, fontSize: 14, height: 1.5),
                   ),
                   const SizedBox(height: 32),
@@ -104,13 +105,13 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                         children: [
                           const Icon(Icons.check_circle, color: Color(0xFF059669), size: 48),
                           const SizedBox(height: 12),
-                          const Text(
-                            'Đã gửi email khôi phục!',
+                          Text(
+                            Trans.emailSentSuccess,
                             style: TextStyle(color: Color(0xFF065F46), fontWeight: FontWeight.bold, fontSize: 16),
                           ),
                           const SizedBox(height: 8),
-                          const Text(
-                            'Vui lòng kiểm tra hộp thư đến (hoặc thư rác), sao chép mã xác nhận và nhập vào trang tiếp theo.',
+                          Text(
+                            Trans.checkInbox,
                             textAlign: TextAlign.center,
                             style: TextStyle(color: Color(0xFF064E3B)),
                           ),
@@ -133,7 +134,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                         elevation: 0,
                       ),
-                      child: const Text('NHẬP MÃ XÁC NHẬN', style: TextStyle(letterSpacing: 2, fontWeight: FontWeight.w700)),
+                      child: Text(Trans.enterVerificationCode, style: TextStyle(letterSpacing: 2, fontWeight: FontWeight.w700)),
                     ),
                     const SizedBox(height: 12),
                     OutlinedButton(
@@ -144,7 +145,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                         padding: const EdgeInsets.symmetric(vertical: 16),
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                       ),
-                      child: const Text('QUAY LẠI ĐĂNG NHẬP', style: TextStyle(fontWeight: FontWeight.w700)),
+                      child: Text(Trans.backToLogin, style: TextStyle(fontWeight: FontWeight.w700)),
                     ),
                   ] else ...[
                     Form(
@@ -152,15 +153,15 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
-                          const Text('Email', style: TextStyle(color: Color(0xFF7C6B61), fontSize: 13)),
+                          Text(Trans.email, style: TextStyle(color: Color(0xFF7C6B61), fontSize: 13)),
                           TextFormField(
-                            style: TextStyle(color: Theme.of(context).colorScheme.surface),
+                            style: TextStyle(color: Color(0xFF7C6B61)),
                             controller: _emailController,
                             keyboardType: TextInputType.emailAddress,
                             decoration: _inputDecoration('nguyenvana@gmail.com'),
                             validator: (value) {
-                              if (value == null || value.trim().isEmpty) return 'Vui lòng nhập email.';
-                              if (!value.contains('@')) return 'Email không hợp lệ.';
+                              if (value == null || value.trim().isEmpty) return Trans.pleaseEnterEmail;
+                              if (!value.contains('@')) return Trans.invalidEmailFormat;
                               return null;
                             },
                           ),
@@ -184,7 +185,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                             ),
                             child: _isLoading
                                 ? const SizedBox(height: 18, width: 18, child: CircularProgressIndicator(color: Color(0xFFEF7A45), strokeWidth: 2))
-                                : const Text('GỬI YÊU CẦU', style: TextStyle(letterSpacing: 2, fontWeight: FontWeight.w700, color: Color(0xFFFFFFFF))),
+                                : Text(Trans.sendRequest, style: TextStyle(letterSpacing: 2, fontWeight: FontWeight.w700, color: Color(0xFFFFFFFF))),
                           ),
                         ],
                       ),

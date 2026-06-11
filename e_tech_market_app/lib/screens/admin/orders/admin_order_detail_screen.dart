@@ -5,6 +5,7 @@ import '../../../config/api_config.dart';
 import 'package:e_tech_market_app/utils/network_utils.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
+import '../../../utils/translation.dart';
 
 
 class AdminOrderDetailScreen extends StatefulWidget {
@@ -67,7 +68,7 @@ class _AdminOrderDetailScreenState extends State<AdminOrderDetailScreen> {
     setState(() => _isSavingStatus = true);
     try {
       await AdminOrdersService.updateAdminOrder(widget.orderId, status: _selectedStatus);
-      _showSnackBar('Cập nhật trạng thái thành công', Colors.green);
+      _showSnackBar(Trans.updateStatusSuccess, Colors.green);
       await _loadDetail(); 
       setState(() => _isSavingStatus = false);
     } catch (e) {
@@ -158,11 +159,11 @@ class _AdminOrderDetailScreenState extends State<AdminOrderDetailScreen> {
         margin: const EdgeInsets.symmetric(vertical: 8),
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(color: Colors.red.withOpacity(0.06), borderRadius: BorderRadius.circular(8)),
-        child: const Row(
+        child: Row(
           children: [
-            Icon(Icons.cancel_rounded, color: Colors.red, size: 18),
-            SizedBox(width: 8),
-            Text('Đơn hàng này đã hủy bỏ thành công', style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold, fontSize: 13)),
+            const Icon(Icons.cancel_rounded, color: Colors.red, size: 18),
+            const SizedBox(width: 8),
+            Text(Trans.orderCancelled, style: const TextStyle(color: Colors.red, fontWeight: FontWeight.bold, fontSize: 13)),
           ],
         ),
       );
@@ -317,10 +318,10 @@ class _AdminOrderDetailScreenState extends State<AdminOrderDetailScreen> {
     final rr = _detail?['return_request'];
     if (rr == null) {
       return _buildSectionCard(
-        title: 'Yêu cầu hoàn trả',
+        title: Trans.returnRequest,
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 16),
-          child: Center(child: Text('Không có yêu cầu hoàn trả.', style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 13))),
+          child: Center(child: Text(Trans.noReturnRequest, style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 13))),
         ),
       );
     }
@@ -335,7 +336,7 @@ class _AdminOrderDetailScreenState extends State<AdminOrderDetailScreen> {
     final Color chipColor = _statusChipColor(status);
 
     return _buildSectionCard(
-      title: 'Yêu cầu hoàn trả',
+      title: Trans.returnRequest,
       trailing: Container(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
         decoration: BoxDecoration(color: chipColor.withOpacity(0.12), borderRadius: BorderRadius.circular(999)),
@@ -352,7 +353,7 @@ class _AdminOrderDetailScreenState extends State<AdminOrderDetailScreen> {
 
           if (media.isNotEmpty) ...[
             const SizedBox(height: 6),
-            const Text('Hình ảnh', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Color(0xFF0F172A))),
+            Text(Trans.images, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Color(0xFF0F172A))),
             const SizedBox(height: 8),
             Wrap(
               spacing: 8,
@@ -372,7 +373,7 @@ class _AdminOrderDetailScreenState extends State<AdminOrderDetailScreen> {
 
           if (refundProof.isNotEmpty) ...[
             const SizedBox(height: 10),
-            const Text('Bằng chứng hoàn trả', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Color(0xFF0F172A))),
+            Text(Trans.refundProof, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Color(0xFF0F172A))),
             const SizedBox(height: 8),
             Wrap(
               spacing: 8,
@@ -401,7 +402,7 @@ class _AdminOrderDetailScreenState extends State<AdminOrderDetailScreen> {
                 border: Border.all(color: const Color(0xFFE2E8F0)),
               ),
               child: Text(
-                'Đã lưu phản hồi: $adminNote', 
+                Trans.savedReply(adminNote),
                 style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.onSurface, fontWeight: FontWeight.w500),
               ),
             ),
@@ -609,7 +610,7 @@ class _AdminOrderDetailScreenState extends State<AdminOrderDetailScreen> {
   Widget _buildStatusHistorySection() {
     final history = _detail?['status_history'] as List? ?? [];
     return _buildSectionCard(
-      title: 'Lịch sử chuyển trạng thái',
+      title: Trans.statusHistory,
       trailing: Container(
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
         decoration: BoxDecoration(color: Theme.of(context).colorScheme.surface, borderRadius: BorderRadius.circular(12)),
@@ -651,7 +652,7 @@ class _AdminOrderDetailScreenState extends State<AdminOrderDetailScreen> {
                             ),
                             if (note.toString().trim().isNotEmpty) ...[
                               const SizedBox(height: 6),
-                              Text('Ghi chú: $note', style: const TextStyle(fontSize: 12, color: Color(0xFF475569), fontStyle: FontStyle.italic)),
+                              Text('${Trans.noteWithColon} $note', style: const TextStyle(fontSize: 12, color: Color(0xFF475569), fontStyle: FontStyle.italic)),
                             ],
                           ],
                         ),
@@ -677,7 +678,7 @@ class _AdminOrderDetailScreenState extends State<AdminOrderDetailScreen> {
         foregroundColor: Theme.of(context).colorScheme.onSurface,
         centerTitle: true,
         title: Text(
-          _detail?['order_code'] != null ? 'Đơn hàng #${_detail!['order_code']}' : 'Chi Tiết Đơn Hàng', 
+          _detail?['order_code'] != null ? '${Trans.orders} #${_detail!['order_code']}' : Trans.orderDetailAdmin,
           style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
         ),
       ),
@@ -692,7 +693,7 @@ class _AdminOrderDetailScreenState extends State<AdminOrderDetailScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       _buildSectionCard(
-                        title: 'Quản lý trạng thái',
+                        title: Trans.statusManagement,
                         child: Column(
                           children: [
                             _buildOrderStepsTracker(),
@@ -735,22 +736,22 @@ class _AdminOrderDetailScreenState extends State<AdminOrderDetailScreen> {
                       const SizedBox(height: 12),
 
                       _buildSectionCard(
-                        title: 'Thông tin khách hàng',
+                        title: Trans.customerInfo,
                         child: Column(
                           children: [
-                            _buildInfoRow('Tên khách hàng', _resolveCustomerName(_detail)),
-                            _buildInfoRow('Email khách hàng', _resolveCustomerEmail(_detail)),
+                            _buildInfoRow(Trans.customerNameLabel, _resolveCustomerName(_detail)),
+                            _buildInfoRow(Trans.customerEmailLabel, _resolveCustomerEmail(_detail)),
                             const Divider(height: 16, color: Color(0xFFF1F5F9)),
-                            _buildInfoRow('Tên người nhận', _resolveShippingName(_detail)),
-                            _buildInfoRow('Số điện thoại', _resolveShippingPhone(_detail)),
-                            _buildInfoRow('Địa chỉ giao hàng', _resolveShippingAddress(_detail)),
+                            _buildInfoRow(Trans.receiverNameLabel, _resolveShippingName(_detail)),
+                            _buildInfoRow(Trans.phone, _resolveShippingPhone(_detail)),
+                            _buildInfoRow(Trans.shippingAddressLabel, _resolveShippingAddress(_detail)),
                           ],
                         ),
                       ),
                       const SizedBox(height: 12),
 
                       _buildSectionCard(
-                        title: 'Danh sách sản phẩm (${items.length})',
+                        title: '${Trans.productList} (${items.length})',
                         child: Column(
                           children: items.map((item) {
                             final imgUrl = _getResolvedProductImage(item);
@@ -786,7 +787,7 @@ class _AdminOrderDetailScreenState extends State<AdminOrderDetailScreen> {
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
                                         Text(
-                                          item['name'] ?? 'Sản phẩm không tên', 
+                                          item['name'] ?? Trans.noProductName, 
                                           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Theme.of(context).colorScheme.onSurface), 
                                           maxLines: 2, 
                                           overflow: TextOverflow.ellipsis,
@@ -799,11 +800,11 @@ class _AdminOrderDetailScreenState extends State<AdminOrderDetailScreen> {
                                       ],
                                     ),
                                   ),
-                                  const SizedBox(width: 8),
-                                  Text(
-                                    '${AdminOrdersService.formatVnd(item['total_price'] ?? 0)}₫', 
-                                    style: TextStyle(fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.onSurface, fontSize: 13),
-                                  ),
+                                  // const SizedBox(width: 8),
+                                  // Text(
+                                  //   '${AdminOrdersService.formatVnd(item['total_price'] ?? 0)}₫', 
+                                  //   style: TextStyle(fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.onSurface, fontSize: 13),
+                                  // ),
                                 ],
                               ),
                             );
@@ -813,7 +814,7 @@ class _AdminOrderDetailScreenState extends State<AdminOrderDetailScreen> {
                       const SizedBox(height: 12),
 
                       _buildSectionCard(
-                        title: 'Thanh toán & Chi phí',
+                        title: Trans.paymentCost,
                         child: Column(
                           children: [
                             _buildAmountRow('Tạm tính', amounts['subtotal'] ?? 0),
@@ -825,7 +826,7 @@ class _AdminOrderDetailScreenState extends State<AdminOrderDetailScreen> {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Text('Phương thức', style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 13)),
+                                Text(Trans.paymentMethod, style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 13)),
                                 Text(
                                   _resolvePaymentMethod(_detail), 
                                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Theme.of(context).colorScheme.onSurface),
@@ -898,7 +899,7 @@ class _AdminOrderDetailScreenState extends State<AdminOrderDetailScreen> {
             style: TextStyle(
               fontSize: isTotal ? 15 : 13,
               fontWeight: isTotal ? FontWeight.bold : FontWeight.w600,
-              color: isDiscount ? Colors.red : (isTotal ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.onSurface),
+              color: isDiscount ? Colors.red : (isTotal ? Color(0xFFFF2424) : Theme.of(context).colorScheme.onSurface),
             ),
           )
         ],

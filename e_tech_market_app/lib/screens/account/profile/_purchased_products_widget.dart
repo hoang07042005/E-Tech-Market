@@ -226,7 +226,6 @@ class _PurchasedProductsWidgetState extends State<PurchasedProductsWidget> {
       padding: const EdgeInsets.all(5),
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(12),
       ),
       child: Row(
@@ -242,17 +241,17 @@ class _PurchasedProductsWidgetState extends State<PurchasedProductsWidget> {
                     errorBuilder: (_, __, ___) => Container(
                       width: 80,
                       height: 80,
-                      color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                      color: Theme.of(context).colorScheme.surface,
                       child: Icon(Icons.image_not_supported,
-                          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.4)),
+                          color: Theme.of(context).colorScheme.onSurface),
                     ),
                   )
                 : Container(
                     width: 80,
                     height: 80,
-                    color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                    color: Theme.of(context).colorScheme.surface,
                     child: Icon(Icons.image_not_supported,
-                        color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.4)),
+                        color: Theme.of(context).colorScheme.onSurface),
                   ),
           ),
           const SizedBox(width: 12),
@@ -270,7 +269,7 @@ class _PurchasedProductsWidgetState extends State<PurchasedProductsWidget> {
                 Text(
                   'Số lượng: ${p.quantity}',
                   style: TextStyle(
-                    color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+                    color: Theme.of(context).colorScheme.onSurface,
                     fontSize: 13,
                   ),
                 ),

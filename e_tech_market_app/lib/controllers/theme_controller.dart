@@ -21,7 +21,7 @@ class ThemeController extends ChangeNotifier {
     notifyListeners();
   }
 
-  void initialize() => _init();
+  Future<void> initialize() => _init();
 
   ThemeMode get themeMode => _isDark ? ThemeMode.dark : ThemeMode.light;
 

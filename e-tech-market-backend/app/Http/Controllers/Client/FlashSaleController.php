@@ -24,7 +24,7 @@ class FlashSaleController extends Controller
                 ->where('start_at', '<=', $now)
                 ->where('end_at', '>=', $now)
                 ->with(['items' => function ($query) {
-                    $query->with(['product', 'variant']);
+                    $query->with(['product.category', 'variant']);
                 }])
                 ->first();
 
@@ -34,7 +34,7 @@ class FlashSaleController extends Controller
                     ->where('start_at', '>', $now)
                     ->orderBy('start_at', 'asc')
                     ->with(['items' => function ($query) {
-                        $query->with(['product', 'variant']);
+                        $query->with(['product.category', 'variant']);
                     }])
                     ->first();
             }

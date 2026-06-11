@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../services/blog_service.dart';
 import '../../utils/network_utils.dart';
+import '../../utils/translation.dart';
 import 'blog_detail_screen.dart';
 
 class BlogScreen extends StatefulWidget {
@@ -92,14 +93,14 @@ class _BlogScreenState extends State<BlogScreen> {
   Widget build(BuildContext context) {
     if (_isLoading) {
       return Scaffold(
-        appBar: AppBar(title: const Text('Tin Tức')),
+        appBar: AppBar(title: Text(Trans.newsTitle)),
         body: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               CircularProgressIndicator(color: Theme.of(context).colorScheme.primary),
               const SizedBox(height: 16),
-              Text('Đang tải tin tức mới nhất...'),
+              Text(Trans.loadingNews),
             ],
           ),
         ),
@@ -108,7 +109,7 @@ class _BlogScreenState extends State<BlogScreen> {
 
     if (_error != null) {
       return Scaffold(
-        appBar: AppBar(title: const Text('Tin Tức')),
+        appBar: AppBar(title: Text(Trans.newsTitle)),
         body: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -120,7 +121,7 @@ class _BlogScreenState extends State<BlogScreen> {
               ElevatedButton.icon(
                 onPressed: _loadBlogPosts,
                 icon: const Icon(Icons.refresh),
-                label: const Text('Thử lại'),
+                label: Text(Trans.retryButton),
               ),
             ],
           ),
@@ -132,7 +133,7 @@ class _BlogScreenState extends State<BlogScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Tin Tức Công Nghệ',),
+        title: Text(Trans.newsTitleFull),
         centerTitle: true,
         backgroundColor: Colors.transparent,
         foregroundColor: Theme.of(context).colorScheme.onSurface,
@@ -158,7 +159,7 @@ class _BlogScreenState extends State<BlogScreen> {
                 children: [
                   // Section Title
                   Text(
-                    'Tin tức mới nhất',
+                    Trans.latestNews,
                     style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                           fontWeight: FontWeight.w600,
                           color: Theme.of(context).colorScheme.onSurface,
@@ -176,7 +177,7 @@ class _BlogScreenState extends State<BlogScreen> {
                             const Icon(Icons.article_outlined,
                                 size: 64, color: Colors.grey),
                             const SizedBox(height: 16),
-                            Text('Không có bài viết nào',
+                            Text(Trans.noArticles,
                                 style: Theme.of(context)
                                     .textTheme
                                     .bodyLarge
@@ -227,7 +228,7 @@ class _BlogScreenState extends State<BlogScreen> {
 
   Widget _buildHeroSection(dynamic post) {
     final imageUrl = NetworkUtils.fixDeviceUrl(post['thumbnail_url'] ?? '');
-    final categoryName = post['category']?['name'] ?? 'Tin tức';
+    final categoryName = post['category']?['name'] ?? Trans.newsCategory;
     final title = post['title'] ?? '';
     final excerpt = post['excerpt'] ?? '';
     final createdAt = post['published_at'] ?? '';
@@ -348,7 +349,7 @@ class _BlogScreenState extends State<BlogScreen> {
                         ),
                         const SizedBox(width: 12),
                         Text(
-                          '⏱️ $readingTime phút đọc',
+                          Trans.readingTime(readingTime),
                           style: TextStyle(
                             color: Theme.of(context).colorScheme.outlineVariant,
                             fontSize: 12,
@@ -372,7 +373,7 @@ class _BlogScreenState extends State<BlogScreen> {
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
       child: Row(
         children: [
-          _buildFilterButton('all', 'Tất cả'),
+          _buildFilterButton('all', Trans.all),
           const SizedBox(width: 12),
           ..._categories.map((cat) {
             return Padding(
@@ -527,7 +528,7 @@ class _BlogScreenState extends State<BlogScreen> {
 
                     // Read more link
                     Text(
-                      'Đọc tiếp →',
+                      Trans.readMore,
                       style: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
@@ -549,7 +550,7 @@ class _BlogScreenState extends State<BlogScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Đọc nhiều nhất',
+          Trans.readMost,
           style: Theme.of(context).textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.w600,
                 color: Theme.of(context).colorScheme.onSurface,
@@ -607,7 +608,7 @@ class _BlogScreenState extends State<BlogScreen> {
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          '$views lượt xem',
+                          Trans.views(views),
                           style: TextStyle(
                             fontSize: 11,
                             color: Theme.of(context).colorScheme.onSurfaceVariant,
@@ -630,7 +631,7 @@ class _BlogScreenState extends State<BlogScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Chuyên mục',
+          Trans.categoryLabel,
           style: Theme.of(context).textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.w600,
                 color: Theme.of(context).colorScheme.onSurface,

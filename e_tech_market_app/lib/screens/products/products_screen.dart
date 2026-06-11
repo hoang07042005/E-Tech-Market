@@ -6,6 +6,7 @@ import '../../services/wishlist_service.dart';
 import '../../services/cart_service.dart';
 import '../../utils/network_utils.dart';
 import '../../utils/app_snackbar.dart';
+import '../../utils/translation.dart';
 import 'product_detail_screen.dart';
 
 class ProductsScreen extends StatefulWidget {
@@ -43,11 +44,11 @@ class _ProductsScreenState extends State<ProductsScreen> {
   Timer? _debounce;
 
   final List<String> _sortOptions = [
-    'Mặc định',
-    'Mới nhất',
-    'Cũ nhất',
-    'Giá: Thấp -> Cao',
-    'Giá: Cao -> Thấp',
+    Trans.defaultSort,
+    Trans.newest,
+    Trans.oldest,
+    Trans.priceAscending,
+    Trans.priceDescending,
   ];
 
   @override
@@ -154,16 +155,16 @@ class _ProductsScreenState extends State<ProductsScreen> {
 
     String? sortParams;
     String? orderParams;
-    if (_sortValue == 'Mới nhất') {
+    if (_sortValue == Trans.newest) {
       sortParams = 'created_at';
       orderParams = 'desc';
-    } else if (_sortValue == 'Cũ nhất') {
+    } else if (_sortValue == Trans.oldest) {
       sortParams = 'created_at';
       orderParams = 'asc';
-    } else if (_sortValue == 'Giá: Thấp -> Cao') {
+    } else if (_sortValue == Trans.priceAscending) {
       sortParams = 'price';
       orderParams = 'asc';
-    } else if (_sortValue == 'Giá: Cao -> Thấp') {
+    } else if (_sortValue == Trans.priceDescending) {
       sortParams = 'price';
       orderParams = 'desc';
     }
@@ -252,7 +253,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            'BỘ LỌC',
+                            Trans.filterLabel,
                             style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,
@@ -273,7 +274,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
                           padding: const EdgeInsets.all(16),
                           children: [
                             // DANH MỤC
-                            Text('DANH MỤC',
+                            Text(Trans.categories,
                                 style: TextStyle(
                                     fontWeight: FontWeight.bold, fontSize: 14)),
                             const SizedBox(height: 12),
@@ -286,13 +287,13 @@ class _ProductsScreenState extends State<ProductsScreen> {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Text('MỨC GIÁ',
+                                Text(Trans.priceRange,
                                     style: TextStyle(
                                         fontWeight: FontWeight.bold,
                                         fontSize: 14)),
                                 Row(
                                   children: [
-                                    Text('Nhập khoảng giá',
+                                    Text(Trans.enterPriceRange,
                                         style: TextStyle(fontSize: 12)),
                                     Checkbox(
                                       value: _useCustomPrice,
@@ -417,7 +418,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
 
                             const SizedBox(height: 24),
                             // HÃNG
-                            Text('HÃNG',
+                            Text(Trans.brand,
                                 style: TextStyle(
                                     fontWeight: FontWeight.bold, fontSize: 14)),
                             const SizedBox(height: 12),
@@ -527,7 +528,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
             const SizedBox(width: 12),
             Expanded(
               child: Text(
-                'Tất cả sản phẩm',
+                Trans.allProducts,
                 style: TextStyle(
                   fontSize: 14,
                   color: isSelected ? Color(0xFFF26522) : Theme.of(context).colorScheme.onSurface,
@@ -953,10 +954,10 @@ class _ProductsScreenState extends State<ProductsScreen> {
                       try {
                         await CartService.addToCart(productId, 1);
                         if (!mounted) return;
-                        AppSnackBar.showSuccess(context, 'Đã thêm sản phẩm vào giỏ hàng!');
+                        AppSnackBar.showSuccess(context, Trans.addedToCart);
                       } catch (e) {
                         if (!mounted) return;
-                        AppSnackBar.showError(context, 'Lỗi: ${e.toString().replaceFirst('Exception: ', '')}');
+                        AppSnackBar.showError(context, Trans.errorLabel + e.toString().replaceFirst('Exception: ', ''));
                       }
                     },
                     style: ElevatedButton.styleFrom(
@@ -967,7 +968,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
                         borderRadius: BorderRadius.circular(4),
                       ),
                     ),
-                    child: Text('THÊM VÀO GIỎ',
+                    child: Text(Trans.addToCart,
                         style: TextStyle(
                             fontWeight: FontWeight.bold, letterSpacing: 0.5)),
                   ),
@@ -988,8 +989,8 @@ class _ProductsScreenState extends State<ProductsScreen> {
         // Header Texts
         Text(
           _selectedCategoryId != null
-              ? 'SẢN PHẨM THEO DANH MỤC'
-              : 'TẤT CẢ SẢN PHẨM',
+              ? Trans.productsByCategory
+              : Trans.allProducts,
           style: TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.bold,
@@ -1021,7 +1022,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
                 child: TextField(
                   controller: _searchController,
                   decoration: InputDecoration(
-                    hintText: 'Tìm kiếm sản phẩm...',
+                    hintText: Trans.searchProductsPlaceholder,
                     hintStyle: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant),
                     border: InputBorder.none,
                     contentPadding: const EdgeInsets.symmetric(horizontal: 16),
@@ -1053,7 +1054,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
         Row(
           children: [
             Text(
-              'SẮP XẾP:',
+              Trans.sort,
               style: TextStyle(
                   fontWeight: FontWeight.bold,
                   color: Theme.of(context).colorScheme.onSurfaceVariant,
@@ -1076,7 +1077,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
                     icon: const Icon(Icons.keyboard_arrow_down, size: 20),
                     items: _sortOptions.map((String value) {
                       return DropdownMenuItem<String>(
-                        value: value == 'Mặc định' ? 'default' : value,
+                        value: value == Trans.defaultSort ? 'default' : value,
                         child: Text(value,
                             style: TextStyle(
                                 fontSize: 13, fontWeight: FontWeight.w600)),
@@ -1101,7 +1102,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
               child: OutlinedButton.icon(
                 onPressed: _showFilterDrawer,
                 icon: Icon(Icons.tune, size: 18, color: Theme.of(context).colorScheme.onSurface),
-                label: Text('BỘ LỌC',
+                label: Text(Trans.filterLabel,
                     style: TextStyle(
                         color: Theme.of(context).colorScheme.onSurface,
                         fontWeight: FontWeight.bold,
@@ -1131,7 +1132,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
           Padding(
             padding: EdgeInsets.all(40.0),
             child: Center(
-                child: Text('Không có sản phẩm phù hợp bộ lọc của bạn.')),
+                child: Text(Trans.noProductsMatchFilter)),
           )
         else
           ListView.builder(
@@ -1164,7 +1165,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: Text('Trang $_currentPage / $_lastPage',
+                  child: Text(Trans.pageOf(_currentPage, _lastPage),
                       style: TextStyle(fontWeight: FontWeight.bold)),
                 ),
                 OutlinedButton(

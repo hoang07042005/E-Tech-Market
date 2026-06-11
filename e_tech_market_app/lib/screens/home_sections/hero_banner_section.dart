@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../utils/network_utils.dart';
+import '../../utils/translation.dart';
 
 class HeroBannerSection extends StatefulWidget {
   final List<dynamic> banners;
@@ -147,8 +148,8 @@ class _HeroBannerSectionState extends State<HeroBannerSection> {
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                         elevation: 8,
                       ),
-                      child: const Text(
-                        'Khám Phá',
+                      child: Text(
+                        Trans.explore,
                         style: TextStyle(
                           color: Colors.white,
                           fontWeight: FontWeight.w600,

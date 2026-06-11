@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../services/auth_service.dart';
+import '../utils/translation.dart';
 import '../services/banner_service.dart';
 import '../services/blog_service.dart';
 import '../services/coupon_service.dart';
@@ -193,9 +194,9 @@ class _HomeScreenState extends State<HomeScreen> {
                       }
                     },
                     itemBuilder: (context) => [
-                      const PopupMenuItem(
+                      PopupMenuItem(
                         value: 'read_all',
-                        child: Text('Đánh dấu đã đọc tất cả'),
+                        child: Text(Trans.markAsRead),
                       ),
                     ],
                   ),
@@ -204,7 +205,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             Expanded(
               child: _recentNotifications.isEmpty
-                  ? Center(child: Text('Chưa có thông báo nào.', style: TextStyle(color: Theme.of(context).colorScheme.onSurface)))
+                  ? Center(child: Text(Trans.noNotificationsYet, style: TextStyle(color: Theme.of(context).colorScheme.onSurface)))
                   : ListView.separated(
                       padding: const EdgeInsets.all(8),
                       itemCount: _recentNotifications.length,
@@ -272,7 +273,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         elevation: 0,
                         side: const BorderSide(color: Color(0xFFE2E8F0)),
                       ),
-                      child: const Text('Xem tất cả'),
+                      child: Text(Trans.viewAll),
                     ),
                   ),
                   if (remainingUnread > 0)
@@ -285,7 +286,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           borderRadius: BorderRadius.circular(10),
                         ),
                         child: Text(
-                          '+$remainingUnread chưa đọc',
+                          Trans.unreadCount(remainingUnread),
                           style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 10, fontWeight: FontWeight.bold),
                         ),
                       ),
@@ -780,7 +781,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       MaterialPageRoute(builder: (_) => const SearchScreen()),
                     );
                   },
-                  tooltip: 'Tìm kiếm',
+                  tooltip: Trans.search,
                 ),
                 IconButton(
                   icon: Badge(
@@ -792,7 +793,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   onPressed: () {
                     _scaffoldKey.currentState?.openEndDrawer();
                   },
-                  tooltip: 'Thông báo',
+                  tooltip: Trans.notifications,
                 ),
                 IconButton(
                   icon: Badge(
@@ -807,7 +808,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       MaterialPageRoute(builder: (context) => const CartScreen()),
                     ).then((_) => _loadCartCount());
                   },
-                  tooltip: 'Giỏ hàng',
+                  tooltip: Trans.cart,
                 ),
                 GestureDetector(
                   onTap: () => _onTabSelected(4),
@@ -852,17 +853,17 @@ class _HomeScreenState extends State<HomeScreen> {
         selectedItemColor: Colors.orange, // Đổi thành màu cam khi active
         unselectedItemColor: Theme.of(context).colorScheme.onSurfaceVariant,
         type: BottomNavigationBarType.fixed,
-        items: const [
+        items: [
           BottomNavigationBarItem(
-              icon: Icon(Icons.home_outlined), label: 'Trang chủ'),
+              icon: Icon(Icons.home_outlined), label: Trans.home),
           BottomNavigationBarItem(
-              icon: Icon(Icons.grid_view_outlined), label: 'Sản phẩm'),
+              icon: Icon(Icons.grid_view_outlined), label: Trans.products),
           BottomNavigationBarItem(
               icon: Icon(Icons.newspaper_outlined), label: 'Tin tức'),
           BottomNavigationBarItem(
-              icon: Icon(Icons.receipt_long_outlined), label: 'Đơn hàng'),
+              icon: Icon(Icons.receipt_long_outlined), label: Trans.orders),
           BottomNavigationBarItem(
-              icon: Icon(Icons.person_outlined), label: 'Tài khoản'),
+              icon: Icon(Icons.person_outlined), label: Trans.account),
         ],
       ),
     );

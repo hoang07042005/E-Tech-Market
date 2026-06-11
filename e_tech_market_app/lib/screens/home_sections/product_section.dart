@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../utils/network_utils.dart';
+import '../../utils/translation.dart';
 
 class ProductSection extends StatelessWidget {
   final List<dynamic> products;
@@ -42,7 +43,7 @@ class ProductSection extends StatelessWidget {
             children: [
               Expanded(
                 child: Text(
-                  'Hàng mới & Nổi bật',
+                  Trans.featuredProductsHome,
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 22,
@@ -56,7 +57,7 @@ class ProductSection extends StatelessWidget {
                 onPressed: onViewAll,
                 icon: const Icon(Icons.arrow_forward_outlined),
                 color: _brandColor,
-                tooltip: 'Xem tất cả sản phẩm',
+                tooltip: Trans.viewAllProducts,
               ),
             ],
           ),
@@ -67,7 +68,7 @@ class ProductSection extends StatelessWidget {
             Padding(
               padding: EdgeInsets.symmetric(vertical: 24),
               child: Text(
-                'Chưa có sản phẩm nổi bật.',
+                Trans.noFeaturedProducts,
                 textAlign: TextAlign.center,
                   style: TextStyle(fontSize: 14, color: Theme.of(context).colorScheme.onSurfaceVariant),
               ),
@@ -140,7 +141,7 @@ class _ProductCard extends StatelessWidget {
     final excerpt =
         product['short_description']?.toString().trim().isNotEmpty == true
             ? product['short_description'].toString()
-            : 'Thiết kế thông minh, lực hút mạnh mẽ, làm sạch hoàn hảo.';
+            : Trans.defaultProductExcerpt;
     final imageUrl = _resolveProductImageUrl(product);
     final displayPrice = _getDisplayPrice(product);
     final oldPrice = _getDisplayOldPrice(product);
@@ -216,7 +217,7 @@ class _ProductCard extends StatelessWidget {
                             borderRadius: BorderRadius.circular(3),
                           ),
                           child: Text(
-                            discountPercent > 0 ? '-$discountPercent%' : 'MỚI',
+                            discountPercent > 0 ? '-$discountPercent%' : Trans.newBadge,
                             style: const TextStyle(
                                 color: Colors.white,
                                 fontSize: 10,
@@ -238,7 +239,7 @@ class _ProductCard extends StatelessWidget {
                         children: [
                           Expanded(
                             child: Text(
-                              (brand == null || brand.isEmpty ? 'TECH' : brand)
+                              (brand == null || brand.isEmpty ? Trans.brandDefault : brand)
                                   .toUpperCase(),
                               style: TextStyle(
                                 color: Theme.of(context).colorScheme.onSurfaceVariant,
@@ -315,8 +316,8 @@ class _ProductCard extends StatelessWidget {
                             shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(4)),
                           ),
-                          child: const Text(
-                            'THÊM VÀO GIỎ',
+                          child: Text(
+                            Trans.addToCartBtn,
                             style: TextStyle(
                                 fontSize: 10,
                                 fontWeight: FontWeight.w800,

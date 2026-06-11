@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
+import '../../utils/translation.dart';
+
 class CouponSection extends StatefulWidget {
   final List<dynamic> coupons;
   final bool isLoading;
@@ -222,12 +224,12 @@ class _CouponSectionState extends State<CouponSection> {
           final minAmount = coupon['min_order_amount'];
 
           final valueText = couponType == 'percentage'
-              ? 'Giảm ${_formatPercentage(value)}%'
-              : 'Giảm ${_formatPrice(value)}đ';
-              
+              ? Trans.discountPercentValue(int.tryParse(value) ?? 0)
+              : Trans.discountAmountValue2(double.tryParse(value) ?? 0);
+
           final subtitle = minAmount != null
-              ? 'Đơn từ ${_formatPrice(minAmount.toString())}đ'
-              : 'Mọi đơn hàng';
+              ? Trans.ordersFrom(double.tryParse(minAmount.toString()) ?? 0)
+              : Trans.allOrders;
 
           return _CouponCard(
             code: code,
@@ -319,8 +321,8 @@ class _CouponCard extends StatelessWidget {
                       borderRadius: BorderRadius.circular(6),
                     ),
                   ),
-                  child: const Text(
-                    'Lưu',
+                  child: Text(
+                    Trans.save,
                     style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700),
                   ),
                 ),

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
 import '../../services/auth_service.dart';
+import '../../utils/translation.dart';
 import '../home_screen.dart';
+import '../../main.dart';
 import 'register_screen.dart';
 import 'forgot_password_screen.dart';
 
@@ -34,7 +36,7 @@ class _LoginScreenState extends State<LoginScreen> {
       );
       if (!mounted) return;
       Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (_) => const HomeScreen()),
+        MaterialPageRoute(builder: (_) => const EntryPoint()),
       );
     } catch (exception) {
       setState(() {
@@ -59,7 +61,7 @@ class _LoginScreenState extends State<LoginScreen> {
       await AuthService.loginWithGoogle();
       if (!mounted) return;
       Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (_) => const HomeScreen()),
+        MaterialPageRoute(builder: (_) => const EntryPoint()),
       );
     } catch (exception) {
       setState(() {
@@ -104,7 +106,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         text: TextSpan(
                           children: [
                             TextSpan(
-                              text: 'Chào mừng\n',
+                              text: Trans.welcome + '\n',
                               style: TextStyle(color: Colors.black, fontSize: 42, fontWeight: FontWeight.w800),
                             ),
                             TextSpan(
@@ -115,8 +117,8 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                       ),
                       const SizedBox(height: 12),
-                      const Text(
-                        'Trải nghiệm chuỗi bán lẻ công nghệ — sản phẩm được tuyển chọn cho người yêu thích sự chính xác và hiệu năng.',
+                      Text(
+                        Trans.subtitle,
                         style: TextStyle(color: Color(0xFF9CA3AF), fontSize: 14, height: 1.6),
                       ),
                     ],
@@ -148,14 +150,14 @@ class _LoginScreenState extends State<LoginScreen> {
                       RichText(
                         text: TextSpan(
                           children: [
-                            TextSpan(text: 'Chào mừng\n', style: TextStyle(color: Colors.black, fontSize: 34, fontWeight: FontWeight.w800)),
+                            TextSpan(text: Trans.welcome + '\n', style: TextStyle(color: Colors.black, fontSize: 34, fontWeight: FontWeight.w800)),
                             TextSpan(text: 'trở lại.', style: TextStyle(color: accent, fontSize: 34, fontWeight: FontWeight.w800)),
                           ],
                         ),
                       ),
                       const SizedBox(height: 8),
-                      const Text(
-                        'Trải nghiệm chuỗi bán lẻ công nghệ — sản phẩm được tuyển chọn cho người yêu thích sự chính xác và hiệu năng.',
+                      Text(
+                        Trans.subtitle,
                         style: TextStyle(color: Color(0xFF9CA3AF), fontSize: 13, height: 1.6),
                       ),
                     ],
@@ -216,7 +218,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   const SizedBox(height: 10),
                   Center(
                     child: Text(
-                      'Đăng nhập',
+                      Trans.loginTitle,
                       style: TextStyle(
                         color: accent,
                         fontSize: 30,
@@ -227,7 +229,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   const SizedBox(height: 8),
                   Center(
                     child: Text(
-                      'Nhập email và mật khẩu để vào cửa hàng.',
+                      Trans.loginSubtitle,
                       textAlign: TextAlign.center,
                       style: TextStyle(color: Colors.black54, fontSize: 14),
                     ),
@@ -247,27 +249,27 @@ class _LoginScreenState extends State<LoginScreen> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: [
-                              const Text('Email', style: TextStyle(color: Color(0xFF7C6B61), fontSize: 13)),
+                              Text(Trans.email, style: TextStyle(color: Color(0xFF7C6B61), fontSize: 13)),
                               TextFormField(
-                                style: TextStyle(color: Theme.of(context).colorScheme.surface),
+                                style: TextStyle(color: Color(0xFF7C6B61)),
                                 controller: _emailController,
                                 keyboardType: TextInputType.emailAddress,
                                 decoration: _inputDecoration(''),
                                 validator: (value) {
-                                  if (value == null || value.trim().isEmpty) return 'Vui lòng nhập email.';
-                                  if (!value.contains('@')) return 'Email không hợp lệ.';
+                                  if (value == null || value.trim().isEmpty) return Trans.pleaseEnterEmail;
+                                  if (!value.contains('@')) return Trans.invalidEmailFormat;
                                   return null;
                                 },
                               ),
                               const SizedBox(height: 16),
-                              const Text('Mật khẩu', style: TextStyle(color: Color(0xFF7C6B61), fontSize: 13)),
+                              Text(Trans.password, style: TextStyle(color: Color(0xFF7C6B61), fontSize: 13)),
                               TextFormField(
-                                style: TextStyle(color: Theme.of(context).colorScheme.surface),
+                                style: TextStyle(color: Color(0xFF7C6B61)),
                                 controller: _passwordController,
                                 obscureText: true,
                                 decoration: _inputDecoration(''),
                                 validator: (value) {
-                                  if (value == null || value.isEmpty) return 'Vui lòng nhập mật khẩu.';
+                                  if (value == null || value.isEmpty) return Trans.pleaseEnterPassword;
                                   return null;
                                 },
                               ),
@@ -280,7 +282,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                         MaterialPageRoute(builder: (_) => const ForgotPasswordScreen()),
                                       );
                                     },
-                                    child: const Text('Quên mật khẩu?', style: TextStyle(color: Color(0xFF6B7280))),
+                                    child: Text(Trans.forgotPassword + '?', style: TextStyle(color: Color(0xFF6B7280))),
                                   ),
                                 ),
                             ],
@@ -306,17 +308,17 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                           child: _isLoading
                               ? const SizedBox(height: 18, width: 18, child: CircularProgressIndicator(color: Color(0xFFFFFFFF), strokeWidth: 2))
-                              : const Text('ĐĂNG NHẬP', style: TextStyle(letterSpacing: 2, fontWeight: FontWeight.w700, color: Color(0xFFFFFFFF))),
+                              : Text(Trans.loginButton, style: TextStyle(letterSpacing: 2, fontWeight: FontWeight.w700, color: Color(0xFFFFFFFF))),
                         ),
                         const SizedBox(height: 20),
-                        Row(children: const [Expanded(child: Divider(color: Color(0xFFEDE6E0))), Padding(padding: EdgeInsets.symmetric(horizontal: 12), child: Text('HOẶC', style: TextStyle(color: Color(0xFFBDBDBD), fontWeight: FontWeight.w600, fontSize: 12))), Expanded(child: Divider(color: Color(0xFFEDE6E0))) ]),
+                        Row(children: [Expanded(child: Divider(color: Color(0xFFEDE6E0))), Padding(padding: EdgeInsets.symmetric(horizontal: 12), child: Text(Trans.orText, style: TextStyle(color: Color(0xFFBDBDBD), fontWeight: FontWeight.w600, fontSize: 12))), Expanded(child: Divider(color: Color(0xFFEDE6E0))) ]),
                         const SizedBox(height: 20),
                         OutlinedButton.icon(
                           onPressed: _isLoading ? null : _signInWithGoogle,
                           icon: Image.network('https://www.google.com/favicon.ico', width: 20, height: 20),
-                          label: const Padding(
+                          label: Padding(
                             padding: EdgeInsets.symmetric(vertical: 12),
-                            child: Text('Tiếp tục với Google', style: TextStyle(color: Color(0xFF1F2937), fontWeight: FontWeight.w600)),
+                            child: Text(Trans.continueWithGoogle, style: TextStyle(color: Color(0xFF1F2937), fontWeight: FontWeight.w600)),
                           ),
                           style: OutlinedButton.styleFrom(
                             backgroundColor: Colors.white,
@@ -337,7 +339,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             padding: const EdgeInsets.symmetric(vertical: 14),
                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                           ),
-                          child: const Text('Chưa có tài khoản? Đăng ký', style: TextStyle(fontWeight: FontWeight.w600)),
+                          child: Text(Trans.registerLink, style: TextStyle(fontWeight: FontWeight.w600)),
                         ),
                       ],
                     ),

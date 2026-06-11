@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../services/video_service.dart';
 import '../../utils/network_utils.dart';
+import '../../utils/translation.dart';
 import 'video_detail_screen.dart';
 
 class VideoScreen extends StatefulWidget {
@@ -38,7 +39,7 @@ class _VideoScreenState extends State<VideoScreen> {
     } catch (e) {
       if (mounted) {
         setState(() {
-          _error = 'Lỗi tải danh sách video: $e';
+          _error = Trans.errorLoadingList('video', e.toString());
           _isLoading = false;
         });
       }
@@ -95,7 +96,7 @@ class _VideoScreenState extends State<VideoScreen> {
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
       appBar: AppBar(
-        title: const Text('Video giới thiệu công nghệ', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+        title: Text(Trans.videoTitle, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
         backgroundColor: Colors.white,
         foregroundColor: Colors.black,
         elevation: 1,
@@ -110,17 +111,17 @@ class _VideoScreenState extends State<VideoScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  'Khám phá các sản phẩm công nghệ qua những thước phim thực tế và review chi tiết.',
-                  style: TextStyle(color: Color(0xFF64748B), fontSize: 13, height: 1.4),
+                Text(
+                  Trans.videoExplore,
+                  style: const TextStyle(color: Color(0xFF64748B), fontSize: 13, height: 1.4),
                 ),
                 const SizedBox(height: 16),
                 SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
                   child: Row(
                     children: [
-                      _buildChip('all', 'Tất cả'),
-                      _buildChip('product', 'Có sản phẩm'),
+                      _buildChip('all', Trans.videoAll),
+                      _buildChip('product', Trans.videoWithProduct),
                       ..._categories.map((cat) => _buildChip('cat-${cat['id']}', cat['name'].toString())),
                       if (_hasGeneralVideos) _buildChip('general', 'Video chung'),
                     ],
@@ -128,7 +129,7 @@ class _VideoScreenState extends State<VideoScreen> {
                 ),
                 const SizedBox(height: 12),
                 Text(
-                  'Hiển thị ${_filteredVideos.length} video',
+                  Trans.showingVideosCount(_filteredVideos.length),
                   style: const TextStyle(color: Color(0xFF94A3B8), fontSize: 12, fontWeight: FontWeight.bold),
                 ),
               ],
@@ -141,7 +142,7 @@ class _VideoScreenState extends State<VideoScreen> {
                 : _error != null
                     ? Center(child: Text(_error!, style: const TextStyle(color: Colors.red)))
                     : _filteredVideos.isEmpty
-                        ? const Center(child: Text('Không tìm thấy video nào.', style: TextStyle(color: Color(0xFF64748B))))
+                        ? Center(child: Text(Trans.noVideosFound, style: const TextStyle(color: Color(0xFF64748B))))
                         : GridView.builder(
                             padding: const EdgeInsets.all(16),
                             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
@@ -187,7 +188,7 @@ class _VideoScreenState extends State<VideoScreen> {
   }
 
   Widget _buildVideoCard(Map<String, dynamic> video) {
-    final title = video['title']?.toString() ?? 'Video giới thiệu';
+    final title = video['title']?.toString() ?? Trans.videoIntro;
     final product = video['product'] as Map<String, dynamic>?;
     final catObj = video['video_category'] ?? video['category'];
     String? desc = video['description']?.toString();

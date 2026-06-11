@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:e_tech_market_app/services/admin_products_service.dart';
+import '../../../utils/translation.dart';
 import 'admin_product_from_screen.dart';
 import 'admin_product_variant_detail_screen.dart';
 import '../../../config/api_config.dart';
@@ -195,18 +196,18 @@ class _AdminProductScreenState extends State<AdminProductScreen> {
       context: context,
       builder: (ctx) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Row(
+        title: Row(
           children: [
-            Icon(Icons.warning_amber_rounded, color: Colors.redAccent),
-            SizedBox(width: 8),
-            Text('Xác nhận xóa', style: TextStyle(fontWeight: FontWeight.bold)),
+            const Icon(Icons.warning_amber_rounded, color: Colors.redAccent),
+            const SizedBox(width: 8),
+            Text(Trans.confirmDelete, style: const TextStyle(fontWeight: FontWeight.bold)),
           ],
         ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('Hành động này không thể hoàn tác. Bạn chắc chắn muốn xóa sản phẩm này?'),
+            Text(Trans.deleteWarning),
             const SizedBox(height: 16),
             Container(
               padding: const EdgeInsets.all(8),
@@ -234,7 +235,7 @@ class _AdminProductScreenState extends State<AdminProductScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(product['name'] ?? '', maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.onSurface)),
-                        Text(product['brand'] ?? 'Thương hiệu trống', style: TextStyle(color: Colors.grey[600], fontSize: 12)),
+                        Text(product['brand'] ?? Trans.brandEmpty, style: TextStyle(color: Colors.grey[600], fontSize: 12)),
                       ],
                     ),
                   )
@@ -244,7 +245,7 @@ class _AdminProductScreenState extends State<AdminProductScreen> {
           ],
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Hủy', style: TextStyle(color: Colors.grey))),
+          TextButton(onPressed: () => Navigator.pop(ctx), child: Text(Trans.cancel, style: const TextStyle(color: Colors.grey))),
           ElevatedButton(
             onPressed: () async {
               Navigator.pop(ctx);
@@ -252,20 +253,20 @@ class _AdminProductScreenState extends State<AdminProductScreen> {
                 await AdminProductsService.deleteAdminProduct(product['id']);
                 if (mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Đã xóa sản phẩm thành công!'), backgroundColor: Colors.green),
+                    SnackBar(content: Text(Trans.deletedSuccess), backgroundColor: Colors.green),
                   );
                 }
                 _fetchData();
               } catch (e) {
                 if (mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Lỗi: $e'), backgroundColor: Colors.red),
+                    SnackBar(content: Text('${Trans.errorPrefix}$e'), backgroundColor: Colors.red),
                   );
                 }
               }
             },
             style: ElevatedButton.styleFrom(backgroundColor: Colors.redAccent, elevation: 0),
-            child: const Text('Xóa', style: TextStyle(color: Colors.white)),
+            child: Text(Trans.delete, style: const TextStyle(color: Colors.white)),
           ),
         ],
       ),
@@ -280,7 +281,7 @@ class _AdminProductScreenState extends State<AdminProductScreen> {
         elevation: 0,
         backgroundColor: Theme.of(context).colorScheme.surface,
         foregroundColor: Theme.of(context).colorScheme.onSurface,
-        title: const Text('Danh sách sản phẩm', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+        title: Text(Trans.productList, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh, color: Colors.blueAccent),
@@ -296,7 +297,7 @@ class _AdminProductScreenState extends State<AdminProductScreen> {
           ).then((_) => _fetchData()); 
         },
         icon: const Icon(Icons.add, color: Colors.white),
-        label: const Text('Thêm mới', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
+        label: Text(Trans.addNew, style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
         backgroundColor: const Color(0xFFF26522),
         elevation: 2,
       ),
@@ -333,16 +334,16 @@ class _AdminProductScreenState extends State<AdminProductScreen> {
                         child: Padding(
                           padding: const EdgeInsets.fromLTRB(20, 12, 16, 8),
                           child: Text(
-                            'Kết quả tìm kiếm (${_filteredProducts.length})',
+                            '${Trans.searchResults} (${_filteredProducts.length})',
                             style: TextStyle(color: Colors.grey[700], fontWeight: FontWeight.bold, fontSize: 14),
                           ),
                         ),
                       ),
                       _pagedProducts.isEmpty
-                          ? const SliverToBoxAdapter(
+                          ? SliverToBoxAdapter(
                               child: Padding(
-                                padding: EdgeInsets.symmetric(vertical: 60),
-                                child: Center(child: Text('Không tìm thấy sản phẩm phù hợp', style: TextStyle(color: Colors.grey))),
+                                padding: const EdgeInsets.symmetric(vertical: 60),
+                                child: Center(child: Text(Trans.noMatchingProducts, style: const TextStyle(color: Colors.grey))),
                               ),
                             )
                           : SliverList(
@@ -369,10 +370,10 @@ class _AdminProductScreenState extends State<AdminProductScreen> {
       mainAxisSpacing: 12,
       crossAxisSpacing: 12,
       children: [
-        _buildStatCard('Tổng sản phẩm', _totalProducts.toString(), Icons.layers, const Color(0xFFE0F2FE), const Color(0xFF0369A1)),
-        _buildStatCard('Hết hàng trong kho', _outOfStock.toString(), Icons.label_off, const Color(0xFFFFE4E6), const Color(0xFFB91C1C)),
-        _buildStatCard('Sắp hết hàng', _lowStock.toString(), Icons.warning, const Color(0xFFFEF3C7), const Color(0xFFB45309)),
-        _buildStatCard('Đang kích hoạt', _activeProducts.toString(), Icons.check_circle, const Color(0xFFDCFCE7), const Color(0xFF15803D)),
+        _buildStatCard(Trans.totalProducts, _totalProducts.toString(), Icons.layers, const Color(0xFFE0F2FE), const Color(0xFF0369A1)),
+        _buildStatCard(Trans.outOfStock, _outOfStock.toString(), Icons.label_off, const Color(0xFFFFE4E6), const Color(0xFFB91C1C)),
+        _buildStatCard(Trans.lowStock, _lowStock.toString(), Icons.warning, const Color(0xFFFEF3C7), const Color(0xFFB45309)),
+        _buildStatCard(Trans.activeProducts, _activeProducts.toString(), Icons.check_circle, const Color(0xFFDCFCE7), const Color(0xFF15803D)),
       ],
     );
   }
@@ -415,7 +416,7 @@ class _AdminProductScreenState extends State<AdminProductScreen> {
           TextField(
             controller: _searchController,
             decoration: InputDecoration(
-              hintText: 'Tìm theo Tên, Brand, Loại...',
+              hintText: Trans.searchByNameBrand,
               prefixIcon: const Icon(Icons.search, size: 22, color: Colors.grey),
               filled: true,
               fillColor: Theme.of(context).colorScheme.surface,
@@ -438,7 +439,7 @@ class _AdminProductScreenState extends State<AdminProductScreen> {
                   value: _selectedCategory,
                   isExpanded: true,
                   decoration: InputDecoration(
-                    labelText: 'Danh mục',
+                    labelText: Trans.category,
                     filled: true,
                     fillColor: Theme.of(context).colorScheme.surface,
                     contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
@@ -446,7 +447,7 @@ class _AdminProductScreenState extends State<AdminProductScreen> {
                     enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(5), borderSide: BorderSide(color: Theme.of(context).colorScheme.onSurface, width: 0.5)),
                   ),
                   items: [
-                    const DropdownMenuItem(value: 'all', child: Text('Tất cả', style: TextStyle(fontSize: 13))),
+                    DropdownMenuItem(value: 'all', child: Text(Trans.all, style: const TextStyle(fontSize: 13))),
                     ..._categories.map((c) => DropdownMenuItem(
                           value: c['id'],
                           child: Text(c['name'], overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 13)),
@@ -467,7 +468,7 @@ class _AdminProductScreenState extends State<AdminProductScreen> {
                   value: _selectedBrand,
                   isExpanded: true,
                   decoration: InputDecoration(
-                    labelText: 'Thương hiệu',
+                    labelText: Trans.brand,
                     filled: true,
                     fillColor: Theme.of(context).colorScheme.surface,
                     contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
@@ -475,7 +476,7 @@ class _AdminProductScreenState extends State<AdminProductScreen> {
                     enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(5), borderSide: BorderSide(color: Theme.of(context).colorScheme.onSurface, width: 0.5)),
                   ),
                   items: [
-                    const DropdownMenuItem(value: 'all', child: Text('Tất cả', style: TextStyle(fontSize: 13))),
+                    DropdownMenuItem(value: 'all', child: Text(Trans.all, style: const TextStyle(fontSize: 13))),
                     ..._brands.map((b) => DropdownMenuItem(
                           value: b,
                           child: Text(b, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 13)),
@@ -501,17 +502,17 @@ class _AdminProductScreenState extends State<AdminProductScreen> {
                   isExpanded: true,
                   decoration: InputDecoration(
 
-                    labelText: 'Trạng thái hiển thị',
+                    labelText: Trans.displayStatus,
                     filled: true,
                     fillColor: Theme.of(context).colorScheme.surface,
                     contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
                     border: OutlineInputBorder(borderRadius: BorderRadius.circular(5), borderSide: BorderSide(color: Theme.of(context).colorScheme.onSurface, width: 0.5)),
                     enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(5), borderSide: BorderSide(color: Theme.of(context).colorScheme.onSurface, width: 0.5)),
                   ),
-                  items: const [
-                    DropdownMenuItem(value: 'all', child: Text('Tất cả trạng thái', style: TextStyle(fontSize: 13))),
-                    DropdownMenuItem(value: 'active', child: Text('Đang hiển thị', style: TextStyle(fontSize: 13))),
-                    DropdownMenuItem(value: 'inactive', child: Text('Đang bị ẩn', style: TextStyle(fontSize: 13))),
+                  items: [
+                    DropdownMenuItem(value: 'all', child: Text(Trans.allStatuses, style: const TextStyle(fontSize: 13))),
+                    DropdownMenuItem(value: 'active', child: Text(Trans.displaying, style: const TextStyle(fontSize: 13))),
+                    DropdownMenuItem(value: 'inactive', child: Text(Trans.hidden, style: const TextStyle(fontSize: 13))),
                   ],
                   onChanged: (val) {
                     setState(() {
@@ -526,7 +527,7 @@ class _AdminProductScreenState extends State<AdminProductScreen> {
               TextButton.icon(
                 onPressed: _clearFilters,
                 icon: const Icon(Icons.refresh_sharp, size: 18),
-                label: const Text('Đặt lại', style: TextStyle(fontSize: 13)),
+                label: Text(Trans.reset, style: const TextStyle(fontSize: 13)),
                 style: TextButton.styleFrom(foregroundColor: Colors.redAccent),
               )
             ],
@@ -541,7 +542,7 @@ class _AdminProductScreenState extends State<AdminProductScreen> {
     final double pct = (totalStock / 200).clamp(0.0, 1.0);
     final Color progressColor = pct >= 0.6 ? Colors.green : pct >= 0.3 ? Colors.orange : Colors.red;
     final bool isActive = p['is_active'] == true;
-    final String shortDescription = p['description'] ?? 'Chưa có mô tả ngắn cho sản phẩm này.';
+    final String shortDescription = p['description'] ?? Trans.noShortDescription;
 
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
@@ -595,7 +596,7 @@ class _AdminProductScreenState extends State<AdminProductScreen> {
                             Padding(
                               padding: const EdgeInsets.only(right: 65), // Tránh đè trực tiếp lên chữ đầu tiên của Tên
                               child: Text(
-                                p['name'] ?? 'Không tên',
+                                p['name'] ?? Trans.noName,
                                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: Theme.of(context).colorScheme.onSurface),
                                 maxLines: 2,
                                 overflow: TextOverflow.ellipsis,
@@ -623,7 +624,7 @@ class _AdminProductScreenState extends State<AdminProductScreen> {
                                 const SizedBox(width: 6),
                                 Flexible(
                                   child: Text(
-                                    p['category']?['name'] ?? 'Chưa phân loại',
+                                    p['category']?['name'] ?? Trans.uncategorized,
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
                                     style: TextStyle(fontSize: 12, color: Colors.grey[600]),
@@ -653,7 +654,7 @@ class _AdminProductScreenState extends State<AdminProductScreen> {
                             ],
                           ),
                           child: Text(
-                            isActive ? 'ĐANG BÁN' : 'TẠM ẨN',
+                            isActive ? Trans.selling : Trans.temporarilyHidden,
                             style: TextStyle(
                               color: isActive ? Colors.green[700] : Colors.grey[700], 
                               fontSize: 9, 
@@ -677,7 +678,7 @@ class _AdminProductScreenState extends State<AdminProductScreen> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text('Tồn kho: $totalStock sản phẩm', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w500, color: Colors.grey[700])),
+                          Text('${Trans.stock}: $totalStock ${Trans.productItemsCount}', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w500, color: Colors.grey[700])),
                         ],
                       ),
                       const SizedBox(height: 4),
@@ -747,7 +748,7 @@ class _AdminProductScreenState extends State<AdminProductScreen> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(
-            'Trang $_currentPage / $_totalPages',
+            '${Trans.page} $_currentPage / $_totalPages',
             style: TextStyle(color: Colors.grey[600], fontSize: 13, fontWeight: FontWeight.w500),
           ),
           Row(
@@ -762,7 +763,7 @@ class _AdminProductScreenState extends State<AdminProductScreen> {
                       }
                     : null,
                 style: OutlinedButton.styleFrom(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8))),
-                child: const Text('Trước'),
+                child: Text(Trans.previous),
               ),
               const SizedBox(width: 8),
               OutlinedButton(
@@ -775,7 +776,7 @@ class _AdminProductScreenState extends State<AdminProductScreen> {
                       }
                     : null,
                 style: OutlinedButton.styleFrom(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8))),
-                child: const Text('Sau'),
+                child: Text(Trans.next),
               ),
             ],
           ),

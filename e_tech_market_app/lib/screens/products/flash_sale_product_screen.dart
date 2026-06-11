@@ -35,16 +35,28 @@ class _FlashSaleProductScreenState extends State<FlashSaleProductScreen> {
   // Items đã lọc theo danh mục và search
   List<dynamic> _filteredItems = [];
 
+  // Phân trang
+  final ScrollController _scrollController = ScrollController();
+  int _currentPage = 1;
+  static const int _itemsPerPage = 20;
+
   @override
   void initState() {
     super.initState();
+    _scrollController.addListener(_onScroll);
     _loadFlashSale();
   }
 
   @override
   void dispose() {
     _timer?.cancel();
+    _searchController.dispose();
+    _scrollController.dispose();
     super.dispose();
+  }
+
+  void _onScroll() {
+    // Không dùng infinite scroll nữa, dùng phân trang bằng nút
   }
 
   Future<void> _loadFlashSale() async {
@@ -62,57 +74,7 @@ class _FlashSaleProductScreenState extends State<FlashSaleProductScreen> {
       for (final item in items) {
         final product = item['product'] as Map<String, dynamic>?;
         final category = product?['category'] as Map<String, dynamic>?;
-        var categoryName = category?['name']?.toString();
-
-        // Nếu API không trả về danh mục thì lấy từ tên sản phẩm
-        if (categoryName == null || categoryName.isEmpty) {
-          final productName = (product?['name'] as String?)?.toUpperCase() ?? '';
-
-          // Điện thoại - nhiều hãng hơn
-          if (productName.contains('IPHONE') || productName.contains('SAMSUNG') ||
-              productName.contains('OPPO') || productName.contains('VIVO') ||
-              productName.contains('XIAOMI') || productName.contains('REALME') ||
-              productName.contains('NOKIA') || productName.contains('POCO') ||
-              productName.contains('HONOR') || productName.contains('TECNO') ||
-              productName.contains('ITEL') || productName.contains('INFINIX') ||
-              productName.contains('ZTE') || productName.contains('NUBIA') ||
-              productName.contains('BLACK SHARK')) {
-            categoryName = 'ĐIỆN THOẠI';
-          } else if (productName.contains('LAPTOP') || productName.contains('NOTEBOOK') ||
-              productName.contains('MACBOOK') || productName.contains('VAIO') ||
-              productName.contains('ASUS') || productName.contains('DELL') ||
-              productName.contains('HP ') || productName.contains('LENOVO') ||
-              productName.contains('ACER')) {
-            categoryName = 'LAPTOP';
-          } else if (productName.contains('TABLET') || productName.contains('IPAD')) {
-            categoryName = 'TABLET';
-          } else if (productName.contains('SMARTWATCH') || productName.contains('ĐỒNG HỒ') ||
-              productName.contains('WATCH') || productName.contains('BAND')) {
-            categoryName = 'ĐỒNG HỒ THÔNG MINH';
-          } else if (productName.contains('TAI NGHE') || productName.contains('HEADPHONE') ||
-              productName.contains('EARPHONE') || productName.contains('AIRPODS') ||
-              productName.contains('BUDS') || productName.contains('GALAXY BUDS')) {
-            categoryName = 'TAI NGHE';
-          } else if (productName.contains('LOA') || productName.contains('SPEAKER') ||
-              productName.contains('JBL') || productName.contains('MICRO') ||
-              productName.contains('MIC')) {
-            categoryName = 'LOA';
-          } else if (productName.contains('SẠC') || productName.contains('CHARGER') ||
-              productName.contains('CÁP') || productName.contains('CABLE') ||
-              productName.contains('ADAPTER') || productName.contains('MAGSAFE')) {
-            categoryName = 'SẠC & CÁP';
-          } else if (productName.contains('ỐP') || productName.contains('CASE') ||
-              productName.contains('BAO DA') || productName.contains('FOLIO')) {
-            categoryName = 'ỐP LƯNG';
-          } else if (productName.contains('PIN') || productName.contains('BATER') ||
-              productName.contains('SẠC DỰ PHÒNG') || productName.contains('POWER BANK')) {
-            categoryName = 'PIN DỰ PHÒNG';
-          } else if (productName.contains('ROM') || productName.contains('RAM') ||
-              productName.contains('SSD') || productName.contains('HDD') ||
-              productName.contains('USB')) {
-            categoryName = 'LƯU TRỮ';
-          }
-        }
+        final categoryName = category?['name']?.toString();
 
         if (categoryName != null && categoryName.isNotEmpty) {
           categoriesSet.add(categoryName);
@@ -234,59 +196,7 @@ class _FlashSaleProductScreenState extends State<FlashSaleProductScreen> {
       filtered = filtered.where((item) {
         final product = item['product'] as Map<String, dynamic>?;
         final category = product?['category'] as Map<String, dynamic>?;
-        var categoryName = category?['name']?.toString();
-
-        // Nếu API không trả về danh mục thì lấy từ tên sản phẩm
-        if (categoryName == null || categoryName.isEmpty) {
-          final productName = (product?['name'] as String?)?.toUpperCase() ?? '';
-
-          // Điện thoại - nhiều hãng hơn
-          if (productName.contains('IPHONE') || productName.contains('SAMSUNG') ||
-              productName.contains('OPPO') || productName.contains('VIVO') ||
-              productName.contains('XIAOMI') || productName.contains('REALME') ||
-              productName.contains('NOKIA') || productName.contains('POCO') ||
-              productName.contains('HONOR') || productName.contains('TECNO') ||
-              productName.contains('ITEL') || productName.contains('INFINIX') ||
-              productName.contains('ZTE') || productName.contains('NUBIA') ||
-              productName.contains('BLACK SHARK')) {
-            categoryName = 'ĐIỆN THOẠI';
-          } else if (productName.contains('LAPTOP') || productName.contains('NOTEBOOK') ||
-              productName.contains('MACBOOK') || productName.contains('VAIO') ||
-              productName.contains('ASUS') || productName.contains('DELL') ||
-              productName.contains('HP ') || productName.contains('LENOVO') ||
-              productName.contains('ACER')) {
-            categoryName = 'LAPTOP';
-          } else if (productName.contains('TABLET') || productName.contains('IPAD')) {
-            categoryName = 'TABLET';
-          } else if (productName.contains('SMARTWATCH') || productName.contains('ĐỒNG HỒ') ||
-              productName.contains('WATCH') || productName.contains('BAND')) {
-            categoryName = 'ĐỒNG HỒ THÔNG MINH';
-          } else if (productName.contains('TAI NGHE') || productName.contains('HEADPHONE') ||
-              productName.contains('EARPHONE') || productName.contains('AIRPODS') ||
-              productName.contains('BUDS') || productName.contains('GALAXY BUDS')) {
-            categoryName = 'TAI NGHE';
-          } else if (productName.contains('LOA') || productName.contains('SPEAKER') ||
-              productName.contains('JBL') || productName.contains('MICRO') ||
-              productName.contains('MIC')) {
-            categoryName = 'LOA';
-          } else if (productName.contains('SẠC') || productName.contains('CHARGER') ||
-              productName.contains('CÁP') || productName.contains('CABLE') ||
-              productName.contains('ADAPTER') || productName.contains('MAGSAFE')) {
-            categoryName = 'SẠC & CÁP';
-          } else if (productName.contains('ỐP') || productName.contains('CASE') ||
-              productName.contains('BAO DA') || productName.contains('FOLIO')) {
-            categoryName = 'ỐP LƯNG';
-          } else if (productName.contains('PIN') || productName.contains('BATER') ||
-              productName.contains('SẠC DỰ PHÒNG') || productName.contains('POWER BANK')) {
-            categoryName = 'PIN DỰ PHÒNG';
-          } else if (productName.contains('ROM') || productName.contains('RAM') ||
-              productName.contains('SSD') || productName.contains('HDD') ||
-              productName.contains('USB')) {
-            categoryName = 'LƯU TRỮ';
-          }
-        }
-
-        return categoryName == selectedCategory;
+        return category?['name']?.toString() == selectedCategory;
       }).toList();
     }
 
@@ -304,6 +214,7 @@ class _FlashSaleProductScreenState extends State<FlashSaleProductScreen> {
 
     setState(() {
       _filteredItems = filtered;
+      _currentPage = 1;
     });
   }
 
@@ -353,9 +264,9 @@ class _FlashSaleProductScreenState extends State<FlashSaleProductScreen> {
                 ),
                 cursorColor: Colors.white,
               )
-            : const Text(
-                '⚡ FLASH SALE TỐT NHẤT',
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, letterSpacing: 0.5),
+            : Text(
+                _flashSale?['name'] != null ? '⚡ ${_flashSale!['name'].toString().toUpperCase()}' : '⚡ FLASH SALE',
+                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18, letterSpacing: 0.5),
               ),
         centerTitle: false,
         backgroundColor: const Color(0xFFFF2424),
@@ -391,6 +302,15 @@ class _FlashSaleProductScreenState extends State<FlashSaleProductScreen> {
       );
     }
 
+    final int totalItems = _filteredItems.length;
+    final int totalPages = (totalItems / _itemsPerPage).ceil();
+    final int startIndex = (_currentPage - 1) * _itemsPerPage;
+    
+    final itemsToDisplay = _filteredItems
+        .skip(startIndex)
+        .take(_itemsPerPage)
+        .toList();
+
     return Column(
       children: [
         // 1. THANH ĐẾM NGƯỢC THỜI GIAN ĐANG DIỄN RA (ĐÚNG NHƯ ẢNH MẪU)
@@ -402,6 +322,7 @@ class _FlashSaleProductScreenState extends State<FlashSaleProductScreen> {
         // 3. LƯỚI SẢN PHẨM GRIDVIEW
         Expanded(
           child: GridView.builder(
+            controller: _scrollController,
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 2,
@@ -409,13 +330,56 @@ class _FlashSaleProductScreenState extends State<FlashSaleProductScreen> {
               crossAxisSpacing: 10,
               mainAxisSpacing: 10,
             ),
-            itemCount: items.length,
+            itemCount: itemsToDisplay.length,
             itemBuilder: (context, index) {
-              final item = items[index] as Map<String, dynamic>;
+              final item = itemsToDisplay[index] as Map<String, dynamic>;
               return _buildProductCard(item);
             },
           ),
         ),
+
+        // 4. PHÂN TRANG (CÁC NÚT BẤM)
+        if (totalPages > 1)
+          Container(
+            padding: const EdgeInsets.symmetric(vertical: 10),
+            color: Theme.of(context).colorScheme.surface,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.chevron_left, size: 28),
+                  color: const Color(0xFFFF2424),
+                  onPressed: _currentPage > 1
+                      ? () => setState(() {
+                            _currentPage--;
+                            _scrollController.animateTo(0, duration: const Duration(milliseconds: 300), curve: Curves.easeOut);
+                          })
+                      : null,
+                ),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: Colors.grey[100],
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Text(
+                    'Trang $_currentPage / $totalPages',
+                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                  ),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.chevron_right, size: 28),
+                  color: const Color(0xFFFF2424),
+                  onPressed: _currentPage < totalPages
+                      ? () => setState(() {
+                            _currentPage++;
+                            _scrollController.animateTo(0, duration: const Duration(milliseconds: 300), curve: Curves.easeOut);
+                          })
+                      : null,
+                ),
+              ],
+            ),
+          ),
       ],
     );
   }

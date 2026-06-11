@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:e_tech_market_app/services/admin_products_service.dart';
 import '../../../config/api_config.dart';
+import '../../../utils/translation.dart';
 
 class AdminProductFormScreen extends StatefulWidget {
   final int? productId;
@@ -125,7 +126,7 @@ class _AdminProductFormScreenState extends State<AdminProductFormScreen> with Si
         _addBlankVariant();
       }
     } catch (e) {
-      _showSnackBar('Lỗi tải dữ liệu: $e', Colors.red);
+      _showSnackBar('${Trans.errorOccurred}: $e', Colors.red);
     } finally {
       setState(() => _isLoading = false);
     }
@@ -170,7 +171,7 @@ class _AdminProductFormScreenState extends State<AdminProductFormScreen> with Si
 
     _quickPasteController.clear();
     Navigator.pop(context);
-    _showSnackBar('Đã thêm $addedCount phiên bản!', Colors.green);
+    _showSnackBar('$addedCount ${Trans.variantsAdded}', Colors.green);
   }
 
   void _openQuickPasteModal() {
@@ -188,13 +189,13 @@ class _AdminProductFormScreenState extends State<AdminProductFormScreen> with Si
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text('Dán nhanh chuỗi phiên bản', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFF1E293B))),
+                Text(Trans.quickPasteVariants, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFF1E293B))),
                 IconButton(icon: const Icon(Icons.close), onPressed: () => Navigator.pop(context)),
               ],
             ),
             const SizedBox(height: 4),
             Text(
-              'Định dạng: Tên bản | Màu | Cấu hình | Giá | Kho\nVí dụ: iPhone 15 Pro | Vàng | 256GB | 27990000 | 15',
+              '${Trans.quickPasteFormat}\n${Trans.quickPasteExample}',
               style: TextStyle(fontSize: 12, color: Colors.grey[600], height: 1.4),
             ),
             const SizedBox(height: 16),
@@ -203,7 +204,7 @@ class _AdminProductFormScreenState extends State<AdminProductFormScreen> with Si
               maxLines: 5,
               style: const TextStyle(fontSize: 14),
               decoration: InputDecoration(
-                hintText: 'Dán nội dung văn bản từ Web vào đây...',
+                hintText: Trans.quickPasteHint,
                 border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                 filled: true,
                 fillColor: const Color(0xFFF8FAFC),
@@ -220,7 +221,7 @@ class _AdminProductFormScreenState extends State<AdminProductFormScreen> with Si
                   padding: const EdgeInsets.symmetric(vertical: 14),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                 ),
-                label: const Text('Phân tích dữ liệu', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                label: Text(Trans.analyzeData, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
               ),
             )
           ],
@@ -276,7 +277,7 @@ class _AdminProductFormScreenState extends State<AdminProductFormScreen> with Si
 
   Future<void> _submitForm() async {
     if (!_formKey.currentState!.validate()) {
-      _showSnackBar('Vui lòng kiểm tra lại các mục nhập bị thiếu!', Colors.amber[800]!);
+      _showSnackBar(Trans.verifyInputs, Colors.amber[800]!);
       return;
     }
     setState(() => _isLoading = true);
@@ -337,7 +338,7 @@ class _AdminProductFormScreenState extends State<AdminProductFormScreen> with Si
       );
 
       if (mounted) {
-        _showSnackBar(widget.productId == null ? 'Thêm sản phẩm thành công!' : 'Đã cập nhật thay đổi thành công!', Colors.green);
+        _showSnackBar(widget.productId == null ? Trans.productAdded : Trans.productUpdated, Colors.green);
         Navigator.pop(context, true);
       }
     } catch (e) {
@@ -355,17 +356,17 @@ class _AdminProductFormScreenState extends State<AdminProductFormScreen> with Si
         elevation: 1,
         backgroundColor: Theme.of(context).colorScheme.surface,
         foregroundColor: Theme.of(context).colorScheme.onSurface,
-        title: Text(widget.productId != null ? 'Chỉnh sửa sản phẩm' : 'Thêm sản phẩm mới', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+        title: Text(widget.productId != null ? Trans.editProduct : Trans.addProductNew, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
         bottom: TabBar(
           controller: _tabController,
           labelColor: const Color(0xFF4F46E5),
           unselectedLabelColor: const Color(0xFF64748B),
           indicatorColor: const Color(0xFF4F46E5),
           indicatorWeight: 3,
-          tabs: const [
-            Tab(text: 'Thông tin gốc'),
-            Tab(text: 'Các phiên bản'),
-            Tab(text: 'Thông số & FAQ'),
+          tabs: [
+            Tab(text: Trans.originalTab),
+            Tab(text: Trans.variantsTab),
+            Tab(text: Trans.specsFaqTab),
           ],
         ),
       ),
@@ -391,7 +392,7 @@ class _AdminProductFormScreenState extends State<AdminProductFormScreen> with Si
               child: OutlinedButton(
                 onPressed: () => Navigator.pop(context),
                 style: OutlinedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 14), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)), side: const BorderSide(color: Color(0xFFCBD5E1))),
-                child: const Text('Hủy bỏ', style: TextStyle(color: Color(0xFF475569), fontWeight: FontWeight.w600)),
+                child: Text(Trans.cancel, style: const TextStyle(color: Color(0xFF475569), fontWeight: FontWeight.w600)),
               ),
             ),
             const SizedBox(width: 12),
@@ -399,7 +400,7 @@ class _AdminProductFormScreenState extends State<AdminProductFormScreen> with Si
               child: ElevatedButton(
                 onPressed: _submitForm,
                 style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF4F46E5), padding: const EdgeInsets.symmetric(vertical: 14), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)), elevation: 0),
-                child: const Text('Lưu sản phẩm', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                child: Text(Trans.saveProduct, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
               ),
             ),
           ],
@@ -415,32 +416,32 @@ class _AdminProductFormScreenState extends State<AdminProductFormScreen> with Si
       child: Column(
         children: [
           _buildFormCard(
-            title: 'Thông tin cơ bản',
+            title: Trans.basicInfo,
             icon: Icons.assignment_outlined,
             child: Column(
               children: [
-                _buildTextField(controller: _nameController, label: 'Tên sản phẩm *', hint: 'Nhập tên thiết bị di động/máy tính...', validator: (v) => v!.isEmpty ? 'Vui lòng điền thông tin này' : null),
+                _buildTextField(controller: _nameController, label: '${Trans.productName} *', hint: Trans.productNameHint, validator: (v) => v!.isEmpty ? Trans.fieldRequired : null),
                 const SizedBox(height: 16),
                 Row(
                   children: [
-                    Expanded(child: _buildTextField(controller: _priceController, label: 'Giá mặc định (đ) *', hint: '0', isNumber: true, validator: (v) => v!.isEmpty ? 'Yêu cầu điền giá gốc' : null)),
+                    Expanded(child: _buildTextField(controller: _priceController, label: '${Trans.defaultPrice} *', hint: Trans.priceHint, isNumber: true, validator: (v) => v!.isEmpty ? Trans.priceRequired : null)),
                     const SizedBox(width: 12),
-                    Expanded(child: _buildTextField(controller: _brandController, label: 'Thương hiệu', hint: 'VD: Apple, Samsung')),
+                    Expanded(child: _buildTextField(controller: _brandController, label: Trans.brand, hint: Trans.brandHint)),
                   ],
                 ),
                 const SizedBox(height: 16),
                 DropdownButtonFormField<String>(
                   value: _selectedCategoryId,
                   style: const TextStyle(color: Color(0xFF1E293B), fontSize: 14),
-                  decoration: _inputDecoration('Danh mục sản phẩm *', 'Chọn nhóm danh mục'),
+                  decoration: _inputDecoration('${Trans.categoryRequired} *', Trans.selectCategory),
                   items: _categories.map((c) => DropdownMenuItem<String>(value: c['id'].toString(), child: Text(c['name'] ?? ''))).toList(),
                   onChanged: (val) => setState(() => _selectedCategoryId = val),
-                  validator: (v) => v == null ? 'Vui lòng chọn danh mục' : null,
+                  validator: (v) => v == null ? Trans.categoryRequiredMsg : null,
                 ),
                 const SizedBox(height: 12),
                 SwitchListTile(
-                  title: const Text('Trạng thái hiển thị công khai', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Color(0xFF334155))),
-                  subtitle: const Text('Bật để hiển thị trực tiếp lên sàn mua sắm', style: TextStyle(fontSize: 11, color: Color(0xFF64748B))),
+                  title: Text(Trans.publicDisplayStatus, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Color(0xFF334155))),
+                  subtitle: Text(Trans.enableToDisplayOnMarketplace, style: const TextStyle(fontSize: 11, color: Color(0xFF64748B))),
                   value: _isActive,
                   contentPadding: EdgeInsets.zero,
                   activeColor: const Color(0xFF10B981),
@@ -451,18 +452,18 @@ class _AdminProductFormScreenState extends State<AdminProductFormScreen> with Si
           ),
           const SizedBox(height: 16),
           _buildFormCard(
-            title: 'Mô tả tóm tắt sản phẩm',
+            title: Trans.productSummary,
             icon: Icons.description_outlined,
-            child: _buildTextField(controller: _descController, label: 'Giới thiệu thông tin chi tiết', hint: 'Nhập thông tin mô tả sản phẩm...', maxLines: 4),
+            child: _buildTextField(controller: _descController, label: Trans.productDescLabel, hint: Trans.productDescHint, maxLines: 4),
           ),
           const SizedBox(height: 16),
           _buildFormCard(
-            title: 'Bộ sưu tập hình ảnh',
+            title: Trans.imageCollection,
             icon: Icons.collections_outlined,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text('Ảnh bìa chính sản phẩm (Main Image)', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(0xFF475569))),
+                Text(Trans.mainImage, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(0xFF475569))),
                 const SizedBox(height: 8),
                 Row(
                   children: [
@@ -471,13 +472,13 @@ class _AdminProductFormScreenState extends State<AdminProductFormScreen> with Si
                     OutlinedButton.icon(
                       onPressed: _pickMainImage,
                       icon: const Icon(Icons.cloud_upload_outlined, size: 16),
-                      label: const Text('Tải ảnh đại diện'),
+                      label: Text(Trans.uploadImage),
                       style: OutlinedButton.styleFrom(side: const BorderSide(color: Color(0xFF6366F1)), foregroundColor: const Color(0xFF6366F1)),
                     ),
                   ],
                 ),
                 const Padding(padding: EdgeInsets.symmetric(vertical: 12), child: Divider(color: Color(0xFFE2E8F0))),
-                const Text('Album ảnh chi tiết bổ sung (Tối đa 12 ảnh)', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(0xFF475569))),
+                Text(Trans.detailImageAlbum, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(0xFF475569))),
                 const SizedBox(height: 10),
                 Wrap(
                   spacing: 10,
@@ -521,7 +522,7 @@ class _AdminProductFormScreenState extends State<AdminProductFormScreen> with Si
                     onPressed: _openQuickPasteModal,
                     style: OutlinedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 13), foregroundColor: const Color(0xFF6B21A8), side: const BorderSide(color: Color(0xFFA855F7), width: 1.2), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
                     icon: const Icon(Icons.flash_on_outlined, size: 16),
-                    label: const Text('Dán nhanh (Web Clip)', style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold)),
+                    label: Text(Trans.quickPasteWebClip, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold)),
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -530,7 +531,7 @@ class _AdminProductFormScreenState extends State<AdminProductFormScreen> with Si
                     onPressed: () => setState(_addBlankVariant),
                     style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 13), backgroundColor: const Color(0xFF4F46E5), elevation: 0, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
                     icon: const Icon(Icons.add, size: 16, color: Colors.white),
-                    label: const Text('Thêm thủ công', style: TextStyle(fontSize: 13, color: Colors.white, fontWeight: FontWeight.bold)),
+                    label: Text(Trans.addManually, style: const TextStyle(fontSize: 13, color: Colors.white, fontWeight: FontWeight.bold)),
                   ),
                 ),
               ],
@@ -557,7 +558,7 @@ class _AdminProductFormScreenState extends State<AdminProductFormScreen> with Si
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                     decoration: BoxDecoration(color: const Color(0xFFEDE9FE), borderRadius: BorderRadius.circular(8)),
-                    child: Text('Phiên bản #${index + 1}', style: const TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF4338CA), fontSize: 12)),
+                    child: Text('${Trans.variant} #${index + 1}', style: const TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF4338CA), fontSize: 12)),
                   ),
                   const Spacer(),
                   if (_variants.length > 1)

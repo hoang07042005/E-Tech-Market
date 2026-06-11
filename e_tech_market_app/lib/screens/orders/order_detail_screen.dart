@@ -1,10 +1,11 @@
-﻿import 'dart:io';
-
+import 'dart:io';
+import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../../services/order_service.dart';
 import '../../../utils/network_utils.dart';
+import '../../../utils/translation.dart';
 
 class OrderDetailScreen extends StatefulWidget {
   final int orderId;
@@ -71,23 +72,22 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
 
   String _statusLabel(String status) {
     final s = status.toLowerCase();
-    if (s == 'pending') return 'Chờ xác nhận';
-    if (s == 'processing') return 'Đã xác nhận';
-    if (s == 'paid') return 'Đang chuẩn bị';
-    if (s == 'shipped') return 'Đang giao';
-    if (s == 'delivered') return 'Đã giao';
-    if (s == 'completed') return 'Hoàn thành';
-    if (s == 'returned') return 'Hoàn trả';
-    if (s == 'cancelled') return 'Đã hủy';
+    if (s == 'pending') return Trans.statusPending;
+    if (s == 'processing') return Trans.statusProcessing;
+    if (s == 'paid') return Trans.statusPreparing;
+    if (s == 'shipped') return Trans.statusShipped;
+    if (s == 'delivered') return Trans.statusDelivered;
+    if (s == 'completed') return Trans.statusCompleted;
+    if (s == 'returned') return Trans.statusReturned;
+    if (s == 'cancelled') return Trans.statusCancelled;
     return status.isEmpty ? '—' : status;
   }
 
-  String _formatMoney(dynamic amount) {
-    final value = amount is num
-        ? amount.toDouble()
-        : double.tryParse(amount?.toString() ?? '') ?? 0.0;
-    return value.toStringAsFixed(0).replaceAllMapped(RegExp(r'\\B(?=(\d{3})+(?!\\d))'), (match) => '.');
-  }
+String _formatMoney(dynamic value) {
+  final num number = num.tryParse(value.toString()) ?? 0;
+  final formatter = NumberFormat('#,###', 'vi_VN');
+  return formatter.format(number);
+}
 
   String _resolveOrderItemImageUrl(dynamic item) {
     final product = item is Map<String, dynamic> ? item['product'] as Map<String, dynamic>? : null;
@@ -115,9 +115,9 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
 
   String _payLabel(String method) {
     final s = method.toLowerCase();
-    if (s == 'cod') return 'Thanh toán khi nhận hàng (COD)';
-    if (s == 'momo') return 'Ví MoMo';
-    if (s == 'vnpay') return 'VNPAY';
+    if (s == 'cod') return Trans.paymentCOD;
+    if (s == 'momo') return Trans.paymentMoMo;
+    if (s == 'vnpay') return Trans.paymentVNPAY;
     return method.isEmpty ? '—' : method;
   }
 
@@ -203,7 +203,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
             : _error != null
                 ? Center(child: Text(_error!, style: TextStyle(color: colorScheme.error)))
                 : order == null
-                    ? Center(child: Text('Không tìm thấy đơn hàng.', style: TextStyle(color: colorScheme.onSurface)))
+                    ? Center(child: Text(Trans.orderNotFound, style: TextStyle(color: colorScheme.onSurface)))
                     : _buildContent(order),
       ),
     );
@@ -274,8 +274,9 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: colorScheme.surfaceContainerHighest,
-        borderRadius: BorderRadius.circular(20),
+        color: colorScheme.surface,
+        borderRadius: BorderRadius.circular(5),
+        border: Border.all(color: colorScheme.outline, width: 0.5),
       ),
       child: Row(
         children: [
@@ -295,7 +296,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                 Text(
                   'Trạng thái đơn hàng',
                   style: TextStyle(
-                    color: colorScheme.onSurface.withValues(alpha: 0.6),
+                    color: colorScheme.onSurface,
                     fontSize: 13,
                   ),
                 ),
@@ -323,8 +324,9 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: colorScheme.surfaceContainerHighest,
-        borderRadius: BorderRadius.circular(20),
+        color: colorScheme.surface,
+        borderRadius: BorderRadius.circular(5),
+        border: Border.all(color: colorScheme.outline, width: 0.5),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -372,7 +374,6 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
     final name = (product?['name'] ?? item['product_name_snapshot'] ?? 'Sản phẩm').toString();
     final imageUrl = _resolveOrderItemImageUrl(item);
     final quantity = item['quantity']?.toString() ?? '1';
-    final price = _formatMoney(item['price'] ?? item['unit_price'] ?? 0);
     final total = _formatMoney(item['total_price'] ?? item['price'] ?? 0);
 
     return Container(
@@ -381,44 +382,76 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
       decoration: BoxDecoration(
         color: colorScheme.surface,
         borderRadius: BorderRadius.circular(12),
+        // Thêm shadow nhẹ để item nổi bật và cao cấp hơn
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.03),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start, // Căn đỉnh để ảnh và chữ thẳng hàng phía trên
         children: [
+          // 1. Hình ảnh sản phẩm
           ClipRRect(
             borderRadius: BorderRadius.circular(8),
             child: imageUrl.isNotEmpty
-                ? Image.network(imageUrl, width: 64, height: 64, fit: BoxFit.cover,
-                    errorBuilder: (_, __, ___) => _buildImagePlaceholder())
+                ? Image.network(
+                    imageUrl,
+                    width: 72, // Tăng nhẹ kích thước ảnh cho rõ ràng hơn
+                    height: 72,
+                    fit: BoxFit.cover,
+                    errorBuilder: (_, __, ___) => _buildImagePlaceholder(),
+                  )
                 : _buildImagePlaceholder(),
           ),
           const SizedBox(width: 12),
+
+          // 2. Khu vực thông tin chi tiết (Chiếm trọn phần không gian còn lại)
           Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  name,
-                  style: TextStyle(fontWeight: FontWeight.w600, color: colorScheme.onSurface),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  'Số lượng: $quantity',
-                  style: TextStyle(
-                    color: colorScheme.onSurface.withValues(alpha: 0.6),
-                    fontSize: 13,
+            child: SizedBox(
+              height: 72, // Khóa chiều cao bằng với ảnh để dễ dàn trang dọc
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween, // Đẩy tên lên đỉnh, giá xuống đáy
+                children: [
+                  // Tên sản phẩm
+                  Text(
+                    name,
+                    style: TextStyle(
+                      fontWeight: FontWeight.w600, 
+                      color: colorScheme.onSurface,
+                      fontSize: 14,
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                   ),
-                ),
-              ],
-            ),
-          ),
-          Text(
-            '${total}đ',
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              color: colorScheme.primary,
-              fontSize: 15,
+                  
+                  // Hàng hiển thị Giá và Số lượng phía dưới
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      // Giá tiền (Đưa xuống dưới giúp hiển thị được số lớn mà không bị đè chữ)
+                      Text(
+                        '${total}đ',
+                        style: TextStyle(fontWeight: FontWeight.bold, color: Color(0xFFF26522), fontSize: 16),
+                      ),
+                      
+                      // Số lượng bên góc phải đáy
+                      Text(
+                        'x$quantity', // Viết dạng 'x1' trông sẽ gọn gàng và chuẩn e-commerce hơn
+                        style: TextStyle(
+                          color: colorScheme.onSurface.withOpacity(0.6),
+                          fontSize: 13,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
         ],
@@ -432,8 +465,9 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
       width: 64,
       height: 64,
       decoration: BoxDecoration(
-        color: colorScheme.surfaceContainerHighest,
+        color: colorScheme.surface,
         borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: colorScheme.outline, width: 0.5),
       ),
       child: Icon(Icons.image_not_supported, color: colorScheme.onSurface.withValues(alpha: 0.4)),
     );
@@ -454,8 +488,9 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: colorScheme.surfaceContainerHighest,
-        borderRadius: BorderRadius.circular(20),
+        color: colorScheme.surface,
+        borderRadius: BorderRadius.circular(5),
+        border: Border.all(color: colorScheme.outline, width: 0.5),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -490,7 +525,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Icon(icon, size: 18, color: colorScheme.onSurface.withValues(alpha: 0.5)),
+        Icon(icon, size: 18, color: colorScheme.onSurface),
         const SizedBox(width: 8),
         Expanded(
           child: Column(
@@ -529,8 +564,9 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: colorScheme.surfaceContainerHighest,
-        borderRadius: BorderRadius.circular(20),
+        color: colorScheme.surface,
+        borderRadius: BorderRadius.circular(5),
+        border: Border.all(color: colorScheme.outline, width: 0.5),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -572,8 +608,9 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: colorScheme.surfaceContainerHighest,
-        borderRadius: BorderRadius.circular(20),
+        color: colorScheme.surface,
+        borderRadius: BorderRadius.circular(5),
+        border: Border.all(color: colorScheme.outline, width: 0.5),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -616,7 +653,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
         Text(
           label,
           style: TextStyle(
-            color: colorScheme.onSurface.withValues(alpha: 0.7),
+            color: colorScheme.onSurface,
             fontSize: isTotal ? 16 : 14,
           ),
         ),
@@ -637,7 +674,9 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
     final status = (order['status'] ?? '').toString().toLowerCase();
     final paymentMethod = (order['payment']?['method'] ?? '').toString().toLowerCase();
     final paymentStatus = (order['payment']?['status'] ?? '').toString().toLowerCase();
-    final hasReturnRequest = order['return_request'] != null;
+    final returnRequest = order['return_request'];
+    final hasReturnRequest = returnRequest != null;
+    final isRefundConfirmed = hasReturnRequest && returnRequest['customer_confirmed_at'] != null && returnRequest['customer_confirmed_at'].toString().isNotEmpty;
     final isCancelled = status == 'cancelled';
     final isCompleted = status == 'completed';
 
@@ -656,7 +695,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
               children: [
                 Icon(Icons.cancel_outlined, color: colorScheme.onErrorContainer),
                 const SizedBox(width: 8),
-                Text('Đơn hàng đã bị hủy', style: TextStyle(color: colorScheme.onErrorContainer)),
+                Text(Trans.orderCancelled, style: TextStyle(color: colorScheme.onErrorContainer)),
               ],
             ),
           ),
@@ -669,7 +708,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
           _buildActionButton('Xác nhận đã nhận hàng', Colors.green, _onConfirmReceived),
           const SizedBox(height: 8),
         ],
-        if (hasReturnRequest && status == 'returned') ...[
+        if (hasReturnRequest && status == 'returned' && !isRefundConfirmed) ...[
           _buildActionButton('Xác nhận đã hoàn tiền', Colors.green, _onConfirmRefundReceived),
           const SizedBox(height: 8),
         ],
@@ -699,36 +738,126 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
     );
   }
 
+  String _resolveMediaUrl(dynamic m) {
+    final url = (m is Map) ? (m['url'] ?? m['image_url'] ?? m['image'])?.toString() : null;
+    return url != null ? NetworkUtils.fixDeviceUrl(url) : '';
+  }
+
   Widget _buildReturnRequestCard(dynamic returnRequest) {
     final colorScheme = Theme.of(context).colorScheme;
+    if (returnRequest == null) return const SizedBox.shrink();
+
+    final status = returnRequest['status']?.toString() ?? 'pending';
+    final content = returnRequest['content']?.toString() ?? '';
+    final reason = returnRequest['reason']?.toString() ?? '';
+    final displayContent = content.isNotEmpty ? content : reason;
+    final adminNote = returnRequest['admin_note']?.toString() ?? '';
+
+    final media = (returnRequest['media'] as List?) ?? [];
+    final refundProof = (returnRequest['refund_proof'] as List?) ?? [];
+
+    final Color chipColor = _statusColor(status);
+
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: colorScheme.surfaceContainerHighest,
-        borderRadius: BorderRadius.circular(20),
+        color: colorScheme.surface,
+        borderRadius: BorderRadius.circular(5),
+        border: Border.all(color: colorScheme.outline, width: 0.5),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Icon(Icons.undo_outlined, color: colorScheme.primary, size: 22),
-              const SizedBox(width: 8),
-              Text(
-                'Yêu cầu hoàn trả',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
-                  color: colorScheme.onSurface,
-                ),
+              Row(
+                children: [
+                  Icon(Icons.undo_outlined, color: colorScheme.primary, size: 22),
+                  const SizedBox(width: 8),
+                  Text(
+                    Trans.returnRequest,
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                      color: colorScheme.onSurface,
+                    ),
+                  ),
+                ],
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                decoration: BoxDecoration(color: chipColor.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(999)),
+                child: Text(_statusLabel(status), style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: chipColor)),
               ),
             ],
           ),
           const SizedBox(height: 16),
-          Text(
-            returnRequest['reason']?.toString() ?? '—',
-            style: TextStyle(color: colorScheme.onSurface),
-          ),
+          
+          if (displayContent.trim().isNotEmpty) ...[
+            Text('Lý do / Nội dung:', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: colorScheme.onSurface)),
+            const SizedBox(height: 4),
+            Text(displayContent, style: TextStyle(fontSize: 14, color: colorScheme.onSurface)),
+            const SizedBox(height: 12),
+          ],
+
+          if (media.isNotEmpty) ...[
+            Text(Trans.images, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: colorScheme.onSurface)),
+            const SizedBox(height: 8),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: media.take(8).map<Widget>((m) {
+                final u = _resolveMediaUrl(m);
+                if (u.isEmpty) return const SizedBox.shrink();
+                return ClipRRect(
+                  borderRadius: BorderRadius.circular(8),
+                  child: Image.network(u, width: 76, height: 76, fit: BoxFit.cover, errorBuilder: (c, e, s) {
+                    return const SizedBox(width: 76, height: 76, child: Icon(Icons.broken_image_rounded, color: Colors.grey));
+                  }),
+                );
+              }).toList(),
+            ),
+            const SizedBox(height: 12),
+          ],
+
+          if (adminNote.trim().isNotEmpty) ...[
+            Text('Phản hồi từ Admin:', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: colorScheme.onSurface)),
+            const SizedBox(height: 4),
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: colorScheme.surface,
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: colorScheme.outline, width: 0.5),
+              ),
+              child: Text(
+                adminNote,
+                style: TextStyle(fontSize: 13, color: colorScheme.onSurface, fontStyle: FontStyle.italic),
+              ),
+            ),
+            const SizedBox(height: 12),
+          ],
+
+          if (refundProof.isNotEmpty) ...[
+            Text(Trans.refundProof, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: colorScheme.onSurface)),
+            const SizedBox(height: 8),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: refundProof.take(8).map<Widget>((m) {
+                final u = _resolveMediaUrl(m);
+                if (u.isEmpty) return const SizedBox.shrink();
+                return ClipRRect(
+                  borderRadius: BorderRadius.circular(8),
+                  child: Image.network(u, width: 76, height: 76, fit: BoxFit.cover, errorBuilder: (c, e, s) {
+                    return const SizedBox(width: 76, height: 76, child: Icon(Icons.broken_image_rounded, color: Colors.grey));
+                  }),
+                );
+              }).toList(),
+            ),
+          ],
         ],
       ),
     );
@@ -741,8 +870,9 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: colorScheme.surfaceContainerHighest,
-        borderRadius: BorderRadius.circular(20),
+        color: colorScheme.surface,
+        borderRadius: BorderRadius.circular(5),
+        border: Border.all(color: colorScheme.outline, width: 0.5),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -793,7 +923,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                   ),
                   if (note != null && note.isNotEmpty) ...[
                     const SizedBox(height: 4),
-                    Text('Ghi chú: $note', style: TextStyle(color: colorScheme.onSurface)),
+                    Text(Trans.noteLabel(note), style: TextStyle(color: colorScheme.onSurface)),
                   ],
                 ],
               ),

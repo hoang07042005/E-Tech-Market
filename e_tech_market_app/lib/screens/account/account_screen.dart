@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../utils/network_utils.dart';
+import '../../utils/translation.dart';
 import 'clause/terms_screen.dart';
 import '../orders/order_list_screen.dart';
 import 'security/security_screen.dart';
@@ -12,6 +13,7 @@ import 'setting/setting_screen.dart';
 import '../admin/inventory/admin_inventory_screen.dart';
 import '../admin/products/admin_product_screen.dart';
 import '../admin/orders/admin_order_screen.dart';
+import '../admin/dashboard/admin_dashboard_screen.dart';
 
 class AccountScreen extends StatelessWidget {
   final Map<String, dynamic> user;
@@ -49,8 +51,8 @@ class AccountScreen extends StatelessWidget {
       avatarUrl = null;
     }
 
-    final name = user['name'] ?? 'Khách hàng';
-    final email = user['email'] ?? 'Chưa cập nhật email';
+    final name = user['name'] ?? Trans.guestUser;
+    final email = user['email'] ?? Trans.noEmail;
 
     // Kiểm tra xem người dùng có vai trò là admin không
     bool isAdmin = false;
@@ -104,14 +106,14 @@ class AccountScreen extends StatelessWidget {
             // --- TÀI KHOẢN ---
             _buildMenuSection(
                 context: context,
-                title: 'TÀI KHOẢN',
+                title: Trans.accountTitle,
               
               children: [
                 // Thông tin cá nhân: Màu Xanh Dương (Tin cậy)
                 _buildMenuItem(
                   context,
-                  Icons.person_outline, 
-                  'Thông tin cá nhân', 
+                  Icons.person_outline,
+                  Trans.personalInfo, 
                   const Color(0xFFE0F2FE), 
                   const Color(0xFF0284C7), 
                   () {
@@ -121,8 +123,8 @@ class AccountScreen extends StatelessWidget {
                 // Đơn hàng: Màu Vàng Cam (Trạng thái giao nhận, vận chuyển)
                 _buildMenuItem(
                   context,
-                  Icons.receipt_long_outlined, 
-                  'Đơn hàng', 
+                  Icons.receipt_long_outlined,
+                  Trans.myOrders, 
                   const Color(0xFFFEF3C7), 
                   const Color(0xFFD97706), 
                   () {
@@ -132,8 +134,8 @@ class AccountScreen extends StatelessWidget {
                 // Sản phẩm yêu thích: Màu Hồng/Đỏ (Yêu thích, tim)
                 _buildMenuItem(
                   context,
-                  Icons.favorite_outline, 
-                  'Sản phẩm yêu thích', 
+                  Icons.favorite_outline,
+                  Trans.myWishlist, 
                   const Color(0xFFFCE7F3), 
                   const Color(0xFFDB2777), 
                   () {
@@ -143,8 +145,8 @@ class AccountScreen extends StatelessWidget {
                 // Kho voucher: Màu Tím (Ưu đãi, sự kiện đặc biệt)
                 _buildMenuItem(
                   context,
-                  Icons.local_activity_outlined, 
-                  'Kho voucher', 
+                  Icons.local_activity_outlined,
+                  Trans.voucherWarehouse, 
                   const Color(0xFFF3E8FF), 
                   const Color(0xFF9333EA), 
                   () {
@@ -159,15 +161,15 @@ class AccountScreen extends StatelessWidget {
             // --- VỀ E-TECH MARKET ---
             _buildMenuSection(
                 context: context,
-                title: 'VỀ E-TECH MARKET',
+                title: Trans.aboutEtech,
               children: [
                 // Giới thiệu: Màu Lam Ngọc/Teal (Thông tin doanh nghiệp)
                 _buildMenuItem(
                   context,
-                  Icons.info_outline, 
-                  'Giới thiệu', 
-                  const Color(0xFFE0F2F1), 
-                  const Color(0xFF00897B), 
+                  Icons.info_outline,
+                  Trans.introduction,
+                  const Color(0xFFE0F2F1),
+                  const Color(0xFF00897B),
                   () {
                     Navigator.push(context, MaterialPageRoute(builder: (_) => const AboutScreen()));
                   }
@@ -175,10 +177,10 @@ class AccountScreen extends StatelessWidget {
                 // Liên hệ & Hỗ trợ: Màu Xanh Lá (Tổng đài, hỗ trợ trực tuyến năng động)
                 _buildMenuItem(
                   context,
-                  Icons.headset_mic_outlined, 
-                  'Liên hệ & Hỗ trợ', 
-                  const Color(0xFFDCFCE7), 
-                  const Color(0xFF16A34A), 
+                  Icons.headset_mic_outlined,
+                  Trans.contactSupport,
+                  const Color(0xFFDCFCE7),
+                  const Color(0xFF16A34A),
                   () {
                     Navigator.push(context, MaterialPageRoute(builder: (_) => const ContactScreen()));
                   }
@@ -191,15 +193,15 @@ class AccountScreen extends StatelessWidget {
             // --- THIẾT LẬP ---
             _buildMenuSection(
                 context: context,
-                title: 'THIẾT LẬP',
+                title: Trans.setup,
               children: [
                 // Bảo mật: Màu Xanh Khiên/Xanh Chàm (An toàn, bảo mật)
                 _buildMenuItem(
                   context,
-                  Icons.security_outlined, 
-                  'Bảo mật', 
-                  const Color(0xFFE0E7FF), 
-                  const Color(0xFF4F46E5), 
+                  Icons.security_outlined,
+                  Trans.security,
+                  const Color(0xFFE0E7FF),
+                  const Color(0xFF4F46E5),
                   () {
                     Navigator.push(context, MaterialPageRoute(builder: (_) => const SecurityScreen()));
                   }
@@ -207,10 +209,10 @@ class AccountScreen extends StatelessWidget {
                 // Các điều khoản: Màu Cam Đất (Văn bản pháp lý, lưu ý)
                 _buildMenuItem(
                   context,
-                  Icons.article_outlined, 
-                  'Các điều khoản', 
-                  const Color(0xFFFFEDD5), 
-                  const Color(0xFFEA580C), 
+                  Icons.article_outlined,
+                  Trans.terms,
+                  const Color(0xFFFFEDD5),
+                  const Color(0xFFEA580C),
                   () {
                     Navigator.push(context, MaterialPageRoute(builder: (_) => const TermsScreen()));
                   }
@@ -218,10 +220,10 @@ class AccountScreen extends StatelessWidget {
                 // Cài đặt: Màu Xám Slate (Hệ thống, cấu hình)
                 _buildMenuItem(
                   context,
-                  Icons.settings_outlined, 
-                  'Cài đặt', 
-                  const Color(0xFFF1F5F9), 
-                  const Color(0xFF64748B), 
+                  Icons.settings_outlined,
+                  Trans.setting,
+                  const Color(0xFFF1F5F9),
+                  const Color(0xFF64748B),
                   () {
                     Navigator.push(context, MaterialPageRoute(builder: (_) => const SettingScreen()));
                   }
@@ -235,15 +237,26 @@ class AccountScreen extends StatelessWidget {
             if (isAdmin) ...[
               _buildMenuSection(
                 context: context,
-                title: 'QUẢN TRỊ',
+                title: Trans.adminPanel,
                 children: [
+                  // Tổng quan (Dashboard): Màu Tím/Indigo
+                  _buildMenuItem(
+                  context,
+                    Icons.dashboard_outlined,
+                    Trans.systemOverview,
+                    const Color(0xFFE0E7FF),
+                    const Color(0xFF4338CA),
+                    () {
+                      Navigator.push(context, MaterialPageRoute(builder: (_) => const AdminDashboardScreen()));
+                    }
+                  ),
                   // Tồn kho: Màu Nâu/Hổ phách (Kho bãi, lưu trữ)
                   _buildMenuItem(
                   context,
-                    Icons.inventory_2_outlined, 
-                    'Tồn kho (Admin)', 
-                    const Color(0xFFFEF3C7), 
-                    const Color(0xFFB45309), 
+                    Icons.inventory_2_outlined,
+                    Trans.inventoryAdmin,
+                    const Color(0xFFFEF3C7),
+                    const Color(0xFFB45309),
                     () {
                       Navigator.push(context, MaterialPageRoute(builder: (_) => const AdminInventoryScreen()));
                     }
@@ -251,10 +264,10 @@ class AccountScreen extends StatelessWidget {
                   // Quản lý đơn hàng: Màu Cyan/Xanh biển sáng (Xử lý luồng đơn)
                   _buildMenuItem(
                   context,
-                    Icons.assignment_outlined, 
-                    'Quản lý đơn hàng (Admin)', 
-                    const Color(0xFFE0F7FA), 
-                    const Color(0xFF00ACC1), 
+                    Icons.assignment_outlined,
+                    Trans.orderManagementAdmin,
+                    const Color(0xFFE0F7FA),
+                    const Color(0xFF00ACC1),
                     () {
                       Navigator.push(context, MaterialPageRoute(builder: (_) => const AdminOrdersScreen()));
                     }
@@ -262,10 +275,10 @@ class AccountScreen extends StatelessWidget {
                   // Quản lý sản phẩm: Màu Xanh lục đậm (Sản phẩm, hàng hóa)
                   _buildMenuItem(
                   context,
-                    Icons.inventory_outlined, 
-                    'Quản lý sản phẩm (Admin)', 
-                    const Color(0xFFE8F5E9), 
-                    const Color(0xFF2E7D32), 
+                    Icons.inventory_outlined,
+                    Trans.productManagementAdmin,
+                    const Color(0xFFE8F5E9),
+                    const Color(0xFF2E7D32),
                     () {
                       Navigator.push(context, MaterialPageRoute(builder: (_) => const AdminProductScreen()));
                     }
@@ -293,7 +306,7 @@ class AccountScreen extends StatelessWidget {
                   ),
                 ),
                 icon: const Icon(Icons.logout, size: 22, color: Color(0xFFD32F2F)),
-                label: const Text('Đăng xuất', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                label: Text(Trans.logout, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
               ),
             ),
             const SizedBox(height: 40),
