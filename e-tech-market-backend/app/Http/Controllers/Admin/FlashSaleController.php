@@ -14,49 +14,41 @@ use Illuminate\Http\Request;
 
 class FlashSaleController extends Controller
 {
+    public function __construct(private \App\Services\FlashSaleService $flashSaleService)
+    {
+    }
+
     public function index(): JsonResponse
     {
-        // Tự động chuyển sang trạng thái "ended" nếu đã hết hạn
-        FlashSale::where('status', '!=', FlashSale::STATUS_ENDED)
-            ->where('end_at', '<', now())
-            ->update(['status' => FlashSale::STATUS_ENDED]);
-
-        $sales = FlashSale::withCount('items')->orderBy('start_at', 'desc')->get();
+        $sales = $this->flashSaleService->getAdminSales();
 
         return response()->json(FlashSaleResource::collection($sales)->resolve());
     }
 
     public function store(StoreFlashSaleRequest $request): JsonResponse
     {
-        $validated = $request->validated();
-
-        \Illuminate\Support\Facades\Cache::forget('active_flash_sale');
-        $sale = FlashSale::create($validated);
+        $sale = $this->flashSaleService->createSale($request->validated());
 
         return response()->json((new FlashSaleResource($sale))->resolve(), 201);
     }
 
     public function show(FlashSale $flashSale): JsonResponse
     {
-        $flashSale->load('items.product', 'items.variant');
+        $flashSale = $this->flashSaleService->getSaleWithItems($flashSale);
 
         return response()->json((new FlashSaleResource($flashSale))->resolve());
     }
 
     public function update(UpdateFlashSaleRequest $request, FlashSale $flashSale): JsonResponse
     {
-        $validated = $request->validated();
+        $updatedSale = $this->flashSaleService->updateSale($flashSale, $request->validated());
 
-        \Illuminate\Support\Facades\Cache::forget('active_flash_sale');
-        $flashSale->update($validated);
-
-        return response()->json((new FlashSaleResource($flashSale))->resolve());
+        return response()->json((new FlashSaleResource($updatedSale))->resolve());
     }
 
     public function destroy(FlashSale $flashSale): JsonResponse
     {
-        \Illuminate\Support\Facades\Cache::forget('active_flash_sale');
-        $flashSale->delete();
+        $this->flashSaleService->deleteSale($flashSale);
 
         return response()->json(['message' => 'Flash Sale deleted successfully']);
     }
@@ -64,23 +56,19 @@ class FlashSaleController extends Controller
     // Items management
     public function addItem(StoreFlashSaleItemRequest $request, FlashSale $flashSale): JsonResponse
     {
-        $validated = $request->validated();
-
-        \Illuminate\Support\Facades\Cache::forget('active_flash_sale');
-        $item = $flashSale->items()->create($validated);
+        $item = $this->flashSaleService->addItem($flashSale, $request->validated());
 
         return response()->json((new FlashSaleResource($item))->resolve(), 201);
     }
 
     public function removeItem(FlashSale $flashSale, FlashSaleItem $item): JsonResponse
     {
-        if ($item->flash_sale_id !== $flashSale->id) {
-            return response()->json(['message' => 'Item does not belong to this sale'], 403);
+        try {
+            $this->flashSaleService->removeItem($flashSale, $item);
+            return response()->json(['message' => 'Item removed successfully']);
+        } catch (\Exception $e) {
+            return response()->json(['message' => $e->getMessage()], $e->getCode() ?: 400);
         }
-        \Illuminate\Support\Facades\Cache::forget('active_flash_sale');
-        $item->delete();
-
-        return response()->json(['message' => 'Item removed successfully']);
     }
 
     public function addBulkItems(Request $request, FlashSale $flashSale): JsonResponse
@@ -93,46 +81,7 @@ class FlashSaleController extends Controller
         $percentage = (float) $validated['discount_percentage'];
         $qtyLimit = $validated['quantity_limit'] ?? null;
 
-        // Process products in chunks to avoid loading all products into memory
-        $addedCount = 0;
-        \App\Models\Product::chunk(200, function ($products) use ($flashSale, $percentage, $qtyLimit, &$addedCount) {
-            $products->load('variants');
-            foreach ($products as $product) {
-                if ($product->variants->isNotEmpty()) {
-                    foreach ($product->variants as $variant) {
-                        $discountedPrice = round((float) $variant->price * (1 - $percentage / 100));
-                        $flashSale->items()->updateOrCreate(
-                            [
-                                'product_id' => $product->id,
-                                'variant_id' => $variant->id,
-                            ],
-                            [
-                                'flash_sale_price' => $discountedPrice,
-                                'quantity_limit' => $qtyLimit,
-                            ]
-                        );
-                        $addedCount++;
-                    }
-                } else {
-                    // Products without variants may not have a direct `price` attribute
-                    $basePrice = (float) $product->getAttribute('price');
-                    $discountedPrice = round($basePrice * (1 - $percentage / 100));
-                    $flashSale->items()->updateOrCreate(
-                        [
-                            'product_id' => $product->id,
-                            'variant_id' => null,
-                        ],
-                        [
-                            'flash_sale_price' => $discountedPrice,
-                            'quantity_limit' => $qtyLimit,
-                        ]
-                    );
-                    $addedCount++;
-                }
-            }
-        });
-
-        \Illuminate\Support\Facades\Cache::forget('active_flash_sale');
+        $addedCount = $this->flashSaleService->addBulkItems($flashSale, $percentage, $qtyLimit);
 
         return response()->json([
             'message' => "Đã áp dụng giảm giá {$percentage}% cho {$addedCount} sản phẩm/phiên bản thành công!",

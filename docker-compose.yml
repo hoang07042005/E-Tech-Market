@@ -35,7 +35,7 @@ services:
       - REDIS_PASSWORD=${REDIS_PASSWORD:-}
       - SCOUT_DRIVER=meilisearch
       - MEILISEARCH_HOST=http://meilisearch:7700
-      - MEILISEARCH_KEY=etech-master-key-1234
+      - MEILISEARCH_KEY=${MEILISEARCH_KEY:-etech-master-key-1234}
       - CACHE_DRIVER=redis
       - SESSION_DRIVER=redis
     depends_on:
@@ -103,7 +103,7 @@ services:
   meilisearch:
     image: getmeili/meilisearch:v1.6
     environment:
-      - MEILI_MASTER_KEY=etech-master-key-1234
+      - MEILI_MASTER_KEY=${MEILISEARCH_KEY:-etech-master-key-1234}
     ports:
       - "7700:7700"
     volumes:

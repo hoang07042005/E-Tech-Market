@@ -12,37 +12,34 @@ use Illuminate\Http\Request;
 
 class CouponsController extends Controller
 {
+    public function __construct(private \App\Services\CouponService $couponService)
+    {
+    }
+
     public function index(Request $request): JsonResponse
     {
-        $coupons = Coupon::query()
-            ->withCount('usages')
-            ->orderBy('created_at', 'desc')
-            ->paginate((int) $request->input('limit', 20));
+        $coupons = $this->couponService->getAdminCoupons((int) $request->input('limit', 20));
 
         return CouponResource::collection($coupons)->response();
     }
 
     public function store(StoreCouponRequest $request): JsonResponse
     {
-        $validated = $request->validated();
-
-        $coupon = Coupon::create($validated);
+        $coupon = $this->couponService->createCoupon($request->validated());
 
         return response()->json((new CouponResource($coupon))->resolve(), 201);
     }
 
     public function update(UpdateCouponRequest $request, Coupon $coupon): JsonResponse
     {
-        $validated = $request->validated();
+        $updatedCoupon = $this->couponService->updateCoupon($coupon, $request->validated());
 
-        $coupon->update($validated);
-
-        return response()->json((new CouponResource($coupon))->resolve());
+        return response()->json((new CouponResource($updatedCoupon))->resolve());
     }
 
     public function destroy(Coupon $coupon): JsonResponse
     {
-        $coupon->delete();
+        $this->couponService->deleteCoupon($coupon);
 
         return response()->json(['message' => 'Coupon deleted successfully']);
     }

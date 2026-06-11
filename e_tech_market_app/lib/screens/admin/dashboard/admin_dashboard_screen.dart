@@ -2,7 +2,8 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import '../../../utils/network_utils.dart';
 import '../../../config/api_config.dart';
-import 'package:http/http.dart' as http;
+import 'package:dio/dio.dart';
+import '../../../config/dio_client.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:fl_chart/fl_chart.dart';
 
@@ -26,21 +27,10 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
 
   Future<void> _fetchDashboardData() async {
     try {
-      final SharedPreferences prefs = await SharedPreferences.getInstance();
-      final String? token = prefs.getString('auth_token');
+      final response = await DioClient.instance.get('/admin/dashboard/stats?range=month&resolution=day');
 
-      final uri = Uri.parse('${ApiConfig.apiBaseUrl}/admin/dashboard/stats?range=month&resolution=day');
-      final response = await http.get(
-        uri,
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          if (token != null) 'Authorization': 'Bearer $token',
-        },
-      ).timeout(const Duration(seconds: 15));
-
-      if (response.statusCode >= 200 && response.statusCode < 300) {
-        final resData = json.decode(response.body);
+      if (response.statusCode == 200) {
+        final resData = response.data;
         setState(() {
           _dashboardData = resData['data'] ?? resData;
           _isLoading = false;
@@ -51,9 +41,14 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
           _isLoading = false;
         });
       }
+    } on DioException catch (e) {
+      setState(() {
+        _error = 'Lỗi kết nối: ${e.message}';
+        _isLoading = false;
+      });
     } catch (e) {
       setState(() {
-        _error = 'Lỗi kết nối: $e';
+        _error = 'Lỗi hệ thống: $e';
         _isLoading = false;
       });
     }

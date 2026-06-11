@@ -1,9 +1,9 @@
-import 'dart:convert';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:url_launcher/url_launcher.dart';
 import '../../../utils/app_snackbar.dart';
 import '../../../config/api_config.dart';
+import '../../../config/dio_client.dart';
 
 const String _baseUrl = String.fromEnvironment('API_BASE_URL', defaultValue: ApiConfig.apiBaseUrl);
 
@@ -52,13 +52,10 @@ class _ContactScreenState extends State<ContactScreen> {
 
   Future<void> _loadStoreContact() async {
     try {
-      final res = await http.get(
-        Uri.parse('$_baseUrl/store/contact'),
-        headers: {'Accept': 'application/json'},
-      ).timeout(const Duration(seconds: 10));
+      final res = await DioClient.instance.get('/store/contact');
       if (mounted && res.statusCode == 200) {
         setState(() {
-          _storeContact = jsonDecode(res.body);
+          _storeContact = res.data;
           _loadingInfo = false;
         });
       } else {
@@ -86,25 +83,29 @@ class _ContactScreenState extends State<ContactScreen> {
     if (!(_formKey.currentState?.validate() ?? false)) return;
     setState(() => _submitting = true);
     try {
-      final res = await http.post(
-        Uri.parse('$_baseUrl/contact/messages'),
-        headers: {'Content-Type': 'application/json', 'Accept': 'application/json'},
-        body: jsonEncode({
+      final res = await DioClient.instance.post(
+        '/contact/messages',
+        data: {
           'name': _nameCtrl.text.trim(),
           'email': _emailCtrl.text.trim(),
           'phone': _phoneCtrl.text.trim(),
           'subject': _subject,
           'message': _messageCtrl.text.trim(),
-        }),
-      ).timeout(const Duration(seconds: 15));
+        },
+      );
 
       if (!mounted) return;
       if (res.statusCode == 201 || res.statusCode == 200) {
         _messageCtrl.clear();
         AppSnackBar.showSuccess(context, 'Đã gửi liên hệ! Chúng tôi sẽ phản hồi bạn sớm.');
+      }
+    } on DioException catch (e) {
+      if (!mounted) return;
+      final data = e.response?.data;
+      if (data is Map && data['message'] != null) {
+        AppSnackBar.showError(context, data['message'].toString());
       } else {
-        final data = jsonDecode(res.body);
-        AppSnackBar.showError(context, data['message']?.toString() ?? 'Gửi liên hệ thất bại.');
+        AppSnackBar.showError(context, 'Gửi liên hệ thất bại. Vui lòng thử lại.');
       }
     } catch (e) {
       if (mounted) AppSnackBar.showError(context, 'Lỗi kết nối. Vui lòng thử lại.');

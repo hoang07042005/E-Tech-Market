@@ -1,9 +1,5 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import '../../../config/api_config.dart'
-
-;
+import '../../../config/dio_client.dart';
 const Color _background = Color(0xFFF9F2E9);
 const Color _card = Colors.white;
 const Color _accent = Color(0xFF7C2E00);
@@ -27,7 +23,6 @@ class _RefundPolicyScreenState extends State<RefundPolicyScreen> {
 
 
 
-static const String _baseUrl = String.fromEnvironment('API_BASE_URL', defaultValue: ApiConfig.apiBaseUrl);
 
   Map<String, dynamic>? _storeContact;
 
@@ -39,10 +34,10 @@ static const String _baseUrl = String.fromEnvironment('API_BASE_URL', defaultVal
 
   Future<void> _loadStoreContact() async {
     try {
-      final res = await http.get(Uri.parse('$_baseUrl/store/contact'));
+      final res = await DioClient.instance.get('/store/contact');
       if (mounted && res.statusCode == 200) {
         setState(() {
-          _storeContact = jsonDecode(res.body);
+          _storeContact = res.data;
         });
       }
     } catch (_) {}

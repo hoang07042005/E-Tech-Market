@@ -13,62 +13,46 @@ use Illuminate\Support\Str;
 
 class CategoriesController extends Controller
 {
+    public function __construct(private \App\Services\CategoryService $categoryService)
+    {
+    }
+
     public function index(): JsonResponse
     {
         $type = request()->get('type', null);
-        $query = Category::query();
-        if ($type) {
-            $query->where('type', $type);
-        }
-        $categories = $query->orderBy('name')->get();
+        $categories = $this->categoryService->getAllCategories($type);
 
         return response()->json($categories);
     }
 
     public function store(StoreCategoryRequest $request): JsonResponse
     {
-        $data = $request->validated();
-
-        if (empty($data['slug'])) {
-            $data['slug'] = Str::slug($data['name']);
-        }
-
-        if ($request->hasFile('image')) {
-            $path = $request->file('image')->store('categories', 'public');
-            $data['image'] = '/storage/'.$path;
-        }
-
-        $category = Category::create($data);
+        $category = $this->categoryService->createCategory(
+            $request->validated(),
+            $request->file('image')
+        );
 
         return response()->json((new CategoryResource($category))->resolve(), 201);
     }
 
     public function update(UpdateCategoryRequest $request, Category $category): JsonResponse
     {
-        $data = $request->validated();
+        $updatedCategory = $this->categoryService->updateCategory(
+            $category,
+            $request->validated(),
+            $request->file('image')
+        );
 
-        if ($request->hasFile('image')) {
-            if ($category->image && str_starts_with($category->image, '/storage/')) {
-                Storage::disk('public')->delete(str_replace('/storage/', '', $category->image));
-            }
-            $path = $request->file('image')->store('categories', 'public');
-            $data['image'] = '/storage/'.$path;
-        }
-
-        $category->update($data);
-
-        return response()->json((new CategoryResource($category))->resolve());
+        return response()->json((new CategoryResource($updatedCategory))->resolve());
     }
 
     public function destroy(Category $category): JsonResponse
     {
-        // Prevent deleting if it has children
-        if ($category->children()->count() > 0) {
-            return response()->json(['message' => 'Cannot delete category with sub-categories'], 422);
+        try {
+            $this->categoryService->deleteCategory($category);
+            return response()->json(['message' => 'Category deleted']);
+        } catch (\Exception $e) {
+            return response()->json(['message' => $e->getMessage()], 422);
         }
-
-        $category->delete();
-
-        return response()->json(['message' => 'Category deleted']);
     }
 }

@@ -1,30 +1,28 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
-
+import 'package:dio/dio.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
-
-import '../config/api_config.dart';
+import '../config/dio_client.dart';
 
 class AuthService {
-  static const String _baseUrl = ApiConfig.apiBaseUrl;
   static const String _tokenKey = 'auth_token';
   static const String _userKey = 'auth_user';
-
 
   static Future<Map<String, dynamic>> login({
     required String email,
     required String password,
   }) async {
-    final uri = Uri.parse('$_baseUrl/auth/login');
-    final response = await _post(uri, {
-      'email': email,
-      'password': password,
-    });
-
-    return _parseAuthResponse(response);
+    try {
+      final response = await DioClient.instance.post('/auth/login', data: {
+        'email': email,
+        'password': password,
+      });
+      return await _parseAuthResponse(response.data);
+    } catch (e) {
+      _handleError(e, 'Đăng nhập thất bại.');
+      rethrow;
+    }
   }
 
   static Future<Map<String, dynamic>> loginWithGoogle() async {
@@ -40,13 +38,16 @@ class AuthService {
       throw Exception('Không thể lấy mã xác thực Google.');
     }
 
-    final uri = Uri.parse('$_baseUrl/auth/google-login');
-    final response = await _post(uri, {
-      'token': auth.idToken,
-      'access_token': auth.accessToken,
-    });
-
-    return _parseAuthResponse(response);
+    try {
+      final response = await DioClient.instance.post('/auth/google-login', data: {
+        'token': auth.idToken,
+        'access_token': auth.accessToken,
+      });
+      return await _parseAuthResponse(response.data);
+    } catch (e) {
+      _handleError(e, 'Đăng nhập bằng Google thất bại.');
+      rethrow;
+    }
   }
 
   static Future<Map<String, dynamic>> register({
@@ -55,42 +56,45 @@ class AuthService {
     required String password,
     required String phone,
   }) async {
-    final uri = Uri.parse('$_baseUrl/auth/register');
-    final response = await _post(uri, {
-      'name': name,
-      'email': email,
-      'password': password,
-      'phone': phone,
-    });
-
-    return _parseAuthResponse(response);
+    try {
+      final response = await DioClient.instance.post('/auth/register', data: {
+        'name': name,
+        'email': email,
+        'password': password,
+        'phone': phone,
+      });
+      return await _parseAuthResponse(response.data);
+    } catch (e) {
+      _handleError(e, 'Đăng ký thất bại.');
+      rethrow;
+    }
   }
 
-  static Future<Map<String, dynamic>> _parseAuthResponse(http.Response response) async {
-    if (response.statusCode >= 200 && response.statusCode < 300) {
-      late final Map<String, dynamic> body;
-      try {
-        body = jsonDecode(response.body) as Map<String, dynamic>;
-      } catch (_) {
-        throw Exception('Phản hồi máy chủ không hợp lệ.');
-      }
-
-      final token = body['token'] as String?;
-      final user = body['user'] as Map<String, dynamic>?;
-
-      if (token == null || user == null) {
-        throw Exception('Phản hồi máy chủ không hợp lệ.');
-      }
-
-      await saveSession(token: token, user: user);
-      return {'user': user, 'token': token};
+  static Future<Map<String, dynamic>> _parseAuthResponse(dynamic body) async {
+    if (body is! Map<String, dynamic>) {
+      throw Exception('Phản hồi máy chủ không hợp lệ.');
     }
 
-    final body = response.body.isNotEmpty
-        ? (jsonDecode(response.body) as Map<String, dynamic>)
-        : <String, dynamic>{};
-    final message = body['message'] ?? _findFirstError(body) ?? 'Đã xảy ra lỗi khi kết nối tới máy chủ.';
-    throw Exception(message);
+    final token = body['token'] as String?;
+    final user = body['user'] as Map<String, dynamic>?;
+
+    if (token == null || user == null) {
+      throw Exception('Phản hồi máy chủ không hợp lệ.');
+    }
+
+    await saveSession(token: token, user: user);
+    return {'user': user, 'token': token};
+  }
+
+  static void _handleError(dynamic e, String defaultMessage) {
+    if (e is DioException) {
+      final data = e.response?.data;
+      if (data is Map<String, dynamic>) {
+        final message = data['message'] ?? _findFirstError(data) ?? defaultMessage;
+        throw Exception(message);
+      }
+    }
+    throw Exception(e is Exception ? e.toString().replaceFirst('Exception: ', '') : defaultMessage);
   }
 
   static String? _findFirstError(Map<String, dynamic> body) {
@@ -115,25 +119,18 @@ class AuthService {
   }
 
   static Future<List<Map<String, dynamic>>> fetchSessions(String token) async {
-    final uri = Uri.parse('$_baseUrl/me/sessions');
-    final response = await _get(uri, token);
-
-    if (response.statusCode >= 200 && response.statusCode < 300) {
-      final body = jsonDecode(response.body) as Map<String, dynamic>;
+    try {
+      final response = await DioClient.instance.get('/me/sessions');
+      final body = response.data;
       final data = body['data'];
       if (data is List) {
-        return data
-            .map((item) => Map<String, dynamic>.from(item as Map<String, dynamic>))
-            .toList();
+        return data.map((item) => Map<String, dynamic>.from(item as Map<String, dynamic>)).toList();
       }
       return [];
+    } catch (e) {
+      _handleError(e, 'Đã xảy ra lỗi khi lấy danh sách phiên.');
+      rethrow;
     }
-
-    final body = response.body.isNotEmpty
-        ? jsonDecode(response.body) as Map<String, dynamic>
-        : <String, dynamic>{};
-    final message = body['message'] ?? _findFirstError(body) ?? 'Đã xảy ra lỗi khi lấy danh sách phiên.';
-    throw Exception(message);
   }
 
   static Future<void> changePassword({
@@ -141,40 +138,22 @@ class AuthService {
     required String currentPassword,
     required String newPassword,
   }) async {
-    final uri = Uri.parse('$_baseUrl/me/password');
-    final response = await _patch(uri, token, {
-      'current_password': currentPassword,
-      'new_password': newPassword,
-    });
-
-    if (response.statusCode >= 200 && response.statusCode < 300) {
-      return;
+    try {
+      await DioClient.instance.patch('/me/password', data: {
+        'current_password': currentPassword,
+        'new_password': newPassword,
+      });
+    } catch (e) {
+      _handleError(e, 'Đổi mật khẩu thất bại.');
     }
-
-    final body = response.body.isNotEmpty
-        ? jsonDecode(response.body) as Map<String, dynamic>
-        : <String, dynamic>{};
-    final message = body['message'] ?? _findFirstError(body) ?? 'Đổi mật khẩu thất bại.';
-    throw Exception(message);
   }
 
   static Future<void> forgotPassword(String email) async {
-    final uri = Uri.parse('$_baseUrl/auth/forgot-password');
-    final response = await http.post(
-      uri,
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({'email': email}),
-    );
-
-    if (response.statusCode >= 200 && response.statusCode < 300) {
-      return;
+    try {
+      await DioClient.instance.post('/auth/forgot-password', data: {'email': email});
+    } catch (e) {
+      _handleError(e, 'Gửi yêu cầu thất bại. Vui lòng thử lại.');
     }
-
-    final body = response.body.isNotEmpty
-        ? jsonDecode(response.body) as Map<String, dynamic>
-        : <String, dynamic>{};
-    final message = body['message'] ?? _findFirstError(body) ?? 'Gửi yêu cầu thất bại. Vui lòng thử lại.';
-    throw Exception(message);
   }
 
   static Future<void> resetPassword({
@@ -182,65 +161,15 @@ class AuthService {
     required String token,
     required String password,
   }) async {
-    final uri = Uri.parse('$_baseUrl/auth/reset-password');
-    final response = await http.post(
-      uri,
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({
+    try {
+      await DioClient.instance.post('/auth/reset-password', data: {
         'email': email,
         'token': token,
         'password': password,
         'password_confirmation': password,
-      }),
-    );
-
-    if (response.statusCode >= 200 && response.statusCode < 300) {
-      return;
-    }
-
-    final body = response.body.isNotEmpty
-        ? jsonDecode(response.body) as Map<String, dynamic>
-        : <String, dynamic>{};
-    final message = body['message'] ?? _findFirstError(body) ?? 'Đặt lại mật khẩu thất bại.';
-    throw Exception(message);
-  }
-
-  static Future<http.Response> _get(Uri uri, String token) async {
-    try {
-      return await http.get(
-        uri,
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $token',
-        },
-      ).timeout(const Duration(seconds: 15));
-    } on TimeoutException {
-      throw Exception('Không thể kết nối tới máy chủ $uri. Vui lòng kiểm tra API và mạng.');
-    } on SocketException {
-      throw Exception('Lỗi mạng. Không thể kết nối tới $uri. Kiểm tra kết nối và địa chỉ API.');
-    } on http.ClientException {
-      throw Exception('Lỗi kết nối HTTP tới $uri. Kiểm tra địa chỉ API và mạng.');
-    }
-  }
-
-  static Future<http.Response> _patch(Uri uri, String token, Map<String, dynamic> body) async {
-    try {
-      return await http
-          .patch(
-            uri,
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': 'Bearer $token',
-            },
-            body: jsonEncode(body),
-          )
-          .timeout(const Duration(seconds: 15));
-    } on TimeoutException {
-      throw Exception('Không thể kết nối tới máy chủ $uri. Vui lòng kiểm tra API và mạng.');
-    } on SocketException {
-      throw Exception('Lỗi mạng. Không thể kết nối tới $uri. Kiểm tra kết nối và địa chỉ API.');
-    } on http.ClientException {
-      throw Exception('Lỗi kết nối HTTP tới $uri. Kiểm tra địa chỉ API và mạng.');
+      });
+    } catch (e) {
+      _handleError(e, 'Đặt lại mật khẩu thất bại.');
     }
   }
 
@@ -265,19 +194,5 @@ class AuthService {
   static Future<String?> getToken() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString(_tokenKey);
-  }
-
-  static Future<http.Response> _post(Uri uri, Map<String, dynamic> body) async {
-    try {
-      return await http
-          .post(uri, headers: {'Content-Type': 'application/json'}, body: jsonEncode(body))
-          .timeout(const Duration(seconds: 15));
-    } on TimeoutException {
-      throw Exception('Không thể kết nối tới máy chủ $uri. Vui lòng kiểm tra API và mạng.');
-    } on SocketException {
-      throw Exception('Lỗi mạng. Không thể kết nối tới $uri. Kiểm tra kết nối và địa chỉ API.');
-    } on http.ClientException {
-      throw Exception('Lỗi kết nối HTTP tới $uri. Kiểm tra địa chỉ API và mạng.');
-    }
   }
 }

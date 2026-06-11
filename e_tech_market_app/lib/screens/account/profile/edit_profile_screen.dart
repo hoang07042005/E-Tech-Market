@@ -1,8 +1,9 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
+import 'package:dio/dio.dart';
 import 'package:image_picker/image_picker.dart';
+import '../../../config/dio_client.dart';
 import '../../../services/auth_service.dart';
 import '../../../utils/network_utils.dart';
 import '../../../utils/translation.dart';
@@ -83,18 +84,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   Future<void> _uploadAvatar(String token) async {
     if (_avatarFile == null) return;
 
-    const baseUrl = String.fromEnvironment('API_BASE_URL', defaultValue: 'http://192.168.24.17:8000/api');
-    final uri = Uri.parse('$baseUrl/me/avatar');
-
-    final request = http.MultipartRequest('POST', uri)
-      ..headers['Authorization'] = 'Bearer $token'
-      ..headers['Accept'] = 'application/json'
-      ..files.add(await http.MultipartFile.fromPath('file', _avatarFile!.path));
-
-    final streamed = await request.send();
-    if (streamed.statusCode < 200 || streamed.statusCode >= 300) {
-      final body = await streamed.stream.bytesToString();
-      debugPrint('Avatar upload failed: $body');
+    try {
+      final formData = FormData.fromMap({
+        'file': await MultipartFile.fromFile(_avatarFile!.path),
+      });
+      await DioClient.instance.post('/me/avatar', data: formData);
+    } catch (e) {
+      debugPrint('Avatar upload failed: $e');
     }
   }
 
@@ -113,16 +109,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       // Upload avatar first if selected
       await _uploadAvatar(token);
 
-      const baseUrl = String.fromEnvironment('API_BASE_URL', defaultValue: 'http://192.168.24.17:8000/api');
-      final uri = Uri.parse('$baseUrl/me');
-
-      final response = await http.patch(
-        uri,
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $token',
-        },
-        body: jsonEncode({
+      final response = await DioClient.instance.patch(
+        '/me',
+        data: {
           'name': _nameCtrl.text.trim(),
           'email': _emailCtrl.text.trim(),
           'phone': _phoneCtrl.text.trim().isEmpty ? null : _phoneCtrl.text.trim(),
@@ -130,11 +119,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           'ward': _wardCtrl.text.trim().isEmpty ? null : _wardCtrl.text.trim(),
           'district': _districtCtrl.text.trim().isEmpty ? null : _districtCtrl.text.trim(),
           'province': _provinceCtrl.text.trim().isEmpty ? null : _provinceCtrl.text.trim(),
-        }),
+        },
       );
 
-      if (response.statusCode >= 200 && response.statusCode < 300) {
-        final decoded = jsonDecode(response.body);
+      if (response.statusCode == 200) {
+        final decoded = response.data;
         final updatedUser = decoded['user'] ?? decoded; 
         
         // Save to local session
@@ -143,9 +132,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         if (mounted) {
           Navigator.pop(context, true);
         }
-      } else {
-        final body = jsonDecode(response.body);
-        throw Exception(body['message'] ?? 'Không thể cập nhật hồ sơ.');
+      }
+    } on DioException catch (e) {
+      if (mounted) {
+        setState(() {
+          final data = e.response?.data;
+          _errorMessage = (data is Map && data['message'] != null) ? data['message'].toString() : 'Không thể cập nhật hồ sơ.';
+        });
       }
     } catch (e) {
       if (mounted) {
