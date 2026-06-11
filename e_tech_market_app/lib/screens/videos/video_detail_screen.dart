@@ -245,11 +245,11 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
     }
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
+      backgroundColor: Theme.of(context).colorScheme.surface,
       appBar: AppBar(
         title: Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.black,
+        backgroundColor: Theme.of(context).colorScheme.surface,
+        foregroundColor: Theme.of(context).colorScheme.onSurface,
         elevation: 0,
       ),
       body: SingleChildScrollView(
@@ -295,7 +295,7 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
 
             // Video Info
             Container(
-              color: Colors.white,
+              color: Theme.of(context).colorScheme.surface,
               padding: const EdgeInsets.all(16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -316,9 +316,9 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
                     padding: EdgeInsets.symmetric(vertical: 16),
                     child: Divider(height: 1, color: Color(0xFFE2E8F0)),
                   ),
-                  Text(Trans.videoDescriptionLabel, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Color(0xFF1E293B))),
+                  Text(Trans.videoDescriptionLabel, style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.onSurface)),
                   const SizedBox(height: 8),
-                  Text(desc, style: const TextStyle(fontSize: 13, color: Color(0xFF64748B), height: 1.5)),
+                  Text(desc, style: TextStyle(fontSize: 13, color: Theme.of(context).colorScheme.onSurface, height: 1.5)),
                 ],
               ),
             ),
@@ -332,7 +332,7 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(Trans.productsInVideo, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFF0F172A))),
+                    Text(Trans.productsInVideo, style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.onSurface)),
                     const SizedBox(height: 12),
                     InkWell(
                       onTap: () {
@@ -341,9 +341,9 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
                       borderRadius: BorderRadius.circular(12),
                       child: Container(
                         decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: const Color(0xFFE2E8F0)),
+                          color: Theme.of(context).colorScheme.surface,
+                          borderRadius: BorderRadius.circular(5),
+                          border: Border.all(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5)),
                           boxShadow: [
                             BoxShadow(color: Colors.black.withValues(alpha: 0.03), blurRadius: 10, offset: const Offset(0, 4)),
                           ],
@@ -353,7 +353,7 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
                             crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: [
                               ClipRRect(
-                                borderRadius: const BorderRadius.only(topLeft: Radius.circular(11), bottomLeft: Radius.circular(11)),
+                                borderRadius: const BorderRadius.only(topLeft: Radius.circular(5), bottomLeft: Radius.circular(5)),
                                 child: Image.network(
                                   NetworkUtils.fixDeviceUrl(product['main_image_url']?.toString() ?? ''),
                                   width: 110,
@@ -370,14 +370,14 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
                                     children: [
                                       Text(
                                         product['name']?.toString() ?? '',
-                                        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: Color(0xFF1E293B)),
+                                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: Theme.of(context).colorScheme.onSurface),
                                         maxLines: 2,
                                         overflow: TextOverflow.ellipsis,
                                       ),
                                       const SizedBox(height: 6),
                                       Text(
                                         (product['short_description']?.toString() ?? product['description']?.toString() ?? Trans.updatingDescription).replaceAll(RegExp(r'<[^>]*>|&[^;]+;'), ''),
-                                        style: const TextStyle(color: Color(0xFF64748B), fontSize: 12, height: 1.4),
+                                        style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 12, height: 1.4),
                                         maxLines: 4,
                                         overflow: TextOverflow.ellipsis,
                                       )
@@ -385,9 +385,9 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
                                   ),
                                 ),
                               ),
-                              const Padding(
+                               Padding(
                                 padding: EdgeInsets.only(right: 12),
-                                child: Icon(Icons.arrow_forward_ios, size: 14, color: Color(0xFF94A3B8)),
+                                child: Icon(Icons.arrow_forward_ios, size: 14, color: Theme.of(context).colorScheme.onSurface),
                               ),
                             ],
                           ),
@@ -402,16 +402,16 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
                 margin: const EdgeInsets.symmetric(horizontal: 16),
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(12),
+                  color: Theme.of(context).colorScheme.surface,
+                  borderRadius: BorderRadius.circular(5),
                   border: Border.all(color: const Color(0xFFE2E8F0)),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(Trans.productLabel, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Color(0xFF1E293B))),
+                    Text(Trans.productLabel, style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.onSurface)),
                     const SizedBox(height: 8),
-                    Text(Trans.videoOverview, style: const TextStyle(fontSize: 13, color: Color(0xFF64748B))),
+                    Text(Trans.videoOverview, style: TextStyle(fontSize: 13, color: Theme.of(context).colorScheme.onSurface)),
                   ],
                 ),
               ),
@@ -421,7 +421,7 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
               const SizedBox(height: 24),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Text(Trans.suggestedVideos, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFF0F172A))),
+                child: Text(Trans.suggestedVideos, style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.onSurface)),
               ),
               const SizedBox(height: 12),
               ListView.separated(
@@ -473,14 +473,14 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
                                 rec['title']?.toString() ?? Trans.videoSuggested,
                                 maxLines: 2,
                                 overflow: TextOverflow.ellipsis,
-                                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Color(0xFF1E293B)),
+                                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Theme.of(context).colorScheme.onSurface),
                               ),
                               const SizedBox(height: 4),
                               Text(
                                 (rec['description']?.toString() ?? Trans.updatingDescription).replaceAll(RegExp(r'<[^>]*>|&[^;]+;'), ''),
                                 maxLines: 2,
                                 overflow: TextOverflow.ellipsis,
-                                style: const TextStyle(fontSize: 11, color: Color(0xFF64748B), height: 1.3),
+                                style: TextStyle(fontSize: 11, color: Theme.of(context).colorScheme.onSurface, height: 1.3),
                               ),
                               if (recProduct != null) ...[
                                 const SizedBox(height: 6),

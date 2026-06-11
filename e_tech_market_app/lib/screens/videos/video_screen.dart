@@ -94,18 +94,18 @@ class _VideoScreenState extends State<VideoScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
+      backgroundColor: Theme.of(context).colorScheme.surface,
       appBar: AppBar(
         title: Text(Trans.videoTitle, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.black,
+        backgroundColor: Theme.of(context).colorScheme.surface,
+        foregroundColor: Theme.of(context).colorScheme.onSurface,
         elevation: 1,
       ),
       body: Column(
         children: [
           // Header area
           Container(
-            color: Colors.white,
+            color: Theme.of(context).colorScheme.surface,
             width: double.infinity,
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
             child: Column(
@@ -113,7 +113,7 @@ class _VideoScreenState extends State<VideoScreen> {
               children: [
                 Text(
                   Trans.videoExplore,
-                  style: const TextStyle(color: Color(0xFF64748B), fontSize: 13, height: 1.4),
+                  style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 13, height: 1.4),
                 ),
                 const SizedBox(height: 16),
                 SingleChildScrollView(
@@ -205,8 +205,9 @@ class _VideoScreenState extends State<VideoScreen> {
       },
       child: Container(
         decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(12),
+          color: Theme.of(context).colorScheme.surface,
+          borderRadius: BorderRadius.circular(5),
+           border: Border.all(color: Theme.of(context).colorScheme.onSurface, width: 0.5),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withOpacity(0.04),
@@ -221,7 +222,7 @@ class _VideoScreenState extends State<VideoScreen> {
             // Thumbnail
             Expanded(
               child: ClipRRect(
-                borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
+                borderRadius: const BorderRadius.vertical(top: Radius.circular(5)),
                 child: Stack(
                   fit: StackFit.expand,
                   children: [
@@ -237,10 +238,10 @@ class _VideoScreenState extends State<VideoScreen> {
                         child: Container(
                           padding: const EdgeInsets.all(8),
                           decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.9),
+                            color: Theme.of(context).colorScheme.surface,
                             shape: BoxShape.circle,
                           ),
-                          child: const Icon(Icons.play_arrow, color: Color(0xFFEF7A45)),
+                          child: const Icon(Icons.play_arrow, color: Colors.orange),
                         ),
                       ),
                     ),
@@ -266,7 +267,7 @@ class _VideoScreenState extends State<VideoScreen> {
                       desc,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(color: Color(0xFF64748B), fontSize: 11, height: 1.3),
+                      style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 11, height: 1.3),
                     ),
                   ],
                   const SizedBox(height: 8),
@@ -296,7 +297,7 @@ class _VideoScreenState extends State<VideoScreen> {
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
                       decoration: BoxDecoration(
-                        color: const Color(0xFFF3F4F6),
+                        color: Theme.of(context).colorScheme.surface,
                         borderRadius: BorderRadius.circular(4),
                       ),
                       child: Row(
@@ -308,7 +309,7 @@ class _VideoScreenState extends State<VideoScreen> {
                               catObj['name']?.toString() ?? '',
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
-                              style: const TextStyle(fontSize: 10, color: Color(0xFF4B5563), fontWeight: FontWeight.w600),
+                              style: TextStyle(fontSize: 10, color: Theme.of(context).colorScheme.onSurface, fontWeight: FontWeight.w600),
                             ),
                           ),
                         ],

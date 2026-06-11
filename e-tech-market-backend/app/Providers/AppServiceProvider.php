@@ -52,11 +52,13 @@ class AppServiceProvider extends ServiceProvider
                 // Forget product listing cache entries (prefixed with products_index_)
                 // Since Cache::forget only works with exact keys, we track via a
                 // lightweight registry key that stores active cache keys.
-                $registeredKeys = Cache::get('_cache_registry_products', []);
-                foreach ($registeredKeys as $key) {
-                    Cache::forget($key);
+                $registeredKeys = \Illuminate\Support\Facades\Redis::smembers('_cache_registry_products');
+                if (is_array($registeredKeys)) {
+                    foreach ($registeredKeys as $key) {
+                        Cache::forget($key);
+                    }
                 }
-                Cache::forget('_cache_registry_products');
+                \Illuminate\Support\Facades\Redis::del('_cache_registry_products');
             } catch (\Throwable) {
                 // Fail-safe: silent
             }
@@ -65,11 +67,13 @@ class AppServiceProvider extends ServiceProvider
         $forgetCategoryCache = function () {
             try {
                 // Categories are cached with prefix "categories_"
-                $registeredKeys = Cache::get('_cache_registry_categories', []);
-                foreach ($registeredKeys as $key) {
-                    Cache::forget($key);
+                $registeredKeys = \Illuminate\Support\Facades\Redis::smembers('_cache_registry_categories');
+                if (is_array($registeredKeys)) {
+                    foreach ($registeredKeys as $key) {
+                        Cache::forget($key);
+                    }
                 }
-                Cache::forget('_cache_registry_categories');
+                \Illuminate\Support\Facades\Redis::del('_cache_registry_categories');
                 Cache::forget('store_config');
             } catch (\Throwable) {
                 // Fail-safe
@@ -78,11 +82,13 @@ class AppServiceProvider extends ServiceProvider
 
         $forgetReviewCache = function () {
             try {
-                $registeredKeys = Cache::get('_cache_registry_reviews', []);
-                foreach ($registeredKeys as $key) {
-                    Cache::forget($key);
+                $registeredKeys = \Illuminate\Support\Facades\Redis::smembers('_cache_registry_reviews');
+                if (is_array($registeredKeys)) {
+                    foreach ($registeredKeys as $key) {
+                        Cache::forget($key);
+                    }
                 }
-                Cache::forget('_cache_registry_reviews');
+                \Illuminate\Support\Facades\Redis::del('_cache_registry_reviews');
             } catch (\Throwable) {
                 // Fail-safe
             }
@@ -91,11 +97,13 @@ class AppServiceProvider extends ServiceProvider
         $forgetBlogCache = function () {
             try {
                 Cache::forget('blog_categories_all');
-                $registeredKeys = Cache::get('_cache_registry_blog', []);
-                foreach ($registeredKeys as $key) {
-                    Cache::forget($key);
+                $registeredKeys = \Illuminate\Support\Facades\Redis::smembers('_cache_registry_blog');
+                if (is_array($registeredKeys)) {
+                    foreach ($registeredKeys as $key) {
+                        Cache::forget($key);
+                    }
                 }
-                Cache::forget('_cache_registry_blog');
+                \Illuminate\Support\Facades\Redis::del('_cache_registry_blog');
             } catch (\Throwable) {
                 // Fail-safe
             }

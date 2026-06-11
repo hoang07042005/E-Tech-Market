@@ -233,6 +233,7 @@ class _BlogScreenState extends State<BlogScreen> {
     final excerpt = post['excerpt'] ?? '';
     final createdAt = post['published_at'] ?? '';
     final readingTime = post['reading_time'] ?? 5;
+    final catColor = _getCategoryColor(categoryName);
 
     return GestureDetector(
       onTap: () {
@@ -296,13 +297,13 @@ class _BlogScreenState extends State<BlogScreen> {
                         vertical: 6,
                       ),
                       decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.primary,
+                        color: catColor,
                         borderRadius: BorderRadius.circular(4),
                       ),
                       child: Text(
                         categoryName,
-                        style: TextStyle(
-                          color: Theme.of(context).colorScheme.surface,
+                        style: const TextStyle(
+                          color: Colors.white,
                           fontSize: 12,
                           fontWeight: FontWeight.w600,
                         ),
@@ -395,9 +396,9 @@ class _BlogScreenState extends State<BlogScreen> {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
-          color: isActive ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.surface,
+          color: isActive ? Colors.orange : Theme.of(context).colorScheme.surface,
           border: Border.all(
-            color: isActive ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.outline,
+            color: isActive ? Colors.orange : Theme.of(context).colorScheme.outline,
           ),
           borderRadius: BorderRadius.circular(8),
         ),
@@ -406,7 +407,7 @@ class _BlogScreenState extends State<BlogScreen> {
           style: TextStyle(
             fontSize: 13,
             fontWeight: FontWeight.w600,
-            color: isActive ? Theme.of(context).colorScheme.surface : Theme.of(context).colorScheme.onSurface,
+            color: isActive ? Colors.white : Theme.of(context).colorScheme.onSurface,
           ),
         ),
       ),
@@ -420,6 +421,7 @@ class _BlogScreenState extends State<BlogScreen> {
     final slug = post['slug'] ?? '';
     final categoryName = post['category']?['name'] ?? '';
     final createdAt = post['published_at'] ?? '';
+    final catColor = _getCategoryColor(categoryName);
 
     return GestureDetector(
       onTap: () {
@@ -476,13 +478,13 @@ class _BlogScreenState extends State<BlogScreen> {
                               vertical: 4,
                             ),
                             decoration: BoxDecoration(
-                              color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
+                              color: catColor.withValues(alpha: 0.1),
                               borderRadius: BorderRadius.circular(4),
                             ),
                             child: Text(
                               categoryName,
                               style: TextStyle(
-                                color: Theme.of(context).colorScheme.primary,
+                                color: catColor,
                                 fontSize: 11,
                                 fontWeight: FontWeight.w600,
                               ),
@@ -532,7 +534,7 @@ class _BlogScreenState extends State<BlogScreen> {
                       style: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
-                        color: Theme.of(context).colorScheme.primary,
+                        color: Colors.orange,
                       ),
                     ),
                   ],
@@ -639,6 +641,7 @@ class _BlogScreenState extends State<BlogScreen> {
         ),
         const SizedBox(height: 12),
         ..._categories.map((cat) {
+          final catColor = _getCategoryColor(cat['name'] ?? '');
           return GestureDetector(
             onTap: () {
               setState(() => _activeFilter = cat['slug']);
@@ -663,7 +666,7 @@ class _BlogScreenState extends State<BlogScreen> {
                       vertical: 2,
                     ),
                     decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
+                      color: catColor.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(4),
                     ),
                     child: Text(
@@ -671,7 +674,7 @@ class _BlogScreenState extends State<BlogScreen> {
                       style: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
-                        color: Theme.of(context).colorScheme.primary,
+                        color: catColor,
                       ),
                     ),
                   ),
@@ -691,5 +694,34 @@ class _BlogScreenState extends State<BlogScreen> {
     } catch (_) {
       return 'N/A';
     }
+  }
+
+  Color _getCategoryColor(String categoryName) {
+    if (categoryName.isEmpty) return Colors.grey;
+    
+    // Explicit mappings for common categories to ensure distinct colors
+    final lowerName = categoryName.toLowerCase();
+    if (lowerName.contains('đánh giá')) return const Color(0xFFE91E63); // Pink
+    if (lowerName.contains('công nghệ')) return const Color(0xFF2196F3); // Blue
+    if (lowerName.contains('tư vấn')) return const Color(0xFF4CAF50); // Green
+    if (lowerName.contains('tin tức')) return const Color(0xFFFF9800); // Orange
+    if (lowerName.contains('khuyến mãi')) return const Color(0xFFF44336); // Red
+    
+    final colors = [
+      const Color(0xFF9C27B0), // Purple
+      const Color(0xFF3F51B5), // Indigo
+      const Color(0xFF00BCD4), // Cyan
+      const Color(0xFF009688), // Teal
+      const Color(0xFFFF5722), // Deep Orange
+      const Color(0xFF795548), // Brown
+      const Color(0xFF607D8B), // Blue Grey
+    ];
+    
+    // Improved hash to reduce collisions
+    int hash = 0;
+    for (int i = 0; i < categoryName.length; i++) {
+      hash = (hash * 31 + categoryName.codeUnitAt(i)) & 0x7FFFFFFF;
+    }
+    return colors[hash % colors.length];
   }
 }

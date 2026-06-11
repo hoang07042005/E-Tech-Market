@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import '../../services/auth_service.dart';
+import '../auth/login_screen.dart';
 import '../../services/cart_service.dart';
 import '../../services/products_service.dart';
 import '../../services/reviews_service.dart';
@@ -1855,9 +1856,9 @@ Widget _buildFaqItem(ProductFaq faq) {
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
                 Text(
-                  'Xem tất cả',
+                  'XEM TẤT CẢ ',
                   style: TextStyle(
-                      color: Theme.of(context).colorScheme.primary, fontWeight: FontWeight.w600),
+                      color: const Color(0xFFFF2424), fontWeight: FontWeight.w600),
                 ),
               ],
             ),
@@ -1904,8 +1905,8 @@ Widget _buildFaqItem(ProductFaq faq) {
             ClipRRect(
               borderRadius: BorderRadius.circular(6),
               child: Container(
-                width: 58,
-                height: 58,
+                width: 70,
+                height: 70,
                 color: Theme.of(context).colorScheme.outline,
                 child: item.thumbnailUrl == null || item.thumbnailUrl!.isEmpty
                     ? Icon(Icons.article_outlined, color: Theme.of(context).colorScheme.onSurfaceVariant)
@@ -2026,7 +2027,7 @@ Widget _buildFaqItem(ProductFaq faq) {
                             Icons.star,
                             size: 19,
                             color: starValue <= currentValue
-                                ? Theme.of(context).colorScheme.primary
+                                ? Colors.orange
                                 : Theme.of(context).colorScheme.outline,
                           ),
                         ),
@@ -2114,7 +2115,7 @@ Widget _buildFaqItem(ProductFaq faq) {
                                   Icons.star,
                                   size: 28,
                                   color: starValue <= localRating
-                                      ? Theme.of(context).colorScheme.primary
+                                      ? Colors.orange
                                       : Theme.of(context).colorScheme.outline,
                                 ),
                                 const SizedBox(height: 8),
@@ -2123,7 +2124,7 @@ Widget _buildFaqItem(ProductFaq faq) {
                                   style: TextStyle(
                                     fontSize: 11,
                                     color: starValue == localRating
-                                        ? Theme.of(context).colorScheme.primary
+                                        ? Colors.orange
                                         : Theme.of(context).colorScheme.onSurfaceVariant,
                                     fontWeight: starValue == localRating
                                         ? FontWeight.bold
@@ -2212,6 +2213,8 @@ Widget _buildFaqItem(ProductFaq faq) {
                                   final token = await AuthService.getToken();
                                   if (!context.mounted) return;
                                   if (token == null || token.isEmpty) {
+                                    Navigator.pop(context); // Close modal
+                                    Navigator.push(context, MaterialPageRoute(builder: (_) => const LoginScreen()));
                                     AppSnackBar.showError(context, Trans.loginToWriteReview);
                                     return;
                                   }
@@ -2244,10 +2247,11 @@ Widget _buildFaqItem(ProductFaq faq) {
                                   if (context.mounted) {
                                     Navigator.pop(context);
                                     AppSnackBar.showSuccess(context, Trans.reviewSubmittedSuccess);
+                                    _loadProduct();
                                   }
                                 },
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Theme.of(context).colorScheme.primary,
+                            backgroundColor: Colors.orange,
                             disabledBackgroundColor: Theme.of(context).colorScheme.outline,
                             padding: const EdgeInsets.symmetric(vertical: 14),
                             shape: RoundedRectangleBorder(
@@ -2310,15 +2314,15 @@ Widget _buildFaqItem(ProductFaq faq) {
                           avg.toStringAsFixed(1),
                           style: TextStyle(
                             fontSize: 40,
-                            fontWeight: FontWeight.bold,
+                            fontWeight: FontWeight.bold, color: Colors.black
                           ),
                         ),
-                        Text('/ 5', style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant)),
+                        Text('/ 5', style: TextStyle(color: Theme.of(context).colorScheme.surface)),
                         const SizedBox(height: 4),
                         _buildStars(avg, size: 17),
                         const SizedBox(height: 8),
                         Text(Trans.totalReviews(total),
-                            style: TextStyle(fontSize: 12)),
+                            style: TextStyle(fontSize: 12, color: Colors.black)),
                         const SizedBox(height: 10),
                         // TÌM ĐOẠN NÚT BẤM CŨ TRONG _buildVisualReviews VÀ THAY BẰNG ĐOẠN NÀY:
                         OutlinedButton(
@@ -2341,7 +2345,7 @@ Widget _buildFaqItem(ProductFaq faq) {
                             child: Text(
                               Trans.writeReview,
                               style: const TextStyle(
-                                  fontSize: 12, fontWeight: FontWeight.bold),
+                                  fontSize: 12, fontWeight: FontWeight.bold, color: Colors.black),
                             ),
                           ),
                         ),
@@ -2360,7 +2364,7 @@ Widget _buildFaqItem(ProductFaq faq) {
                           child: Row(
                             children: [
                               Text('$star',
-                                  style: TextStyle(fontSize: 11)),
+                                  style: TextStyle(fontSize: 11, color: Colors.black)),
                               const SizedBox(width: 3),
                               const Icon(Icons.star,
                                   color: Colors.orange, size: 12),
@@ -2379,7 +2383,7 @@ Widget _buildFaqItem(ProductFaq faq) {
                               ),
                               const SizedBox(width: 6),
                               Text('$count',
-                                  style: TextStyle(fontSize: 11)),
+                                  style: TextStyle(fontSize: 11, color: Colors.black)),
                             ],
                           ),
                         );
@@ -2404,7 +2408,6 @@ Widget _buildFaqItem(ProductFaq faq) {
           runSpacing: 8,
           children: [
             _buildReviewFilterChip('all', 'Tất cả'),
-            _buildReviewFilterChip('with_images', 'Có hình ảnh'),
             _buildReviewFilterChip('verified', 'Đã mua hàng'),
             _buildReviewFilterChip('star_5', '5 sao'),
             _buildReviewFilterChip('star_4', '4 sao'),
@@ -2451,15 +2454,15 @@ Widget _buildFaqItem(ProductFaq faq) {
         children: [
           SizedBox(
             width: 108,
-            child: Text(label, style: TextStyle(fontSize: 12)),
+            child: Text(label, style: TextStyle(fontSize: 12, color: Colors.black)),
           ),
           Expanded(child: _buildStars(avg, size: 14)),
           Text(
             '${count == 0 ? 0 : avg.toStringAsFixed(0)}/5',
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: Colors.black),
           ),
           Text(' ($count)',
-              style: TextStyle(fontSize: 11, color: Theme.of(context).colorScheme.onSurfaceVariant)),
+              style: TextStyle(fontSize: 11, color: Colors.black)),
         ],
       ),
     );
@@ -2473,10 +2476,10 @@ Widget _buildFaqItem(ProductFaq faq) {
       onSelected: (_) => setState(() => reviewFilter = value),
       selectedColor: const Color(0xFFFFEDD5),
       side: BorderSide(
-        color: selected ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.outline,
+        color: selected ? Colors.orange : Theme.of(context).colorScheme.outline,
       ),
       labelStyle: TextStyle(
-        color: selected ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.onSurface,
+        color: selected ? Colors.orange : Theme.of(context).colorScheme.onSurface,
         fontWeight: FontWeight.w600,
       ),
     );
@@ -2918,7 +2921,7 @@ Widget _buildFaqItem(ProductFaq faq) {
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: const Color(0xFFF0FDF4),
+                color: const Color(0xFFFFF1DE),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Row(
@@ -2926,7 +2929,7 @@ Widget _buildFaqItem(ProductFaq faq) {
                 children: [
                   CircleAvatar(
                     radius: 18,
-                    backgroundColor: Color(0xFF16A34A),
+                    backgroundColor: Colors.orange,
                     child: Text(
                       'QT',
                       style: TextStyle(
@@ -2942,7 +2945,7 @@ Widget _buildFaqItem(ProductFaq faq) {
                           children: [
                             Text(
                               'Quản trị viên',
-                              style: TextStyle(fontWeight: FontWeight.bold),
+                              style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
                             ),
                             const SizedBox(width: 6),
                             Container(
@@ -2964,13 +2967,13 @@ Widget _buildFaqItem(ProductFaq faq) {
                           ],
                         ),
                         const SizedBox(height: 6),
-                        Text(row.answer!, style: TextStyle(height: 1.45, color: Theme.of(context).colorScheme.onPrimaryContainer)),
+                        Text(row.answer!, style: TextStyle(height: 1.45, color: Colors.black)),
                         if ((row.answeredAt ?? '').isNotEmpty) ...[
                           const SizedBox(height: 6),
                           Text(
                             _timeAgoVi(row.answeredAt!),
                             style: TextStyle(
-                                color: Theme.of(context).colorScheme.onSurfaceVariant, fontSize: 12),
+                                color: Colors.black45, fontSize: 12),
                           ),
                         ],
                       ],

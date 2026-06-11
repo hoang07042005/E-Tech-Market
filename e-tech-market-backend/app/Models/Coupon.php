@@ -30,6 +30,11 @@ class Coupon extends Model
         'is_active' => 'boolean',
     ];
 
+    protected $hidden = [
+        'created_at',
+        'updated_at',
+    ];
+
     public function usages(): HasMany
     {
         return $this->hasMany(CouponUsage::class, 'coupon_id');

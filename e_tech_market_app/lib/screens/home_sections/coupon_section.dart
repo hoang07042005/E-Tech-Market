@@ -224,7 +224,7 @@ class _CouponSectionState extends State<CouponSection> {
           final minAmount = coupon['min_order_amount'];
 
           final valueText = couponType == 'percentage'
-              ? Trans.discountPercentValue(int.tryParse(value) ?? 0)
+              ? Trans.discountPercentValue((double.tryParse(value) ?? 0).toInt())
               : Trans.discountAmountValue2(double.tryParse(value) ?? 0);
 
           final subtitle = minAmount != null

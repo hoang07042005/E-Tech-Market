@@ -120,6 +120,7 @@ export default function ProductDetailPage() {
   const [qaError, setQaError] = useState<string | null>(null)
   const [buyerLoggedIn, setBuyerLoggedIn] = useState(false)
   const [qnaShopOpenById, setQnaShopOpenById] = useState<Record<number, boolean>>({})
+  const [recentlyViewed, setRecentlyViewed] = useState<Product[]>([])
 
   const isInCompare = useMemo(() => {
     if (!product) return false
@@ -348,6 +349,31 @@ export default function ProductDetailPage() {
 
     setSelectedVariant(null)
   }, [product, variantIdParam])
+
+  useEffect(() => {
+    if (product) {
+      try {
+        const stored = localStorage.getItem('recently_viewed_products');
+        let rv: Product[] = stored ? JSON.parse(stored) : [];
+        rv = rv.filter((p: Product) => p.id !== product.id);
+        rv.unshift({
+          id: product.id,
+          name: product.name,
+          slug: product.slug,
+          main_image_url: product.main_image_url,
+          // Add other required fields with dummy values to satisfy Product type if needed,
+          // but PdpRelatedProductsSection only needs id, slug, main_image_url, name, short_description
+        } as Product);
+        if (rv.length > 6) rv = rv.slice(0, 6);
+        localStorage.setItem('recently_viewed_products', JSON.stringify(rv));
+        
+        // Exclude current product from displaying in the recently viewed section
+        setRecentlyViewed(rv.filter((p: Product) => p.id !== product.id));
+      } catch (e) {
+        // ignore JSON parse error
+      }
+    }
+  }, [product])
 
 
   useEffect(() => {
@@ -807,6 +833,14 @@ export default function ProductDetailPage() {
             relatedProducts={relatedProducts} 
             wishSet={wishSet} 
             onToggleLike={onToggleLike} 
+            title="Sản phẩm liên quan"
+          />
+          
+          <PdpRelatedProductsSection 
+            relatedProducts={recentlyViewed} 
+            wishSet={wishSet} 
+            onToggleLike={onToggleLike} 
+            title="Sản phẩm đã xem gần đây"
           />
 
           <PdpRichSection product={product} visibleNews={visibleNews} />

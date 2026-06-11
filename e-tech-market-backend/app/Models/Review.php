@@ -32,6 +32,12 @@ class Review extends Model
         'exp_camera' => 'integer',
     ];
 
+    protected $hidden = [
+        'created_at',
+        'updated_at',
+        'deleted_at',
+    ];
+
     public function product(): BelongsTo
     {
         return $this->belongsTo(Product::class, 'product_id');

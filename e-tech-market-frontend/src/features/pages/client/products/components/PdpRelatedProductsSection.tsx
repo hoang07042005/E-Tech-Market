@@ -7,17 +7,19 @@ export function PdpRelatedProductsSection({
   relatedProducts,
   wishSet,
   onToggleLike,
+  title = "Sản phẩm liên quan",
 }: {
   relatedProducts: Product[]
   wishSet: Set<number>
   onToggleLike: (productId: number) => void
+  title?: string
 }) {
   if (relatedProducts.length === 0) return null
 
   return (
-    <section className="pdpRelatedSection" aria-label="Sản phẩm liên quan">
+    <section className="pdpRelatedSection" aria-label={title}>
       <div className="pdpRelatedHeader">
-        <h3 className="pdpRelatedTitle">Sản phẩm liên quan</h3>
+        <h3 className="pdpRelatedTitle">{title}</h3>
       </div>
       <div className="pdpRelatedGrid">
         {relatedProducts.map((rp) => (

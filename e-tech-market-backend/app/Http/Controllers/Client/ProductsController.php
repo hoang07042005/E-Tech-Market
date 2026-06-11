@@ -73,14 +73,8 @@ class ProductsController extends Controller
 
         $cacheKey = 'products_index_'.md5(serialize($request->all()));
 
-        // Register this cache key so targeted invalidation can find it
-        $registry = \Illuminate\Support\Facades\Cache::get('_cache_registry_products', []);
-        if (! in_array($cacheKey, $registry, true)) {
-            $registry[] = $cacheKey;
-            // Keep registry max 200 entries to prevent unbounded growth
-            $registry = array_slice($registry, -200);
-            \Illuminate\Support\Facades\Cache::put('_cache_registry_products', $registry, 600);
-        }
+        \Illuminate\Support\Facades\Redis::sadd('_cache_registry_products', $cacheKey);
+        \Illuminate\Support\Facades\Redis::expire('_cache_registry_products', 600);
 
         $products = \Illuminate\Support\Facades\Cache::remember($cacheKey, 300, function () use ($query, $request) {
             $storeConfig = \App\Models\AdminSetting::query()->where('key', 'store_profile')->first();
