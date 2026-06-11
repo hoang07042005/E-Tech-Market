@@ -1,18 +1,8 @@
-import 'package:http/http.dart' as http;
-import 'dart:convert';
-import 'package:shared_preferences/shared_preferences.dart';
-
-import '../config/api_config.dart';
+import 'dart:io';
+import 'package:dio/dio.dart';
+import '../../config/dio_client.dart';
 
 class AdminOrdersService {
-  static const String _baseUrl = ApiConfig.apiBaseUrl;
-
-
-  static Future<String?> _getAuthToken() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getString('auth_token');
-  }
-
   static Future<Map<String, dynamic>> fetchAdminOrders({
     int page = 1,
     int perPage = 10,
@@ -25,12 +15,9 @@ class AdminOrdersService {
     String? paymentStatus,
     String? returnRequests,
   }) async {
-    final token = await _getAuthToken();
-    if (token == null) throw Exception('Chưa đăng nhập');
-
-    final Map<String, String> params = {
-      'page': page.toString(),
-      'per_page': perPage.toString(),
+    final params = <String, dynamic>{
+      'page': page,
+      'per_page': perPage,
     };
 
     if (orderCode?.isNotEmpty ?? false) params['order_code'] = orderCode!;
@@ -42,58 +29,44 @@ class AdminOrdersService {
     if (paymentStatus != null && paymentStatus != 'all') params['payment_status'] = paymentStatus;
     if (returnRequests?.isNotEmpty ?? false) params['return_requests'] = returnRequests!;
 
-    final uri = Uri.parse('$_baseUrl/admin/orders').replace(queryParameters: params);
-
-    final response = await http.get(
-      uri,
-      headers: {'Authorization': 'Bearer $token', 'Accept': 'application/json'},
-    );
-
-    if (response.statusCode != 200) {
-      throw Exception('Lỗi tải đơn hàng: ${response.statusCode}');
+    try {
+      final response = await DioClient.instance.get('/admin/orders', queryParameters: params);
+      return response.data as Map<String, dynamic>;
+    } on DioException catch (e) {
+      throw Exception('Lỗi tải đơn hàng: ${e.response?.statusCode ?? 'unknown'}');
     }
-
-    return jsonDecode(response.body);
   }
 
   static Future<Map<String, dynamic>> fetchAdminOrderDetail(int orderId) async {
-    final token = await _getAuthToken();
-    if (token == null) throw Exception('Chưa đăng nhập');
-
-    final response = await http.get(
-      Uri.parse('$_baseUrl/admin/orders/$orderId'),
-      headers: {'Authorization': 'Bearer $token', 'Accept': 'application/json'},
-    );
-
-    if (response.statusCode != 200) {
-      throw Exception('Lỗi tải chi tiết đơn: ${response.statusCode}');
+    try {
+      final response = await DioClient.instance.get('/admin/orders/$orderId');
+      final data = response.data;
+      if (data is Map<String, dynamic>) {
+        return data['data'] ?? data;
+      }
+      return {};
+    } on DioException catch (e) {
+      throw Exception('Lỗi tải chi tiết đơn: ${e.response?.statusCode ?? 'unknown'}');
     }
-
-    return jsonDecode(response.body)['data'] ?? jsonDecode(response.body);
   }
 
   static Future<Map<String, dynamic>> updateAdminOrder(
     int orderId, {
     required String status,
   }) async {
-    final token = await _getAuthToken();
-    if (token == null) throw Exception('Chưa đăng nhập');
-
-    final response = await http.post(
-      Uri.parse('$_baseUrl/admin/orders/$orderId'),
-      headers: {
-        'Authorization': 'Bearer $token',
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-      },
-      body: jsonEncode({'status': status}),
-    );
-
-    if (response.statusCode != 200) {
-      throw Exception('Lỗi cập nhật trạng thái: ${response.statusCode}');
+    try {
+      final response = await DioClient.instance.patch(
+        '/admin/orders/$orderId',
+        data: {'status': status},
+      );
+      final data = response.data;
+      if (data is Map<String, dynamic>) {
+        return data['data'] ?? data;
+      }
+      return {};
+    } on DioException catch (e) {
+      throw Exception('Lỗi cập nhật trạng thái: ${e.response?.statusCode ?? 'unknown'}');
     }
-
-    return jsonDecode(response.body)['data'] ?? jsonDecode(response.body);
   }
 
   static Future<Map<String, dynamic>> processOrderReturn(
@@ -102,77 +75,47 @@ class AdminOrdersService {
     String? adminNote,
     List<String>? refundProofPaths,
   }) async {
+    final actionSegment = action == 'approve'
+        ? 'approve'
+        : (action == 'reject' ? 'reject' : 'refunded');
+    final endpoint = '/admin/orders/$orderId/return-request/$actionSegment';
 
-    final token = await _getAuthToken();
-    if (token == null) throw Exception('Chưa đăng nhập');
-
-    // Trường hợp 1: Phê duyệt (approve) hoặc Từ chối (reject) không kèm file -> Gửi JSON thông thường
-    if (refundProofPaths == null || refundProofPaths.isEmpty) {
-      final response = await http.post(
-        Uri.parse('$_baseUrl/admin/orders/$orderId/return-request/${action == 'approve' ? 'approve' : (action == 'reject' ? 'reject' : 'refunded')}'),
-
-        headers: {
-          'Authorization': 'Bearer $token',
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-        },
-        body: jsonEncode({
+    try {
+      // With files → multipart
+      if (refundProofPaths != null && refundProofPaths.isNotEmpty) {
+        final formData = FormData.fromMap({
           'action': action,
           if (adminNote != null && adminNote.isNotEmpty) 'admin_note': adminNote,
-        }),
-      );
-
-      if (response.statusCode != 200) {
-        throw Exception('Lỗi xử lý hoàn trả ($action): ${response.statusCode}');
+        });
+        for (final path in refundProofPaths) {
+          formData.files.add(MapEntry(
+            'refund_proof[]',
+            await MultipartFile.fromFile(path),
+          ));
+        }
+        final response = await DioClient.instance.post(endpoint, data: formData);
+        final data = response.data;
+        if (data is Map<String, dynamic>) return data['data'] ?? data;
+        return {};
       }
 
-      final responseBody = jsonDecode(response.body);
-      return responseBody['data'] ?? responseBody;
-    } 
-    
-    // Trường hợp 2: Xác nhận hoàn tiền (refunded) có kèm ảnh/video chứng từ -> Gửi Multipart
-    else {
-      final request = http.MultipartRequest(
-        'POST',
-        Uri.parse('$_baseUrl/admin/orders/$orderId/return-request/refunded'),
-      );
-
-
-      request.headers['Authorization'] = 'Bearer $token';
-      request.headers['Accept'] = 'application/json';
-      
-      request.fields['action'] = action;
-      if (adminNote != null && adminNote.isNotEmpty) {
-        request.fields['admin_note'] = adminNote;
-      }
-
-      for (final path in refundProofPaths) {
-        request.files.add(await http.MultipartFile.fromPath('refund_proof[]', path));
-      }
-
-      final streamedResponse = await request.send();
-      final response = await http.Response.fromStream(streamedResponse);
-
-      if (response.statusCode != 200) {
-        throw Exception('Lỗi xử lý hoàn tiền multipart: ${response.statusCode}');
-      }
-
-      final responseBody = jsonDecode(response.body);
-      return responseBody['data'] ?? responseBody;
+      // Without files → JSON
+      final response = await DioClient.instance.post(endpoint, data: {
+        'action': action,
+        if (adminNote != null && adminNote.isNotEmpty) 'admin_note': adminNote,
+      });
+      final data = response.data;
+      if (data is Map<String, dynamic>) return data['data'] ?? data;
+      return {};
+    } on DioException catch (e) {
+      throw Exception('Lỗi xử lý hoàn trả ($action): ${e.response?.statusCode ?? 'unknown'}');
     }
   }
 
-  static String resolveImageUrl(String? url) {
-    if (url == null || url.isEmpty) return '';
-    if (url.startsWith('http')) return url;
-    return '$_baseUrl${url.startsWith('/') ? url : '/$url'}';
-  }
-
   static String formatVnd(num amount) {
-    return amount.toStringAsFixed(0).replaceAllMapped(
-          RegExp(r'(\d)(?=(\d{3})+(?!\d))'),
-          (Match m) => '${m[1]}.',
-        );
+    return amount
+        .toStringAsFixed(0)
+        .replaceAllMapped(RegExp(r'(\d)(?=(\d{3})+(?!\d))'), (m) => '${m[1]}.');
   }
 
   static String formatViTime(String? isoString) {
@@ -180,7 +123,7 @@ class AdminOrdersService {
     try {
       final dt = DateTime.parse(isoString);
       return '${dt.day}/${dt.month}/${dt.year} ${dt.hour.toString().padLeft(2, '0')}:${dt.minute.toString().padLeft(2, '0')}';
-    } catch (e) {
+    } catch (_) {
       return '—';
     }
   }
@@ -190,7 +133,7 @@ class AdminOrdersService {
     try {
       final dt = DateTime.parse(isoString);
       return '${dt.day}/${dt.month}/${dt.year}';
-    } catch (e) {
+    } catch (_) {
       return '—';
     }
   }

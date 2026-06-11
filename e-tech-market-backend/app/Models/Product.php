@@ -7,10 +7,26 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Laravel\Scout\Searchable;
 
 class Product extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, Searchable;
+
+    public function toSearchableArray()
+    {
+        $array = $this->toArray();
+
+        // Index specs for filtering
+        $this->loadMissing('specs');
+        $specsArray = [];
+        foreach ($this->specs as $spec) {
+            $specsArray[$spec->name] = $spec->value;
+        }
+        $array['specs'] = $specsArray;
+
+        return $array;
+    }
 
     protected $fillable = [
         'category_id',

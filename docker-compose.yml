@@ -33,6 +33,9 @@ services:
       - REDIS_PORT=6379
       # Redis password is set via environment variable. If not set, it defaults to empty.
       - REDIS_PASSWORD=${REDIS_PASSWORD:-}
+      - SCOUT_DRIVER=meilisearch
+      - MEILISEARCH_HOST=http://meilisearch:7700
+      - MEILISEARCH_KEY=etech-master-key-1234
       - CACHE_DRIVER=redis
       - SESSION_DRIVER=redis
     depends_on:
@@ -62,7 +65,7 @@ services:
     volumes:
       - ./e-tech-market-backend:/var/www
       - backend_vendor:/var/www/vendor
-    command: sh -c "php artisan storage:link && php artisan config:clear && php artisan cache:clear && php artisan route:clear && php artisan view:clear && php artisan queue:work --tries=3"
+    command: /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf
     environment:
       - DB_CONNECTION=pgsql
       - DB_HOST=db
@@ -97,6 +100,16 @@ services:
     ports:
       - "6379:6379"
 
+  meilisearch:
+    image: getmeili/meilisearch:v1.6
+    environment:
+      - MEILI_MASTER_KEY=etech-master-key-1234
+    ports:
+      - "7700:7700"
+    volumes:
+      - meili_data:/meili_data
+
 volumes:
+  meili_data:
   db_data:
   backend_vendor:

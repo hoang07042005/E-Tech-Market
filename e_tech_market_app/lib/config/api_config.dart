@@ -2,7 +2,9 @@
 ///
 /// Update `apiBaseUrl` here to change IP/host for the entire app.
 class ApiConfig {
-  // Example: http://192.168.24.18:8000/api
-  static const String apiBaseUrl = 'http://192.168.24.18:8000/api';
+  // Dành cho thiết bị thật, hãy đảm bảo IP này trùng với IP mạng LAN của máy bạn
+  static const String apiBaseUrl = String.fromEnvironment(
+    'API_BASE_URL',
+    defaultValue: 'http://192.168.24.18:8000/api/v1', // IP cho máy thật
+  );
 }
-

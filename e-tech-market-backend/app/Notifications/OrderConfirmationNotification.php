@@ -12,6 +12,13 @@ class OrderConfirmationNotification extends Notification implements ShouldQueue
 {
     use Queueable;
 
+    public int $tries = 3;
+
+    public function backoff(): array
+    {
+        return [10, 30, 60]; // Retry after 10s, 30s, 60s
+    }
+
     public function __construct(
         public Order $order
     ) {}

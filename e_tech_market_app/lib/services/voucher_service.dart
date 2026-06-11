@@ -1,38 +1,19 @@
-import 'dart:convert';
-
-import 'package:http/http.dart' as http;
-
-import 'auth_service.dart';
-import '../config/api_config.dart';
+import 'package:dio/dio.dart';
+import '../../config/dio_client.dart';
 
 class VoucherService {
-static const String _baseUrl = ApiConfig.apiBaseUrl;
-
   static Future<List<dynamic>> fetchMyCoupons() async {
-    final token = await AuthService.getToken();
-    if (token == null) {
-      throw Exception('Vui lòng đăng nhập lại.');
+    try {
+      final response = await DioClient.instance.get('/me/coupons');
+      final body = response.data;
+      if (body is List) return body;
+      if (body is Map && body['data'] is List) return body['data'] as List<dynamic>;
+      return [];
+    } on DioException catch (e) {
+      if (e.response?.statusCode == 401) {
+        throw Exception('Vui lòng đăng nhập lại.');
+      }
+      throw Exception('Không thể tải voucher: ${e.response?.statusCode ?? 'unknown'}');
     }
-
-    final uri = Uri.parse('$_baseUrl/me/coupons');
-    final response = await _get(uri, token);
-    final body = json.decode(response.body);
-    if (body is List) return body;
-    if (body is Map && body['data'] is List) return body['data'] as List<dynamic>;
-    return [];
-  }
-
-  static Future<http.Response> _get(Uri uri, String token) async {
-    final response = await http.get(uri, headers: {
-      'Content-Type': 'application/json',
-      'Accept': 'application/json',
-      'Authorization': 'Bearer $token',
-    }).timeout(const Duration(seconds: 15));
-
-    if (response.statusCode < 200 || response.statusCode >= 300) {
-      throw Exception('Không thể tải voucher: ${response.statusCode}');
-    }
-
-    return response;
   }
 }

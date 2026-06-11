@@ -9,9 +9,12 @@
         "firebase/php-jwt": "^7.0",
         "google/auth": "^1.50",
         "guzzlehttp/guzzle": "^7.2",
+        "http-interop/http-factory-guzzle": "^1.2",
         "laravel/framework": "^10.10",
         "laravel/sanctum": "^3.3",
+        "laravel/scout": "^11.2",
         "laravel/tinker": "^2.8",
+        "meilisearch/meilisearch-php": "^1.16",
         "mews/purifier": "^3.4",
         "spatie/laravel-permission": "^6.25"
     },

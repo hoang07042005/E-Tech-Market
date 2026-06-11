@@ -261,23 +261,14 @@ class _CouponCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ClipPath(
-      clipper: _VoucherClipper(), // Khoét cạnh kiểu vé giảm giá hiện đại
+    return CustomPaint(
+      painter: _VoucherPainter(
+        backgroundColor: Theme.of(context).colorScheme.surface,
+        borderColor: Theme.of(context).colorScheme.outline,
+      ),
       child: Container(
         width: 265,
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-        decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.surface,
-          borderRadius: BorderRadius.circular(10),
-          border: Border.all(color: Theme.of(context).colorScheme.outline, width: 1),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.02),
-              blurRadius: 8,
-              offset: const Offset(0, 2),
-            )
-          ],
-        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -393,17 +384,24 @@ class _CouponCard extends StatelessWidget {
   }
 }
 
-/// Custom Clipper giúp khoét 2 lỗ tròn nhỏ bên sườn, tạo hình dáng voucher tinh tế
-class _VoucherClipper extends CustomClipper<Path> {
+/// Custom Painter vẽ hình dáng voucher có khoét lỗ và border chính xác
+class _VoucherPainter extends CustomPainter {
+  final Color backgroundColor;
+  final Color borderColor;
+
+  _VoucherPainter({required this.backgroundColor, required this.borderColor});
+
   @override
-  Path getClip(Size size) {
+  void paint(Canvas canvas, Size size) {
     final path = Path();
-    path.lineTo(0, 0);
+    final double radius = 10.0;
     
     // Vị trí lỗ khoét (ở giữa chiều cao card)
     double cutoutY = size.height * 0.45;
     double cutoutRadius = 6.0;
 
+    path.moveTo(0, radius);
+    
     // Khoét cạnh trái
     path.lineTo(0, cutoutY - cutoutRadius);
     path.arcToPoint(
@@ -411,8 +409,11 @@ class _VoucherClipper extends CustomClipper<Path> {
       radius: Radius.circular(cutoutRadius),
       clockwise: true,
     );
-    path.lineTo(0, size.height);
-    path.lineTo(size.width, size.height);
+    path.lineTo(0, size.height - radius);
+    path.arcToPoint(Offset(radius, size.height), radius: Radius.circular(radius), clockwise: false);
+
+    path.lineTo(size.width - radius, size.height);
+    path.arcToPoint(Offset(size.width, size.height - radius), radius: Radius.circular(radius), clockwise: false);
 
     // Khoét cạnh phải
     path.lineTo(size.width, cutoutY + cutoutRadius);
@@ -421,12 +422,31 @@ class _VoucherClipper extends CustomClipper<Path> {
       radius: Radius.circular(cutoutRadius),
       clockwise: true,
     );
-    path.lineTo(size.width, 0);
+    path.lineTo(size.width, radius);
+    path.arcToPoint(Offset(size.width - radius, 0), radius: Radius.circular(radius), clockwise: false);
+    
+    path.lineTo(radius, 0);
+    path.arcToPoint(Offset(0, radius), radius: Radius.circular(radius), clockwise: false);
     
     path.close();
-    return path;
+
+    // Draw shadow
+    canvas.drawShadow(path, Colors.black.withValues(alpha: 0.02), 4.0, false);
+
+    // Draw background
+    final bgPaint = Paint()
+      ..color = backgroundColor
+      ..style = PaintingStyle.fill;
+    canvas.drawPath(path, bgPaint);
+
+    // Draw border
+    final borderPaint = Paint()
+      ..color = borderColor
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1.0;
+    canvas.drawPath(path, borderPaint);
   }
 
   @override
-  bool shouldReclip(CustomClipper<Path> oldClipper) => false;
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }

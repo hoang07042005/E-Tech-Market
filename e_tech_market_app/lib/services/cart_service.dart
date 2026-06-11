@@ -1,13 +1,8 @@
-import 'dart:async';
-import 'dart:convert';
-import 'dart:io';
-
-import 'package:http/http.dart' as http;
+import 'package:dio/dio.dart';
 
 import '../utils/network_utils.dart';
 import 'auth_service.dart';
-
-import '../../config/api_config.dart';
+import '../../config/dio_client.dart';
 
 class CartItem {
   final int id;
@@ -97,16 +92,10 @@ class CartState {
 
 class CartService {
 
-  static const String _baseUrl = ApiConfig.apiBaseUrl;
-
-
-
   static Future<CartState> fetchCart() async {
-    final token = await _requireToken();
-    final response = await _send(
-      () => http.get(Uri.parse('$_baseUrl/cart'), headers: _headers(token)),
-    );
-    return CartState.fromJson(jsonDecode(response.body) as Map<String, dynamic>);
+    await _requireToken();
+    final response = await _send(() => DioClient.instance.get('/cart'));
+    return CartState.fromJson(response.data as Map<String, dynamic>);
   }
 
   static Future<CartState> addItem({
@@ -115,46 +104,41 @@ class CartService {
     int quantity = 1,
     double? price,
   }) async {
-    final token = await _requireToken();
+    await _requireToken();
     final response = await _send(
-      () => http.post(
-        Uri.parse('$_baseUrl/cart/items'),
-        headers: _headers(token),
-        body: jsonEncode({
+      () => DioClient.instance.post(
+        '/cart/items',
+        data: {
           'product_id': productId,
           if (variantId != null) 'variant_id': variantId,
           'quantity': quantity.clamp(1, 999),
           if (price != null) 'unit_price': price,
-        }),
+        },
       ),
     );
-    return CartState.fromJson(jsonDecode(response.body) as Map<String, dynamic>);
+    return CartState.fromJson(response.data as Map<String, dynamic>);
   }
 
   static Future<CartState> updateItemQuantity({
     required int productId,
     required int quantity,
   }) async {
-    final token = await _requireToken();
+    await _requireToken();
     final response = await _send(
-      () => http.put(
-        Uri.parse('$_baseUrl/cart/items/$productId'),
-        headers: _headers(token),
-        body: jsonEncode({'quantity': quantity.clamp(1, 999)}),
+      () => DioClient.instance.put(
+        '/cart/items/$productId',
+        data: {'quantity': quantity.clamp(1, 999)},
       ),
     );
-    return CartState.fromJson(jsonDecode(response.body) as Map<String, dynamic>);
+    return CartState.fromJson(response.data as Map<String, dynamic>);
   }
 
   static Future<CartState> removeItem({required int productId}) async {
-    final token = await _requireToken();
+    await _requireToken();
     final response = await _send(
-      () => http.delete(
-        Uri.parse('$_baseUrl/cart/items/$productId'),
-        headers: _headers(token),
-      ),
+      () => DioClient.instance.delete('/cart/items/$productId'),
     );
-    return CartState.fromJson(jsonDecode(response.body) as Map<String, dynamic>);
+    return CartState.fromJson(response.data as Map<String, dynamic>);
   }
 
   static Future<CartState> clearCart(CartState cart) async {
@@ -173,29 +157,25 @@ class CartService {
     return token;
   }
 
-  static Map<String, String> _headers(String token) => {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-        'Authorization': 'Bearer $token',
-      };
-
-  static Future<http.Response> _send(Future<http.Response> Function() request) async {
+  static Future<Response> _send(Future<Response> Function() request) async {
     try {
-      final response = await request().timeout(const Duration(seconds: 15));
-      if (response.statusCode >= 200 && response.statusCode < 300) {
+      final response = await request();
+      if (response.statusCode != null && response.statusCode! >= 200 && response.statusCode! < 300) {
         return response;
       }
-      final body = response.body.isNotEmpty
-          ? jsonDecode(response.body) as Map<String, dynamic>
-          : <String, dynamic>{};
+      final body = response.data is Map ? response.data as Map<String, dynamic> : <String, dynamic>{};
       final message = body['message']?.toString() ?? _findFirstError(body);
       throw Exception(message ?? 'Khong the cap nhat gio hang.');
-    } on TimeoutException {
-      throw Exception('Ket noi gio hang qua cham. Vui long thu lai.');
-    } on SocketException {
+    } on DioException catch (e) {
+      if (e.type == DioExceptionType.connectionTimeout || e.type == DioExceptionType.receiveTimeout) {
+        throw Exception('Ket noi gio hang qua cham. Vui long thu lai.');
+      }
+      if (e.response != null) {
+        final body = e.response!.data is Map ? e.response!.data as Map<String, dynamic> : <String, dynamic>{};
+        final message = body['message']?.toString() ?? _findFirstError(body);
+        throw Exception(message ?? 'Loi he thong.');
+      }
       throw Exception('Khong the ket noi may chu gio hang.');
-    } on http.ClientException {
-      throw Exception('Loi ket noi HTTP toi gio hang.');
     }
   }
 

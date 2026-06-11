@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../services/auth_service.dart';
+import '../config/dio_client.dart';
 import '../utils/translation.dart';
 import '../services/banner_service.dart';
 import '../services/blog_service.dart';
@@ -735,6 +736,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> _logout() async {
     await AuthService.clearSession();
+    DioClient.reset();
     if (!mounted) return;
     Navigator.of(context).pushAndRemoveUntil(
       MaterialPageRoute(builder: (_) => const LoginScreen()),
@@ -850,7 +852,7 @@ class _HomeScreenState extends State<HomeScreen> {
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedIndex,
         onTap: _onTabSelected,
-        selectedItemColor: Colors.orange, // Đổi thành màu cam khi active
+        selectedItemColor: Color(0xFFEA6C00), // Đổi thành màu cam khi active
         unselectedItemColor: Theme.of(context).colorScheme.onSurfaceVariant,
         type: BottomNavigationBarType.fixed,
         items: [

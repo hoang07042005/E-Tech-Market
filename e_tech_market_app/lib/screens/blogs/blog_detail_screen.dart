@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import '../../utils/network_utils.dart';
 import '../../utils/translation.dart';
+import '../../utils/app_snackbar.dart';
+import '../../services/blog_service.dart';
 
-class BlogDetailScreen extends StatelessWidget {
+class BlogDetailScreen extends StatefulWidget {
   final dynamic post;
 
   const BlogDetailScreen({
@@ -11,20 +13,73 @@ class BlogDetailScreen extends StatelessWidget {
     required this.post,
   }) : super(key: key);
 
+  @override
+  State<BlogDetailScreen> createState() => _BlogDetailScreenState();
+}
+
+class _BlogDetailScreenState extends State<BlogDetailScreen> {
+  late dynamic post;
+  List<dynamic> comments = [];
+  bool isSubmitting = false;
+  final TextEditingController _commentController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    post = widget.post;
+    if (post['comments'] != null && post['comments'] is List) {
+      comments = List.from(post['comments']);
+    }
+  }
+
+  @override
+  void dispose() {
+    _commentController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _submitComment() async {
+    final text = _commentController.text.trim();
+    if (text.isEmpty) return;
+
+    final slug = post['slug'];
+    if (slug == null) return;
+
+    setState(() {
+      isSubmitting = true;
+    });
+
+    try {
+      final newComment = await BlogService.addComment(slug, text);
+      setState(() {
+        comments.insert(0, newComment);
+        _commentController.clear();
+      });
+      if (mounted) {
+        AppSnackBar.showSuccess(context, 'Bình luận đã được gửi.');
+      }
+    } catch (e) {
+      if (mounted) {
+        AppSnackBar.showError(context, e.toString().replaceFirst('Exception: ', ''));
+      }
+    } finally {
+      setState(() {
+        isSubmitting = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     final imageUrl = NetworkUtils.fixDeviceUrl(post['thumbnail_url'] ?? '');
     final title = post['title'] ?? '';
     final excerpt = post['excerpt'] ?? '';
-    // API returns content, not content_html
     final content = post['content'] ?? post['content_html'] ?? 'No content available';
     final categoryName = post['category']?['name'] ?? 'News';
     final authorName = post['author']?['name'] ?? 'E-Tech Market';
     final createdAt = post['published_at'] ?? '';
     final readingTime = post['reading_time'] ?? 5;
     final views = (post['views'] as num?)?.toInt() ?? 0;
-
 
     return Scaffold(
       appBar: AppBar(
@@ -177,6 +232,20 @@ class BlogDetailScreen extends StatelessWidget {
                     const SizedBox(height: 24),
                   ],
                   _buildContent(content, context),
+                  const SizedBox(height: 32),
+                  const Divider(),
+                  const SizedBox(height: 16),
+                  Text(
+                    'Bình luận (${comments.length})',
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  _buildCommentForm(),
+                  const SizedBox(height: 24),
+                  _buildCommentList(),
                   const SizedBox(height: 40),
                 ],
               ),
@@ -184,6 +253,123 @@ class BlogDetailScreen extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildCommentForm() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        TextField(
+          controller: _commentController,
+          maxLines: 3,
+          decoration: InputDecoration(
+            hintText: 'Viết bình luận của bạn...',
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
+            filled: true,
+            fillColor: Theme.of(context).colorScheme.surfaceContainerHighest.withAlpha(50),
+          ),
+        ),
+        const SizedBox(height: 12),
+        ElevatedButton(
+          onPressed: isSubmitting ? null : _submitComment,
+          style: ElevatedButton.styleFrom(
+            padding: const EdgeInsets.symmetric(vertical: 12),
+            backgroundColor: Theme.of(context).colorScheme.primary,
+            foregroundColor: Theme.of(context).colorScheme.onPrimary,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
+          ),
+          child: isSubmitting
+              ? const SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                )
+              : const Text('Gửi bình luận'),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildCommentList() {
+    if (comments.isEmpty) {
+      return Container(
+        padding: const EdgeInsets.all(24),
+        alignment: Alignment.center,
+        child: Text(
+          'Chưa có bình luận nào. Hãy là người đầu tiên!',
+          style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant),
+        ),
+      );
+    }
+
+    return ListView.separated(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: comments.length,
+      separatorBuilder: (_, __) => const Divider(),
+      itemBuilder: (context, index) {
+        final comment = comments[index];
+        final author = comment['author_name'] ?? 'Khách';
+        final content = comment['content'] ?? '';
+        final date = _formatDate(comment['created_at'] ?? '');
+
+        return Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              CircleAvatar(
+                radius: 18,
+                backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+                child: Text(
+                  author.isNotEmpty ? author[0].toUpperCase() : 'U',
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.onPrimaryContainer,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          author,
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
+                          ),
+                        ),
+                        Text(
+                          date,
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Theme.of(context).colorScheme.onSurfaceVariant,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      content,
+                      style: const TextStyle(fontSize: 14),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 

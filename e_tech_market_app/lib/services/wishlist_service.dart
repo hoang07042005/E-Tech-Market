@@ -1,72 +1,43 @@
-import 'dart:convert';
+import 'package:dio/dio.dart';
 
-import 'package:http/http.dart' as http;
-
-import 'auth_service.dart';
-import '../config/api_config.dart';
+import '../../config/dio_client.dart';
 
 class WishlistService {
-  static const String _baseUrl = ApiConfig.apiBaseUrl;
-
   static Set<int> _wishlistIds = {};
 
   static Future<List<dynamic>> fetchWishlist() async {
-    final token = await AuthService.getToken();
-    if (token == null || token.isEmpty) return [];
-
-    final uri = Uri.parse('$_baseUrl/wishlist');
     try {
-      final response = await http.get(
-        uri,
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          'Authorization': 'Bearer $token',
-        },
-      );
-      if (response.statusCode >= 200 && response.statusCode < 300) {
-        final decoded = jsonDecode(response.body);
-        if (decoded is List) return decoded;
-      }
+      final response = await DioClient.instance.get('/wishlist');
+      final data = response.data;
+      if (data is List) return data;
+      return [];
     } catch (_) {
       // Wishlist is optional during page rendering.
+      return [];
     }
-    return [];
   }
 
   static Future<String?> toggleWishlist(int productId) async {
-    final token = await AuthService.getToken();
-    if (token == null || token.isEmpty) {
-      throw Exception('Vui long dang nhap de them san pham yeu thich.');
-    }
-
-    final uri = Uri.parse('$_baseUrl/wishlist/toggle');
-    final response = await http.post(
-      uri,
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-        'Authorization': 'Bearer $token',
-      },
-      body: jsonEncode({'product_id': productId}),
-    );
-
-    final decoded = response.body.isNotEmpty ? jsonDecode(response.body) : {};
-    if (response.statusCode >= 200 && response.statusCode < 300) {
+    try {
+      final response = await DioClient.instance.post(
+        '/wishlist/toggle',
+        data: {'product_id': productId},
+      );
+      final decoded = response.data;
       if (decoded is Map<String, dynamic>) {
         return decoded['status'] as String?;
       }
       return null;
+    } on DioException catch (e) {
+      if (e.response?.statusCode == 401) {
+        throw Exception('Vui lòng đăng nhập để thêm sản phẩm yêu thích.');
+      }
+      if (e.response?.data is Map) {
+        final data = e.response!.data as Map<String, dynamic>;
+        throw Exception(data['message']?.toString() ?? 'Không thể cập nhật yêu thích.');
+      }
+      throw Exception('Không thể cập nhật yêu thích.');
     }
-
-    if (decoded is Map<String, dynamic>) {
-      final message =
-          decoded['message']?.toString() ?? _findFirstError(decoded);
-      throw Exception(message ?? 'Khong the cap nhat yeu thich.');
-    }
-
-    throw Exception(
-        'Khong the cap nhat yeu thich. HTTP ${response.statusCode}');
   }
 
   static Future<void> loadWishlist() async {
@@ -78,6 +49,7 @@ class WishlistService {
 
   static Future<void> toggleFavorite(int productId) async {
     final wasFavorite = _wishlistIds.contains(productId);
+    // Optimistic update
     if (wasFavorite) {
       _wishlistIds.remove(productId);
     } else {
@@ -92,6 +64,7 @@ class WishlistService {
         _wishlistIds.remove(productId);
       }
     } catch (_) {
+      // Rollback optimistic update on error
       if (wasFavorite) {
         _wishlistIds.add(productId);
       } else {
@@ -99,16 +72,6 @@ class WishlistService {
       }
       rethrow;
     }
-  }
-
-  static String? _findFirstError(Map<String, dynamic> body) {
-    for (final value in body.values) {
-      if (value is String && value.isNotEmpty) return value;
-      if (value is List && value.isNotEmpty && value.first is String) {
-        return value.first as String;
-      }
-    }
-    return null;
   }
 
   static int _toInt(dynamic value) {

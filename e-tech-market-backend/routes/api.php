@@ -49,17 +49,15 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('throttle:5,1')->group(function () {
-    Route::post('/auth/register', [AuthController::class, 'register']);
-    Route::post('/auth/login', [AuthController::class, 'login']);
-    Route::post('/auth/google-login', [AuthController::class, 'googleLogin']);
-    Route::post('/auth/forgot-password', [PasswordResetController::class, 'forgot']);
-    Route::post('/auth/reset-password', [PasswordResetController::class, 'reset']);
+    Route::post('/auth/register', [AuthController::class, 'register'])->middleware('throttle:auth.register');
+    Route::post('/auth/login', [AuthController::class, 'login'])->middleware('throttle:auth.login');
+    Route::post('/auth/google-login', [AuthController::class, 'googleLogin'])->middleware('throttle:auth.login');
+    Route::post('/auth/forgot-password', [PasswordResetController::class, 'forgot'])->middleware('throttle:auth.password');
+    Route::post('/auth/reset-password', [PasswordResetController::class, 'reset'])->middleware('throttle:auth.password');
 
     Route::get('/auth/email/verify/{id}/{hash}', [VerificationController::class, 'verify'])
-        ->middleware(['signed'])
+        ->middleware(['signed', 'throttle:6,1'])
         ->name('verification.verify');
-});
 
 Route::middleware('throttle:10,1')->group(function () {
     Route::post('/contact/messages', [ContactMessagesController::class, 'store']);

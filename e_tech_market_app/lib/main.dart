@@ -11,6 +11,9 @@ import 'services/auth_service.dart';
 import 'screens/maintenance_screen.dart';
 import 'services/store_service.dart';
 
+/// Global navigator key — dùng để navigate từ bên ngoài widget tree (vd: DioClient interceptor)
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await ThemeController.instance.initialize();
@@ -42,6 +45,7 @@ class _MyAppState extends State<MyApp> {
           builder: (context, _) {
             return MaterialApp(
               title: 'E-Tech Market',
+              navigatorKey: navigatorKey,
               locale: LocaleController.instance.locale,
               supportedLocales: LocaleController.supportedLocales,
               localizationsDelegates: AppLocalizations.localizationsDelegates,

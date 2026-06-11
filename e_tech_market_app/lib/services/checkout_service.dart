@@ -1,10 +1,5 @@
-import 'dart:async';
-import 'dart:convert';
-import 'dart:io';
-
-import 'package:http/http.dart' as http;
-import '../../config/api_config.dart';
-import 'auth_service.dart';
+import 'package:dio/dio.dart';
+import '../../config/dio_client.dart';
 
 class ShippingMethod {
   final int id;
@@ -123,20 +118,15 @@ class PaymentAvailability {
 }
 
 class CheckoutService {
-static const String _baseUrl = ApiConfig.apiBaseUrl;
-
   static Future<Map<String, dynamic>> fetchShippingConfig() async {
-    final uri = Uri.parse('$_baseUrl/store/shipping');
-    final response = await _get(uri);
-    return jsonDecode(response.body) as Map<String, dynamic>;
+    final response = await DioClient.instance.get('/store/shipping');
+    return response.data as Map<String, dynamic>;
   }
 
   static Future<PaymentAvailability> fetchPaymentConfig() async {
-    final uri = Uri.parse('$_baseUrl/store/payments');
     try {
-      final response = await _get(uri);
-      return PaymentAvailability.fromJson(
-          jsonDecode(response.body) as Map<String, dynamic>);
+      final response = await DioClient.instance.get('/store/payments');
+      return PaymentAvailability.fromJson(response.data as Map<String, dynamic>);
     } catch (_) {
       return const PaymentAvailability();
     }
@@ -146,13 +136,15 @@ static const String _baseUrl = ApiConfig.apiBaseUrl;
     required String code,
     required double orderAmount,
   }) async {
-    final token = await AuthService.getToken();
-    final uri = Uri.parse('$_baseUrl/coupons/apply');
-    final response = await _post(uri, {
-      'code': code,
-      'order_amount': orderAmount,
-    }, token: token);
-    return jsonDecode(response.body) as Map<String, dynamic>;
+    try {
+      final response = await DioClient.instance.post('/coupons/apply', data: {
+        'code': code,
+        'order_amount': orderAmount,
+      });
+      return response.data as Map<String, dynamic>;
+    } on DioException catch (e) {
+      throw Exception(_extractErrorMessage(e));
+    }
   }
 
   static Future<Map<String, dynamic>> createOrder({
@@ -166,107 +158,58 @@ static const String _baseUrl = ApiConfig.apiBaseUrl;
     int? shippingMethodId,
     int? shippingZoneId,
   }) async {
-    final token = await AuthService.getToken();
-    if (token == null) throw Exception('Vui lòng đăng nhập để đặt hàng.');
-
-    final uri = Uri.parse('$_baseUrl/orders/from-items');
-    final response = await _post(uri, {
-      'shipping_name': shippingName,
-      'shipping_phone': shippingPhone,
-      'shipping_address_line': shippingAddress,
-      'shipping_province': null,
-      'shipping_district': null,
-      'shipping_ward': null,
-      'notes': notes,
-      'coupon_code': couponCode,
-      'payment_method': paymentMethod,
-      'items': items,
-      'shipping_method_id': shippingMethodId,
-      'shipping_zone_id': shippingZoneId,
-    }, token: token);
-    return jsonDecode(response.body) as Map<String, dynamic>;
+    try {
+      final response = await DioClient.instance.post('/orders/from-items', data: {
+        'shipping_name': shippingName,
+        'shipping_phone': shippingPhone,
+        'shipping_address_line': shippingAddress,
+        'shipping_province': null,
+        'shipping_district': null,
+        'shipping_ward': null,
+        'notes': notes,
+        'coupon_code': couponCode,
+        'payment_method': paymentMethod,
+        'items': items,
+        'shipping_method_id': shippingMethodId,
+        'shipping_zone_id': shippingZoneId,
+      });
+      return response.data as Map<String, dynamic>;
+    } on DioException catch (e) {
+      throw Exception(_extractErrorMessage(e));
+    }
   }
 
   static Future<void> cancelOrder(int orderId) async {
-    final token = await AuthService.getToken();
-    if (token == null) return;
-    final uri = Uri.parse('$_baseUrl/orders/$orderId/cancel');
-    await _post(uri, {'_method': 'PATCH'}, token: token);
+    try {
+      await DioClient.instance.patch('/orders/$orderId/cancel');
+    } catch (_) {}
   }
 
   static Future<String> createPaymentLink({
     required String paymentMethod,
     required int orderId,
   }) async {
-    final token = await AuthService.getToken();
-    if (token == null) throw Exception('Vui lòng đăng nhập.');
-
-    final uri = Uri.parse('$_baseUrl/payments/$paymentMethod/$orderId/create');
-    final body = paymentMethod == 'momo'
-        ? {'request_type': 'payWithMethod'}
-        : null;
-    final response = await _post(uri, body ?? {}, token: token);
-    final data = jsonDecode(response.body) as Map<String, dynamic>;
-    return data['pay_url']?.toString() ?? '';
-  }
-
-  static Future<http.Response> _get(Uri uri) async {
     try {
-      final response = await http
-          .get(uri, headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json',
-          })
-          .timeout(const Duration(seconds: 15));
-
-      if (response.statusCode >= 200 && response.statusCode < 300) {
-        return response;
-      }
-      throw Exception('Lỗi ${response.statusCode}');
-    } on TimeoutException {
-      throw Exception('Không thể kết nối tới máy chủ.');
-    } on SocketException {
-      throw Exception('Lỗi mạng.');
-    } on http.ClientException {
-      throw Exception('Lỗi HTTP.');
+      final body = paymentMethod == 'momo'
+          ? {'request_type': 'payWithMethod'}
+          : {};
+      final response = await DioClient.instance.post('/payments/$paymentMethod/$orderId/create', data: body);
+      final data = response.data as Map<String, dynamic>;
+      return data['pay_url']?.toString() ?? '';
+    } on DioException catch (e) {
+      throw Exception(_extractErrorMessage(e));
     }
   }
 
-  static Future<http.Response> _post(
-    Uri uri,
-    Map<String, dynamic> body, {
-    String? token,
-  }) async {
-    try {
-      final headers = <String, String>{
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-      };
-      if (token != null) headers['Authorization'] = 'Bearer $token';
-
-      final response = await http
-          .post(uri, headers: headers, body: jsonEncode(body))
-          .timeout(const Duration(seconds: 15));
-
-      if (response.statusCode >= 200 && response.statusCode < 300) {
-        return response;
-      }
-
-      String message = 'Lỗi ${response.statusCode}';
-      try {
-        final decoded = jsonDecode(response.body) as Map<String, dynamic>;
-        message = decoded['message']?.toString() ?? message;
-      } catch (_) {}
-      throw Exception(message);
-    } on TimeoutException {
-      throw Exception('Không thể kết nối tới máy chủ.');
-    } on SocketException {
-      throw Exception('Lỗi mạng.');
-    } on http.ClientException {
-      throw Exception('Lỗi HTTP.');
+  static String _extractErrorMessage(DioException e) {
+    if (e.response?.data is Map) {
+      final data = e.response!.data as Map<String, dynamic>;
+      return data['message']?.toString() ?? 'Có lỗi xảy ra, vui lòng thử lại sau.';
     }
+    return 'Có lỗi xảy ra, vui lòng thử lại sau.';
   }
 }
+
 
 double _toDouble(dynamic value) {
   if (value is num) return value.toDouble();

@@ -11,6 +11,13 @@ class NewsletterWelcomeNotification extends Notification implements ShouldQueue
 {
     use Queueable;
 
+    public int $tries = 3;
+
+    public function backoff(): array
+    {
+        return [10, 30, 60];
+    }
+
     public function __construct() {}
 
     public function via(object $notifiable): array

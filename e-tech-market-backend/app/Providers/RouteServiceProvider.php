@@ -27,18 +27,22 @@ class RouteServiceProvider extends ServiceProvider
         RateLimiter::for('api', function (Request $request) {
             return Limit::perMinute(300)->by($request->user()?->id ?: $request->ip());
         });
+        RateLimiter::for('auth.login', function (Request $request) {
+            return Limit::perMinute(5)->by($request->ip());
+        });
+
+        RateLimiter::for('auth.register', function (Request $request) {
+            return Limit::perMinute(3)->by($request->ip());
+        });
+
+        RateLimiter::for('auth.password', function (Request $request) {
+            return Limit::perMinute(3)->by($request->ip());
+        });
 
         $this->routes(function () {
             // Primary versioned endpoint: /api/v1/*
             Route::middleware('api')
                 ->prefix('api/v1')
-                ->group(base_path('routes/api.php'));
-
-            // Backward-compatible alias: /api/* → same routes
-            // Keeps existing tests, payment gateway callbacks, and external integrations working.
-            // New clients should use /api/v1/*.
-            Route::middleware('api')
-                ->prefix('api')
                 ->group(base_path('routes/api.php'));
 
             Route::middleware('web')

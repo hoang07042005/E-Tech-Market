@@ -1,37 +1,23 @@
-import 'dart:convert';
-import 'package:http/http.dart' as http;
-import '../config/api_config.dart';
+import 'package:dio/dio.dart';
+import '../../config/dio_client.dart';
 
 class NewsletterService {
-  static const String _baseUrl = ApiConfig.apiBaseUrl;
-
-
   static Future<Map<String, dynamic>> subscribeToNewsletter({
     required String email,
     String source = 'home',
   }) async {
     try {
-      final response = await http
-          .post(
-            Uri.parse('$_baseUrl/newsletter/subscriptions'),
-            headers: {'Content-Type': 'application/json'},
-            body: jsonEncode({
-              'email': email,
-              'source': source,
-            }),
-          )
-          .timeout(const Duration(seconds: 10));
-
-      if (response.statusCode == 201 || response.statusCode == 200) {
-        return jsonDecode(response.body);
-      } else {
-        throw Exception(
-            'Failed to subscribe: ${response.statusCode} - ${response.body}');
+      final response = await DioClient.instance.post(
+        '/newsletter/subscriptions',
+        data: {'email': email, 'source': source},
+      );
+      return response.data as Map<String, dynamic>;
+    } on DioException catch (e) {
+      if (e.response?.data is Map) {
+        final data = e.response!.data as Map<String, dynamic>;
+        throw Exception(data['message']?.toString() ?? 'Đăng ký newsletter thất bại.');
       }
-    } on http.ClientException catch (e) {
-      throw Exception('Network error: ${e.message}');
-    } catch (e) {
-      throw Exception('Error subscribing to newsletter: $e');
+      throw Exception('Lỗi mạng khi đăng ký newsletter.');
     }
   }
 }
