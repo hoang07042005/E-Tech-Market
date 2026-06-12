@@ -189,7 +189,8 @@ class _FlashSaleSectionState extends State<FlashSaleSection> {
                 child: Row(
                   children: [
                     Text(Trans.viewAll, style: TextStyle(fontSize: 14)),
-                    Icon(Icons.arrow_forward, size: 16),
+                    const SizedBox(width: 4),
+                    Icon(Icons.arrow_forward, size: 16, color: Color(0xFFFF2424)),
                   ],
                 ),
               ),

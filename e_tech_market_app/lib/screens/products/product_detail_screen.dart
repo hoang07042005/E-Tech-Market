@@ -1872,12 +1872,7 @@ Widget _buildFaqItem(ProductFaq faq) {
 
 // 1. ĐỊNH VỊ HÀM NÀY NẰM ĐỘC LẬP TRONG CLASS _ProductDetailScreenState
   String _resolveImageUrl(String? url) {
-    if (url == null || url.isEmpty) return '';
-    if (url.startsWith('http')) return url;
-    // Đồng bộ cấu hình URL IP giống hệt bên ProductsService của bạn
-    const String baseUrl = String.fromEnvironment('API_BASE_URL', defaultValue: ApiConfig.apiBaseUrl);
-    final cleanUrl = url.startsWith('/') ? url.substring(1) : url;
-    return '$baseUrl/$cleanUrl';
+    return NetworkUtils.fixDeviceUrl(url);
   }
 
   // 2. HÀM MINI CARD TIN TỨC GỌI ĐẾN PHƯƠNG THỨC TRÊN

@@ -331,7 +331,7 @@ class _AdminProductVariantDetailScreenState extends State<AdminProductVariantDet
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
-        border: Border.all(color: Theme.of(context).colorScheme.onSurface, width: 0.5),
+        border: Border.all(color: Theme.of(context).colorScheme.outline, width: 0.15),
         borderRadius: BorderRadius.circular(5),
       ),
       child: Column(

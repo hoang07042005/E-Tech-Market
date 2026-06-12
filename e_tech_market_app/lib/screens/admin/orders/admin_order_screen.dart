@@ -180,8 +180,8 @@ class _AdminOrdersScreenState extends State<AdminOrdersScreen> {
                         color: _filterExpanded ? const Color(0xFF4F46E5).withOpacity(0.08) : Theme.of(context).colorScheme.surface,
                         borderRadius: BorderRadius.circular(8),
                         border: Border.all(
-                          color: _filterExpanded ? const Color(0xFF4F46E5) : Theme.of(context).colorScheme.onSurface,
-                          width: 1.2,
+                          color: _filterExpanded ? const Color(0xFF4F46E5) : Theme.of(context).colorScheme.outline,
+                          width: 0.15,
                         ),
                       ),
                       child: Row(
@@ -218,7 +218,7 @@ class _AdminOrdersScreenState extends State<AdminOrdersScreen> {
                         decoration: BoxDecoration(
                           color: Theme.of(context).colorScheme.surface,
                           borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: Theme.of(context).colorScheme.onSurface, width: 0.5),
+                          border: Border.all(color: Theme.of(context).colorScheme.outline, width: 0.15),
                           boxShadow: [
                             BoxShadow(
                               color: const Color(0xFF0F172A).withOpacity(0.03),
@@ -369,7 +369,7 @@ class _AdminOrdersScreenState extends State<AdminOrdersScreen> {
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Theme.of(context).colorScheme.onSurface, width: 0.5),
+        border: Border.all(color: Theme.of(context).colorScheme.outline, width: 0.15),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -412,13 +412,13 @@ class _AdminOrdersScreenState extends State<AdminOrdersScreen> {
             _loadOrders();
           },
           style: ElevatedButton.styleFrom(
-            backgroundColor: isSelected ? const Color(0xFF4F46E5) : Colors.white,
-            foregroundColor: isSelected ? Colors.white : const Color(0xFF475569),
+            backgroundColor: isSelected ? const Color(0xFF4F46E5) : Theme.of(context).colorScheme.surface,
+            foregroundColor: isSelected ? Theme.of(context).colorScheme.surface : const Color(0xFF475569),
             elevation: 0,
             padding: EdgeInsets.zero,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(8), 
-              side: BorderSide(color: isSelected ? Colors.transparent : const Color(0xFFE2E8F0), width: 1.2),
+              side: BorderSide(color: isSelected ? Colors.transparent : Theme.of(context).colorScheme.outline, width: 0.15),
             ),
           ),
           child: Text(label, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
@@ -435,7 +435,7 @@ class _AdminOrdersScreenState extends State<AdminOrdersScreen> {
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Theme.of(context).colorScheme.onSurface, width: 0.5),
+        border: Border.all(color: Theme.of(context).colorScheme.outline, width: 0.15),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

@@ -179,7 +179,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
         color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(12),
         boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 10, offset: const Offset(0, 2))],
-        border: Border.all(color: Theme.of(context).colorScheme.outline),
+        border: Border.all(color: Theme.of(context).colorScheme.outline, width: 0.15),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -418,7 +418,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
         color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(12),
         boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 10, offset: const Offset(0, 2))],
-        border: Border.all(color: Theme.of(context).colorScheme.onSurface),
+        border: Border.all(color: Theme.of(context).colorScheme.outline, width: 0.15),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -531,7 +531,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
         color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(12),
         boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 10, offset: const Offset(0, 2))],
-        border: Border.all(color: Theme.of(context).colorScheme.onSurface, width: 0.5),
+        border: Border.all(color: Theme.of(context).colorScheme.outline, width: 0.15),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart'; 
 import 'package:e_tech_market_app/services/products_service.dart';
 import '../../../config/api_config.dart';
+import '../../../utils/network_utils.dart';
 
 class ProductNews {
   final int id;
@@ -75,16 +76,7 @@ class _ProductNewDetailScreenState extends State<ProductNewDetailScreen> {
   }
 
     String _resolveImageUrl(String? url) {
-        if (url == null || url.isEmpty) return '';
-        if (url.startsWith('http')) return url;
-
-        // �u?ng d?n g?c c?a API server
-        const String baseUrl = String.fromEnvironment('API_BASE_URL', defaultValue: ApiConfig.apiBaseUrl); 
-        final cleanUrl = url.startsWith('/') ? url.substring(1) : url;
-        if (cleanUrl.startsWith('uploads')) {
-        return '$baseUrl/$cleanUrl';
-        }
-        return '$baseUrl/api/$cleanUrl';
+        return NetworkUtils.fixDeviceUrl(url);
     }
 
   @override

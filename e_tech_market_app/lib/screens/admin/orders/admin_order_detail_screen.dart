@@ -855,7 +855,7 @@ class _AdminOrderDetailScreenState extends State<AdminOrderDetailScreen> {
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface, 
         borderRadius: BorderRadius.circular(12), 
-        border: Border.all(color: Theme.of(context).colorScheme.onSurface, width: 0.5),
+        border: Border.all(color: Theme.of(context).colorScheme.outline, width: 0.15),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start, 

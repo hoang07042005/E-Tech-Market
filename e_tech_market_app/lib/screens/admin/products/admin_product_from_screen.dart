@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:e_tech_market_app/services/admin_products_service.dart';
 import '../../../config/api_config.dart';
+import '../../../utils/network_utils.dart';
 import '../../../utils/translation.dart';
 
 class AdminProductFormScreen extends StatefulWidget {
@@ -547,7 +548,7 @@ class _AdminProductFormScreenState extends State<AdminProductFormScreen> with Si
             color: Theme.of(context).colorScheme.surface,
             borderRadius: BorderRadius.circular(14),
             boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 10, offset: const Offset(0, 2))],
-            border: Border.all(color: Theme.of(context).colorScheme.onSurface),
+            border: Border.all(color: Theme.of(context).colorScheme.outline, width: 0.15),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -616,7 +617,7 @@ class _AdminProductFormScreenState extends State<AdminProductFormScreen> with Si
               const SizedBox(height: 14),
               Container(
                 padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(color: Theme.of(context).colorScheme.surface, borderRadius: BorderRadius.circular(10), border: Border.all(color: Theme.of(context).colorScheme.onSurface)),
+                decoration: BoxDecoration(color: Theme.of(context).colorScheme.surface, borderRadius: BorderRadius.circular(10), border: Border.all(color: Theme.of(context).colorScheme.outline, width: 0.15)),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -700,7 +701,7 @@ class _AdminProductFormScreenState extends State<AdminProductFormScreen> with Si
             return Container(
               margin: const EdgeInsets.only(bottom: 14),
               padding: const EdgeInsets.all(14),
-              decoration: BoxDecoration(color: Theme.of(context).colorScheme.surface, borderRadius: BorderRadius.circular(14), border: Border.all(color: Theme.of(context).colorScheme.onSurface)),
+              decoration: BoxDecoration(color: Theme.of(context).colorScheme.surface, borderRadius: BorderRadius.circular(14), border: Border.all(color: Theme.of(context).colorScheme.outline, width: 0.15)),
               child: Column(
                 children: [
                   Row(
@@ -780,7 +781,7 @@ class _AdminProductFormScreenState extends State<AdminProductFormScreen> with Si
             return Container(
               margin: const EdgeInsets.only(bottom: 14),
               padding: const EdgeInsets.all(14),
-              decoration: BoxDecoration(color: Theme.of(context).colorScheme.surface, borderRadius: BorderRadius.circular(14), border: Border.all(color: Theme.of(context).colorScheme.onSurface)),
+              decoration: BoxDecoration(color: Theme.of(context).colorScheme.surface, borderRadius: BorderRadius.circular(14), border: Border.all(color: Theme.of(context).colorScheme.outline, width: 0.15)),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -867,7 +868,7 @@ class _AdminProductFormScreenState extends State<AdminProductFormScreen> with Si
         isDense: true,
         contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-        enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: BorderSide(color: Theme.of(context).colorScheme.onSurface)),
+        enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: BorderSide(color: Theme.of(context).colorScheme.outline, width: 0.15)),
       ),
       onChanged: onChanged,
       validator: validator,
@@ -931,18 +932,7 @@ class _AdminProductFormScreenState extends State<AdminProductFormScreen> with Si
   }
 
   String _resolveImageUrl(String? url) {
-    if (url == null || url.isEmpty) return '';
-
-    const String serviceUrl = String.fromEnvironment('API_BASE_URL', defaultValue: ApiConfig.apiBaseUrl);
-    final String domain = serviceUrl.replaceAll('/api', '');
-
-    if (url.startsWith('http')) {
-      if (url.contains('localhost:8000')) {
-        return url.replaceAll('http://localhost:8000', domain);
-      }
-      return url;
-    }
-    return '$domain${url.startsWith('/') ? url : '/$url'}';
+    return NetworkUtils.fixDeviceUrl(url);
   }
 
   // SỬA LỖI HIỂN THỊ ẢNH: Xử lý an toàn cả String (URL trực tiếp) và Map (Đối tượng ảnh từ database)

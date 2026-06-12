@@ -4,30 +4,30 @@ class NetworkUtils {
     if (url == null || url.isEmpty) return '';
 
     var fixedUrl = url.trim();
-    
-    // Extract host from ApiConfig.apiBaseUrl dynamically
-    final uri = Uri.parse(ApiConfig.apiBaseUrl);
-    final dynamicHost = uri.host + (uri.hasPort ? ':${uri.port}' : '');
+    final baseUri = Uri.parse(ApiConfig.apiBaseUrl);
 
-    // If already a full URL, just replace localhost/127.0.0.1
-    if (fixedUrl.startsWith('http://') || fixedUrl.startsWith('https://')) {
-      fixedUrl = fixedUrl.replaceAll('localhost', dynamicHost);
-      fixedUrl = fixedUrl.replaceAll('127.0.0.1', dynamicHost);
+    // If it's a relative URL, ensure it has the base scheme and host
+    if (!fixedUrl.startsWith('http://') && !fixedUrl.startsWith('https://')) {
+      if (!fixedUrl.startsWith('/')) {
+        fixedUrl = '/$fixedUrl';
+      }
+      return '${baseUri.scheme}://${baseUri.host}:${baseUri.port}$fixedUrl';
+    }
+
+    // It's an absolute URL. Parse it to safely replace host/port.
+    try {
+      final uri = Uri.parse(fixedUrl);
+      // Rewrite host/port if it comes from the local backend (localhost, 127.0.0.1, or 192.168.x.x)
+      if (uri.host == 'localhost' || uri.host == '127.0.0.1' || uri.host.startsWith('192.168.') || uri.host.startsWith('10.')) {
+        final newUri = uri.replace(
+          host: baseUri.host,
+          port: baseUri.port,
+        );
+        return newUri.toString();
+      }
+      return fixedUrl;
+    } catch (e) {
       return fixedUrl;
     }
-    
-    // For relative paths, append to base URL host
-    const baseUrl = ApiConfig.apiBaseUrl;
-    final hostUrl = baseUrl.replaceAll(RegExp(r'/api.*'), '');
-    
-    // Ensure path starts with /
-    if (!fixedUrl.startsWith('/')) {
-      fixedUrl = '/$fixedUrl';
-    }
-    
-    fixedUrl = '$hostUrl$fixedUrl';
-    fixedUrl = fixedUrl.replaceAll('localhost', dynamicHost);
-    fixedUrl = fixedUrl.replaceAll('127.0.0.1', dynamicHost); 
-    return fixedUrl;
   }
 }

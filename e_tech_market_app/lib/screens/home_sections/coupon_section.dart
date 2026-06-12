@@ -275,6 +275,18 @@ class _CouponCard extends StatelessWidget {
             // Dòng trên: Thông tin chi tiết giảm giá
             Row(
               children: [
+                Container(
+                  padding: const EdgeInsets.all(1),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Icon(
+                    Icons.local_offer_rounded,
+                    size: 25,
+                    color: const Color(0xFFEF7A45),
+                  ),
+                ),
+                const SizedBox(width: 10),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -292,7 +304,7 @@ class _CouponCard extends StatelessWidget {
                       Text(
                         subtitle,
                           style: TextStyle(
-                          fontSize: 11, 
+                          fontSize: 11,
                           color: Theme.of(context).colorScheme.onSurfaceVariant,
                         ),
                       ),

@@ -317,8 +317,8 @@ class _BlogScreenState extends State<BlogScreen> {
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
-                        color: Theme.of(context).colorScheme.onSurface,
-                        fontSize: 20,
+                        color: Colors.white,
+                        fontSize: 18,
                         fontWeight: FontWeight.w700,
                         height: 1.4,
                       ),
@@ -332,7 +332,7 @@ class _BlogScreenState extends State<BlogScreen> {
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
                         color: Theme.of(context).colorScheme.outline,
-                        fontSize: 13,
+                        fontSize: 12,
                         height: 1.5,
                       ),
                     ),

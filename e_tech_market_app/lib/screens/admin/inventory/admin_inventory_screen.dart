@@ -262,7 +262,7 @@ class _AdminInventoryScreenState extends State<AdminInventoryScreen> {
       backgroundColor: Theme.of(context).colorScheme.surface,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(5),
-        side: BorderSide(color: isSelected ? Colors.transparent : Theme.of(context).colorScheme.onSurface, width: 0.5,),
+        side: BorderSide(color: isSelected ? Colors.transparent : Theme.of(context).colorScheme.outline, width: 0.15),
       ),
     );
   }
@@ -278,7 +278,7 @@ class _AdminInventoryScreenState extends State<AdminInventoryScreen> {
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(5),
-          border: Border.all(color: Theme.of(context).colorScheme.outline, width: 0.5,),
+          border: Border.all(color: Theme.of(context).colorScheme.outline, width: 0.15,),
         boxShadow: [
           BoxShadow(
             color: Theme.of(context).colorScheme.onSurface.withOpacity(0.02),
