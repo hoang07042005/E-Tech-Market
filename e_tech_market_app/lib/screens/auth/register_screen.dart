@@ -21,6 +21,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
   bool _agree = true;
   bool _isLoading = false;
   String? _error;
+  bool _obscurePassword = true;
+  bool _obscureConfirm = true;
 
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
@@ -277,8 +279,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               TextFormField(
                                 style: TextStyle(color: Color(0xFF7C6B61)),
                                 controller: _passwordController,
-                                obscureText: true,
-                                decoration: _inputDecoration(''),
+                                obscureText: _obscurePassword,
+                                decoration: _inputDecoration('').copyWith(
+                                  suffixIcon: IconButton(
+                                    icon: Icon(_obscurePassword ? Icons.visibility_off : Icons.visibility, color: Colors.grey, size: 20),
+                                    onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+                                  ),
+                                ),
                                 validator: (value) {
                                   if (value == null || value.isEmpty) return Trans.pleaseEnterPassword;
                                   if (value.length < 6) return Trans.passwordMinLength;
@@ -290,8 +297,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               TextFormField(
                                 style: TextStyle(color: Color(0xFF7C6B61)),
                                 controller: _confirmController,
-                                obscureText: true,
-                                decoration: _inputDecoration(''),
+                                obscureText: _obscureConfirm,
+                                decoration: _inputDecoration('').copyWith(
+                                  suffixIcon: IconButton(
+                                    icon: Icon(_obscureConfirm ? Icons.visibility_off : Icons.visibility, color: Colors.grey, size: 20),
+                                    onPressed: () => setState(() => _obscureConfirm = !_obscureConfirm),
+                                  ),
+                                ),
                                 validator: (value) {
                                   if (value == null || value.isEmpty) return Trans.pleaseConfirmPassword;
                                   return null;

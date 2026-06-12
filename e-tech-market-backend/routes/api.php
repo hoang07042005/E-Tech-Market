@@ -99,6 +99,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::patch('/me/password', [AuthController::class, 'changePassword'])->middleware('throttle:5,1');
     Route::get('/me/sessions', [AuthController::class, 'sessions']);
     Route::post('/auth/logout', [AuthController::class, 'logout']);
+    Route::delete('/me', [AuthController::class, 'deleteAccount']);
 
     Route::post('/auth/email/verification-notification', [VerificationController::class, 'resend'])
         ->middleware(['throttle:6,1'])

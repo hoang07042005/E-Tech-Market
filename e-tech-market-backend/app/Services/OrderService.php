@@ -75,6 +75,7 @@ class OrderService
                             ->where('end_at', '>=', now());
                     })
                     ->orderByRaw('variant_id IS NULL ASC')
+                    ->lockForUpdate()
                     ->first();
 
                 if ($activeFlashSale) {
@@ -94,7 +95,7 @@ class OrderService
             $discount = $flashSaleDiscount;
             $coupon = null;
             if (! empty($data['coupon_code'])) {
-                $coupon = Coupon::query()->where('code', $data['coupon_code'])->first();
+                $coupon = Coupon::query()->lockForUpdate()->where('code', $data['coupon_code'])->first();
                 if (! $coupon || ! $coupon->isValidNow()) {
                     throw ValidationException::withMessages(['coupon_code' => 'Mã giảm giá không hợp lệ hoặc đã hết hạn']);
                 }

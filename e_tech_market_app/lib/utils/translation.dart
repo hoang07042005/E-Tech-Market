@@ -18,6 +18,16 @@ class Trans {
   static String get checkUpdate => isVietnamese ? 'Kiểm tra cập nhật' : 'Check for updates';
   static String get dangerZone => isVietnamese ? 'Khu vực nguy hiểm' : 'Danger Zone';
   static String get deleteAccount => isVietnamese ? 'Xóa tài khoản' : 'Delete account';
+  static String get deleteAccountConfirmTitle => isVietnamese ? 'Xóa tài khoản?' : 'Delete account?';
+  static String get deleteAccountConfirmMessage => isVietnamese ? 'Nhập mật khẩu để xác nhận xóa tài khoản. Hành động này không thể hoàn tác.' : 'Enter your password to confirm account deletion. This action cannot be undone.';
+  static String get deleteAccountCannotRecover => isVietnamese
+      ? 'Tài khoản không thể khôi phục. Bạn sẽ mất: đơn hàng, voucher, lịch sử mua hàng và tất cả dữ liệu liên quan.'
+      : 'Account cannot be recovered. You will lose: orders, vouchers, purchase history and all related data.';
+  static String get deleteAccountWarning => isVietnamese
+      ? 'Cảnh báo: Hành động này là vĩnh viễn và không thể hoàn tác.'
+      : 'Warning: This action is permanent and cannot be undone.';
+  static String get iAgreeDelete => isVietnamese ? 'Tôi đồng ý xóa tài khoản vĩnh viễn' : 'I agree to permanently delete my account';
+  static String get deleteAccountSuccess => isVietnamese ? 'Tài khoản đã được xóa.' : 'Account has been deleted.';
   static String get home => isVietnamese ? 'Trang chủ' : 'Home';
   static String get account => isVietnamese ? 'Tài khoản' : 'Account';
   static String get cart => isVietnamese ? 'Giỏ hàng' : 'Cart';

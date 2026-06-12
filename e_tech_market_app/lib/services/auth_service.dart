@@ -195,4 +195,17 @@ class AuthService {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString(_tokenKey);
   }
+
+  static Future<void> deleteAccount({
+    required String password,
+  }) async {
+    try {
+      await DioClient.instance.delete('/me', data: {
+        'password': password,
+      });
+      await clearSession();
+    } catch (e) {
+      _handleError(e, 'Xóa tài khoản thất bại.');
+    }
+  }
 }

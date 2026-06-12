@@ -281,6 +281,33 @@ class AuthController extends Controller
         return Response::json(['ok' => true])->withoutCookie('auth_token');
     }
 
+    public function deleteAccount(Request $request): JsonResponse
+    {
+        $user = $this->authenticatedUser($request);
+
+        $data = $request->validate([
+            'password' => ['required', 'string'],
+        ]);
+
+        if (! Hash::check($data['password'], $user->password)) {
+            throw ValidationException::withMessages([
+                'password' => ['Mật khẩu không đúng.'],
+            ]);
+        }
+
+        // Soft delete user (deactivate) - giữ lại data cho nghiệp vụ
+        $user->is_active = false;
+        $user->email = $user->email.'_deleted_'.$user->id.'_'.time();
+        $user->phone = null;
+        $user->avatar_url = null;
+        $user->save();
+
+        // Revoke all tokens
+        $user->tokens()->delete();
+
+        return Response::json(['ok' => true])->withoutCookie('auth_token');
+    }
+
     public function googleLogin(Request $request): JsonResponse
     {
         $request->validate([

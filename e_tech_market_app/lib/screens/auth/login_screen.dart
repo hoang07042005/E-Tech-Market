@@ -20,6 +20,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final _passwordController = TextEditingController();
   bool _isLoading = false;
   String? _error;
+  bool _obscurePassword = true;
 
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
@@ -266,8 +267,13 @@ class _LoginScreenState extends State<LoginScreen> {
                               TextFormField(
                                 style: TextStyle(color: Color(0xFF7C6B61)),
                                 controller: _passwordController,
-                                obscureText: true,
-                                decoration: _inputDecoration(''),
+                                obscureText: _obscurePassword,
+                                decoration: _inputDecoration('').copyWith(
+                                  suffixIcon: IconButton(
+                                    icon: Icon(_obscurePassword ? Icons.visibility_off : Icons.visibility, color: Colors.grey, size: 20),
+                                    onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+                                  ),
+                                ),
                                 validator: (value) {
                                   if (value == null || value.isEmpty) return Trans.pleaseEnterPassword;
                                   return null;

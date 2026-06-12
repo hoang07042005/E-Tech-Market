@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 
+import '../../../main.dart' show navigatorKey;
+import '../../../screens/auth/login_screen.dart';
 import '../../../services/auth_service.dart';
+import '../../../utils/app_snackbar.dart';
 import '../../../utils/translation.dart';
 
 class SecurityScreen extends StatefulWidget {
@@ -524,19 +527,7 @@ class _SecurityScreenState extends State<SecurityScreen> {
             width: double.infinity,
             height: 44,
             child: ElevatedButton(
-              onPressed: () {
-                showDialog<void>(
-                  context: context,
-                  builder: (context) => AlertDialog(
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                    title: Text(Trans.featureNotReady),
-                    content: const Text('Chức năng xóa tài khoản đang được phát triển và sẽ ra mắt ở phiên bản tiếp theo.'),
-                    actions: [
-                      TextButton(onPressed: () => Navigator.of(context).pop(), child: Text(Trans.close)),
-                    ],
-                  ),
-                );
-              },
+              onPressed: () => _showDeleteAccountDialog(context),
               style: ElevatedButton.styleFrom(
                 backgroundColor: dangerColor,
                 foregroundColor: Colors.white,
@@ -610,6 +601,109 @@ class _SecurityScreenState extends State<SecurityScreen> {
           const SizedBox(width: 8),
           Expanded(child: Text(message, style: TextStyle(color: textColor, fontSize: 13, fontWeight: FontWeight.w500))),
         ],
+      ),
+    );
+  }
+
+  void _showDeleteAccountDialog(BuildContext context) {
+    final passwordController = TextEditingController();
+    bool deleting = false;
+    bool agreed = false;
+    String password = '';
+
+    showDialog<void>(
+      context: context,
+      builder: (dialogContext) => StatefulBuilder(
+        builder: (context, setDialogState) => AlertDialog(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          title: Text(Trans.deleteAccountConfirmTitle),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(Trans.deleteAccountWarning,
+                    style: TextStyle(fontSize: 13, color: dangerColor, fontWeight: FontWeight.bold)),
+                const SizedBox(height: 12),
+                Text(Trans.deleteAccountCannotRecover,
+                    style: const TextStyle(fontSize: 13, color: Colors.grey)),
+                const SizedBox(height: 16),
+                TextField(
+                  controller: passwordController,
+                  obscureText: true,
+                  onChanged: (value) => setDialogState(() => password = value),
+                  decoration: InputDecoration(
+                    labelText: Trans.password,
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Row(
+                  children: [
+                    Checkbox(
+                      value: agreed,
+                      onChanged: (value) => setDialogState(() => agreed = value ?? false),
+                      activeColor: dangerColor,
+                    ),
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: () => setDialogState(() => agreed = !agreed),
+                        child: Text(Trans.iAgreeDelete,
+                            style: TextStyle(fontSize: 13, color: agreed ? dangerColor : Colors.grey)),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(),
+              child: Text(Trans.cancel),
+            ),
+            ElevatedButton(
+              onPressed: deleting || !agreed || password.isEmpty
+                  ? null
+                  : () async {
+                      setDialogState(() => deleting = true);
+                      try {
+                        await AuthService.deleteAccount(
+                          password: password,
+                        );
+                        if (context.mounted) {
+                          Navigator.of(dialogContext).pop();
+                          AppSnackBar.showSuccess(
+                            context,
+                            Trans.deleteAccountSuccess,
+                          );
+                          // Navigate to login using navigatorKey (app uses conditional rendering)
+                          navigatorKey.currentState?.pushAndRemoveUntil(
+                            MaterialPageRoute(builder: (_) => const LoginScreen()),
+                            (route) => false,
+                          );
+                        }
+                      } catch (e) {
+                        setDialogState(() => deleting = false);
+                      }
+                    },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: dangerColor,
+                foregroundColor: Colors.white,
+              ),
+              child: deleting
+                  ? const SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                      ),
+                    )
+                  : Text(Trans.delete),
+            ),
+          ],
+        ),
       ),
     );
   }
