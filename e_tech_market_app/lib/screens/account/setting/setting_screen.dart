@@ -75,23 +75,29 @@ class _SettingScreenState extends State<SettingScreen> {
             const SizedBox(height: 24),
             _buildSectionTitle(l10n.privacy),
             _buildCard(children: [
-              _buildSwitchTile(icon: Icons.phone_android_outlined, iconColor: const Color(0xFF10B981), iconBgColor: const Color(0xFFECFDF5), title: l10n.displayPhoneNumber, value: _showPhoneNumber, onChanged: (val) => setState(() => _showPhoneNumber = val)),
+              _buildSwitchTile(icon: Icons.phone_android_outlined, iconColor: const Color(0xFF10B981), iconBgColor: const Color(0xFFECFDF5), title: l10n.displayPhoneNumber, value: _showPhoneNumber, onChanged: (val) {
+                setState(() => _showPhoneNumber = val);
+                _showComingSoon(context);
+              }),
               const Divider(height: 1, indent: 56),
-              _buildSwitchTile(icon: Icons.recommend_outlined, iconColor: const Color(0xFF10B981), iconBgColor: const Color(0xFFECFDF5), title: l10n.allowPersonalization, value: _allowPersonalization, onChanged: (val) => setState(() => _allowPersonalization = val)),
+              _buildSwitchTile(icon: Icons.recommend_outlined, iconColor: const Color(0xFF10B981), iconBgColor: const Color(0xFFECFDF5), title: l10n.allowPersonalization, value: _allowPersonalization, onChanged: (val) {
+                setState(() => _allowPersonalization = val);
+                _showComingSoon(context);
+              }),
             ]),
             const SizedBox(height: 24),
             _buildSectionTitle(l10n.data),
             _buildCard(children: [
-              _buildActionTile(icon: Icons.delete_outline, iconColor: const Color(0xFFEF4444), iconBgColor: const Color(0xFFFEF2F2), title: l10n.clearCache, onTap: () {}),
+              _buildActionTile(icon: Icons.delete_outline, iconColor: const Color(0xFFEF4444), iconBgColor: const Color(0xFFFEF2F2), title: l10n.clearCache, onTap: () => _showComingSoon(context)),
               const Divider(height: 1, indent: 56),
-              _buildActionTile(icon: Icons.refresh, iconColor: const Color(0xFFF59E0B), iconBgColor: const Color(0xFFFFFBEB), title: l10n.refreshData, onTap: () {}),
+              _buildActionTile(icon: Icons.refresh, iconColor: const Color(0xFFF59E0B), iconBgColor: const Color(0xFFFFFBEB), title: l10n.refreshData, onTap: () => _showComingSoon(context)),
             ]),
             const SizedBox(height: 24),
             _buildSectionTitle(l10n.appInfo),
             _buildCard(children: [
               ListTile(leading: Container(padding: const EdgeInsets.all(8), decoration: BoxDecoration(color: const Color(0xFFF3E8FF), borderRadius: BorderRadius.circular(8)), child: const Icon(Icons.info_outline, color: Color(0xFFA855F7), size: 20)), title: Text(l10n.appVersion, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w500)), trailing: const Text('v1.0.0', style: TextStyle(color: Color(0xFF64748B), fontSize: 14))),
               const Divider(height: 1, indent: 56),
-              _buildActionTile(icon: Icons.system_update_alt, iconColor: const Color(0xFFA855F7), iconBgColor: const Color(0xFFF3E8FF), title: l10n.checkUpdate, onTap: () {}),
+              _buildActionTile(icon: Icons.system_update_alt, iconColor: const Color(0xFFA855F7), iconBgColor: const Color(0xFFF3E8FF), title: l10n.checkUpdate, onTap: () => _showComingSoon(context)),
             ]),
             const SizedBox(height: 24),
             _buildSectionTitle(l10n.dangerZone, color: const Color(0xFFEF4444)),
@@ -282,6 +288,13 @@ class _SettingScreenState extends State<SettingScreen> {
           ],
         ),
       ),
+    );
+  }
+
+  void _showComingSoon(BuildContext context) {
+    AppSnackBar.showInfo(
+      context,
+      Trans.featureComingSoon,
     );
   }
 }

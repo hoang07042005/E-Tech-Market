@@ -5,7 +5,8 @@
       "Bash(vendor/bin/phpstan analyse app/Http/Controllers/Client/OrdersController.php --error-format=table)",
       "Bash(vendor/bin/phpstan analyse --level=5 --error-format=table)",
       "Bash(vendor/bin/phpstan analyse --level=9 --error-format=table)",
-      "Bash(vendor/bin/phpstan analyse --level=9)"
+      "Bash(vendor/bin/phpstan analyse --level=9)",
+      "Bash(grep -A 50 '\"\"require\"\"' e-tech-market-backend/composer.json)"
     ]
   }
 }

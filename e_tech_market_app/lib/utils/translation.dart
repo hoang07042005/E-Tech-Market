@@ -28,9 +28,10 @@ class Trans {
       : 'Warning: This action is permanent and cannot be undone.';
   static String get iAgreeDelete => isVietnamese ? 'Tôi đồng ý xóa tài khoản vĩnh viễn' : 'I agree to permanently delete my account';
   static String get deleteAccountSuccess => isVietnamese ? 'Tài khoản đã được xóa.' : 'Account has been deleted.';
+  static String get featureComingSoon => isVietnamese ? 'Tính năng đang được phát triển!' : 'This feature is coming soon!';
   static String get home => isVietnamese ? 'Trang chủ' : 'Home';
   static String get account => isVietnamese ? 'Tài khoản' : 'Account';
-  static String get cart => isVietnamese ? 'Giỏ hàng' : 'Cart';
+  static String get cart => isVietnamese ? 'Giỏ hàng' : 'Cart'; 
   static String get search => isVietnamese ? 'Tìm kiếm' : 'Search';
   static String get notifications => isVietnamese ? 'Thông báo' : 'Notifications';
   static String get noNotificationsYet => isVietnamese ? 'Chưa có thông báo nào.' : 'No notifications yet.';
