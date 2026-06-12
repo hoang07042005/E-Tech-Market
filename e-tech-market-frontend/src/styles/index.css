@@ -210,6 +210,8 @@ html.dark .hpNewsSection {
     background: var(--et-bg);
 }
 
+hpCouponValue
+
 html.dark .hpTabHeader,
 html.dark .hpTabButtons {
     border-bottom-color: var(--et-border);
@@ -239,6 +241,10 @@ html.dark .hpNewsExcerpt {
 html.dark .hpCouponCard {
     background: rgba(255, 255, 255, .03);
     border-color: var(--et-primary);
+}
+
+html.dark .hpCouponValue {
+    color: var(--et-primary);
 }
 
 html.dark .hpReviewCard {

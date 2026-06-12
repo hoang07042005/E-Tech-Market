@@ -12,36 +12,14 @@ use Symfony\Component\HttpFoundation\Response;
 
 class UsersController extends Controller
 {
+    public function __construct(private \App\Services\UserService $userService)
+    {
+    }
+
     public function index(Request $request): JsonResponse
     {
-        $query = User::query()->with('roles')->orderByDesc('created_at');
+        $paginator = $this->userService->getAdminUsers($request, (int) $request->query('per_page', 20));
 
-        $roleType = $request->query('role_type');
-        if ($roleType === 'customer') {
-            $query->whereHas('roles', function ($q) {
-                $q->where('slug', 'customer');
-            });
-        } elseif ($roleType === 'admin') {
-            $query->whereHas('roles', function ($q) {
-                $q->where('slug', '!=', 'customer');
-            });
-        }
-
-        $search = trim((string) $request->query('search', ''));
-        if ($search !== '') {
-            $escaped = addcslashes($search, '%_\\');
-            $like = '%'.$escaped.'%';
-            $query->where(function ($q) use ($like) {
-                $q->where('name', 'like', $like)
-                    ->orWhere('email', 'like', $like)
-                    ->orWhere('phone', 'like', $like);
-            });
-        }
-
-        $perPage = (int) $request->query('per_page', 20);
-        $perPage = max(5, min(100, $perPage));
-
-        $paginator = $query->paginate($perPage);
         $collection = $paginator->getCollection()->map(function (User $item) {
             return (new UserResource($item))->resolve();
         });
@@ -55,53 +33,13 @@ class UsersController extends Controller
      */
     public function update(UpdateUserRequest $request, User $user): JsonResponse
     {
-        $data = $request->validated();
-
-        if (! array_key_exists('is_active', $data) && ! array_key_exists('role_ids', $data)) {
-            return response()->json(
-                ['message' => 'Gửi ít nhất một trường: is_active hoặc role_ids.'],
-                Response::HTTP_UNPROCESSABLE_ENTITY,
-            );
+        try {
+            $updatedUser = $this->userService->updateUser($user, $request->validated(), $request->user());
+            return response()->json((new UserResource($updatedUser))->resolve());
+        } catch (\Exception $e) {
+            $code = $e->getCode() ?: 422;
+            return response()->json(['message' => $e->getMessage()], $code);
         }
-
-        if ($request->user()->id === $user->id) {
-            if (array_key_exists('is_active', $data)) {
-                return response()->json(
-                    ['message' => 'Không thể thay đổi trạng thái chính tài khoản đang đăng nhập.'],
-                    Response::HTTP_UNPROCESSABLE_ENTITY,
-                );
-            }
-            if (array_key_exists('role_ids', $data)) {
-                return response()->json(
-                    ['message' => 'Không thể thay đổi vai trò chính tài khoản đang đăng nhập.'],
-                    Response::HTTP_UNPROCESSABLE_ENTITY,
-                );
-            }
-        }
-
-        if (array_key_exists('role_ids', $data)) {
-            $targetHasAdmin = $user->roles()->where('slug', 'admin')->exists();
-            if ($targetHasAdmin) {
-                return response()->json(
-                    ['message' => 'Không thể thay đổi vai trò của tài khoản quản trị viên.'],
-                    Response::HTTP_UNPROCESSABLE_ENTITY,
-                );
-            }
-
-            /** @var list<int|string> $ids */
-            $ids = $data['role_ids'];
-            $uniqueIds = array_values(array_unique(array_map('intval', $ids)));
-            $user->roles()->sync($uniqueIds);
-        }
-
-        if (array_key_exists('is_active', $data)) {
-            $user->update(['is_active' => $data['is_active']]);
-        }
-
-        // Refresh the model, then return a resolved resource array
-        $user = $user->fresh()->load('roles');
-
-        return response()->json((new UserResource($user))->resolve());
     }
 
     /**
@@ -109,15 +47,12 @@ class UsersController extends Controller
      */
     public function destroy(Request $request, User $user): JsonResponse
     {
-        if ($request->user()->id === $user->id) {
-            return response()->json(
-                ['message' => 'Không thể xóa chính tài khoản đang đăng nhập.'],
-                Response::HTTP_UNPROCESSABLE_ENTITY,
-            );
+        try {
+            $this->userService->deleteUser($user, $request->user());
+            return response()->json(['message' => 'Đã xóa tài khoản.']);
+        } catch (\Exception $e) {
+            $code = $e->getCode() ?: 422;
+            return response()->json(['message' => $e->getMessage()], $code);
         }
-
-        $user->delete();
-
-        return response()->json(['message' => 'Đã xóa tài khoản.']);
     }
 }

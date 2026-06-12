@@ -23,14 +23,7 @@ class OrdersController extends Controller
 {
     public function index(Request $request): JsonResponse
     {
-        $user = $request->user();
-
-        $orders = Order::query()
-            ->where('user_id', $user->id)
-            ->orderBy('created_at', 'desc')
-            ->with(['items.product', 'payment'])
-            ->paginate(12);
-
+        $orders = app(OrderService::class)->getClientOrders($request->user());
         return response()->json($orders);
     }
 
@@ -38,10 +31,13 @@ class OrdersController extends Controller
     {
         $this->authorize('view', $order);
 
-        $order->load(['items.product', 'payment', 'returnRequest', 'statusHistories', 'statusHistories.changedBy']);
+        try {
+            $order = app(OrderService::class)->getClientOrder($order, $request->user());
+        } catch (\Exception $e) {
+            return response()->json(['message' => $e->getMessage()], $e->getCode() ?: 403);
+        }
 
         $payload = $order->toArray();
-        // Ensure frontend always receives `return_request` (snake_case) consistently.
         $payload['return_request'] = $order->returnRequest ? [
             'id' => (int) $order->returnRequest->id,
             'status' => (string) ($order->returnRequest->status ?? ''),
@@ -77,215 +73,57 @@ class OrdersController extends Controller
     public function cancel(Order $order, Request $request): JsonResponse
     {
         $this->authorize('update', $order);
-        $user = $request->user();
-
-        $cur = strtolower((string) ($order->status ?? ''));
-        if (! in_array($cur, ['pending', 'processing'], true)) {
-            return response()->json(['message' => 'Không thể hủy đơn ở trạng thái này.'], 422);
+        try {
+            $order = app(OrderService::class)->cancelOrder($order, $request->user());
+            return $this->show($order, $request);
+        } catch (\Exception $e) {
+            return response()->json(['message' => $e->getMessage()], $e->getCode() ?: 422);
         }
-
-        $prevStatus = $cur;
-        $order->status = 'cancelled';
-        $order->save();
-
-        // Restore stock
-        $order->loadMissing('items');
-        $productIdsToSync = [];
-        foreach ($order->items as $item) {
-            if ($item->variant_id) {
-                $variant = ProductVariant::find($item->variant_id);
-                if ($variant) {
-                    $variant->stock_quantity = (int) ($variant->stock_quantity ?? 0) + (int) $item->quantity;
-                    $variant->save();
-                    $productIdsToSync[$variant->product_id] = true;
-                }
-            }
-        }
-        foreach (array_keys($productIdsToSync) as $pid) {
-            $p = Product::find($pid);
-            if ($p) {
-                ProductInventorySync::syncFromVariants($p, 'order_cancelled');
-            }
-        }
-
-        OrderStatusHistory::create([
-            'order_id' => (int) $order->id,
-            'from_status' => $prevStatus,
-            'to_status' => 'cancelled',
-            'changed_by_user_id' => $user->id,
-            'note' => null,
-        ]);
-
-        return $this->show($order, $request);
     }
 
     public function confirmReceived(Order $order, Request $request): JsonResponse
     {
         $this->authorize('update', $order);
-        $user = $request->user();
-
-        $cur = strtolower((string) ($order->status ?? ''));
-        if ($cur !== 'delivered') {
-            return response()->json(['message' => 'Chỉ có thể xác nhận khi đơn ở trạng thái đã giao.'], 422);
+        try {
+            $order = app(OrderService::class)->confirmReceived($order, $request->user());
+            return $this->show($order, $request);
+        } catch (\Exception $e) {
+            return response()->json(['message' => $e->getMessage()], $e->getCode() ?: 422);
         }
-
-        $order->status = 'completed';
-        $order->save();
-
-        OrderStatusHistory::create([
-            'order_id' => (int) $order->id,
-            'from_status' => 'delivered',
-            'to_status' => 'completed',
-            'changed_by_user_id' => $user->id,
-            'note' => null,
-        ]);
-
-        return $this->show($order, $request);
     }
 
     public function confirmPayment(Order $order, Request $request): JsonResponse
     {
         $this->authorize('update', $order);
-        $user = $request->user();
-
-        $order->loadMissing(['payment']);
-        if (! $order->payment || strtolower((string) $order->payment->method) !== 'cod') {
-            return response()->json(['message' => 'Chỉ có thể xác nhận thanh toán cho đơn hàng COD.'], 422);
+        try {
+            $order = app(OrderService::class)->confirmPayment($order, $request->user());
+            return $this->show($order, $request);
+        } catch (\Exception $e) {
+            return response()->json(['message' => $e->getMessage()], $e->getCode() ?: 422);
         }
-
-        if ($order->payment->status === 'paid') {
-            return response()->json(['message' => 'Đơn hàng này đã được xác nhận thanh toán.'], 422);
-        }
-
-        $order->payment->status = 'paid';
-        $order->payment->paid_at = now();
-        $order->payment->save();
-
-        $order->payment_status = 'paid';
-        $order->save();
-
-        return $this->show($order, $request);
     }
 
     public function requestReturn(Order $order, RequestReturnOrderRequest $request): JsonResponse
     {
         $this->authorize('update', $order);
-        $user = $request->user();
-
-        $cur = strtolower((string) ($order->status ?? ''));
-        if ($cur !== 'delivered') {
-            return response()->json(['message' => 'Chỉ có thể yêu cầu hoàn trả khi đơn ở trạng thái đã giao.'], 422);
+        try {
+            $files = $request->file('media', []);
+            $order = app(OrderService::class)->requestReturn($order, $request->user(), $request->validated(), is_array($files) ? $files : [$files]);
+            return $this->show($order, $request);
+        } catch (\Exception $e) {
+            return response()->json(['message' => $e->getMessage()], $e->getCode() ?: 422);
         }
-
-        $order->loadMissing(['returnRequest']);
-        if ($order->returnRequest) {
-            return response()->json(['message' => 'Đơn hàng này đã có yêu cầu hoàn trả.'], 422);
-        }
-
-        $data = $request->validated();
-
-        $files = $request->file('media', []);
-        $mediaMeta = [];
-        foreach ($files as $f) {
-            if (! $f) {
-                continue;
-            }
-            $mime = (string) ($f->getMimeType() ?? '');
-            $isVideo = str_starts_with(strtolower($mime), 'video/');
-            $type = $isVideo ? 'video' : 'image';
-            $path = $f->storePublicly('returns/'.(int) $order->id, ['disk' => 'public']);
-            $mediaMeta[] = [
-                'type' => $type,
-                'url' => '/storage/'.ltrim($path, '/'),
-                'original_name' => (string) ($f->getClientOriginalName() ?? ''),
-                'mime' => $mime !== '' ? $mime : null,
-                'size' => (int) ($f->getSize() ?? 0),
-            ];
-        }
-
-        OrderReturnRequest::create([
-            'order_id' => (int) $order->id,
-            'user_id' => (int) $user->id,
-            'status' => 'pending',
-            'content' => (string) $data['content'],
-            'media' => $mediaMeta,
-        ]);
-
-        // Notify all admins (if notifications table is present in this project).
-        $adminUsers = User::query()
-            ->whereHas('roles', function ($r) {
-                $r->where('slug', '=', 'admin');
-            })
-            ->select(['id'])
-            ->get();
-
-        foreach ($adminUsers as $au) {
-            Notification::create([
-                'user_id' => (int) $au->id,
-                'type' => 'order_return_request',
-                'title' => 'Yêu cầu hoàn trả mới',
-                'body' => 'Đơn #'.($order->order_code ?: ('ET-'.$order->id)).' vừa có yêu cầu hoàn trả.',
-                'data' => [
-                    'order_id' => (int) $order->id,
-                    'order_code' => (string) ($order->order_code ?: ('ET-'.$order->id)),
-                ],
-                'read_at' => null,
-            ]);
-        }
-
-        // Reload with returnRequest
-        $order->load(['returnRequest']);
-
-        return $this->show($order, $request);
     }
 
     public function confirmRefundReceived(Order $order, Request $request): JsonResponse
     {
         $this->authorize('update', $order);
-        $user = $request->user();
-
-        $order->loadMissing(['returnRequest']);
-        if (! $order->returnRequest) {
-            return response()->json(['message' => 'Đơn hàng này chưa có yêu cầu hoàn trả.'], 422);
+        try {
+            $order = app(OrderService::class)->confirmRefundReceived($order, $request->user());
+            return $this->show($order, $request);
+        } catch (\Exception $e) {
+            return response()->json(['message' => $e->getMessage()], $e->getCode() ?: 422);
         }
-
-        $rrStatus = strtolower((string) ($order->returnRequest->status ?? ''));
-        if ($rrStatus !== 'refunded') {
-            return response()->json(['message' => 'Chỉ có thể xác nhận khi admin đã hoàn tiền.'], 422);
-        }
-
-        if ($order->returnRequest->customer_confirmed_at) {
-            return response()->json(['message' => 'Bạn đã xác nhận nhận tiền hoàn trước đó.'], 422);
-        }
-
-        $order->returnRequest->customer_confirmed_at = now();
-        $order->returnRequest->save();
-
-        // Optional: notify admins that customer confirmed receiving refund
-        $adminUsers = User::query()
-            ->whereHas('roles', function ($r) {
-                $r->where('slug', '=', 'admin');
-            })
-            ->select(['id'])
-            ->get();
-
-        foreach ($adminUsers as $au) {
-            Notification::create([
-                'user_id' => (int) $au->id,
-                'type' => 'order_refund_confirmed',
-                'title' => 'Khách đã xác nhận nhận tiền hoàn',
-                'body' => 'Đơn #'.($order->order_code ?: ('ET-'.$order->id)).' đã được khách xác nhận nhận tiền hoàn.',
-                'data' => [
-                    'order_id' => (int) $order->id,
-                    'order_code' => (string) ($order->order_code ?: ('ET-'.$order->id)),
-                ],
-                'read_at' => null,
-            ]);
-        }
-
-        $order->load(['returnRequest']);
-
-        return $this->show($order, $request);
     }
 
     public function store(StoreOrderRequest $request, OrderService $orderService): JsonResponse

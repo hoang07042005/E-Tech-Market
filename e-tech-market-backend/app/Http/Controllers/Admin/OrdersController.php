@@ -166,96 +166,17 @@ class OrdersController extends Controller
             $page = 1;
         }
 
-        $qCode = trim((string) $request->query('order_code', ''));
-        $qCustomer = trim((string) $request->query('customer', ''));
-        $status = trim((string) $request->query('status', ''));
-        $paymentMethod = trim((string) $request->query('payment_method', ''));
-        $paymentStatus = trim((string) $request->query('payment_status', ''));
-        $dateFrom = trim((string) $request->query('date_from', ''));
-        $dateTo = trim((string) $request->query('date_to', ''));
-        $returnRequests = trim((string) $request->query('return_requests', ''));
+        $filters = $request->only([
+            'order_code', 'customer', 'status', 'payment_method', 
+            'payment_status', 'date_from', 'date_to', 'return_requests'
+        ]);
 
-        $query = Order::query()
-            ->with(['user:id,name,avatar_url', 'payment:id,order_id,method,status'])
-            ->with(['items:id,order_id,product_name_snapshot,quantity'])
-            ->with(['returnRequest:id,order_id,status'])
-            ->orderByDesc('created_at');
-
-        if ($qCode !== '') {
-            $query->where('order_code', 'ilike', '%'.$qCode.'%');
-        }
-
-        if ($qCustomer !== '') {
-            $query->where(function ($qq) use ($qCustomer) {
-                $qq->where('shipping_name', 'ilike', '%'.$qCustomer.'%')
-                    ->orWhereHas('user', function ($u) use ($qCustomer) {
-                        $u->where('name', 'ilike', '%'.$qCustomer.'%');
-                    });
-            });
-        }
-
-        if ($status !== '' && $status !== 'all') {
-            $query->where('status', '=', $status);
-        }
-
-        if ($paymentStatus !== '' && $paymentStatus !== 'all') {
-            $query->where('payment_status', '=', $paymentStatus);
-        }
-
-        if ($paymentMethod !== '' && $paymentMethod !== 'all') {
-            $query->whereHas('payment', function ($p) use ($paymentMethod) {
-                $p->where('method', '=', $paymentMethod);
-            });
-        }
-
-        if ($returnRequests !== '' && $returnRequests !== '0' && $returnRequests !== 'false') {
-            if ($returnRequests === '1' || $returnRequests === 'true') {
-                $query->whereHas('returnRequest');
-            } else {
-                $query->whereHas('returnRequest', function ($r) use ($returnRequests) {
-                    $r->where('status', '=', $returnRequests);
-                });
-            }
-        }
-
-        $parseDate = static function (string $s): ?Carbon {
-            try {
-                if (preg_match('/^\d{4}-\d{2}-\d{2}$/', $s)) {
-                    return Carbon::parse($s);
-                }
-                if (preg_match('/^\d{2}\/\d{2}\/\d{4}$/', $s)) {
-                    return Carbon::createFromFormat('d/m/Y', $s);
-                }
-
-                return null;
-            } catch (\Throwable) {
-                return null;
-            }
-        };
-
-        $from = $dateFrom !== '' ? $parseDate($dateFrom) : null;
-        $to = $dateTo !== '' ? $parseDate($dateTo) : null;
-        if ($from) {
-            $query->where('created_at', '>=', $from->startOfDay());
-        }
-        if ($to) {
-            $query->where('created_at', '<=', $to->endOfDay());
-        }
-
-        $paginator = $query->paginate($perPage, ['*'], 'page', $page);
+        $result = $this->adminOrderService->getAdminOrders($filters, $perPage, $page);
+        $paginator = $result['paginator'];
+        $stats = $result['stats'];
 
         $pageItems = collect($paginator->items());
         $data = OrderListResource::collection($pageItems)->resolve();
-
-        $statsBase = Order::query();
-        $stats = [
-            'total' => (int) $statsBase->count(),
-            'pending' => (int) Order::query()->where('status', 'pending')->count(),
-            'processing' => (int) Order::query()->where('status', 'processing')->count(),
-            'completed' => (int) Order::query()->where('status', 'completed')->count(),
-            'canceled' => (int) Order::query()->whereIn('status', ['cancelled', 'returned'])->count(),
-            'return_requests_pending' => (int) OrderReturnRequest::query()->where('status', 'pending')->count(),
-        ];
 
         return response()->json([
             'data' => $data,

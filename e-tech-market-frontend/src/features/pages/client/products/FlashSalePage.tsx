@@ -37,6 +37,12 @@ type FlashSale = {
   items: FlashSaleItem[]
 }
 
+const resolveImageUrl = (url?: string | null) => {
+  if (!url) return '/placeholder.png'
+  if (url.startsWith('http')) return url
+  return `${API_BASE_URL}${url.startsWith('/') ? url : `/${url}`}`
+}
+
 type SortType = 'popular' | 'discount' | 'priceAsc' | 'priceDesc'
 
 export default function FlashSalePage() {
@@ -268,10 +274,8 @@ export default function FlashSalePage() {
       {/* Products Grid */}
       <div className="fspGrid">
         {filteredAndSortedItems.map(item => {
-          const productUrl = `/products/${item.product.slug}${item.variant_id ? `?variant=${item.variant_id}` : ''}`;
-          const displayImage = item.variant?.image_url
-            ? `${API_BASE_URL}${item.variant.image_url}`
-            : (item.product.main_image_url ? `${API_BASE_URL}${item.product.main_image_url}` : '/placeholder.png');
+          const productUrl = `/products/${item.product.slug}?flashSale=true${item.variant_id ? `&variant=${item.variant_id}` : ''}`;
+          const displayImage = resolveImageUrl(item.variant?.image_url || item.product.main_image_url);
           const displayName = item.variant
             ? `${item.product.name} - ${item.variant.variant_name}`
             : item.product.name;

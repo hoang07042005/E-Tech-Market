@@ -39,18 +39,9 @@ export const fetchAdminCategories = <T>(token: string | null) => {
 
 export const saveAdminProduct = async <T>(data: FormData, id: number | null | undefined, token: string | null) => {
   const url = id ? `/api/admin/products/${id}` : '/api/admin/products'
-  const response = await fetch(`${API_BASE_URL}${url}`, {
+  return apiFetch<T>(url, {
     method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${token}`,
-      'Accept': 'application/json'
-    },
+    token,
     body: data
   })
-  
-  const resData = await response.json() as { message?: string } & T
-  if (!response.ok) {
-    throw new Error(resData.message || 'Lỗi khi lưu sản phẩm')
-  }
-  return resData
 }

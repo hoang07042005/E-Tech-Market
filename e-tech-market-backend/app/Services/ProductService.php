@@ -11,6 +11,9 @@ use App\Support\HtmlSanitizer;
 use App\Support\ProductInventorySync;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Redis;
+use App\Models\Category;
 use Illuminate\Support\Str;
 
 class ProductService
@@ -87,6 +90,247 @@ class ProductService
         });
 
         return $variant->fresh();
+    }
+
+    /**
+     * Lấy danh sách sản phẩm (Client) với phân trang, lọc, sắp xếp, và cache
+     */
+    public function getClientProducts(array $filters, int $limit = 12)
+    {
+        $query = Product::query()->where('is_active', true);
+
+        if (!empty($filters['category_id'])) {
+            $catId = (int) $filters['category_id'];
+            $allCatIds = $this->getAllCategoryIds($catId);
+            $query->whereIn('category_id', $allCatIds);
+        }
+
+        if (!empty($filters['brand'])) {
+            $query->where('brand', 'ilike', $filters['brand']);
+        }
+
+        if (!empty($filters['min_price']) || !empty($filters['max_price'])) {
+            $query->whereHas('variants', function ($q) use ($filters) {
+                if (!empty($filters['min_price'])) {
+                    $q->where('price', '>=', (float) $filters['min_price']);
+                }
+                if (!empty($filters['max_price'])) {
+                    $q->where('price', '<=', (float) $filters['max_price']);
+                }
+                $q->where('is_active', true);
+            });
+        }
+
+        if (!empty($filters['search'])) {
+            $search = $filters['search'];
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'ilike', "%{$search}%")
+                    ->orWhere('description', 'ilike', "%{$search}%");
+            });
+        }
+
+        $sort = $filters['sort'] ?? 'created_at';
+        $order = strtolower($filters['order'] ?? 'desc') === 'asc' ? 'asc' : 'desc';
+
+        $allowedSortFields = ['created_at', 'price', 'name'];
+        if (! in_array($sort, $allowedSortFields)) {
+            $sort = 'created_at';
+        }
+
+        if ($sort === 'price') {
+            $query->orderBy(
+                \App\Models\ProductVariant::select('price')
+                    ->whereColumn('product_id', 'products.id')
+                    ->where('is_active', true)
+                    ->orderBy('price', 'asc')
+                    ->limit(1),
+                $order
+            );
+        } else {
+            $query->orderBy($sort, $order);
+        }
+
+        $cacheKey = 'products_index_'.md5(serialize($filters).$limit);
+
+        Redis::sadd('_cache_registry_products', $cacheKey);
+        Redis::expire('_cache_registry_products', 600);
+
+        return Cache::remember($cacheKey, 300, function () use ($query, $limit) {
+            $storeConfig = \App\Models\AdminSetting::query()->where('key', 'store_profile')->first();
+            $defaultLimit = 12;
+            if ($storeConfig && isset($storeConfig->value['products_per_page'])) {
+                $defaultLimit = (int) $storeConfig->value['products_per_page'];
+                if ($defaultLimit < 1) $defaultLimit = 12;
+            }
+
+            return $query
+                ->with(['category', 'variants'])
+                ->withCount([
+                    'reviews as reviews_count' => fn ($q) => $q->where('status', 'approved'),
+                ])
+                ->withAvg([
+                    'reviews as avg_rating' => fn ($q) => $q->where('status', 'approved'),
+                ], 'rating')
+                ->paginate($limit > 0 ? $limit : $defaultLimit);
+        });
+    }
+
+    /**
+     * Chi tiết sản phẩm (Client)
+     */
+    public function getClientProduct(Product $product): Product
+    {
+        if (! $product->is_active) {
+            throw new \Exception('Product not active', 404);
+        }
+
+        $product->load([
+            'category',
+            'images' => fn ($q) => $q->orderBy('sort_order'),
+            'specs' => fn ($q) => $q->orderBy('sort_order'),
+            'variants' => fn ($q) => $q->where('is_active', true),
+            'videos' => fn ($q) => $q->where('is_active', true)->orderBy('sort_order'),
+            'faqs' => fn ($q) => $q->where('is_active', true)->orderBy('sort_order'),
+            'news' => fn ($q) => $q->where('is_active', true)->orderByDesc('published_at')->orderBy('sort_order'),
+            'reviews' => fn ($q) => $q->where('status', 'approved')->with('user')->orderBy('created_at', 'desc'),
+            'flashSaleItems' => fn ($q) => $q->whereHas('flashSale', function ($query) {
+                $query->where('status', \App\Models\FlashSale::STATUS_ACTIVE)
+                    ->where('start_at', '<=', now())
+                    ->where('end_at', '>=', now());
+            })->with('flashSale'),
+        ]);
+
+        return $product;
+    }
+
+    /**
+     * Lấy danh sách sản phẩm liên quan (Bought together & Similar)
+     */
+    public function getRelatedProducts(Product $product): array
+    {
+        // 1. Frequently Bought Together (Cross-sell)
+        $orderIds = \App\Models\OrderItem::where('product_id', $product->id)
+            ->pluck('order_id')
+            ->unique();
+
+        $boughtTogether = Product::query()
+            ->where('is_active', true)
+            ->where('id', '!=', $product->id)
+            ->whereIn('id', function ($query) use ($orderIds) {
+                $query->select('product_id')
+                    ->from('order_items')
+                    ->whereIn('order_id', $orderIds);
+            })
+            ->with(['category', 'variants'])
+            ->withCount([
+                'reviews as reviews_count' => fn ($q) => $q->where('status', 'approved'),
+            ])
+            ->withAvg([
+                'reviews as avg_rating' => fn ($q) => $q->where('status', 'approved'),
+            ], 'rating')
+            ->limit(4)
+            ->get();
+
+        if ($boughtTogether->count() < 4) {
+            $extra = Product::query()
+                ->where('is_active', true)
+                ->where('id', '!=', $product->id)
+                ->whereNotIn('id', $boughtTogether->pluck('id'))
+                ->where(function ($q) use ($product) {
+                    $q->where('brand', $product->brand)
+                        ->orWhereHas('category', function ($cq) {
+                            $cq->where('name', 'ilike', '%phụ kiện%')
+                                ->orWhere('name', 'ilike', '%linh kiện%');
+                        });
+                })
+                ->with(['category', 'variants'])
+                ->withCount([
+                    'reviews as reviews_count' => fn ($q) => $q->where('status', 'approved'),
+                ])
+                ->withAvg([
+                    'reviews as avg_rating' => fn ($q) => $q->where('status', 'approved'),
+                ], 'rating')
+                ->limit(4 - $boughtTogether->count())
+                ->get();
+
+            $boughtTogether = $boughtTogether->concat($extra);
+        }
+
+        // 2. Similar Products (Customers also bought / Up-sell)
+        $similar = Product::query()
+            ->where('is_active', true)
+            ->where('id', '!=', $product->id)
+            ->where('category_id', $product->category_id)
+            ->with(['category', 'variants'])
+            ->withCount([
+                'reviews as reviews_count' => fn ($q) => $q->where('status', 'approved'),
+            ])
+            ->withAvg([
+                'reviews as avg_rating' => fn ($q) => $q->where('status', 'approved'),
+            ], 'rating')
+            ->orderBy('reviews_count', 'desc')
+            ->limit(10)
+            ->get();
+
+        return [
+            'bought_together' => $boughtTogether,
+            'similar' => $similar,
+        ];
+    }
+
+    /**
+     * Lấy danh sách sản phẩm (Admin) với phân trang, lọc, tìm kiếm
+     */
+    public function getAdminProducts(array $filters, int $perPage = 20)
+    {
+        $query = Product::with(['category', 'images', 'specs', 'variants', 'faqs', 'inventoryItems']);
+
+        if (!empty($filters['search'])) {
+            $search = $filters['search'];
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                    ->orWhere('brand', 'like', "%{$search}%")
+                    ->orWhereHas('category', function ($catQ) use ($search) {
+                        $catQ->where('name', 'like', "%{$search}%");
+                    });
+            });
+        }
+
+        $perPage = max(5, min((int) $perPage, 100)); // clamp 5–100
+
+        $products = $query->orderBy('created_at', 'desc')->paginate($perPage);
+
+        return $products;
+    }
+
+    /**
+     * Chi tiết sản phẩm (Admin)
+     */
+    public function getAdminProduct(Product $product): Product
+    {
+        $product->load(['category', 'images', 'specs', 'variants', 'faqs', 'inventoryItems']);
+
+        return $product;
+    }
+
+    /**
+     * Helper recursive get category IDs
+     */
+    private function getAllCategoryIds($categoryId): array
+    {
+        $ids = [$categoryId];
+        $queue = [$categoryId];
+
+        while ($queue !== []) {
+            $childrenIds = Category::whereIn('parent_id', $queue)->pluck('id')->all();
+            $queue = array_values(array_diff($childrenIds, $ids));
+            if (empty($queue)) {
+                break;
+            }
+            $ids = array_merge($ids, $queue);
+        }
+
+        return array_values(array_unique($ids));
     }
 
     private function handleImages(Product $product, $request): void

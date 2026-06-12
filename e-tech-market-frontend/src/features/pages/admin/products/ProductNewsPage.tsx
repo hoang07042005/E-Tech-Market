@@ -194,19 +194,14 @@ export default function ProductNewsPage() {
     try {
       const fd = new FormData();
       fd.append("file", file);
-      const res = await fetch(
-        `${API_BASE_URL}/api/admin/uploads/product-news-thumbnail`,
+      const data = await apiFetch<{ url?: string; message?: string }>(
+        `/api/admin/uploads/product-news-thumbnail`,
         {
           method: "POST",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            Accept: "application/json",
-          },
+          token,
           body: fd,
         },
       );
-      const data = (await res.json()) as { url?: string; message?: string };
-      if (!res.ok) throw new Error(data.message || "Upload thất bại");
       if (!data.url) throw new Error("Không nhận được URL ảnh.");
       setForm((prev) => ({ ...prev, thumbnail_url: data.url || "" }));
     } finally {

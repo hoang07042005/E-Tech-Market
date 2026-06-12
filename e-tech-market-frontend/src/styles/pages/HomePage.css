@@ -1113,7 +1113,6 @@
 
 .hpCouponHeader {
   margin-bottom: 24px;
-  text-align: center;
 }
 
 .hpCouponSectionTitle {
@@ -1659,4 +1658,204 @@
 .reveal-scale.active {
   opacity: 1;
   transform: scale(1);
+}
+
+/* Coupon Section */
+.hpCouponSection {
+  background: var(--et-surface);
+  padding: 16px 0;
+}
+
+.hpCouponHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.hpCouponSectionTitle {
+  font-size: 2.75rem;
+  font-weight: 600;
+  color: var(--et-text);
+  margin: 0;
+}
+
+.hpCouponSectionSub {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  color: var(--et-primary);
+  display: block;
+  margin-bottom: 12px;
+}
+
+.hpCouponBadge {
+  background: rgba(239, 122, 69, 0.08);
+  color: #ef7a45;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 8px;
+  border-radius: 6px;
+}
+/* Container bọc ngoài và thanh cuộn ngang */
+.hpCouponGridWrapper {
+  overflow-x: auto;
+  padding: 12px 4px;
+  -webkit-overflow-scrolling: touch;
+}
+
+.hpCouponGridWrapper::-webkit-scrollbar {
+  height: 5px;
+}
+
+.hpCouponGridWrapper::-webkit-scrollbar-thumb {
+  background: #e0e0e0;
+  border-radius: 10px;
+}
+
+.hpCouponGrid {
+  display: flex;
+  gap: 16px;
+  width: max-content;
+}
+
+
+.hpCouponCard {
+  width: 270px;
+  background: #fbf9f4; /* Nền kem như ảnh */
+  padding: 20px 16px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+  box-sizing: border-box;
+
+  /* 1. Dùng border dashed truyền thống - Chắc chắn hiển thị */
+  border: 1.5px dashed #ef7a45; 
+  border-radius: 16px;
+
+  /* 2. Đặt vị trí lỗ khuyết (50% là chính giữa theo chiều dọc) */
+  --cut-pos-y: 50%;
+  --cut-radius: 8px; /* Bán kính lỗ khuyết */
+
+  /* 3. MA THUẬT MASK ĐÁP ỨNG: Vừa đục lỗ nền, vừa bắt viền dashed phải uốn vào trong */
+  -webkit-mask-image: 
+    radial-gradient(circle at 0px var(--cut-pos-y), transparent var(--cut-radius), black calc(var(--cut-radius) + 0.5px)),
+    radial-gradient(circle at 100% var(--cut-pos-y), transparent var(--cut-radius), black calc(var(--cut-radius) + 0.5px));
+  mask-image: 
+    radial-gradient(circle at 0px var(--cut-pos-y), transparent var(--cut-radius), black calc(var(--cut-radius) + 0.5px)),
+    radial-gradient(circle at 100% var(--cut-pos-y), transparent var(--cut-radius), black calc(var(--cut-radius) + 0.5px));
+  
+  -webkit-mask-composite: source-in;
+  mask-composite: intersect;
+}
+
+/* Vẽ thêm đường viền nửa vòng tròn ôm vào trong lỗ khuyết */
+.hpCouponCard::before,
+.hpCouponCard::after {
+  content: '';
+  position: absolute;
+  top: var(--cut-pos-y);
+  width: calc(var(--cut-radius) * 2);
+  height: calc(var(--cut-radius) * 2);
+  margin-top: calc(var(--cut-radius) * -1); /* Căn tâm chính xác */
+  /* Tạo đường viền đứt nét vòng tròn */
+  border: 2.5px dashed #ef7a45;
+  border-radius: 50%;
+  box-sizing: border-box;
+  pointer-events: none;
+}
+
+/* Lỗ khuyết bên trái */
+.hpCouponCard::before {
+  left: calc(var(--cut-radius) * -1);
+}
+
+/* Lỗ khuyết bên phải */
+.hpCouponCard::after {
+  right: calc(var(--cut-radius) * -1);
+}
+
+
+
+/* Phần thông tin phía trên */
+.hpCouponCardTop {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.hpCouponInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.hpCouponValue {
+  font-size: 16px;
+  font-weight: 800;
+  color: #1e293b; /* Màu chữ đậm nét rõ ràng */
+  line-height: 1.2;
+}
+
+.hpCouponMin {
+  font-size: 12px;
+  color: #64748b;
+}
+
+.hpCouponSaveBtn {
+  background: #fde8dc;
+  color: #ef7a45;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 8px 18px;
+  border-radius: 20px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.hpCouponSaveBtn:hover {
+  background: #ef7a45;
+  color: #ffffff;
+}
+
+/* Đường cắt đứt đoạn ở giữa */
+.hpCouponDivider {
+  height: 1px;
+  border-top: 1.5px dashed #a1a8b3; 
+  margin: 20px 0;
+  position: relative;
+}
+/* Phần copy phía dưới */
+.hpCouponCardBottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #ffffff; /* Màu nền xám bo góc phía dưới */
+  padding: 10px 14px;
+  border-radius: 12px;
+  cursor: pointer;
+}
+
+.hpCouponCardBottom:hover {
+  background: #f1f5f9;
+}
+
+.hpCouponCode {
+  font-size: 13px;
+  font-weight: 700;
+  color: #475569;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.hpCouponCopyAction {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: #ef7a45;
+  font-size: 11px;
+  font-weight: 600;
 }

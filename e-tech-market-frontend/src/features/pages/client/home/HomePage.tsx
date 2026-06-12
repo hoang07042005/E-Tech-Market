@@ -641,32 +641,52 @@ export default function HomePage() {
           <section className="hpCouponSection reveal">
             <div className="hpContainer">
               <div className="hpCouponHeader">
-                <h2 className="hpCouponSectionTitle">🎁 Ưu đãi độc quyền dành cho bạn</h2>
+                <div>
+                  <h2 className="hpCouponSectionTitle">Ưu đãi dành cho bạn</h2>
+                  <p className="hpCouponSectionSub">CHẠM VÀO MÃ ĐỂ SAO CHÉP NHANH</p>
+                </div>
+                <div className="hpCouponBadge">
+                  {activeCoupons.length} ưu đãi
+                </div>
               </div>
-              <div className="hpCouponGrid">
-                {loading
-                  ? Array.from({ length: 3 }).map((_, i) => <CouponSkeleton key={i} />)
-                  : activeCoupons.map((c) => (
-                    <div key={c.id} className="hpCouponCard">
-                      <div className="hpCouponCardLeft">
-                        <div className="hpCouponValue">
-                          {c.coupon_type === 'percentage' ? `Giảm ${c.value}%` : `Giảm ${formatPriceVnd(c.value.toString())}`}
+              <div className="hpCouponGridWrapper">
+                <div className="hpCouponGrid">
+                  {loading
+                    ? Array.from({ length: 3 }).map((_, i) => <CouponSkeleton key={i} />)
+                    : activeCoupons.map((c) => (
+                      <div key={c.id} className="hpCouponCard">
+                        <div className="hpCouponCardTop">
+                          <div className="hpCouponInfo">
+                            <div className="hpCouponValue">
+                              {c.coupon_type === 'percentage' ? `Giảm ${c.value}%` : `Giảm ${formatPriceVnd(c.value.toString())}`}
+                            </div>
+                            <div className="hpCouponMin">
+                              {c.min_order_amount ? `Đơn từ ${formatPriceVnd(c.min_order_amount.toString())}` : 'Áp dụng mọi đơn hàng'}
+                            </div>
+                          </div>
+                          <button
+                            className="hpCouponSaveBtn"
+                            onClick={() => saveCoupon(c.code)}
+                          >
+                            Lưu
+                          </button>
                         </div>
-                        {c.min_order_amount && (
-                          <div className="hpCouponMin">Đơn tối thiểu {formatPriceVnd(c.min_order_amount.toString())}</div>
-                        )}
-                        <div className="hpCouponCodeBox">{c.code}</div>
+                        
+                        <div className="hpCouponDivider"></div>
+                        
+                        <div className="hpCouponCardBottom" onClick={() => { navigator.clipboard.writeText(c.code); alert('Đã sao chép mã!'); }}>
+                          <div className="hpCouponCode">{c.code}</div>
+                          <div className="hpCouponCopyAction">
+                            <span>Sao chép</span>
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                              <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                          </div>
+                        </div>
                       </div>
-                      <div className="hpCouponCardRight">
-                        <button
-                          className="hpCouponCopyBtn"
-                          onClick={() => saveCoupon(c.code)}
-                        >
-                          Lưu Mã
-                        </button>
-                      </div>
-                    </div>
-                  ))}
+                    ))}
+                </div>
               </div>
             </div>
           </section>

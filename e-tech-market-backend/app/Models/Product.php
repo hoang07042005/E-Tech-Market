@@ -21,7 +21,7 @@ class Product extends Model
         $this->loadMissing('specs');
         $specsArray = [];
         foreach ($this->specs as $spec) {
-            $specsArray[$spec->name] = $spec->value;
+            $specsArray[$spec->spec_key] = $spec->spec_value;
         }
         $array['specs'] = $specsArray;
 

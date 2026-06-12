@@ -15,70 +15,41 @@ use Illuminate\Support\Str;
 
 class ProductNewsController extends Controller
 {
+    public function __construct(private \App\Services\ProductNewsService $newsService)
+    {
+    }
+
     public function index(Product $product): JsonResponse
     {
-        $items = $product->news()
-            ->orderByDesc('published_at')
-            ->orderBy('sort_order')
-            ->get();
-
+        $items = $this->newsService->getAdminProductNews($product);
         return response()->json(ProductNewsResource::collection($items)->resolve());
     }
 
     public function store(Product $product, StoreProductNewsRequest $request): JsonResponse
     {
-        $data = $request->validated();
-
-        $baseSlug = Str::slug($data['title']) ?: ('news-'.uniqid());
-        $slug = $baseSlug;
-        $i = 1;
-        while (ProductNews::where('slug', $slug)->exists()) {
-            $slug = $baseSlug.'-'.$i;
-            $i++;
-        }
-
-        $news = ProductNews::create([
-            'product_id' => $product->id,
-            'title' => $data['title'],
-            'slug' => $slug,
-            'content_html' => HtmlSanitizer::sanitize($data['content_html']),
-            'thumbnail_url' => ! empty($data['thumbnail_url']) ? trim($data['thumbnail_url']) : null,
-            'sort_order' => $data['sort_order'] ?? 0,
-            'is_active' => $data['is_active'] ?? true,
-            'published_at' => $data['published_at'] ?? Carbon::now(),
-        ]);
-
+        $news = $this->newsService->createProductNews($product, $request->validated());
         return response()->json($news, 201);
     }
 
     public function update(Product $product, ProductNews $news, UpdateProductNewsRequest $request): JsonResponse
     {
-        if ((int) $news->product_id !== (int) $product->id) {
-            return response()->json(['message' => 'Not found'], 404);
+        try {
+            $updatedNews = $this->newsService->updateProductNews($product, $news, $request->validated());
+            return response()->json($updatedNews);
+        } catch (\Exception $e) {
+            $code = $e->getCode() ?: 404;
+            return response()->json(['message' => $e->getMessage()], $code);
         }
-
-        $data = $request->validated();
-
-        $news->update([
-            'title' => $data['title'],
-            'content_html' => HtmlSanitizer::sanitize($data['content_html']),
-            'thumbnail_url' => ! empty($data['thumbnail_url']) ? trim($data['thumbnail_url']) : null,
-            'sort_order' => $data['sort_order'] ?? $news->sort_order,
-            'is_active' => $data['is_active'] ?? $news->is_active,
-            'published_at' => $data['published_at'] ?? $news->published_at,
-        ]);
-
-        return response()->json($news);
     }
 
     public function destroy(Product $product, ProductNews $news): JsonResponse
     {
-        if ((int) $news->product_id !== (int) $product->id) {
-            return response()->json(['message' => 'Not found'], 404);
+        try {
+            $this->newsService->deleteProductNews($product, $news);
+            return response()->json(['message' => 'Deleted']);
+        } catch (\Exception $e) {
+            $code = $e->getCode() ?: 404;
+            return response()->json(['message' => $e->getMessage()], $code);
         }
-
-        $news->delete();
-
-        return response()->json(['message' => 'Deleted']);
     }
 }

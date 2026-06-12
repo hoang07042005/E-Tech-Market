@@ -10,51 +10,30 @@ use Illuminate\Http\JsonResponse;
 
 class ProductShopQnaController extends Controller
 {
-    /**
-     * Hộp thư admin: các câu hỏi chưa trả lời (theo thời gian gửi mới nhất).
-     */
+    public function __construct(private \App\Services\ProductShopQnaService $qnaService)
+    {
+    }
+
     public function pendingAll(): JsonResponse
     {
-        $rows = ProductShopQna::query()
-            ->with(['product:id,name,slug,is_active'])
-            ->whereNull('answer')
-            ->orderByDesc('created_at')
-            ->limit(500)
-            ->get();
-
+        $rows = $this->qnaService->getPendingQnas();
         return response()->json($rows);
     }
 
     public function index(Product $product): JsonResponse
     {
-        $rows = $product->shopQnas()
-            ->orderByRaw('answered_at is null desc')
-            ->orderByDesc('created_at')
-            ->get();
-
+        $rows = $this->qnaService->getProductQnasAdmin($product);
         return response()->json($rows);
     }
 
     public function update(Product $product, ProductShopQna $shopQna, ReplyQnaRequest $request): JsonResponse
     {
-        if ((int) $shopQna->product_id !== (int) $product->id) {
-            return response()->json(['message' => 'Not found'], 404);
+        try {
+            $updatedQna = $this->qnaService->replyQna($product, $shopQna, $request->validated());
+            return response()->json($updatedQna);
+        } catch (\Exception $e) {
+            $code = $e->getCode() ?: 404;
+            return response()->json(['message' => $e->getMessage()], $code);
         }
-
-        $data = $request->validated();
-
-        if (array_key_exists('answer', $data)) {
-            $trimmed = $data['answer'] !== null ? trim($data['answer']) : '';
-            $shopQna->answer = $trimmed !== '' ? $trimmed : null;
-            $shopQna->answered_at = $shopQna->answer !== null ? now() : null;
-        }
-
-        if (isset($data['is_visible'])) {
-            $shopQna->is_visible = (bool) $data['is_visible'];
-        }
-
-        $shopQna->save();
-
-        return response()->json($shopQna->fresh());
     }
 }

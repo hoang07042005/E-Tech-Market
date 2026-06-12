@@ -317,6 +317,37 @@ export default function CategoryPage() {
                 />
               </div>
 
+              {!formData.parent_id && (
+                <div className="catFormField">
+                  <label>ẢNH DANH MỤC (CHỈ DÀNH CHO DANH MỤC GỐC)</label>
+                  <input 
+                    type="file" 
+                    accept="image/*"
+                    onChange={e => {
+                      if (e.target.files && e.target.files.length > 0) {
+                        setImageFile(e.target.files[0])
+                      }
+                    }}
+                    style={{ marginTop: '8px' }}
+                  />
+                  {editingCategory?.image && !imageFile && (
+                    <div style={{ marginTop: '8px' }}>
+                      <p style={{ fontSize: '12px', color: '#6b7280', marginBottom: '4px' }}>Ảnh hiện tại:</p>
+                      <img 
+                        src={resolveImageUrl(editingCategory.image)} 
+                        alt="Current" 
+                        style={{ width: '60px', height: '60px', objectFit: 'cover', borderRadius: '4px', border: '1px solid #e5e7eb' }} 
+                      />
+                    </div>
+                  )}
+                  {imageFile && (
+                    <div style={{ marginTop: '8px', fontSize: '13px', color: '#10b981', fontWeight: 500 }}>
+                      ✓ Đã chọn ảnh mới: {imageFile.name}
+                    </div>
+                  )}
+                </div>
+              )}
+
               <div className="catModalFooter">
                 <button type="button" className="catCancelBtn" onClick={() => setIsModalOpen(false)}>Hủy</button>
                 <button type="submit" className="catSubmitBtn">{editingCategory ? 'Cập nhật' : 'Tạo'}</button>

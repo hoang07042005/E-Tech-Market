@@ -122,6 +122,7 @@ export type Product = {
     flash_sale_price: number
     quantity_limit: number | null
     sold_quantity: number
+    variant_id?: number | null
     flash_sale: {
       id: number
       name: string

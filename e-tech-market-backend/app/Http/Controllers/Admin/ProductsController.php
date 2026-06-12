@@ -34,23 +34,9 @@ class ProductsController extends Controller
 
     public function index(Request $request): JsonResponse
     {
-        $query = Product::with(['category', 'images', 'specs', 'variants', 'faqs', 'inventoryItems']);
+        $filters = $request->only(['search']);
+        $products = $this->productService->getAdminProducts($filters, (int) $request->query('per_page', 20));
 
-        if ($request->filled('search')) {
-            $search = $request->query('search');
-            $query->where(function ($q) use ($search) {
-                $q->where('name', 'like', "%{$search}%")
-                    ->orWhere('brand', 'like', "%{$search}%")
-                    ->orWhereHas('category', function ($catQ) use ($search) {
-                        $catQ->where('name', 'like', "%{$search}%");
-                    });
-            });
-        }
-
-        $perPage = (int) $request->query('per_page', 20);
-        $perPage = max(5, min($perPage, 100)); // clamp 5–100
-
-        $products = $query->orderBy('created_at', 'desc')->paginate($perPage);
         $collection = $products->getCollection()->map(function (Product $item) {
             return (new ProductResource($item))->resolve();
         });
@@ -63,7 +49,7 @@ class ProductsController extends Controller
 
     public function show(Product $product): JsonResponse
     {
-        $product->load(['category', 'images', 'specs', 'variants', 'faqs', 'inventoryItems']);
+        $product = $this->productService->getAdminProduct($product);
 
         return response()->json($this->cleanUtf8((new ProductResource($product))->resolve()));
     }

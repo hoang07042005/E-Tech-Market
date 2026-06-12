@@ -284,11 +284,29 @@ export default function ProductDetailPage() {
     return schema
   }, [product, reviewStats, selectedVariant])
 
+  const isFlashSaleMode = searchParams.get('flashSale') === 'true'
+
   const activeFlashSale = useMemo(() => {
+    if (!isFlashSaleMode) return null
     if (!product?.flash_sale_items?.length) return null
-    // Assuming only one active flash sale per product for simplicity
-    return product.flash_sale_items[0]
-  }, [product])
+    const now = new Date().getTime()
+    for (const item of product.flash_sale_items) {
+      if (item.flash_sale) {
+        // Handle cross-browser date parsing
+        const startStr = item.flash_sale.start_at.replace(' ', 'T')
+        const endStr = item.flash_sale.end_at.replace(' ', 'T')
+        const start = new Date(startStr).getTime()
+        const end = new Date(endStr).getTime()
+        
+        if (now >= start && now <= end) {
+          if (item.variant_id == null || item.variant_id === selectedVariant?.id) {
+            return item
+          }
+        }
+      }
+    }
+    return null
+  }, [product, selectedVariant])
 
   const [flashTimeLeft, setFlashTimeLeft] = useState<{ h: number; m: number; s: number } | null>(null)
 
@@ -300,7 +318,8 @@ export default function ProductDetailPage() {
 
     const timer = setInterval(() => {
       const now = new Date().getTime()
-      const end = new Date(activeFlashSale.flash_sale.end_at).getTime()
+      const endStr = activeFlashSale.flash_sale.end_at.replace(' ', 'T')
+      const end = new Date(endStr).getTime()
       const diff = end - now
 
       if (diff <= 0) {
@@ -648,14 +667,14 @@ export default function ProductDetailPage() {
                 <span className="pdpPrice">
                   {activeFlashSale
                     ? `${parseFloat(activeFlashSale.flash_sale_price.toString()).toLocaleString('vi-VN')} đ`
-                    : parseFloat(selectedVariant ? selectedVariant.effective_price.toString() : '0').toLocaleString('vi-VN') + ' đ'
+                    : parseFloat(selectedVariant ? selectedVariant.effective_price.toString() : product.price).toLocaleString('vi-VN') + ' đ'
                   }
                 </span>
                 {(activeFlashSale || (selectedVariant && selectedVariant.effective_price < parseFloat(selectedVariant.price))) && (
                   <span className="pdpOldPrice">
                     {activeFlashSale
-                      ? `${parseFloat(selectedVariant ? selectedVariant.price : '0').toLocaleString('vi-VN')} đ`
-                      : parseFloat(selectedVariant!.price).toLocaleString('vi-VN') + ' đ'
+                      ? `${parseFloat(selectedVariant ? selectedVariant.price : product.price).toLocaleString('vi-VN')} đ`
+                      : parseFloat(selectedVariant ? selectedVariant.price : product.price).toLocaleString('vi-VN') + ' đ'
                     }
                   </span>
                 )}
@@ -754,7 +773,7 @@ export default function ProductDetailPage() {
                   className="pdpAddBtn"
                   onClick={() => {
                     const v = selectedVariant
-                    const priceStr = v ? v.effective_price.toString() : '0'
+                    const priceStr = v ? v.effective_price.toString() : product.price.toString()
                     const price = activeFlashSale
                       ? Number.parseFloat(activeFlashSale.flash_sale_price.toString())
                       : Number.parseFloat(priceStr)
