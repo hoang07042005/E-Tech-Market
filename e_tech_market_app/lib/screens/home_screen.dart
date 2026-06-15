@@ -306,7 +306,7 @@ class _HomeScreenState extends State<HomeScreen> {
       final results = await Future.wait<dynamic>([
         BannerService.fetchActiveBanners(),
         CouponService.fetchAvailableCoupons(),
-        ProductsService.fetchCategories(),
+        ProductsService.fetchCategories(orderByReviews: true, limit: 5),
         ProductsService.fetchProducts(limit: 10, isFeatured: 1),
         WishlistService.fetchWishlist(),
         BlogService.fetchBlogPosts(perPage: 5),

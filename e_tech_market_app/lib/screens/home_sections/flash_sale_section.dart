@@ -329,7 +329,7 @@ class _FlashSaleCard extends StatelessWidget {
         margin: const EdgeInsets.symmetric(horizontal: 6, vertical: 8),
         decoration: BoxDecoration(
           color: Theme.of(context).colorScheme.surface,
-          borderRadius: BorderRadius.circular(5),
+          borderRadius: BorderRadius.circular(12),
           border: Border.all(color: Theme.of(context).colorScheme.outline, width: 0.15),
           boxShadow: [
             BoxShadow(
@@ -348,7 +348,7 @@ class _FlashSaleCard extends StatelessWidget {
                 AspectRatio(
                   aspectRatio: 1,
                   child: ClipRRect(
-                    borderRadius: const BorderRadius.vertical(top: Radius.circular(5)),
+                    borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
                     child: imageUrl.isNotEmpty
                         ? Image.network(
                             imageUrl,

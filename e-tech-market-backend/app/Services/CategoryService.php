@@ -3,6 +3,8 @@
 namespace App\Services;
 
 use App\Models\Category;
+use App\Models\Review;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
@@ -18,6 +20,34 @@ class CategoryService
             $query->where('type', $type);
         }
         return $query->orderBy('name')->get();
+    }
+
+    /**
+     * Get categories ordered by most reviews (products with most reviews first).
+     * Returns flat list of parent categories only (for homepage tabs display).
+     */
+    public function getCategoriesOrderedByReviews(string $type = 'product', ?int $limit = null): array
+    {
+        $query = Category::query()
+            ->select('categories.*')
+            ->leftJoin('products', 'products.category_id', '=', 'categories.id')
+            ->leftJoin('reviews', function ($join) {
+                $join->on('reviews.product_id', '=', 'products.id')
+                    ->where('reviews.status', '=', 'approved');
+            })
+            ->where('categories.is_active', true)
+            ->where('categories.type', $type)
+            ->whereNull('categories.deleted_at')
+            ->whereNull('categories.parent_id')
+            ->groupBy('categories.id')
+            ->orderByRaw('COUNT(reviews.id) DESC')
+            ->orderBy('categories.sort_order');
+
+        if ($limit) {
+            $query->limit($limit);
+        }
+
+        return $query->get()->all();
     }
 
     /**

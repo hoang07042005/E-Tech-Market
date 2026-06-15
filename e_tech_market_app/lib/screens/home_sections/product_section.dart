@@ -153,14 +153,14 @@ class _ProductCard extends StatelessWidget {
 
     return Material(
       color: Theme.of(context).colorScheme.surface,
-      borderRadius: BorderRadius.circular(5),
+      borderRadius: BorderRadius.circular(12),
       clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: onTap,
         child: Container(
           decoration: BoxDecoration(
             border: Border.all(color: Theme.of(context).colorScheme.outline, width: 0.15),
-            borderRadius: BorderRadius.circular(5),
+            borderRadius: BorderRadius.circular(12),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -494,7 +494,7 @@ class _ProductSkeleton extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
-        borderRadius: BorderRadius.circular(5),
+        borderRadius: BorderRadius.circular(12),
             border: Border.all(color: Theme.of(context).colorScheme.outline),
       ),
       child: Column(

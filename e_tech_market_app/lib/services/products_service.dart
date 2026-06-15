@@ -100,9 +100,16 @@ class ProductsService {
     }
   }
 
-  static Future<List<dynamic>> fetchCategories() async {
+  static Future<List<dynamic>> fetchCategories({bool orderByReviews = false, int? limit}) async {
     try {
-      final response = await DioClient.instance.get('/categories', queryParameters: {'type': 'product'});
+      final queryParams = <String, dynamic>{'type': 'product'};
+      if (orderByReviews) {
+        queryParams['order_by_reviews'] = 'true';
+      }
+      if (limit != null) {
+        queryParams['limit'] = limit;
+      }
+      final response = await DioClient.instance.get('/categories', queryParameters: queryParams);
       final data = response.data;
       if (data is List) return data;
       if (data is Map<String, dynamic> && data['data'] is List) return data['data'];

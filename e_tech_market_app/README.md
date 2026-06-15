@@ -108,12 +108,19 @@ lib/
 # Lấy dependencies
 flutter pub get
 
+# Kiểm tra kết nối máy thật bằng Terminal
+adb devices
+adb pair 192.168.24.16:
+adb connect 192.168.24.16:
+
 # Chạy debug
 flutter run
 
 # Chạy với API tùy chỉnh
 flutter run --dart-define=API_BASE_URL=http://192.168.1.5:8000/api
 ```
+
+
 
 ## 📦 Build
 

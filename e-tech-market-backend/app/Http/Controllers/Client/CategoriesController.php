@@ -16,6 +16,15 @@ class CategoriesController extends Controller
     public function index(Request $request): JsonResponse
     {
         $type = $request->get('type', 'product');
+        $orderByReviews = $request->get('order_by_reviews', false);
+
+        // If order_by_reviews is true, get categories ordered by most reviews (for homepage tabs)
+        if ($orderByReviews) {
+            $limit = $request->get('limit', 5);
+            $tree = $this->categoryService->getCategoriesOrderedByReviews($type, (int) $limit);
+            return response()->json($tree);
+        }
+
         $tree = $this->categoryService->getActiveCategoryTree($type);
 
         return response()->json($tree);

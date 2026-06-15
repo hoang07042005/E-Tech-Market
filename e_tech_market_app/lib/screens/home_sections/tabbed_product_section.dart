@@ -36,7 +36,7 @@ class TabbedProductSection extends StatelessWidget {
     final visibleCategories =
         categories.take(5).cast<Map<String, dynamic>>().toList();
     final visibleProducts =
-        products.take(8).cast<Map<String, dynamic>>().toList();
+        products.take(4).cast<Map<String, dynamic>>().toList();
 
     return Container(
       width: double.infinity,
@@ -92,7 +92,7 @@ class TabbedProductSection extends StatelessWidget {
                       selectedColor: _brandColor,
                       backgroundColor: Theme.of(context).colorScheme.surface,
                       side: BorderSide(
-                        color: selected ? _brandColor : Theme.of(context).colorScheme.outline,
+                        color: selected ? _brandColor : Theme.of(context).colorScheme.outline, width:0.15,
                       ),
                       onSelected: onTabSelected == null
                           ? null
@@ -183,14 +183,14 @@ class _TabbedProductCard extends StatelessWidget {
 
     return Material(
       color: Theme.of(context).colorScheme.surface,
-      borderRadius: BorderRadius.circular(5),
+      borderRadius: BorderRadius.circular(12),
       clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: onTap,
         child: Container(
           decoration: BoxDecoration(
             border: Border.all(color: Theme.of(context).colorScheme.outline, width: 0.15),
-            borderRadius: BorderRadius.circular(5),
+            borderRadius: BorderRadius.circular(12),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -253,31 +253,29 @@ class _TabbedProductCard extends StatelessWidget {
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                       ),
-                      const SizedBox(height: 6),
-                      Row(
-                        children: [
-                          Text(
-                            '${_formatPrice(displayPrice)} đ',
-                            style: TextStyle(
-                              color: Color(0xFFEF7A45),
-                              fontSize: 13,
-                              fontWeight: FontWeight.w800,
-                            ),
+                      const SizedBox(height: 4),
+                      // Hiển thị giá gốc ở trên (bị gạch ngang), giá giảm ở dưới
+                      if (oldPrice != null && oldPrice > displayPrice) ...[
+                        Text(
+                          '${_formatPrice(oldPrice)} đ',
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.onSurfaceVariant,
+                            fontSize: 10,
+                            decoration: TextDecoration.lineThrough,
+                            decorationColor: Theme.of(context).colorScheme.onSurfaceVariant,
                           ),
-                          if (oldPrice != null && oldPrice > displayPrice) ...[
-                            const SizedBox(width: 6),
-                            Text(
-                              '${_formatPrice(oldPrice)} đ',
-                              style: TextStyle(
-                                color: Theme.of(context).colorScheme.onSurfaceVariant,
-                                fontSize: 10,
-                                decoration: TextDecoration.lineThrough,
-                              ),
-                            ),
-                          ],
-                        ],
+                        ),
+                        const SizedBox(height: 4),
+                      ],
+                      Text(
+                        '${_formatPrice(displayPrice)} đ',
+                        style: TextStyle(
+                          color: Color(0xFFEF7A45),
+                          fontSize: 13,
+                          fontWeight: FontWeight.w800,
+                        ),
                       ),
-                      const SizedBox(height: 8),
+                      
                       Expanded(
                         child: Text(
                           product['short_description']?.toString() ?? '',
