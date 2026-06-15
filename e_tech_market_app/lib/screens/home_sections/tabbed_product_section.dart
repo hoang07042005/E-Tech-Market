@@ -189,12 +189,7 @@ class _TabbedProductCard extends StatelessWidget {
         onTap: onTap,
         child: Container(
           decoration: BoxDecoration(
-            border: Border.all(
-              color: Color.alphaBlend(
-                Theme.of(context).colorScheme.outline.withOpacity(0.3), 
-                Theme.of(context).colorScheme.surface,                
-              ),
-            ),
+            border: Border.all(color: Theme.of(context).colorScheme.outline, width: 0.15),
             borderRadius: BorderRadius.circular(5),
           ),
           child: Column(
@@ -409,12 +404,7 @@ class _TabbedProductSkeleton extends StatelessWidget {
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surfaceContainerLow,
         borderRadius: BorderRadius.circular(10),
-        border: Border.all(
-          color: Color.alphaBlend(
-            Theme.of(context).colorScheme.outline.withOpacity(0.3), // 30% màu border
-            Theme.of(context).colorScheme.surface,                 // Trộn trên nền canvas
-          ),
-        ),
+        border: Border.all(color: Theme.of(context).colorScheme.outline, width: 0.15),
       ),
       child: Column(
         children: [

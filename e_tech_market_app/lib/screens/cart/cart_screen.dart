@@ -199,7 +199,7 @@ class _CartScreenState extends State<CartScreen> {
           Row(
             children: [
               Text(
-                '${_cart.totalQuantity} sản phẩm',
+                '(${_cart.totalQuantity}) sản phẩm',
                 style: TextStyle(
                   color: Theme.of(context).colorScheme.onSurface,
                   fontWeight: FontWeight.w700,
@@ -228,7 +228,7 @@ class _CartScreenState extends State<CartScreen> {
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Theme.of(context).colorScheme.outline, width: 0.5),
+        border: Border.all(color: Theme.of(context).colorScheme.outline, width: 0.15),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,

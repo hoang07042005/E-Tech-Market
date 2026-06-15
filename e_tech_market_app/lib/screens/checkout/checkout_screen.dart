@@ -1068,7 +1068,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(label, style: TextStyle(fontWeight: FontWeight.bold, fontSize: isTotal ? 16 : 14, color: Theme.of(context).colorScheme.onSurface)),
-          Text(value, style: TextStyle(fontWeight: FontWeight.w900, fontSize: isTotal ? 20 : 14, color: valueColor ?? (isTotal ? Theme.of(context).colorScheme.error : Theme.of(context).colorScheme.onSurface))),
+          Text(value, style: TextStyle(fontWeight: FontWeight.w900, fontSize: isTotal ? 20 : 14, color: valueColor ?? (isTotal ? Colors.red : Theme.of(context).colorScheme.onSurface))),
         ],
       ),
     );

@@ -398,7 +398,7 @@ class _AdminProductScreenState extends State<AdminProductScreen> {
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
-        borderRadius: BorderRadius.circular(5),
+        borderRadius: BorderRadius.circular(16),
         border: Border.all(color: Theme.of(context).colorScheme.outline, width: 0.15),
       ),
       child: Column(
@@ -411,8 +411,8 @@ class _AdminProductScreenState extends State<AdminProductScreen> {
               filled: true,
               fillColor: Theme.of(context).colorScheme.surface,
               contentPadding: const EdgeInsets.symmetric(vertical: 0),
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(5), borderSide: BorderSide(color: Theme.of(context).colorScheme.outline, width: 0.15)),
-              enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(5), borderSide: BorderSide(color: Theme.of(context).colorScheme.outline, width: 0.15)),
+              border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide(color: Theme.of(context).colorScheme.outline, width: 0.15)),
+              enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide(color: Theme.of(context).colorScheme.outline, width: 0.15)),
             ),
             onChanged: (v) {
               setState(() {
@@ -433,8 +433,8 @@ class _AdminProductScreenState extends State<AdminProductScreen> {
                     filled: true,
                     fillColor: Theme.of(context).colorScheme.surface,
                     contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(5), borderSide: BorderSide(color: Theme.of(context).colorScheme.outline, width: 0.15)),
-                    enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(5), borderSide: BorderSide(color: Theme.of(context).colorScheme.outline, width: 0.15)),
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide(color: Theme.of(context).colorScheme.outline, width: 0.15)),
+                    enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide(color: Theme.of(context).colorScheme.outline, width: 0.15)),
                   ),
                   items: [
                     DropdownMenuItem(value: 'all', child: Text(Trans.all, style: const TextStyle(fontSize: 13))),
@@ -462,8 +462,8 @@ class _AdminProductScreenState extends State<AdminProductScreen> {
                     filled: true,
                     fillColor: Theme.of(context).colorScheme.surface,
                     contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(5), borderSide: BorderSide(color: Theme.of(context).colorScheme.outline, width: 0.15)),
-                    enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(5), borderSide: BorderSide(color: Theme.of(context).colorScheme.outline, width: 0.15)),
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide(color: Theme.of(context).colorScheme.outline, width: 0.15)),
+                    enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide(color: Theme.of(context).colorScheme.outline, width: 0.15)),
                   ),
                   items: [
                     DropdownMenuItem(value: 'all', child: Text(Trans.all, style: const TextStyle(fontSize: 13))),
@@ -496,8 +496,8 @@ class _AdminProductScreenState extends State<AdminProductScreen> {
                     filled: true,
                     fillColor: Theme.of(context).colorScheme.surface,
                     contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(5), borderSide: BorderSide(color: Theme.of(context).colorScheme.outline, width: 0.15)),
-                    enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(5), borderSide: BorderSide(color: Theme.of(context).colorScheme.outline, width: 0.15)),
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: Theme.of(context).colorScheme.outline, width: 0.15)),
+                    enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: Theme.of(context).colorScheme.outline, width: 0.15)),
                   ),
                   items: [
                     DropdownMenuItem(value: 'all', child: Text(Trans.allStatuses, style: const TextStyle(fontSize: 13))),
@@ -538,7 +538,7 @@ class _AdminProductScreenState extends State<AdminProductScreen> {
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
-        borderRadius: BorderRadius.circular(5),
+        borderRadius: BorderRadius.circular(12),
         border: Border.all(color: Theme.of(context).colorScheme.outline, width: 0.15),
       ),
       child: Padding(
@@ -555,7 +555,7 @@ class _AdminProductScreenState extends State<AdminProductScreen> {
                   height: 80,
                   decoration: BoxDecoration(
                     color: Colors.grey[50],
-                    borderRadius: BorderRadius.circular(5),
+                    borderRadius: BorderRadius.circular(12),
                   ),
                   child: p['main_image_url'] != null
                       ? ClipRRect(

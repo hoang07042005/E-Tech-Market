@@ -1157,7 +1157,7 @@ Widget _buildGallery(Product current, List<ProductImage> images) {
                 style: TextStyle(
                   fontSize: 22,
                   fontWeight: FontWeight.bold,
-                  color: Colors.red,
+                  color: Color(0xFFF26522),
                 ),
               ),
               if ((hasFlashSale || oldPrice > displayPrice) &&
@@ -1193,7 +1193,7 @@ Widget _buildGallery(Product current, List<ProductImage> images) {
             style: TextStyle(
               color: Theme.of(context).colorScheme.surface,
               fontWeight: FontWeight.bold,
-              fontSize: 13,
+              fontSize: 15,
             ),
           ),
           Row(
@@ -1346,7 +1346,7 @@ Widget _buildGallery(Product current, List<ProductImage> images) {
                         color: isSelected
                             ? Colors.orange
                             : Theme.of(context).colorScheme.outline,
-                        width: isSelected ? 1.5 : 1.0,
+                        width: isSelected ? 0.5 : 0.5,
                       ),
                       borderRadius: BorderRadius.circular(4),
                     ),
@@ -1426,7 +1426,7 @@ Widget _buildGallery(Product current, List<ProductImage> images) {
                         color: isSelected
                             ? Colors.orange
                             : Theme.of(context).colorScheme.outline,
-                        width: isSelected ? 1.5 : 1.0,
+                        width: isSelected ? 0.5 : 0.5,
                       ),
                       borderRadius: BorderRadius.circular(4),
                     ),
@@ -1479,7 +1479,7 @@ Widget _buildGallery(Product current, List<ProductImage> images) {
                 Container(
                   decoration: BoxDecoration(
                     color: Theme.of(context).colorScheme.surface,
-                    border: Border.all(color: Theme.of(context).colorScheme.outline),
+                    border: Border.all(color: Theme.of(context).colorScheme.outline, width: 0.5),
                     borderRadius: BorderRadius.circular(4),
                   ),
                   child: Row(
@@ -1668,14 +1668,14 @@ Widget _buildGallery(Product current, List<ProductImage> images) {
             margin: const EdgeInsets.only(bottom: 10),
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.surfaceContainerLow,
-              border: Border.all(color: Theme.of(context).colorScheme.outline),
+              color: Color(0xFFFFF7ED),
+              border: Border.all(color: Colors.orange, width: 0.5),
               borderRadius: BorderRadius.circular(8),
             ),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Icon(item.$1, color: Theme.of(context).colorScheme.primary, size: 22),
+                Icon(item.$1, color: Color(0xFF1D3557), size: 22),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(item.$2, style: TextStyle(height: 1.35)),
@@ -1703,8 +1703,8 @@ Widget _buildGallery(Product current, List<ProductImage> images) {
           margin: const EdgeInsets.only(bottom: 10),
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            border: Border.all(color: Theme.of(context).colorScheme.outline),
-            borderRadius: BorderRadius.circular(8),
+            border: Border.all(color: Theme.of(context).colorScheme.outline, width: 0.15),
+            borderRadius: BorderRadius.circular(12),
           ),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -1758,7 +1758,7 @@ Widget _buildGallery(Product current, List<ProductImage> images) {
     );
   }
 
-Widget _buildFaqItem(ProductFaq faq) {
+  Widget _buildFaqItem(ProductFaq faq) {
     final isOpen = openFaqId == faq.id;
     return Column(
       children: [
@@ -1784,7 +1784,8 @@ Widget _buildFaqItem(ProductFaq faq) {
               style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant, height: 1.4),
             ),
           ),
-        Divider(height: 1, color: Theme.of(context).colorScheme.outline),
+        Divider( color: Theme.of(context).colorScheme.outline, height: 1),
+        const SizedBox(height: 10),
       ],
     );
   }
@@ -1816,7 +1817,7 @@ Widget _buildFaqItem(ProductFaq faq) {
               // decoration: BoxDecoration(
               //   color: Theme.of(context).colorScheme.surface,
               //   border: Border.all(color: Theme.of(context).colorScheme.outline),
-              //   borderRadius: BorderRadius.circular(8),
+              //   borderRadius: BorderRadius.circular(12),
               // ),
               // Thay thế widget Text cũ bằng widget Html
               child: Html(
@@ -1886,14 +1887,14 @@ Widget _buildFaqItem(ProductFaq faq) {
           ),
         );
       },
-      borderRadius: BorderRadius.circular(8),
+      borderRadius: BorderRadius.circular(12),
       child: Container(
         margin: const EdgeInsets.only(bottom: 10),
         padding: const EdgeInsets.all(10),
         decoration: BoxDecoration(
           color: Theme.of(context).colorScheme.surfaceContainerLow,
-          borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: Theme.of(context).colorScheme.outline, width: 0.5),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: Theme.of(context).colorScheme.outline, width: 0.15),
         ),
         child: Row(
           children: [
@@ -2180,12 +2181,12 @@ Widget _buildFaqItem(ProductFaq faq) {
                           enabledBorder: OutlineInputBorder(
                             borderSide: const BorderSide(
                                 color: Color(0xFFD1D5DB), width: 1.0),
-                            borderRadius: BorderRadius.circular(8),
+                            borderRadius: BorderRadius.circular(12),
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderSide: BorderSide(
                                 color: Theme.of(context).colorScheme.primary, width: 1.5),
-                            borderRadius: BorderRadius.circular(8),
+                            borderRadius: BorderRadius.circular(12),
                           ),
                         ),
                       ),
@@ -2250,7 +2251,7 @@ Widget _buildFaqItem(ProductFaq faq) {
                             disabledBackgroundColor: Theme.of(context).colorScheme.outline,
                             padding: const EdgeInsets.symmetric(vertical: 14),
                             shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8)),
+                                borderRadius: BorderRadius.circular(12)),
                             elevation: 0,
                           ),
                           child: localIsSubmitting
@@ -2295,7 +2296,7 @@ Widget _buildFaqItem(ProductFaq faq) {
           decoration: BoxDecoration(
             color: const Color(0xFFFFFBEB),
             border: Border.all(color: const Color(0xFFFDE68A)),
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: BorderRadius.circular(12),
           ),
           child: Column(
             children: [
@@ -2418,7 +2419,7 @@ Widget _buildFaqItem(ProductFaq faq) {
             padding: const EdgeInsets.all(18),
             decoration: BoxDecoration(
               color: Theme.of(context).colorScheme.surfaceContainerLow,
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.circular(12),
             ),
             child: Text(Trans.noReviewsYet,
                 style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant)),
@@ -2471,7 +2472,7 @@ Widget _buildFaqItem(ProductFaq faq) {
       onSelected: (_) => setState(() => reviewFilter = value),
       selectedColor: const Color(0xFFFFEDD5),
       side: BorderSide(
-        color: selected ? Colors.orange : Theme.of(context).colorScheme.outline,
+        color: selected ? Colors.orange : Theme.of(context).colorScheme.outline,width: 0.15
       ),
       labelStyle: TextStyle(
         color: selected ? Colors.orange : Theme.of(context).colorScheme.onSurface,
@@ -2524,8 +2525,8 @@ Widget _buildFaqItem(ProductFaq faq) {
       margin: const EdgeInsets.only(bottom: 14),
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        border: Border.all(color: Theme.of(context).colorScheme.outline),
-        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: Theme.of(context).colorScheme.outline, width: 0.15),
+        borderRadius: BorderRadius.circular(12),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -2627,8 +2628,8 @@ Widget _buildFaqItem(ProductFaq faq) {
         Container(
           padding: const EdgeInsets.all(14),
           decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.surfaceContainerLow,
-            border: Border.all(color: Theme.of(context).colorScheme.outline),
+            color: Theme.of(context).colorScheme.surface,
+            border: Border.all(color: Theme.of(context).colorScheme.outline, width: 0.15),
             borderRadius: BorderRadius.circular(10),
           ),
           child: Column(
@@ -2696,12 +2697,12 @@ Widget _buildFaqItem(ProductFaq faq) {
                         filled: true,
                         fillColor: Theme.of(context).colorScheme.surface,
                         border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
+                          borderRadius: BorderRadius.circular(12),
                           borderSide:
                               const BorderSide(color: Color(0xFFCBD5E1)),
                         ),
                         enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
+                          borderRadius: BorderRadius.circular(12),
                           borderSide:
                               const BorderSide(color: Color(0xFFE2E8F0)),
                         ),
@@ -2741,12 +2742,12 @@ Widget _buildFaqItem(ProductFaq faq) {
                             54, // Tạo khoảng trống lề dưới lớn (padding-bottom) để chữ không bị nút đè lên
                       ),
                       enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
+                        borderRadius: BorderRadius.circular(12),
                         borderSide: const BorderSide(
                             color: Color(0xFFCBD5E1), width: 1.0),
                       ),
                       focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
+                        borderRadius: BorderRadius.circular(12),
                         borderSide: BorderSide(
                             color: Theme.of(context).colorScheme.primary, width: 1.2),
                       ),
@@ -2821,7 +2822,7 @@ Widget _buildFaqItem(ProductFaq faq) {
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
               color: Theme.of(context).colorScheme.surfaceContainerLow,
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.circular(12),
             ),
             child: Text(
               'Chưa có câu hỏi nào. Hãy đặt câu hỏi đầu tiên ở ô phía trên.',
@@ -2840,7 +2841,7 @@ Widget _buildFaqItem(ProductFaq faq) {
       margin: const EdgeInsets.only(bottom: 14),
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        border: Border.all(color: Theme.of(context).colorScheme.outline),
+        border: Border.all(color: Theme.of(context).colorScheme.outline, width:0.15),
         borderRadius: BorderRadius.circular(10),
       ),
       child: Column(
@@ -2917,7 +2918,7 @@ Widget _buildFaqItem(ProductFaq faq) {
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
                 color: const Color(0xFFFFF1DE),
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(12),
               ),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -3000,7 +3001,7 @@ Widget _buildFaqItem(ProductFaq faq) {
         decoration: BoxDecoration(
           color: Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: Theme.of(context).colorScheme.outline),
+          border: Border.all(color: Theme.of(context).colorScheme.outline, width: 0.15),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

@@ -493,7 +493,7 @@ class _AdminProductFormScreenState extends State<AdminProductFormScreen> with Si
                         child: Container(
                           width: 72,
                           height: 72,
-                          decoration: BoxDecoration(color: const Color(0xFFEEF2F6), borderRadius: BorderRadius.circular(10), border: Border.all(color: const Color(0xFFC7D2FE), width: 1.5)),
+                          decoration: BoxDecoration(color: const Color(0xFFEEF2F6), borderRadius: BorderRadius.circular(10), border: Border.all(color: const Color(0xFFC7D2FE), width: 0.15)),
                           child: const Icon(Icons.add_photo_alternate_outlined, color: Color(0xFF4F46E5)),
                         ),
                       )
@@ -521,7 +521,7 @@ class _AdminProductFormScreenState extends State<AdminProductFormScreen> with Si
                 Expanded(
                   child: OutlinedButton.icon(
                     onPressed: _openQuickPasteModal,
-                    style: OutlinedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 13), foregroundColor: const Color(0xFF6B21A8), side: const BorderSide(color: Color(0xFFA855F7), width: 1.2), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
+                    style: OutlinedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 13), foregroundColor: const Color(0xFF6B21A8), side: const BorderSide(color: Color(0xFFA855F7), width: 0.15), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
                     icon: const Icon(Icons.flash_on_outlined, size: 16),
                     label: Text(Trans.quickPasteWebClip, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold)),
                   ),
@@ -828,7 +828,7 @@ class _AdminProductFormScreenState extends State<AdminProductFormScreen> with Si
         color: Theme.of(context).colorScheme.surface, 
         borderRadius: BorderRadius.circular(12), 
         boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.02), blurRadius: 6, offset: const Offset(0, 2))],
-        border: Border.all(color: const Color(0xFFE2E8F0))
+        border: Border.all(color: Theme.of(context).colorScheme.outline, width: 0.15)
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -910,7 +910,7 @@ class _AdminProductFormScreenState extends State<AdminProductFormScreen> with Si
             isDense: true,
             contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-            enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: const BorderSide(color: Color(0xFFE2E8F0))),
+            enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: BorderSide(color: Theme.of(context).colorScheme.outline, width: 0.5)),
             suffixIcon: const Icon(Icons.calendar_today, size: 18, color: Color(0xFF64748B)),
           ),
         ),
@@ -925,9 +925,9 @@ class _AdminProductFormScreenState extends State<AdminProductFormScreen> with Si
       labelStyle: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500, color: Color(0xFF475569)),
       hintStyle: TextStyle(fontSize: 13, color: Colors.grey[400]),
       contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-      border: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: const BorderSide(color: Color(0xFFCBD5E1))),
-      enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: const BorderSide(color: Color(0xFFE2E8F0))),
-      focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: const BorderSide(color: Color(0xFF4F46E5), width: 1.5)),
+      border: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: BorderSide(color: Theme.of(context).colorScheme.outline, width: 0.5)),
+      enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: BorderSide(color: Theme.of(context).colorScheme.outline, width: 0.5)),
+      focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: BorderSide(color: Theme.of(context).colorScheme.outline, width: 0.5)),
     );
   }
 

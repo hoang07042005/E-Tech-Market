@@ -275,8 +275,8 @@ String _formatMoney(dynamic value) {
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: colorScheme.surface,
-        borderRadius: BorderRadius.circular(5),
-        border: Border.all(color: colorScheme.outline, width: 0.5),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: colorScheme.outline, width: 0.15),
       ),
       child: Row(
         children: [
@@ -325,15 +325,15 @@ String _formatMoney(dynamic value) {
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: colorScheme.surface,
-        borderRadius: BorderRadius.circular(5),
-        border: Border.all(color: colorScheme.outline, width: 0.5),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: colorScheme.outline, width: 0.15),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              Icon(Icons.shopping_bag_outlined, color: colorScheme.primary, size: 22),
+              Icon(Icons.shopping_bag_outlined, color: Colors.orange, size: 22),
               const SizedBox(width: 8),
               Text(
                 'Sản phẩm',
@@ -467,7 +467,7 @@ String _formatMoney(dynamic value) {
       decoration: BoxDecoration(
         color: colorScheme.surface,
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: colorScheme.outline, width: 0.5),
+        border: Border.all(color: colorScheme.outline, width: 0.15),
       ),
       child: Icon(Icons.image_not_supported, color: colorScheme.onSurface.withValues(alpha: 0.4)),
     );
@@ -489,15 +489,15 @@ String _formatMoney(dynamic value) {
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: colorScheme.surface,
-        borderRadius: BorderRadius.circular(5),
-        border: Border.all(color: colorScheme.outline, width: 0.5),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: colorScheme.outline, width: 0.15),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              Icon(Icons.location_on_outlined, color: colorScheme.primary, size: 22),
+              Icon(Icons.location_on_outlined, color: Colors.orange, size: 22),
               const SizedBox(width: 8),
               Text(
                 'Địa chỉ nhận hàng',
@@ -565,15 +565,15 @@ String _formatMoney(dynamic value) {
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: colorScheme.surface,
-        borderRadius: BorderRadius.circular(5),
-        border: Border.all(color: colorScheme.outline, width: 0.5),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: colorScheme.outline, width: 0.15),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              Icon(Icons.payment_outlined, color: colorScheme.primary, size: 22),
+              Icon(Icons.payment_outlined, color: Colors.orange, size: 22),
               const SizedBox(width: 8),
               Text(
                 'Thanh toán',
@@ -609,15 +609,15 @@ String _formatMoney(dynamic value) {
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: colorScheme.surface,
-        borderRadius: BorderRadius.circular(5),
-        border: Border.all(color: colorScheme.outline, width: 0.5),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: colorScheme.outline, width: 0.15),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              Icon(Icons.receipt_long_outlined, color: colorScheme.primary, size: 22),
+              Icon(Icons.receipt_long_outlined, color: Colors.orange, size: 22),
               const SizedBox(width: 8),
               Text(
                 'Tổng kết đơn hàng',
@@ -662,7 +662,7 @@ String _formatMoney(dynamic value) {
           style: TextStyle(
             fontWeight: isTotal ? FontWeight.bold : FontWeight.normal,
             fontSize: isTotal ? 18 : 14,
-            color: isTotal ? colorScheme.primary : (isDiscount ? Colors.green : colorScheme.onSurface),
+            color: isTotal ? Colors.red : (isDiscount ? Colors.green : colorScheme.onSurface),
           ),
         ),
       ],
@@ -762,8 +762,8 @@ String _formatMoney(dynamic value) {
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: colorScheme.surface,
-        borderRadius: BorderRadius.circular(5),
-        border: Border.all(color: colorScheme.outline, width: 0.5),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: colorScheme.outline, width: 0.15),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -773,7 +773,7 @@ String _formatMoney(dynamic value) {
             children: [
               Row(
                 children: [
-                  Icon(Icons.undo_outlined, color: colorScheme.primary, size: 22),
+                  Icon(Icons.undo_outlined, color: Colors.green, size: 22),
                   const SizedBox(width: 8),
                   Text(
                     Trans.returnRequest,
@@ -822,7 +822,7 @@ String _formatMoney(dynamic value) {
           ],
 
           if (adminNote.trim().isNotEmpty) ...[
-            Text('Phản hồi từ Admin:', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: colorScheme.onSurface)),
+            Text('Phản hồi từ Admin:', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Colors.red)),
             const SizedBox(height: 4),
             Container(
               width: double.infinity,
@@ -830,7 +830,7 @@ String _formatMoney(dynamic value) {
               decoration: BoxDecoration(
                 color: colorScheme.surface,
                 borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: colorScheme.outline, width: 0.5),
+                border: Border.all(color: Colors.red, width: 0.5),
               ),
               child: Text(
                 adminNote,
@@ -871,15 +871,15 @@ String _formatMoney(dynamic value) {
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: colorScheme.surface,
-        borderRadius: BorderRadius.circular(5),
-        border: Border.all(color: colorScheme.outline, width: 0.5),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: colorScheme.outline, width: 0.15),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              Icon(Icons.history, color: colorScheme.primary, size: 22),
+              Icon(Icons.history, color: Colors.blue, size: 22),
               const SizedBox(width: 8),
               Text(
                 'Lịch sử thay đổi',

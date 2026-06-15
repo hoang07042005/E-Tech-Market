@@ -19,6 +19,7 @@
         "spatie/laravel-permission": "^6.25"
     },
     "require-dev": {
+        "darkaonline/l5-swagger": "^8.6",
         "fakerphp/faker": "^1.9.1",
         "larastan/larastan": "*",
         "laravel/pint": "^1.0",

@@ -178,7 +178,7 @@ class _AdminInventoryScreenState extends State<AdminInventoryScreen> {
                   decoration: InputDecoration(
                     hintText: 'Tìm theo tên, biến thể hoặc SKU...',
                     prefixIcon: const Icon(Icons.search),
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(5), borderSide: BorderSide.none),
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
                     filled: true,
                     fillColor: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.1),
                     isDense: true,
@@ -233,7 +233,7 @@ class _AdminInventoryScreenState extends State<AdminInventoryScreen> {
                 color: isSelected 
                     ? Colors.white.withOpacity(0.25) 
                     : (value == 'out' && count > 0 ?  Theme.of(context).colorScheme.error.withValues(alpha: 0.1) : Theme.of(context).colorScheme.primary.withValues(alpha: 0.1)),
-              borderRadius: BorderRadius.circular(5),
+              borderRadius: BorderRadius.circular(12),
             ),
             child: Text(
               '$count',
@@ -261,7 +261,7 @@ class _AdminInventoryScreenState extends State<AdminInventoryScreen> {
       ),
       backgroundColor: Theme.of(context).colorScheme.surface,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(5),
+        borderRadius: BorderRadius.circular(12),
         side: BorderSide(color: isSelected ? Colors.transparent : Theme.of(context).colorScheme.outline, width: 0.15),
       ),
     );
@@ -277,7 +277,7 @@ class _AdminInventoryScreenState extends State<AdminInventoryScreen> {
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
-        borderRadius: BorderRadius.circular(5),
+        borderRadius: BorderRadius.circular(12),
           border: Border.all(color: Theme.of(context).colorScheme.outline, width: 0.15,),
         boxShadow: [
           BoxShadow(
@@ -372,7 +372,7 @@ class _AdminInventoryScreenState extends State<AdminInventoryScreen> {
       isScrollControlled: true, 
       backgroundColor: Theme.of(context).colorScheme.surface,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(5)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(12)),
       ),
       builder: (ctx) => Padding(
         padding: EdgeInsets.only(

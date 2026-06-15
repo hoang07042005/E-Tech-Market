@@ -52,145 +52,166 @@ class _VoucherWarehouseScreenState extends State<VoucherWarehouseScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.surface,
+      backgroundColor: Theme.of(context).colorScheme.surface, // Nền tối huyền ảo sang trọng đồng bộ với Card voucher trong ảnh mẫu
       appBar: AppBar(
-        title: Text(Trans.voucherWarehouse, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+        title: Text(Trans.voucherWarehouse, style:  TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: Theme.of(context).colorScheme.onSurface)),
         backgroundColor: Theme.of(context).colorScheme.surface,
         foregroundColor: Theme.of(context).colorScheme.onSurface,
         elevation: 0,
+        iconTheme:  IconThemeData(color: Theme.of(context).colorScheme.onSurface),
       ),
       body: _loading
-          ? const Center(child: CircularProgressIndicator())
+          ? const Center(child: CircularProgressIndicator(color: Color(0xFFEF7A45)))
           : _error != null
               ? Center(child: Text(_error!, style: const TextStyle(color: Colors.red)))
               : _vouchers.isEmpty
                   ? Center(
                       child: Container(
                         padding: const EdgeInsets.all(24),
-                        decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(12)),
-                        child: Text(Trans.noCouponYet),
+                        decoration: BoxDecoration(color: const Color(0xFF1F2937), borderRadius: BorderRadius.circular(16)),
+                        child: Text(Trans.noCouponYet, style: const TextStyle(color: Colors.white70)),
                       ),
                     )
                   : RefreshIndicator(
+                      color: const Color(0xFFEF7A45),
                       onRefresh: _loadVouchers,
                       child: ListView.builder(
-                        padding: const EdgeInsets.all(16),
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                         itemCount: _vouchers.length,
                         itemBuilder: (context, index) {
                           final c = _vouchers[index] as Map<String, dynamic>;
+                          final code = c['code']?.toString() ?? '-';
                           final isPercentage = c['coupon_type'] == 'percentage';
                           final displayValue = isPercentage 
-                              ? '-${(num.tryParse(c['value']?.toString() ?? '0') ?? 0).toInt()}%'
-                              : '-${_formatVnd(c['value'])}';
+                              ? 'Giảm ${(num.tryParse(c['value']?.toString() ?? '0') ?? 0).toInt()}%'
+                              : 'Giảm ${_formatVnd(c['value'])}';
 
-                          return Container(
-                            margin: const EdgeInsets.only(bottom: 14),
-                            height: 105, // Cố định chiều cao để các phần tử cân đối theo hàng ngang
-                            decoration: BoxDecoration(
-                              color: Theme.of(context).colorScheme.surface,
-                              borderRadius: BorderRadius.circular(12),
-                              border: Border.all(color: Theme.of(context).colorScheme.onSurface, width: 0.5),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withOpacity(0.04),
-                                  blurRadius: 8,
-                                  offset: const Offset(0, 2),
-                                ),
-                              ],
-                            ),
-                            child: Row(
-                              children: [
-                                // 1. Khối hiển thị số tiền/phần trăm giảm giá (Bên trái)
-                                Container(
-                                  width: 95,
-                                  height: double.infinity,
-                                  decoration: BoxDecoration(
-                                    color: Colors.orange.shade50,
-                                    borderRadius: const BorderRadius.only(
-                                      topLeft: Radius.circular(12),
-                                      bottomLeft: Radius.circular(12),
-                                    ),
-                                  ),
-                                  alignment: Alignment.center,
-                                  padding: const EdgeInsets.symmetric(horizontal: 8),
-                                  child: Text(
-                                    displayValue,
-                                    textAlign: TextAlign.center,
-                                    style: const TextStyle(
-                                      color: Colors.orange,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 18,
-                                    ),
-                                  ),
-                                ),
+                          final subtitle = c['min_order_amount'] != null
+                              ? Trans.minOrderRequiredValue(_formatVnd(c['min_order_amount']))
+                              : Trans.allOrders;
 
-                                // Đường cắt giữa (Phần phân cách giả lập vé xé)
-                                VerticalDivider(
-                                  width: 1,
-                                  thickness: 1,
-                                  color: Colors.grey.shade200,
-                                ),
-
-                                // 2. Khối thông tin Voucher (Ở giữa)
-                                Expanded(
-                                  child: Padding(
-                                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      mainAxisAlignment: MainAxisAlignment.center,
+                          return Padding(
+                            padding: const EdgeInsets.only(bottom: 14),
+                            child: CustomPaint(
+                              painter: _WarehouseVoucherPainter(
+                                backgroundColor: Theme.of(context).colorScheme.surface,
+                                borderColor: Theme.of(context).colorScheme.onSurface,
+                              ),
+                              child: Container(
+                                width: double.infinity,
+                                height: 140, // Đồng bộ chiều cao chuẩn với thiết kế coupon_section
+                                padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    // Phần trên: Icon + Thông tin khuyến mãi chính
+                                    Row(
                                       children: [
-                                        Text(
-                                          c['code']?.toString() ?? '-',
-                                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.onSurface),
-                                          maxLines: 1,
-                                          overflow: TextOverflow.ellipsis,
+                                        Container(
+                                          padding: const EdgeInsets.all(8),
+                                          decoration: BoxDecoration(
+                                            color: const Color(0xFFFFEFE7),
+                                            borderRadius: BorderRadius.circular(8),
+                                          ),
+                                          child: const Icon(
+                                            Icons.local_offer_rounded,
+                                            size: 24,
+                                            color: Color(0xFFEF7A45),
+                                          ),
                                         ),
-                                        const SizedBox(height: 4),
-                                        if (c['min_order_amount'] != null)
-                                          Text(
-                                            Trans.minOrderRequiredValue(_formatVnd(c['min_order_amount'])),
-                                            style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 12),
-                                            maxLines: 1,
-                                            overflow: TextOverflow.ellipsis,
+                                        const SizedBox(width: 14),
+                                        Expanded(
+                                          child: Column(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                displayValue,
+                                                style:  TextStyle(
+                                                  fontSize: 18,
+                                                  fontWeight: FontWeight.w800,
+                                                  color: Theme.of(context).colorScheme.onSurface,
+                                                  height: 1.2,
+                                                ),
+                                                maxLines: 1,
+                                                overflow: TextOverflow.ellipsis,
+                                              ),
+                                              const SizedBox(height: 4),
+                                              Text(
+                                                subtitle,
+                                                style:  TextStyle(
+                                                  fontSize: 12,
+                                                  color: Theme.of(context).colorScheme.onSurface,
+                                                ),
+                                                maxLines: 1,
+                                                overflow: TextOverflow.ellipsis,
+                                              ),
+                                            ],
                                           ),
-                                        const SizedBox(height: 4),
-                                        if (c['end_at'] != null)
-                                          Text(
-                                            'HSD: ${c['end_at']?.toString().split('T').first ?? ''}',
-                                            style: const TextStyle(color: Colors.redAccent, fontSize: 11, fontWeight: FontWeight.w500),
-                                          ),
+                                        ),
                                       ],
                                     ),
-                                  ),
-                                ),
-
-                                // 3. Nút Sao chép mã (Bên phải)
-                                Padding(
-                                  padding: const EdgeInsets.only(right: 12),
-                                  child: ElevatedButton(
-                                    onPressed: () async {
-                                      final code = c['code']?.toString() ?? '';
-                                      await Clipboard.setData(ClipboardData(text: code));
-                                      AppSnackBar.showSuccess(context, Trans.copiedToClipboardMessage(code));
-                                    },
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: Colors.orange,
-                                      foregroundColor: Colors.white,
-                                      elevation: 0,
-                                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                                      minimumSize: Size.zero,
-                                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(20),
+                                    const Spacer(),
+                                    // Đường phân cách nét đứt chấm chấm tinh tế ở giữa thân voucher
+                                    Row(
+                                      children: List.generate(
+                                        30,
+                                        (index) => Expanded(
+                                          child: Container(
+                                            color: index % 2 == 0 ? Colors.transparent : const Color(0xFF4B5563),
+                                            height: 1,
+                                          ),
+                                        ),
                                       ),
                                     ),
-                                    child: const Text(
-                                      'Sao chép', // Bạn có thể thay bằng Trans.copyCode nếu text ngắn gọn vừa nút
-                                      style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                                    const Spacer(),
+                                    // Phần dưới: Hiển thị Code ẩn và Nút Sao chép (Đã bỏ nút Lưu)
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(
+                                          code,
+                                          style:  TextStyle(
+                                            fontSize: 13,
+                                            fontWeight: FontWeight.bold,
+                                            color: Theme.of(context).colorScheme.onSurface,
+                                            letterSpacing: 0.5,
+                                          ),
+                                        ),
+                                        InkWell(
+                                          onTap: () async {
+                                            await Clipboard.setData(ClipboardData(text: code));
+                                            if (mounted) {
+                                              AppSnackBar.showSuccess(context, Trans.copiedToClipboardMessage(code));
+                                            }
+                                          },
+                                          borderRadius: BorderRadius.circular(6),
+                                          child: Padding(
+                                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                            child: Row(
+                                              children: const [
+                                                Text(
+                                                  'Sao chép',
+                                                  style: TextStyle(
+                                                    fontSize: 11,
+                                                    color: Color(0xFFEF7A45),
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                                ),
+                                                SizedBox(width: 4),
+                                                Icon(
+                                                  Icons.copy_rounded,
+                                                  size: 13,
+                                                  color: Color(0xFFEF7A45),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                      ],
                                     ),
-                                  ),
+                                  ],
                                 ),
-                              ],
+                              ),
                             ),
                           );
                         },
@@ -198,4 +219,71 @@ class _VoucherWarehouseScreenState extends State<VoucherWarehouseScreen> {
                     ),
     );
   }
+}
+
+/// Custom Painter vẽ hình dáng voucher có khoét lỗ hai bên hông và bo góc mịn màng
+class _WarehouseVoucherPainter extends CustomPainter {
+  final Color backgroundColor;
+  final Color borderColor;
+
+  _WarehouseVoucherPainter({required this.backgroundColor, required this.borderColor});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final path = Path();
+    const double radius = 12.0;
+    
+    // Điểm khoét lỗ nằm ở mức 52% chiều cao của thẻ để cân đối với đường phân cách đứt đoạn
+    double cutoutY = size.height * 0.52;
+    const double cutoutRadius = 6.0;
+
+    path.moveTo(0, radius);
+    
+    // Khoét cạnh trái (Left Cutout)
+    path.lineTo(0, cutoutY - cutoutRadius);
+    path.arcToPoint(
+      Offset(0, cutoutY + cutoutRadius),
+      radius: const Radius.circular(cutoutRadius),
+      clockwise: true,
+    );
+    path.lineTo(0, size.height - radius);
+    path.arcToPoint(Offset(radius, size.height), radius: const Radius.circular(radius), clockwise: false);
+
+    path.lineTo(size.width - radius, size.height);
+    path.arcToPoint(Offset(size.width, size.height - radius), radius: const Radius.circular(radius), clockwise: false);
+
+    // Khoét cạnh phải (Right Cutout)
+    path.lineTo(size.width, cutoutY + cutoutRadius);
+    path.arcToPoint(
+      Offset(size.width, cutoutY - cutoutRadius),
+      radius: const Radius.circular(cutoutRadius),
+      clockwise: true,
+    );
+    path.lineTo(size.width, radius);
+    path.arcToPoint(Offset(size.width - radius, 0), radius: const Radius.circular(radius), clockwise: false);
+    
+    path.lineTo(radius, 0);
+    path.arcToPoint(const Offset(0, radius), radius: const Radius.circular(radius), clockwise: false);
+    
+    path.close();
+
+    // Đổ bóng mờ nhẹ tạo chiều sâu cho vé
+    canvas.drawShadow(path, Colors.black.withOpacity(0.1), 5.0, false);
+
+    // Vẽ màu nền đổ đầy tấm vé
+    final bgPaint = Paint()
+      ..color = backgroundColor
+      ..style = PaintingStyle.fill;
+    canvas.drawPath(path, bgPaint);
+
+    // Vẽ đường viền outline bo sát theo hình dáng cấu trúc vé
+    final borderPaint = Paint()
+      ..color = borderColor
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 0.8;
+    canvas.drawPath(path, borderPaint);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }

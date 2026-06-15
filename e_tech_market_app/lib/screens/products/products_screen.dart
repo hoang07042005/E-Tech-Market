@@ -740,7 +740,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
         margin: const EdgeInsets.only(bottom: 20),
         decoration: BoxDecoration(
           color: Theme.of(context).colorScheme.surface,
-          borderRadius: BorderRadius.circular(5),
+          borderRadius: BorderRadius.circular(12),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withOpacity(0.05),
@@ -748,12 +748,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
               offset: const Offset(0, 4),
             ),
           ],
-            border: Border.all(
-              color: Color.alphaBlend(
-                Theme.of(context).colorScheme.outline.withOpacity(0.3), // 30% màu border
-                Theme.of(context).colorScheme.surface,                 // Trộn trên nền canvas
-              ),
-            ),
+          border: Border.all(color: Theme.of(context).colorScheme.outline, width: 0.15),
 
         ),
         child: Column(
@@ -764,7 +759,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
             children: [
               ClipRRect(
                 borderRadius:
-                    const BorderRadius.vertical(top: Radius.circular(5)),
+                    const BorderRadius.vertical(top: Radius.circular(12)),
                 child: Container(
                   width: double.infinity,
                   height: 350,
@@ -1013,7 +1008,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
           height: 48,
           decoration: BoxDecoration(
             color: Theme.of(context).colorScheme.surface,
-            border: Border.all(color: Theme.of(context).colorScheme.outline),
+            border: Border.all(color: Theme.of(context).colorScheme.outline, width: 0.15),
             borderRadius: BorderRadius.circular(4),
           ),
           child: Row(
@@ -1067,7 +1062,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
                 padding: const EdgeInsets.symmetric(horizontal: 12),
                 decoration: BoxDecoration(
                   color: Theme.of(context).colorScheme.surface,
-                  border: Border.all(color: Theme.of(context).colorScheme.outline),
+                  border: Border.all(color: Theme.of(context).colorScheme.outline, width: 0.15),
                   borderRadius: BorderRadius.circular(4),
                 ),
                 child: DropdownButtonHideUnderline(
@@ -1109,7 +1104,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
                         fontSize: 13)),
                 style: OutlinedButton.styleFrom(
                   backgroundColor: Theme.of(context).colorScheme.surface,
-                  side: BorderSide(color: Theme.of(context).colorScheme.outline),
+                  side: BorderSide(color: Theme.of(context).colorScheme.outline, width: 0.15),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(4),
                   ),
@@ -1161,7 +1156,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
                   ),
-                  child: Text('Trước'),
+                  child: Text('<'),
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -1179,7 +1174,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
                   ),
-                  child: Text('Sau'),
+                  child: Text('>'),
                 ),
               ],
             ),

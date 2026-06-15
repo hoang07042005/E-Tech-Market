@@ -286,7 +286,7 @@ class _AdminProductVariantDetailScreenState extends State<AdminProductVariantDet
                           const SizedBox(height: 8),
                           Container(
                             padding: const EdgeInsets.all(12),
-                            decoration: BoxDecoration(color: Theme.of(context).colorScheme.surface, borderRadius: BorderRadius.circular(5)),
+                            decoration: BoxDecoration(color: Theme.of(context).colorScheme.surface, borderRadius: BorderRadius.circular(12)),
                             child: Text(p['description'], style: TextStyle(fontSize: 13, color: Theme.of(context).colorScheme.onSurface)),
                           ),
                           const SizedBox(height: 12),
@@ -299,13 +299,13 @@ class _AdminProductVariantDetailScreenState extends State<AdminProductVariantDet
                                 .map((faq) => Container(
                                       margin: const EdgeInsets.only(bottom: 8),
                                       padding: const EdgeInsets.all(12),
-                                      decoration: BoxDecoration(border: Border.all(color: Colors.grey[200]!), borderRadius: BorderRadius.circular(6)),
+                                      decoration: BoxDecoration(border: Border.all(color: Theme.of(context).colorScheme.outline, width: 0.5), borderRadius: BorderRadius.circular(12)),
                                       child: Column(
                                         crossAxisAlignment: CrossAxisAlignment.start,
                                         children: [
-                                          Text('Q: ${faq['question']}', style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Colors.blue)),
+                                          Text('CÂU HỎI : ${faq['question']}', style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Colors.blue)),
                                           const SizedBox(height: 8),
-                                          Text('${faq['answer']}', style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.onSurface)),
+                                          Text('CÂU TRẢ LỜI : ${faq['answer']}', style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.onSurface)),
                                         ],
                                       ),
                                     ))
@@ -332,7 +332,7 @@ class _AdminProductVariantDetailScreenState extends State<AdminProductVariantDet
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
         border: Border.all(color: Theme.of(context).colorScheme.outline, width: 0.15),
-        borderRadius: BorderRadius.circular(5),
+        borderRadius: BorderRadius.circular(12),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -388,7 +388,7 @@ class _AdminProductVariantDetailScreenState extends State<AdminProductVariantDet
 
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
-      decoration: BoxDecoration(border: Border.all(color: Colors.grey[200]!), borderRadius: BorderRadius.circular(8)),
+      decoration: BoxDecoration(border: Border.all(color: Theme.of(context).colorScheme.outline, width: 0.5), borderRadius: BorderRadius.circular(12)),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -399,7 +399,7 @@ class _AdminProductVariantDetailScreenState extends State<AdminProductVariantDet
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 ClipRRect(
-                  borderRadius: BorderRadius.circular(6),
+                  borderRadius: BorderRadius.circular(12),
                   child: Container(
                     width: 100,
                     height: 100,

@@ -241,7 +241,7 @@ class _OrderListScreenState extends State<OrderListScreen> {
   Widget _buildStatusChips() {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-      decoration: BoxDecoration(color: Theme.of(context).colorScheme.surface, borderRadius: BorderRadius.circular(5)),
+      decoration: BoxDecoration(color: Theme.of(context).colorScheme.surface, borderRadius: BorderRadius.circular(12)),
       child: Row(
         children: [
           Text(Trans.orderStatus, style: const TextStyle(fontWeight: FontWeight.w600)),
@@ -286,7 +286,7 @@ class _OrderListScreenState extends State<OrderListScreen> {
       selectedColor: const Color(0xFFF26522),
       backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
       side: BorderSide.none,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       showCheckmark: false,
     );
   }
@@ -322,8 +322,8 @@ class _OrderListScreenState extends State<OrderListScreen> {
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
-        borderRadius: BorderRadius.circular(5),
-        border: Border.all(color: Theme.of(context).colorScheme.outline, width: 0.5,),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Theme.of(context).colorScheme.outline, width: 0.15),
         boxShadow: [
           BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 12, offset: const Offset(0, 4)),
         ],

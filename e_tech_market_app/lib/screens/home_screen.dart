@@ -849,7 +849,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ? const Center(child: CircularProgressIndicator())
             : _buildPageBody(),
       ),
-      bottomNavigationBar: BottomNavigationBar(
+      bottomNavigationBar:  BottomNavigationBar(
         currentIndex: _selectedIndex,
         onTap: _onTabSelected,
         selectedItemColor: Color(0xFFEA6C00), // Đổi thành màu cam khi active

@@ -82,7 +82,7 @@ class _NewsletterSectionState extends State<NewsletterSection> {
                 Text(
                   'Tham gia cộng đồng ưu tiên: ưu đãi sớm cho phiên bản giới hạn và tài liệu kỹ thuật chọn lọc.',
                   style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                        fontSize: 16,
+                        fontSize: 14,
                         color: Theme.of(context).colorScheme.onSurfaceVariant,
                         height: 1.6,
                       ),
@@ -93,7 +93,7 @@ class _NewsletterSectionState extends State<NewsletterSection> {
                 // Form
                 Container(
                   decoration: BoxDecoration(
-                    border: Border.all(color: Theme.of(context).colorScheme.outline),
+                    border: Border.all(color: Theme.of(context).colorScheme.outline, width: 0.15),
                     borderRadius: BorderRadius.circular(12),
                     boxShadow: [
                       BoxShadow(

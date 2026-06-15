@@ -19,7 +19,7 @@ services:
       - "9000"
     volumes:
       - ./e-tech-market-backend:/var/www
-      - backend_vendor:/var/www/vendor
+      
     command: sh -c "php artisan storage:link && php artisan config:clear && php artisan cache:clear && php artisan route:clear && php artisan view:clear && php-fpm"
     environment:
       - DB_CONNECTION=pgsql
@@ -64,7 +64,7 @@ services:
       dockerfile: Dockerfile
     volumes:
       - ./e-tech-market-backend:/var/www
-      - backend_vendor:/var/www/vendor
+      
     command: /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf
     environment:
       - DB_CONNECTION=pgsql
@@ -112,4 +112,4 @@ services:
 volumes:
   meili_data:
   db_data:
-  backend_vendor:
+

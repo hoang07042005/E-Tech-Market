@@ -257,3 +257,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/me/coupons/save', [ClientCouponsController::class, 'save']);
 
 });
+
+Route::get('/docs', function () {
+    return redirect('/api/v1/docs');
+});

@@ -159,12 +159,7 @@ class _ProductCard extends StatelessWidget {
         onTap: onTap,
         child: Container(
           decoration: BoxDecoration(
-            border: Border.all(
-              color: Color.alphaBlend(
-                Theme.of(context).colorScheme.outline.withOpacity(0.3), 
-                Theme.of(context).colorScheme.surface,                
-              ),
-            ),
+            border: Border.all(color: Theme.of(context).colorScheme.outline, width: 0.15),
             borderRadius: BorderRadius.circular(5),
           ),
           child: Column(
@@ -448,7 +443,7 @@ class _CircleActionButton extends StatelessWidget {
           height: 28,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            border: Border.all(color: Theme.of(context).colorScheme.outline),
+            border: Border.all(color: Theme.of(context).colorScheme.outline, width: 0.15),
           ),
           child: Icon(icon, size: 15, color: color),
         ),
