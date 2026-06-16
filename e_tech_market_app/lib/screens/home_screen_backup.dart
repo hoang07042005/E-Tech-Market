@@ -61,7 +61,6 @@ class _HomeScreenState extends State<HomeScreen> {
   List<dynamic> _banners = [];
   List<dynamic> _availableCoupons = [];
   List<dynamic> _categories = [];
-  List<dynamic> _apiCategories = [];
   List<dynamic> _featuredProducts = [];
   Set<int> _wishSet = {};
   int _currentBannerIndex = 0;
@@ -70,19 +69,6 @@ class _HomeScreenState extends State<HomeScreen> {
   Map<int, List<dynamic>> _tabProductsByCategory = {};
   Map<int, bool> _tabLoadingByCategory = {};
   List<dynamic> _latestNews = [];
-
-  // Fixed categories for tabbed section (like web)
-  static const _homeTabCategories = [
-    {'id': 2, 'name': 'Điện thoại'},
-    {'id': 3, 'name': 'Laptop'},
-    {'id': 51, 'name': 'PC'},
-    {'id': 53, 'name': 'Màn hình'},
-    {'id': 52, 'name': 'Máy in'},
-  ];
-
-  // Fixed categories getter for TabbedProductSection only
-  List<dynamic> get tabCategoriesForTabs => _homeTabCategories;
-
   bool _newsLoading = false;
   List<dynamic> _homeVideos = [];
   bool _videosLoading = false;
@@ -333,9 +319,7 @@ class _HomeScreenState extends State<HomeScreen> {
       setState(() {
         _banners = results[0] as List<dynamic>;
         _availableCoupons = (results[1] as List<dynamic>).take(4).toList();
-        // Use fixed categories like web
-        _apiCategories = results[2] as List<dynamic>? ?? [];
-        _categories = _apiCategories;
+        _categories = (results[2] as List<dynamic>).take(5).toList();
         final productResponse = results[3] as Map<String, dynamic>;
         _featuredProducts = productResponse['data'] as List<dynamic>? ?? [];
         _wishSet = (results[4] as List<dynamic>)
@@ -348,18 +332,16 @@ class _HomeScreenState extends State<HomeScreen> {
         _currentBannerIndex = 0;
         _homeError = null;
         _isHomeLoading = false;
-        // Load first tab category
-        _selectedTabIndex = 0;
-        final firstCategoryId = _homeTabCategories.isNotEmpty
-            ? (_homeTabCategories[0]['id'] as num?)?.toInt()
-            : null;
-        if (firstCategoryId != null) {
-          _tabLoadingByCategory[firstCategoryId] = true;
+        if (_categories.isNotEmpty) {
+          _selectedTabIndex = 0;
+          final firstCategoryId = (_categories[0]['id'] as num?)?.toInt();
+          if (firstCategoryId != null) {
+            _tabLoadingByCategory[firstCategoryId] = true;
+          }
         }
       });
-      // Load first tab products
-      if (_homeTabCategories.isNotEmpty) {
-        final firstCategoryId = (_homeTabCategories[0]['id'] as num?)?.toInt();
+      if (_categories.isNotEmpty) {
+        final firstCategoryId = (_categories[0]['id'] as num?)?.toInt();
         if (firstCategoryId != null) {
           await _loadTabProductsForCategory(firstCategoryId);
         }
@@ -496,7 +478,6 @@ class _HomeScreenState extends State<HomeScreen> {
         page: 1,
         limit: 8,
         categoryId: categoryId.toString(),
-        isFeatured: 1,
       );
       final data = response['data'] as List<dynamic>? ?? [];
       if (!mounted) return;
@@ -517,9 +498,8 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _selectTab(int index) {
-    // Use fixed tab categories
-    if (index < 0 || index >= tabCategoriesForTabs.length) return;
-    final category = tabCategoriesForTabs[index] as Map<String, dynamic>?;
+    if (index < 0 || index >= _categories.length) return;
+    final category = _categories[index] as Map<String, dynamic>?;
     final categoryId = (category?['id'] as num?)?.toInt();
     if (categoryId == null) return;
 
@@ -562,7 +542,6 @@ class _HomeScreenState extends State<HomeScreen> {
           slug: slug,
           variantId: variant?['id']?.toString(),
           flashSalePrice: flashSalePrice,
-          showFlashSale: true,
         ),
       ),
     );
@@ -597,14 +576,13 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildTabbedCategorySection() {
-    // Use fixed tab categories for products display (like web)
-    final category = tabCategoriesForTabs.isNotEmpty ? tabCategoriesForTabs[_selectedTabIndex] as Map<String, dynamic> : null;
+    final category = _categories.isNotEmpty ? _categories[_selectedTabIndex] as Map<String, dynamic> : null;
     final categoryId = (category?['id'] as num?)?.toInt();
     final currentProducts = categoryId != null ? _tabProductsByCategory[categoryId] ?? [] : [];
     final loading = _isHomeLoading || (categoryId != null && (_tabLoadingByCategory[categoryId] ?? false));
 
     return TabbedProductSection(
-      categories: tabCategoriesForTabs,
+      categories: _categories,
       selectedTabIndex: _selectedTabIndex,
       onTabSelected: _selectTab,
       products: currentProducts,

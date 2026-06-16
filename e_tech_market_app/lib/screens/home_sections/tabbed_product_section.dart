@@ -51,9 +51,9 @@ class TabbedProductSection extends StatelessWidget {
               Expanded(
                 child: Text(
                   Trans.productsByCategory,
-                  textAlign: TextAlign.center,
+                  textAlign: TextAlign.left,
                   style: TextStyle(
-                    fontSize: 22,
+                    fontSize: 20,
                     fontWeight: FontWeight.w800,
                     color: Theme.of(context).colorScheme.onSurface,
                     height: 1.15,

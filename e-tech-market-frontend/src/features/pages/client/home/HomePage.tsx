@@ -428,7 +428,7 @@ export default function HomePage() {
       fetchCategories('product'),
       apiFetch<ProductReview[]>('/api/reviews?min_rating=5&limit=6'),
       apiFetch<{ data: BlogPost[] }>('/api/blog/posts?per_page=5'),
-      fetchProducts({ limit: 16, category_id: 2 }),
+      fetchProducts({ limit: 16, category_id: 2, is_featured: 1 }),
       fetchActiveBanners(),
       apiFetch<Video[]>('/api/videos')
     ])
@@ -464,25 +464,25 @@ export default function HomePage() {
 
   useEffect(() => {
     if (tabActive === 'laptop' && laptopProducts.length === 0) {
-      fetchProducts({ limit: 16, category_id: 3 })
+      fetchProducts({ limit: 16, category_id: 3, is_featured: 1 })
         .then((res) => {
           if (res && Array.isArray(res.data)) setLaptopProducts(res.data)
         })
         .catch(console.error)
     } else if (tabActive === 'pc' && pcProducts.length === 0) {
-      fetchProducts({ limit: 16, category_id: 51 })
+      fetchProducts({ limit: 16, category_id: 51, is_featured: 1 })
         .then((res) => {
           if (res && Array.isArray(res.data)) setPcProducts(res.data)
         })
         .catch(console.error)
     } else if (tabActive === 'monitor' && monitorProducts.length === 0) {
-      fetchProducts({ limit: 16, category_id: 53 })
+      fetchProducts({ limit: 16, category_id: 53, is_featured: 1 })
         .then((res) => {
           if (res && Array.isArray(res.data)) setMonitorProducts(res.data)
         })
         .catch(console.error)
     } else if (tabActive === 'printer' && printerProducts.length === 0) {
-      fetchProducts({ limit: 16, category_id: 52 })
+      fetchProducts({ limit: 16, category_id: 52, is_featured: 1 })
         .then((res) => {
           if (res && Array.isArray(res.data)) setPrinterProducts(res.data)
         })

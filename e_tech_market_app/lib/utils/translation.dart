@@ -330,7 +330,7 @@ class Trans {
 
   // Products screen translations
   static String get allProducts => isVietnamese ? 'Tất cả sản phẩm' : 'All products';
-  static String get productsByCategory => isVietnamese ? 'SẢN PHẨM THEO DANH MỤC' : 'PRODUCTS BY CATEGORY';
+  static String get productsByCategory => isVietnamese ? 'SẢN PHẨM THEO DANH MỤC NỔI BẬT' : 'PRODUCTS BY CATEGORY';
   static String get searchProductsPlaceholder => isVietnamese ? 'Tìm kiếm sản phẩm...' : 'Search products...';
   static String get sort => isVietnamese ? 'SẮP XẾP:' : 'SORT:';
   static String get filterLabel => isVietnamese ? 'BỘ LỌC' : 'FILTER';
@@ -397,7 +397,7 @@ class Trans {
 
   // Admin product screen translations
   static String get totalProducts => isVietnamese ? 'Tổng sản phẩm' : 'Total Products';
-    static String get lowStock => isVietnamese ? 'Sắp hết hàng' : 'Low Stock';
+  static String get lowStock => isVietnamese ? 'Sắp hết hàng' : 'Low Stock';
   static String get activeProducts => isVietnamese ? 'Đang kích hoạt' : 'Active';
   static String get productList => isVietnamese ? 'Danh sách sản phẩm' : 'Product List';
   static String get addNew => isVietnamese ? 'Thêm mới' : 'Add New';
@@ -642,8 +642,8 @@ class Trans {
   static String get statusHistory => isVietnamese ? 'Lịch sử chuyển trạng thái' : 'Status history';
   static String get statusManagement => isVietnamese ? 'Quản lý trạng thái' : 'Status management';
   static String get customerInfo => isVietnamese ? 'Thông tin khách hàng' : 'Customer information';
-    static String get paymentCost => isVietnamese ? 'Thanh toán & Chi phí' : 'Payment & Costs';
-    static String get orderNoteLabel => isVietnamese ? 'Ghi chú' : 'Note';
+  static String get paymentCost => isVietnamese ? 'Thanh toán & Chi phí' : 'Payment & Costs';
+  static String get orderNoteLabel => isVietnamese ? 'Ghi chú' : 'Note';
   static String get noteWithColon => isVietnamese ? 'Ghi chú:' : 'Note:';
   static String get orderCancelledFailed => isVietnamese ? 'Đơn hàng hủy thất bại' : 'Order cancellation failed';
   static String get shippingInfo => isVietnamese ? 'THÔNG TIN & ĐỊA CHỈ NHẬN HÀNG' : 'SHIPPING INFORMATION';
@@ -680,7 +680,7 @@ class Trans {
   static String get errorOccurred => isVietnamese ? 'Đã xảy ra lỗi' : 'Error occurred';
   static String get errorLabel => isVietnamese ? 'Lỗi: ' : 'Error: ';
   static String get couponExpired => isVietnamese ? 'Hết hạn' : 'Expired';
-    static String get closePaymentTitle => isVietnamese ? 'Xác nhận thanh toán' : 'Payment Confirmation';
+  static String get closePaymentTitle => isVietnamese ? 'Xác nhận thanh toán' : 'Payment Confirmation';
   static String get closePaymentMessage => isVietnamese ? 'Bạn đ�� đóng trang thanh toán.\n\nNếu bạn chưa thanh toán hoặc gặp lỗi, vui lòng chọn "Hủy đơn hàng".' : 'You closed the payment page.\n\nIf you have not paid or encountered an error, please select "Cancel Order".';
   static String get cancelOrderButton => isVietnamese ? 'Hủy đơn hàng' : 'Cancel Order';
   static String get paidButton => isVietnamese ? 'Đã thanh toán' : 'Paid';

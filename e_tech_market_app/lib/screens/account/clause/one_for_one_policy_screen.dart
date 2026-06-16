@@ -6,20 +6,12 @@ const Color _surface = Color(0xFFFFF7ED);
 
 class OneForOnePolicyScreen extends StatefulWidget {
   const OneForOnePolicyScreen({super.key});
-
-  
-  
-
-  @override
+@override
   State<OneForOnePolicyScreen> createState() => _OneForOnePolicyScreenState();
 }
 
 class _OneForOnePolicyScreenState extends State<OneForOnePolicyScreen> {
-
-
-
-
-  Map<String, dynamic>? _storeContact;
+Map<String, dynamic>? _storeContact;
 
   @override
   void initState() {

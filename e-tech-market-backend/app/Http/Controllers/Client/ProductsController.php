@@ -106,7 +106,7 @@ class ProductsController extends Controller
      */
     public function index(Request $request): JsonResponse|AnonymousResourceCollection
     {
-        $filters = $request->only(['category_id', 'brand', 'min_price', 'max_price', 'search', 'sort', 'order']);
+        $filters = $request->only(['category_id', 'brand', 'min_price', 'max_price', 'search', 'sort', 'order', 'is_featured']);
         $limit = (int) $request->input('limit', 0);
         $products = $this->productService->getClientProducts($filters, $limit);
 

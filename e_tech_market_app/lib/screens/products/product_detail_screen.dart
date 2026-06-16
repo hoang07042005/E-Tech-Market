@@ -979,8 +979,8 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _buildGallery(current, images),
-              _buildHeader(current, displayPrice, hasFlashSale),
               if (hasFlashSale && flashTimeLeft != null) _buildFlashSaleTimer(),
+              _buildHeader(current, displayPrice, hasFlashSale),
               _buildVariantSelector(current),
               Divider(thickness: 8, color: Theme.of(context).colorScheme.surfaceContainerLow),
               _buildSection(
@@ -1149,19 +1149,18 @@ Widget _buildGallery(Product current, List<ProductImage> images) {
             style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 8),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Text(
-                '${formatCurrency(displayPrice)} đ',
-                style: TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFFF26522),
+          if (!hasFlashSale && oldPrice > displayPrice)
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Text(
+                  '${formatCurrency(displayPrice)} đ',
+                  style: TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFFF26522),
+                  ),
                 ),
-              ),
-              if ((hasFlashSale || oldPrice > displayPrice) &&
-                  oldPrice > displayPrice)
                 Padding(
                   padding: const EdgeInsets.only(left: 8, bottom: 2),
                   child: Text(
@@ -1173,6 +1172,158 @@ Widget _buildGallery(Product current, List<ProductImage> images) {
                     ),
                   ),
                 ),
+              ],
+            ),
+        ],
+      ),
+    );
+  }
+
+
+  Widget _buildFlashSaleTimer() {
+    final current = product;
+    if (current == null || current.flashSaleItems.isEmpty) return const SizedBox.shrink();
+
+    // Sử dụng hàm chuẩn của hệ thống để lấy giá bán hiện tại (giá đã giảm) và giá gốc ban đầu
+    final salePrice = _getDisplayPrice();
+    final oldPrice = _getOriginalPrice();
+
+    // Tính toán phần trăm giảm giá chuẩn xác dựa trên giá thực tế đang hiển thị
+    final discountPercent = oldPrice > salePrice 
+        ? ((oldPrice - salePrice) / oldPrice * 100).round() 
+        : 0;
+
+    // Kiểm tra null trước khi sử dụng flashTimeLeft
+    final timeLeft = flashTimeLeft;
+    final hours = timeLeft != null ? (timeLeft.inHours % 24).toString().padLeft(2, '0') : '00';
+    final minutes = timeLeft != null ? (timeLeft.inMinutes % 60).toString().padLeft(2, '0') : '00';
+    final seconds = timeLeft != null ? (timeLeft.inSeconds % 60).toString().padLeft(2, '0') : '00';
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            Color(0xFFFF2453),
+            Color(0xFFFF6A00),
+          ],
+          begin: Alignment.centerLeft,
+          end: Alignment.centerRight,
+        ),
+      ),
+      child: Stack(
+        children: [
+          Positioned(
+            right: 120,
+            top: -5,
+            bottom: -5,
+            child: Opacity(
+              opacity: 0.15,
+              child: const Icon(
+                Icons.flash_on,
+                size: 75,
+                color: Colors.white,
+              ),
+            ),
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.baseline,
+                    textBaseline: TextBaseline.alphabetic,
+                    children: [
+                      // Hiển thị phần trăm giảm giá chỉ khi thực sự có giảm giá (> 0)
+                      if (discountPercent > 0) ...[
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(6),
+                          ),
+                          child: Text(
+                            '-$discountPercent%',
+                            style: const TextStyle(
+                              color: Color(0xFFFF2453),
+                              fontWeight: FontWeight.bold,
+                              fontSize: 12,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                      ],
+                      Text(
+                        '${formatCurrency(salePrice)}đ',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 20,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 2),
+                  // Chỉ hiện giá gốc gạch ngang nếu giá gốc lớn hơn giá khuyến mãi
+                  if (oldPrice > salePrice)
+                    Text(
+                      '${formatCurrency(oldPrice)}đ',
+                      style: const TextStyle(
+                        color: Colors.white70,
+                        decoration: TextDecoration.lineThrough,
+                        fontSize: 13,
+                      ),
+                    ),
+                ],
+              ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Row(
+                    children: const [
+                      Icon(
+                        Icons.flash_on,
+                        color: Colors.white,
+                        size: 18,
+                      ),
+                      SizedBox(width: 4),
+                      Text(
+                        'Flash Sale',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w900,
+                          fontSize: 18,
+                          fontStyle: FontStyle.italic,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 4),
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Text('Kết thúc sau ', style: TextStyle(color: Colors.white, fontSize: 12)),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withValues(alpha: 0.2),
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        child: Text(
+                          '$hours:$minutes:$seconds',
+                          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ],
           ),
         ],
@@ -1180,35 +1331,6 @@ Widget _buildGallery(Product current, List<ProductImage> images) {
     );
   }
 
-  Widget _buildFlashSaleTimer() {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-      color: Colors.red[600],
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            '⚡KẾT THÚC SAU',
-            style: TextStyle(
-              color: Theme.of(context).colorScheme.surface,
-              fontWeight: FontWeight.bold,
-              fontSize: 15,
-            ),
-          ),
-          Row(
-            children: [
-              _buildCompactTimeUnit(flashTimeLeft!.inHours % 24),
-              Text(':', style: TextStyle(color: Theme.of(context).colorScheme.surface)),
-              _buildCompactTimeUnit(flashTimeLeft!.inMinutes % 60),
-              Text(':', style: TextStyle(color: Theme.of(context).colorScheme.surface)),
-              _buildCompactTimeUnit(flashTimeLeft!.inSeconds % 60),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
 
   Widget _buildVariantSelector(Product current) {
     if (current.variants.isEmpty) return const SizedBox.shrink();
@@ -1611,7 +1733,7 @@ Widget _buildGallery(Product current, List<ProductImage> images) {
               icon: const Icon(Icons.add_shopping_cart, color: Colors.white),
               label: Text(Trans.addToCart),
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.orange, // Đổi thành màu cam tại đây
+                backgroundColor:  Color(0xFFFF6A00), // Đổi thành màu cam tại đây
                 foregroundColor: Colors.white,  // Đổi chữ và icon thành màu trắng cho nổi bật
               ),
             ),

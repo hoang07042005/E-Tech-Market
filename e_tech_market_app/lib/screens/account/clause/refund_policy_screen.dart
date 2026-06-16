@@ -8,23 +8,12 @@ const Color _mutedDark = Color(0xFF1E293B);
 
 class RefundPolicyScreen extends StatefulWidget {
   const RefundPolicyScreen({super.key});
-
-  
-  
-  
-  
-  
-
   @override
   State<RefundPolicyScreen> createState() => _RefundPolicyScreenState();
 }
 
 class _RefundPolicyScreenState extends State<RefundPolicyScreen> {
-
-
-
-
-  Map<String, dynamic>? _storeContact;
+Map<String, dynamic>? _storeContact;
 
   @override
   void initState() {

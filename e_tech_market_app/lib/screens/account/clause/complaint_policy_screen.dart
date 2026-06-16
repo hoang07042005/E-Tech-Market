@@ -5,19 +5,12 @@ const Color _accent = Color(0xFF7C2E00);
 
 class ComplaintPolicyScreen extends StatefulWidget {
   const ComplaintPolicyScreen({super.key});
-
-  
-
-  @override
+@override
   State<ComplaintPolicyScreen> createState() => _ComplaintPolicyScreenState();
 }
 
 class _ComplaintPolicyScreenState extends State<ComplaintPolicyScreen> {
-
-
-
-
-  Map<String, dynamic>? _storeContact;
+Map<String, dynamic>? _storeContact;
 
   @override
   void initState() {

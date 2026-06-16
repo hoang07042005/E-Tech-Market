@@ -248,6 +248,9 @@ Route::get('/banners', [ClientBannerController::class, 'index']);
 Route::get('/videos', [App\Http\Controllers\Client\VideoController::class, 'index']);
 Route::get('/videos/{video}', [App\Http\Controllers\Client\VideoController::class, 'show']);
 
+// Unified home data endpoint - reduces multiple API calls to 1
+Route::get('/home', [App\Http\Controllers\Client\HomeController::class, 'index']);
+
 Route::get('/coupons', [ClientCouponsController::class, 'index']);
 Route::post('/coupons/apply', [ClientCouponsController::class, 'apply'])->middleware('throttle:5,1');
 

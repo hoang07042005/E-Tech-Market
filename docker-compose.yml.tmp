@@ -20,14 +20,14 @@ services:
     volumes:
       - ./e-tech-market-backend:/var/www
       
-    command: /bin/sh -c "([ -L public/storage ] || php artisan storage:link --force) && cp /usr/local/etc/php-fpm.d/www.conf /usr/local/etc/php-fpm.d/www.conf.bak && sed -i 's|listen = 127.0.0.1:9000|listen = 0.0.0.0:9000|' /usr/local/etc/php-fpm.d/www.conf && php-fpm"
+    command: sh -c "php artisan storage:link && php artisan config:clear && php artisan cache:clear && php artisan route:clear && php artisan view:clear && (echo "listen = 0.0.0.0:9000" > /usr/local/etc/php-fpm.d/zz-docker.conf) && php-fpm"
     environment:
       - DB_CONNECTION=pgsql
       - DB_HOST=db
       - DB_PORT=5432
       - DB_DATABASE=etech
       - DB_USERNAME=postgres
-      - DB_PASSWORD=${POSTGRES_PASSWORD:-postgres}
+      - DB_PASSWORD=${POSTGRES_PASSWORD}
       - QUEUE_CONNECTION=database
       - REDIS_HOST=redis
       - REDIS_PORT=6379
@@ -72,7 +72,7 @@ services:
       - DB_PORT=5432
       - DB_DATABASE=etech
       - DB_USERNAME=postgres
-      - DB_PASSWORD=${POSTGRES_PASSWORD:-postgres}
+      - DB_PASSWORD=${POSTGRES_PASSWORD}
       - QUEUE_CONNECTION=database
       - REDIS_HOST=redis
       - REDIS_PORT=6379
@@ -89,7 +89,7 @@ services:
     environment:
       - POSTGRES_DB=etech
       - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-postgres}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
     ports:
       - "5432:5432"
     volumes:

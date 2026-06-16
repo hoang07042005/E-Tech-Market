@@ -75,6 +75,7 @@ interface AdminProductDetail {
   description: string | null
   rich_html?: string | null
   is_active: boolean
+  is_featured: boolean
   specs?: Spec[]
   variants?: Variant[]
   images?: ExistingProductImage[]
@@ -117,7 +118,8 @@ export default function ProductForm({ productId, onSave, onCancel }: ProductForm
     brand: '',
     description: '',
     rich_html: '',
-    is_active: true
+    is_active: true,
+    is_featured: false
   })
 
   const [specs, setSpecs] = useState<Spec[]>([])
@@ -156,7 +158,8 @@ export default function ProductForm({ productId, onSave, onCancel }: ProductForm
             brand: pData.brand || '',
             description: pData.description || '',
             rich_html: pData.rich_html || '',
-            is_active: pData.is_active
+            is_active: pData.is_active,
+            is_featured: pData.is_featured ?? false
           })
           setSpecs(
             (pData.specs ?? []).map(row => ({
@@ -531,6 +534,15 @@ export default function ProductForm({ productId, onSave, onCancel }: ProductForm
                             onChange={e => setFormData({ ...formData, is_active: e.target.checked })}
                           />
                           <label htmlFor="isActive">Hiển thị tại cửa hàng</label>
+                        </div>
+                        <div className="pToggleField" style={{ marginTop: 8 }}>
+                          <input
+                            type="checkbox"
+                            id="isFeatured"
+                            checked={formData.is_featured}
+                            onChange={e => setFormData({ ...formData, is_featured: e.target.checked })}
+                          />
+                          <label htmlFor="isFeatured">Sản phẩm nổi bật</label>
                         </div>
                       </div>
                     </div>

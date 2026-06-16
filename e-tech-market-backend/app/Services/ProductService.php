@@ -14,10 +14,18 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Redis;
 use App\Models\Category;
+use App\Services\CategoryService;
 use Illuminate\Support\Str;
 
 class ProductService
 {
+    private CategoryService $categoryService;
+
+    public function __construct(CategoryService $categoryService)
+    {
+        $this->categoryService = $categoryService;
+    }
+
     public function createProduct(array $data, $request): Product
     {
         $data = $this->cleanUtf8($data);
@@ -129,6 +137,17 @@ class ProductService
             });
         }
 
+        // Filter by is_featured
+        if (isset($filters['is_featured'])) {
+            $isFeatured = $filters['is_featured'];
+            if ($isFeatured === '1' || $isFeatured === 1 || $isFeatured === true) {
+                $query->where('is_featured', true);
+            } elseif ($isFeatured === '0' || $isFeatured === 0 || $isFeatured === false) {
+                $query->where('is_featured', false);
+            }
+            // If any other value, don't filter
+        }
+
         $sort = $filters['sort'] ?? 'created_at';
         $order = strtolower($filters['order'] ?? 'desc') === 'asc' ? 'asc' : 'desc';
 
@@ -168,9 +187,7 @@ class ProductService
                 ->withCount([
                     'reviews as reviews_count' => fn ($q) => $q->where('status', 'approved'),
                 ])
-                ->withAvg([
-                    'reviews as avg_rating' => fn ($q) => $q->where('status', 'approved'),
-                ], 'rating')
+                // Bỏ withAvg - chỉ load khi cần chi tiết sản phẩm
                 ->paginate($limit > 0 ? $limit : $defaultLimit);
         });
     }
@@ -314,23 +331,11 @@ class ProductService
     }
 
     /**
-     * Helper recursive get category IDs
+     * Helper - get all descendant category IDs (cached tree lookup)
      */
     private function getAllCategoryIds($categoryId): array
     {
-        $ids = [$categoryId];
-        $queue = [$categoryId];
-
-        while ($queue !== []) {
-            $childrenIds = Category::whereIn('parent_id', $queue)->pluck('id')->all();
-            $queue = array_values(array_diff($childrenIds, $ids));
-            if (empty($queue)) {
-                break;
-            }
-            $ids = array_merge($ids, $queue);
-        }
-
-        return array_values(array_unique($ids));
+        return $this->categoryService->getAllCategoryIds($categoryId);
     }
 
     private function handleImages(Product $product, $request): void

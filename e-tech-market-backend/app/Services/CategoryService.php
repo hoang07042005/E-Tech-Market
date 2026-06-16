@@ -115,6 +115,43 @@ class CategoryService
         });
     }
 
+    /**
+     * Invalidate cached category trees when categories change.
+     */
+    public function clearCategoryCache(): void
+    {
+        $types = ['product', 'blog', 'news'];
+        foreach ($types as $type) {
+            \Illuminate\Support\Facades\Cache::forget("categories_tree_{$type}");
+        }
+    }
+
+    /**
+     * Get all descendant category IDs for a given category using cached tree lookup.
+     * Much faster than recursive queries.
+     */
+    public function getAllCategoryIds(int $categoryId, string $type = 'product'): array
+    {
+        $tree = $this->getActiveCategoryTree($type);
+        $ids = [$categoryId];
+
+        $this->collectDescendantIds($tree, $categoryId, $ids);
+
+        return array_values(array_unique($ids));
+    }
+
+    private function collectDescendantIds(array $tree, int $parentId, array &$ids): void
+    {
+        foreach ($tree as $node) {
+            if ($node->parent_id == $parentId) {
+                $ids[] = $node->id;
+                if ($node->children && $node->children->isNotEmpty()) {
+                    $this->collectDescendantIds($node->children->toArray(), $node->id, $ids);
+                }
+            }
+        }
+    }
+
     private function buildCategoryTree($categories, $parentId = null): array
     {
         $branch = [];

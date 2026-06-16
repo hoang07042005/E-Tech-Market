@@ -37,11 +37,13 @@ class Product extends Model
         'rich_html',
         'main_image_url',
         'is_active',
+        'is_featured',
     ];
 
     protected $casts = [
         'category_id' => 'integer',
         'is_active' => 'boolean',
+        'is_featured' => 'boolean',
     ];
 
     public function category(): BelongsTo

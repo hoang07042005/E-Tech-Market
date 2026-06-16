@@ -75,6 +75,8 @@ class AppServiceProvider extends ServiceProvider
                 }
                 \Illuminate\Support\Facades\Redis::del('_cache_registry_categories');
                 Cache::forget('store_config');
+                // Clear category tree cache
+                (new \App\Services\CategoryService())->clearCategoryCache();
             } catch (\Throwable) {
                 // Fail-safe
             }

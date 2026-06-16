@@ -4,18 +4,12 @@ const Color _accent = Color(0xFFF97316);
 
 class PaymentSecurityPolicyScreen extends StatefulWidget {
   const PaymentSecurityPolicyScreen({super.key});
-
-  
-
-  @override
+@override
   State<PaymentSecurityPolicyScreen> createState() => _PaymentSecurityPolicyScreenState();
 }
 
 class _PaymentSecurityPolicyScreenState extends State<PaymentSecurityPolicyScreen> {
-
-
-
-  Map<String, dynamic>? _storeContact;
+Map<String, dynamic>? _storeContact;
 
   @override
   void initState() {

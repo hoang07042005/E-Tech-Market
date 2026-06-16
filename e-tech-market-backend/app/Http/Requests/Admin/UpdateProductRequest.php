@@ -20,6 +20,7 @@ class UpdateProductRequest extends FormRequest
             'description' => 'nullable|string',
             'rich_html' => 'nullable|string',
             'is_active' => 'boolean',
+            'is_featured' => 'boolean',
             'images' => 'nullable|array|max:12',
             'images.*' => 'image|mimes:jpeg,png,jpg,webp|max:2048',
             'keep_existing_images' => 'nullable',
