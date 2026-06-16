@@ -171,25 +171,20 @@ class ProductService
 
         $cacheKey = 'products_index_'.md5(serialize($filters).$limit);
 
-        Redis::sadd('_cache_registry_products', $cacheKey);
-        Redis::expire('_cache_registry_products', 600);
-
-        return Cache::remember($cacheKey, 300, function () use ($query, $limit) {
+        // Cache global cho store config
+        $defaultLimit = Cache::remember('store_products_per_page', 3600, function () {
             $storeConfig = \App\Models\AdminSetting::query()->where('key', 'store_profile')->first();
-            $defaultLimit = 12;
-            if ($storeConfig && isset($storeConfig->value['products_per_page'])) {
-                $defaultLimit = (int) $storeConfig->value['products_per_page'];
-                if ($defaultLimit < 1) $defaultLimit = 12;
-            }
-
-            return $query
-                ->with(['category', 'variants'])
-                ->withCount([
-                    'reviews as reviews_count' => fn ($q) => $q->where('status', 'approved'),
-                ])
-                // Bỏ withAvg - chỉ load khi cần chi tiết sản phẩm
-                ->paginate($limit > 0 ? $limit : $defaultLimit);
+            return ($storeConfig && isset($storeConfig->value['products_per_page']))
+                ? max(1, (int) $storeConfig->value['products_per_page'])
+                : 12;
         });
+
+        return $query
+            ->with(['category', 'variants'])
+            ->withCount([
+                'reviews as reviews_count' => fn ($q) => $q->where('status', 'approved'),
+            ])
+            ->paginate($limit > 0 ? $limit : $defaultLimit);
     }
 
     /**

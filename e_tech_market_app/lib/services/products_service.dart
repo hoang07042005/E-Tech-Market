@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../config/dio_client.dart';
@@ -18,7 +19,6 @@ class ProductsService {
   }) async {
     final queryParams = <String, dynamic>{
       'page': page,
-      '_t': DateTime.now().millisecondsSinceEpoch,
     };
 
     if (limit != null) queryParams['limit'] = limit;
@@ -32,7 +32,10 @@ class ProductsService {
     if (isFeatured != null) queryParams['is_featured'] = isFeatured;
 
     try {
+      final stopwatch = Stopwatch()..start();
       final response = await DioClient.instance.get('/products', queryParameters: queryParams);
+      debugPrint('API /products took ${stopwatch.elapsedMilliseconds}ms');
+      stopwatch.stop();
       return response.data as Map<String, dynamic>;
     } on DioException catch (e) {
       throw Exception(_extractErrorMessage(e));
