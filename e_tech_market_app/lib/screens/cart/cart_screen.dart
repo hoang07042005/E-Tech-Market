@@ -283,7 +283,7 @@ class _CartScreenState extends State<CartScreen> {
                 ],
                 const SizedBox(height: 8),
                 Text(
-                  formatCurrency(item.unitPrice),
+                  formatCurrency(item.unitPrice) + ' ₫',
                   style: const TextStyle(
                     color: Color(0xFFF26522),
                     fontWeight: FontWeight.w900,
@@ -383,7 +383,7 @@ class _CartScreenState extends State<CartScreen> {
                     style: TextStyle(color: Color(0xFF64748B), fontSize: 12),
                   ),
                   Text(
-                    formatCurrency(_cart.totalPrice),
+                    formatCurrency(_cart.totalPrice) + ' đ',
                     style: const TextStyle(
                       color: Color(0xFFF26522),
                       fontWeight: FontWeight.w900,

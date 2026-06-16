@@ -119,20 +119,29 @@ class _CouponSectionState extends State<CouponSection> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      'Ưu đãi dành cho bạn',
-                      style: TextStyle(
-                        fontSize: 16, 
-                        fontWeight: FontWeight.w700,
-                        color: Theme.of(context).colorScheme.onSurface,
-                        letterSpacing: -0.3,
-                      ),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        const Icon(Icons.card_giftcard, color: Color(0xFFFF2424), size: 28),
+                        const SizedBox(width: 6), 
+                        Expanded( 
+                          child: Text(
+                            'Ưu đãi dành cho bạn',
+                            style: TextStyle(
+                              fontSize: 18, 
+                              fontWeight: FontWeight.w700,
+                              color: Theme.of(context).colorScheme.onSurface,
+                              letterSpacing: -0.3,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
-                    SizedBox(height: 2),
+                    const SizedBox(height: 4), 
                     Text(
                       'Chạm vào mã để sao chép nhanh',
                       style: TextStyle(
-                        fontSize: 12, 
+                        fontSize: 15, 
                         color: Theme.of(context).colorScheme.onSurfaceVariant,
                       ),
                     ),

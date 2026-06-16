@@ -40,7 +40,7 @@ class TabbedProductSection extends StatelessWidget {
 
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.fromLTRB(20, 24, 20, 30),
+      padding: const EdgeInsets.fromLTRB(20, 24, 20, 20),
       color: Theme.of(context).colorScheme.surface,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -92,7 +92,7 @@ class TabbedProductSection extends StatelessWidget {
                       selectedColor: _brandColor,
                       backgroundColor: Theme.of(context).colorScheme.surface,
                       side: BorderSide(
-                        color: selected ? _brandColor : Theme.of(context).colorScheme.outline, width:0.15,
+                        color: selected ? _brandColor : Theme.of(context).colorScheme.outline, width: 0.15,
                       ),
                       onSelected: onTabSelected == null
                           ? null
@@ -108,7 +108,7 @@ class TabbedProductSection extends StatelessWidget {
             _buildSkeletonGrid()
           else if (visibleProducts.isEmpty)
             Padding(
-              padding: EdgeInsets.symmetric(vertical: 24),
+              padding: const EdgeInsets.symmetric(vertical: 24),
               child: Text(
                 'Chưa có sản phẩm nổi bật.',
                 textAlign: TextAlign.center,
@@ -116,25 +116,26 @@ class TabbedProductSection extends StatelessWidget {
               ),
             )
           else
-            GridView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: visibleProducts.length,
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                crossAxisSpacing: 12,
-                mainAxisSpacing: 12,
-                childAspectRatio: 0.54,
-              ),
-              itemBuilder: (context, index) {
-                final product = visibleProducts[index];
-                final productId = (product['id'] as num?)?.toInt() ?? 0;
-                return _TabbedProductCard(
-                  product: product,
-                  isWished: wishedProductIds.contains(productId),
-                  onTap: () => onProductSelected(product),
-                  onToggleWishlist: () => onToggleWishlist(productId),
-                  onAddToCart: () => onAddToCart(product),
+            LayoutBuilder(
+              builder: (context, constraints) {
+                final itemWidth = (constraints.maxWidth - 12) / 2;
+                return Wrap(
+                  spacing: 12,
+                  runSpacing: 12,
+                  children: List.generate(visibleProducts.length, (index) {
+                    final product = visibleProducts[index];
+                    final productId = (product['id'] as num?)?.toInt() ?? 0;
+                    return SizedBox(
+                      width: itemWidth,
+                      child: _TabbedProductCard(
+                        product: product,
+                        isWished: wishedProductIds.contains(productId),
+                        onTap: () => onProductSelected(product),
+                        onToggleWishlist: () => onToggleWishlist(productId),
+                        onAddToCart: () => onAddToCart(product),
+                      ),
+                    );
+                  }),
                 );
               },
             ),
@@ -144,17 +145,18 @@ class TabbedProductSection extends StatelessWidget {
   }
 
   Widget _buildSkeletonGrid() {
-    return GridView.builder(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      itemCount: 4,
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        crossAxisSpacing: 12,
-        mainAxisSpacing: 12,
-        childAspectRatio: 0.54,
-      ),
-      itemBuilder: (_, __) => const _TabbedProductSkeleton(),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final itemWidth = (constraints.maxWidth - 12) / 2;
+        return Wrap(
+          spacing: 12,
+          runSpacing: 12,
+          children: List.generate(4, (_) => SizedBox(
+            width: itemWidth,
+            child: const _TabbedProductSkeleton(),
+          )),
+        );
+      },
     );
   }
 }
@@ -177,6 +179,10 @@ class _TabbedProductCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final name = product['name']?.toString() ?? '';
+    // Đồng bộ cách lấy trường mô tả giống như product_section
+    final excerpt = product['short_description']?.toString().trim().isNotEmpty == true
+        ? product['short_description'].toString()
+        : Trans.defaultProductExcerpt;
     final imageUrl = _resolveProductImageUrl(product);
     final displayPrice = _getDisplayPrice(product);
     final oldPrice = _getDisplayOldPrice(product);
@@ -194,125 +200,118 @@ class _TabbedProductCard extends StatelessWidget {
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
+            mainAxisSize: MainAxisSize.min,
             children: [
-              Expanded(
-                flex: 7,
-                child: Container(
-                  child: Stack(
-                    children: [
-                      Positioned.fill(
-                        child: Padding(
-                          padding: const EdgeInsets.all(0),
-                          child: imageUrl.isEmpty
-                              ? _buildFallback(context)
-                              : Image.network(
-                                  imageUrl,
-                                  fit: BoxFit.contain,
-                                  errorBuilder: (_, __, ___) => _buildFallback(context),
-                                ),
-                        ),
-                      ),
-                      Positioned(
-                        top: 8,
-                        right: 8,
-                        child: Material(
-                          color: Theme.of(context).colorScheme.surface,
-                          shape: const CircleBorder(),
-                          child: InkWell(
-                            onTap: onToggleWishlist,
-                            customBorder: const CircleBorder(),
-                            child: Padding(
-                              padding: const EdgeInsets.all(6),
-                              child: Icon(
-                                isWished ? Icons.favorite : Icons.favorite_border,
-                                color: isWished ? _brandColor : Theme.of(context).colorScheme.onSurfaceVariant,
-                                size: 16,
-                              ),
+              // 1. Phần Ảnh (giữ tỉ lệ aspect ratio 1.1 của tabbed_product_section)
+              AspectRatio(
+                aspectRatio: 1.1,
+                child: Stack(
+                  children: [
+                    Positioned.fill(
+                      child: imageUrl.isEmpty
+                          ? _buildFallback(context)
+                          : Image.network(
+                              imageUrl,
+                              fit: BoxFit.cover,
+                              errorBuilder: (_, __, ___) => _buildFallback(context),
+                            ),
+                    ),
+                    Positioned(
+                      top: 8,
+                      right: 8,
+                      child: Material(
+                        color: Theme.of(context).colorScheme.surface,
+                        shape: const CircleBorder(),
+                        child: InkWell(
+                          onTap: onToggleWishlist,
+                          customBorder: const CircleBorder(),
+                          child: Padding(
+                            padding: const EdgeInsets.all(6),
+                            child: Icon(
+                              isWished ? Icons.favorite : Icons.favorite_border,
+                              color: isWished ? _brandColor : Theme.of(context).colorScheme.onSurfaceVariant,
+                              size: 16,
                             ),
                           ),
                         ),
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
-              Expanded(
-                flex: 6,
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(12, 12, 12, 12),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        name,
-                        style: TextStyle(
-                          color: Theme.of(context).colorScheme.onSurface,
-                          fontSize: 13,
-                          fontWeight: FontWeight.w800,
-                        ),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
+              
+              // 2. Phần thông tin sản phẩm: Cập nhật theo giao diện product_section
+              Padding(
+                padding: const EdgeInsets.all(10),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      name,
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.onSurface,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w800,
+                        height: 1.25,
                       ),
-                      const SizedBox(height: 4),
-                      // Hiển thị giá gốc ở trên (bị gạch ngang), giá giảm ở dưới
-                      if (oldPrice != null && oldPrice > displayPrice) ...[
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 6),
+                    Wrap(
+                      spacing: 6,
+                      runSpacing: 2,
+                      crossAxisAlignment: WrapCrossAlignment.center,
+                      children: [
                         Text(
-                          '${_formatPrice(oldPrice)} đ',
-                          style: TextStyle(
-                            color: Theme.of(context).colorScheme.onSurfaceVariant,
-                            fontSize: 10,
-                            decoration: TextDecoration.lineThrough,
-                            decorationColor: Theme.of(context).colorScheme.onSurfaceVariant,
+                          '${_formatPrice(displayPrice)} đ',
+                          style: const TextStyle(
+                            color: _brandColor,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w800,
                           ),
                         ),
-                        const SizedBox(height: 4),
+                        if (oldPrice != null && oldPrice > displayPrice)
+                          Text(
+                            '${_formatPrice(oldPrice)} đ',
+                            style: TextStyle(
+                              color: Theme.of(context).colorScheme.onSurfaceVariant,
+                              fontSize: 10,
+                              decoration: TextDecoration.lineThrough,
+                              decorationColor: Theme.of(context).colorScheme.onSurfaceVariant,
+                            ),
+                          ),
                       ],
-                      Text(
-                        '${_formatPrice(displayPrice)} đ',
-                        style: TextStyle(
-                          color: Color(0xFFEF7A45),
-                          fontSize: 13,
-                          fontWeight: FontWeight.w800,
-                        ),
-                      ),
-                      
-                      Expanded(
-                        child: Text(
-                          product['short_description']?.toString() ?? '',
-                          style: TextStyle(
-                            color: Theme.of(context).colorScheme.onSurfaceVariant,
-                            fontSize: 11,
-                            height: 1.3,
-                          ),
-                          maxLines: 3,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      SizedBox(
-                          width: double.infinity,
-                          height: 30,
-                          child: ElevatedButton(
-                            onPressed: onAddToCart, 
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: _brandColor,
-                              foregroundColor: Theme.of(context).colorScheme.surface,
-                              elevation: 0,
-                              padding: EdgeInsets.zero,
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(4)),
+                    ),
+                    const SizedBox(height: 8),
+                    
+                    // Phần mô tả ngắn và Nút giỏ hàng hình tròn (Copy từ product_section)
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Expanded(
+                          child: Text(
+                            excerpt,
+                            style: TextStyle(
+                              color: Theme.of(context).colorScheme.onSurfaceVariant,
+                              fontSize: 11,
+                              height: 1.35,
                             ),
-                            child: Text(
-                              Trans.addToCartBtn,
-                              style: TextStyle(
-                                  fontSize: 10,
-                                  fontWeight: FontWeight.w800,
-                                  letterSpacing: 0.4),
-                            ),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
                           ),
                         ),
-                    ],
-                  ),
+                        const SizedBox(width: 6),
+                        _CircleActionButton(
+                          icon: Icons.add_shopping_cart_outlined,
+                          color: Colors.white,
+                          backgroundColor: _brandColor,
+                          onTap: onAddToCart,
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
               ),
             ],
@@ -393,6 +392,46 @@ class _TabbedProductCard extends StatelessWidget {
   }
 }
 
+// Thêm Widget nút bấm hình tròn từ product_section sang để sử dụng
+class _CircleActionButton extends StatelessWidget {
+  final IconData icon;
+  final Color color;
+  final Color? backgroundColor;
+  final VoidCallback onTap;
+
+  const _CircleActionButton({
+    required this.icon,
+    required this.color,
+    this.backgroundColor,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final bgColor = backgroundColor ?? Theme.of(context).colorScheme.surface;
+
+    return Material(
+      color: bgColor,
+      shape: const CircleBorder(),
+      child: InkWell(
+        onTap: onTap,
+        customBorder: const CircleBorder(),
+        child: Container(
+          width: 30,
+          height: 30,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            border: backgroundColor == null 
+                ? Border.all(color: Theme.of(context).colorScheme.outline, width: 0.15)
+                : null,
+          ),
+          child: Icon(icon, size: 15, color: color),
+        ),
+      ),
+    );
+  }
+}
+
 class _TabbedProductSkeleton extends StatelessWidget {
   const _TabbedProductSkeleton();
 
@@ -400,29 +439,51 @@ class _TabbedProductSkeleton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surfaceContainerLow,
-        borderRadius: BorderRadius.circular(10),
+        color: Theme.of(context).colorScheme.surface,
+        borderRadius: BorderRadius.circular(12),
         border: Border.all(color: Theme.of(context).colorScheme.outline, width: 0.15),
       ),
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
-          Expanded(flex: 7, child: Container(color: Theme.of(context).colorScheme.surfaceContainerLow)),
-          Expanded(
-            flex: 6,
-            child: Padding(
-              padding: const EdgeInsets.all(12),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: const [
-                  _TabbedSkeletonLine(widthFactor: 0.7),
-                  SizedBox(height: 10),
-                  _TabbedSkeletonLine(widthFactor: 0.9),
-                  SizedBox(height: 10),
-                  _TabbedSkeletonLine(widthFactor: 0.5),
-                  Spacer(),
-                  _TabbedSkeletonLine(widthFactor: 1, height: 32),
-                ],
-              ),
+          const AspectRatio(
+            aspectRatio: 1.1,
+            child: SizedBox(),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(12),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const _TabbedSkeletonLine(widthFactor: 0.8),
+                const SizedBox(height: 8),
+                const _TabbedSkeletonLine(widthFactor: 0.4),
+                const SizedBox(height: 12),
+                Row(
+                  children:  [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          _TabbedSkeletonLine(widthFactor: 0.9, height: 8),
+                          SizedBox(height: 4),
+                          _TabbedSkeletonLine(widthFactor: 0.7, height: 8),
+                        ],
+                      ),
+                    ),
+                    SizedBox(width: 6),
+                    Container(
+                      width: 30,
+                      height: 30,
+                      decoration: BoxDecoration(
+                        color: Colors.black12,
+                        shape: BoxShape.circle,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
             ),
           ),
         ],

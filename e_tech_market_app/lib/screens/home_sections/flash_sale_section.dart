@@ -171,12 +171,8 @@ class _FlashSaleSectionState extends State<FlashSaleSection> {
                   const Icon(Icons.flash_on, color: Color(0xFFFF2424), size: 28),
                   const SizedBox(width: 6),
                   Text(
-                    'FLASH SALE',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Theme.of(context).colorScheme.onSurface,
-                    ),
+                    _flashSale?['name'] != null ? '${_flashSale!['name'].toString().toUpperCase()}' : 'FLASH SALE',
+                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18, letterSpacing: 0.5),
                   ),
                 ],
               ),
@@ -205,20 +201,34 @@ class _FlashSaleSectionState extends State<FlashSaleSection> {
 
   Widget _buildCountdown() {
     return Row(
+      mainAxisAlignment: MainAxisAlignment.center, 
       children: [
         Text(
-          'KẾT THÚC TRONG: ',
+          'CHƯƠNG TRÌNH KẾT THÚC SAU : ',
           style: TextStyle(
-            fontSize: 11,
+            fontSize: 13,
             fontWeight: FontWeight.w600,
             color: Theme.of(context).colorScheme.onSurfaceVariant,
           ),
         ),
-        _buildTimerBox(_hours),
-        _buildTimerSep(),
-        _buildTimerBox(_minutes),
-        _buildTimerSep(),
-        _buildTimerBox(_seconds),
+        const SizedBox(width: 10),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+          decoration: BoxDecoration(
+            color: const Color(0xFFFF2424),
+            borderRadius: BorderRadius.circular(12),
+          ), 
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _buildTimerBox(_hours),
+              _buildTimerSep(),
+              _buildTimerBox(_minutes),
+              _buildTimerSep(),
+              _buildTimerBox(_seconds),
+            ],
+          ),
+        ),
       ],
     );
   }
@@ -227,7 +237,6 @@ class _FlashSaleSectionState extends State<FlashSaleSection> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
       decoration: BoxDecoration(
-        color: const Color(0xFFFF2424),
         borderRadius: BorderRadius.circular(4),
       ),
       child: Text(
@@ -247,7 +256,7 @@ class _FlashSaleSectionState extends State<FlashSaleSection> {
       child: Text(
         ':',
         style: TextStyle(
-          color: Color(0xFFFF2424),
+          color: Colors.white,
           fontSize: 14,
           fontWeight: FontWeight.bold,
         ),

@@ -122,14 +122,42 @@ class _SettingScreenState extends State<SettingScreen> {
     );
   }
 
-  Widget _buildSwitchTile({required IconData icon, required String title, required bool value, required ValueChanged<bool> onChanged, Color iconColor = const Color(0xFF3B82F6), Color iconBgColor = const Color(0xFFEFF6FF)}) {
+  Widget _buildSwitchTile({
+    required IconData icon,
+    required String title,
+    required bool value,
+    required ValueChanged<bool> onChanged,
+    Color iconColor = const Color(0xFF3B82F6),
+    Color iconBgColor = const Color(0xFFEFF6FF),
+  }) {
     return SwitchListTile(
       value: value,
       onChanged: onChanged,
-      activeColor: const Color(0xFFF26522),
+      activeColor: Colors.white, 
+      activeTrackColor: const Color(0xFF34C759),         
+      inactiveThumbColor: const Color(0xFF94A3B8),
+      inactiveTrackColor: Theme.of(context).colorScheme.surface,
+      trackOutlineColor: WidgetStateProperty.resolveWith<Color?>(
+        (Set<WidgetState> states) {
+          if (states.contains(WidgetState.selected)) {
+            return const Color(0xFF34C759); 
+          }
+          return const Color(0xFFE2E8F0);
+        },
+      ),
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
-      secondary: Container(padding: const EdgeInsets.all(8), decoration: BoxDecoration(color: iconBgColor, borderRadius: BorderRadius.circular(8)), child: Icon(icon, color: iconColor, size: 20)),
-      title: Text(title, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w500)),
+      secondary: Container(
+        padding: const EdgeInsets.all(8),
+        decoration: BoxDecoration(
+          color: iconBgColor, 
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Icon(icon, color: iconColor, size: 20),
+      ),
+      title: Text(
+        title, 
+        style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
+      ),
     );
   }
 

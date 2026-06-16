@@ -8,6 +8,7 @@ import '../../utils/network_utils.dart';
 import '../../utils/app_snackbar.dart';
 import '../../utils/translation.dart';
 import 'product_detail_screen.dart';
+import '../cart/cart_screen.dart';
 
 class ProductsScreen extends StatefulWidget {
   final int? initialCategoryId;
@@ -804,67 +805,79 @@ class _ProductsScreenState extends State<ProductsScreen> {
                   ),
                 ),
               ),
-              // New Badge Top Right
-              if (isNew)
-                Positioned(
-                  top: 10,
-                  right: 10,
-                  child: Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: Colors.green,
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                    child: Text('MỚI',
-                        style: TextStyle(
-                            color: Theme.of(context).colorScheme.surface,
-                            fontSize: 10,
-                            fontWeight: FontWeight.bold)),
-                  ),
-                ),
-              // Bottom Badges
+              // Top-right badges (MỚI, -%, NỔI BẬT hiển thị đồng thời theo HÀNG NGANG)
               Positioned(
-                bottom: 10,
-                left: 10,
+                top: 10,
+                right: 10,
                 child: Row(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    if (isFeatured)
+                    // Badge NỔI BẬT
+                    if (isFeatured) ...[
                       Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 8, vertical: 4),
-                        margin: const EdgeInsets.only(right: 4),
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                         decoration: BoxDecoration(
                           color: Colors.amber.shade700,
                           borderRadius: BorderRadius.circular(4),
                         ),
-                        child: Text('NỔI BẬT',
-                            style: TextStyle(
-                                color: Theme.of(context).colorScheme.surface,
-                                fontSize: 10,
-                                fontWeight: FontWeight.bold)),
+                        child: Text(
+                          'NỔI BẬT',
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.surface,
+                            fontSize: 10,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                       ),
+                      const SizedBox(width: 4), // Khoảng cách ngang giữa các badge
+                    ],
+
+                    // Badge MỚI
+                    if (isNew) ...[
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: Colors.green,
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        child: Text(
+                          'MỚI',
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.surface,
+                            fontSize: 10,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 4),
+                    ],
+
+                    // Badge GIẢM GIÁ
                     if (discountPercent > 0)
                       Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 8, vertical: 4),
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                         decoration: BoxDecoration(
                           color: Colors.red,
                           borderRadius: BorderRadius.circular(4),
                         ),
-                        child: Text('-$discountPercent%',
-                            style: TextStyle(
-                                color: Theme.of(context).colorScheme.surface,
-                                fontSize: 10,
-                                fontWeight: FontWeight.bold)),
+                        child: Text(
+                          '-$discountPercent%',
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.surface,
+                            fontSize: 10,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                       ),
                   ],
                 ),
               ),
+
             ],
           ),
 
           // Content
+
           Padding(
             padding: const EdgeInsets.all(16),
             child: Column(
@@ -941,32 +954,89 @@ class _ProductsScreenState extends State<ProductsScreen> {
                   overflow: TextOverflow.ellipsis,
                 ),
                 const SizedBox(height: 16),
-                SizedBox(
-                  width: double.infinity,
-                  height: 40,
-                  child: ElevatedButton(
-                    onPressed: () async {
-                      try {
-                        await CartService.addToCart(productId, 1);
-                        if (!mounted) return;
-                        AppSnackBar.showSuccess(context, Trans.addedToCart);
-                      } catch (e) {
-                        if (!mounted) return;
-                        AppSnackBar.showError(context, Trans.errorLabel + e.toString().replaceFirst('Exception: ', ''));
-                      }
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFF26522),
-                      foregroundColor: Theme.of(context).colorScheme.surface,
-                      elevation: 0,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(4),
+
+                Row(
+                  children: [
+                    // Nút Thêm Vào Giỏ (Viền cam, nền trắng/trong suốt)
+                    Expanded(
+                      child: SizedBox(
+                        height: 42,
+                        child: OutlinedButton.icon(
+                          onPressed: () async {
+                            try {
+                              await CartService.addToCart(productId, 1);
+                              if (!mounted) return;
+                              AppSnackBar.showSuccess(context, Trans.addedToCart);
+                            } catch (e) {
+                              if (!mounted) return;
+                              AppSnackBar.showError(context, Trans.errorLabel + e.toString().replaceFirst('Exception: ', ''));
+                            }
+                          },
+                          icon: const Icon(Icons.add_shopping_cart, size: 18, color: Color(0xFFF26522)),
+                          label: Text(
+                            Trans.addToCart,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Color(0xFFF26522),
+                              fontSize: 13,
+                            ),
+                          ),
+                          style: OutlinedButton.styleFrom(
+                            side: const BorderSide(color: Color(0xFFF26522), width: 1),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                            padding: EdgeInsets.zero,
+                          ),
+                        ),
                       ),
                     ),
-                    child: Text(Trans.addToCart,
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, letterSpacing: 0.5)),
-                  ),
+                    const SizedBox(width: 10), // Khoảng cách giữa 2 nút
+                    
+                    // Nút Mua Ngay (Nền cam chữ trắng đầy đủ)
+                    Expanded(
+                      child: SizedBox(
+                        height: 42,
+                        child: ElevatedButton(
+                          onPressed: () async {
+                            try {
+                              // 1. Thêm sản phẩm vào giỏ hàng trước
+                              await CartService.addToCart(productId, 1);
+                              if (!mounted) return;
+                              
+                              // 2. Chuyển hướng NGAY lập tức sang trang Giỏ hàng
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const CartScreen(), 
+                                ),
+                              );
+                            } catch (e) {
+                              if (!mounted) return;
+                              AppSnackBar.showError(context, Trans.errorLabel + e.toString().replaceFirst('Exception: ', ''));
+                            }
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFFF26522),
+                            foregroundColor: Colors.white,
+                            elevation: 0,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                            padding: EdgeInsets.zero,
+                          ),
+                          child: const Text(
+                            'Mua ngay',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              letterSpacing: 0.5,
+                              fontSize: 13,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),

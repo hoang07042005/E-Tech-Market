@@ -164,39 +164,29 @@ class _ProductCard extends StatelessWidget {
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
+            mainAxisSize: MainAxisSize.min, // <-- Giúp viền Container co khít theo nội dung bên trong
             children: [
-              Expanded(
-                flex: 8,
+              // --- PHẦN 1: CỐ ĐỊNH TỈ LỆ ẢNH ĐỂ ĐỀU NHAU ---
+              AspectRatio(
+                aspectRatio: 1, // Ảnh vuông tỉ lệ 1:1, giúp các sản phẩm thẳng hàng phần ảnh
                 child: Stack(
                   children: [
                     Positioned.fill(
-                      child: Container(
-                        padding: const EdgeInsets.all(0),
-                        child: imageUrl.isEmpty
-                            ? _buildImageFallback()
-                            : Image.network(
-                                imageUrl,
-                                fit: BoxFit.contain,
-                                errorBuilder: (_, __, ___) =>
-                                    _buildImageFallback(),
-                              ),
-                      ),
+                      child: imageUrl.isEmpty
+                          ? _buildImageFallback()
+                          : Image.network(
+                              imageUrl,
+                              fit: BoxFit.cover,
+                              errorBuilder: (_, __, ___) => _buildImageFallback(),
+                            ),
                     ),
                     Positioned(
                       top: 8,
                       left: 8,
-                      child: Row(
-                        children: [
-                          _CircleActionButton(
-                            icon: isWished
-                                ? Icons.favorite
-                                : Icons.favorite_border,
-                            color: isWished
-                                ? _brandColor
-                                : const Color(0xFF94A3B8),
-                            onTap: onToggleWishlist,
-                          ),
-                        ],
+                      child: _CircleActionButton(
+                        icon: isWished ? Icons.favorite : Icons.favorite_border,
+                        color: isWished ? _brandColor : const Color(0xFF94A3B8),
+                        onTap: onToggleWishlist,
                       ),
                     ),
                     if (discountPercent > 0 || isNew)
@@ -204,11 +194,9 @@ class _ProductCard extends StatelessWidget {
                         top: 8,
                         right: 8,
                         child: Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 8, vertical: 4),
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                           decoration: BoxDecoration(
-                            color:
-                                discountPercent > 0 ? Colors.red : _brandColor,
+                            color: discountPercent > 0 ? Colors.red : _brandColor,
                             borderRadius: BorderRadius.circular(3),
                           ),
                           child: Text(
@@ -223,105 +211,96 @@ class _ProductCard extends StatelessWidget {
                   ],
                 ),
               ),
-              Expanded(
-                flex: 9,
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Expanded(
-                            child: Text(
-                              (brand == null || brand.isEmpty ? Trans.brandDefault : brand)
-                                  .toUpperCase(),
-                              style: TextStyle(
-                                color: Theme.of(context).colorScheme.onSurfaceVariant,
-                                fontSize: 10,
-                                fontWeight: FontWeight.w800,
-                                letterSpacing: 0.5,
-                              ),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
+              
+              // --- PHẦN 2: THÔNG TIN TỰ CO GIÃN THEO CHỮ (BỎ EXPANDED) ---
+              Padding(
+                padding: const EdgeInsets.all(10),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            (brand == null || brand.isEmpty ? Trans.brandDefault : brand)
+                                .toUpperCase(),
+                            style: TextStyle(
+                              color: Theme.of(context).colorScheme.onSurfaceVariant,
+                              fontSize: 10,
+                              fontWeight: FontWeight.w800,
+                              letterSpacing: 0.5,
                             ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                           ),
-                          _RatingStars(rating: rating, count: ratingCount),
-                        ],
-                      ),
-                      const SizedBox(height: 6),
-                      Text(
-                        name,
-                          style: TextStyle(
-                            color: Theme.of(context).colorScheme.onSurface,
-                          fontSize: 13,
-                          fontWeight: FontWeight.w800,
-                          height: 1.25,
                         ),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
+                        _RatingStars(rating: rating, count: ratingCount),
+                      ],
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      name,
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.onSurface,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w800,
+                        height: 1.25,
                       ),
-                      const SizedBox(height: 6),
-                      Wrap(
-                        spacing: 6,
-                        runSpacing: 2,
-                        crossAxisAlignment: WrapCrossAlignment.center,
-                        children: [
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 6),
+                    Wrap(
+                      spacing: 6,
+                      runSpacing: 2,
+                      crossAxisAlignment: WrapCrossAlignment.center,
+                      children: [
+                        Text(
+                          '${_formatPrice(displayPrice)} đ',
+                          style: const TextStyle(
+                              color: _brandColor,
+                              fontSize: 14,
+                              fontWeight: FontWeight.w800),
+                        ),
+                        if (oldPrice != null && oldPrice > displayPrice)
                           Text(
-                            '${_formatPrice(displayPrice)} đ',
-                            style: const TextStyle(
-                                color: _brandColor,
-                                fontSize: 14,
-                                fontWeight: FontWeight.w800),
-                          ),
-                          if (oldPrice != null && oldPrice > displayPrice)
-                            Text(
-                              '${_formatPrice(oldPrice)} đ',
-                              style: TextStyle(
-                                color: Theme.of(context).colorScheme.onSurfaceVariant,
-                                fontSize: 11,
-                                decoration: TextDecoration.lineThrough,
-                              ),
-                            ),
-                        ],
-                      ),
-                      const SizedBox(height: 6),
-                      Expanded(
-                        child: Text(
-                          excerpt,
+                            '${_formatPrice(oldPrice)} đ',
                             style: TextStyle(
                               color: Theme.of(context).colorScheme.onSurfaceVariant,
                               fontSize: 11,
-                              height: 1.35),
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-
-                      SizedBox(
-                        width: double.infinity,
-                        height: 30,
-                        child: ElevatedButton(
-                          onPressed: onAddToCart, 
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: _brandColor,
-                            foregroundColor: Colors.white,
-                            elevation: 0,
-                            padding: EdgeInsets.zero,
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(4)),
+                              decoration: TextDecoration.lineThrough,
+                            ),
                           ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    
+                    // Phần mô tả ngắn và Nút giỏ hàng tự động co giãn ngang hàng
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Expanded(
                           child: Text(
-                            Trans.addToCartBtn,
+                            excerpt,
                             style: TextStyle(
-                                fontSize: 10,
-                                fontWeight: FontWeight.w800,
-                                letterSpacing: 0.4),
+                                color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                fontSize: 11,
+                                height: 1.35),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
                           ),
                         ),
-                      ),
-                    ],
-                  ),
+                        const SizedBox(width: 6),
+                        _CircleActionButton(
+                          icon: Icons.add_shopping_cart_outlined,
+                          color: Colors.white,
+                          backgroundColor: _brandColor,
+                          onTap: onAddToCart,
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
               ),
             ],
@@ -330,6 +309,10 @@ class _ProductCard extends StatelessWidget {
       ),
     );
   }
+
+  // Các hàm hỗ trợ bên dưới giữ nguyên...
+  
+ 
 
   Widget _buildImageFallback() {
     return Center(
@@ -422,28 +405,34 @@ class _ProductCard extends StatelessWidget {
 class _CircleActionButton extends StatelessWidget {
   final IconData icon;
   final Color color;
+  final Color? backgroundColor; // Thêm dòng này
   final VoidCallback onTap;
 
   const _CircleActionButton({
     required this.icon,
     required this.color,
+    this.backgroundColor, // Thêm dòng này
     required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
+    final bgColor = backgroundColor ?? Theme.of(context).colorScheme.surface;
+
     return Material(
-      color: Theme.of(context).colorScheme.surface,
+      color: bgColor,
       shape: const CircleBorder(),
       child: InkWell(
         onTap: onTap,
         customBorder: const CircleBorder(),
         child: Container(
-          width: 28,
-          height: 28,
+          width: 30, // Kích thước vừa vặn cho góc chữ
+          height: 30,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            border: Border.all(color: Theme.of(context).colorScheme.outline, width: 0.15),
+            border: backgroundColor == null 
+                ? Border.all(color: Theme.of(context).colorScheme.outline, width: 0.15)
+                : null,
           ),
           child: Icon(icon, size: 15, color: color),
         ),

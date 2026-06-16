@@ -526,11 +526,11 @@ class _FlashSaleProductScreenState extends State<FlashSaleProductScreen> {
         decoration: BoxDecoration(
           color: Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: Theme.of(context).colorScheme.outline, width: 0.5),
+          border: Border.all(color: Theme.of(context).colorScheme.outline, width: 0.15),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withOpacity(0.04),
-              blurRadius: 6,
+              blurRadius: 6,  
               offset: const Offset(0, 2),
             ),
           ],

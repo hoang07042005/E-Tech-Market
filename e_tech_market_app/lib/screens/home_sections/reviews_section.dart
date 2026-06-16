@@ -25,7 +25,7 @@ class ReviewsSection extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Padding(
-            padding: const EdgeInsets.only(bottom: 20),
+            padding: const EdgeInsets.only(bottom: 30),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [

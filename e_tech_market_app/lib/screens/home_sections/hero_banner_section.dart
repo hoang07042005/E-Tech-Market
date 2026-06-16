@@ -55,11 +55,6 @@ class _HeroBannerSectionState extends State<HeroBannerSection> {
       return Container(
         height: 280,
         decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [Colors.orange.shade100, Colors.yellow.shade100],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
           borderRadius: BorderRadius.circular(24),
         ),
         child: const Center(child: CircularProgressIndicator()),
@@ -110,9 +105,9 @@ class _HeroBannerSectionState extends State<HeroBannerSection> {
                         begin: Alignment.centerLeft,
                         end: Alignment.centerRight,
                         colors: [
-                          Colors.white.withValues(alpha: 0.72),
-                          Colors.orange.shade50.withValues(alpha: 0.35),
-                          Colors.orange.shade100.withValues(alpha: 0.18),
+                          Colors.white.withValues(alpha: 0.30),
+                          Colors.orange.shade50.withValues(alpha: 0.15),
+                          Colors.orange.shade100.withValues(alpha: 0.05),
                         ],
                       ),
                     ),
