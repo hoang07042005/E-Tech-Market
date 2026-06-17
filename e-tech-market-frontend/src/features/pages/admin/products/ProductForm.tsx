@@ -139,7 +139,7 @@ export default function ProductForm({ productId, onSave, onCancel }: ProductForm
   const [faqPasteText, setFaqPasteText] = useState('')
   const [mainInventoryQty, setMainInventoryQty] = useState<number | null>(null)
 
-  const token = localStorage.getItem('token')
+  // 🔒 Token is sent via httpOnly cookie automatically
 
   const variantStockSum = variants.reduce((sum, v) => sum + (Number.isFinite(v.stock_quantity) ? v.stock_quantity : 0), 0)
 
@@ -147,11 +147,11 @@ export default function ProductForm({ productId, onSave, onCancel }: ProductForm
     const fetchInitData = async () => {
       setIsLoading(true)
       try {
-        const cData = await fetchAdminCategories<Category[]>(token)
+        const cData = await fetchAdminCategories<Category[]>()
         setCategories(cData)
 
         if (productId) {
-          const pData = await fetchAdminProductDetail<AdminProductDetail>(productId, token)
+          const pData = await fetchAdminProductDetail<AdminProductDetail>(productId)
           setFormData({
             name: pData.name,
             category_id: pData.category_id.toString(),
@@ -199,7 +199,7 @@ export default function ProductForm({ productId, onSave, onCancel }: ProductForm
       }
     }
     fetchInitData()
-  }, [productId, token])
+  }, [productId])
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
@@ -424,7 +424,7 @@ export default function ProductForm({ productId, onSave, onCancel }: ProductForm
     }
 
     try {
-      const resData = await saveAdminProduct<{ inventory_items?: InventoryMainRow[] }>(data, productId, token)
+      const resData = await saveAdminProduct<{ inventory_items?: InventoryMainRow[] }>(data, productId)
       if (resData.inventory_items) {
         const invMain = resData.inventory_items.find(i => i.location_code === 'main')
         setMainInventoryQty(typeof invMain?.quantity_on_hand === 'number' ? invMain.quantity_on_hand : null)

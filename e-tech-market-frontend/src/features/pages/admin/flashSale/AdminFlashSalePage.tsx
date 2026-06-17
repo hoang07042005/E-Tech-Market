@@ -3,6 +3,7 @@ import { apiFetch, API_BASE_URL } from '@/configs/api.config'
 import { fetchFlashSales, fetchFlashSaleDetail } from '@/features/services/admin/api.admin.service'
 import '@/styles/admin/AdminPage.css'
 import '@/styles/admin/AdminFlashSalePage.css'
+import { useAuthStore } from '@/features/store/useAuthStore'
 
 type Product = {
   id: number
@@ -42,7 +43,9 @@ type FlashSale = {
 }
 
 export default function AdminFlashSalePage() {
-  const token = typeof window !== 'undefined' ? window.localStorage.getItem('token') : null
+  // 🔒 Token is sent via httpOnly cookie automatically
+  const userStr = useAuthStore((state) => state.userStr)
+  const hasAuth = !!userStr
   const [sales, setSales] = useState<FlashSale[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -99,10 +102,10 @@ export default function AdminFlashSalePage() {
   const selectedProduct = availableProducts.find(p => String(p.id) === addItemData.product_id)
 
   const loadSales = async () => {
-    if (!token) return
+    if (!hasAuth) return
     setLoading(true)
     try {
-      const res = await fetchFlashSales<FlashSale[]>(token)
+      const res = await fetchFlashSales<FlashSale[]>()
       setSales(res)
     } catch (e: any) {
       setError(e.message)
@@ -112,10 +115,10 @@ export default function AdminFlashSalePage() {
   }
 
   const loadProducts = async () => {
-    if (!token) return
+    if (!hasAuth) return
     try {
       // For simplicity, just get all products. In real app, use search/pagination
-      const res = await apiFetch<any>('/api/admin/products?per_page=100', { token })
+      const res = await apiFetch<any>('/api/admin/products?per_page=100')
       const data = Array.isArray(res?.data) ? res.data : (Array.isArray(res) ? res : [])
       setAvailableProducts(data)
     } catch (e: any) {
@@ -130,18 +133,16 @@ export default function AdminFlashSalePage() {
 
   const handleSubmitSale = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!token) return
+    if (!hasAuth) return
     try {
       if (editingSale) {
         await apiFetch(`/api/admin/flash-sales/${editingSale.id}`, {
           method: 'PUT',
-          token,
           body: JSON.stringify(formData)
         })
       } else {
         await apiFetch('/api/admin/flash-sales', {
           method: 'POST',
-          token,
           body: JSON.stringify(formData)
         })
       }
@@ -153,9 +154,9 @@ export default function AdminFlashSalePage() {
   }
 
   const handleOpenItems = async (sale: FlashSale) => {
-    if (!token) return
+    if (!hasAuth) return
     try {
-      const fullSale = await fetchFlashSaleDetail<FlashSale>(sale.id, token)
+      const fullSale = await fetchFlashSaleDetail<FlashSale>(sale.id)
       setCurrentSale(fullSale)
       setIsItemsModalOpen(true)
     } catch (e: any) {
@@ -165,11 +166,10 @@ export default function AdminFlashSalePage() {
 
   const handleAddItem = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!token || !currentSale) return
+    if (!hasAuth || !currentSale) return
     try {
       await apiFetch(`/api/admin/flash-sales/${currentSale.id}/items`, {
         method: 'POST',
-        token,
         body: JSON.stringify({
           product_id: Number(addItemData.product_id),
           variant_id: addItemData.variant_id ? Number(addItemData.variant_id) : null,
@@ -186,7 +186,7 @@ export default function AdminFlashSalePage() {
 
   const handleBulkDiscount = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!token || !currentSale) return
+    if (!hasAuth || !currentSale) return
     if (!bulkDiscountPercentage) {
       alert('Vui lòng nhập phần trăm giảm giá!')
       return
@@ -203,7 +203,6 @@ export default function AdminFlashSalePage() {
     try {
       const res = await apiFetch<{ message: string }>(`/api/admin/flash-sales/${currentSale.id}/bulk-discount`, {
         method: 'POST',
-        token,
         body: JSON.stringify({
           discount_percentage: percent,
           quantity_limit: bulkQuantityLimit ? Number(bulkQuantityLimit) : null
@@ -221,12 +220,11 @@ export default function AdminFlashSalePage() {
   }
 
   const handleRemoveItem = async (itemId: number) => {
-    if (!token || !currentSale) return
+    if (!hasAuth || !currentSale) return
     if (!confirm('Xóa sản phẩm này khỏi Flash Sale?')) return
     try {
       await apiFetch(`/api/admin/flash-sales/${currentSale.id}/items/${itemId}`, {
-        method: 'DELETE',
-        token
+        method: 'DELETE'
       })
       handleOpenItems(currentSale)
     } catch (e: any) {

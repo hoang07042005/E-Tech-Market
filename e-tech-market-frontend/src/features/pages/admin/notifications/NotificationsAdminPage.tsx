@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { apiFetch } from '@/configs/api.config'
+import { useAuthStore } from '@/features/store/useAuthStore'
 
 type Notif = {
   id: number
@@ -25,14 +26,15 @@ function fmtVi(iso?: string | null) {
 }
 
 export default function NotificationsAdminPage() {
-  const token = typeof window !== 'undefined' ? window.localStorage.getItem('token') : null
+  const userStr = useAuthStore((state) => state.userStr)
+  const hasAuth = !!userStr
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [res, setRes] = useState<NotifRes | null>(null)
   const [page, setPage] = useState(1)
 
   const load = useCallback(async () => {
-    if (!token) {
+    if (!hasAuth) {
       setError('Bạn chưa đăng nhập.')
       setLoading(false)
       return
@@ -40,14 +42,14 @@ export default function NotificationsAdminPage() {
     setLoading(true)
     setError(null)
     try {
-      const d = await apiFetch<NotifRes>(`/notifications?per_page=30&page=${page}`, { token })
+      const d = await apiFetch<NotifRes>(`/notifications?per_page=30&page=${page}`)
       setRes(d)
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Không tải được thông báo.')
     } finally {
       setLoading(false)
     }
-  }, [page, token])
+  }, [page, hasAuth])
 
   useEffect(() => {
     const t = window.setTimeout(() => {
@@ -60,9 +62,9 @@ export default function NotificationsAdminPage() {
   const pg = res?.pagination
 
   const markRead = async (id: number) => {
-    if (!token) return
+    if (!hasAuth) return
     try {
-      await apiFetch(`/notifications/${id}/read`, { token, method: 'PATCH', body: JSON.stringify({}) })
+      await apiFetch(`/notifications/${id}/read`, { method: 'PATCH', body: JSON.stringify({}) })
       await load()
     } catch {
       // ignore

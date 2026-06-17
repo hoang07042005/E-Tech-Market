@@ -69,8 +69,6 @@ export default function ProductPage({
   const PAGE_SIZE = 20
   const [page, setPage] = useState(1)
 
-  const token = localStorage.getItem('token')
-
   const getErrMsg = (err: unknown) => {
     if (err && typeof err === 'object' && 'message' in err) {
       const msg = (err as { message?: unknown }).message
@@ -83,14 +81,15 @@ export default function ProductPage({
     setIsLoading(true)
     setError(null)
     try {
-      const data = await fetchAdminProducts(token)
+      // 🔒 Token is sent via httpOnly cookie automatically
+      const data = await fetchAdminProducts()
       setProducts(data)
     } catch (err: unknown) {
       setError(getErrMsg(err))
     } finally {
       setIsLoading(false)
     }
-  }, [token])
+  }, [])
 
   useEffect(() => {
     const t = window.setTimeout(() => {
@@ -151,7 +150,7 @@ export default function ProductPage({
     setConfirmOpen(false)
 
     try {
-      await deleteAdminProduct(pendingDeleteProduct.id, token)
+      await deleteAdminProduct(pendingDeleteProduct.id)
       setPendingDeleteProduct(null)
       fetchData()
     } catch (err: unknown) {

@@ -3,6 +3,8 @@ import { useEffect, useState, lazy, Suspense } from 'react'
 import { useApiQuery } from '@/features/api/useApiQuery'
 import ErrorBoundary from '@/components/ErrorBoundary'
 import { GlobalToastProvider } from '@/components/GlobalToastProvider'
+import { useQueryClient } from '@tanstack/react-query'
+import { API_BASE_URL } from '@/configs/api.config'
 
 import {
   AUTH_EXPIRED_EVENT,
@@ -10,6 +12,7 @@ import {
   isAuthSessionExpired,
   performAuthSessionExpiry,
 } from '@/features/store/auth.store'
+import { syncCartFromBackend } from '@/features/services/cart.service'
 
 import '@/styles/App.css'
 import HeaderPage from '@/components/HeaderPage'
@@ -100,6 +103,7 @@ function AppFrame() {
   const location = useLocation()
   const navigate = useNavigate()
   const path = (location.pathname || '').toLowerCase()
+  const queryClient = useQueryClient()
 
 
 
@@ -135,6 +139,44 @@ function AppFrame() {
     setMaintenanceMode(!!storeConfigQuery.data.maintenance_mode)
     setChatConfig(storeConfigQuery.data.chat || { service: 'none' })
   }, [storeConfigQuery.data])
+
+  useEffect(() => {
+    if (currentUser) {
+      syncCartFromBackend()
+      
+      let es: EventSource | null = null;
+      let retryTimeout: number | undefined;
+      
+      const connectSSE = () => {
+        es = new EventSource(`${API_BASE_URL}/api/sse/stream`, { withCredentials: true });
+        
+        es.onmessage = (event) => {
+          try {
+            const data = JSON.parse(event.data);
+            if (data.type === 'notification_created') {
+              queryClient.invalidateQueries({ queryKey: ['notifications'] });
+            } else if (data.type === 'payment_confirmed' || data.type === 'payment_failed') {
+              queryClient.invalidateQueries({ queryKey: ['order', String(data.order_id)] });
+              queryClient.invalidateQueries({ queryKey: ['orders'] });
+              window.dispatchEvent(new CustomEvent('payment_status_changed', { detail: data }));
+            }
+          } catch (e) {}
+        };
+        
+        es.onerror = () => {
+          es?.close();
+          retryTimeout = window.setTimeout(connectSSE, 5000);
+        };
+      };
+      
+      connectSSE();
+      
+      return () => {
+        es?.close();
+        if (retryTimeout) clearTimeout(retryTimeout);
+      };
+    }
+  }, [currentUser, queryClient])
 
   /** Phiên đăng nhập 24h: kiểm tra khi đổi route + mỗi phút. */
   useEffect(() => {

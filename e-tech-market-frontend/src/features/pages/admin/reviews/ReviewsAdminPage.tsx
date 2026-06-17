@@ -3,6 +3,7 @@ import type { ChangeEvent } from 'react'
 import { apiFetch, API_BASE_URL } from '@/configs/api.config'
 import ConfirmModal from '@/components/ConfirmModal'
 import '@/styles/admin/ReviewsAdminPage.css'
+import { useAuthStore } from '@/features/store/useAuthStore'
 
 type Review = {
   id: number
@@ -53,7 +54,9 @@ export default function ReviewsAdminPage() {
   const [totalPages, setTotalPages] = useState(1)
   const [showDeleteModal, setShowDeleteModal] = useState(false)
   const [reviewToDelete, setReviewToDelete] = useState<Review | null>(null)
-  const token = typeof window !== 'undefined' ? window.localStorage.getItem('token') : null
+  // 🔒 Token is sent via httpOnly cookie automatically
+  const userStr = useAuthStore((state) => state.userStr)
+  const hasAuth = !!userStr
 
   const fetchReviews = useCallback(
     async (
@@ -61,7 +64,7 @@ export default function ReviewsAdminPage() {
       status: 'all' | 'pending' | 'approved' | 'rejected',
       sort: SortOption,
     ) => {
-      if (!token) {
+      if (!hasAuth) {
         setLoading(false)
         return
       }
@@ -71,7 +74,7 @@ export default function ReviewsAdminPage() {
         if (status !== 'all') {
           url += `&status=${status}`
         }
-        const res = await apiFetch<ReviewListResponse>(url, { token })
+        const res = await apiFetch<ReviewListResponse>(url)
         const items = Array.isArray(res?.data) ? res.data : Array.isArray(res) ? res : []
         const sorted = [...items].sort((a, b) => {
           if (sort === 'oldest') {
@@ -94,22 +97,25 @@ export default function ReviewsAdminPage() {
         setLoading(false)
       }
     },
-    [token],
+    [hasAuth],
   )
 
   useEffect(() => {
     const loadReviews = async () => {
+      if (!hasAuth) {
+        setLoading(false)
+        return
+      }
       await fetchReviews(page, statusFilter, sortBy)
     }
     void loadReviews()
-  }, [fetchReviews, page, statusFilter, sortBy])
+  }, [fetchReviews, page, statusFilter, sortBy, hasAuth])
 
   const updateStatus = async (id: number, newStatus: Review['status']) => {
-    if (!token) return
+    if (!hasAuth) return
     try {
       await apiFetch(`/api/admin/reviews/${id}`, {
         method: 'PATCH',
-        token,
         body: JSON.stringify({ status: newStatus }),
       })
       setReviews((prev) =>
@@ -121,9 +127,9 @@ export default function ReviewsAdminPage() {
   }
 
   const deleteReview = async (id: number) => {
-    if (!token) return
+    if (!hasAuth) return
     try {
-      await apiFetch(`/api/admin/reviews/${id}`, { method: 'DELETE', token })
+      await apiFetch(`/api/admin/reviews/${id}`, { method: 'DELETE' })
       setReviews((prev) => prev.filter((r) => r.id !== id))
       setTotalReviews((prev) => Math.max(prev - 1, 0))
       setShowDeleteModal(false)

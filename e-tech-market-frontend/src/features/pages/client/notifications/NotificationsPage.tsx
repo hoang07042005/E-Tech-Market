@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { apiFetch } from '@/configs/api.config'
 import '@/styles/pages/NotificationsPage.css'
+import { useAuthStore } from '@/features/store/useAuthStore'
 
 type Notif = {
   id: number
@@ -57,7 +58,8 @@ function renderIcon(type: 'blog' | 'order' | 'warning' | 'system') {
 
 export default function NotificationsPage() {
   const navigate = useNavigate()
-  const token = typeof window !== 'undefined' ? window.localStorage.getItem('token') : null
+  const userStr = useAuthStore((state) => state.userStr)
+  const hasAuth = !!userStr
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [res, setRes] = useState<NotifRes | null>(null)
@@ -66,21 +68,21 @@ export default function NotificationsPage() {
   const [filter, setFilter] = useState<'all' | 'unread' | 'read'>('all')
 
   const load = useCallback(async () => {
-    if (!token) {
+    if (!hasAuth) {
       navigate('/login')
       return
     }
     setLoading(true)
     setError(null)
     try {
-      const d = await apiFetch<NotifRes>(`/notifications?per_page=20&page=${page}`, { token })
+      const d = await apiFetch<NotifRes>(`/notifications?per_page=20&page=${page}`)
       setRes(d)
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Không tải được thông báo.')
     } finally {
       setLoading(false)
     }
-  }, [navigate, page, token])
+  }, [navigate, page, hasAuth])
 
   useEffect(() => {
     void load()
@@ -97,11 +99,11 @@ export default function NotificationsPage() {
   }, [rows, filter])
 
   const markRead = async (id: number) => {
-    if (!token) return
+    if (!hasAuth) return
     try {
-      await apiFetch(`/notifications/${id}/read`, { token, method: 'PATCH', body: JSON.stringify({}) })
+      await apiFetch(`/notifications/${id}/read`, { method: 'PATCH', body: JSON.stringify({}) })
       // Reload silently to update counts and state
-      const d = await apiFetch<NotifRes>(`/notifications?per_page=20&page=${page}`, { token })
+      const d = await apiFetch<NotifRes>(`/notifications?per_page=20&page=${page}`)
       setRes(d)
     } catch {
       // ignore
@@ -109,10 +111,10 @@ export default function NotificationsPage() {
   }
 
   const markAllRead = async () => {
-    if (!token || unreadCount === 0 || markingAll) return
+    if (!hasAuth || unreadCount === 0 || markingAll) return
     setMarkingAll(true)
     try {
-      await apiFetch(`/notifications/read-all`, { token, method: 'PATCH', body: JSON.stringify({}) })
+      await apiFetch(`/notifications/read-all`, { method: 'PATCH', body: JSON.stringify({}) })
       await load()
     } catch {
       // ignore

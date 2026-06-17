@@ -10,19 +10,20 @@ export interface Banner {
   sort_order: number
 }
 
-export const fetchAdminBanners = (token: string | null) => {
-  return apiFetch<Banner[]>('/api/admin/banners', { token })
+// 🔒 Token is sent via httpOnly cookie automatically
+export const fetchAdminBanners = () => {
+  return apiFetch<Banner[]>('/api/admin/banners')
 }
 
-export const fetchAdminBannerDetail = (id: number, token: string | null) => {
-  return apiFetch<Banner>(`/api/admin/banners/${id}`, { token })
+export const fetchAdminBannerDetail = (id: number) => {
+  return apiFetch<Banner>(`/api/admin/banners/${id}`)
 }
 
-export const deleteAdminBanner = (id: number, token: string | null) => {
-  return apiFetch(`/api/admin/banners/${id}`, { method: 'DELETE', token })
+export const deleteAdminBanner = (id: number) => {
+  return apiFetch(`/api/admin/banners/${id}`, { method: 'DELETE' })
 }
 
-export const saveAdminBanner = async (data: FormData, id: number | null | undefined, token: string | null) => {
+export const saveAdminBanner = async (data: FormData, id: number | null | undefined) => {
   const url = id ? `/api/admin/banners/${id}` : '/api/admin/banners'
   if (id) {
     data.append('_method', 'PUT') // Laravel requires _method=PUT for multipart form updates
@@ -30,7 +31,6 @@ export const saveAdminBanner = async (data: FormData, id: number | null | undefi
 
   const response = await apiFetch<Banner>(url, {
     method: 'POST', // Always POST for FormData in Laravel, use _method=PUT for updates
-    token,
     body: data,
   })
 

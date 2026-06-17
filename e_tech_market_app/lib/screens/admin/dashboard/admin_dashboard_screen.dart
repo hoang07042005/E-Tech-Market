@@ -7,52 +7,23 @@ import '../../../config/dio_client.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:fl_chart/fl_chart.dart';
 
-class AdminDashboardScreen extends StatefulWidget {
+import 'package:provider/provider.dart';
+import '../../../providers/admin_dashboard_provider.dart';
+
+class AdminDashboardScreen extends StatelessWidget {
   const AdminDashboardScreen({Key? key}) : super(key: key);
 
   @override
-  State<AdminDashboardScreen> createState() => _AdminDashboardScreenState();
+  Widget build(BuildContext context) {
+    return ChangeNotifierProvider(
+      create: (_) => AdminDashboardProvider()..fetchDashboardData(),
+      child: const _AdminDashboardView(),
+    );
+  }
 }
 
-class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
-  bool _isLoading = true;
-  String? _error;
-  Map<String, dynamic>? _dashboardData;
-
-  @override
-  void initState() {
-    super.initState();
-    _fetchDashboardData();
-  }
-
-  Future<void> _fetchDashboardData() async {
-    try {
-      final response = await DioClient.instance.get('/admin/dashboard/stats?range=month&resolution=day');
-
-      if (response.statusCode == 200) {
-        final resData = response.data;
-        setState(() {
-          _dashboardData = resData['data'] ?? resData;
-          _isLoading = false;
-        });
-      } else {
-        setState(() {
-          _error = 'Lỗi tải dữ liệu (${response.statusCode})';
-          _isLoading = false;
-        });
-      }
-    } on DioException catch (e) {
-      setState(() {
-        _error = 'Lỗi kết nối: ${e.message}';
-        _isLoading = false;
-      });
-    } catch (e) {
-      setState(() {
-        _error = 'Lỗi hệ thống: $e';
-        _isLoading = false;
-      });
-    }
-  }
+class _AdminDashboardView extends StatelessWidget {
+  const _AdminDashboardView({Key? key}) : super(key: key);
 
   String _formatVnd(dynamic value) {
     if (value == null) return '0';
@@ -62,6 +33,8 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final provider = context.watch<AdminDashboardProvider>();
+
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
       appBar: AppBar(
@@ -75,29 +48,28 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
         ),
       ),
       body: RefreshIndicator(
-        onRefresh: _fetchDashboardData,
-        child: _buildBody(),
+        onRefresh: provider.fetchDashboardData,
+        child: _buildBody(context, provider),
       ),
     );
   }
 
-  Widget _buildBody() {
-    if (_isLoading) {
+  Widget _buildBody(BuildContext context, AdminDashboardProvider provider) {
+    if (provider.isLoading) {
       return const Center(child: CircularProgressIndicator(color: Color(0xFFEF7A45)));
     }
-    if (_error != null) {
+    if (provider.error != null) {
       return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             const Icon(Icons.error_outline, size: 48, color: Colors.red),
             const SizedBox(height: 16),
-            Text(_error!, style: const TextStyle(color: Colors.red)),
+            Text(provider.error!, style: const TextStyle(color: Colors.red)),
             const SizedBox(height: 16),
             ElevatedButton(
               onPressed: () {
-                setState(() => _isLoading = true);
-                _fetchDashboardData();
+                provider.fetchDashboardData();
               },
               child: const Text('Thử lại'),
             ),
@@ -109,11 +81,11 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
     return ListView(
       padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
       children: [
-        _buildAnalyticsSection(),
+        _buildAnalyticsSection(context, provider),
         const SizedBox(height: 20),
-        _buildTopCategoriesSection(),
+        _buildTopCategoriesSection(context, provider),
         const SizedBox(height: 20),
-        _buildTopRatedProductsSection(),
+        _buildTopRatedProductsSection(context, provider),
         const SizedBox(height: 40),
       ],
     );
@@ -122,11 +94,11 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
   // ═══════════════════════════════════════════════════════════════
   // 1. Phân tích & Thống kê (Line Chart + Summary)
   // ═══════════════════════════════════════════════════════════════
-  Widget _buildAnalyticsSection() {
-    final analytics = _dashboardData?['analytics'] as Map<String, dynamic>?;
+  Widget _buildAnalyticsSection(BuildContext context, AdminDashboardProvider provider) {
+    final analytics = provider.dashboardData?['analytics'] as Map<String, dynamic>?;
     final revenue7d = (analytics?['revenue_7d'] as List<dynamic>?) ?? [];
 
-    final kpi = _dashboardData?['kpi'] as Map<String, dynamic>?;
+    final kpi = provider.dashboardData?['kpi'] as Map<String, dynamic>?;
     final double revenue = kpi?['revenue_30d'] is num ? (kpi!['revenue_30d'] as num).toDouble() : 0.0;
     final int paidOrders = kpi?['paid_orders_30d'] ?? 0;
     final int todayOrders = kpi?['orders_today'] ?? 0;
@@ -196,11 +168,11 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                 const SizedBox(height: 12),
                 Row(
                   children: [
-                    _legendDot(const Color(0xFF3B82F6), 'Doanh thu'),
+                    _legendDot(context, const Color(0xFF3B82F6), 'Doanh thu'),
                     const SizedBox(width: 16),
-                    _legendDot(const Color(0xFFFB923C), 'Số đơn hàng'),
+                    _legendDot(context, const Color(0xFFFB923C), 'Số đơn hàng'),
                     const SizedBox(width: 16),
-                    _legendDot(const Color(0xFF10B981), 'SP bán ra'),
+                    _legendDot(context, const Color(0xFF10B981), 'SP bán ra'),
                   ],
                 ),
               ],
@@ -330,11 +302,11 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                 const SizedBox(height: 10),
                 Row(
                   children: [
-                    _summaryCol('Doanh thu', '${_formatVnd(revenue)} đ', const Color(0xFF3B82F6)),
+                    _summaryCol(context, 'Doanh thu', '${_formatVnd(revenue)} đ', const Color(0xFF3B82F6)),
                     const SizedBox(width: 6),
-                    _summaryCol('Đơn TT', paidOrders.toString(), const Color(0xFFFB923C)),
+                    _summaryCol(context, 'Đơn TT', paidOrders.toString(), const Color(0xFFFB923C)),
                     const SizedBox(width: 6),
-                    _summaryCol('Đơn ngày', todayOrders.toString(), const Color(0xFF8B5CF6)),
+                    _summaryCol(context, 'Đơn ngày', todayOrders.toString(), const Color(0xFF8B5CF6)),
                   ],
                 ),
               ],
@@ -360,7 +332,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
     );
   }
 
-  Widget _legendDot(Color color, String label) {
+  Widget _legendDot(BuildContext context, Color color, String label) {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -371,7 +343,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
     );
   }
 
-  Widget _summaryCol(String title, String value, Color accent) {
+  Widget _summaryCol(BuildContext context, String title, String value, Color accent) {
     return Expanded(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -391,8 +363,8 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
   // ═══════════════════════════════════════════════════════════════
   // 2. Danh mục bán chạy (Donut Pie + Grid)
   // ═══════════════════════════════════════════════════════════════
-  Widget _buildTopCategoriesSection() {
-    final categories = (_dashboardData?['analytics']?['top_categories_30d'] as List<dynamic>?) ?? [];
+  Widget _buildTopCategoriesSection(BuildContext context, AdminDashboardProvider provider) {
+    final categories = (provider.dashboardData?['analytics']?['top_categories_30d'] as List<dynamic>?) ?? [];
 
     final List<Color> catColors = [
       const Color(0xFF3B82F6), const Color(0xFF10B981), const Color(0xFFFB923C),
@@ -522,8 +494,8 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
   // ═══════════════════════════════════════════════════════════════
   // 3. Top sản phẩm đánh giá cao
   // ═══════════════════════════════════════════════════════════════
-  Widget _buildTopRatedProductsSection() {
-    final products = (_dashboardData?['top_rated_products'] as List<dynamic>?) ?? [];
+  Widget _buildTopRatedProductsSection(BuildContext context, AdminDashboardProvider provider) {
+    final products = (provider.dashboardData?['top_rated_products'] as List<dynamic>?) ?? [];
 
     return Container(
       padding: const EdgeInsets.all(16),

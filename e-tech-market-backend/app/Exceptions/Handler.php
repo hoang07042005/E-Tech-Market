@@ -74,10 +74,10 @@ class Handler extends ExceptionHandler
 
         return response()->json([
             'success' => false,
-            'message' => $this->isProduction()
+            'message' => app()->environment('production')
                 ? 'Server error occurred'
                 : $this->getMessage($e),
-            'debug' => !$this->isProduction() ? [
+            'debug' => !app()->environment('production') ? [
                 'exception' => get_class($e),
                 'file' => $e->getFile(),
                 'line' => $e->getLine(),

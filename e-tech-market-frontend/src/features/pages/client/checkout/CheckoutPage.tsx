@@ -7,6 +7,7 @@ import { apiFetch } from '@/configs/api.config'
 import logoMomo from '@/assets/logo-momo.png'
 import logoVnpay from '@/assets/vnpay-logo.png'
 import logoCod from '@/assets/COD.png'
+import { useAuthStore } from '@/features/store/useAuthStore'
 
 function formatVnd(n: number) {
   return `${Math.round(n).toLocaleString('vi-VN')} đ`
@@ -56,7 +57,7 @@ type CouponPublic = {
 }
 
 function readStoredUser(): StoredUser | null {
-  const raw = localStorage.getItem('user')
+  const raw = useAuthStore((state) => state.userStr)
   if (!raw) return null
   try {
     const v = JSON.parse(raw) as unknown
@@ -104,7 +105,8 @@ export default function CheckoutPage() {
   const [showCouponModal, setShowCouponModal] = useState(false)
 
   const account = useMemo(() => readStoredUser(), [])
-  const token = useMemo(() => (typeof window === 'undefined' ? null : localStorage.getItem('token')), [])
+  const userStr = useAuthStore((state) => state.userStr)
+  const hasAuth = !!userStr
 
   const pendingPaymentKey = 'pending_payment'
   const shipMethodKey = 'checkout_shipping_method_id'
@@ -115,9 +117,12 @@ export default function CheckoutPage() {
     const gateway = usp.get('gateway')
     const success = usp.get('success')
     const code = usp.get('order_code')
+    const id = usp.get('order_id')
     if (!gateway || !success || !code) return null
-    return { gateway, success: success === '1', order_code: code }
+    return { gateway, success: success === '1', order_code: code, order_id: id ? Number(id) : null }
   }, [])
+
+  const [waitingPayment, setWaitingPayment] = useState(false)
 
   const [form, setForm] = useState(() => ({
     name: (account?.name ?? '').trim(),
@@ -266,7 +271,6 @@ export default function CheckoutPage() {
     try {
       const res = await apiFetch<{ coupon: any; discount_amount: number }>('/api/coupons/apply', {
         method: 'POST',
-        token: token || undefined,
         body: JSON.stringify({ code, order_amount: totalPrice }),
       })
       setAppliedCoupon({ code, discount_amount: res.discount_amount })
@@ -316,10 +320,9 @@ export default function CheckoutPage() {
     try {
       if (form.payment_method === 'cod') {
         // If logged in, create real order in backend (so it is saved in DB).
-        if (token) {
+        if (hasAuth) {
           const created = await apiFetch<{ id: number; order_code: string }>(`/orders/from-items`, {
             method: 'POST',
-            token,
             body: JSON.stringify({
               shipping_name: form.name.trim(),
               shipping_phone: form.phone.trim(),
@@ -391,7 +394,7 @@ export default function CheckoutPage() {
         return
       }
 
-      if (!token) {
+      if (!hasAuth) {
         setError('Vui lòng đăng nhập để thanh toán online.')
         return
       }
@@ -410,7 +413,6 @@ export default function CheckoutPage() {
       } else {
         const created = await apiFetch<{ id: number; order_code: string }>(`/orders/from-items`, {
           method: 'POST',
-          token,
           body: JSON.stringify({
             shipping_name: form.name.trim(),
             shipping_phone: form.phone.trim(),
@@ -438,7 +440,6 @@ export default function CheckoutPage() {
       // Create payment link & redirect to gateway
       const pay = await apiFetch<{ pay_url: string }>(`/payments/${form.payment_method}/${order_id}/create`, {
         method: 'POST',
-        token,
         // MoMo will show "choose payment method" screen by default
         body: form.payment_method === 'momo' ? JSON.stringify({ request_type: 'payWithMethod' }) : undefined,
       })
@@ -457,12 +458,70 @@ export default function CheckoutPage() {
       if (paymentReturn.success) {
         localStorage.removeItem(pendingPaymentKey)
         clearCart()
-        setOrderCode(paymentReturn.order_code)
+        
+        setWaitingPayment(true)
+
+        let timer: number;
+        const poll = async () => {
+          if (!paymentReturn.order_id) {
+             setWaitingPayment(false)
+             setOrderCode(paymentReturn.order_code)
+             return;
+          }
+          try {
+             const res = await apiFetch<any>(`/api/orders/${paymentReturn.order_id}`)
+             if (res.payment_status === 'paid') {
+               setWaitingPayment(false)
+               setOrderCode(paymentReturn.order_code)
+             } else if (res.payment_status === 'failed') {
+               setWaitingPayment(false)
+               setError('Thanh toán thất bại. Bạn có thể bấm “Xác nhận đặt hàng” để thử thanh toán lại.')
+             } else {
+               timer = window.setTimeout(poll, 2000)
+             }
+          } catch(e) {
+             timer = window.setTimeout(poll, 2000)
+          }
+        };
+        poll();
+
       } else {
         setError('Thanh toán thất bại. Bạn có thể bấm “Xác nhận đặt hàng” để thử thanh toán lại (không tạo đơn mới).')
       }
     })
   }, [paymentReturn])
+
+  useEffect(() => {
+    const onPaymentStatus = (e: any) => {
+      if (e.detail?.order_id === paymentReturn?.order_id) {
+        if (e.detail?.status === 'paid') {
+          setWaitingPayment(false)
+          setOrderCode(paymentReturn?.order_code || '')
+        } else if (e.detail?.status === 'failed') {
+          setWaitingPayment(false)
+          setError('Thanh toán thất bại. Bạn có thể bấm “Xác nhận đặt hàng” để thử thanh toán lại.')
+        }
+      }
+    };
+    window.addEventListener('payment_status_changed', onPaymentStatus)
+    return () => window.removeEventListener('payment_status_changed', onPaymentStatus)
+  }, [paymentReturn])
+
+  if (waitingPayment) {
+    return (
+      <div className="coPage">
+        <div className="coContainer">
+          <div className="coSuccessWrap">
+            <div className="coSuccessCard" style={{ textAlign: 'center', padding: '60px 20px' }}>
+              <div className="et-loader-spinner" style={{ margin: '0 auto 24px' }}></div>
+              <h2 style={{ fontSize: '24px', fontWeight: 'bold', color: 'var(--et-text)', marginBottom: '12px' }}>Đang xác nhận thanh toán...</h2>
+              <p style={{ color: 'var(--et-text-muted)' }}>Hệ thống đang kết nối với đối tác thanh toán để xác nhận đơn hàng của bạn. Vui lòng không đóng trang này.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
 
   if (orderCode) {
     return (

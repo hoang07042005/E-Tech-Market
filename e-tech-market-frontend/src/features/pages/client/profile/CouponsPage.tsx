@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { apiFetch } from '@/configs/api.config'
 import '@/styles/pages/CheckoutPage.css' // Reuse the modal and coupon styling
+import { useAuthStore } from '@/features/store/useAuthStore'
 
 type CouponPublic = {
   id: number
@@ -22,13 +23,13 @@ export default function CouponsPage() {
 
   useEffect(() => {
     let cancelled = false
-    const token = localStorage.getItem('token')
-    if (!token) {
+    const userStr = useAuthStore((state) => state.userStr)
+    if (!userStr) {
       setLoading(false)
       return
     }
 
-    apiFetch<CouponPublic[]>('/api/me/coupons', { token })
+    apiFetch<CouponPublic[]>('/api/me/coupons')
       .then((res) => {
         if (!cancelled && Array.isArray(res)) setActiveCoupons(res)
       })

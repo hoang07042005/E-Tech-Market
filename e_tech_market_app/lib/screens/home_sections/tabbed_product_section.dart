@@ -180,9 +180,14 @@ class _TabbedProductCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final name = product['name']?.toString() ?? '';
     // Đồng bộ cách lấy trường mô tả giống như product_section
-    final excerpt = product['short_description']?.toString().trim().isNotEmpty == true
-        ? product['short_description'].toString()
-        : Trans.defaultProductExcerpt;
+    final description = product['description']?.toString().trim();
+    final shortDescription = product['short_description']?.toString().trim();
+    final excerpt =
+        description != null && description.isNotEmpty
+            ? description
+            : shortDescription != null && shortDescription.isNotEmpty
+                ? shortDescription
+                : Trans.defaultProductExcerpt;
     final imageUrl = _resolveProductImageUrl(product);
     final displayPrice = _getDisplayPrice(product);
     final oldPrice = _getDisplayOldPrice(product);
@@ -258,7 +263,7 @@ class _TabbedProductCard extends StatelessWidget {
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
-                    const SizedBox(height: 6),
+                    const SizedBox(height: 2),
                     Wrap(
                       spacing: 6,
                       runSpacing: 2,
@@ -284,7 +289,7 @@ class _TabbedProductCard extends StatelessWidget {
                           ),
                       ],
                     ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: 2),
                     
                     // Phần mô tả ngắn và Nút giỏ hàng hình tròn (Copy từ product_section)
                     Row(
@@ -295,10 +300,10 @@ class _TabbedProductCard extends StatelessWidget {
                             excerpt,
                             style: TextStyle(
                               color: Theme.of(context).colorScheme.onSurfaceVariant,
-                              fontSize: 11,
+                              fontSize: 10,
                               height: 1.35,
                             ),
-                            maxLines: 2,
+                            maxLines: 3,
                             overflow: TextOverflow.ellipsis,
                           ),
                         ),

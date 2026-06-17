@@ -14,9 +14,9 @@ import {
   type ProductNews,
   type ProductReview,
 } from '@/features/services/products.service'
-import { addToCart } from '@/features/services/cart.service'
 import { fetchWishlist, toggleWishlist } from '@/features/services/wishlist.service'
 import { addToCompare, getCompareList, removeFromCompare } from '@/features/services/compare.service'
+import { useWishlistQuery, useWishlistMutation, useCartMutation } from '@/features/services/mutations'
 import '@/styles/pages/ProductDetailPage.css'
 import Skeleton from '@/components/Skeleton'
 
@@ -38,6 +38,7 @@ import { PdpSpecsSection } from './components/PdpSpecsSection'
 import { PdpFaqSection } from './components/PdpFaqSection'
 import { PdpRelatedProductsSection } from './components/PdpRelatedProductsSection'
 import type { ProductSpecRow, ProductMediaItem } from './components/PdpShared'
+import { useAuthStore } from '@/features/store/useAuthStore'
 
 export default function ProductDetailPage() {
   const navigate = useNavigate()
@@ -47,10 +48,15 @@ export default function ProductDetailPage() {
 
   const queryClient = useQueryClient()
   const toast = useGlobalToast()
-  const token = typeof window !== 'undefined' ? window.localStorage.getItem('token') : null
-  const hasAuth = !!token
+  // 🔒 Check auth via user in localStorage (not token - token is in httpOnly cookie)
+  const userStr = useAuthStore((state) => state.userStr)
+  const hasAuth = !!userStr
   const [relatedProducts, setRelatedProducts] = useState<Product[]>([])
-  const [wishSet, setWishSet] = useState<Set<number>>(() => new Set())
+  
+  const { data: wishlistData } = useWishlistQuery(hasAuth)
+  const wishSet = useMemo(() => new Set(wishlistData?.map((i) => i.product_id) || []), [wishlistData])
+  const wishlistMutation = useWishlistMutation()
+  const { addToCart } = useCartMutation()
 
   const { data: product, isLoading: loading, error } = useQuery<Product, Error>({
     queryKey: ['productBySlug', slug, variantIdParam],
@@ -76,16 +82,7 @@ export default function ProductDetailPage() {
     placeholderData: keepPreviousData,
   })
 
-  const wishlistQuery = useQuery<Array<{ product_id: number }>>({
-    queryKey: ['wishlist', token],
-    queryFn: async () => {
-      if (!token) return []
-      return await fetchWishlist(token)
-    },
-    enabled: !!token,
-    staleTime: 1000 * 60 * 3,
-    refetchOnWindowFocus: true,
-  })
+  // Removed wishlistQuery
 
   const shopQnasQuery = useQuery<ProductShopQnaPublic[]>({
     queryKey: ['shopQnas', product?.slug],
@@ -404,14 +401,10 @@ export default function ProductDetailPage() {
   useEffect(() => {
     let cancelled = false
     if (!slug) return
-    const t = localStorage.getItem('token')
     Promise.resolve().then(async () => {
-      if (!t) {
-        if (!cancelled) setBuyerLoggedIn(false)
-        return
-      }
+      // 🔒 Token is sent via httpOnly cookie automatically, check via /api/me
       try {
-        await apiFetch<{ name?: string }>('/api/me', { token: t })
+        await apiFetch<{ name?: string }>('/api/me')
         if (!cancelled) setBuyerLoggedIn(true)
       } catch {
         if (!cancelled) setBuyerLoggedIn(false)
@@ -422,47 +415,12 @@ export default function ProductDetailPage() {
     }
   }, [slug])
 
-  useEffect(() => {
-    if (!hasAuth) {
-      setWishSet(new Set())
-      return
-    }
-    if (wishlistQuery.data) {
-      setWishSet(new Set(wishlistQuery.data.map((i) => i.product_id)))
-    }
-  }, [hasAuth, wishlistQuery.data])
-
   async function onToggleLike(productId: number) {
-    if (!token) {
+    if (!hasAuth) {
       navigate('/login')
       return
     }
-
-    // Optimistic UI
-    setWishSet((prev) => {
-      const next = new Set(prev)
-      if (next.has(productId)) next.delete(productId)
-      else next.add(productId)
-      return next
-    })
-
-    try {
-      const status = await toggleWishlist(token, productId)
-      setWishSet((prev) => {
-        const next = new Set(prev)
-        if (status === 'added') next.add(productId)
-        else next.delete(productId)
-        return next
-      })
-    } catch {
-      // rollback
-      setWishSet((prev) => {
-        const next = new Set(prev)
-        if (next.has(productId)) next.delete(productId)
-        else next.add(productId)
-        return next
-      })
-    }
+    wishlistMutation.mutate(productId)
   }
 
   const refreshShopQnas = useCallback(async () => {
@@ -785,8 +743,8 @@ export default function ProductDetailPage() {
                           .join(' · ') ||
                         v.variant_name
                         : null
-                    addToCart(
-                      {
+                    addToCart({
+                      item: {
                         product_id: product.id,
                         slug: product.slug,
                         name: product.name,
@@ -796,8 +754,8 @@ export default function ProductDetailPage() {
                         variant_label: variantLabel,
                         quantity: 1,
                       },
-                      qty,
-                    )
+                      qty
+                    })
                   }}
                 >
                   THÊM VÀO GIỎ
@@ -975,8 +933,7 @@ export default function ProductDetailPage() {
                     type="button"
                     className="pdpReviewSubmit"
                     onClick={async () => {
-                      const token = localStorage.getItem('token')
-                      if (!token) {
+                      if (!hasAuth) {
                         toast.showToast({ type: 'info', message: 'Vui lòng đăng nhập để đánh giá.' })
                         navigate('/login')
                         return
@@ -986,9 +943,9 @@ export default function ProductDetailPage() {
                         return
                       }
                       try {
+                        // 🔒 Token is sent via httpOnly cookie automatically
                         await apiFetch(`/api/products/${product.id}/reviews`, {
                           method: 'POST',
-                          token,
                           body: JSON.stringify({
                             rating: reviewRating,
                             exp_performance: expPerformance,

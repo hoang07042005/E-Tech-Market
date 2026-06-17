@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { API_BASE_URL } from '@/configs/api.config'
 import { fetchOrders, fetchOrderDetail, updateOrder, processOrderReturn } from '@/features/services/admin/api.admin.service'
+import { useAuthStore } from '@/features/store/useAuthStore'
 
 type OrderRow = {
   id: number
@@ -151,7 +152,9 @@ function fmtViTime(iso?: string | null) {
 }
 
 export default function OrdersAdminPage() {
-  const token = typeof window !== 'undefined' ? window.localStorage.getItem('token') : null
+  // 🔒 Token is sent via httpOnly cookie automatically
+  const userStr = useAuthStore((state) => state.userStr)
+  const hasAuth = !!userStr
 
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -212,7 +215,7 @@ export default function OrdersAdminPage() {
   useEffect(() => {
     let cancelled = false
     async function load() {
-      if (!token) {
+      if (!hasAuth) {
         setError('Bạn chưa đăng nhập.')
         setLoading(false)
         return
@@ -220,7 +223,7 @@ export default function OrdersAdminPage() {
       setLoading(true)
       setError(null)
       try {
-        const data = await fetchOrders<OrdersResponse>(queryString, token)
+        const data = await fetchOrders<OrdersResponse>(queryString)
         if (cancelled) return
         setRes(data)
       } catch (e) {
@@ -234,20 +237,20 @@ export default function OrdersAdminPage() {
     return () => {
       cancelled = true
     }
-  }, [token, queryString])
+  }, [hasAuth, queryString])
 
   useEffect(() => {
     let cancelled = false
     async function loadDetail() {
       if (view !== 'detail' || !selectedId) return
-      if (!token) {
+      if (!hasAuth) {
         setDetailError('Bạn chưa đăng nhập.')
         return
       }
       setDetailLoading(true)
       setDetailError(null)
       try {
-        const d = await fetchOrderDetail<OrderDetail>(selectedId, token)
+        const d = await fetchOrderDetail<OrderDetail>(selectedId)
         if (cancelled) return
         setDetail(d)
         setDraftStatus(d.status || 'pending')
@@ -262,14 +265,14 @@ export default function OrdersAdminPage() {
     return () => {
       cancelled = true
     }
-  }, [token, view, selectedId])
+  }, [hasAuth, view, selectedId])
 
   const saveDetail = async () => {
-    if (!token || !detail) return
+    if (!hasAuth || !detail) return
     setSavingDetail(true)
     setDetailError(null)
     try {
-      const updated = await updateOrder<OrderDetail>(detail.id, { status: draftStatus }, token)
+      const updated = await updateOrder<OrderDetail>(detail.id, { status: draftStatus })
       setDetail(updated)
 
       // Update row badge in list if already loaded
@@ -310,11 +313,11 @@ export default function OrdersAdminPage() {
   }
 
   const approveReturnRequest = async () => {
-    if (!token || !detail) return
+    if (!hasAuth || !detail) return
     setRrBusy(true)
     setRrError(null)
     try {
-      const updated = await processOrderReturn<OrderDetail>(detail.id, 'approve', { admin_note: rrNote.trim() ? rrNote.trim() : null }, token)
+      const updated = await processOrderReturn<OrderDetail>(detail.id, 'approve', { admin_note: rrNote.trim() ? rrNote.trim() : null })
       setDetail(updated)
       updateRowReturnRequest(updated)
     } catch (e) {
@@ -325,7 +328,7 @@ export default function OrdersAdminPage() {
   }
 
   const rejectReturnRequest = async () => {
-    if (!token || !detail) return
+    if (!hasAuth || !detail) return
     if (!rrNote.trim()) {
       setRrError('Vui lòng nhập lý do/ghi chú khi từ chối.')
       return
@@ -333,7 +336,7 @@ export default function OrdersAdminPage() {
     setRrBusy(true)
     setRrError(null)
     try {
-      const updated = await processOrderReturn<OrderDetail>(detail.id, 'reject', { admin_note: rrNote.trim() }, token)
+      const updated = await processOrderReturn<OrderDetail>(detail.id, 'reject', { admin_note: rrNote.trim() })
       setDetail(updated)
       updateRowReturnRequest(updated)
     } catch (e) {
@@ -344,14 +347,14 @@ export default function OrdersAdminPage() {
   }
 
   const markRefunded = async () => {
-    if (!token || !detail) return
+    if (!hasAuth || !detail) return
     setRrBusy(true)
     setRrError(null)
     try {
       const fd = new FormData()
       if (rrNote.trim()) fd.set('admin_note', rrNote.trim())
       rrRefundFiles.forEach((f) => fd.append('refund_proof[]', f))
-      const updated = await processOrderReturn<OrderDetail>(detail.id, 'refunded', fd as any, token)
+      const updated = await processOrderReturn<OrderDetail>(detail.id, 'refunded', fd as any)
       setDetail(updated)
       updateRowReturnRequest(updated)
       setRrRefundFiles([])

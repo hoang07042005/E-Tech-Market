@@ -10,32 +10,31 @@ export interface Category {
   image?: string | null
 }
 
-export const fetchAdminCategories = (token: string | null) => {
-  return apiFetch<Category[]>('/api/admin/categories', { token })
+// 🔒 Token is sent via httpOnly cookie automatically
+export const fetchAdminCategories = () => {
+  return apiFetch<Category[]>('/api/admin/categories')
 }
 
-export const fetchAdminCategoriesByType = (token: string | null, type?: 'product' | 'video') => {
+export const fetchAdminCategoriesByType = (type?: 'product' | 'video') => {
   const qs = type ? `?type=${encodeURIComponent(type)}` : ''
-  return apiFetch<Category[]>(`/api/admin/categories${qs}`, { token })
+  return apiFetch<Category[]>(`/api/admin/categories${qs}`)
 }
 
-export const deleteAdminCategory = (id: number, token: string | null) => {
-  return apiFetch(`/api/admin/categories/${id}`, { method: 'DELETE', token })
+export const deleteAdminCategory = (id: number) => {
+  return apiFetch(`/api/admin/categories/${id}`, { method: 'DELETE' })
 }
 
-export const saveAdminCategory = (payload: FormData, id: number | null | undefined, token: string | null) => {
+export const saveAdminCategory = (payload: FormData, id: number | null | undefined) => {
   if (id) {
     payload.set('_method', 'PUT')
     return apiFetch(`/api/admin/categories/${id}`, {
       method: 'POST',
       body: payload,
-      token
     })
   } else {
     return apiFetch('/api/admin/categories', {
       method: 'POST',
       body: payload,
-      token
     })
   }
 }

@@ -1,3 +1,5 @@
+import { apiFetch } from '@/configs/api.config'
+
 export type CartItem = {
   key: string
   product_id: number
@@ -45,6 +47,30 @@ export function cartItemKey(product_id: number, variant_id: number | null) {
   return `${product_id}:${variant_id ?? 'base'}`
 }
 
+export async function syncCartFromBackend() {
+  try {
+    const res = await apiFetch<any>('/api/cart')
+    if (res && Array.isArray(res.items)) {
+      const state: CartState = {
+        items: res.items.map((it: any) => ({
+          key: cartItemKey(it.product_id, it.variant_id),
+          product_id: it.product_id,
+          slug: it.product?.slug || '',
+          name: it.product?.name || '',
+          price: Number(it.unit_price) || 0,
+          image_url: it.product?.main_image_url || null,
+          variant_id: it.variant_id,
+          variant_label: it.variant?.attribute_values ? Object.values(it.variant.attribute_values).join(', ') : null,
+          quantity: Number(it.quantity) || 1,
+        })),
+      }
+      setCart(state)
+    }
+  } catch (err) {
+    // Ignore error if unauthenticated
+  }
+}
+
 export function addToCart(item: Omit<CartItem, 'key'>, qty: number) {
   const quantity = Math.max(1, Math.floor(qty || 1))
   const state = getCart()
@@ -66,16 +92,20 @@ export function updateCartQuantity(key: string, qty: number) {
   const state = getCart()
   const idx = state.items.findIndex((x) => x.key === key)
   if (idx < 0) return
-  state.items[idx] = { ...state.items[idx], quantity: nextQty }
+  const item = state.items[idx]
+  state.items[idx] = { ...item, quantity: nextQty }
   setCart(state)
 }
 
 export function removeFromCart(key: string) {
   const state = getCart()
+  const item = state.items.find(x => x.key === key)
+  if (!item) return
   setCart({ items: state.items.filter((x) => x.key !== key) })
 }
 
 export function clearCart() {
+  const state = getCart()
   setCart({ items: [] })
 }
 

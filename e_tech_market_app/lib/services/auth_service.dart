@@ -2,12 +2,14 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../config/dio_client.dart';
 
 class AuthService {
   static const String _tokenKey = 'auth_token';
   static const String _userKey = 'auth_user';
+  static const _secureStorage = FlutterSecureStorage();
 
   static Future<Map<String, dynamic>> login({
     required String email,
@@ -114,7 +116,7 @@ class AuthService {
     required Map<String, dynamic> user,
   }) async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(_tokenKey, token);
+    await _secureStorage.write(key: _tokenKey, value: token);
     await prefs.setString(_userKey, jsonEncode(user));
   }
 
@@ -175,13 +177,13 @@ class AuthService {
 
   static Future<void> clearSession() async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.remove(_tokenKey);
+    await _secureStorage.delete(key: _tokenKey);
     await prefs.remove(_userKey);
   }
 
   static Future<bool> hasSession() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.containsKey(_tokenKey);
+    final token = await _secureStorage.read(key: _tokenKey);
+    return token != null && token.isNotEmpty;
   }
 
   static Future<Map<String, dynamic>?> getCurrentUser() async {
@@ -192,8 +194,7 @@ class AuthService {
   }
 
   static Future<String?> getToken() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getString(_tokenKey);
+    return await _secureStorage.read(key: _tokenKey);
   }
 
   static Future<void> deleteAccount({

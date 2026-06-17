@@ -4,6 +4,7 @@ import '@/styles/pages/OrdersPage.css'
 import { API_BASE_URL, apiFetch } from '@/configs/api.config'
 import Skeleton from '@/components/Skeleton'
 import ConfirmModal from '@/components/ConfirmModal'
+import { useAuthStore } from '@/features/store/useAuthStore'
 
 type OrderDetail = {
   id: number
@@ -116,7 +117,8 @@ export default function OrderDetailPage() {
   const navigate = useNavigate()
   const location = useLocation()
   const { id } = useParams()
-  const token = typeof window !== 'undefined' ? window.localStorage.getItem('token') : null
+  const userStr = useAuthStore((state) => state.userStr)
+  const hasAuth = !!userStr
 
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -147,7 +149,7 @@ export default function OrderDetailPage() {
   }, [showReturnForm])
 
   useEffect(() => {
-    if (!token) {
+    if (!hasAuth) {
       navigate('/login')
       return
     }
@@ -159,7 +161,7 @@ export default function OrderDetailPage() {
         setError(null)
       }
     }, 0)
-    apiFetch<OrderDetail>(`/orders/${id}`, { token })
+    apiFetch<OrderDetail>(`/orders/${id}`)
       .then((d) => {
         if (!cancelled) setOrder(d)
       })
@@ -172,7 +174,7 @@ export default function OrderDetailPage() {
     return () => {
       cancelled = true
     }
-  }, [id, navigate, token])
+  }, [id, navigate, hasAuth])
 
   const meta = useMemo(() => statusMeta(order?.status), [order?.status])
   const step = meta.step
@@ -250,7 +252,7 @@ export default function OrderDetailPage() {
   }
 
   async function onCancelOrder() {
-    if (!order || !token) return
+    if (!order || !hasAuth) return
     // perform cancel (called from modal confirm)
     setActionBusy(true)
     setActionError(null)
@@ -270,7 +272,7 @@ export default function OrderDetailPage() {
   }
 
   async function onConfirmReceived() {
-    if (!order || !token) return
+    if (!order || !hasAuth) return
     // called from modal confirm
     setActionBusy(true)
     setActionError(null)
@@ -291,7 +293,7 @@ export default function OrderDetailPage() {
 
   async function onSubmitReturnRequest() {
     // performs submission (called from modal confirm)
-    if (!order || !token) return
+    if (!order || !hasAuth) return
     setActionBusy(true)
     setActionError(null)
     try {
@@ -316,7 +318,7 @@ export default function OrderDetailPage() {
   }
 
   function requestSubmitReturnRequest() {
-    if (!order || !token) return
+    if (!order || !hasAuth) return
     if (!returnContent.trim() || returnContent.trim().length < 5) {
       setActionError('Vui lòng nhập nội dung yêu cầu (tối thiểu 5 ký tự).')
       return
@@ -325,7 +327,7 @@ export default function OrderDetailPage() {
   }
 
   async function onConfirmRefundReceived() {
-    if (!order || !token) return
+    if (!order || !hasAuth) return
     // called from modal confirm
     setActionBusy(true)
     setActionError(null)
@@ -345,7 +347,7 @@ export default function OrderDetailPage() {
   }
 
   async function onConfirmPayment() {
-    if (!order || !token) return
+    if (!order || !hasAuth) return
     if (order.payment?.status === 'paid') return
     // This function is invoked by modal confirm — proceed with API call
     setActionBusy(true)

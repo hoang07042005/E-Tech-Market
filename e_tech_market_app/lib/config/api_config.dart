@@ -1,6 +1,6 @@
 class ApiConfig {
   static const String apiBaseUrl = String.fromEnvironment(
     'API_BASE_URL',
-    defaultValue: 'http://192.168.24.21:8000/api/v1', // IP cho máy thật
+    defaultValue: 'http://192.168.24.17:8000/api/v1', // IP cho máy thật
   );
 }

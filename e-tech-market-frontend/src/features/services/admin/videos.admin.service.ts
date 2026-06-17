@@ -32,25 +32,26 @@ export interface Video {
   video_category?: VideoCategory | null
 }
 
-export const fetchAdminVideos = (token: string | null, productId?: number | null) => {
+// 🔒 Token is sent via httpOnly cookie automatically
+export const fetchAdminVideos = (productId?: number | null) => {
   let url = '/api/admin/videos'
   if (productId) {
     url += `?product_id=${productId}`
   }
-  return apiFetch<Video[]>(url, { token })
+  return apiFetch<Video[]>(url)
 }
 
-export const fetchAdminVideoDetail = (id: number, token: string | null) => {
-  return apiFetch<Video>(`/api/admin/videos/${id}`, { token })
+export const fetchAdminVideoDetail = (id: number) => {
+  return apiFetch<Video>(`/api/admin/videos/${id}`)
 }
 
-export const deleteAdminVideo = (id: number, token: string | null) => {
-  return apiFetch(`/api/admin/videos/${id}`, { method: 'DELETE', token })
+export const deleteAdminVideo = (id: number) => {
+  return apiFetch(`/api/admin/videos/${id}`, { method: 'DELETE' })
 }
 
-export const saveAdminVideo = async (data: FormData, id: number | null | undefined, token: string | null) => {
+export const saveAdminVideo = async (data: FormData, id: number | null | undefined) => {
   const url = id ? `/api/admin/videos/${id}` : '/api/admin/videos'
-  
+
   if (id) {
     data.append('_method', 'PUT')
   }
@@ -58,7 +59,6 @@ export const saveAdminVideo = async (data: FormData, id: number | null | undefin
   const response = await apiFetch<Video>(url, {
     method: 'POST',
     body: data,
-    token,
   })
   return response
 }

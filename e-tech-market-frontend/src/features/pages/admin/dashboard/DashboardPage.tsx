@@ -6,6 +6,7 @@ import { fetchDashboardStats } from '@/features/services/admin/api.admin.service
 import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, PieChart, Pie, Cell } from 'recharts'
 import { RevenueIcon, CartIcon, BoxIcon, UserGroupIcon, GridIcon, AlertIcon, PencilIcon, BoxSmallIcon, HeadsetIcon, ReturnIcon, ReviewChatIcon, MedalIcon, PlusIcon } from '../AdminIcons'
 import '@/styles/admin/DashboardPage.css'
+import { useAuthStore } from '@/features/store/useAuthStore'
 
 const fmtMoneyTooltip = (v: number) => {
   if (!Number.isFinite(v)) return '0'
@@ -66,7 +67,8 @@ function CustomTooltip({ active, payload, label }: CustomTooltipProps) {
 
 export default function DashboardPage({ onCreateProduct }: { onCreateProduct?: () => void } = {}) {
   const navigate = useNavigate();
-  const token = typeof window !== 'undefined' ? window.localStorage.getItem('token') : null
+  // 🔒 Token is sent via httpOnly cookie automatically
+  const userStr = useAuthStore((state) => state.userStr)
   const [analyticsRange, setAnalyticsRange] = useState<'7d' | '30d' | 'month' | 'custom'>('month')
   const [resolution, setResolution] = useState<'day' | 'week' | 'month'>('day')
   const [customStartDate, setCustomStartDate] = useState<string>(() => {
@@ -231,7 +233,7 @@ export default function DashboardPage({ onCreateProduct }: { onCreateProduct?: (
   useEffect(() => {
     let cancelled = false
     async function load() {
-      if (!token) {
+      if (!userStr) {
         setDashLoading(false)
         setDashError('Chưa đăng nhập admin.')
         return
@@ -240,8 +242,9 @@ export default function DashboardPage({ onCreateProduct }: { onCreateProduct?: (
       setDashError(null)
       try {
         const [res, productsRes] = await Promise.all([
-          fetchDashboardStats<DashStats>(analyticsRange, token, customStartDate, customEndDate, resolution),
-          apiFetch<any>('/api/admin/products?per_page=100', { token }),
+          // 🔒 Token is sent via httpOnly cookie automatically
+          fetchDashboardStats<DashStats>(analyticsRange, customStartDate, customEndDate, resolution),
+          apiFetch<any>('/api/admin/products?per_page=100'),
         ])
         if (cancelled) return
         setDash(res)
@@ -308,10 +311,10 @@ export default function DashboardPage({ onCreateProduct }: { onCreateProduct?: (
     return () => {
       cancelled = true
     }
-  }, [token, analyticsRange, customStartDate, customEndDate, resolution])
+  }, [userStr, analyticsRange, customStartDate, customEndDate, resolution])
 
   const restockVariant = async (variantId: number) => {
-    if (!token) return
+    if (!userStr) return
     const raw = (restockDraft[variantId] ?? '').trim()
     const add = Number.parseInt(raw, 10)
     if (!Number.isFinite(add) || add <= 0) return
@@ -319,7 +322,6 @@ export default function DashboardPage({ onCreateProduct }: { onCreateProduct?: (
     setRestockBusyId(variantId)
     try {
       await apiFetch(`/api/admin/product-variants/${variantId}/restock`, {
-        token,
         method: 'PATCH',
         body: JSON.stringify({ add }),
       })

@@ -4,7 +4,7 @@ import { apiFetch } from '@/configs/api.config'
 export type HomeData = any
 
 /** Unified home data - replaces 8 separate API calls with 1 */
+// 🔒 Token is sent via httpOnly cookie automatically
 export async function fetchHomeData(): Promise<HomeData> {
-  const token = typeof window !== 'undefined' ? window.localStorage.getItem('token') : null
-  return apiFetch<HomeData>('/api/home', { token })
+  return apiFetch<HomeData>('/api/home')
 }

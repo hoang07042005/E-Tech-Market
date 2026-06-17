@@ -11,11 +11,11 @@ import {
   type Category as ApiCategory,
 } from '@/features/services/products.service'
 import { API_BASE_URL } from '@/configs/api.config'
-import { addToCart } from '@/features/services/cart.service'
-import { fetchWishlist, toggleWishlist } from '@/features/services/wishlist.service'
 import { HeartIcon } from '@/components/icons/HeartIcon'
 import { addToCompare, getCompareList, removeFromCompare } from '@/features/services/compare.service'
+import { useWishlistQuery, useWishlistMutation, useCartMutation } from '@/features/services/mutations'
 import Skeleton from '@/components/Skeleton'
+import { useAuthStore } from '@/features/store/useAuthStore'
 
 const TEN_DAYS_MS = 10 * 24 * 60 * 60 * 1000
 
@@ -113,6 +113,7 @@ function ProductCard({
   onToggleLike: (productId: number) => void
 }) {
   const brand = product.brand || 'TECH'
+  const { addToCart } = useCartMutation()
 
   // Handle image URL
   const imageUrl = resolveImageUrl(product.main_image_url)
@@ -284,8 +285,8 @@ function ProductCard({
           className="ppCardAddBtn"
           onClick={() => {
             const lowestVariant = (product.variants || []).sort((a, b) => a.effective_price - b.effective_price)[0]
-            addToCart(
-              {
+            addToCart({
+              item: {
                 product_id: product.id,
                 slug: product.slug,
                 name: product.name,
@@ -295,8 +296,8 @@ function ProductCard({
                 variant_label: lowestVariant ? [variantColorLabel(lowestVariant), variantStorageLabel(lowestVariant)].filter(Boolean).join(' · ') : null,
                 quantity: 1,
               },
-              1,
-            )
+              qty: 1
+            })
           }}
         >
           THÊM VÀO GIỎ
@@ -365,9 +366,12 @@ export default function ProductsPage() {
   const [page, setPage] = useState(1)
   const [lastPage, setLastPage] = useState(1)
   const [showMobileFilters, setShowMobileFilters] = useState(false)
-  const [wishSet, setWishSet] = useState<Set<number>>(() => new Set())
-  const token = typeof window !== 'undefined' ? window.localStorage.getItem('token') : null
-  const hasAuth = !!token
+  const userStr = useAuthStore((state) => state.userStr)
+  const hasAuth = !!userStr
+
+  const { data: wishlistData } = useWishlistQuery(hasAuth)
+  const wishSet = useMemo(() => new Set(wishlistData?.map((i) => i.product_id) || []), [wishlistData])
+  const wishlistMutation = useWishlistMutation()
 
   const sortRef = useRef<HTMLDivElement>(null)
   const [sortOpen, setSortOpen] = useState(false)
@@ -383,48 +387,16 @@ export default function ProductsPage() {
   }, [])
 
   useEffect(() => {
-    if (!hasAuth) {
-      return
-    }
-    fetchWishlist(token)
-      .then((items) => setWishSet(new Set(items.map((i) => i.product_id))))
-      .catch(() => setWishSet(new Set()))
-  }, [hasAuth, token])
-
-  useEffect(() => {
     setQuery((current) => (current === searchQueryParam ? current : searchQueryParam))
     setPage(1)
   }, [searchQueryParam])
 
   async function onToggleLike(productId: number) {
-    if (!token) {
+    if (!hasAuth) {
       navigate('/login')
       return
     }
-    // Optimistic UI
-    setWishSet((prev) => {
-      const next = new Set(prev)
-      if (next.has(productId)) next.delete(productId)
-      else next.add(productId)
-      return next
-    })
-    try {
-      const status = await toggleWishlist(token, productId)
-      setWishSet((prev) => {
-        const next = new Set(prev)
-        if (status === 'added') next.add(productId)
-        else next.delete(productId)
-        return next
-      })
-    } catch {
-      // rollback
-      setWishSet((prev) => {
-        const next = new Set(prev)
-        if (next.has(productId)) next.delete(productId)
-        else next.add(productId)
-        return next
-      })
-    }
+    wishlistMutation.mutate(productId)
   }
 
   const brands = useMemo(() => {

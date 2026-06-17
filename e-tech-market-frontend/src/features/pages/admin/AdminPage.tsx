@@ -20,6 +20,7 @@ import BannerAdminPage from './banners/BannerAdminPage'
 import VideoAdminPage from './videos/VideoAdminPage'
 import VideoCategoryPage from './categories/VideoCategoryPage'
 import { apiFetch, API_BASE_URL } from '@/configs/api.config'
+import { useAuthStore } from '@/features/store/useAuthStore'
 
 
 type AdminTab =
@@ -127,11 +128,14 @@ export default function AdminPage() {
   const [darkMode, setDarkMode] = useState<boolean>(() => {
     return typeof window !== 'undefined' && localStorage.getItem('theme') === 'dark'
   })
-  const token = typeof window !== 'undefined' ? window.localStorage.getItem('token') : null
+  // 🔒 Check auth via user in localStorage (not token - token is in httpOnly cookie)
+  const userStr = useAuthStore((state) => state.userStr)
+  const hasAuth = !!userStr
   const currentUserQuery = useQuery<AdminUser>({
     queryKey: ['currentUser'],
-    queryFn: () => apiFetch<AdminUser>('/api/me', { token }),
-    enabled: !!token,
+    // 🔒 Token is sent via httpOnly cookie automatically
+    queryFn: () => apiFetch<AdminUser>('/api/me'),
+    enabled: hasAuth,
     staleTime: 1000 * 60 * 2,
   })
   const currentUser = currentUserQuery.data
@@ -190,10 +194,10 @@ export default function AdminPage() {
   const searchWrapRef = useRef<HTMLDivElement | null>(null)
 
   const loadNotifs = useCallback(async () => {
-    if (!token) return
+    if (!hasAuth) return
     setNotifLoading(true)
     try {
-      const res = await apiFetch<{ data: Notif[]; unread: number }>('/notifications?per_page=20&unread=1', { token })
+      const res = await apiFetch<{ data: Notif[]; unread: number }>('/notifications?per_page=20&unread=1')
       setNotifRows(Array.isArray(res.data) ? res.data : [])
       setNotifUnread(Number(res.unread ?? 0) || 0)
     } catch {
@@ -201,7 +205,7 @@ export default function AdminPage() {
     } finally {
       setNotifLoading(false)
     }
-  }, [token])
+  }, [hasAuth])
 
   useEffect(() => {
     if (!notifOpen) return
@@ -236,14 +240,14 @@ export default function AdminPage() {
   useEffect(() => {
     const query = qSearch.trim()
     if (!qOpen) return
-    if (!token) return
+    if (!hasAuth) return
     if (query.length < 2) return
 
     const t = window.setTimeout(() => {
       setQLoading(true)
       ;(async () => {
         try {
-          const res = await apiFetch<any>(`/api/admin/products`, { token })
+          const res = await apiFetch<any>(`/api/admin/products`)
           const data = Array.isArray(res?.data) ? res.data : (Array.isArray(res) ? res : [])
           const rows: QuickProduct[] = data.map((p: any) => {
             const obj = (p ?? {}) as Record<string, unknown>
@@ -288,12 +292,12 @@ export default function AdminPage() {
     }, 220)
 
     return () => window.clearTimeout(t)
-  }, [qSearch, qOpen, token])
+  }, [qSearch, qOpen, hasAuth])
 
   const markNotifRead = async (id: number) => {
-    if (!token) return
+    if (!hasAuth) return
     try {
-      await apiFetch(`/notifications/${id}/read`, { token, method: 'PATCH', body: JSON.stringify({}) })
+      await apiFetch(`/notifications/${id}/read`, { method: 'PATCH', body: JSON.stringify({}) })
       setNotifRows((p) => p.filter((n) => n.id !== id))
       setNotifUnread((u) => Math.max(0, u - 1))
     } catch {
@@ -302,9 +306,9 @@ export default function AdminPage() {
   }
 
   const markAllRead = async () => {
-    if (!token) return
+    if (!hasAuth) return
     try {
-      await apiFetch(`/notifications/read-all`, { token, method: 'PATCH', body: JSON.stringify({}) })
+      await apiFetch(`/notifications/read-all`, { method: 'PATCH', body: JSON.stringify({}) })
       setNotifRows([])
       setNotifUnread(0)
     } catch {

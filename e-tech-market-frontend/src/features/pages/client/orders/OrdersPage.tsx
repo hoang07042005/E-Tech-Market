@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom'
 import '@/styles/pages/OrdersPage.css'
 import { apiFetch, API_BASE_URL } from '@/configs/api.config'
 import Skeleton from '@/components/Skeleton'
+import { useAuthStore } from '@/features/store/useAuthStore'
 
 type OrderListRow = {
   id: number
@@ -54,7 +55,8 @@ function statusMeta(status?: string | null) {
 export default function OrdersPage() {
   const navigate = useNavigate()
   const location = useLocation()
-  const token = typeof window !== 'undefined' ? window.localStorage.getItem('token') : null
+  const userStr = useAuthStore((state) => state.userStr)
+  const hasAuth = !!userStr
 
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -79,7 +81,7 @@ export default function OrdersPage() {
   }, [res?.current_page, res?.last_page])
 
   useEffect(() => {
-    if (!token) {
+    if (!hasAuth) {
       navigate('/login')
       return
     }
@@ -90,7 +92,7 @@ export default function OrdersPage() {
         setError(null)
       }
     }, 0)
-    apiFetch<OrdersIndexResponse>(`/orders?page=${page}`, { token })
+    apiFetch<OrdersIndexResponse>(`/orders?page=${page}`)
       .then((d) => {
         if (!cancelled) setRes(d)
       })
@@ -103,7 +105,7 @@ export default function OrdersPage() {
     return () => {
       cancelled = true
     }
-  }, [navigate, page, token])
+  }, [navigate, page, hasAuth])
 
   const rows = useMemo(() => res?.data ?? [], [res?.data])
   const filteredRows = useMemo(() => {

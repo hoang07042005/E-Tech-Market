@@ -84,8 +84,7 @@ export default function AuthPage({
     try {
       if (mode === 'login') {
         const res = await login(loginForm)
-        // 🔒 Token is stored in httpOnly cookie, but we also save it for legacy frontend checks
-        if (res.token) window.localStorage.setItem('token', res.token)
+        // 🔒 Token is stored in httpOnly cookie, handled automatically by browser
         localStorage.setItem('user', JSON.stringify(res.user))
         setAuthSessionExpiry()
         window.dispatchEvent(new Event('auth-change'))
@@ -111,8 +110,7 @@ export default function AuthPage({
         phone: registerForm.phone,
       })
 
-      // 🔒 Token is stored in httpOnly cookie, but we also save it for legacy frontend checks
-      if (res.token) window.localStorage.setItem('token', res.token)
+      // 🔒 Token is stored in httpOnly cookie, handled automatically by browser
       localStorage.setItem('user', JSON.stringify(res.user))
       setAuthSessionExpiry()
       window.dispatchEvent(new Event('auth-change'))

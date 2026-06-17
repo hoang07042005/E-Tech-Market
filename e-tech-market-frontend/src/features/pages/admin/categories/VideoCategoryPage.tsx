@@ -3,6 +3,7 @@ import '@/styles/admin/CategoryPage.css'
 import ConfirmModal from '@/components/ConfirmModal'
 
 import {
+import { useAuthStore } from '@/features/store/useAuthStore'
   fetchAdminVideoCategories,
   deleteAdminVideoCategory,
   saveAdminVideoCategory,
@@ -18,7 +19,8 @@ export default function VideoCategoryPage() {
   const [confirmOpen, setConfirmOpen] = useState(false)
   const [pendingDeleteCategory, setPendingDeleteCategory] = useState<Category | null>(null)
 
-  const token = localStorage.getItem('token')
+  const userStr = useAuthStore((state) => state.userStr)
+  const hasAuth = !!userStr
 
   const [formData, setFormData] = useState({
     name: '',
@@ -32,7 +34,7 @@ export default function VideoCategoryPage() {
     setIsLoading(true)
     setError(null)
     try {
-      const data = await fetchAdminVideoCategories(token)
+      const data = await fetchAdminVideoCategories()
       setCategories(data)
     } catch (err: any) {
       setError(err.message || 'Không tải được danh mục video.')
@@ -80,7 +82,7 @@ export default function VideoCategoryPage() {
       payload.append('is_active', formData.is_active ? '1' : '0')
       payload.append('sort_order', String(formData.sort_order ?? 0))
 
-      await saveAdminVideoCategory(payload, editingCategory?.id, token)
+      await saveAdminVideoCategory(payload, editingCategory?.id)
       setIsModalOpen(false)
       fetchCategories()
     } catch (err: any) {
@@ -103,7 +105,7 @@ export default function VideoCategoryPage() {
     setConfirmOpen(false)
 
     try {
-      await deleteAdminVideoCategory(pendingDeleteCategory.id, token)
+      await deleteAdminVideoCategory(pendingDeleteCategory.id)
       setPendingDeleteCategory(null)
       fetchCategories()
     } catch (err: any) {

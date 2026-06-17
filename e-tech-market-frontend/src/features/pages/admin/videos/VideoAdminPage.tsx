@@ -31,7 +31,7 @@ export default function VideoAdminPage() {
   const [videoFile, setVideoFile] = useState<File | null>(null)
   const [thumbnailFile, setThumbnailFile] = useState<File | null>(null)
 
-  const token = localStorage.getItem('token')
+  // 🔒 Token is sent via httpOnly cookie automatically
 
   // Form State
   const [formData, setFormData] = useState({
@@ -51,9 +51,9 @@ export default function VideoAdminPage() {
     setError(null)
     try {
       const [videoData, productData, categoryData] = await Promise.all([
-        fetchAdminVideos(token),
-        apiFetch<any>('/api/admin/products?per_page=100', { token }),
-        fetchAdminVideoCategories(token)
+        fetchAdminVideos(),
+        apiFetch<any>('/api/admin/products?per_page=100'),
+        fetchAdminVideoCategories()
       ])
       setVideos(videoData)
       const prodArr = Array.isArray(productData?.data) ? productData.data : (Array.isArray(productData) ? productData : [])
@@ -148,7 +148,7 @@ export default function VideoAdminPage() {
         payload.append('thumbnail_file', thumbnailFile)
       }
 
-      await saveAdminVideo(payload, editingVideo?.id, token)
+      await saveAdminVideo(payload, editingVideo?.id)
       setIsModalOpen(false)
       loadData()
     } catch (err: any) {
@@ -170,7 +170,7 @@ export default function VideoAdminPage() {
     setPendingDeleteVideo(null)
     if (!video) return
     try {
-      await deleteAdminVideo(video.id, token)
+      await deleteAdminVideo(video.id)
       loadData()
     } catch (err: any) {
       alert(err.message || 'Xóa video thất bại.')

@@ -19,8 +19,6 @@ export default function BannerAdminPage() {
   const [imageFile, setImageFile] = useState<File | null>(null)
   const [confirmOpen, setConfirmOpen] = useState(false)
   const [pendingDeleteBanner, setPendingDeleteBanner] = useState<Banner | null>(null)
-  
-  const token = localStorage.getItem('token')
 
   // Form State
   const [formData, setFormData] = useState({
@@ -35,7 +33,8 @@ export default function BannerAdminPage() {
     setIsLoading(true)
     setError(null)
     try {
-      const data = await fetchAdminBanners(token)
+      // 🔒 Token is sent via httpOnly cookie automatically
+      const data = await fetchAdminBanners()
       setBanners(data)
     } catch (err: any) {
       setError(err.message || 'Không tải được banners.')
@@ -87,7 +86,8 @@ export default function BannerAdminPage() {
         payload.append('image', imageFile)
       }
 
-      await saveAdminBanner(payload, editingBanner?.id, token)
+      // 🔒 Token is sent via httpOnly cookie automatically
+      await saveAdminBanner(payload, editingBanner?.id)
       setIsModalOpen(false)
       fetchBanners()
     } catch (err: any) {
@@ -106,7 +106,8 @@ export default function BannerAdminPage() {
     setConfirmOpen(false)
     setPendingDeleteBanner(null)
     try {
-      await deleteAdminBanner(id, token)
+      // 🔒 Token is sent via httpOnly cookie automatically
+      await deleteAdminBanner(id)
       fetchBanners()
     } catch (err: any) {
       alert(err.message || 'Xóa banner thất bại.')

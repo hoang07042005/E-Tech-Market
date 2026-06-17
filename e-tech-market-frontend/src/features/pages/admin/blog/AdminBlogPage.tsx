@@ -3,6 +3,7 @@ import { apiFetch, API_BASE_URL } from '@/configs/api.config'
 import ConfirmModal from '@/components/ConfirmModal'
 import '@/styles/admin/AdminPage.css' // Reuse styles
 import '@/styles/admin/AdminBlogPage.css'
+import { useAuthStore } from '@/features/store/useAuthStore'
 
 type BlogCategory = {
   id: number
@@ -30,7 +31,9 @@ const resolveImageUrl = (url: string | null) => {
 }
 
 export default function AdminBlogPage() {
-  const token = typeof window !== 'undefined' ? window.localStorage.getItem('token') : null
+  // 🔒 Token is sent via httpOnly cookie automatically
+  const userStr = useAuthStore((state) => state.userStr)
+  const hasAuth = !!userStr
   const [posts, setPosts] = useState<BlogPost[]>([])
   const [categories, setCategories] = useState<BlogCategory[]>([])
   const [loading, setLoading] = useState(true)
@@ -53,12 +56,12 @@ export default function AdminBlogPage() {
   const [pendingDeletePost, setPendingDeletePost] = useState<BlogPost | null>(null)
 
   const loadData = async () => {
-    if (!token) return
+    if (!hasAuth) return
     setLoading(true)
     try {
       const [postsRes, catsRes] = await Promise.all([
-        apiFetch<{ data: BlogPost[] }>('/api/admin/blog-posts', { token }),
-        apiFetch<BlogCategory[]>('/api/blog/categories', { token })
+        apiFetch<{ data: BlogPost[] }>('/api/admin/blog-posts'),
+        apiFetch<BlogCategory[]>('/api/blog/categories')
       ])
       setPosts(postsRes.data)
       setCategories(catsRes)
@@ -104,7 +107,7 @@ export default function AdminBlogPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!token) return
+    if (!hasAuth) return
     setSubmitting(true)
 
     const payload = {
@@ -117,13 +120,11 @@ export default function AdminBlogPage() {
       if (editingPost) {
         await apiFetch(`/api/admin/blog-posts/${editingPost.id}`, {
           method: 'PUT',
-          token,
           body: JSON.stringify(payload)
         })
       } else {
         await apiFetch('/api/admin/blog-posts', {
           method: 'POST',
-          token,
           body: JSON.stringify(payload)
         })
       }
@@ -137,18 +138,18 @@ export default function AdminBlogPage() {
   }
 
   const handleDelete = (post: BlogPost) => {
-    if (!token) return
+    if (!hasAuth) return
     setPendingDeletePost(post)
     setConfirmOpen(true)
   }
 
   const confirmDelete = async () => {
-    if (!token || !pendingDeletePost) return
+    if (!hasAuth || !pendingDeletePost) return
     const id = pendingDeletePost.id
     setConfirmOpen(false)
     setPendingDeletePost(null)
     try {
-      await apiFetch(`/api/admin/blog-posts/${id}`, { method: 'DELETE', token })
+      await apiFetch(`/api/admin/blog-posts/${id}`, { method: 'DELETE' })
       loadData()
     } catch (e: any) {
       alert(e.message)
@@ -300,11 +301,10 @@ export default function AdminBlogPage() {
                       type="button" 
                       onClick={async () => {
                         const name = window.prompt('Nhập tên danh mục mới:')
-                        if (!name || !name.trim() || !token) return
+                        if (!name || !name.trim() || !hasAuth) return
                         try {
                           const res = await apiFetch<BlogCategory>('/api/admin/blog-categories', {
                             method: 'POST',
-                            token,
                             body: JSON.stringify({ name: name.trim() })
                           })
                           setCategories(prev => [...prev, res])
@@ -337,13 +337,12 @@ export default function AdminBlogPage() {
                       accept="image/*"
                       onChange={async (e) => {
                         const file = e.target.files?.[0]
-                        if (!file || !token) return
+                        if (!file || !hasAuth) return
                         const fd = new FormData()
                         fd.append('file', file)
                         try {
                           const res = await apiFetch<{ url: string }>('/api/admin/uploads/blog-thumbnail', {
                             method: 'POST',
-                            token,
                             body: fd
                           })
                           setFormData({ ...formData, thumbnail_url: res.url })

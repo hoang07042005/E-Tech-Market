@@ -16,7 +16,8 @@
         "laravel/tinker": "^2.8",
         "meilisearch/meilisearch-php": "^1.16",
         "mews/purifier": "^3.4",
-        "spatie/laravel-permission": "^6.25"
+        "spatie/laravel-permission": "^6.25",
+        "symfony/html-sanitizer": "^6.4"
     },
     "require-dev": {
         "darkaonline/l5-swagger": "^8.6",

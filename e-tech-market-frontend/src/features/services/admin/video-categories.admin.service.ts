@@ -11,31 +11,29 @@ export interface VideoCategory {
 
 export type Category = VideoCategory
 
-export const fetchAdminVideoCategories = (token: string | null) => {
-  return apiFetch<VideoCategory[]>('/api/admin/video-categories', { token })
+// 🔒 Token is sent via httpOnly cookie automatically
+export const fetchAdminVideoCategories = () => {
+  return apiFetch<VideoCategory[]>('/api/admin/video-categories')
 }
 
-export const deleteAdminVideoCategory = (id: number, token: string | null) => {
-  return apiFetch(`/api/admin/video-categories/${id}`, { method: 'DELETE', token })
+export const deleteAdminVideoCategory = (id: number) => {
+  return apiFetch(`/api/admin/video-categories/${id}`, { method: 'DELETE' })
 }
 
 export const saveAdminVideoCategory = (
   payload: FormData,
   id: number | null | undefined,
-  token: string | null
 ) => {
   if (id) {
     payload.set('_method', 'PUT')
     return apiFetch(`/api/admin/video-categories/${id}`, {
       method: 'POST',
       body: payload,
-      token
     })
   }
 
   return apiFetch('/api/admin/video-categories', {
     method: 'POST',
     body: payload,
-    token
   })
 }

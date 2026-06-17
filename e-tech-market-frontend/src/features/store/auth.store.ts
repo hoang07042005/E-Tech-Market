@@ -14,13 +14,11 @@ export function clearAuthSessionExpiry(): void {
 }
 
 /**
- * Nếu còn token nhưng chưa có mốc hết hạn (phiên cũ), gán ngay +24h kể từ lần mở trang này.
+ * Nếu chưa có mốc hết hạn phiên (phiên cũ), gán ngay +24h kể từ lần mở trang này.
+ * Chỉ dùng để hiển thị thông báo UX, server sẽ kiểm tra auth thực qua cookie.
  */
 export function ensureAuthExpiryMigrated(): void {
-  if (!localStorage.getItem('token')) {
-    clearAuthSessionExpiry()
-    return
-  }
+  // Không còn token trong localStorage - chỉ dùng expiry timestamp cho UX message
   if (!localStorage.getItem(AUTH_EXPIRES_AT_KEY)) {
     setAuthSessionExpiry()
   }
@@ -39,9 +37,8 @@ export function isAuthSessionExpired(): boolean {
   return Date.now() > at
 }
 
-/** Xóa token/user + mốc thời gian; báo app để chuyển trang đăng nhập nếu cần. */
+/** Xóa user + mốc thời gian; báo app để chuyển trang đăng nhập nếu cần. */
 export function performAuthSessionExpiry(): void {
-  localStorage.removeItem('token')
   localStorage.removeItem('user')
   localStorage.removeItem('pending_payment')
   clearAuthSessionExpiry()

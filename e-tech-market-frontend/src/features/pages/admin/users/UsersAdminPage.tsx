@@ -3,6 +3,7 @@ import { apiFetch } from '@/configs/api.config'
 import { fetchRoles, fetchUsers } from '@/features/services/admin/api.admin.service'
 import '@/styles/admin/ProductPage.css'
 import '@/styles/admin/UsersAdminPage.css'
+import { useAuthStore } from '@/features/store/useAuthStore'
 
 type Role = {
   id: number
@@ -51,7 +52,7 @@ function userHasAdminRole(row: AdminUserRow): boolean {
 }
 
 function readCurrentUserId(): number | null {
-  const raw = localStorage.getItem('user')
+  const raw = useAuthStore((state) => state.userStr)
   if (!raw) return null
   try {
     const u = JSON.parse(raw) as { id?: number }
@@ -64,7 +65,8 @@ function readCurrentUserId(): number | null {
 type BusyKind = 'lock' | 'delete' | 'roles'
 
 export default function UsersAdminPage() {
-  const token = localStorage.getItem('token')
+  const userStr = useAuthStore((state) => state.userStr)
+  const hasAuth = !!userStr
   const currentUserId = useMemo(() => readCurrentUserId(), [])
   const [page, setPage] = useState(1)
   const [search, setSearch] = useState('')
@@ -94,7 +96,7 @@ export default function UsersAdminPage() {
       setRolesCatalogLoading(true)
       setRolesCatalogError(null)
       try {
-        const list = await fetchRoles<Role[]>(token)
+        const list = await fetchRoles<Role[]>()
         if (!cancelled) setRoleCatalog(list ?? [])
       } catch (e: unknown) {
         if (!cancelled) {
@@ -109,7 +111,7 @@ export default function UsersAdminPage() {
     return () => {
       cancelled = true
     }
-  }, [token])
+  }, [hasAuth])
 
   const load = useCallback(async () => {
     setLoading(true)
@@ -119,7 +121,7 @@ export default function UsersAdminPage() {
       q.set('page', String(page))
       q.set('role_type', activeTab)
       if (debouncedSearch) q.set('search', debouncedSearch)
-      const res = await fetchUsers<PaginatedUsers>(q.toString(), token)
+      const res = await fetchUsers<PaginatedUsers>(q.toString())
       setRows(res.data ?? [])
       setLastPage(res.last_page ?? 1)
       setTotal(res.total ?? 0)
@@ -129,7 +131,7 @@ export default function UsersAdminPage() {
     } finally {
       setLoading(false)
     }
-  }, [token, page, debouncedSearch, activeTab])
+  }, [hasAuth, page, debouncedSearch, activeTab])
 
   useEffect(() => {
     void load()
@@ -148,7 +150,6 @@ export default function UsersAdminPage() {
     try {
       await apiFetch<AdminUserRow>(`/api/admin/users/${u.id}`, {
         method: 'PATCH',
-        token,
         body: JSON.stringify({ is_active: !lock }),
       })
       await load()
@@ -165,7 +166,7 @@ export default function UsersAdminPage() {
     setBusy({ userId: u.id, kind: 'delete' })
     setError(null)
     try {
-      await apiFetch(`/api/admin/users/${u.id}`, { method: 'DELETE', token })
+      await apiFetch(`/api/admin/users/${u.id}`, { method: 'DELETE' })
       await load()
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : 'Không xóa được tài khoản.')
@@ -202,7 +203,6 @@ export default function UsersAdminPage() {
     try {
       await apiFetch<AdminUserRow>(`/api/admin/users/${user.id}`, {
         method: 'PATCH',
-        token,
         body: JSON.stringify({ role_ids: uniqueSorted }),
       })
       setRoleEditor(null)

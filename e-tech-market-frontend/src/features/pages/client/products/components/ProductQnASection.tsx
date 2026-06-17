@@ -63,14 +63,12 @@ export function ProductQnASection({
                     setQaError('Vui lòng nhập tên hiển thị (hoặc đăng nhập).')
                     return
                   }
-                  const token = localStorage.getItem('token')
                   setQaSending(true)
                   try {
                     const res = await apiFetch<{ message?: string }>(
                       `/api/products/${encodeURIComponent(product.slug)}/shop-qna`,
                       {
                         method: 'POST',
-                        token: token || undefined,
                         body: JSON.stringify({
                           question: q,
                           ...(buyerLoggedIn ? {} : { guest_name: qaGuestName.trim() }),

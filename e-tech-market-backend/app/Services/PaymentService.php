@@ -10,6 +10,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Str;
 
 class PaymentService
@@ -384,6 +385,15 @@ class PaymentService
             if ($email) {
                 Notification::route('mail', $email)->notify(new OrderConfirmationNotification($order));
             }
+
+            try {
+                Redis::connection()->publish('user-events.' . $order->user_id, json_encode([
+                    'type' => 'payment_confirmed',
+                    'order_id' => $order->id,
+                    'order_code' => $order->order_code,
+                    'status' => 'paid',
+                ]));
+            } catch (\Exception $e) {}
         } else {
             $payment->status = 'failed';
             $payment->transaction_code = $transactionCode ?? $payment->transaction_code;
@@ -391,6 +401,15 @@ class PaymentService
 
             $order->payment_status = 'failed';
             $order->save();
+
+            try {
+                Redis::connection()->publish('user-events.' . $order->user_id, json_encode([
+                    'type' => 'payment_failed',
+                    'order_id' => $order->id,
+                    'order_code' => $order->order_code,
+                    'status' => 'failed',
+                ]));
+            } catch (\Exception $e) {}
         }
     }
 

@@ -104,17 +104,22 @@ class CartService
     /**
      * Update item quantity in cart
      */
-    public function updateItemQuantity(User $user, Product $product, int $quantity): Cart
+    public function updateItemQuantity(User $user, Product $product, int $quantity, ?int $variantId = null): Cart
     {
         $cart = Cart::query()->firstOrCreate(
             ['user_id' => $user->id],
             ['status' => 'active']
         );
 
-        $item = CartItem::query()
+        $query = CartItem::query()
             ->where('cart_id', $cart->id)
-            ->where('product_id', $product->id)
-            ->first();
+            ->where('product_id', $product->id);
+            
+        if ($variantId) {
+            $query->where('variant_id', $variantId);
+        }
+
+        $item = $query->first();
 
         if (! $item) {
             throw new \Exception('Item not found in cart', 404);
@@ -129,17 +134,22 @@ class CartService
     /**
      * Remove item from cart
      */
-    public function removeItem(User $user, Product $product): Cart
+    public function removeItem(User $user, Product $product, ?int $variantId = null): Cart
     {
         $cart = Cart::query()->firstOrCreate(
             ['user_id' => $user->id],
             ['status' => 'active']
         );
 
-        CartItem::query()
+        $query = CartItem::query()
             ->where('cart_id', $cart->id)
-            ->where('product_id', $product->id)
-            ->delete();
+            ->where('product_id', $product->id);
+            
+        if ($variantId) {
+            $query->where('variant_id', $variantId);
+        }
+        
+        $query->delete();
 
         $cart->load(['items.product', 'items.variant']);
 

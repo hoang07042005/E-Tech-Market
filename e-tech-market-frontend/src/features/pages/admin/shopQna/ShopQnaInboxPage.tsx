@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { apiFetch } from '@/configs/api.config'
 import { fetchPendingQna } from '@/features/services/admin/api.admin.service'
 import '@/styles/admin/ShopQnaInboxPage.css'
+import { useAuthStore } from '@/features/store/useAuthStore'
 
 type PendingShopQna = {
   id: number
@@ -15,7 +16,8 @@ type PendingShopQna = {
 }
 
 export default function ShopQnaInboxPage() {
-  const token = localStorage.getItem('token')
+  const userStr = useAuthStore((state) => state.userStr)
+  const hasAuth = !!userStr
   const [items, setItems] = useState<PendingShopQna[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -23,7 +25,7 @@ export default function ShopQnaInboxPage() {
   const [savingId, setSavingId] = useState<number | null>(null)
 
   async function load() {
-    if (!token) {
+    if (!hasAuth) {
       setError('Vui lòng đăng nhập admin.')
       setLoading(false)
       return
@@ -31,7 +33,7 @@ export default function ShopQnaInboxPage() {
     setLoading(true)
     setError(null)
     try {
-      const rows = await fetchPendingQna<PendingShopQna[]>(token)
+      const rows = await fetchPendingQna<PendingShopQna[]>()
       setItems(rows)
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : 'Không tải được danh sách.')
@@ -51,12 +53,11 @@ export default function ShopQnaInboxPage() {
       alert('Vui lòng nhập nội dung trả lời.')
       return
     }
-    if (!token) return
+    if (!hasAuth) return
     setSavingId(row.id)
     try {
       await apiFetch(`/api/admin/products/${row.product_id}/shop-qna/${row.id}`, {
         method: 'PATCH',
-        token,
         body: JSON.stringify({ answer }),
       })
       setDrafts(d => {

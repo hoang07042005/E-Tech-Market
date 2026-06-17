@@ -237,6 +237,8 @@ class OrderService
                 }
             }
 
+            \App\Jobs\InvalidateAdminDashboardCache::dispatch();
+
             return $order;
         });
     }
@@ -304,6 +306,8 @@ class OrderService
             'note' => null,
         ]);
 
+        \App\Jobs\InvalidateAdminDashboardCache::dispatch();
+
         return $order;
     }
 
@@ -329,6 +333,8 @@ class OrderService
             'note' => null,
         ]);
 
+        \App\Jobs\InvalidateAdminDashboardCache::dispatch();
+
         return $order;
     }
 
@@ -353,6 +359,8 @@ class OrderService
 
         $order->payment_status = 'paid';
         $order->save();
+
+        \App\Jobs\InvalidateAdminDashboardCache::dispatch();
 
         return $order;
     }

@@ -20,6 +20,9 @@ $allowedOrigins = $allowedOrigins
         'http://127.0.0.1:3000',
         'http://localhost:4200',
         'http://127.0.0.1:4200',
+        // All localhost variants with any port
+        'http://localhost',
+        'http://127.0.0.1',
     ])
     ->filter(fn ($origin) => is_string($origin) && $origin !== '')
     ->unique()

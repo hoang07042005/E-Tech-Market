@@ -32,6 +32,7 @@ use App\Http\Controllers\Client\ProductNewsController;
 use App\Http\Controllers\Client\ProductsController;
 use App\Http\Controllers\Client\ProductShopQnaController as ClientProductShopQnaController;
 use App\Http\Controllers\Client\ReviewsController;
+use App\Http\Controllers\Client\SseController;
 use App\Http\Controllers\Client\StoreProfileController;
 use App\Http\Controllers\Client\WishlistController;
 use Illuminate\Support\Facades\DB;
@@ -129,6 +130,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/notifications', [ClientNotificationsController::class, 'index']);
     Route::patch('/notifications/{notification}/read', [ClientNotificationsController::class, 'markRead']);
     Route::patch('/notifications/read-all', [ClientNotificationsController::class, 'markReadAll']);
+
+    Route::get('/sse/stream', [SseController::class, 'stream']);
 
     // Admin Routes
     Route::prefix('admin')->name('admin.')->middleware(['admin', 'throttle:120,1'])->group(function () {

@@ -3,6 +3,7 @@ import { apiFetch, API_BASE_URL } from "@/configs/api.config";
 import ConfirmModal from "@/components/ConfirmModal";
 import "@/styles/admin/ProductNewsPage.css";
 import { sanitizeHtml } from "@/utils/sanitizeHtml";
+import { useAuthStore } from '@/features/store/useAuthStore'
 
 type ProductLite = {
   id: number;
@@ -33,7 +34,8 @@ const resolveImageUrl = (url: string | null) => {
 };
 
 export default function ProductNewsPage() {
-  const token = localStorage.getItem("token");
+  const userStr = useAuthStore((state) => state.userStr)
+  const hasAuth = !!userStr;
 
   const [products, setProducts] = useState<ProductLite[]>([]);
   const [selectedProductId, setSelectedProductId] = useState<number | null>(
@@ -67,9 +69,7 @@ export default function ProductNewsPage() {
     setLoadingProducts(true);
     setError(null);
     try {
-      const res = await apiFetch<any>("/api/admin/products?per_page=100", {
-        token,
-      });
+      const res = await apiFetch<any>("/api/admin/products?per_page=100");
       const arr = Array.isArray(res?.data)
         ? res.data
         : Array.isArray(res)
@@ -91,8 +91,7 @@ export default function ProductNewsPage() {
     setError(null);
     try {
       const data = await apiFetch<NewsItem[]>(
-        `/api/admin/products/${productId}/news`,
-        { token },
+        `/api/admin/products/${productId}/news`
       );
       setNews(data);
     } catch (e: unknown) {
@@ -166,14 +165,12 @@ export default function ProductNewsPage() {
           `/api/admin/products/${selectedProductId}/news/${editing.id}`,
           {
             method: "PUT",
-            token,
             body: JSON.stringify(payload),
           },
         );
       } else {
         await apiFetch(`/api/admin/products/${selectedProductId}/news`, {
           method: "POST",
-          token,
           body: JSON.stringify({
             ...payload,
             published_at: new Date().toISOString(),
@@ -189,7 +186,7 @@ export default function ProductNewsPage() {
   };
 
   const uploadThumbnail = async (file: File) => {
-    if (!token) throw new Error("Bạn chưa đăng nhập.");
+    if (!hasAuth) throw new Error("Bạn chưa đăng nhập.");
     setThumbnailUploading(true);
     try {
       const fd = new FormData();
@@ -198,7 +195,6 @@ export default function ProductNewsPage() {
         `/api/admin/uploads/product-news-thumbnail`,
         {
           method: "POST",
-          token,
           body: fd,
         },
       );
@@ -227,7 +223,6 @@ export default function ProductNewsPage() {
         `/api/admin/products/${selectedProductId}/news/${pendingDeleteNews.id}`,
         {
           method: "DELETE",
-          token,
         },
       );
       setPendingDeleteNews(null);

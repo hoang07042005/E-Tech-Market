@@ -4,6 +4,9 @@ import '@/styles/components/HeaderFooter.css'
 import { cartCount, getCart } from '@/features/services/cart.service'
 import { HeartOutlineIcon } from './icons/HeartIcon'
 import { apiFetch } from '@/configs/api.config'
+import { useApiQuery } from '@/features/api/useApiQuery'
+import { useQueryClient } from '@tanstack/react-query'
+import { useAuthStore } from '@/features/store/useAuthStore'
 
 
 export type NavKey = 'Home' | 'Product' | 'Accessory' | 'Blog' | 'Contact' | 'About'
@@ -33,7 +36,7 @@ function isAdminUser(user: StoredUser | null): boolean {
 }
 
 function readStoredUser(): StoredUser | null {
-  const savedUser = localStorage.getItem('user')
+  const savedUser = useAuthStore((state) => state.userStr)
   // 🔒 Token is now in httpOnly cookie, no need to check localStorage token
   // Just verify user data exists
   if (!savedUser) return null
@@ -130,6 +133,7 @@ function MoonIcon() {
 export default function HeaderPage({ active = 'Home' }: { active?: NavKey }) {
   const navigate = useNavigate()
   const location = useLocation()
+  const queryClient = useQueryClient()
   const [user, setUser] = useState<StoredUser | null>(readStoredUser)
   const [cartQty, setCartQty] = useState(() => cartCount(getCart()))
   const [searchQuery, setSearchQuery] = useState('')
@@ -173,34 +177,27 @@ export default function HeaderPage({ active = 'Home' }: { active?: NavKey }) {
     created_at?: string | null
   }
   const [notifOpen, setNotifOpen] = useState(false)
-  const [notifRows, setNotifRows] = useState<Notif[]>([])
-  const [notifUnread, setNotifUnread] = useState(0)
-  const [notifLoading, setNotifLoading] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
   const notifWrapRef = useRef<HTMLDivElement | null>(null)
 
-  const loadNotifs = useCallback(async () => {
-    if (!user) return // 🔒 Check user instead of token
-    setNotifLoading(true)
-    try {
-      // 🔒 Token is in httpOnly cookie, no need to pass it
-      const res = await apiFetch<{ data: Notif[]; unread: number }>(`/notifications?per_page=10&unread=1`)
-      setNotifRows(Array.isArray(res.data) ? res.data : [])
-      setNotifUnread(Number(res.unread ?? 0) || 0)
-    } catch {
-      // ignore
-    } finally {
-      setNotifLoading(false)
+  const notifQuery = useApiQuery<{ data: Notif[]; unread: number }>(
+    ['notifications'],
+    `/notifications?per_page=10&unread=1`,
+    {
+      enabled: !!user,
+      staleTime: 60000,
     }
-  }, [user])
+  )
+
+  const notifRows = Array.isArray(notifQuery.data?.data) ? notifQuery.data.data : []
+  const notifUnread = Number(notifQuery.data?.unread ?? 0) || 0
+  const notifLoading = notifQuery.isLoading
 
   useEffect(() => {
-    if (!notifOpen) return
-    const t = window.setTimeout(() => {
-      void loadNotifs()
-    }, 0)
-    return () => window.clearTimeout(t)
-  }, [notifOpen, loadNotifs])
+    if (notifOpen && user) {
+      queryClient.invalidateQueries({ queryKey: ['notifications'] })
+    }
+  }, [notifOpen, user, queryClient])
 
   useEffect(() => {
     const onDown = (e: MouseEvent) => {
@@ -214,22 +211,20 @@ export default function HeaderPage({ active = 'Home' }: { active?: NavKey }) {
   }, [])
 
   const markNotifRead = async (id: number) => {
-    if (!token) return
+    if (!user) return
     try {
-      await apiFetch(`/notifications/${id}/read`, { token, method: 'PATCH', body: JSON.stringify({}) })
-      setNotifRows((p) => p.filter((n) => n.id !== id))
-      setNotifUnread((u) => Math.max(0, u - 1))
+      await apiFetch(`/notifications/${id}/read`, { method: 'PATCH', body: JSON.stringify({}) })
+      queryClient.invalidateQueries({ queryKey: ['notifications'] })
     } catch {
       // ignore
     }
   }
 
   const markAllRead = async () => {
-    if (!token) return
+    if (!user) return
     try {
-      await apiFetch(`/notifications/read-all`, { token, method: 'PATCH', body: JSON.stringify({}) })
-      setNotifRows([])
-      setNotifUnread(0)
+      await apiFetch(`/notifications/read-all`, { method: 'PATCH', body: JSON.stringify({}) })
+      queryClient.invalidateQueries({ queryKey: ['notifications'] })
     } catch {
       // ignore
     }
@@ -478,7 +473,7 @@ export default function HeaderPage({ active = 'Home' }: { active?: NavKey }) {
                 </div>
                 {notifLoading ? (
                   <div className="hfNotifEmpty">Đang tải…</div>
-                ) : !token ? (
+                ) : !user ? (
                   <div className="hfNotifEmpty">Vui lòng đăng nhập để xem thông báo.</div>
                 ) : !notifRows.length ? (
                   <div className="hfNotifEmpty">Chưa có thông báo.</div>
@@ -497,7 +492,7 @@ export default function HeaderPage({ active = 'Home' }: { active?: NavKey }) {
                     ))}
                   </div>
                 )}
-                {token ? (
+                {user ? (
                   <button type="button" className="hfNotifViewAll" onClick={() => { setNotifOpen(false); navigate('/notifications') }}>
                     Xem tất cả
                   </button>

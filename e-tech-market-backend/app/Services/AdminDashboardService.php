@@ -31,7 +31,7 @@ class AdminDashboardService
             $cacheKey .= '_'.md5($startDateParam.'_'.$endDateParam);
         }
 
-        return Cache::remember($cacheKey, 60, function () use ($range, $startDateParam, $endDateParam, $resolution) {
+        return Cache::tags(['admin_dashboard'])->remember($cacheKey, 600, function () use ($range, $startDateParam, $endDateParam, $resolution) {
             $now = Carbon::now();
             $from30d = $now->copy()->subDays(30);
             $from7d = $now->copy()->subDays(7);

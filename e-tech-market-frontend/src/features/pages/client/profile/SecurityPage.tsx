@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { apiFetch } from '@/configs/api.config'
 import '@/styles/pages/SecurityPage.css'
+import { useAuthStore } from '@/features/store/useAuthStore'
 
 type SessionRow = {
   id: string
@@ -22,7 +23,8 @@ export default function SecurityPage() {
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState<string | null>(null)
-  const token = typeof window !== 'undefined' ? window.localStorage.getItem('token') : null
+  const userStr = useAuthStore((state) => state.userStr)
+  const hasAuth = !!userStr
 
   const [pwCur, setPwCur] = useState('')
   const [pwNew, setPwNew] = useState('')
@@ -41,9 +43,9 @@ export default function SecurityPage() {
   const currentSessionCount = useMemo(() => sessions.length, [sessions])
 
   useEffect(() => {
-    if (!token) return
+    if (!hasAuth) return
     let cancelled = false
-    apiFetch<{ data: SessionRow[] }>('/me/sessions', { token })
+    apiFetch<{ data: SessionRow[] }>('/me/sessions')
       .then((res) => {
         if (cancelled) return
         setSessions(Array.isArray(res.data) ? res.data : [])
@@ -55,12 +57,12 @@ export default function SecurityPage() {
     return () => {
       cancelled = true
     }
-  }, [token])
+  }, [hasAuth])
 
   const onChangePassword = async () => {
     setError(null)
     setSuccess(null)
-    if (!token) {
+    if (!hasAuth) {
       setError('Vui lòng đăng nhập lại để đổi mật khẩu.')
       return
     }
@@ -80,7 +82,6 @@ export default function SecurityPage() {
     setBusy(true)
     try {
       await apiFetch('/me/password', {
-        token,
         method: 'PATCH',
         body: JSON.stringify({
           current_password: pwCur,

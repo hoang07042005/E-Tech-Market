@@ -25,8 +25,8 @@ export default function CategoryPage() {
   const toggleExpand = (id: number) => {
     setExpandedIds(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id])
   }
-  
-  const token = localStorage.getItem('token')
+
+  // 🔒 Token is sent via httpOnly cookie automatically
 
   // Form State
   const [formData, setFormData] = useState({
@@ -41,7 +41,7 @@ export default function CategoryPage() {
     setIsLoading(true)
     setError(null)
     try {
-      const data = await fetchAdminCategories(token)
+      const data = await fetchAdminCategories()
       setCategories(data)
     } catch (err: any) {
       setError(err.message || 'Không tải được danh mục.')
@@ -87,7 +87,7 @@ export default function CategoryPage() {
         payload.append('image', imageFile)
       }
 
-      await saveAdminCategory(payload, editingCategory?.id, token)
+      await saveAdminCategory(payload, editingCategory?.id)
       setIsModalOpen(false)
       fetchCategories()
     } catch (err: any) {
@@ -110,7 +110,7 @@ export default function CategoryPage() {
     setConfirmOpen(false)
 
     try {
-      await deleteAdminCategory(pendingDeleteCategory.id, token)
+      await deleteAdminCategory(pendingDeleteCategory.id)
       setPendingDeleteCategory(null)
       fetchCategories()
     } catch (err: any) {

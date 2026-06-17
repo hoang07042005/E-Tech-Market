@@ -1,4 +1,4 @@
-import { apiFetch, API_BASE_URL } from '@/configs/api.config'
+import { apiFetch } from '@/configs/api.config'
 
 export interface Category {
   id: number
@@ -20,28 +20,28 @@ export interface AdminProductList {
   variants?: any[]
 }
 
-export const fetchAdminProducts = async (token: string | null) => {
-  const res = await apiFetch<any>('/api/admin/products?per_page=100', { token })
+// 🔒 Token is sent via httpOnly cookie automatically
+export const fetchAdminProducts = async () => {
+  const res = await apiFetch<any>('/api/admin/products?per_page=100')
   return (Array.isArray(res) ? res : res?.data || []) as AdminProductList[]
 }
 
-export const deleteAdminProduct = (id: number, token: string | null) => {
-  return apiFetch(`/api/admin/products/${id}`, { method: 'DELETE', token })
+export const deleteAdminProduct = (id: number) => {
+  return apiFetch(`/api/admin/products/${id}`, { method: 'DELETE' })
 }
 
-export const fetchAdminProductDetail = <T>(id: number, token: string | null) => {
-  return apiFetch<T>(`/api/admin/products/${id}`, { token })
+export const fetchAdminProductDetail = <T>(id: number) => {
+  return apiFetch<T>(`/api/admin/products/${id}`)
 }
 
-export const fetchAdminCategories = <T>(token: string | null) => {
-  return apiFetch<T>('/api/admin/categories', { token })
+export const fetchAdminCategories = <T>() => {
+  return apiFetch<T>('/api/admin/categories')
 }
 
-export const saveAdminProduct = async <T>(data: FormData, id: number | null | undefined, token: string | null) => {
+export const saveAdminProduct = async <T>(data: FormData, id: number | null | undefined) => {
   const url = id ? `/api/admin/products/${id}` : '/api/admin/products'
   return apiFetch<T>(url, {
     method: 'POST',
-    token,
     body: data
   })
 }

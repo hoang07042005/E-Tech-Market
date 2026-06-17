@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { apiFetch } from '@/configs/api.config'
 import ConfirmModal from '@/components/ConfirmModal'
 import '@/styles/admin/CouponsAdmin.css'
+import { useAuthStore } from '@/features/store/useAuthStore'
 
 type Coupon = {
   id: number
@@ -26,18 +27,20 @@ export default function CouponsAdminPage() {
   const [editData, setEditData] = useState<Partial<Coupon> | null>(null)
   const [showDeleteModal, setShowDeleteModal] = useState(false)
   const [couponToDelete, setCouponToDelete] = useState<Coupon | null>(null)
-  
-  const token = typeof window !== 'undefined' ? window.localStorage.getItem('token') : null
+
+  // 🔒 Token is sent via httpOnly cookie automatically
+  const userStr = useAuthStore((state) => state.userStr)
+  const hasAuth = !!userStr
 
   const fetchCoupons = async (currentPage: number) => {
-    if (!token) {
+    if (!hasAuth) {
       setLoading(false)
       return
     }
 
     setLoading(true)
     try {
-      const res = await apiFetch<any>(`/api/admin/coupons?page=${currentPage}&limit=10`, { token })
+      const res = await apiFetch<any>(`/api/admin/coupons?page=${currentPage}&limit=10`)
       const fetchedCoupons = Array.isArray(res?.data) ? res.data : Array.isArray(res) ? res : []
 
       setCoupons(fetchedCoupons)
@@ -55,7 +58,7 @@ export default function CouponsAdminPage() {
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!token || !editData) return
+    if (!hasAuth || !editData) return
     try {
       const isEdit = !!editData.id
       const url = isEdit ? `/api/admin/coupons/${editData.id}` : `/api/admin/coupons`
@@ -63,7 +66,6 @@ export default function CouponsAdminPage() {
       
       await apiFetch(url, {
         method,
-        token,
         body: JSON.stringify(editData),
       })
       
@@ -76,9 +78,9 @@ export default function CouponsAdminPage() {
   }
 
   const deleteCoupon = async (id: number) => {
-    if (!token) return
+    if (!hasAuth) return
     try {
-      await apiFetch(`/api/admin/coupons/${id}`, { method: 'DELETE', token })
+      await apiFetch(`/api/admin/coupons/${id}`, { method: 'DELETE' })
       setCoupons((prev) => prev.filter((c) => c.id !== id))
       setShowDeleteModal(false)
       setCouponToDelete(null)

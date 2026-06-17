@@ -45,10 +45,11 @@ class CartController extends Controller
     {
         $data = $request->validate([
             'quantity' => ['required', 'integer', 'min:1'],
+            'variant_id' => ['nullable', 'integer', 'min:1'],
         ]);
 
         try {
-            $cart = $this->cartService->updateItemQuantity($request->user(), $product, (int) $data['quantity']);
+            $cart = $this->cartService->updateItemQuantity($request->user(), $product, (int) $data['quantity'], $data['variant_id'] ?? null);
             return response()->json($cart);
         } catch (\Exception $e) {
             $code = $e->getCode() ?: 400;
@@ -58,7 +59,8 @@ class CartController extends Controller
 
     public function removeItem(Request $request, Product $product): JsonResponse
     {
-        $cart = $this->cartService->removeItem($request->user(), $product);
+        $variantId = $request->input('variant_id');
+        $cart = $this->cartService->removeItem($request->user(), $product, $variantId ? (int) $variantId : null);
         return response()->json($cart);
     }
 }

@@ -138,10 +138,14 @@ class _ProductCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final name = product['name']?.toString() ?? '';
     final brand = product['brand']?.toString().trim();
+    final description = product['description']?.toString().trim();
+    final shortDescription = product['short_description']?.toString().trim();
     final excerpt =
-        product['short_description']?.toString().trim().isNotEmpty == true
-            ? product['short_description'].toString()
-            : Trans.defaultProductExcerpt;
+        description != null && description.isNotEmpty
+            ? description
+            : shortDescription != null && shortDescription.isNotEmpty
+                ? shortDescription
+                : Trans.defaultProductExcerpt;
     final imageUrl = _resolveProductImageUrl(product);
     final displayPrice = _getDisplayPrice(product);
     final oldPrice = _getDisplayOldPrice(product);
@@ -238,19 +242,19 @@ class _ProductCard extends StatelessWidget {
                         _RatingStars(rating: rating, count: ratingCount),
                       ],
                     ),
-                    const SizedBox(height: 6),
+                    const SizedBox(height: 2),
                     Text(
                       name,
                       style: TextStyle(
                         color: Theme.of(context).colorScheme.onSurface,
-                        fontSize: 13,
+                        fontSize: 12,
                         fontWeight: FontWeight.w800,
                         height: 1.25,
                       ),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
-                    const SizedBox(height: 6),
+                    const SizedBox(height:2),
                     Wrap(
                       spacing: 6,
                       runSpacing: 2,
@@ -260,7 +264,7 @@ class _ProductCard extends StatelessWidget {
                           '${_formatPrice(displayPrice)} đ',
                           style: const TextStyle(
                               color: _brandColor,
-                              fontSize: 14,
+                              fontSize: 13,
                               fontWeight: FontWeight.w800),
                         ),
                         if (oldPrice != null && oldPrice > displayPrice)
@@ -268,13 +272,13 @@ class _ProductCard extends StatelessWidget {
                             '${_formatPrice(oldPrice)} đ',
                             style: TextStyle(
                               color: Theme.of(context).colorScheme.onSurfaceVariant,
-                              fontSize: 11,
+                              fontSize: 10,
                               decoration: TextDecoration.lineThrough,
                             ),
                           ),
                       ],
                     ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: 2),
                     
                     // Phần mô tả ngắn và Nút giỏ hàng tự động co giãn ngang hàng
                     Row(
@@ -287,7 +291,7 @@ class _ProductCard extends StatelessWidget {
                                 color: Theme.of(context).colorScheme.onSurfaceVariant,
                                 fontSize: 11,
                                 height: 1.35),
-                            maxLines: 2,
+                            maxLines: 3,
                             overflow: TextOverflow.ellipsis,
                           ),
                         ),

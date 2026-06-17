@@ -4,10 +4,11 @@ import {
   performAuthSessionExpiry,
 } from '@/features/store/auth.store'
 
-export const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000').replace(
-  /\/+$/,
-  '',
-)
+// During development (Vite), use relative path to leverage proxy which avoids CORS.
+// In production, use the configured API URL.
+export const API_BASE_URL = import.meta.env.DEV
+  ? ''  // Relative path: proxy handles CORS in dev mode
+  : (import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000').replace(/\/+$/, '')
 
 
 export type ApiError = {
@@ -90,7 +91,7 @@ export async function apiFetch<T>(
 
   const data = await parseJsonSafe<ApiError & T>(res)
   if (!res.ok) {
-    if (res.status === 401 && typeof window !== 'undefined' && window.localStorage.getItem('token')) {
+    if (res.status === 401) {
       performAuthSessionExpiry()
     }
     const fallbackText = data ? null : await res.text().catch(() => null)

@@ -3,6 +3,7 @@ import { apiFetch, API_BASE_URL } from '@/configs/api.config'
 import logoMomo from '@/assets/logo-momo.png'
 import logoVnpay from '@/assets/vnpay-logo.png'
 import logoCod from '@/assets/COD.png'
+import { useAuthStore } from '@/features/store/useAuthStore'
 
 type IconProps = { className?: string; title?: string }
 
@@ -94,8 +95,9 @@ function fmtAdminDateTime(iso?: string | null) {
 }
 
 export default function SettingsAdminPage() {
-  const token = typeof window !== 'undefined' ? window.localStorage.getItem('token') : null
-  const userStr = typeof window !== 'undefined' ? window.localStorage.getItem('user') : null
+  // 🔒 Token is sent via httpOnly cookie automatically
+  const userStr = useAuthStore((state) => state.userStr)
+  const hasAuth = !!userStr
   const userAvatarUrl = useMemo(() => {
     if (!userStr) return null
     try {
@@ -173,7 +175,7 @@ export default function SettingsAdminPage() {
   useEffect(() => {
     let cancelled = false
     async function load() {
-      if (!token) {
+      if (!hasAuth) {
         setError('Bạn chưa đăng nhập.')
         setLoading(false)
         return
@@ -181,7 +183,7 @@ export default function SettingsAdminPage() {
       setLoading(true)
       setError(null)
       try {
-        const s = await apiFetch<SettingsPayload>('/api/admin/settings', { token })
+        const s = await apiFetch<SettingsPayload>('/api/admin/settings')
         if (cancelled) return
         setData(s)
         setStore(s.store)
@@ -191,14 +193,14 @@ export default function SettingsAdminPage() {
         setMethods(s.shipping.methods as MethodRow[])
         // Load zones from dedicated endpoint to reflect DB exactly (no truncation/limits).
         try {
-          const z = await apiFetch<ZoneRow[]>('/api/admin/shipping/zones', { token })
+          const z = await apiFetch<ZoneRow[]>('/api/admin/shipping/zones')
           if (!cancelled) setZones(Array.isArray(z) ? z : [])
         } catch {
           if (!cancelled) setZones(s.shipping.zones)
         }
         // Load methods from dedicated endpoint to reflect DB exactly.
         try {
-          const m = await apiFetch<MethodRow[]>('/api/admin/shipping/methods', { token })
+          const m = await apiFetch<MethodRow[]>('/api/admin/shipping/methods')
           if (!cancelled) setMethods(Array.isArray(m) ? m : [])
         } catch {
           // keep from settings payload
@@ -215,14 +217,13 @@ export default function SettingsAdminPage() {
     return () => {
       cancelled = true
     }
-  }, [token])
+  }, [hasAuth])
 
   const onSaveAll = async () => {
-    if (!token) return
+    if (!hasAuth) return
     setSaving(true)
     try {
       const updated = await apiFetch<SettingsPayload>('/api/admin/settings', {
-        token,
         method: 'PATCH',
         body: JSON.stringify({
           store,
@@ -251,7 +252,7 @@ export default function SettingsAdminPage() {
   }
 
   const submitAddZone = async () => {
-    if (!token) return
+    if (!hasAuth) return
     const name = addZoneForm.name.trim()
     if (!name) {
       setAddZoneErr('Vui lòng nhập tên khu vực.')
@@ -266,7 +267,6 @@ export default function SettingsAdminPage() {
     setAddZoneErr(null)
     try {
       const created = await apiFetch<ZoneRow>('/api/admin/shipping/zones', {
-        token,
         method: 'POST',
         body: JSON.stringify({
           name,
@@ -285,14 +285,13 @@ export default function SettingsAdminPage() {
   }
 
   const updateZone = async (z: ZoneRow) => {
-    if (!token) return
+    if (!hasAuth) return
     const name = prompt('Tên khu vực', z.name)?.trim()
     if (!name) return
     const eta = prompt('Thời gian dự kiến', z.eta ?? '')?.trim() ?? ''
     const feeStr = prompt('Đơn giá (VND)', String(z.fee))?.trim() ?? String(z.fee)
     const fee = Number(feeStr.replaceAll('.', '').replaceAll(',', '')) || 0
     const updated = await apiFetch<ZoneRow>(`/api/admin/shipping/zones/${z.id}`, {
-      token,
       method: 'PATCH',
       body: JSON.stringify({ name, eta, fee }),
     })
@@ -300,9 +299,8 @@ export default function SettingsAdminPage() {
   }
 
   const toggleZoneActive = async (z: ZoneRow) => {
-    if (!token) return
+    if (!hasAuth) return
     const updated = await apiFetch<ZoneRow>(`/api/admin/shipping/zones/${z.id}`, {
-      token,
       method: 'PATCH',
       body: JSON.stringify({ is_active: !z.is_active }),
     })
@@ -310,11 +308,10 @@ export default function SettingsAdminPage() {
   }
 
   const deleteZone = async (z: ZoneRow) => {
-    if (!token) return
+    if (!hasAuth) return
     const ok = window.confirm(`Xóa vùng “${z.name}”? Thao tác này không thể hoàn tác.`)
     if (!ok) return
     await apiFetch<{ ok: true }>(`/api/admin/shipping/zones/${z.id}`, {
-      token,
       method: 'DELETE',
     })
     setZones((cur) => cur.filter((x) => x.id !== z.id))
@@ -352,7 +349,7 @@ export default function SettingsAdminPage() {
   }
 
   const submitAddMethod = async () => {
-    if (!token) return
+    if (!hasAuth) return
     const name = addMethodForm.name.trim()
     if (!name) {
       setAddMethodErr('Vui lòng nhập tên đối tác.')
@@ -378,7 +375,6 @@ export default function SettingsAdminPage() {
     try {
       if (editingMethodId) {
         const updated = await apiFetch<MethodRow>(`/api/admin/shipping/methods/${editingMethodId}`, {
-          token,
           method: 'PATCH',
           body: JSON.stringify({
             name,
@@ -392,7 +388,6 @@ export default function SettingsAdminPage() {
         setMethods((cur) => cur.map((x) => (x.id === editingMethodId ? updated : x)))
       } else {
         const created = await apiFetch<MethodRow>('/api/admin/shipping/methods', {
-          token,
           method: 'POST',
           body: JSON.stringify({
             name,
@@ -414,9 +409,8 @@ export default function SettingsAdminPage() {
   }
 
   const toggleMethodActive = async (m: MethodRow) => {
-    if (!token) return
+    if (!hasAuth) return
     const updated = await apiFetch<MethodRow>(`/api/admin/shipping/methods/${m.id}`, {
-      token,
       method: 'PATCH',
       body: JSON.stringify({ is_active: !m.is_active }),
     })
@@ -424,7 +418,7 @@ export default function SettingsAdminPage() {
   }
 
   const updateMethod = async (m: MethodRow) => {
-    if (!token) return
+    if (!hasAuth) return
     setAddMethodErr(null)
     setEditingMethodId(m.id)
     setAddMethodForm({
@@ -439,10 +433,10 @@ export default function SettingsAdminPage() {
   }
 
   const deleteMethod = async (m: MethodRow) => {
-    if (!token) return
+    if (!hasAuth) return
     const ok = window.confirm(`Xóa đối tác “${m.name}”? Thao tác này không thể hoàn tác.`)
     if (!ok) return
-    await apiFetch<{ ok: true }>(`/api/admin/shipping/methods/${m.id}`, { token, method: 'DELETE' })
+    await apiFetch<{ ok: true }>(`/api/admin/shipping/methods/${m.id}`, { method: 'DELETE' })
     setMethods((cur) => cur.filter((x) => x.id !== m.id))
   }
 

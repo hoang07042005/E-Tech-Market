@@ -4,8 +4,10 @@ import '@/styles/pages/ProductsPage.css'
 import '@/styles/pages/WishlistPage.css'
 import { fetchWishlist, toggleWishlist, type WishlistItem } from '@/features/services/wishlist.service'
 import { API_BASE_URL } from '@/configs/api.config'
+import { useWishlistQuery, useWishlistMutation } from '@/features/services/mutations'
 import type { Product } from '@/features/services/products.service'
 import Skeleton from '@/components/Skeleton'
+import { useAuthStore } from '@/features/store/useAuthStore'
 
 const resolveImageUrl = (url: string | null) => {
   if (!url) return 'https://via.placeholder.com/400'
@@ -64,22 +66,19 @@ function WishlistCard({
 
 export default function WishlistPage() {
   const navigate = useNavigate()
-  const [items, setItems] = useState<WishlistItem[]>([])
-  const [loading, setLoading] = useState(true)
   const [selectedCatId, setSelectedCatId] = useState<string>('all')
-  const token = typeof window !== 'undefined' ? window.localStorage.getItem('token') : null
-  const hasAuth = !!token
+  const userStr = useAuthStore((state) => state.userStr)
+  const hasAuth = !!userStr
+
+  const { data: wishlistData, isLoading: loading } = useWishlistQuery(hasAuth)
+  const wishlistMutation = useWishlistMutation()
+  const items = wishlistData || []
 
   useEffect(() => {
     if (!hasAuth) {
       navigate('/login')
-      return
     }
-    fetchWishlist(token)
-      .then(setItems)
-      .catch(() => setItems([]))
-      .finally(() => setLoading(false))
-  }, [hasAuth, navigate, token])
+  }, [hasAuth, navigate])
 
   const products = useMemo(() => items.map((i) => i.product).filter(Boolean) as Product[], [items])
 
@@ -107,24 +106,12 @@ export default function WishlistPage() {
   }, [products, selectedCatId])
 
   async function remove(productId: number) {
-    if (!token) return
-    try {
-      await toggleWishlist(token, productId)
-      setItems((prev) => prev.filter((x) => x.product_id !== productId))
-    } catch {
-      // noop
-    }
+    wishlistMutation.mutate(productId)
   }
 
   async function clearAll() {
-    if (!token) return
     const ids = items.map((i) => i.product_id)
-    setItems([])
-    try {
-      await Promise.allSettled(ids.map((id) => toggleWishlist(token, id)))
-    } catch {
-      // noop
-    }
+    ids.forEach((id) => wishlistMutation.mutate(id))
   }
 
   function WishlistSkeleton() {

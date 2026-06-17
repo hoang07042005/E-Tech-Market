@@ -12,7 +12,9 @@ import { fetchWishlist, toggleWishlist } from '@/features/services/wishlist.serv
 import { addToCompare, getCompareList, removeFromCompare } from '@/features/services/compare.service'
 import FlashSaleSection from './FlashSaleSection'
 import { fetchActiveBanners, type Banner } from '@/features/services/client/banners.client.service'
+import { useWishlistQuery, useWishlistMutation, useCartMutation } from '@/features/services/mutations'
 import Skeleton from '@/components/Skeleton'
+import { useAuthStore } from '@/features/store/useAuthStore'
 
 const resolveImageUrl = (url: string | null) => {
   if (!url) return 'https://via.placeholder.com/400'
@@ -87,6 +89,7 @@ function ProductCard({
   onToggleLike: (id: number) => void
 }) {
   const imageUrl = resolveImageUrl(product.main_image_url)
+  const { addToCart } = useCartMutation()
 
   const brand = product.brand ? product.brand : 'ECOVACS'
   const excerpt = product.short_description || 'Thiết kế thông minh, lực hút mạnh mẽ, làm sạch hoàn hảo mọi ngóc ngách trong ngôi nhà của bạn...'
@@ -251,15 +254,18 @@ function ProductCard({
           className="hpAddToCartFullBtn"
           onClick={() => {
             addToCart({
-              product_id: product.id,
-              slug: product.slug,
-              name: product.name,
-              price: Number.parseFloat(displayPrice),
-              image_url: imageUrl,
-              variant_id: null,
-              variant_label: null,
-              quantity: 1,
-            }, 1)
+              item: {
+                product_id: product.id,
+                slug: product.slug,
+                name: product.name,
+                price: Number.parseFloat(displayPrice),
+                image_url: imageUrl,
+                variant_id: null,
+                variant_label: null,
+                quantity: 1,
+              },
+              qty: 1
+            })
             window.dispatchEvent(new Event('toast', { bubbles: false }))
           }}
         >
@@ -365,7 +371,6 @@ export default function HomePage() {
   const [monitorProducts, setMonitorProducts] = useState<ApiProduct[]>([])
   const [printerProducts, setPrinterProducts] = useState<ApiProduct[]>([])
   const [loading, setLoading] = useState(true)
-  const [wishSet, setWishSet] = useState<Set<number>>(() => new Set())
   const [banners, setBanners] = useState<Banner[]>([])
   const [currentBannerIndex, setCurrentBannerIndex] = useState(0)
 
@@ -376,55 +381,28 @@ export default function HomePage() {
     }, 300000)
     return () => clearInterval(interval)
   }, [banners.length])
-  const token = typeof window !== 'undefined' ? window.localStorage.getItem('token') : null
+  // 🔒 Check auth via user in localStorage (not token - token is in httpOnly cookie)
+  const userStr = useAuthStore((state) => state.userStr)
+  const hasAuth = !!userStr
 
-  useEffect(() => {
-    if (token) {
-      fetchWishlist(token)
-        .then((items) => setWishSet(new Set(items.map((i) => i.product_id))))
-        .catch(() => setWishSet(new Set()))
-    }
-  }, [token])
+  const { data: wishlistData } = useWishlistQuery(hasAuth)
+  const wishSet = useMemo(() => new Set(wishlistData?.map((i) => i.product_id) || []), [wishlistData])
+  const wishlistMutation = useWishlistMutation()
 
   async function onToggleLike(productId: number) {
-    const currentToken = localStorage.getItem('token')
-    if (!currentToken) {
+    if (!hasAuth) {
       navigate('/login')
       return
     }
-    // Optimistic UI
-    setWishSet((prev) => {
-      const next = new Set(prev)
-      if (next.has(productId)) next.delete(productId)
-      else next.add(productId)
-      return next
-    })
-    try {
-      // toggleWishlist takes (token, productId)
-      const status = await toggleWishlist(currentToken, productId)
-      setWishSet((prev) => {
-        const next = new Set(prev)
-        if (status === 'added') next.add(productId)
-        else next.delete(productId)
-        return next
-      })
-      window.dispatchEvent(new Event('wishlist-updated', { bubbles: false }))
-    } catch {
-      // Revert on error
-      setWishSet((prev) => {
-        const next = new Set(prev)
-        if (next.has(productId)) next.delete(productId)
-        else next.add(productId)
-        return next
-      })
-    }
+    wishlistMutation.mutate(productId)
   }
 
   useEffect(() => {
     let active = true
     Promise.all([
       fetchProducts({ limit: 10, is_featured: 1 }),
-      apiFetch<CouponPublic[]>('/api/coupons?exclude_saved=true', { token: localStorage.getItem('token') }),
+      // 🔒 Token is sent via httpOnly cookie automatically
+      apiFetch<CouponPublic[]>('/api/coupons?exclude_saved=true'),
       fetchCategories('product'),
       apiFetch<ProductReview[]>('/api/reviews?min_rating=5&limit=6'),
       apiFetch<{ data: BlogPost[] }>('/api/blog/posts?per_page=5'),
@@ -509,17 +487,16 @@ export default function HomePage() {
   }, [loading, tabActive, featuredProducts, latestNews])
 
   const saveCoupon = async (code: string) => {
-    const token = localStorage.getItem('token')
-    if (!token) {
+    if (!hasAuth) {
       alert('Vui lòng đăng nhập để lưu mã giảm giá!')
       navigate('/login')
       return
     }
 
     try {
+      // 🔒 Token is sent via httpOnly cookie automatically
       const res = await apiFetch<{ message: string }>('/api/me/coupons/save', {
         method: 'POST',
-        token,
         body: JSON.stringify({ code })
       })
       alert(res.message)

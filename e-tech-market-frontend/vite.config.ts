@@ -3,6 +3,11 @@ import { defineConfig } from 'vitest/config'
 import react from '@vitejs/plugin-react'
 import path from 'path'
 
+// In Docker, "localhost" inside the frontend container refers to itself, not the
+// nginx service.  Use the Docker service name "nginx" by default when the
+// VITE_API_PROXY_TARGET env-var is not explicitly set.
+const apiProxyTarget = process.env.VITE_API_PROXY_TARGET || 'http://nginx:8000'
+
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
@@ -17,6 +22,17 @@ export default defineConfig({
     },
     host: true,
     port: 5173,
+    proxy: {
+      '/api': {
+        target: apiProxyTarget,
+        changeOrigin: true,
+        ws: true,
+      },
+      '/storage': {
+        target: apiProxyTarget,
+        changeOrigin: true,
+      },
+    },
   },
   test: {
     environment: 'jsdom',

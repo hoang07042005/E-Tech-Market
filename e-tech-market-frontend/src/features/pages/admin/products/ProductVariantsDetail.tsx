@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { fetchAdminProductDetail } from '@/features/services/admin/products.admin.service'
 import { API_BASE_URL } from '@/configs/api.config'
+import { useAuthStore } from '@/features/store/useAuthStore'
 
 interface Category {
   id: number
@@ -91,14 +92,15 @@ export default function ProductVariantsDetail({
   const [error, setError] = useState<string | null>(null)
   const [selectedFilter, setSelectedFilter] = useState<string | 'all'>('all')
 
-  const token = localStorage.getItem('token')
+  const userStr = useAuthStore((state) => state.userStr)
+  const hasAuth = !!userStr
 
   useEffect(() => {
     let mounted = true
     setIsLoading(true)
     setError(null)
 
-    fetchAdminProductDetail<ProductDetail>(productId, token)
+    fetchAdminProductDetail<ProductDetail>(productId)
       .then((res) => {
         if (mounted) {
           setProduct(res)
@@ -122,7 +124,7 @@ export default function ProductVariantsDetail({
     return () => {
       mounted = false
     }
-  }, [productId, token])
+  }, [productId, hasAuth])
 
   if (isLoading) {
     return (

@@ -3,6 +3,7 @@ import type { ChangeEvent } from 'react'
 import { apiFetch } from '@/configs/api.config'
 import {  } from '@/features/services/admin/api.admin.service'
 import '@/styles/admin/ContactsAdminPage.css'
+import { useAuthStore } from '@/features/store/useAuthStore'
 
 type ContactMessage = {
   id: number
@@ -29,18 +30,19 @@ export default function ContactsAdminPage() {
   const [sortOrder, setSortOrder] = useState<'newest' | 'oldest'>('newest')
   const [page, setPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
-  const token = typeof window !== 'undefined' ? window.localStorage.getItem('token') : null
+  const userStr = useAuthStore((state) => state.userStr)
+  const hasAuth = !!userStr
 
   const fetchMessages = useCallback(
     async (currentPage: number, handledStatus: 'all' | 'yes' | 'no') => {
-      if (!token) return
+      if (!hasAuth) return
       setLoading(true)
       try {
         let url = `/api/admin/contact-messages?page=${currentPage}&limit=10`
         if (handledStatus !== 'all') {
           url += `&handled=${handledStatus}`
         }
-        const res = await apiFetch<{ data: ContactMessage[]; last_page: number }>(url, { token })
+        const res = await apiFetch<{ data: ContactMessage[]; last_page: number }>(url)
         setMessages(res.data || [])
         setTotalPages(res.last_page || 1)
       } catch (err) {
@@ -49,7 +51,7 @@ export default function ContactsAdminPage() {
         setLoading(false)
       }
     },
-    [token],
+    [hasAuth],
   )
 
   useEffect(() => {
@@ -60,11 +62,10 @@ export default function ContactsAdminPage() {
   }, [fetchMessages, page, handledFilter])
 
   const markHandled = async (id: number) => {
-    if (!token) return
+    if (!hasAuth) return
     try {
       const res = await apiFetch<ContactMessage>(`/api/admin/contact-messages/${id}/handle`, {
         method: 'PATCH',
-        token,
         body: JSON.stringify({}),
       })
       setMessages((prev) => prev.map((m) => (m.id === id ? res : m)))
@@ -75,9 +76,9 @@ export default function ContactsAdminPage() {
 
   const deleteMessage = async (id: number) => {
     if (!confirm('Bạn có chắc chắn muốn xoá tin nhắn này?')) return
-    if (!token) return
+    if (!hasAuth) return
     try {
-      await apiFetch(`/api/admin/contact-messages/${id}`, { method: 'DELETE', token })
+      await apiFetch(`/api/admin/contact-messages/${id}`, { method: 'DELETE' })
       setMessages((prev) => prev.filter((m) => m.id !== id))
     } catch {
       alert('Lỗi khi xoá.')

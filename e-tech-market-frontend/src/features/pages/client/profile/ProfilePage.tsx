@@ -5,6 +5,7 @@ import { me as fetchMe, logout as apiLogout } from '@/features/services/auth.ser
 import { API_BASE_URL, apiFetch } from '@/configs/api.config'
 import Skeleton from '@/components/Skeleton'
 import { clearAuthSessionExpiry } from '@/features/store/auth.store'
+import { useAuthStore } from '@/features/store/useAuthStore'
 
 type TabKey = 'profile' | 'orders' | 'notifications' | 'payments' | 'security' | 'coupons'
 
@@ -115,7 +116,7 @@ export default function ProfilePage() {
   const displayName = useMemo(() => {
     const localUser = (() => {
       try {
-        const raw = window.localStorage.getItem('user')
+        const raw = useAuthStore((state) => state.userStr)
         if (!raw) return null
         return JSON.parse(raw) as MeUser
       } catch {

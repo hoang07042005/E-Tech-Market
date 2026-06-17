@@ -92,9 +92,7 @@ class ProductService
         DB::transaction(function () use ($variant, $add) {
             ProductVariant::query()
                 ->where('id', $variant->id)
-                ->update([
-                    'stock_quantity' => DB::raw('COALESCE(stock_quantity, 0) + '.$add),
-                ]);
+                ->increment('stock_quantity', $add);
         });
 
         return $variant->fresh();

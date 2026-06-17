@@ -9,11 +9,9 @@ import {
   cartCount,
   cartTotal,
   getCart,
-  removeFromCart,
-  updateCartQuantity,
-  clearCart,
   type CartState,
 } from '@/features/services/cart.service'
+import { useCartMutation } from '@/features/services/mutations'
 
 function formatVnd(n: number) {
   return `${Math.round(n).toLocaleString('vi-VN')} đ`
@@ -34,6 +32,7 @@ export default function CartPage() {
   const [boughtTogether, setBoughtTogether] = useState<ApiProduct[]>([])
   const [loadingSuggestions, setLoadingSuggestions] = useState(true)
   const [loadingBoughtTogether, setLoadingBoughtTogether] = useState(false)
+  const { updateQuantity, removeFromCart, clearCart } = useCartMutation()
 
   useEffect(() => {
     const onChange = () => setCart(getCart())
@@ -209,7 +208,7 @@ export default function CartPage() {
                       <button
                         type="button"
                         className="cartQtyBtn"
-                        onClick={() => updateCartQuantity(it.key, it.quantity - 1)}
+                        onClick={() => updateQuantity({ key: it.key, qty: it.quantity - 1, productId: it.product_id, variantId: it.variant_id })}
                         disabled={it.quantity <= 1}
                         aria-label="Giảm số lượng"
                       >
@@ -220,13 +219,13 @@ export default function CartPage() {
                         type="number"
                         min={1}
                         value={it.quantity}
-                        onChange={(e) => updateCartQuantity(it.key, Number(e.target.value))}
+                        onChange={(e) => updateQuantity({ key: it.key, qty: Number(e.target.value), productId: it.product_id, variantId: it.variant_id })}
                         aria-label="Số lượng"
                       />
                       <button
                         type="button"
                         className="cartQtyBtn"
-                        onClick={() => updateCartQuantity(it.key, it.quantity + 1)}
+                        onClick={() => updateQuantity({ key: it.key, qty: it.quantity + 1, productId: it.product_id, variantId: it.variant_id })}
                         aria-label="Tăng số lượng"
                       >
                         <PlusIcon />
@@ -235,7 +234,7 @@ export default function CartPage() {
 
                     <div className="cartLine hideSm">{formatVnd(it.price * it.quantity)}</div>
 
-                    <button type="button" className="cartRemoveBtn" onClick={() => removeFromCart(it.key)} aria-label="Xoá sản phẩm">
+                    <button type="button" className="cartRemoveBtn" onClick={() => removeFromCart({ key: it.key, productId: it.product_id, variantId: it.variant_id })} aria-label="Xoá sản phẩm">
                       <TrashIcon />
                     </button>
                   </div>
