@@ -184,7 +184,14 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                               elevation: 0,
                             ),
                             child: _isLoading
-                                ? const SizedBox(height: 18, width: 18, child: CircularProgressIndicator(color: Color(0xFFEF7A45), strokeWidth: 2))
+                                ? Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      SizedBox(height: 18, width: 18, child: CircularProgressIndicator(color: Color(0xFFFFFFFF), strokeWidth: 2)),
+                                      const SizedBox(width: 8),
+                                      Text('ĐANG GỬI...', style: TextStyle(letterSpacing: 1, fontWeight: FontWeight.w700, color: Color(0xFFFFFFFF))),
+                                    ],
+                                  )
                                 : Text(Trans.sendRequest, style: TextStyle(letterSpacing: 2, fontWeight: FontWeight.w700, color: Color(0xFFFFFFFF))),
                           ),
                         ],

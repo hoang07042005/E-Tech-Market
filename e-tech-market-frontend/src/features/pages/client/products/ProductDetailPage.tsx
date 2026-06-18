@@ -14,7 +14,7 @@ import {
   type ProductNews,
   type ProductReview,
 } from '@/features/services/products.service'
-import { fetchWishlist, toggleWishlist } from '@/features/services/wishlist.service'
+import {} from '@/features/services/wishlist.service'
 import { addToCompare, getCompareList, removeFromCompare } from '@/features/services/compare.service'
 import { useWishlistQuery, useWishlistMutation, useCartMutation } from '@/features/services/mutations'
 import '@/styles/pages/ProductDetailPage.css'
@@ -98,6 +98,7 @@ export default function ProductDetailPage() {
   const [selectedImg, setSelectedImg] = useState<string | null>(null)
   const [selectedVariant, setSelectedVariant] = useState<ProductVariant | null>(null)
   const [qty, setQty] = useState(1)
+  const [showFloatingBar, setShowFloatingBar] = useState(false)
   const [openFaqId, setOpenFaqId] = useState<number | null>(null)
   const [isReviewModalOpen, setIsReviewModalOpen] = useState(false)
   const [reviewRating, setReviewRating] = useState(5)
@@ -335,6 +336,25 @@ export default function ProductDetailPage() {
   }, [activeFlashSale])
 
   useEffect(() => {
+    if (!product) return
+
+    const productInfo = document.querySelector('.pdpProductInfo')
+    if (!productInfo) {
+      setShowFloatingBar(true)
+      return
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setShowFloatingBar(!entry.isIntersecting)
+      },
+      { threshold: 0 }
+    )
+    observer.observe(productInfo)
+    return () => observer.disconnect()
+  }, [product])
+
+  useEffect(() => {
     if (!product) {
       setSelectedVariant(null)
       setSelectedImg(null)
@@ -568,6 +588,64 @@ export default function ProductDetailPage() {
           </script>
         ) : null}
       </Helmet>
+      {showFloatingBar && (() => {
+        const v = selectedVariant
+        const fmt = (n: number) => `${Math.round(n).toLocaleString('vi-VN')} đ`
+        const unitPrice = activeFlashSale
+          ? Number.parseFloat(activeFlashSale.flash_sale_price.toString())
+          : Number.parseFloat((v?.effective_price || product.price).toString())
+        const totalPrice = unitPrice * qty
+        return (
+          <div className="pdpFloatingBar">
+            <div className="pdpFloatingContent">
+              <div className="pdpFloatingInfo">
+                <img src={resolveImageUrl(selectedImg || product.main_image_url)} alt="" className="pdpFloatingImg" />
+                <div className="pdpFloatingDetails">
+                  <div className="pdpFloatingName">{product.name}</div>
+                  <div className="pdpFloatingPrice">
+                    {activeFlashSale ? (
+                      <>
+                        <span className="pdpFloatingOldPrice">{fmt(Number.parseFloat(v?.price?.toString() || product.price.toString()))}</span>
+                        <span className="pdpFloatingSalePrice">{fmt(unitPrice)}</span>
+                      </>
+                    ) : (
+                      fmt(unitPrice)
+                    )}
+                  </div>
+                </div>
+              </div>
+              <div className="pdpFloatingActions">
+                <div className="pdpFloatingQty">
+                  <button type="button" onClick={() => setQty(q => Math.max(1, q - 1))}>-</button>
+                  <span>{qty}</span>
+                  <button type="button" onClick={() => setQty(q => q + 1)}>+</button>
+                </div>
+                <button
+                  type="button"
+                  className="pdpFloatingAddBtn"
+                  onClick={() => {
+                    addToCart({
+                      item: {
+                        product_id: product.id,
+                        slug: product.slug,
+                        name: product.name,
+                        price: Number.isFinite(unitPrice) ? unitPrice : 0,
+                        image_url: resolveImageUrl(selectedImg || product.main_image_url),
+                        variant_id: v?.id ?? null,
+                        variant_label: v ? [variantColorLabel(v), variantStorageLabel(v)].filter(Boolean).join(' · ') : null,
+                        quantity: 1,
+                      },
+                      qty
+                    })
+                  }}
+                >
+                  THÊM VÀO GIỎ - {fmt(totalPrice)}
+                </button>
+              </div>
+            </div>
+          </div>
+        )
+      })()}
       <div className="pdpPage">
         <div className="ppContainer">
           <nav className="pdpBreadcrumb">
@@ -618,8 +696,6 @@ export default function ProductDetailPage() {
                   </div>
                 </div>
               )}
-
-              
 
               <div className="pdpPriceRow">
                 <span className="pdpPrice">

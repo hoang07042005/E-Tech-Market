@@ -293,7 +293,14 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
               elevation: 0,
             ),
             child: _isLoading
-                ? const SizedBox(height: 18, width: 18, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+                ? Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      SizedBox(height: 18, width: 18, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2)),
+                      const SizedBox(width: 8),
+                      Text('ĐANG ĐẶT LẠI...', style: TextStyle(letterSpacing: 1, fontWeight: FontWeight.w700, color: Color(0xFFFFFFFF))),
+                    ],
+                  )
                 : const Text('ĐẶT LẠI MẬT KHẨU', style: TextStyle(letterSpacing: 2, fontWeight: FontWeight.w700, color: Color(0xFFFFFFFF))),
           ),
         ],

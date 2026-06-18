@@ -255,9 +255,13 @@ function ProductCard({
             <path d="M16 3h5v5M4 20l7-7M21 3l-7 7M15 14l6 6M9 3H4v5M3 21l7-7M3 3l7 7M14 15l7 7"></path>
           </svg>
         </button>
-        {isNew && <span className="ppCardBadge">MỚI</span>}
-        {product.is_featured && <span className="ppCardBadge ppCardBadge--limited">NỔI BẬT</span>}
-        {discountPercent > 0 && <span className="ppCardBadge ppCardBadge--discount">-{discountPercent}%</span>}
+        {(isNew || product.is_featured || discountPercent > 0) && (
+          <div className="ppCardBadges">
+            {product.is_featured && <span className="ppCardBadge ppCardBadge--featured">NỔI BẬT</span>}
+            {isNew && <span className="ppCardBadge ppCardBadge--new">MỚI</span>}
+            {discountPercent > 0 && <span className="ppCardBadge ppCardBadge--discount">-{discountPercent}%</span>}
+          </div>
+        )}
       </Link>
       <div className="ppCardContent">
         <div className="ppCardTopRow">

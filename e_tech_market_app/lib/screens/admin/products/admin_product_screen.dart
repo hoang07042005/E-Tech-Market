@@ -532,6 +532,7 @@ class _AdminProductScreenState extends State<AdminProductScreen> {
     final double pct = (totalStock / 200).clamp(0.0, 1.0);
     final Color progressColor = pct >= 0.6 ? Colors.green : pct >= 0.3 ? Colors.orange : Colors.red;
     final bool isActive = p['is_active'] == true;
+    final bool isFeatured = p['is_featured'] == true;
     final String shortDescription = p['description'] ?? Trans.noShortDescription;
 
     return Container(
@@ -584,11 +585,22 @@ class _AdminProductScreenState extends State<AdminProductScreen> {
                             // Tên sản phẩm chiếm trọn chiều rộng dòng (nếu text dài, tag đè lên góc phải trên của text)
                             Padding(
                               padding: const EdgeInsets.only(right: 65), // Tránh đè trực tiếp lên chữ đầu tiên của Tên
-                              child: Text(
-                                p['name'] ?? Trans.noName,
-                                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: Theme.of(context).colorScheme.onSurface),
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
+                              child: Row(
+                                children: [
+                                  if (isFeatured)
+                                    Padding(
+                                      padding: const EdgeInsets.only(right: 4),
+                                      child: Icon(Icons.star, color: Color(0xFFF59E0B), size: 18),
+                                    ),
+                                  Expanded(
+                                    child: Text(
+                                      p['name'] ?? Trans.noName,
+                                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: Theme.of(context).colorScheme.onSurface),
+                                      maxLines: 2,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
                             const SizedBox(height: 6),

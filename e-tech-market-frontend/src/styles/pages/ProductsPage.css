@@ -536,15 +536,34 @@
   padding: 4px 10px;
   font-size: 10px;
   font-weight: 600;
+}
+
+.ppCardBadges {
   position: absolute;
-  top: 15px;
-  right: 15px
+  top: 10px;
+  right: 10px;
+  display: flex;
+  flex-direction: row;
+  gap: 4px;
+  align-items: flex-end
+}
+
+.ppCardBadge--featured {
+  background: #f59e0b
+}
+
+.ppCardBadge--new {
+  background: #22c55e
 }
 
 .ppCardBadge--limited {
   background: var(--et-primary-hover);
   left: 15px;
   right: auto
+}
+
+.ppCardBadge--discount {
+  background: #ef4444
 }
 
 .ppCardContent {

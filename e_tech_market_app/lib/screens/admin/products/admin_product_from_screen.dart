@@ -23,11 +23,11 @@ class _AdminProductFormScreenState extends State<AdminProductFormScreen> with Si
 
   // --- THÔNG TIN CHUNG ---
   final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _priceController = TextEditingController();
   final TextEditingController _brandController = TextEditingController();
   final TextEditingController _descController = TextEditingController();
   String? _selectedCategoryId;
   bool _isActive = true;
+  bool _isFeatured = false;
   List<dynamic> _categories = [];
 
   // --- QUẢN LÝ HÌNH ẢNH ---
@@ -57,7 +57,6 @@ class _AdminProductFormScreenState extends State<AdminProductFormScreen> with Si
   void dispose() {
     _tabController.dispose();
     _nameController.dispose();
-    _priceController.dispose();
     _brandController.dispose();
     _descController.dispose();
     _quickPasteController.dispose();
@@ -74,11 +73,11 @@ class _AdminProductFormScreenState extends State<AdminProductFormScreen> with Si
         final product = await AdminProductsService.fetchAdminProductDetail(widget.productId!);
         
         _nameController.text = product['name'] ?? '';
-        _priceController.text = (product['price'] ?? '').toString();
         _brandController.text = product['brand'] ?? '';
         _descController.text = product['description'] ?? '';
         _selectedCategoryId = product['category_id']?.toString();
         _isActive = product['is_active'] == true || product['is_active'] == 1;
+        _isFeatured = product['is_featured'] == true || product['is_featured'] == 1;
         _mainImageUrlPreview = product['main_image_url'];
 
         if (product['images'] != null) {
@@ -320,11 +319,11 @@ class _AdminProductFormScreenState extends State<AdminProductFormScreen> with Si
 
       final Map<String, String> textFields = {
         'name': _nameController.text.trim(),
-        'price': _priceController.text.trim(),
         'brand': _brandController.text.trim(),
         'description': _descController.text.trim(),
         'category_id': _selectedCategoryId ?? '',
         'is_active': _isActive ? '1' : '0',
+        'is_featured': _isFeatured ? '1' : '0',
         'variants': jsonEncode(transformedVariants),
         'specs': jsonEncode(transformedSpecs),
         'faqs': jsonEncode(_faqs),
@@ -423,22 +422,18 @@ class _AdminProductFormScreenState extends State<AdminProductFormScreen> with Si
               children: [
                 _buildTextField(controller: _nameController, label: '${Trans.productName} *', hint: Trans.productNameHint, validator: (v) => v!.isEmpty ? Trans.fieldRequired : null),
                 const SizedBox(height: 16),
-                Row(
-                  children: [
-                    Expanded(child: _buildTextField(controller: _priceController, label: '${Trans.defaultPrice} *', hint: Trans.priceHint, isNumber: true, validator: (v) => v!.isEmpty ? Trans.priceRequired : null)),
-                    const SizedBox(width: 12),
-                    Expanded(child: _buildTextField(controller: _brandController, label: Trans.brand, hint: Trans.brandHint)),
-                  ],
-                ),
-                const SizedBox(height: 16),
-                DropdownButtonFormField<String>(
-                  value: _selectedCategoryId,
-                  style: const TextStyle(color: Color(0xFF1E293B), fontSize: 14),
-                  decoration: _inputDecoration('${Trans.categoryRequired} *', Trans.selectCategory),
-                  items: _categories.map((c) => DropdownMenuItem<String>(value: c['id'].toString(), child: Text(c['name'] ?? ''))).toList(),
-                  onChanged: (val) => setState(() => _selectedCategoryId = val),
-                  validator: (v) => v == null ? Trans.categoryRequiredMsg : null,
-                ),
+                Column(children: [
+                  DropdownButtonFormField<String>(
+                    value: _selectedCategoryId,
+                    style: const TextStyle(color: Color(0xFF1E293B), fontSize: 14),
+                    decoration: _inputDecoration('${Trans.categoryRequired} *', Trans.selectCategory),
+                    items: _categories.map((c) => DropdownMenuItem<String>(value: c['id'].toString(), child: Text(c['name'] ?? ''))).toList(),
+                    onChanged: (val) => setState(() => _selectedCategoryId = val),
+                    validator: (v) => v == null ? Trans.categoryRequiredMsg : null,
+                  ),
+                  const SizedBox(height: 12),
+                  _buildTextField(controller: _brandController, label: Trans.brand, hint: Trans.brandHint),
+                ]),
                 const SizedBox(height: 12),
                 SwitchListTile(
                   title: Text(Trans.publicDisplayStatus, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Color(0xFF334155))),
@@ -447,6 +442,14 @@ class _AdminProductFormScreenState extends State<AdminProductFormScreen> with Si
                   contentPadding: EdgeInsets.zero,
                   activeColor: const Color(0xFF10B981),
                   onChanged: (val) => setState(() => _isActive = val),
+                ),
+                SwitchListTile(
+                  title: Text('Sản phẩm nổi bật', style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Color(0xFF334155))),
+                  subtitle: Text('Hiển thị biểu tượng sao trên trang danh sách', style: const TextStyle(fontSize: 11, color: Color(0xFF64748B))),
+                  value: _isFeatured,
+                  contentPadding: EdgeInsets.zero,
+                  activeColor: const Color(0xFFF59E0B),
+                  onChanged: (val) => setState(() => _isFeatured = val),
                 )
               ],
             ),

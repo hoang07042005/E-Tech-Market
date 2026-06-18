@@ -313,7 +313,14 @@ class _LoginScreenState extends State<LoginScreen> {
                             elevation: 0,
                           ),
                           child: _isLoading
-                              ? const SizedBox(height: 18, width: 18, child: CircularProgressIndicator(color: Color(0xFFFFFFFF), strokeWidth: 2))
+                              ? Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    SizedBox(height: 18, width: 18, child: CircularProgressIndicator(color: Color(0xFFFFFFFF), strokeWidth: 2)),
+                                    const SizedBox(width: 8),
+                                    Text('ĐANG ĐĂNG NHẬP...', style: TextStyle(letterSpacing: 1, fontWeight: FontWeight.w700, color: Color(0xFFFFFFFF))),
+                                  ],
+                                )
                               : Text(Trans.loginButton, style: TextStyle(letterSpacing: 2, fontWeight: FontWeight.w700, color: Color(0xFFFFFFFF))),
                         ),
                         const SizedBox(height: 20),

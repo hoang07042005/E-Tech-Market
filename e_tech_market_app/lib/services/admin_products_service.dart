@@ -47,11 +47,7 @@ class AdminProductsService {
   }) async {
     final endpoint = id != null ? '/admin/products/$id' : '/admin/products';
 
-    final formData = FormData.fromMap({
-      ...fields,
-      // Laravel expects _method=PUT for update via POST+multipart
-      if (id != null) '_method': 'PUT',
-    });
+    final formData = FormData.fromMap({...fields});
 
     if (mainImage != null && mainImage.existsSync()) {
       formData.files.add(MapEntry(
