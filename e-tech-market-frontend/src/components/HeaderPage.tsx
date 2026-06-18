@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef, type FormEvent } from 'react'
+import { useState, useEffect, useCallback, useRef, useMemo, type FormEvent } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import '@/styles/components/HeaderFooter.css'
 import { cartCount, getCart } from '@/features/services/cart.service'
@@ -35,17 +35,7 @@ function isAdminUser(user: StoredUser | null): boolean {
   return user.roles.some((r) => staffRoles.includes(r?.slug || ''))
 }
 
-function readStoredUser(): StoredUser | null {
-  const savedUser = useAuthStore((state) => state.userStr)
-  // 🔒 Token is now in httpOnly cookie, no need to check localStorage token
-  // Just verify user data exists
-  if (!savedUser) return null
-  try {
-    return JSON.parse(savedUser) as StoredUser
-  } catch {
-    return { name: savedUser }
-  }
-}
+
 
 function firstLetter(name: string) {
   const s = (name || '').trim()
@@ -53,6 +43,33 @@ function firstLetter(name: string) {
   const parts = s.split(/\s+/).filter(Boolean)
   const last = parts[parts.length - 1] || s
   return last.slice(0, 1).toUpperCase()
+}
+
+function resolveAvatarUrl(url: string | null | undefined): string | null {
+  if (!url) return null
+  const s = url.trim()
+  if (!s) return null
+
+  // Already absolute URL - check if hostname is accessible
+  if (/^https?:\/\//i.test(s)) {
+    // If hostname is 'nginx' (Docker network hostname), replace with current origin
+    try {
+      const urlObj = new URL(s)
+      if (urlObj.hostname === 'nginx' || urlObj.hostname === 'localhost') {
+        const path = s.replace(/^https?:\/\/[^/]+/, '')
+        return window.location.origin + path
+      }
+    } catch { /* keep original */
+    }
+    return s
+  }
+
+  // Relative path - prepend current origin (nginx proxies /storage to backend)
+  if (s.startsWith('/storage/') || s.startsWith('storage/')) {
+    return window.location.origin + '/' + s.replace(/^\/+/, '')
+  }
+
+  return s
 }
 
 function CartIcon() {
@@ -134,10 +151,19 @@ export default function HeaderPage({ active = 'Home' }: { active?: NavKey }) {
   const navigate = useNavigate()
   const location = useLocation()
   const queryClient = useQueryClient()
-  const [user, setUser] = useState<StoredUser | null>(readStoredUser)
+  const savedUser = useAuthStore((state) => state.userStr)
+  
+  const user = useMemo(() => {
+    if (!savedUser) return null
+    try {
+      return JSON.parse(savedUser) as StoredUser
+    } catch {
+      return { name: savedUser }
+    }
+  }, [savedUser])
+  
   const [cartQty, setCartQty] = useState(() => cartCount(getCart()))
   const [searchQuery, setSearchQuery] = useState('')
-  // 🔒 Token is now in httpOnly cookie, check user state instead
 
   const [darkMode, setDarkMode] = useState<boolean>(() => {
     return typeof window !== 'undefined' && localStorage.getItem('theme') === 'dark'
@@ -257,20 +283,7 @@ export default function HeaderPage({ active = 'Home' }: { active?: NavKey }) {
     setNotifOpen(false)
   }
 
-  const refreshUser = useCallback(() => {
-    setUser(readStoredUser())
-  }, [])
 
-  useEffect(() => {
-    window.addEventListener('auth-change', refreshUser)
-    window.addEventListener('storage', refreshUser)
-    window.addEventListener('visibilitychange', refreshUser)
-    return () => {
-      window.removeEventListener('auth-change', refreshUser)
-      window.removeEventListener('storage', refreshUser)
-      window.removeEventListener('visibilitychange', refreshUser)
-    }
-  }, [refreshUser])
 
   useEffect(() => {
     const onCart = () => setCartQty(cartCount(getCart()))
@@ -509,9 +522,9 @@ export default function HeaderPage({ active = 'Home' }: { active?: NavKey }) {
               onClick={handleUserClick}
             >
               {user ? (
-                user.avatar_url ? (
+                resolveAvatarUrl(user.avatar_url) ? (
                   <span className="hfAvatar" aria-hidden="true">
-                    <img className="hfAvatarImg" src={user.avatar_url} alt="" decoding="async" />
+                    <img className="hfAvatarImg" src={resolveAvatarUrl(user.avatar_url) || ''} alt="" decoding="async" />
                   </span>
                 ) : (
                   <span className="hfAvatar hfAvatarFallback" aria-hidden="true">

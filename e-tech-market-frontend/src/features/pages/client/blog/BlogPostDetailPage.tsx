@@ -68,8 +68,7 @@ export default function BlogPostDetailPage() {
   const [commentContent, setCommentContent] = useState("");
   const [commentSubmitting, setCommentSubmitting] = useState(false);
   const [commentMessage, setCommentMessage] = useState<string | null>(null);
-  const token =
-    typeof window !== "undefined" ? window.localStorage.getItem("token") : null;
+  // ?? Auth is via httpOnly cookie - check user in localStorage instead of token
   const storedUser: StoredUser | null = (() => {
     if (typeof window === "undefined") return null;
     const raw = window.localStorage.getItem("user");
@@ -80,7 +79,7 @@ export default function BlogPostDetailPage() {
       return null;
     }
   })();
-  const canComment = !!token;
+  const canComment = !!storedUser;
   const sanitizedContent = useMemo(
     () =>
       sanitizeHtml(post?.content || "<p>Nội dung đang được cập nhật...</p>"),
@@ -149,7 +148,7 @@ export default function BlogPostDetailPage() {
 
   const submitComment = async () => {
     if (!slug || commentSubmitting) return;
-    if (!token) {
+    if (!storedUser) {
       setCommentMessage("Vui lòng đăng nhập để bình luận.");
       return;
     }
@@ -160,7 +159,7 @@ export default function BlogPostDetailPage() {
         `/api/blog/posts/${slug}/comments`,
         {
           method: "POST",
-          token,
+          
           body: JSON.stringify({
             content: commentContent,
           }),
@@ -423,3 +422,5 @@ export default function BlogPostDetailPage() {
     </div>
   );
 }
+
+

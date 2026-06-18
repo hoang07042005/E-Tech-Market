@@ -23,13 +23,17 @@ class SseController extends Controller
             $channel = 'user-events.' . $user->id;
 
             echo "retry: 3000\n\n";
-            ob_flush();
+            if (ob_get_level() > 0) {
+                ob_flush();
+            }
             flush();
 
             try {
                 $redis->subscribe([$channel], function ($message) {
                     echo "data: " . $message . "\n\n";
-                    ob_flush();
+                    if (ob_get_level() > 0) {
+                        ob_flush();
+                    }
                     flush();
                 });
             } catch (\Exception $e) {

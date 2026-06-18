@@ -6,8 +6,19 @@ import { apiFetch } from '@/configs/api.config'
 
 export const resolveImageUrl = (url: string | null) => {
   if (!url) return 'https://via.placeholder.com/600'
-  if (url.startsWith('http')) return url
-  return `${API_BASE_URL}${url.startsWith('/') ? url : `/${url}`}`
+  const s = url.trim()
+  if (!s) return 'https://via.placeholder.com/600'
+  if (/^https?:\/\//i.test(s)) {
+    try {
+      const urlObj = new URL(s)
+      if (urlObj.hostname === 'nginx' || urlObj.hostname === 'localhost') {
+        const path = s.replace(/^https?:\/\/[^/]+/, '')
+        return window.location.origin + path
+      }
+    } catch { /* keep original */ }
+    return s
+  }
+  return `${API_BASE_URL}${s.startsWith('/') ? s : `/${s}`}`
 }
 
 export function renderVideoPlayer(videoUrl: string, title?: string | null) {

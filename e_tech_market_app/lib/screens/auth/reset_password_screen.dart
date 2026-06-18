@@ -228,7 +228,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
           const Text('Mật khẩu mới', style: TextStyle(color: Color(0xFF7C6B61), fontSize: 13, fontWeight: FontWeight.w600)),
           const SizedBox(height: 6),
           TextFormField(
-            style: TextStyle(color: Color(0xFF7C6B61)),
+            style: TextStyle(color: Colors.black),
             controller: _passwordController,
             obscureText: _obscurePassword,
             decoration: _inputDecoration(
@@ -250,7 +250,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
           const Text('Xác nhận mật khẩu', style: TextStyle(color: Color(0xFF7C6B61), fontSize: 13, fontWeight: FontWeight.w600)),
           const SizedBox(height: 6),
           TextFormField(
-            style: TextStyle(color: Color(0xFF7C6B61)),
+            style: TextStyle(color: Colors.black),
             controller: _confirmPasswordController,
             obscureText: _obscureConfirm,
             decoration: _inputDecoration(

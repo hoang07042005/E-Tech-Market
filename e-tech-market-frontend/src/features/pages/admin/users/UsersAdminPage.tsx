@@ -1,9 +1,10 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useAuthStore } from '@/features/store/useAuthStore'
+
 import { apiFetch } from '@/configs/api.config'
 import { fetchRoles, fetchUsers } from '@/features/services/admin/api.admin.service'
 import '@/styles/admin/ProductPage.css'
 import '@/styles/admin/UsersAdminPage.css'
-import { useAuthStore } from '@/features/store/useAuthStore'
 
 type Role = {
   id: number
@@ -51,8 +52,9 @@ function userHasAdminRole(row: AdminUserRow): boolean {
   return (row.roles ?? []).some(r => r.slug === 'admin')
 }
 
-function readCurrentUserId(): number | null {
-  const raw = useAuthStore((state) => state.userStr)
+// Read current user ID directly from Zustand store state (NOT a Hook call)
+function getCurrentUserIdFromStore(): number | null {
+  const raw = useAuthStore.getState().userStr
   if (!raw) return null
   try {
     const u = JSON.parse(raw) as { id?: number }
@@ -65,9 +67,7 @@ function readCurrentUserId(): number | null {
 type BusyKind = 'lock' | 'delete' | 'roles'
 
 export default function UsersAdminPage() {
-  const userStr = useAuthStore((state) => state.userStr)
-  const hasAuth = !!userStr
-  const currentUserId = useMemo(() => readCurrentUserId(), [])
+  const currentUserId = useMemo(() => getCurrentUserIdFromStore(), [])
   const [page, setPage] = useState(1)
   const [search, setSearch] = useState('')
   const [debouncedSearch, setDebouncedSearch] = useState('')
@@ -111,7 +111,7 @@ export default function UsersAdminPage() {
     return () => {
       cancelled = true
     }
-  }, [hasAuth])
+  }, [])
 
   const load = useCallback(async () => {
     setLoading(true)
@@ -131,7 +131,7 @@ export default function UsersAdminPage() {
     } finally {
       setLoading(false)
     }
-  }, [hasAuth, page, debouncedSearch, activeTab])
+  }, [page, debouncedSearch, activeTab])
 
   useEffect(() => {
     void load()

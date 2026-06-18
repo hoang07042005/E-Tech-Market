@@ -19,17 +19,16 @@ describe('wishlist.service', () => {
       ];
       (apiFetch as any).mockResolvedValue(mockData);
 
-      const token = 'test-token';
-      const result = await fetchWishlist(token);
+      const result = await fetchWishlist();
 
-      expect(apiFetch).toHaveBeenCalledWith('/wishlist', { token });
+      expect(apiFetch).toHaveBeenCalledWith('/wishlist');
       expect(result).toEqual(mockData);
     });
 
     it('should throw an error if apiFetch fails', async () => {
       (apiFetch as any).mockRejectedValue(new Error('Unauthorized'));
 
-      await expect(fetchWishlist('invalid-token')).rejects.toThrow('Unauthorized');
+      await expect(fetchWishlist()).rejects.toThrow('Unauthorized');
     });
   });
 
@@ -37,11 +36,9 @@ describe('wishlist.service', () => {
     it('should return "added" when product is added to wishlist', async () => {
       (apiFetch as any).mockResolvedValue({ status: 'added' });
 
-      const token = 'test-token';
-      const result = await toggleWishlist(token, 101);
+      const result = await toggleWishlist(101);
 
       expect(apiFetch).toHaveBeenCalledWith('/wishlist/toggle', {
-        token,
         method: 'POST',
         body: JSON.stringify({ product_id: 101 }),
       });
@@ -51,11 +48,9 @@ describe('wishlist.service', () => {
     it('should return "removed" when product is removed from wishlist', async () => {
       (apiFetch as any).mockResolvedValue({ status: 'removed' });
 
-      const token = 'test-token';
-      const result = await toggleWishlist(token, 101);
+      const result = await toggleWishlist(101);
 
       expect(apiFetch).toHaveBeenCalledWith('/wishlist/toggle', {
-        token,
         method: 'POST',
         body: JSON.stringify({ product_id: 101 }),
       });

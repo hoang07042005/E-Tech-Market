@@ -28,6 +28,7 @@ export default function AuthPage({
 
   const [user, setUser] = useState<MeUser | null>(null)
   const [error, setError] = useState<string | null>(null)
+  const [loading, setLoading] = useState(false)
 
   useEffect(() => {
     if (!sessionExpired) return
@@ -49,6 +50,7 @@ export default function AuthPage({
   })
 
   const canSubmit = useMemo(() => {
+    if (loading) return false
     if (mode === 'login') return !!loginForm.email && !!loginForm.password
     return (
       !!registerForm.name &&
@@ -57,7 +59,7 @@ export default function AuthPage({
       registerForm.password === registerForm.confirmPassword &&
       registerForm.agreed
     )
-  }, [loginForm.email, loginForm.password, mode, registerForm])
+  }, [loginForm.email, loginForm.password, mode, registerForm, loading])
 
   useEffect(() => {
     const html = document.documentElement
@@ -80,6 +82,7 @@ export default function AuthPage({
   async function onSubmit(e: FormEvent) {
     e.preventDefault()
     setError(null)
+    setLoading(true)
 
     try {
       if (mode === 'login') {
@@ -96,10 +99,12 @@ export default function AuthPage({
 
       if (registerForm.password !== registerForm.confirmPassword) {
         setError('Mật khẩu xác nhận không khớp.')
+        setLoading(false)
         return
       }
       if (!registerForm.agreed) {
         setError('Bạn cần đồng ý điều khoản và chính sách bảo mật.')
+        setLoading(false)
         return
       }
 
@@ -118,6 +123,7 @@ export default function AuthPage({
       onAuthed?.(res.user as MeUser)
       navigate('/')
     } catch (err: unknown) {
+      setLoading(false)
       const message = err instanceof Error ? err.message : null
       setError(message || 'Đăng nhập hoặc đăng ký thất bại. Vui lòng thử lại.')
     }
@@ -301,8 +307,14 @@ export default function AuthPage({
                   </div>
                 )}
 
-                <button type="submit" disabled={!canSubmit} className="authSubmit">
-                  {mode === 'login' ? 'ĐĂNG NHẬP' : 'TẠO TÀI KHOẢN'}
+                <button type="submit" disabled={!canSubmit || loading} className="authSubmit">
+                  {loading
+                    ? mode === 'login'
+                      ? 'ĐANG ĐĂNG NHẬP...'
+                      : 'ĐANG ĐĂNG KÝ...'
+                    : mode === 'login'
+                      ? 'ĐĂNG NHẬP'
+                      : 'TẠO TÀI KHOẢN'}
                 </button>
 
                 {mode === 'login' && (

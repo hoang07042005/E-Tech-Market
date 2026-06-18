@@ -1,0 +1,20 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(xxd -l 20 \"d:/E-Tech-Market/e-tech-market-backend/app/Http/Controllers/Auth/AuthController.php\")",
+      "Bash(php -l \"d:/E-Tech-Market/e-tech-market-backend/app/Http/Controllers/Auth/AuthController.php\")",
+      "Bash(php -r \"echo var_export\\(filetype\\(''d:/E-Tech-Market/e-tech-market-backend/app/Http/Controllers/Auth/AuthController.php''\\), true\\);\")",
+      "Bash(npx tsc --noEmit --skipLibCheck)",
+      "Bash(npm test -- --run src/__tests__/configs/api.config.test.ts)",
+      "Bash(npm test -- --run src/__tests__/store/auth.store.test.ts)",
+      "Bash(curl -s http://localhost:8000/api/v1/health)",
+      "Bash(curl -s -X POST http://localhost:8000/api/v1/auth/login -H \"Content-Type: application/json\" -d '{\"\"email\"\":\"\"admin@etech.com\"\",\"\"password\"\":\"\"password\"\"}')",
+      "Bash(docker exec -i e-tech-market-backend php /var/www/artisan tinker --execute=\"echo App\\\\Models\\\\User::where\\(''email'',''admin@etech.com''\\)->first\\(\\) ? ''Found'' : ''Not found''\")",
+      "Bash(docker ps --format \"{{.Names}}\")",
+      "Bash(docker exec -i e-tech-market-backend-1 php /var/www/artisan tinker --execute=\"echo App\\\\Models\\\\User::where\\(''email'',''admin@etech.com''\\)->first\\(\\) ? ''Found'' : ''Not found''\")",
+      "Bash(docker exec e-tech-market-backend-1 php /var/www/artisan tinker --execute=\"echo App\\\\Models\\\\User::where\\(''email'',''admin@etech.com''\\)->first\\(\\) ? ''Found'' : ''Not found''\")",
+      "Bash(docker exec e-tech-market-backend-1 sh -c 'php /var/www/artisan tinker --execute=\"\"echo App\\\\\\\\\\\\Models\\\\\\\\\\\\User::where\\(\\\\\"\"email\\\\\"\",\\\\\"\"admin@etech.com\\\\\"\"\\)->first\\(\\) ? \\\\\"\"Found\\\\\"\" : \\\\\"\"Not found\\\\\"\"\"\"')",
+      "Bash(npm run build)"
+    ]
+  }
+}

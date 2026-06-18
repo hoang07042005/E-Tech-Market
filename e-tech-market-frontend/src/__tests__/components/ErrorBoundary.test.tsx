@@ -1,4 +1,5 @@
-import { render, screen, fireEvent } from '@testing-library/react';
+import { renderWithProviders as render } from '../../__tests__/utils/test-utils';
+import { screen, fireEvent } from '@testing-library/react';
 import ErrorBoundary from '../../components/ErrorBoundary';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 

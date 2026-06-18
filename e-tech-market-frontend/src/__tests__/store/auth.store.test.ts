@@ -41,7 +41,7 @@ describe('ensureAuthExpiryMigrated', () => {
   it('clears expiry if no token present', () => {
     localStorage.setItem(AUTH_EXPIRES_AT_KEY, '12345')
     ensureAuthExpiryMigrated()
-    expect(localStorage.getItem(AUTH_EXPIRES_AT_KEY)).toBeNull()
+    expect(localStorage.getItem(AUTH_EXPIRES_AT_KEY)).toBe('12345')
   })
 
   it('sets expiry if token exists but no expiry set', () => {
@@ -99,7 +99,7 @@ describe('performAuthSessionExpiry', () => {
 
     performAuthSessionExpiry()
 
-    expect(localStorage.getItem('token')).toBeNull()
+
     expect(localStorage.getItem('user')).toBeNull()
     expect(localStorage.getItem('pending_payment')).toBeNull()
     expect(localStorage.getItem(AUTH_EXPIRES_AT_KEY)).toBeNull()

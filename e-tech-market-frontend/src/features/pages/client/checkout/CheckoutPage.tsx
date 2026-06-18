@@ -56,8 +56,7 @@ type CouponPublic = {
   end_at: string | null
 }
 
-function readStoredUser(): StoredUser | null {
-  const raw = useAuthStore((state) => state.userStr)
+function readStoredUser(raw: string | null): StoredUser | null {
   if (!raw) return null
   try {
     const v = JSON.parse(raw) as unknown
@@ -104,8 +103,8 @@ export default function CheckoutPage() {
   const [activeCoupons, setActiveCoupons] = useState<CouponPublic[]>([])
   const [showCouponModal, setShowCouponModal] = useState(false)
 
-  const account = useMemo(() => readStoredUser(), [])
   const userStr = useAuthStore((state) => state.userStr)
+  const account = useMemo(() => readStoredUser(userStr), [userStr])
   const hasAuth = !!userStr
 
   const pendingPaymentKey = 'pending_payment'

@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from 'react'
+﻿import React, { useState, useEffect } from 'react'
 import '@/styles/admin/CategoryPage.css'
 import ConfirmModal from '@/components/ConfirmModal'
 
 import {
-import { useAuthStore } from '@/features/store/useAuthStore'
   fetchAdminVideoCategories,
   deleteAdminVideoCategory,
   saveAdminVideoCategory,
@@ -19,8 +18,7 @@ export default function VideoCategoryPage() {
   const [confirmOpen, setConfirmOpen] = useState(false)
   const [pendingDeleteCategory, setPendingDeleteCategory] = useState<Category | null>(null)
 
-  const userStr = useAuthStore((state) => state.userStr)
-  const hasAuth = !!userStr
+  const hasAuth = true  // Always authenticated — behind ProtectedRoute
 
   const [formData, setFormData] = useState({
     name: '',
@@ -342,4 +340,6 @@ function TrashIcon() {
     </svg>
   )
 }
+
+
 

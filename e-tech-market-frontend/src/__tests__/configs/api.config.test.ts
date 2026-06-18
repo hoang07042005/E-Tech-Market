@@ -21,20 +21,21 @@ describe('api.config', () => {
   });
 
   describe('apiFetch', () => {
-    it('should attach token to header when provided', async () => {
+    it('should send requests with credentials:include for httpOnly cookies', async () => {
       const mockResponse = new Response(JSON.stringify({ data: 'ok' }), {
         status: 200,
         headers: { 'Content-Type': 'application/json' },
       });
       (globalThis.fetch as any).mockResolvedValueOnce(mockResponse);
 
-      await apiFetch('/test', { token: 'test-token' });
+      await apiFetch('/test');
 
       expect(globalThis.fetch).toHaveBeenCalledWith(
         expect.stringContaining('/api/v1/test'),
         expect.objectContaining({
+          credentials: 'include',
           headers: expect.objectContaining({
-            Authorization: 'Bearer test-token',
+            Accept: 'application/json',
           }),
         })
       );
@@ -43,16 +44,14 @@ describe('api.config', () => {
     it('should throw Error if auth session is expired', async () => {
       vi.spyOn(authStore, 'isAuthSessionExpired').mockImplementation(() => true);
 
-      await expect(apiFetch('/test', { token: 'test-token' })).rejects.toThrow(
-        'Phiên đăng nhập đã hết hạn (24 giờ). Vui lòng đăng nhập lại.'
+      await expect(apiFetch('/test')).rejects.toThrow(
+        'Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.'
       );
       expect(authStore.performAuthSessionExpiry).toHaveBeenCalled();
       expect(globalThis.fetch).not.toHaveBeenCalled();
     });
 
-    it('should call performAuthSessionExpiry on 401 with token in localStorage', async () => {
-      localStorage.setItem('token', 'exists');
-      
+    it('should call performAuthSessionExpiry on 401 response', async () => {
       const mockResponse = new Response(JSON.stringify({ message: 'Unauthorized' }), {
         status: 401,
         headers: { 'Content-Type': 'application/json' },

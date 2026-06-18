@@ -57,7 +57,27 @@ function resolveMediaUrl(maybeUrl: string | null | undefined): string | null {
   if (!maybeUrl) return null
   const s = maybeUrl.trim()
   if (!s) return null
-  if (/^https?:\/\//i.test(s)) return s
+
+  // Already absolute URL - check if hostname is accessible
+  if (/^https?:\/\//i.test(s)) {
+    // If hostname is 'nginx' (Docker network hostname), replace with current origin
+    try {
+      const urlObj = new URL(s)
+      if (urlObj.hostname === 'nginx' || urlObj.hostname === 'localhost') {
+        const path = s.replace(/^https?:\/\/[^/]+/, '')
+        return window.location.origin + path
+      }
+    } catch { /* keep original */
+    }
+    return s
+  }
+
+  // Relative path - prepend current origin (nginx proxies /storage to backend)
+  if (s.startsWith('/storage/') || s.startsWith('storage/')) {
+    return window.location.origin + '/' + s.replace(/^\/+/, '')
+  }
+
+  // For other cases, try to construct URL
   try {
     return new URL(s, API_BASE_URL).toString()
   } catch {
@@ -100,6 +120,7 @@ export default function ProfilePage() {
     ward: '',
   })
   const [saveError, setSaveError] = useState<string | null>(null)
+  const [saving, setSaving] = useState(false)
   const [editOpen, setEditOpen] = useState(false)
   const [editDraft, setEditDraft] = useState(() => ({
     name: '',
@@ -113,12 +134,13 @@ export default function ProfilePage() {
   const [editAvatarFile, setEditAvatarFile] = useState<File | null>(null)
   const [editAvatarPreview, setEditAvatarPreview] = useState<string | null>(null)
 
+  const userStr = useAuthStore((state) => state.userStr)
+  
   const displayName = useMemo(() => {
     const localUser = (() => {
       try {
-        const raw = useAuthStore((state) => state.userStr)
-        if (!raw) return null
-        return JSON.parse(raw) as MeUser
+        if (!userStr) return null
+        return JSON.parse(userStr) as MeUser
       } catch {
         return null
       }
@@ -155,22 +177,24 @@ export default function ProfilePage() {
 
   async function saveFromModal() {
     setSaveError(null)
+    setSaving(true)
     try {
       let updated: any = null
       if (editAvatarFile) {
         const fd = new FormData()
         fd.append('file', editAvatarFile)
         try {
-          updated = await apiFetch<MeUser>('/me/avatar', {
+          const res = await apiFetch<{ user: MeUser }>('/me/avatar', {
             method: 'POST',
             body: fd,
           })
+          updated = (res as any)?.user ?? res
         } catch {
           // ignore avatar upload failure here; continue to profile update
         }
       }
 
-      const patched = await apiFetch<MeUser>('/me', {
+      const patchedRes = await apiFetch<{ user: MeUser }>('/me', {
         method: 'PATCH',
         body: JSON.stringify({
           name: editDraft.name.trim(),
@@ -183,23 +207,27 @@ export default function ProfilePage() {
         }),
       })
 
-      const next = patched ?? updated ?? (await fetchMe())
-      setMe(next as MeUser)
+      const nextRaw = patchedRes?.user ?? updated ?? (await fetchMe())
+      const next = (nextRaw as any)?.user ?? nextRaw as MeUser
+      setMe(next)
       window.localStorage.setItem('user', JSON.stringify(next))
       window.dispatchEvent(new Event('auth-change'))
       closeEditModal()
     } catch (e) {
       const msg = e instanceof Error ? e.message : 'Cập nhật thất bại.'
       setSaveError(msg)
+    } finally {
+      setSaving(false)
     }
   }
 
   useEffect(() => {
     let revoked = false
     fetchMe()
-      .then((u) => {
+      .then((res) => {
         if (revoked) return
-        const next = u as MeUser
+        // API returns { user: {...} } - extract the user object
+        const next = (res as any)?.user ?? res as MeUser
         setMe(next)
         setProfileDraft({
           name: (next?.name ?? next?.username ?? '').toString(),
@@ -211,10 +239,14 @@ export default function ProfilePage() {
           ward: (next?.ward ?? '').toString(),
         })
       })
-      .catch(() => {
+      .catch((e) => {
         if (revoked) return
-        setMe(null)
-        navigate('/login')
+        // Only redirect if it's a 401 - user not authenticated
+        if (e instanceof Error && e.message.includes('401')) {
+          setMe(null)
+          navigate('/login')
+        }
+        // Otherwise, just leave me as null and show placeholder
       })
 
     apiFetch<{ data: OrderRow[] }>('/orders')
@@ -227,7 +259,6 @@ export default function ProfilePage() {
         setOrders([])
       })
       .finally(() => {
-        if (revoked) return
         setLoading(false)
       })
 
@@ -677,8 +708,10 @@ export default function ProfilePage() {
                           </div>
 
                           <div className="pfModalActions">
-                            <button type="button" className="pfBtn pfBtnPrimary" onClick={saveFromModal}>Lưu</button>
-                            <button type="button" className="pfBtn" onClick={closeEditModal}>Hủy</button>
+                            <button type="button" className="pfBtn pfBtnPrimary" onClick={saveFromModal} disabled={saving}>
+                              {saving ? 'Đang lưu...' : 'Lưu'}
+                            </button>
+                            <button type="button" className="pfBtn" onClick={closeEditModal} disabled={saving}>Hủy</button>
                           </div>
                         </div>
                       </div>

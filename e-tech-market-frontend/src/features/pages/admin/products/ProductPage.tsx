@@ -30,6 +30,7 @@ interface Product {
   category_id: number
   category?: Category
   is_active: boolean
+  is_featured?: boolean
   description: string | null
   main_image_url: string | null
   images?: ProductImage[]
@@ -38,8 +39,19 @@ interface Product {
 
 const resolveImageUrl = (url: string | null) => {
   if (!url) return ''
-  if (url.startsWith('http')) return url
-  return `${API_BASE_URL}${url.startsWith('/') ? url : `/${url}`}`
+  const s = url.trim()
+  if (!s) return ''
+  if (/^https?:\/\//i.test(s)) {
+    try {
+      const urlObj = new URL(s)
+      if (urlObj.hostname === 'nginx' || urlObj.hostname === 'localhost') {
+        const path = s.replace(/^https?:\/\/[^/]+/, '')
+        return window.location.origin + path
+      }
+    } catch { /* keep original */ }
+    return s
+  }
+  return `${API_BASE_URL}${s.startsWith('/') ? s : `/${s}`}`
 }
 
 export default function ProductPage({
@@ -438,6 +450,11 @@ export default function ProductPage({
                             {p.main_image_url && <img src={resolveImageUrl(p.main_image_url)} alt="" />}
                           </div>
                           <div className="prodInfo">
+                            {p.is_featured && (
+                              <span title="Sản phẩm nổi bật" style={{ display: 'inline-flex', marginRight: 4, color: '#f51f0bff' }}>
+                                <StarIcon />
+                              </span>
+                            )}
                             <span className="pName hover-accent" style={{ transition: 'color 0.2s' }}>{p.name}</span>
                             <span className="pBrand">{p.brand || 'Chưa có thương hiệu'}</span>
                           </div>
@@ -622,3 +639,4 @@ function CheckCircleIcon() {return (<svg width="20" height="20" viewBox="0 0 24 
 function PencilIcon() {return (<svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 20h9"stroke="currentColor"strokeWidth="2"strokeLinecap="round"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5Z"stroke="currentColor"strokeWidth="2"strokeLinejoin="round"/></svg>)}
 function TrashIcon() {return (<svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 7h16"stroke="currentColor"strokeWidth="2"strokeLinecap="round"/><path d="M10 11v6M14 11v6"stroke="currentColor"strokeWidth="2"strokeLinecap="round"/><path d="M6 7l1 14a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-14"stroke="currentColor"strokeWidth="2"strokeLinejoin="round"/><path d="M9 7V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v3"stroke="currentColor"strokeWidth="2"strokeLinejoin="round"/></svg>)}
 function EyeIcon() {return (<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" /><circle cx="12" cy="12" r="3" /></svg>)}
+function StarIcon() {return (<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" /></svg>)}

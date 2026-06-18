@@ -252,7 +252,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             children: [
                               Text(Trans.email, style: TextStyle(color: Color(0xFF7C6B61), fontSize: 13)),
                               TextFormField(
-                                style: TextStyle(color: Color(0xFF7C6B61)),
+                                style: TextStyle(color: Colors.black),
                                 controller: _emailController,
                                 keyboardType: TextInputType.emailAddress,
                                 decoration: _inputDecoration(''),
@@ -265,7 +265,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               const SizedBox(height: 16),
                               Text(Trans.password, style: TextStyle(color: Color(0xFF7C6B61), fontSize: 13)),
                               TextFormField(
-                                style: TextStyle(color: Color(0xFF7C6B61)),
+                                style: TextStyle(color: Colors.black),
                                 controller: _passwordController,
                                 obscureText: _obscurePassword,
                                 decoration: _inputDecoration('').copyWith(

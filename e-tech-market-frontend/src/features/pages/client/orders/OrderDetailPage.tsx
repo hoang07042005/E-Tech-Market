@@ -78,8 +78,19 @@ function fmtDateTimeVi(iso?: string | null) {
 
 function resolveUrl(url?: string | null) {
   if (!url) return null
-  if (url.startsWith('http')) return url
-  return `${API_BASE_URL}${url.startsWith('/') ? url : `/${url}`}`
+  const s = url.trim()
+  if (!s) return null
+  if (/^https?:\/\//i.test(s)) {
+    try {
+      const urlObj = new URL(s)
+      if (urlObj.hostname === 'nginx' || urlObj.hostname === 'localhost') {
+        const path = s.replace(/^https?:\/\/[^/]+/, '')
+        return window.location.origin + path
+      }
+    } catch { /* keep original */ }
+    return s
+  }
+  return `${API_BASE_URL}${s.startsWith('/') ? s : `/${s}`}`
 }
 
 function payLabel(raw?: string | null) {

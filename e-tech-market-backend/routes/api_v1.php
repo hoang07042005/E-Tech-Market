@@ -52,6 +52,15 @@ use Illuminate\Support\Facades\Route;
 
     Route::post('/auth/register', [AuthController::class, 'register'])->middleware('throttle:auth.register');
     Route::post('/auth/login', [AuthController::class, 'login'])->middleware('throttle:auth.login');
+
+Route::get('/auth/test', function (Illuminate\Http\Request $r) {
+    $token = $r->bearerToken();
+    $user = $r->user();
+    return response()->json([
+        'token' => $token ? substr($token, 0, 20) . '...' : null,
+        'user' => $user ? $user->email : 'null',
+    ]);
+});
     Route::post('/auth/google-login', [AuthController::class, 'googleLogin'])->middleware('throttle:auth.login');
     Route::post('/auth/forgot-password', [PasswordResetController::class, 'forgot'])->middleware('throttle:auth.password');
     Route::post('/auth/reset-password', [PasswordResetController::class, 'reset'])->middleware('throttle:auth.password');
@@ -60,7 +69,7 @@ use Illuminate\Support\Facades\Route;
         ->middleware(['signed', 'throttle:6,1'])
         ->name('verification.verify');
 
-Route::middleware('throttle:10,1')->group(function () {
+Route::middleware('throttle:60,1')->group(function () {
     Route::post('/contact/messages', [ContactMessagesController::class, 'store']);
 });
 
@@ -95,6 +104,13 @@ Route::get('/health', function () {
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/me', [AuthController::class, 'me']);
+    Route::get('/auth/test-token', function (Illuminate\Http\Request $r) {
+        return response()->json([
+            'token' => $r->bearerToken() ? substr($r->bearerToken(), 0, 20) . '...' : 'null',
+            'user' => $r->user() ? $r->user()->email : 'null',
+        ]);
+    });
+    Route::get('/sse/stream', [SseController::class, 'stream']);
     Route::patch('/me', [AuthController::class, 'updateMe']);
     Route::post('/me/avatar', [AuthController::class, 'updateAvatar']);
     Route::patch('/me/password', [AuthController::class, 'changePassword'])->middleware('throttle:5,1');
@@ -130,8 +146,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/notifications', [ClientNotificationsController::class, 'index']);
     Route::patch('/notifications/{notification}/read', [ClientNotificationsController::class, 'markRead']);
     Route::patch('/notifications/read-all', [ClientNotificationsController::class, 'markReadAll']);
-
-    Route::get('/sse/stream', [SseController::class, 'stream']);
 
     // Admin Routes
     Route::prefix('admin')->name('admin.')->middleware(['admin', 'throttle:120,1'])->group(function () {

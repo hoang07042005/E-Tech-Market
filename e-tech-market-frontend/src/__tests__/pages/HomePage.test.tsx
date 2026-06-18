@@ -1,5 +1,6 @@
+import { renderWithProviders as render } from '../utils/test-utils';
 import '@testing-library/jest-dom'
-import { render, screen, waitFor } from '@testing-library/react'
+import { screen, waitFor } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import HomePage from '../../features/pages/client/home/HomePage'
 import * as productService from '../../features/services/products.service'

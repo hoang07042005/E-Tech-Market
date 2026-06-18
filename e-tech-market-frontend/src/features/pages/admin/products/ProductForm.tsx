@@ -91,9 +91,20 @@ interface ProductFormProps {
 
 const resolveImageUrl = (url: string | null) => {
   if (!url) return ''
-  if (url.startsWith('http')) return url
+  const s = url.trim()
+  if (!s) return ''
+  if (/^https?:\/\//i.test(s)) {
+    try {
+      const urlObj = new URL(s)
+      if (urlObj.hostname === 'nginx' || urlObj.hostname === 'localhost') {
+        const path = s.replace(/^https?:\/\/[^/]+/, '')
+        return window.location.origin + path
+      }
+    } catch { /* keep original */ }
+    return s
+  }
   // Ensure we have /storage/ prefix if it's a local path
-  const path = url.startsWith('/') ? url : `/${url}`
+  const path = s.startsWith('/') ? s : `/${s}`
   if (!path.startsWith('/storage/')) {
     return `${API_BASE_URL}/storage${path}`
   }

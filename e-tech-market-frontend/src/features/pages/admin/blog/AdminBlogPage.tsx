@@ -1,9 +1,8 @@
-import { useEffect, useState } from 'react'
+﻿import { useEffect, useState } from 'react'
 import { apiFetch, API_BASE_URL } from '@/configs/api.config'
 import ConfirmModal from '@/components/ConfirmModal'
 import '@/styles/admin/AdminPage.css' // Reuse styles
 import '@/styles/admin/AdminBlogPage.css'
-import { useAuthStore } from '@/features/store/useAuthStore'
 
 type BlogCategory = {
   id: number
@@ -26,14 +25,24 @@ type BlogPost = {
 
 const resolveImageUrl = (url: string | null) => {
   if (!url) return ''
-  if (url.startsWith('http')) return url
-  return `${API_BASE_URL}${url.startsWith('/') ? url : `/${url}`}`
+  const s = url.trim()
+  if (!s) return ''
+  if (/^https?:\/\//i.test(s)) {
+    try {
+      const urlObj = new URL(s)
+      if (urlObj.hostname === 'nginx' || urlObj.hostname === 'localhost') {
+        const path = s.replace(/^https?:\/\/[^/]+/, '')
+        return window.location.origin + path
+      }
+    } catch { /* keep original */ }
+    return s
+  }
+  return `${API_BASE_URL}${s.startsWith('/') ? s : `/${s}`}`
 }
 
 export default function AdminBlogPage() {
   // 🔒 Token is sent via httpOnly cookie automatically
-  const userStr = useAuthStore((state) => state.userStr)
-  const hasAuth = !!userStr
+  const hasAuth = true  // Always authenticated — behind ProtectedRoute
   const [posts, setPosts] = useState<BlogPost[]>([])
   const [categories, setCategories] = useState<BlogCategory[]>([])
   const [loading, setLoading] = useState(true)

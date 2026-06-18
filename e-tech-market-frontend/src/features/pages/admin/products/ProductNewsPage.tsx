@@ -1,9 +1,8 @@
-import { useEffect, useMemo, useState } from "react";
+﻿import { useEffect, useMemo, useState } from "react";
 import { apiFetch, API_BASE_URL } from "@/configs/api.config";
 import ConfirmModal from "@/components/ConfirmModal";
 import "@/styles/admin/ProductNewsPage.css";
 import { sanitizeHtml } from "@/utils/sanitizeHtml";
-import { useAuthStore } from '@/features/store/useAuthStore'
 
 type ProductLite = {
   id: number;
@@ -34,8 +33,7 @@ const resolveImageUrl = (url: string | null) => {
 };
 
 export default function ProductNewsPage() {
-  const userStr = useAuthStore((state) => state.userStr)
-  const hasAuth = !!userStr;
+  const hasAuth = true  // Always authenticated — behind ProtectedRoute;
 
   const [products, setProducts] = useState<ProductLite[]>([]);
   const [selectedProductId, setSelectedProductId] = useState<number | null>(

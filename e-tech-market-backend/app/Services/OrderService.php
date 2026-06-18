@@ -27,7 +27,7 @@ use Illuminate\Validation\ValidationException;
 
 class OrderService
 {
-    public function createOrder(User $user, array $data, array $itemsInput, ?Cart $cart = null): Order
+    public function createOrder(?User $user, array $data, array $itemsInput, ?Cart $cart = null): Order
     {
         return DB::transaction(function () use ($user, $data, $itemsInput, $cart) {
             $subtotal = 0.0;
@@ -111,10 +111,10 @@ class OrderService
                     throw ValidationException::withMessages(['coupon_code' => 'Mã giảm giá đã hết lượt sử dụng']);
                 }
 
-                $userUsageCount = CouponUsage::query()
+                $userUsageCount = $user ? CouponUsage::query()
                     ->where('coupon_id', $coupon->id)
                     ->where('user_id', $user->id)
-                    ->count();
+                    ->count() : 0;
                 if ($coupon->max_uses_per_user !== null && $userUsageCount >= $coupon->max_uses_per_user) {
                     throw ValidationException::withMessages(['coupon_code' => 'Bạn đã sử dụng mã giảm giá này trước đó']);
                 }
@@ -163,7 +163,7 @@ class OrderService
 
             $order = Order::query()->create([
                 'order_code' => $orderCode,
-                'user_id' => $user->id,
+                'user_id' => $user?->id,
                 'cart_id' => $cart?->id,
                 'coupon_id' => $coupon?->id,
                 'shipping_method_id' => $shippingMethodId,
@@ -216,7 +216,7 @@ class OrderService
             if ($coupon) {
                 CouponUsage::query()->create([
                     'coupon_id' => $coupon->id,
-                    'user_id' => $user->id,
+                    'user_id' => $user?->id,
                     'order_id' => $order->id,
                     'discount_amount' => $discount,
                 ]);

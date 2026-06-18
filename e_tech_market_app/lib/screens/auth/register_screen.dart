@@ -241,7 +241,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             children: [
                               Text(Trans.fullName, style: TextStyle(color: Color(0xFF7C6B61), fontSize: 13)),
                               TextFormField(
-                                style: TextStyle(color: Color(0xFF7C6B61)),
+                                style: TextStyle(color: Colors.black),
                                 controller: _nameController,
                                 decoration: _inputDecoration(''),
                                 validator: (value) {
@@ -252,7 +252,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               const SizedBox(height: 16),
                               Text(Trans.email, style: TextStyle(color: Color(0xFF7C6B61), fontSize: 13)),
                               TextFormField(
-                                style: TextStyle(color: Color(0xFF7C6B61)),
+                                style: TextStyle(color: Colors.black),
                                 controller: _emailController,
                                 keyboardType: TextInputType.emailAddress,
                                 decoration: _inputDecoration(''),
@@ -265,7 +265,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               const SizedBox(height: 16),
                               Text(Trans.phoneNumber, style: TextStyle(color: Color(0xFF7C6B61), fontSize: 13)),
                               TextFormField(
-                                style: TextStyle(color: Color(0xFF7C6B61)),
+                                style: TextStyle(color: Colors.black),
                                 controller: _phoneController,
                                 keyboardType: TextInputType.phone,
                                 decoration: _inputDecoration(''),
@@ -277,7 +277,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               const SizedBox(height: 16),
                               Text(Trans.password, style: TextStyle(color: Color(0xFF7C6B61), fontSize: 13)),
                               TextFormField(
-                                style: TextStyle(color: Color(0xFF7C6B61)),
+                                style: TextStyle(color: Colors.black),
                                 controller: _passwordController,
                                 obscureText: _obscurePassword,
                                 decoration: _inputDecoration('').copyWith(
@@ -295,7 +295,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               const SizedBox(height: 16),
                               Text(Trans.confirmPassword, style: TextStyle(color: Color(0xFF7C6B61), fontSize: 13)),
                               TextFormField(
-                                style: TextStyle(color: Color(0xFF7C6B61)),
+                                style: TextStyle(color: Colors.black),
                                 controller: _confirmController,
                                 obscureText: _obscureConfirm,
                                 decoration: _inputDecoration('').copyWith(

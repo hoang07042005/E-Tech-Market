@@ -1,9 +1,8 @@
-import { useEffect, useState } from 'react'
+﻿import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { apiFetch } from '@/configs/api.config'
 import { fetchPendingQna } from '@/features/services/admin/api.admin.service'
 import '@/styles/admin/ShopQnaInboxPage.css'
-import { useAuthStore } from '@/features/store/useAuthStore'
 
 type PendingShopQna = {
   id: number
@@ -16,8 +15,7 @@ type PendingShopQna = {
 }
 
 export default function ShopQnaInboxPage() {
-  const userStr = useAuthStore((state) => state.userStr)
-  const hasAuth = !!userStr
+  const hasAuth = true  // Always authenticated — behind ProtectedRoute
   const [items, setItems] = useState<PendingShopQna[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)

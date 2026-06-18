@@ -1,9 +1,8 @@
-import { useEffect, useState } from 'react'
+﻿import { useEffect, useState } from 'react'
 import { apiFetch, API_BASE_URL } from '@/configs/api.config'
 import { fetchFlashSales, fetchFlashSaleDetail } from '@/features/services/admin/api.admin.service'
 import '@/styles/admin/AdminPage.css'
 import '@/styles/admin/AdminFlashSalePage.css'
-import { useAuthStore } from '@/features/store/useAuthStore'
 
 type Product = {
   id: number
@@ -44,8 +43,7 @@ type FlashSale = {
 
 export default function AdminFlashSalePage() {
   // 🔒 Token is sent via httpOnly cookie automatically
-  const userStr = useAuthStore((state) => state.userStr)
-  const hasAuth = !!userStr
+  const hasAuth = true  // Always authenticated — behind ProtectedRoute
   const [sales, setSales] = useState<FlashSale[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -719,18 +717,18 @@ export default function AdminFlashSalePage() {
                                   (item.variant?.id &&
                                     selectedProduct?.variants?.find(v => v.id === item.variant?.id)?.image_url)
                                     ? `${API_BASE_URL}${selectedProduct.variants.find(v => v.id === item.variant?.id)?.image_url}`
-                                    : (item.product.main_image_url
-                                      ? `${API_BASE_URL}${item.product.main_image_url}`
+                                    : (item.product?.main_image_url
+                                      ? `${API_BASE_URL}${item.product?.main_image_url}`
                                       : '/placeholder.png')
                                 }
                                 style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                                alt={item.product.name}
+                                alt={item.product?.name}
                               />
                             </div>
 
                             <div>
                               <div  className="adm-fs-style-74">
-                                {item.product.name}
+                                {item.product?.name || 'Deleted Product'}
                               </div>
 
                               {item.variant ? (
@@ -832,3 +830,4 @@ if (typeof document !== 'undefined') {
   styleSheet.innerText = styles
   document.head.appendChild(styleSheet)
 }
+

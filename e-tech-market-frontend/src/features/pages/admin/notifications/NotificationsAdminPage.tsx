@@ -1,6 +1,5 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+﻿import { useCallback, useEffect, useMemo, useState } from 'react'
 import { apiFetch } from '@/configs/api.config'
-import { useAuthStore } from '@/features/store/useAuthStore'
 
 type Notif = {
   id: number
@@ -26,8 +25,7 @@ function fmtVi(iso?: string | null) {
 }
 
 export default function NotificationsAdminPage() {
-  const userStr = useAuthStore((state) => state.userStr)
-  const hasAuth = !!userStr
+  const hasAuth = true  // Always authenticated — behind ProtectedRoute
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [res, setRes] = useState<NotifRes | null>(null)

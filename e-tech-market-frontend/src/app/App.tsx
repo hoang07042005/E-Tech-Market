@@ -5,6 +5,7 @@ import ErrorBoundary from '@/components/ErrorBoundary'
 import { GlobalToastProvider } from '@/components/GlobalToastProvider'
 import { useQueryClient } from '@tanstack/react-query'
 import { API_BASE_URL } from '@/configs/api.config'
+import { useAuthStore } from '@/features/store/useAuthStore'
 
 import {
   AUTH_EXPIRED_EVENT,
@@ -55,35 +56,54 @@ const VideoDetailPage = lazy(() => import('@/features/pages/client/video/VideoDe
 
 // Using shared `queryClient` from configs/queryClient.ts
 
-function isStaffOrAdmin(user: unknown): boolean {
-  if (!user || typeof user !== 'object') return false
-  const roles = (user as { roles?: unknown }).roles
-  return Array.isArray(roles) && roles.some((role: any) =>
-    ['admin', 'warehouse-staff', 'order-staff', 'editor'].includes(role?.slug || ''),
+function isStaffOrAdmin(data: unknown): boolean {
+  if (!data || typeof data !== "object") return false
+  const response = data as { user?: unknown }
+  // API returns {user: {roles: [...]}} - extract roles from nested user
+  const userObj = response.user as { roles?: unknown } | undefined
+  const roles = userObj?.roles || (data as { roles?: unknown }).roles
+  if (!Array.isArray(roles)) return false
+  return roles.some((role: any) =>
+    ["admin", "warehouse-staff", "order-staff", "editor"].includes(role?.slug || "")
   )
 }
 
-function useCurrentUser() {
-  // 🔒 Token is now in httpOnly cookie, managed by browser automatically
-  // We check if user is authenticated by attempting to fetch /api/me
-  // The cookie will be sent automatically with credentials: 'include'
+function useCurrentUser(forceEnabled?: boolean) {
+  const userStr = useAuthStore((state) => state.userStr)
+  // Only call /api/me when we have a session marker (user in localStorage)
+  // or when explicitly forced (e.g. ProtectedRoute)
+  const shouldFetch = forceEnabled ?? !!userStr
   return useApiQuery<any>(['currentUser'], '/api/me', {
-    enabled: true, // Always try to fetch, backend will reject with 401 if not authenticated
-    retry: false,
-    staleTime: 1000 * 60 * 2,
+    enabled: shouldFetch,
+    retry: false,  // Don't retry on 401 — user is simply not logged in
+    staleTime: 0,
+    fetchOptions: { silent401: true }, // Suppress global error toast for unauthenticated users
   })
 }
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
-  // 🔒 Token is in httpOnly cookie, not localStorage
-  // We rely on useCurrentUser() to validate authentication
-  const { data: user, isLoading, isError } = useCurrentUser()
+  // 🔒 Token is in httpOnly cookie; userStr in localStorage signals a logged-in session
+  const userStr = useAuthStore((state) => state.userStr)
+  const { data: user, isLoading, isError } = useCurrentUser(true) // Always fetch for protected routes
 
   if (isLoading) {
     return <PageLoader />
   }
 
-  if (isError || !isStaffOrAdmin(user)) {
+  // If there is an error fetching user data, treat as unauthenticated
+  if (isError) {
+    return <Navigate to="/login" replace />
+  }
+
+  // If /api/me hasn't resolved yet but we have a session marker, keep showing loader
+  if (!user) {
+    if (userStr) {
+      return <PageLoader />
+    }
+    return <Navigate to="/login" replace />
+  }
+
+  if (!isStaffOrAdmin(user)) {
     return <Navigate to="/login" replace />
   }
 
@@ -128,7 +148,7 @@ function AppFrame() {
   const [chatConfig, setChatConfig] = useState<any>(null)
   const currentUserQuery = useCurrentUser()
   const storeConfigQuery = useApiQuery<{ maintenance_mode: boolean; chat: any }>(['storeConfig'], '/api/store/config', {
-    retry: false,
+    retry: 1,
     staleTime: 1000 * 60 * 5,
   })
   const currentUser = currentUserQuery.data
@@ -148,7 +168,7 @@ function AppFrame() {
       let retryTimeout: number | undefined;
       
       const connectSSE = () => {
-        es = new EventSource(`${API_BASE_URL}/api/sse/stream`, { withCredentials: true });
+        es = new EventSource(`${API_BASE_URL}/api/v1/sse/stream`, { withCredentials: true });
         
         es.onmessage = (event) => {
           try {
@@ -205,6 +225,34 @@ function AppFrame() {
   }, [location.pathname, navigate])
 
   if (maintenanceMode === null) {
+    // Admin routes should never be blocked by the maintenance loader
+    if (path.startsWith('/admin')) {
+      return (
+        <div className="app-container">
+          <Suspense fallback={<PageLoader />}>
+            <Routes>
+              <Route
+                path="/admin"
+                element={
+                  <ProtectedRoute>
+                    <AdminPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/admin/:tab"
+                element={
+                  <ProtectedRoute>
+                    <AdminPage />
+                  </ProtectedRoute>
+                }
+              />
+            </Routes>
+          </Suspense>
+        </div>
+      )
+    }
+
     return (
       <div className="et-page-loader">
         <div className="et-loader-logo">
@@ -330,3 +378,8 @@ export default function App() {
     </Router>
   )
 }
+
+
+
+
+

@@ -14,8 +14,22 @@ interface SimpleProduct {
 
 const resolveThumbnailUrl = (url?: string | null) => {
   if (!url) return null
-  if (url.startsWith('http')) return url
-  return `${API_BASE_URL}${url.startsWith('/') ? url : `/${url}`}`
+  const s = url.trim()
+  if (!s) return null
+  // Already absolute URL - check if hostname is accessible
+  if (/^https?:\/\//i.test(s)) {
+    try {
+      const urlObj = new URL(s)
+      // If hostname is 'nginx' (Docker network hostname), replace with current origin
+      if (urlObj.hostname === 'nginx' || urlObj.hostname === 'localhost') {
+        const path = s.replace(/^https?:\/\/[^/]+/, '')
+        return window.location.origin + path
+      }
+    } catch { /* keep original */
+    }
+    return s
+  }
+  return `${API_BASE_URL}${s.startsWith('/') ? s : `/${s}`}`
 }
 
 export default function VideoAdminPage() {

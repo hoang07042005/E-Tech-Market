@@ -1,5 +1,6 @@
+import { renderWithProviders as render } from '../utils/test-utils';
 import '@testing-library/jest-dom'
-import { render, screen, waitFor } from '@testing-library/react'
+import { screen, waitFor } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 
 const createIntersectionObserverMock = () => ({
@@ -29,6 +30,7 @@ vi.mock('recharts', async () => {
 import DashboardPage from '../../features/pages/admin/dashboard/DashboardPage'
 import * as adminService from '../../features/services/admin/api.admin.service'
 import * as apiConfig from '../../configs/api.config'
+import { useAuthStore } from '../../features/store/useAuthStore'
 
 beforeEach(() => {
   vi.clearAllMocks()
@@ -78,7 +80,7 @@ beforeEach(() => {
   })
 
   localStorage.clear()
-  localStorage.setItem('token', 'fake-token')
+  useAuthStore.setState({ userStr: JSON.stringify({ name: 'Admin', roles: [{ slug: 'admin' }] }) })
   vi.spyOn(apiConfig, 'apiFetch').mockImplementation(async (url: string) => {
     if (url.includes('/api/admin/dashboard/stats')) {
       return {

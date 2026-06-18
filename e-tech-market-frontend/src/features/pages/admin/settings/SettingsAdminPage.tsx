@@ -1,9 +1,9 @@
-import { useEffect, useMemo, useState } from 'react'
+﻿import { useEffect, useMemo, useState } from 'react'
 import { apiFetch, API_BASE_URL } from '@/configs/api.config'
+import { useAuthStore } from '@/features/store/useAuthStore'
 import logoMomo from '@/assets/logo-momo.png'
 import logoVnpay from '@/assets/vnpay-logo.png'
 import logoCod from '@/assets/COD.png'
-import { useAuthStore } from '@/features/store/useAuthStore'
 
 type IconProps = { className?: string; title?: string }
 
@@ -75,8 +75,23 @@ type MethodRow = {
 
 function resolveAvatar(url?: string | null) {
   if (!url) return null
-  if (url.startsWith('http')) return url
-  return `${API_BASE_URL}${url.startsWith('/') ? url : `/${url}`}`
+  const s = url.trim()
+  if (!s) return null
+  // Already absolute URL - check if hostname is accessible
+  if (/^https?:\/\//i.test(s)) {
+    try {
+      const urlObj = new URL(s)
+      // If hostname is 'nginx' (Docker network hostname), replace with current origin
+      if (urlObj.hostname === 'nginx' || urlObj.hostname === 'localhost') {
+        const path = s.replace(/^https?:\/\/[^/]+/, '')
+        return window.location.origin + path
+      }
+    } catch { /* keep original */
+    }
+    return s
+  }
+  // Relative path - prepend API base URL
+  return `${API_BASE_URL}${s.startsWith('/') ? s : `/${s}`}`
 }
 
 function fmtVnd(n: number) {
@@ -96,8 +111,9 @@ function fmtAdminDateTime(iso?: string | null) {
 
 export default function SettingsAdminPage() {
   // 🔒 Token is sent via httpOnly cookie automatically
+  const hasAuth = true  // Always authenticated — behind ProtectedRoute
   const userStr = useAuthStore((state) => state.userStr)
-  const hasAuth = !!userStr
+
   const userAvatarUrl = useMemo(() => {
     if (!userStr) return null
     try {

@@ -155,7 +155,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                         children: [
                           Text(Trans.email, style: TextStyle(color: Color(0xFF7C6B61), fontSize: 13)),
                           TextFormField(
-                            style: TextStyle(color: Color(0xFF7C6B61)),
+                            style: TextStyle(color: Colors.black),
                             controller: _emailController,
                             keyboardType: TextInputType.emailAddress,
                             decoration: _inputDecoration('nguyenvana@gmail.com'),

@@ -1,9 +1,8 @@
-import { useState, useEffect, useCallback, useMemo } from 'react'
+﻿import { useState, useEffect, useCallback, useMemo } from 'react'
 import type { ChangeEvent } from 'react'
 import { apiFetch } from '@/configs/api.config'
 import {  } from '@/features/services/admin/api.admin.service'
 import '@/styles/admin/ContactsAdminPage.css'
-import { useAuthStore } from '@/features/store/useAuthStore'
 
 type ContactMessage = {
   id: number
@@ -30,8 +29,7 @@ export default function ContactsAdminPage() {
   const [sortOrder, setSortOrder] = useState<'newest' | 'oldest'>('newest')
   const [page, setPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
-  const userStr = useAuthStore((state) => state.userStr)
-  const hasAuth = !!userStr
+  const hasAuth = true  // Always authenticated — behind ProtectedRoute
 
   const fetchMessages = useCallback(
     async (currentPage: number, handledStatus: 'all' | 'yes' | 'no') => {

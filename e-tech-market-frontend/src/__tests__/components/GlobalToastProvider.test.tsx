@@ -1,4 +1,5 @@
-import { render, screen, act } from '@testing-library/react';
+import { renderWithProviders as render } from '../../__tests__/utils/test-utils';
+import { screen, act } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { GlobalToastProvider, useGlobalToast } from '../../components/GlobalToastProvider';
 

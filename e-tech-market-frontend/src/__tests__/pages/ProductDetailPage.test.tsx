@@ -1,5 +1,6 @@
+import { renderWithProviders as render } from '../utils/test-utils';
 import '@testing-library/jest-dom'
-import { render, screen, fireEvent, waitFor } from '@testing-library/react'
+import { screen, fireEvent, waitFor } from '@testing-library/react'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import ProductDetailPage from '../../features/pages/client/products/ProductDetailPage'

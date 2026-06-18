@@ -1,7 +1,6 @@
-import { useEffect, useState } from 'react'
+﻿import { useEffect, useState } from 'react'
 import { fetchAdminProductDetail } from '@/features/services/admin/products.admin.service'
 import { API_BASE_URL } from '@/configs/api.config'
-import { useAuthStore } from '@/features/store/useAuthStore'
 
 interface Category {
   id: number
@@ -76,8 +75,19 @@ const formatCurrency = (amount: number | string | undefined | null) => {
 
 const resolveImageUrl = (url: string | null) => {
   if (!url) return ''
-  if (url.startsWith('http')) return url
-  return `${API_BASE_URL}${url.startsWith('/') ? url : `/${url}`}`
+  const s = url.trim()
+  if (!s) return ''
+  if (/^https?:\/\//i.test(s)) {
+    try {
+      const urlObj = new URL(s)
+      if (urlObj.hostname === 'nginx' || urlObj.hostname === 'localhost') {
+        const path = s.replace(/^https?:\/\/[^/]+/, '')
+        return window.location.origin + path
+      }
+    } catch { /* keep original */ }
+    return s
+  }
+  return `${API_BASE_URL}${s.startsWith('/') ? s : `/${s}`}`
 }
 
 export default function ProductVariantsDetail({
@@ -92,8 +102,7 @@ export default function ProductVariantsDetail({
   const [error, setError] = useState<string | null>(null)
   const [selectedFilter, setSelectedFilter] = useState<string | 'all'>('all')
 
-  const userStr = useAuthStore((state) => state.userStr)
-  const hasAuth = !!userStr
+  const hasAuth = true  // Always authenticated — behind ProtectedRoute
 
   useEffect(() => {
     let mounted = true

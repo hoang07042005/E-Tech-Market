@@ -1,9 +1,8 @@
-import { useState, useEffect, useCallback } from 'react'
+﻿import { useState, useEffect, useCallback } from 'react'
 import type { ChangeEvent } from 'react'
 import { apiFetch, API_BASE_URL } from '@/configs/api.config'
 import ConfirmModal from '@/components/ConfirmModal'
 import '@/styles/admin/ReviewsAdminPage.css'
-import { useAuthStore } from '@/features/store/useAuthStore'
 
 type Review = {
   id: number
@@ -38,8 +37,22 @@ type ReviewListResponse = {
 
 function resolveReviewImageUrl(url: string | null | undefined) {
   if (!url) return 'https://via.placeholder.com/48'
-  if (url.startsWith('http')) return url
-  const path = url.startsWith('/') ? url : `/${url}`
+  const s = url.trim()
+  if (!s) return 'https://via.placeholder.com/48'
+  // Already absolute URL - check if hostname is accessible
+  if (/^https?:\/\//i.test(s)) {
+    try {
+      const urlObj = new URL(s)
+      // If hostname is 'nginx' (Docker network hostname), replace with current origin
+      if (urlObj.hostname === 'nginx' || urlObj.hostname === 'localhost') {
+        const path = s.replace(/^https?:\/\/[^/]+/, '')
+        return window.location.origin + path
+      }
+    } catch { /* keep original */
+    }
+    return s
+  }
+  const path = s.startsWith('/') ? s : `/${s}`
   if (!path.startsWith('/storage/')) return `${API_BASE_URL}/storage${path}`
   return `${API_BASE_URL}${path}`
 }
@@ -55,8 +68,7 @@ export default function ReviewsAdminPage() {
   const [showDeleteModal, setShowDeleteModal] = useState(false)
   const [reviewToDelete, setReviewToDelete] = useState<Review | null>(null)
   // 🔒 Token is sent via httpOnly cookie automatically
-  const userStr = useAuthStore((state) => state.userStr)
-  const hasAuth = !!userStr
+  const hasAuth = true  // Always authenticated — behind ProtectedRoute
 
   const fetchReviews = useCallback(
     async (

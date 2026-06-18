@@ -1,8 +1,7 @@
-import { useState, useEffect } from 'react'
+﻿import { useState, useEffect } from 'react'
 import { apiFetch } from '@/configs/api.config'
 import ConfirmModal from '@/components/ConfirmModal'
 import '@/styles/admin/CouponsAdmin.css'
-import { useAuthStore } from '@/features/store/useAuthStore'
 
 type Coupon = {
   id: number
@@ -29,8 +28,7 @@ export default function CouponsAdminPage() {
   const [couponToDelete, setCouponToDelete] = useState<Coupon | null>(null)
 
   // 🔒 Token is sent via httpOnly cookie automatically
-  const userStr = useAuthStore((state) => state.userStr)
-  const hasAuth = !!userStr
+  const hasAuth = true  // Always authenticated — behind ProtectedRoute
 
   const fetchCoupons = async (currentPage: number) => {
     if (!hasAuth) {

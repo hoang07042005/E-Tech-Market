@@ -1,5 +1,6 @@
+import { renderWithProviders as render } from '../utils/test-utils';
 import '@testing-library/jest-dom'
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import CartPage from '../../features/pages/client/cart/CartPage'
 

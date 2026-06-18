@@ -1,7 +1,6 @@
-import { useEffect, useMemo, useState } from 'react'
+﻿import { useEffect, useMemo, useState } from 'react'
 import { API_BASE_URL } from '@/configs/api.config'
 import { fetchOrders, fetchOrderDetail, updateOrder, processOrderReturn } from '@/features/services/admin/api.admin.service'
-import { useAuthStore } from '@/features/store/useAuthStore'
 
 type OrderRow = {
   id: number
@@ -132,8 +131,19 @@ function avatarToneOf(s: string) {
 
 function resolveAvatar(url?: string | null) {
   if (!url) return null
-  if (url.startsWith('http')) return url
-  return `${API_BASE_URL}${url.startsWith('/') ? url : `/${url}`}`
+  const s = url.trim()
+  if (!s) return null
+  if (/^https?:\/\//i.test(s)) {
+    try {
+      const urlObj = new URL(s)
+      if (urlObj.hostname === 'nginx' || urlObj.hostname === 'localhost') {
+        const path = s.replace(/^https?:\/\/[^/]+/, '')
+        return window.location.origin + path
+      }
+    } catch { /* keep original */ }
+    return s
+  }
+  return `${API_BASE_URL}${s.startsWith('/') ? s : `/${s}`}`
 }
 
 function resolveImage(url?: string | null) {
@@ -153,8 +163,7 @@ function fmtViTime(iso?: string | null) {
 
 export default function OrdersAdminPage() {
   // 🔒 Token is sent via httpOnly cookie automatically
-  const userStr = useAuthStore((state) => state.userStr)
-  const hasAuth = !!userStr
+  const hasAuth = true  // Always authenticated — behind ProtectedRoute
 
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)

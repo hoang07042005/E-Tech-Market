@@ -20,7 +20,6 @@ import BannerAdminPage from './banners/BannerAdminPage'
 import VideoAdminPage from './videos/VideoAdminPage'
 import VideoCategoryPage from './categories/VideoCategoryPage'
 import { apiFetch, API_BASE_URL } from '@/configs/api.config'
-import { useAuthStore } from '@/features/store/useAuthStore'
 
 
 type AdminTab =
@@ -51,6 +50,9 @@ type AdminUser = {
   roles?: Array<{ slug?: string | null }>
 }
 
+// /api/me may return { user: AdminUser } or AdminUser directly
+type ApiMeResponse = AdminUser & { user?: AdminUser }
+
 const ADMIN_TAB_TITLE: Record<AdminTab, string> = {
   dashboard: 'Bảng điều khiển',
   products: 'Sản phẩm',
@@ -73,8 +75,19 @@ const ADMIN_TAB_TITLE: Record<AdminTab, string> = {
 
 function resolveAdminImg(url?: string | null): string {
   if (!url) return ''
-  if (url.startsWith('http')) return url
-  return `${API_BASE_URL}${url.startsWith('/') ? url : `/${url}`}`
+  const s = url.trim()
+  if (!s) return ''
+  if (/^https?:\/\//i.test(s)) {
+    try {
+      const urlObj = new URL(s)
+      if (urlObj.hostname === 'nginx' || urlObj.hostname === 'localhost') {
+        const path = s.replace(/^https?:\/\/[^/]+/, '')
+        return window.location.origin + path
+      }
+    } catch { /* keep original */ }
+    return s
+  }
+  return `${API_BASE_URL}${s.startsWith('/') ? s : `/${s}`}`
 }
 
 function hasPermissionForTab(tab: AdminTab, user: AdminUser | undefined): boolean {
@@ -128,17 +141,17 @@ export default function AdminPage() {
   const [darkMode, setDarkMode] = useState<boolean>(() => {
     return typeof window !== 'undefined' && localStorage.getItem('theme') === 'dark'
   })
-  // 🔒 Check auth via user in localStorage (not token - token is in httpOnly cookie)
-  const userStr = useAuthStore((state) => state.userStr)
-  const hasAuth = !!userStr
-  const currentUserQuery = useQuery<AdminUser>({
+  // 🔒 Token is in httpOnly cookie — always fetch /api/me (cookie authenticates automatically)
+  const currentUserQuery = useQuery<ApiMeResponse>({
     queryKey: ['currentUser'],
-    // 🔒 Token is sent via httpOnly cookie automatically
-    queryFn: () => apiFetch<AdminUser>('/api/me'),
-    enabled: hasAuth,
+    queryFn: () => apiFetch<ApiMeResponse>('/api/me'),
+    enabled: true,
     staleTime: 1000 * 60 * 2,
+    retry: 1,
   })
-  const currentUser = currentUserQuery.data
+  // /api/me may return { user: {...} } or directly the user object
+  const currentUser: AdminUser | undefined =
+    currentUserQuery.data?.user ?? currentUserQuery.data
   const userName = currentUser?.name || 'Admin'
   const userRole = currentUser?.roles?.[0]?.slug || 'admin'
   const userEmail = currentUser?.email || currentUser?.username || 'admin@etech.com'
@@ -194,7 +207,6 @@ export default function AdminPage() {
   const searchWrapRef = useRef<HTMLDivElement | null>(null)
 
   const loadNotifs = useCallback(async () => {
-    if (!hasAuth) return
     setNotifLoading(true)
     try {
       const res = await apiFetch<{ data: Notif[]; unread: number }>('/notifications?per_page=20&unread=1')
@@ -205,7 +217,7 @@ export default function AdminPage() {
     } finally {
       setNotifLoading(false)
     }
-  }, [hasAuth])
+  }, [])
 
   useEffect(() => {
     if (!notifOpen) return
@@ -240,7 +252,6 @@ export default function AdminPage() {
   useEffect(() => {
     const query = qSearch.trim()
     if (!qOpen) return
-    if (!hasAuth) return
     if (query.length < 2) return
 
     const t = window.setTimeout(() => {
@@ -292,10 +303,9 @@ export default function AdminPage() {
     }, 220)
 
     return () => window.clearTimeout(t)
-  }, [qSearch, qOpen, hasAuth])
+  }, [qSearch, qOpen])
 
   const markNotifRead = async (id: number) => {
-    if (!hasAuth) return
     try {
       await apiFetch(`/notifications/${id}/read`, { method: 'PATCH', body: JSON.stringify({}) })
       setNotifRows((p) => p.filter((n) => n.id !== id))
@@ -306,7 +316,6 @@ export default function AdminPage() {
   }
 
   const markAllRead = async () => {
-    if (!hasAuth) return
     try {
       await apiFetch(`/notifications/read-all`, { method: 'PATCH', body: JSON.stringify({}) })
       setNotifRows([])
@@ -345,13 +354,35 @@ export default function AdminPage() {
 
   const resolveAvatar = (url?: string | null) => {
     if (!url) return null
-    if (url.startsWith('http')) return url
-    return `${API_BASE_URL}${url.startsWith('/') ? url : `/${url}`}`
+    const s = url.trim()
+    if (!s) return null
+    // Already absolute URL - check if hostname is accessible
+    if (/^https?:\/\//i.test(s)) {
+      try {
+        const urlObj = new URL(s)
+        // If hostname is 'nginx' (Docker network hostname), replace with current origin
+        if (urlObj.hostname === 'nginx' || urlObj.hostname === 'localhost') {
+          const path = s.replace(/^https?:\/\/[^/]+/, '')
+          return window.location.origin + path
+        }
+      } catch { /* keep original */
+      }
+      return s
+    }
+    // Relative path - prepend API base URL
+    return `${API_BASE_URL}${s.startsWith('/') ? s : `/${s}`}`
   }
 
   const adminLogoSrc = darkMode && logoSrc === '/logo.png' ? '/logo-trang.png' : logoSrc
 
-  if (currentUserQuery.isLoading) {
+  // Show loader while fetching user or if user not yet resolved (cookie auth may take a moment)
+  if (currentUserQuery.isLoading || (!currentUser && !currentUserQuery.isError)) {
+    return <div className="adminLoader" style={{ margin: '120px auto' }} />
+  }
+
+  // If /api/me failed (401 etc.), redirect to login
+  if (currentUserQuery.isError || !currentUser) {
+    window.location.href = '/login'
     return <div className="adminLoader" style={{ margin: '120px auto' }} />
   }
 
@@ -840,4 +871,5 @@ function BellIcon() { return <svg width="20" height="20" viewBox="0 0 24 24" fil
 function SunIcon() { return <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path></svg> }
 function MoonIcon() { return <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg> }
 function ExitIcon() { return <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg> }
+
 

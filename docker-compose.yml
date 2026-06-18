@@ -31,8 +31,8 @@ services:
       - QUEUE_CONNECTION=database
       - REDIS_HOST=redis
       - REDIS_PORT=6379
-      # Redis password is set via environment variable. If not set, it defaults to empty.
-      - REDIS_PASSWORD=${REDIS_PASSWORD:-}
+      # Redis password is set via environment variable.
+      - REDIS_PASSWORD=${REDIS_PASSWORD:-etech-redis-secret-123}
       - SCOUT_DRIVER=meilisearch
       - MEILISEARCH_HOST=http://meilisearch:7700
       - MEILISEARCH_KEY=${MEILISEARCH_KEY:-etech-master-key-1234}
@@ -76,8 +76,8 @@ services:
       - QUEUE_CONNECTION=database
       - REDIS_HOST=redis
       - REDIS_PORT=6379
-      # Redis password is set via environment variable. If not set, it defaults to empty.
-      - REDIS_PASSWORD=${REDIS_PASSWORD:-}
+      # Redis password is set via environment variable.
+      - REDIS_PASSWORD=${REDIS_PASSWORD:-etech-redis-secret-123}
       - CACHE_DRIVER=redis
       - SESSION_DRIVER=redis
     depends_on:
@@ -91,21 +91,22 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-postgres}
     ports:
-      - "5432:5432"
+      - "127.0.0.1:5433:5432"
     volumes:
       - db_data:/var/lib/postgresql/data
 
   redis:
     image: redis:alpine
+    command: redis-server --requirepass ${REDIS_PASSWORD:-etech-redis-secret-123}
     ports:
-      - "6379:6379"
+      - "127.0.0.1:6379:6379"
 
   meilisearch:
     image: getmeili/meilisearch:v1.6
     environment:
       - MEILI_MASTER_KEY=${MEILISEARCH_KEY:-etech-master-key-1234}
     ports:
-      - "7700:7700"
+      - "127.0.0.1:7700:7700"
     volumes:
       - meili_data:/meili_data
 

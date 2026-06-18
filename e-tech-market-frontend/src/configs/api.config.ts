@@ -4,12 +4,31 @@ import {
   performAuthSessionExpiry,
 } from '@/features/store/auth.store'
 
-// During development (Vite), use relative path to leverage proxy which avoids CORS.
-// In production, use the configured API URL.
-export const API_BASE_URL = import.meta.env.DEV
-  ? ''  // Relative path: proxy handles CORS in dev mode
-  : (import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000').replace(/\/+$/, '')
+// Token storage - use localStorage to persist across Docker restarts
+const TOKEN_KEY = 'etech_auth_token'
 
+export function setAuthToken(token: string | null): void {
+  console.log('[setAuthToken] Called with:', token ? token.slice(0, 20) + '...' : 'null')
+  try {
+    if (token) localStorage.setItem(TOKEN_KEY, token)
+    else localStorage.removeItem(TOKEN_KEY)
+  } catch {}
+}
+
+export function getAuthToken(): string | null {
+  try { return localStorage.getItem(TOKEN_KEY) } catch { return null }
+}
+
+export function clearAuthToken(): void {
+  const current = getAuthToken()
+  console.log('[clearAuthToken] Called, current value:', current ? current.slice(0, 20) + '...' : 'null')
+  try { localStorage.removeItem(TOKEN_KEY) } catch {}
+}
+
+// During development (Vite), use relative path to leverage proxy which avoids CORS.
+export const API_BASE_URL = import.meta.env.DEV
+  ? ''
+  : (import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000').replace(/\/$/, '')
 
 export type ApiError = {
   message?: string
@@ -44,33 +63,27 @@ async function parseJsonSafe<T>(res: Response): Promise<T | null> {
 
 export async function apiFetch<T>(
   path: string,
-  options: RequestInit & { token?: string | null } = {},
+  options: RequestInit & { silent401?: boolean } = {},
 ): Promise<T> {
+  const { silent401 = false, ...fetchOptions } = options as RequestInit & { silent401?: boolean }
   const normalizedPath = path.startsWith('/') ? path : `/${path}`
-  // Support both styles:
-  // - API_BASE_URL = http://host:8000  + path = /api/...
-  // - API_BASE_URL = http://host:8000/api + path = /...
-  // Avoid double /api/api.
   const baseHasApi = API_BASE_URL.endsWith('/api')
   const pathHasApi = normalizedPath === '/api' || normalizedPath.startsWith('/api/')
   const effectivePath =
     baseHasApi && pathHasApi ? normalizedPath.slice(4) || '/' : !baseHasApi && !pathHasApi ? `/api${normalizedPath}` : normalizedPath
 
-  // Apply v1 versioning automatically to all requests
   const versionedPath = effectivePath.replace(/^\/api\//, '/api/v1/');
   const url = `${API_BASE_URL}${versionedPath}`
 
-  // Validate token expiry only for legacy token-based requests.
-  if (typeof window !== 'undefined' && options.token) {
+  if (typeof window !== 'undefined') {
     ensureAuthExpiryMigrated()
     if (isAuthSessionExpired()) {
       performAuthSessionExpiry()
-      throw new Error('Phiên đăng nhập đã hết hạn (24 giờ). Vui lòng đăng nhập lại.')
+      throw new Error('Session expired. Please login again.')
     }
   }
 
-  const isFormData =
-    typeof FormData !== 'undefined' && options.body instanceof FormData
+  const isFormData = typeof FormData !== 'undefined' && options.body instanceof FormData
 
   const headers: Record<string, string> = {
     ...(options.headers as Record<string, string> | undefined),
@@ -78,21 +91,32 @@ export async function apiFetch<T>(
     ...(isFormData ? {} : { 'Content-Type': 'application/json' }),
   }
 
-  // ⚠️ DEPRECATED: 'token' param is for backward compatibility only.
-  // New code should rely on httpOnly cookies which are sent automatically.
-  const token = options.token ?? null
-  if (token) headers.Authorization = `Bearer ${token}`
+  const token = getAuthToken()
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`
+    console.log('[apiFetch] Token found, adding Bearer header', token.slice(0, 20) + '...')
+  } else {
+    console.log('[apiFetch] No token in memory')
+  }
 
   const res = await fetch(url, {
-    ...options,
+    ...fetchOptions,
     headers,
-    credentials: 'include', // 🔒 IMPORTANT: Auto-send httpOnly cookies with every request
+    credentials: 'include',
   })
 
   const data = await parseJsonSafe<ApiError & T>(res)
   if (!res.ok) {
     if (res.status === 401) {
-      performAuthSessionExpiry()
+      clearAuthToken()
+      if (!silent401) {
+        performAuthSessionExpiry()
+        const msg401 = (data && typeof data.message === 'string') ? data.message : `Request failed: ${res.status}`
+        notifyGlobalError(msg401)
+        throw new ApiRequestError(msg401, { globalErrorNotified: true })
+      }
+      // Silent 401: user simply not logged in, no toast
+      throw new ApiRequestError('Unauthorized', { globalErrorNotified: true })
     }
     const fallbackText = data ? null : await res.text().catch(() => null)
     const message =
