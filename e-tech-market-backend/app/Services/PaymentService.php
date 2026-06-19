@@ -451,11 +451,13 @@ class PaymentService
             $payment->transaction_code = $transactionCode ?? $payment->transaction_code;
             $payment->save();
 
-            // For orders in 'pending_payment' status, delete them on failure
-            // (user never saw them, so no reason to keep failed records)
+            // For orders in 'pending_payment' status, cancel them on failure instead of deleting
+            // This ensures inventory is restored properly and avoids foreign key constraint errors
             if ($order->status === 'pending_payment') {
-                $order->delete();
-
+                app(\App\Services\OrderService::class)->cancelOrder($order, $order->user);
+                $payment->status = 'failed';
+                $payment->transaction_code = $transactionCode ?? $payment->transaction_code;
+                $payment->save();
                 return;
             }
 

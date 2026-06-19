@@ -96,15 +96,20 @@ class OrderService
                     ->first();
 
                 if ($activeFlashSale) {
-                    if ($activeFlashSale->quantity_limit !== null && $activeFlashSale->sold_quantity + $qty > $activeFlashSale->quantity_limit) {
-                        throw ValidationException::withMessages(['items' => "Sản phẩm {$it['product']->name} đã hết suất Flash Sale."]);
+                    $isFlashSalePrice = isset($it['unit_price']) && abs((float)$it['unit_price'] - (float)$activeFlashSale->flash_sale_price) < 0.01;
+                    
+                    if ($isFlashSalePrice || !isset($it['unit_price'])) {
+                        if ($activeFlashSale->quantity_limit !== null && $activeFlashSale->sold_quantity + $qty > $activeFlashSale->quantity_limit) {
+                            throw ValidationException::withMessages(['items' => "Sản phẩm {$it['product']->name} đã hết suất Flash Sale."]);
+                        }
+
+                        if (!isset($it['unit_price'])) {
+                            $saving = ($originalPrice - (float) $activeFlashSale->flash_sale_price) * $qty;
+                            $flashSaleDiscount += max(0, $saving);
+                        }
+
+                        $activeFlashSale->increment('sold_quantity', $qty);
                     }
-
-                    $originalPrice = (float) $it['unit_price'];
-                    $saving = ($originalPrice - (float) $activeFlashSale->flash_sale_price) * $qty;
-                    $flashSaleDiscount += max(0, $saving);
-
-                    $activeFlashSale->increment('sold_quantity', $qty);
                 }
             }
 
@@ -288,7 +293,7 @@ class OrderService
         }
 
         $cur = strtolower((string) ($order->status ?? ''));
-        if (! in_array($cur, ['pending', 'processing'], true)) {
+        if (! in_array($cur, ['pending', 'processing', 'pending_payment'], true)) {
             throw new \Exception('Không thể hủy đơn ở trạng thái này.', 422);
         }
 

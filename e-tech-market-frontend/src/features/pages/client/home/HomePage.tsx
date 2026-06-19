@@ -263,6 +263,7 @@ function ProductCard({
           type="button"
           className="hpAddToCartFullBtn"
           onClick={() => {
+            const lowestVariant = (product.variants || []).filter(v => v.is_active).sort((a, b) => a.effective_price - b.effective_price)[0]
             addToCart({
               item: {
                 product_id: product.id,
@@ -270,8 +271,8 @@ function ProductCard({
                 name: product.name,
                 price: Number.parseFloat(displayPrice),
                 image_url: imageUrl,
-                variant_id: null,
-                variant_label: null,
+                variant_id: lowestVariant?.id ?? null,
+                variant_label: lowestVariant ? (lowestVariant.variant_name || null) : null,
                 quantity: 1,
               },
               qty: 1

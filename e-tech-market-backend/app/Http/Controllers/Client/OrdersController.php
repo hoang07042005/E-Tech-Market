@@ -151,16 +151,21 @@ class OrdersController extends Controller
                 'product_id' => $it->product_id,
                 'variant_id' => $it->variant_id,
                 'quantity' => $it->quantity,
+                'unit_price' => $it->unit_price,
             ];
         }
 
         $cleanItemsInput = [];
         foreach ($itemsInput as $it) {
-            $cleanItemsInput[] = [
+            $cleanItem = [
                 'product_id' => (int) $it['product_id'],
                 'variant_id' => $it['variant_id'] ? (int) $it['variant_id'] : null,
                 'quantity' => (int) $it['quantity'],
             ];
+            if (isset($it['unit_price'])) {
+                $cleanItem['unit_price'] = (float) $it['unit_price'];
+            }
+            $cleanItemsInput[] = $cleanItem;
         }
 
         $order = $orderService->createOrder($user, $data, $cleanItemsInput, $cart);

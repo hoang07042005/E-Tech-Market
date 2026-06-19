@@ -58,7 +58,7 @@ export async function syncCartFromBackend() {
           product_id: it.product_id,
           slug: it.product?.slug || '',
           name: it.product?.name || '',
-          price: Number(it.unit_price) || 0,
+          price: Number(it.variant?.effective_price ?? it.unit_price) || 0,
           image_url: it.product?.main_image_url || null,
           variant_id: it.variant_id,
           variant_label: it.variant?.attribute_values ? Object.values(it.variant.attribute_values).join(', ') : null,
@@ -80,6 +80,7 @@ export function addToCart(item: Omit<CartItem, 'key'>, qty: number) {
   if (idx >= 0) {
     state.items[idx] = {
       ...state.items[idx],
+      price: item.price,
       quantity: state.items[idx].quantity + quantity,
     }
   } else {

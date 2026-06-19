@@ -71,6 +71,10 @@ class CartService
         return DB::transaction(function () use ($cart, $product, $variant, $data, $cartItem) {
             if ($cartItem) {
                 $cartItem->quantity = $cartItem->quantity + (int) $data['quantity'];
+                // Update unit_price to reflect current pricing (discount may have changed)
+                if (! empty($data['unit_price']) && $data['unit_price'] > 0) {
+                    $cartItem->unit_price = (float) $data['unit_price'];
+                }
                 $cartItem->save();
             } else {
                 $unitPrice = null;

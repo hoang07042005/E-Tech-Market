@@ -406,35 +406,31 @@ export default function CheckoutPage() {
       let order_id: number
       let order_code: string
 
-      if (pending && pending.method === form.payment_method) {
-        order_id = pending.order_id
-        order_code = pending.order_code
-      } else {
-        const created = await apiFetch<{ id: number; order_code: string }>(`/orders/from-items`, {
-          method: 'POST',
-          body: JSON.stringify({
-            shipping_name: form.name.trim(),
-            shipping_phone: form.phone.trim(),
-            shipping_address_line: form.address_line.trim(),
-            shipping_province: null,
-            shipping_district: null,
-            shipping_ward: null,
-            notes: form.notes.trim() || null,
-            coupon_code: appliedCoupon?.code || null,
-            payment_method: form.payment_method,
-            items: cart.items.map((it) => ({
-              product_id: it.product_id,
-              variant_id: it.variant_id,
-              quantity: it.quantity,
-            })),
-            shipping_method_id: form.shipping_method_id,
-            shipping_zone_id: form.shipping_zone_id,
-          }),
-        })
-        order_id = created.id
-        order_code = created.order_code
-        localStorage.setItem(pendingPaymentKey, JSON.stringify({ order_id, order_code, method: form.payment_method }))
-      }
+      const created = await apiFetch<{ id: number; order_code: string }>(`/orders/from-items`, {
+        method: 'POST',
+        body: JSON.stringify({
+          shipping_name: form.name.trim(),
+          shipping_phone: form.phone.trim(),
+          shipping_address_line: form.address_line.trim(),
+          shipping_province: null,
+          shipping_district: null,
+          shipping_ward: null,
+          notes: form.notes.trim() || null,
+          coupon_code: appliedCoupon?.code || null,
+          payment_method: form.payment_method,
+          items: cart.items.map((it) => ({
+            product_id: it.product_id,
+            variant_id: it.variant_id,
+            quantity: it.quantity,
+            unit_price: it.price,
+          })),
+          shipping_method_id: form.shipping_method_id,
+          shipping_zone_id: form.shipping_zone_id,
+        }),
+      })
+      order_id = created.id
+      order_code = created.order_code
+      localStorage.setItem(pendingPaymentKey, JSON.stringify({ order_id, order_code, method: form.payment_method }))
 
       // Create payment link & redirect to gateway
       const pay = await apiFetch<{ pay_url: string }>(`/payments/${form.payment_method}/create`, {
