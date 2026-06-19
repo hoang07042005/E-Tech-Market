@@ -135,8 +135,8 @@ class _BlogScreenState extends State<BlogScreen> {
       appBar: AppBar(
         title: Text(Trans.newsTitleFull),
         centerTitle: true,
-        backgroundColor: Colors.transparent,
-        foregroundColor: Theme.of(context).colorScheme.onSurface,
+        // backgroundColor: Colors.transparent,
+        // foregroundColor: Theme.of(context).colorScheme.onSurface,
         elevation: 0,
       ),
 

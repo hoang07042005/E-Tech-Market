@@ -598,7 +598,7 @@
 }
 
 .hpProductPriceRowNew .hpProductPrice {
-  font-size: 1.25rem;
+  font-size: 15px;
 }
 
 .hpProductBrand {
@@ -628,7 +628,7 @@
 }
 
 .hpProductOldPrice {
-  font-size: 0.85rem;
+  font-size: 10px;
   color: #94a3b8;
   text-decoration: line-through;
   font-weight: 400;
