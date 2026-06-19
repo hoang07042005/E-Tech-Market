@@ -19,6 +19,7 @@ import '@/styles/App.css'
 import HeaderPage from '@/components/HeaderPage'
 import FooterPage from '@/components/FooterPage'
 import ChatWidget from '@/components/ChatWidget'
+import EtechChatbotWidget from '@/components/EtechChatbotWidget'
 import CompareTray from '@/components/CompareTray'
 
 // Lazy load page components
@@ -362,6 +363,7 @@ function AppFrame() {
       </Suspense>
       {!hideChrome && <FooterPage />}
       {!hideChrome && chatConfig && <ChatWidget config={chatConfig} />}
+      {!hideChrome && <EtechChatbotWidget />}
       {!hideChrome && <CompareTray />}
     </div>
   )
