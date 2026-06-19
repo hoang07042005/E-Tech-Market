@@ -138,8 +138,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/orders/{order}/return-request', [OrdersController::class, 'requestReturn']);
     Route::patch('/orders/{order}/return-request/confirm-refund', [OrdersController::class, 'confirmRefundReceived']);
 
-    Route::post('/payments/vnpay/{order}/create', [PaymentsController::class, 'createVnpay']);
-    Route::post('/payments/momo/{order}/create', [PaymentsController::class, 'createMomo']);
+    Route::post('/payments/vnpay/create', [PaymentsController::class, 'createVnpay']);
+    Route::post('/payments/momo/create', [PaymentsController::class, 'createMomo']);
 
     Route::get('/wishlist', [WishlistController::class, 'index']);
     Route::post('/wishlist/toggle', [WishlistController::class, 'toggle']);

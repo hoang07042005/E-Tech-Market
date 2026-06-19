@@ -24,9 +24,16 @@ class PaymentService
      */
     public function createVnpayPaymentUrl(Order $order, ?string $clientIp): array
     {
+        $order = $this->recalculateOrderTotal($order);
         $payment = $this->findOrCreatePayment($order, 'vnpay');
 
-        if ($payment->status === 'paid' || $order->payment_status === 'paid') {
+        // Allow creating payment URL for:
+        // - pending orders (COD that hasn't been paid)
+        // - pending_payment orders (waiting for VnPay/MoMo payment)
+        $isPaid = $payment->status === 'paid' || $order->payment_status === 'paid';
+        $canPay = $order->status === 'pending' || $order->status === 'pending_payment' || $order->payment_status === 'pending';
+
+        if ($isPaid || ! $canPay) {
             return ['error' => 'Order already paid', 'code' => 422];
         }
 
@@ -39,7 +46,7 @@ class PaymentService
         }
 
         $appUrl = rtrim((string) config('app.url'), '/');
-        $returnUrl = $appUrl.'/api/payments/vnpay/return';
+        $returnUrl = $appUrl.'/api/v1/payments/vnpay/return';
 
         $amountVnd = (int) round((float) $order->total_amount);
         $startTime = Carbon::now('Asia/Ho_Chi_Minh');
@@ -119,7 +126,8 @@ class PaymentService
                     return;
                 }
 
-                $payment = $this->findOrCreatePayment($order, 'vnpay');
+                $order = $this->recalculateOrderTotal($order);
+        $payment = $this->findOrCreatePayment($order, 'vnpay');
 
                 // idempotent: if already paid, keep it.
                 if ($payment->status === 'paid' || $order->payment_status === 'paid') {
@@ -159,9 +167,16 @@ class PaymentService
      */
     public function createMomoPaymentUrl(Order $order, ?string $requestType): array
     {
+        $order = $this->recalculateOrderTotal($order);
         $payment = $this->findOrCreatePayment($order, 'momo');
 
-        if ($payment->status === 'paid' || $order->payment_status === 'paid') {
+        // Allow creating payment URL for:
+        // - pending orders (COD that hasn't been paid)
+        // - pending_payment orders (waiting for MoMo payment)
+        $isPaid = $payment->status === 'paid' || $order->payment_status === 'paid';
+        $canPay = $order->status === 'pending' || $order->status === 'pending_payment' || $order->payment_status === 'pending';
+
+        if ($isPaid || ! $canPay) {
             return ['error' => 'Order already paid', 'code' => 422];
         }
 
@@ -175,8 +190,8 @@ class PaymentService
         }
 
         $appUrl = rtrim((string) config('app.url'), '/');
-        $redirectUrl = $appUrl.'/api/payments/momo/return';
-        $ipnUrl = $appUrl.'/api/payments/momo/ipn';
+        $redirectUrl = $appUrl.'/api/v1/payments/momo/return';
+        $ipnUrl = $appUrl.'/api/v1/payments/momo/ipn';
 
         $amountVnd = (string) ((int) round((float) $order->total_amount));
         $orderId = $order->order_code.'__'.Str::uuid()->toString();
@@ -224,6 +239,7 @@ class PaymentService
 
         $resp = Http::timeout(10)->acceptJson()->asJson()->post($endpoint, $payload);
         if (! $resp->ok()) {
+            \Illuminate\Support\Facades\Log::error('MoMo Create Failed', ['status' => $resp->status(), 'body' => $resp->body(), 'payload' => $payload]);
             return ['error' => 'MoMo create payment failed', 'detail' => $resp->body(), 'code' => 502];
         }
 
@@ -235,7 +251,7 @@ class PaymentService
         $resultCode = isset($json['resultCode']) ? (string) $json['resultCode'] : null;
         if ($resultCode !== null && $resultCode !== '0') {
             $message = isset($json['message']) ? (string) $json['message'] : 'MoMo error';
-
+            \Illuminate\Support\Facades\Log::error('MoMo Error Result', ['resultCode' => $resultCode, 'message' => $message, 'detail' => $json]);
             return ['error' => $message, 'detail' => $json, 'code' => 502];
         }
 
@@ -324,7 +340,8 @@ class PaymentService
                     return;
                 }
 
-                $payment = $this->findOrCreatePayment($order, 'momo');
+                $order = $this->recalculateOrderTotal($order);
+        $payment = $this->findOrCreatePayment($order, 'momo');
 
                 if ($payment->status !== 'paid' && $order->payment_status !== 'paid') {
                     $this->settlePayment($payment, $order, $success, $transId !== '' ? $transId : null);
@@ -354,21 +371,50 @@ class PaymentService
 
     // ─── Shared Helpers ───────────────────────────────────────────────
 
+    private function recalculateOrderTotal(Order $order): Order
+    {
+        $order->load(["items"]);
+        $subtotal = 0;
+        foreach ($order->items as $item) {
+            $subtotal += (float)$item->unit_price * (int)$item->quantity;
+        }
+        $order->subtotal_amount = $subtotal;
+        $order->total_amount = max(0, $subtotal - ($order->discount_amount ?? 0) + ($order->shipping_fee ?? 0));
+        $order->save();
+        return $order;
+    }
+
+
     private function findOrCreatePayment(Order $order, string $method): Payment
     {
-        return Payment::query()->firstOrCreate(
-            ['order_id' => $order->id],
-            [
-                'method' => $method,
-                'amount' => $order->total_amount,
-                'currency' => $order->currency ?? 'VND',
-                'status' => 'pending',
-            ]
-        );
+        $payment = Payment::query()
+            ->where('order_id', $order->id)
+            ->where('method', $method)
+            ->first();
+
+        if ($payment) {
+            // Always sync amount from order to ensure correct total before payment
+            $payment->amount = $order->total_amount;
+            $payment->currency = $order->currency ?? 'VND';
+            $payment->save();
+
+            return $payment;
+        }
+
+        return Payment::query()->create([
+            'order_id' => $order->id,
+            'method' => $method,
+            'amount' => $order->total_amount,
+            'currency' => $order->currency ?? 'VND',
+            'status' => 'pending',
+        ]);
     }
 
     /**
      * Settle (mark paid/failed) and optionally send confirmation email.
+     * For orders with 'pending_payment' status:
+     * - On success: convert to 'pending' (visible to user)
+     * - On failure: delete the order
      */
     private function settlePayment(Payment $payment, Order $order, bool $success, ?string $transactionCode): void
     {
@@ -379,6 +425,12 @@ class PaymentService
             $payment->save();
 
             $order->payment_status = 'paid';
+
+            // Convert from 'pending_payment' to 'pending' (make visible to user)
+            if ($order->status === 'pending_payment') {
+                $order->status = 'pending';
+            }
+
             $order->save();
 
             $email = $order->user?->email ?? null;
@@ -398,6 +450,14 @@ class PaymentService
             $payment->status = 'failed';
             $payment->transaction_code = $transactionCode ?? $payment->transaction_code;
             $payment->save();
+
+            // For orders in 'pending_payment' status, delete them on failure
+            // (user never saw them, so no reason to keep failed records)
+            if ($order->status === 'pending_payment') {
+                $order->delete();
+
+                return;
+            }
 
             $order->payment_status = 'failed';
             $order->save();

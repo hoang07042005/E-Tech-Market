@@ -17,8 +17,22 @@ class PaymentsController extends Controller
 
     // ─── VNPAY ────────────────────────────────────────────────────────
 
-    public function createVnpay(Order $order, Request $request): JsonResponse
+    /**
+     * Create VNPAY payment URL.
+     * Accepts order_id in request body to support pending_payment orders.
+     */
+    public function createVnpay(Request $request): JsonResponse
     {
+        $data = $request->validate([
+            'order_id' => ['required', 'integer'],
+        ]);
+
+        $order = Order::query()->find($data['order_id']);
+        if (! $order) {
+            return response()->json(['message' => 'Order not found'], 404);
+        }
+
+        // Allow payment for pending_payment orders (not visible in regular list, but accessible here)
         $this->authorize('view', $order);
 
         $result = $this->paymentService->createVnpayPaymentUrl($order, $request->ip());
@@ -62,19 +76,40 @@ class PaymentsController extends Controller
 
     // ─── MOMO ─────────────────────────────────────────────────────────
 
-    public function createMomo(Order $order, Request $request): JsonResponse
+    /**
+     * Create MoMo payment URL.
+     * Accepts order_id in request body to support pending_payment orders.
+     */
+    public function createMomo(Request $request): JsonResponse
     {
-        $this->authorize('view', $order);
-
-        $validated = $request->validate([
+        $data = $request->validate([
+            'order_id' => ['required', 'integer'],
             'request_type' => ['nullable', 'string', 'max:50'],
         ]);
 
-        $result = $this->paymentService->createMomoPaymentUrl($order, $validated['request_type'] ?? null);
+        $order = Order::query()->find($data['order_id']);
+        if (! $order) {
+            return response()->json(['message' => 'Order not found'], 404);
+        }
+
+        // Allow payment for pending_payment orders (not visible in regular list, but accessible here)
+        $this->authorize('view', $order);
+
+        $result = $this->paymentService->createMomoPaymentUrl($order, $data['request_type'] ?? null);
 
         if (isset($result['error'])) {
+            // Extract detailed message from MoMo response for better UX
+            $detailMsg = $result['error'];
+            if (isset($result['detail']) && is_string($result['detail'])) {
+                $decoded = json_decode($result['detail'], true);
+                if (is_array($decoded) && isset($decoded['message'])) {
+                    $detailMsg = $decoded['message'];
+                }
+            } elseif (isset($result['detail']) && is_array($result['detail']) && isset($result['detail']['message'])) {
+                $detailMsg = $result['detail']['message'];
+            }
             return response()->json(
-                ['message' => $result['error'], 'detail' => $result['detail'] ?? null],
+                ['message' => $detailMsg, 'detail' => $result['detail'] ?? null],
                 $result['code']
             );
         }

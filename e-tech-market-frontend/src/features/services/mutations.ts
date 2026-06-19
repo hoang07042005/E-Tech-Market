@@ -69,7 +69,8 @@ export function useCartMutation() {
           product_id: item.product_id,
           variant_id: item.variant_id,
           quantity: quantity,
-          unit_price: item.price
+          unit_price: item.price,
+          from_flash_sale: item.from_flash_sale ?? false
         })
       })
     },

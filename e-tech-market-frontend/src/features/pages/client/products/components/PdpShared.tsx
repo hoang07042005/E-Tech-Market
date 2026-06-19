@@ -439,7 +439,8 @@ export function ratingLabel(rating: number) {
   return 'Chưa hài lòng'
 }
 
-export function timeAgoVi(iso: string) {
+export function timeAgoVi(iso: string | undefined | null) {
+  if (!iso) return 'gần đây'
   let t = Date.parse(iso)
   if (!isFinite(t)) {
     // common server formats: "YYYY-MM-DD HH:mm:ss"

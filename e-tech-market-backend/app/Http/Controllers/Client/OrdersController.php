@@ -170,7 +170,9 @@ class OrdersController extends Controller
 
     /**
      * Create order directly from frontend-provided items (localStorage cart).
-     * This avoids creating multiple orders by allowing the client to retry payment for the same order id.
+     * For COD: creates order immediately.
+     * For VnPay/MoMo: creates order with status 'pending_payment' (not visible to user until paid).
+     * Order becomes visible when payment callback succeeds.
      */
     public function storeFromItems(StoreOrderRequest $request, OrderService $orderService): JsonResponse
     {
@@ -182,7 +184,16 @@ class OrdersController extends Controller
             return response()->json(['message' => 'Phương thức thanh toán không hợp lệ'], 422);
         }
 
-        $order = $orderService->createOrder($user, $data, $data['items'], null);
+        // COD: create order immediately as before
+        if ($paymentMethod === 'cod') {
+            $order = $orderService->createOrder($user, $data, $data['items'], null);
+
+            return response()->json($order, 201);
+        }
+
+        // VnPay/MoMo: create order with 'pending_payment' status
+        // Order will be confirmed (status = 'pending') when payment succeeds
+        $order = $orderService->createOrderPendingPayment($user, $data, $data['items'], null);
 
         return response()->json($order, 201);
     }

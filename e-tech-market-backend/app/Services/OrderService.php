@@ -29,7 +29,21 @@ class OrderService
 {
     public function createOrder(?User $user, array $data, array $itemsInput, ?Cart $cart = null): Order
     {
-        return DB::transaction(function () use ($user, $data, $itemsInput, $cart) {
+        return $this->createOrderInternal($user, $data, $itemsInput, $cart, 'pending');
+    }
+
+    /**
+     * Create order for VnPay/MoMo - order is NOT visible until payment succeeds.
+     * Payment status starts as 'pending_payment', becomes 'paid' after callback.
+     */
+    public function createOrderPendingPayment(?User $user, array $data, array $itemsInput, ?Cart $cart = null): Order
+    {
+        return $this->createOrderInternal($user, $data, $itemsInput, $cart, 'pending_payment');
+    }
+
+    private function createOrderInternal(?User $user, array $data, array $itemsInput, ?Cart $cart = null, string $initialStatus = 'pending'): Order
+    {
+        return DB::transaction(function () use ($user, $data, $itemsInput, $cart, $initialStatus) {
             $subtotal = 0.0;
             $processedItems = [];
 
@@ -45,7 +59,10 @@ class OrderService
                 }
 
                 $variant = $this->findPurchasableVariant($product, $variantId);
-                $originalPrice = (float) $variant->effective_price;
+                // Use frontend price if provided, otherwise use variant price
+                $originalPrice = isset($it['unit_price']) && $it['unit_price'] > 0
+                    ? (float) $it['unit_price']
+                    : (float) $variant->effective_price;
                 $subtotal += ($originalPrice * $qty);
 
                 $processedItems[] = [
@@ -168,8 +185,8 @@ class OrderService
                 'coupon_id' => $coupon?->id,
                 'shipping_method_id' => $shippingMethodId,
                 'shipping_zone_id' => $shippingZoneId,
-                'status' => 'pending',
-                'payment_status' => 'pending',
+                'status' => $initialStatus,
+                'payment_status' => $initialStatus === 'pending_payment' ? 'pending_payment' : 'pending',
                 'currency' => 'VND',
                 'subtotal_amount' => $subtotal,
                 'discount_amount' => $discount,
@@ -247,6 +264,7 @@ class OrderService
     {
         return Order::query()
             ->where('user_id', $user->id)
+            ->where('status', '!=', 'pending_payment') // Exclude orders waiting for payment
             ->orderBy('created_at', 'desc')
             ->with(['items.product', 'payment'])
             ->paginate($perPage);

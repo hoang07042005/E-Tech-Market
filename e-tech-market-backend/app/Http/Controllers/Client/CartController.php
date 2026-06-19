@@ -30,7 +30,13 @@ class CartController extends Controller
             'variant_id' => ['nullable', 'integer', 'min:1'],
             'quantity' => ['required', 'integer', 'min:1'],
             'unit_price' => ['nullable', 'numeric', 'min:0'],
+            'from_flash_sale' => ['nullable', 'boolean'],
         ]);
+
+        // Default to false if not provided
+        if (!isset($data['from_flash_sale'])) {
+            $data['from_flash_sale'] = false;
+        }
 
         try {
             $cart = $this->cartService->addItem($request->user(), $data);

@@ -29,6 +29,7 @@ class StoreOrderRequest extends FormRequest
             'items.*.product_id' => ['required_with:items', 'integer', 'min:1'],
             'items.*.variant_id' => ['nullable', 'integer', 'min:1'],
             'items.*.quantity' => ['required_with:items', 'integer', 'min:1'],
+            'items.*.unit_price' => ['nullable', 'numeric', 'min:0'],
         ];
     }
 }

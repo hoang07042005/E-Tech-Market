@@ -437,10 +437,10 @@ export default function CheckoutPage() {
       }
 
       // Create payment link & redirect to gateway
-      const pay = await apiFetch<{ pay_url: string }>(`/payments/${form.payment_method}/${order_id}/create`, {
+      const pay = await apiFetch<{ pay_url: string }>(`/payments/${form.payment_method}/create`, {
         method: 'POST',
         // MoMo will show "choose payment method" screen by default
-        body: form.payment_method === 'momo' ? JSON.stringify({ request_type: 'payWithMethod' }) : undefined,
+        body: JSON.stringify({ order_id: order_id }),
       })
       window.location.href = pay.pay_url
     } catch (err: unknown) {

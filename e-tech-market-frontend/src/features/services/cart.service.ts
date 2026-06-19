@@ -10,6 +10,7 @@ export type CartItem = {
   variant_id: number | null
   variant_label: string | null
   quantity: number
+  from_flash_sale?: boolean
 }
 
 export type CartState = {

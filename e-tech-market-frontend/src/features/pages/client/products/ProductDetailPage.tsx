@@ -634,6 +634,7 @@ export default function ProductDetailPage() {
                         variant_id: v?.id ?? null,
                         variant_label: v ? [variantColorLabel(v), variantStorageLabel(v)].filter(Boolean).join(' · ') : null,
                         quantity: 1,
+                        from_flash_sale: isFlashSaleMode,
                       },
                       qty
                     })
@@ -829,6 +830,7 @@ export default function ProductDetailPage() {
                         variant_id: v?.id ?? null,
                         variant_label: variantLabel,
                         quantity: 1,
+                        from_flash_sale: isFlashSaleMode,
                       },
                       qty
                     })

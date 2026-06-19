@@ -14,7 +14,19 @@
       "Bash(docker exec -i e-tech-market-backend-1 php /var/www/artisan tinker --execute=\"echo App\\\\Models\\\\User::where\\(''email'',''admin@etech.com''\\)->first\\(\\) ? ''Found'' : ''Not found''\")",
       "Bash(docker exec e-tech-market-backend-1 php /var/www/artisan tinker --execute=\"echo App\\\\Models\\\\User::where\\(''email'',''admin@etech.com''\\)->first\\(\\) ? ''Found'' : ''Not found''\")",
       "Bash(docker exec e-tech-market-backend-1 sh -c 'php /var/www/artisan tinker --execute=\"\"echo App\\\\\\\\\\\\Models\\\\\\\\\\\\User::where\\(\\\\\"\"email\\\\\"\",\\\\\"\"admin@etech.com\\\\\"\"\\)->first\\(\\) ? \\\\\"\"Found\\\\\"\" : \\\\\"\"Not found\\\\\"\"\"\"')",
-      "Bash(npm run build)"
+      "Bash(npm run build)",
+      "Bash(php -l app/Services/OrderService.php)",
+      "Bash(php -l app/Services/PaymentService.php)",
+      "Bash(php -l app/Http/Controllers/Client/OrdersController.php)",
+      "Bash(docker compose ps --format \"{{.Name}}\")",
+      "Bash(docker compose restart e-tech-market-backend-1)",
+      "Bash(docker compose restart backend)",
+      "Bash(docker compose ps backend --format \"{{.Status}}\")",
+      "Bash(php -l app/Services/CartService.php)",
+      "Bash(docker compose -f d:/E-Tech-Market/docker-compose.yml restart backend)",
+      "Bash(docker exec -i e-tech-market-db-1 psql -U postgres -d etechmarket -c \"ALTER TABLE orders DROP CONSTRAINT orders_payment_status_check; ALTER TABLE orders ADD CONSTRAINT orders_payment_status_check CHECK \\(payment_status::text = ANY \\(ARRAY[''pending''::text, ''pending_payment''::text, ''paid''::text, ''failed''::text, ''refunded''::text, ''cancelled''::text]\\)\\);\")",
+      "Bash(docker exec -i e-tech-market-db-1 psql -U postgres -d etech -c \"ALTER TABLE orders DROP CONSTRAINT orders_payment_status_check; ALTER TABLE orders ADD CONSTRAINT orders_payment_status_check CHECK \\(payment_status::text = ANY \\(ARRAY[''pending''::text, ''pending_payment''::text, ''paid''::text, ''failed''::text, ''refunded''::text, ''cancelled''::text]\\)\\);\")",
+      "Bash(docker exec -i e-tech-market-db-1 psql -U postgres -d etech -c \"ALTER TABLE orders DROP CONSTRAINT orders_status_check; ALTER TABLE orders ADD CONSTRAINT orders_status_check CHECK \\(status::text = ANY \\(ARRAY[''pending''::text, ''pending_payment''::text, ''paid''::text, ''processing''::text, ''shipped''::text, ''delivered''::text, ''completed''::text, ''cancelled''::text, ''returned''::text]\\)\\);\")"
     ]
   }
 }

@@ -74,16 +74,34 @@ class CartService
                 $cartItem->save();
             } else {
                 $unitPrice = null;
+                $fromFlashSale = !empty($data['from_flash_sale']);
+
                 if (! empty($data['unit_price']) && $data['unit_price'] > 0) {
+                    // Explicit price provided (e.g., from product detail)
                     $unitPrice = (float) $data['unit_price'];
-                } else {
-                    $activeFlashSaleItem = $product->flashSaleItems()->whereHas('flashSale', function ($q) {
+                } elseif ($fromFlashSale) {
+                    // Only apply Flash Sale when explicitly from flash sale page
+                    $flashSaleItem = $product->flashSaleItems()->whereHas('flashSale', function ($q) {
                         $q->where('status', \App\Models\FlashSale::STATUS_ACTIVE)
                             ->where('start_at', '<=', now())
                             ->where('end_at', '>=', now());
                     })->first();
 
-                    $unitPrice = $activeFlashSaleItem ? $activeFlashSaleItem->flash_sale_price : $variant->effective_price;
+                    // Check flash sale quantity limit before adding to cart
+                    if ($flashSaleItem && $flashSaleItem->quantity_limit !== null) {
+                        $availableQty = $flashSaleItem->quantity_limit - $flashSaleItem->sold_quantity;
+                        if ($availableQty <= 0) {
+                            throw new \Exception("Sản phẩm {$product->name} đã hết suất Flash Sale.", 422);
+                        }
+                        if ((int) $data['quantity'] > $availableQty) {
+                            throw new \Exception("Sản phẩm {$product->name} chỉ còn {$availableQty} suất Flash Sale.", 422);
+                        }
+                    }
+
+                    $unitPrice = $flashSaleItem ? $flashSaleItem->flash_sale_price : $variant->effective_price;
+                } else {
+                    // Normal add - use price from product, no flash sale
+                    $unitPrice = $variant->effective_price;
                 }
 
                 CartItem::create([
