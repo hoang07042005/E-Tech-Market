@@ -40,6 +40,7 @@ import 'cart/cart_screen.dart';
 import 'search/search_screen.dart';
 import 'home_sections/flash_sale_section.dart';
 import 'products/flash_sale_product_screen.dart';
+import 'chatbot/chatbot_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -871,6 +872,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ? const Center(child: CircularProgressIndicator())
             : _buildPageBody(),
       ),
+      floatingActionButton: _buildChatbotFAB(),
       bottomNavigationBar:  BottomNavigationBar(
         currentIndex: _selectedIndex,
         onTap: _onTabSelected,
@@ -888,6 +890,68 @@ class _HomeScreenState extends State<HomeScreen> {
               icon: Icon(Icons.receipt_long_outlined), label: Trans.orders),
           BottomNavigationBarItem(
               icon: Icon(Icons.person_outlined), label: Trans.account),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildChatbotFAB() {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 20, right: 8),
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          // Pulse animation using TweenAnimationBuilder
+          TweenAnimationBuilder<double>(
+            tween: Tween(begin: 1.0, end: 1.5),
+            duration: const Duration(milliseconds: 1500),
+            builder: (context, value, child) {
+              return Transform.scale(
+                scale: value,
+                child: Container(
+                  width: 56,
+                  height: 56,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: const Color(0xFFF26522).withValues(alpha: 1.5 - value),
+                  ),
+                ),
+              );
+            },
+            onEnd: () {
+              // Note: to loop this we would need an AnimationController, 
+              // but TweenAnimationBuilder works for a simple entry pulse.
+            },
+          ),
+          FloatingActionButton(
+            heroTag: 'chatbot_fab',
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const ChatbotScreen()),
+              );
+            },
+            backgroundColor: Colors.transparent,
+            elevation: 8,
+            shape: const CircleBorder(),
+            child: Container(
+              width: 56,
+              height: 56,
+              decoration: const BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: LinearGradient(
+                  colors: [Color(0xFFF26522), Color(0xFFFF8A50)],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+              ),
+              child: const Icon(
+                Icons.smart_toy_rounded,
+                color: Colors.white,
+                size: 28,
+              ),
+            ),
+          ),
         ],
       ),
     );

@@ -34,6 +34,7 @@ use App\Http\Controllers\Client\ProductShopQnaController as ClientProductShopQna
 use App\Http\Controllers\Client\ReviewsController;
 use App\Http\Controllers\Client\SseController;
 use App\Http\Controllers\Client\StoreProfileController;
+use App\Http\Controllers\Client\ChatbotController;
 use App\Http\Controllers\Client\WishlistController;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redis;
@@ -142,6 +143,9 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('/wishlist', [WishlistController::class, 'index']);
     Route::post('/wishlist/toggle', [WishlistController::class, 'toggle']);
+
+    // Chatbot
+    Route::post('/chatbot/message', [ChatbotController::class, 'message'])->middleware('throttle:30,1');
 
     Route::get('/notifications', [ClientNotificationsController::class, 'index']);
     Route::patch('/notifications/{notification}/read', [ClientNotificationsController::class, 'markRead']);
