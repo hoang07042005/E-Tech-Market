@@ -55,11 +55,15 @@ PROMPT;
             'history' => 'sometimes|array|max:20',
             'history.*.role' => 'required_with:history|string|in:user,model',
             'history.*.text' => 'required_with:history|string|max:2000',
+            'phone_number' => 'nullable|string|max:20',
+            'product_id' => 'nullable|integer|exists:products,id',
         ]);
 
         $userMessage = trim($request->input('message'));
         $history = $request->input('history', []);
         $user = $request->user();
+        $phoneNumber = $request->input('phone_number');
+        $productId = $request->input('product_id');
 
         // Detect intent
         $intent = $this->detectIntent($userMessage);
@@ -71,11 +75,13 @@ PROMPT;
 
         switch ($intent) {
             case 'order_tracking':
-                $result = $this->handleOrderTracking($userMessage, $user);
+                $result = $this->handleOrderTracking($userMessage, $user, $phoneNumber);
                 $order = $result['order'];
                 $context = $result['context'];
                 break;
 
+            case 'stock_check':
+            case 'price_query':
             case 'product_consultation':
             case 'product_comparison':
                 $result = $this->handleProductQuery($userMessage, $intent);
@@ -127,6 +133,21 @@ PROMPT;
                 break;
         }
 
+        // Product enrichment if viewing a product
+        if ($productId) {
+            $viewingProduct = Product::with(['variants', 'faqs', 'reviews' => function($q) {
+                $q->latest()->limit(3);
+            }])->find($productId);
+
+            if ($viewingProduct) {
+                $context .= "\n\nSẢN PHẨM KHÁCH HÀNG ĐANG XEM TRÊN MÀN HÌNH:\n";
+                $context .= "- Tên: {$viewingProduct->name}\n";
+                $context .= "- FAQ: " . $viewingProduct->faqs->map(fn($f) => "Q: {$f->question} - A: {$f->answer}")->join("\n  ") . "\n";
+                $context .= "- Đánh giá gần đây: " . $viewingProduct->reviews->map(fn($r) => "{$r->rating} sao: {$r->comment}")->join("\n  ") . "\n";
+                $context .= "- Tồn kho: " . $viewingProduct->variants->sum('stock_quantity') . "\n";
+            }
+        }
+
         // Get AI response
         $reply = $this->gemini->chat($userMessage, self::SYSTEM_PROMPT, $context, $history);
 
@@ -174,122 +195,23 @@ PROMPT;
      */
     private function detectIntent(string $message): string
     {
-        $message = mb_strtolower($message);
-
-        // Order tracking patterns
-        $orderPatterns = [
-            'đơn hàng', 'mã đơn', 'order', 'tracking', 'giao hàng',
-            'bao giờ giao', 'trạng thái đơn', 'đơn #', 'đơn số',
-            'kiểm tra đơn', 'tra cứu đơn', 'đơn của tôi', 'đơn của mình',
-            'et-', '#et',
-        ];
-
-        foreach ($orderPatterns as $pattern) {
-            if (str_contains($message, $pattern)) {
-                return 'order_tracking';
-            }
+        $prompt = "Classify into: [order_tracking, product_consultation, product_comparison, warranty_policy, coupon_discount, flashsale, top_rated, discounted_products, latest_news, stock_check, price_query, general]. Only return the intent name.";
+        $intent = $this->gemini->chat($message, $prompt, '', []);
+        $intent = trim(strtolower($intent));
+        
+        $validIntents = ['order_tracking', 'product_consultation', 'product_comparison', 'warranty_policy', 'coupon_discount', 'flashsale', 'top_rated', 'discounted_products', 'latest_news', 'stock_check', 'price_query', 'general'];
+        
+        if (in_array($intent, $validIntents)) {
+            return $intent;
         }
-
-        // Latest news patterns
-        $newsPatterns = [
-            'tin tức', 'news', 'bài viết', 'blog', 'cập nhật', 'review mới',
-        ];
-        foreach ($newsPatterns as $pattern) {
-            if (str_contains($message, $pattern)) {
-                return 'latest_news';
-            }
-        }
-
-        // Flashsale patterns
-        $flashsalePatterns = [
-            'flashsale', 'flash sale', 'giờ vàng', 'săn sale', 'chớp nhoáng',
-        ];
-        foreach ($flashsalePatterns as $pattern) {
-            if (str_contains($message, $pattern)) {
-                return 'flashsale';
-            }
-        }
-
-        // Top rated patterns
-        $topRatedPatterns = [
-            'đánh giá cao', 'tốt nhất', 'được yêu thích', 'bán chạy', 'top',
-        ];
-        foreach ($topRatedPatterns as $pattern) {
-            if (str_contains($message, $pattern)) {
-                return 'top_rated';
-            }
-        }
-
-        // Discounted products patterns
-        $discountedPatterns = [
-            'sản phẩm đang giảm giá', 'sản phẩm giảm giá', 'sản phẩm sale', 'đang sale', 'máy sale', 'giảm sốc',
-            'đang được giảm', 'nào giảm giá', 'nào đang giảm', 'nào sale'
-        ];
-        foreach ($discountedPatterns as $pattern) {
-            if (str_contains($message, $pattern)) {
-                return 'discounted_products';
-            }
-        }
-
-        // Product comparison patterns
-        $comparisonPatterns = [
-            'so sánh', 'compare', 'vs', ' hay ', 'nên mua',
-            'nên chọn', 'cái nào tốt hơn', 'khác nhau',
-        ];
-
-        foreach ($comparisonPatterns as $pattern) {
-            if (str_contains($message, $pattern)) {
-                return 'product_comparison';
-            }
-        }
-
-        // Warranty/policy patterns
-        $warrantyPatterns = [
-            'bảo hành', 'đổi trả', 'hoàn tiền', 'warranty', 'chính sách',
-            'return', 'refund', 'trả hàng',
-        ];
-
-        foreach ($warrantyPatterns as $pattern) {
-            if (str_contains($message, $pattern)) {
-                return 'warranty_policy';
-            }
-        }
-
-        // Coupon patterns (specific to discount codes, NOT product discounts)
-        $couponPatterns = [
-            'khuyến mãi', 'voucher', 'coupon', 'mã giảm', 'ưu đãi', 'mã giảm giá',
-            'chương trình giảm giá', 'có mã', 'code giảm',
-        ];
-
-        foreach ($couponPatterns as $pattern) {
-            if (str_contains($message, $pattern)) {
-                return 'coupon_discount';
-            }
-        }
-
-        // Product consultation patterns
-        $productPatterns = [
-            'laptop', 'điện thoại', 'phone', 'iphone', 'samsung', 'macbook',
-            'máy tính', 'pc', 'màn hình', 'tai nghe', 'chuột', 'bàn phím',
-            'tầm', 'triệu', 'budget', 'gợi ý', 'tư vấn', 'recommend',
-            'mua gì', 'sản phẩm', 'cấu hình', 'ram', 'chip', 'cpu',
-            'gpu', 'gaming', 'đồ họa', 'văn phòng', 'học tập',
-            'máy in', 'printer', 'camera', 'loa', 'speaker',
-        ];
-
-        foreach ($productPatterns as $pattern) {
-            if (str_contains($message, $pattern)) {
-                return 'product_consultation';
-            }
-        }
-
+        
         return 'general';
     }
 
     /**
      * Handle order tracking intent.
      */
-    private function handleOrderTracking(string $message, $user): array
+    private function handleOrderTracking(string $message, $user, ?string $phoneNumber = null): array
     {
         // Try to extract order code from message
         $orderCode = null;
@@ -300,16 +222,21 @@ PROMPT;
         $order = null;
         $context = '';
 
-        if ($orderCode && $user) {
-            // Search by order code
-            $order = Order::where('user_id', $user->id)
+        if ($orderCode) {
+            $query = Order::with(['items.product:id,name,slug,main_image_url', 'shippingMethod:id,name'])
                 ->where(function ($q) use ($orderCode) {
                     $q->where('order_code', $orderCode)
                       ->orWhere('order_code', 'LIKE', "%{$orderCode}%")
                       ->orWhere('id', is_numeric($orderCode) ? (int)$orderCode : 0);
-                })
-                ->with(['items.product:id,name,slug,main_image_url', 'shippingMethod:id,name'])
-                ->first();
+                });
+            
+            if ($user) {
+                $query->where('user_id', $user->id);
+                $order = $query->first();
+            } elseif ($phoneNumber) {
+                $query->where('shipping_phone', $phoneNumber);
+                $order = $query->first();
+            }
         }
 
         if ($order) {
@@ -388,7 +315,7 @@ PROMPT;
         }
 
         // Build product query
-        $query = Product::with(['variants:id,product_id,variant_name,price,discount_type,discount_value,discount_start_at,discount_end_at', 'specs', 'category:id,name'])
+        $query = Product::with(['variants:id,product_id,variant_name,price,discount_type,discount_value,discount_start_at,discount_end_at,stock_quantity', 'specs', 'category:id,name'])
             ->where('is_active', true);
 
         // Category detection
@@ -443,11 +370,8 @@ PROMPT;
             $keywords = $matches[0] ?? [];
 
             if (!empty($keywords)) {
-                $query->where(function ($q) use ($keywords) {
-                    foreach ($keywords as $word) {
-                        $q->orWhere('name', 'ILIKE', "%{$word}%");
-                    }
-                });
+                $searchPhrase = implode(' ', $keywords);
+                $query->whereRaw("to_tsvector('simple', name) @@ plainto_tsquery('simple', ?)", [$searchPhrase]);
             }
         }
 
@@ -508,9 +432,16 @@ PROMPT;
                 }
 
                 // Variants info
-                $variantNames = $product->variants->pluck('variant_name')->filter()->take(3)->toArray();
-                if (!empty($variantNames)) {
-                    $context .= "   - Phiên bản: " . implode(', ', $variantNames) . "\n";
+                $variantsInfo = [];
+                foreach ($product->variants->take(3) as $v) {
+                    $vInfo = $v->variant_name;
+                    if (in_array($intent, ['stock_check', 'price_query'])) {
+                         $vInfo .= " (Giá: " . number_format($v->effective_price) . "đ, Tồn kho: " . $v->stock_quantity . ")";
+                    }
+                    $variantsInfo[] = $vInfo;
+                }
+                if (!empty($variantsInfo)) {
+                    $context .= "   - Phiên bản: " . implode(' | ', $variantsInfo) . "\n";
                 }
 
                 $context .= "\n";
@@ -588,7 +519,10 @@ CTX;
             ->limit(5)
             ->get();
 
-        $products = $flashSaleItems->map(fn($item) => $item->product)->filter();
+        $products = $flashSaleItems
+            ->map(fn($item) => $item->product)
+            ->filter()
+            ->values();
 
         $context = "Chương trình Flash Sale đang diễn ra:\n";
         $context .= "- Tên chương trình: {$activeFlashSale->name}\n";
@@ -604,7 +538,7 @@ CTX;
             }
         }
 
-        return ['products' => [], 'context' => $context];
+        return ['products' => $products->all(), 'context' => $context];
     }
 
     /**
