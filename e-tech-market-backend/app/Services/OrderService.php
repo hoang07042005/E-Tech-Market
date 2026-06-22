@@ -570,7 +570,7 @@ class OrderService
     {
         // Retry up to 5 times to guarantee uniqueness under high concurrency.
         for ($attempt = 0; $attempt < 5; $attempt++) {
-            $code = 'ET-'.strtoupper(bin2hex(random_bytes(4))).'-'.now()->format('ymd');
+            $code = 'ET-'.strtoupper(bin2hex(random_bytes(4))).now()->format('ymd');
             if (! Order::query()->where('order_code', $code)->exists()) {
                 return $code;
             }
