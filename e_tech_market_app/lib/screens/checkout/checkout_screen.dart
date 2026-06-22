@@ -74,14 +74,15 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       if (user != null) {
         _nameCtrl.text = user['name']?.toString() ?? '';
         _phoneCtrl.text = user['phone']?.toString() ?? '';
-        
+
         final base = (user['address_line']?.toString() ?? '').trim();
         final ward = (user['ward']?.toString() ?? '').trim();
         final district = (user['district']?.toString() ?? '').trim();
         final province = (user['province']?.toString() ?? '').trim();
-        
-        final parts = [ward, district, province].where((p) => p.isNotEmpty).toList();
-        
+
+        final parts =
+            [ward, district, province].where((p) => p.isNotEmpty).toList();
+
         if (base.isEmpty && parts.isEmpty) {
           _addressCtrl.text = '';
         } else if (base.isEmpty) {
@@ -118,15 +119,22 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
         }
 
         if (_selectedShipMethodId == null && _shippingMethods.isNotEmpty) {
-          _selectedShipMethodId = _shippingMethods.firstWhere((m) => m.isActive, orElse: () => _shippingMethods.first).id;
+          _selectedShipMethodId = _shippingMethods
+              .firstWhere((m) => m.isActive,
+                  orElse: () => _shippingMethods.first)
+              .id;
         }
         if (_selectedShipZoneId == null && _shippingZones.isNotEmpty) {
-          _selectedShipZoneId = _shippingZones.firstWhere((z) => z.isActive, orElse: () => _shippingZones.first).id;
+          _selectedShipZoneId = _shippingZones
+              .firstWhere((z) => z.isActive, orElse: () => _shippingZones.first)
+              .id;
         }
 
         if (!_payAvail.isAvailable(_selectedPayment)) {
-          if (_payAvail.cod) _selectedPayment = 'cod';
-          else if (_payAvail.vnpay) _selectedPayment = 'vnpay';
+          if (_payAvail.cod)
+            _selectedPayment = 'cod';
+          else if (_payAvail.vnpay)
+            _selectedPayment = 'vnpay';
           else if (_payAvail.momo) _selectedPayment = 'momo';
         }
 
@@ -152,10 +160,12 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
 
   double get _shippingFee {
     if (_isFreeShipping) return 0;
-    final method = _shippingMethods.cast<ShippingMethod?>().firstWhere(
-        (m) => m?.id == _selectedShipMethodId, orElse: () => null);
-    final zone = _shippingZones.cast<ShippingZone?>().firstWhere(
-        (z) => z?.id == _selectedShipZoneId, orElse: () => null);
+    final method = _shippingMethods
+        .cast<ShippingMethod?>()
+        .firstWhere((m) => m?.id == _selectedShipMethodId, orElse: () => null);
+    final zone = _shippingZones
+        .cast<ShippingZone?>()
+        .firstWhere((z) => z?.id == _selectedShipZoneId, orElse: () => null);
     return (method?.baseFee ?? 0) + (zone?.fee ?? 0);
   }
 
@@ -223,11 +233,13 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     });
 
     try {
-      final items = _cart.items.map((i) => {
-            'product_id': i.productId,
-            'variant_id': i.variantId,
-            'quantity': i.quantity,
-          }).toList();
+      final items = _cart.items
+          .map((i) => {
+                'product_id': i.productId,
+                'variant_id': i.variantId,
+                'quantity': i.quantity,
+              })
+          .toList();
 
       final orderRes = await CheckoutService.createOrder(
         shippingName: _nameCtrl.text.trim(),
@@ -301,14 +313,17 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
             String fixedUrl = resultUrl;
             final baseUri = Uri.parse(ApiConfig.apiBaseUrl);
             final uri = Uri.parse(resultUrl);
-            
+
             // Chỉ replace phần origin (scheme + authority)
-            if (uri.host == 'localhost' || uri.host == '127.0.0.1' || uri.host.startsWith('192.168.') || uri.host.startsWith('10.')) {
+            if (uri.host == 'localhost' ||
+                uri.host == '127.0.0.1' ||
+                uri.host.startsWith('192.168.') ||
+                uri.host.startsWith('10.')) {
               final origin = '${uri.scheme}://${uri.authority}';
               final targetOrigin = '${baseUri.scheme}://${baseUri.authority}';
               fixedUrl = resultUrl.replaceFirst(origin, targetOrigin);
             }
-            
+
             // Gửi GET request để kích hoạt callback cập nhật DB
             await DioClient.instance.get(fixedUrl);
           } catch (e) {
@@ -341,16 +356,20 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
             context: context,
             barrierDismissible: false,
             builder: (ctx) => AlertDialog(
-              title: Text(Trans.closePaymentTitle, style: TextStyle(fontWeight: FontWeight.bold)),
+              title: Text(Trans.closePaymentTitle,
+                  style: TextStyle(fontWeight: FontWeight.bold)),
               content: Text(Trans.closePaymentMessage),
               actions: [
                 TextButton(
                   onPressed: () => Navigator.pop(ctx, false),
-                  child: Text(Trans.cancelOrderButton, style: TextStyle(color: Colors.red)),
+                  child: Text(Trans.cancelOrderButton,
+                      style: TextStyle(color: Colors.red)),
                 ),
                 ElevatedButton(
                   onPressed: () => Navigator.pop(ctx, true),
-                  style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFF26522), foregroundColor: Colors.white),
+                  style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFFF26522),
+                      foregroundColor: Colors.white),
                   child: Text(Trans.paidButton),
                 ),
               ],
@@ -398,7 +417,9 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(Trans.selectCoupon, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+                    Text(Trans.selectCoupon,
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 18)),
                     IconButton(
                       icon: const Icon(Icons.close),
                       onPressed: () => Navigator.pop(ctx),
@@ -419,7 +440,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                     }
                     final vouchers = snap.data as List<dynamic>? ?? [];
                     if (vouchers.isEmpty) {
-                      return const Center(child: Text('Bạn chưa có mã giảm giá nào.'));
+                      return const Center(
+                          child: Text('Bạn chưa có mã giảm giá nào.'));
                     }
                     return ListView.builder(
                       padding: const EdgeInsets.all(16),
@@ -430,10 +452,15 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                         final type = v['coupon_type'];
                         final val = v['value'];
                         final min = v['min_order_amount'];
-                        final endAt = v['end_at']?.toString().split('T').first ?? '';
+                        final endAt =
+                            v['end_at']?.toString().split('T').first ?? '';
 
-                        final valStr = type == 'percentage' ? 'Giảm $val%' : 'Giảm ${_formatCurrency(_toDouble(val))}';
-                        final minStr = min != null ? 'Đơn tối thiểu: ${_formatCurrency(_toDouble(min))}' : '';
+                        final valStr = type == 'percentage'
+                            ? 'Giảm $val%'
+                            : 'Giảm ${_formatCurrency(_toDouble(val))}';
+                        final minStr = min != null
+                            ? 'Đơn tối thiểu: ${_formatCurrency(_toDouble(min))}'
+                            : '';
 
                         return Container(
                           margin: const EdgeInsets.only(bottom: 12),
@@ -442,7 +469,10 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                             borderRadius: BorderRadius.circular(8),
                             border: Border.all(color: Colors.grey.shade200),
                             boxShadow: [
-                              BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 4, offset: const Offset(0, 2)),
+                              BoxShadow(
+                                  color: Colors.black.withOpacity(0.05),
+                                  blurRadius: 4,
+                                  offset: const Offset(0, 2)),
                             ],
                           ),
                           child: InkWell(
@@ -458,29 +488,48 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                                   height: 80,
                                   decoration: const BoxDecoration(
                                     color: Color(0xFFF26522),
-                                    borderRadius: BorderRadius.only(topLeft: Radius.circular(8), bottomLeft: Radius.circular(8)),
+                                    borderRadius: BorderRadius.only(
+                                        topLeft: Radius.circular(8),
+                                        bottomLeft: Radius.circular(8)),
                                   ),
-                                  child: const Icon(Icons.local_activity, color: Colors.white, size: 32),
+                                  child: const Icon(Icons.local_activity,
+                                      color: Colors.white, size: 32),
                                 ),
                                 Expanded(
                                   child: Padding(
                                     padding: const EdgeInsets.all(12),
                                     child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
-                                        Text(valStr, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                                        Text(valStr,
+                                            style: const TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 16)),
                                         if (minStr.isNotEmpty)
                                           Padding(
-                                            padding: const EdgeInsets.only(top: 4),
-                                            child: Text(minStr, style: const TextStyle(color: Colors.grey, fontSize: 13)),
+                                            padding:
+                                                const EdgeInsets.only(top: 4),
+                                            child: Text(minStr,
+                                                style: const TextStyle(
+                                                    color: Colors.grey,
+                                                    fontSize: 13)),
                                           ),
                                         const SizedBox(height: 4),
                                         Row(
-                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
                                           children: [
-                                            Text(code, style: const TextStyle(color: Color(0xFFF26522), fontWeight: FontWeight.bold)),
+                                            Text(code,
+                                                style: const TextStyle(
+                                                    color: Color(0xFFF26522),
+                                                    fontWeight:
+                                                        FontWeight.bold)),
                                             if (endAt.isNotEmpty)
-                                              Text('HSD: $endAt', style: const TextStyle(color: Colors.red, fontSize: 12)),
+                                              Text('HSD: $endAt',
+                                                  style: const TextStyle(
+                                                      color: Colors.red,
+                                                      fontSize: 12)),
                                           ],
                                         ),
                                       ],
@@ -521,7 +570,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Thanh toán', style: TextStyle(fontWeight: FontWeight.bold)),
+        title: const Text('Thanh toán',
+            style: TextStyle(fontWeight: FontWeight.bold)),
         backgroundColor: Theme.of(context).colorScheme.surface,
         foregroundColor: Theme.of(context).colorScheme.onSurface,
         elevation: 0,
@@ -533,9 +583,12 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
           children: [
             _buildSectionTitle(Trans.shippingInfo),
             _buildTextField(Trans.fullName, _nameCtrl),
-            _buildTextField(Trans.phone, _phoneCtrl, keyboardType: TextInputType.phone),
-            _buildTextField(Trans.address, _addressCtrl, hintText: Trans.addressHint),
-            _buildTextField(Trans.orderNote, _notesCtrl, maxLines: 3, hintText: Trans.noteHint),
+            _buildTextField(Trans.phone, _phoneCtrl,
+                keyboardType: TextInputType.phone),
+            _buildTextField(Trans.address, _addressCtrl,
+                hintText: Trans.addressHint),
+            _buildTextField(Trans.orderNote, _notesCtrl,
+                maxLines: 3, hintText: Trans.noteHint),
             const SizedBox(height: 16),
             _buildShippingMethod(),
             const SizedBox(height: 24),
@@ -543,7 +596,10 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
             _buildPaymentMethods(),
             const SizedBox(height: 24),
             const SizedBox(height: 8),
-            Text('${Trans.orderSummaryLabel} (${_cart.totalQuantity} ${Trans.productsCount})', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+            Text(
+                '${Trans.orderSummaryLabel} (${_cart.totalQuantity} ${Trans.productsCount})',
+                style:
+                    const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
             const SizedBox(height: 16),
             _buildOrderSummary(),
             const SizedBox(height: 20),
@@ -555,7 +611,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                   height: 24,
                   child: Checkbox(
                     value: _acceptedPolicy,
-                    onChanged: (v) => setState(() => _acceptedPolicy = v ?? false),
+                    onChanged: (v) =>
+                        setState(() => _acceptedPolicy = v ?? false),
                     activeColor: const Color(0xFFF26522),
                     materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                   ),
@@ -563,12 +620,13 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                 const SizedBox(width: 8),
                 Expanded(
                   child: GestureDetector(
-                    onTap: () => setState(() => _acceptedPolicy = !_acceptedPolicy),
+                    onTap: () =>
+                        setState(() => _acceptedPolicy = !_acceptedPolicy),
                     child: RichText(
                       text: TextSpan(
                         style: TextStyle(
-                          fontSize: 13, 
-                          color: Theme.of(context).colorScheme.onSurface, 
+                          fontSize: 13,
+                          color: Theme.of(context).colorScheme.onSurface,
                           height: 1.4,
                         ),
                         children: [
@@ -588,7 +646,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (_) => const PaymentSecurityPolicyScreen(),
+                                    builder: (_) =>
+                                        const PaymentSecurityPolicyScreen(),
                                   ),
                                 );
                               },
@@ -606,19 +665,25 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
               width: double.infinity,
               height: 50,
               child: ElevatedButton(
-                onPressed: _isSubmitting || _cart.items.isEmpty || !_acceptedPolicy ? null : _submitOrder,
+                onPressed:
+                    _isSubmitting || _cart.items.isEmpty || !_acceptedPolicy
+                        ? null
+                        : _submitOrder,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Theme.of(context).colorScheme.error,
                   foregroundColor: Theme.of(context).colorScheme.onError,
-                  disabledBackgroundColor: Theme.of(context).colorScheme.surface,
+                  disabledBackgroundColor:
+                      Theme.of(context).colorScheme.surface,
                   side: BorderSide(
                     color: Theme.of(context).colorScheme.error,
                     width: 1,
                   ),
                 ),
                 child: _isSubmitting
-                    ? CircularProgressIndicator(color: Theme.of(context).colorScheme.error)
-                    : Text(Trans.confirmOrder, style: TextStyle(fontWeight: FontWeight.bold)),
+                    ? CircularProgressIndicator(
+                        color: Theme.of(context).colorScheme.error)
+                    : Text(Trans.confirmOrder,
+                        style: TextStyle(fontWeight: FontWeight.bold)),
               ),
             ),
           ],
@@ -634,19 +699,26 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
         children: [
           Container(width: 4, height: 16, color: const Color(0xFFF26522)),
           const SizedBox(width: 8),
-          Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+          Text(title,
+              style:
+                  const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
         ],
       ),
     );
   }
 
-  Widget _buildTextField(String label, TextEditingController controller, {int maxLines = 1, TextInputType? keyboardType, String? hintText}) {
+  Widget _buildTextField(String label, TextEditingController controller,
+      {int maxLines = 1, TextInputType? keyboardType, String? hintText}) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(label, style: const TextStyle(color: Colors.grey, fontSize: 12, fontWeight: FontWeight.bold)),
+          Text(label,
+              style: const TextStyle(
+                  color: Colors.grey,
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold)),
           const SizedBox(height: 4),
           TextField(
             controller: controller,
@@ -657,13 +729,16 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
               hintStyle: const TextStyle(color: Colors.grey, fontSize: 13),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8),
-                borderSide: const BorderSide(color: Color(0xFFD1D5DB), width: 1.0),
+                borderSide:
+                    const BorderSide(color: Color(0xFFD1D5DB), width: 1.0),
               ),
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8),
-                borderSide: const BorderSide(color: Color(0xFFD1D5DB), width: 1.0),
+                borderSide:
+                    const BorderSide(color: Color(0xFFD1D5DB), width: 1.0),
               ),
-              contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+              contentPadding:
+                  const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
             ),
           ),
         ],
@@ -671,7 +746,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     );
   }
 
-  void _showSelectionBottomSheet({required String title, required List<Widget> items}) {
+  void _showSelectionBottomSheet(
+      {required String title, required List<Widget> items}) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -682,7 +758,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       builder: (ctx) {
         return SafeArea(
           child: ConstrainedBox(
-            constraints: BoxConstraints(maxHeight: MediaQuery.of(context).size.height * 0.7),
+            constraints: BoxConstraints(
+                maxHeight: MediaQuery.of(context).size.height * 0.7),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -691,7 +768,9 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(title, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                      Text(title,
+                          style: const TextStyle(
+                              fontSize: 16, fontWeight: FontWeight.bold)),
                       IconButton(
                         icon: const Icon(Icons.close),
                         onPressed: () => Navigator.pop(ctx),
@@ -717,75 +796,79 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   }
 
   Widget _buildDropdownField({
-  required String hint,
-  required String? valueText,
-  required VoidCallback onTap,
-}) {
-  // Lấy textTheme từ hệ thống để tự động đổi màu theo giao diện Sáng/Tối
-  final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    required String hint,
+    required String? valueText,
+    required VoidCallback onTap,
+  }) {
+    // Lấy textTheme từ hệ thống để tự động đổi màu theo giao diện Sáng/Tối
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
-  return InkWell(
-    onTap: onTap,
-    borderRadius: BorderRadius.circular(8),
-    child: Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface,
-        // Đổi màu border: Sử dụng màu mờ nhẹ (onSurface với opacity) để trông tinh tế hơn ở cả 2 chế độ
-        border: Border.all(color: Theme.of(context).colorScheme.onSurface.withOpacity(0.2)),
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Expanded(
-            child: Text(
-              valueText ?? hint,
-              style: TextStyle(
-                fontSize: 13,
-                // SỬA Ở ĐÂY: Nếu valueText có giá trị, lấy màu chữ mặc định của hệ thống (Trắng ở Dark Mode, Đen ở Light Mode)
-                color: valueText == null 
-                    ? (isDarkMode ? Colors.white38 : Colors.grey) // Màu của chữ hint
-                    : Theme.of(context).colorScheme.onSurface,    // Màu chữ hiển thị khi đã chọn
-                fontWeight: valueText == null ? FontWeight.normal : FontWeight.w500,
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(8),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.surface,
+          // Đổi màu border: Sử dụng màu mờ nhẹ (onSurface với opacity) để trông tinh tế hơn ở cả 2 chế độ
+          border: Border.all(
+              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.2)),
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Expanded(
+              child: Text(
+                valueText ?? hint,
+                style: TextStyle(
+                  fontSize: 13,
+                  // SỬA Ở ĐÂY: Nếu valueText có giá trị, lấy màu chữ mặc định của hệ thống (Trắng ở Dark Mode, Đen ở Light Mode)
+                  color: valueText == null
+                      ? (isDarkMode
+                          ? Colors.white38
+                          : Colors.grey) // Màu của chữ hint
+                      : Theme.of(context)
+                          .colorScheme
+                          .onSurface, // Màu chữ hiển thị khi đã chọn
+                  fontWeight:
+                      valueText == null ? FontWeight.normal : FontWeight.w500,
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
               ),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
             ),
-          ),
-          // Thay đổi màu Icon mũi tên để nó sáng lên một chút khi ở chế độ tối
-          Icon(
-            Icons.keyboard_arrow_down, 
-            color: isDarkMode ? Colors.white60 : Colors.grey, 
-            size: 20
-          ),
-        ],
+            // Thay đổi màu Icon mũi tên để nó sáng lên một chút khi ở chế độ tối
+            Icon(Icons.keyboard_arrow_down,
+                color: isDarkMode ? Colors.white60 : Colors.grey, size: 20),
+          ],
+        ),
       ),
-    ),
-  );
-}
+    );
+  }
 
   Widget _buildShippingMethod() {
     var selectedZone;
     for (var z in _shippingZones) {
       if (z.id == _selectedShipZoneId) selectedZone = z;
     }
-    final selectedZoneText = selectedZone != null 
-        ? '${selectedZone.name} (${_isFreeShipping ? Trans.freeShipping : '+${_formatCurrency(selectedZone.fee)}'})' 
+    final selectedZoneText = selectedZone != null
+        ? '${selectedZone.name} (${_isFreeShipping ? Trans.freeShipping : '+${_formatCurrency(selectedZone.fee)}'})'
         : null;
 
     var selectedMethod;
     for (var m in _shippingMethods) {
       if (m.id == _selectedShipMethodId) selectedMethod = m;
     }
-    final selectedMethodText = selectedMethod != null 
-        ? '${selectedMethod.name} ${selectedMethod.etaLabel}' 
+    final selectedMethodText = selectedMethod != null
+        ? '${selectedMethod.name} ${selectedMethod.etaLabel}'
         : null;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(Trans.shippingMethodTitle, style: TextStyle(fontWeight: FontWeight.bold)),
+        Text(Trans.shippingMethodTitle,
+            style: TextStyle(fontWeight: FontWeight.bold)),
         const SizedBox(height: 8),
         Row(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -797,18 +880,30 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                 onTap: () {
                   _showSelectionBottomSheet(
                     title: 'Chọn khu vực giao hàng',
-                    
                     items: _shippingZones.map((z) {
-                      final feeStr = _isFreeShipping ? Trans.freeShipping : '+${_formatCurrency(z.fee)}';
+                      final feeStr = _isFreeShipping
+                          ? Trans.freeShipping
+                          : '+${_formatCurrency(z.fee)}';
                       final isSelected = z.id == _selectedShipZoneId;
                       return ListTile(
-                        title: Text('${z.name} ($feeStr)', style: TextStyle(fontSize: 14, fontWeight: isSelected ? FontWeight.bold : FontWeight.normal, color: isSelected ? const Color(0xFFF26522) : Theme.of(context).colorScheme.onSurface)),
-                        trailing: isSelected ? const Icon(Icons.check, color: Color(0xFFF26522)) : null,
+                        title: Text('${z.name} ($feeStr)',
+                            style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: isSelected
+                                    ? FontWeight.bold
+                                    : FontWeight.normal,
+                                color: isSelected
+                                    ? const Color(0xFFF26522)
+                                    : Theme.of(context).colorScheme.onSurface)),
+                        trailing: isSelected
+                            ? const Icon(Icons.check, color: Color(0xFFF26522))
+                            : null,
                         onTap: () {
                           setState(() => _selectedShipZoneId = z.id);
                           Navigator.pop(context);
                         },
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 20),
+                        contentPadding:
+                            const EdgeInsets.symmetric(horizontal: 20),
                       );
                     }).toList(),
                   );
@@ -826,13 +921,24 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                     items: _shippingMethods.map((m) {
                       final isSelected = m.id == _selectedShipMethodId;
                       return ListTile(
-                        title: Text('${m.name} ${m.etaLabel}', style: TextStyle(fontSize: 14, fontWeight: isSelected ? FontWeight.bold : FontWeight.normal, color: isSelected ? const Color(0xFFF26522) : Theme.of(context).colorScheme.onSurface)),
-                        trailing: isSelected ? const Icon(Icons.check, color: Color(0xFFF26522)) : null,
+                        title: Text('${m.name} ${m.etaLabel}',
+                            style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: isSelected
+                                    ? FontWeight.bold
+                                    : FontWeight.normal,
+                                color: isSelected
+                                    ? const Color(0xFFF26522)
+                                    : Theme.of(context).colorScheme.onSurface)),
+                        trailing: isSelected
+                            ? const Icon(Icons.check, color: Color(0xFFF26522))
+                            : null,
                         onTap: () {
                           setState(() => _selectedShipMethodId = m.id);
                           Navigator.pop(context);
                         },
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 20),
+                        contentPadding:
+                            const EdgeInsets.symmetric(horizontal: 20),
                       );
                     }).toList(),
                   );
@@ -844,80 +950,111 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
         if (_isFreeShipping)
           Padding(
             padding: const EdgeInsets.only(top: 8),
-            child: Text(Trans.shippingFeeLabel, style: const TextStyle(color: Colors.green)),
+            child: Text(Trans.shippingFeeLabel,
+                style: const TextStyle(color: Colors.green)),
           ),
       ],
     );
   }
 
   Widget _buildPaymentMethods() {
-    return Column(
-      children: [
-        Row(
-          children: [
-            Expanded(child: _paymentTile('cod', Trans.codLabel, 'assets/images/COD.png', _payAvail.cod)),
-            const SizedBox(width: 12),
-            Expanded(child: _paymentTile('vnpay', Trans.vnpayLabel, 'assets/images/vnpay-logo.png', _payAvail.vnpay)),
-          ],
+    List<Widget> activeMethods = [];
+    if (_payAvail.cod)
+      activeMethods.add(Expanded(
+          child: _paymentTile('cod', Trans.codLabel, 'assets/images/COD.png')));
+    if (_payAvail.vnpay)
+      activeMethods.add(Expanded(
+          child: _paymentTile(
+              'vnpay', Trans.vnpayLabel, 'assets/images/vnpay-logo.png')));
+    if (_payAvail.momo)
+      activeMethods.add(Expanded(
+          child: _paymentTile(
+              'momo', Trans.momoLabel, 'assets/images/logo-momo.png')));
+
+    if (activeMethods.isEmpty) {
+      return Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.orange.withOpacity(0.1),
+          borderRadius: BorderRadius.circular(8),
         ),
-        const SizedBox(height: 12),
-        Row(
+        child: const Text(
+            'Hiện tại tất cả phương thức thanh toán đang được bảo trì.',
+            style: TextStyle(color: Colors.orange)),
+      );
+    }
+
+    List<Widget> rows = [];
+    for (int i = 0; i < activeMethods.length; i += 2) {
+      if (i + 1 < activeMethods.length) {
+        rows.add(Row(
           children: [
-            Expanded(child: _paymentTile('momo', Trans.momoLabel, 'assets/images/logo-momo.png', _payAvail.momo)),
+            activeMethods[i],
+            const SizedBox(width: 12),
+            activeMethods[i + 1],
+          ],
+        ));
+      } else {
+        rows.add(Row(
+          children: [
+            activeMethods[i],
             const SizedBox(width: 12),
             const Expanded(child: SizedBox()),
           ],
-        ),
-      ],
-    );
+        ));
+      }
+      if (i + 2 < activeMethods.length) {
+        rows.add(const SizedBox(height: 12));
+      }
+    }
+
+    return Column(children: rows);
   }
 
-  Widget _paymentTile(String value, String title, String imagePath, bool available) {
+  Widget _paymentTile(String value, String title, String imagePath) {
     final isSelected = _selectedPayment == value;
-    return Opacity(
-      opacity: available ? 1.0 : 0.5,
-      child: GestureDetector(
-        onTap: available ? () => setState(() => _selectedPayment = value) : null,
-        child: Container(
-          height: 140,
-          decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.surface,
-            border: Border.all(
-              color: isSelected ? const Color(0xFFF26522) : Colors.grey.shade200,
-              width: isSelected ? 1.5 : 1.0,
+    return GestureDetector(
+      onTap: () => setState(() => _selectedPayment = value),
+      child: Container(
+        height: 140,
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.surface,
+          border: Border.all(
+            color: isSelected ? const Color(0xFFF26522) : Colors.grey.shade200,
+            width: isSelected ? 1.5 : 1.0,
+          ),
+          borderRadius: BorderRadius.circular(8),
+          boxShadow: isSelected
+              ? [
+                  BoxShadow(
+                    color: const Color(0xFFF26522).withOpacity(0.05),
+                    blurRadius: 8,
+                    offset: const Offset(0, 4),
+                  )
+                ]
+              : null,
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Image.asset(
+              imagePath,
+              height: 60,
+              fit: BoxFit.contain,
             ),
-            borderRadius: BorderRadius.circular(8),
-            boxShadow: isSelected
-                ? [
-                    BoxShadow(
-                      color: const Color(0xFFF26522).withOpacity(0.05),
-                      blurRadius: 8,
-                      offset: const Offset(0, 4),
-                    )
-                  ]
-                : null,
-          ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Image.asset(
-                imagePath,
-                height: 60,
-                fit: BoxFit.contain,
+            const SizedBox(height: 12),
+            Text(
+              title,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontWeight: FontWeight.w800,
+                fontSize: 12,
+                color: Theme.of(context).colorScheme.onSurface,
+                height: 1.2,
               ),
-              const SizedBox(height: 12),
-              Text(
-                title,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontWeight: FontWeight.w800,
-                  fontSize: 12,
-                  color: Theme.of(context).colorScheme.onSurface,
-                  height: 1.2,
-                ),
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -933,7 +1070,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Container(
-                    width: 100, height: 100,
+                    width: 100,
+                    height: 100,
                     decoration: BoxDecoration(
                       color: Theme.of(context).colorScheme.surface,
                       borderRadius: BorderRadius.circular(10),
@@ -941,7 +1079,9 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                     padding: const EdgeInsets.all(4),
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(6),
-                      child: i.imageUrl != null ? Image.network(i.imageUrl!, fit: BoxFit.cover) : const Icon(Icons.image, color: Colors.grey),
+                      child: i.imageUrl != null
+                          ? Image.network(i.imageUrl!, fit: BoxFit.cover)
+                          : const Icon(Icons.image, color: Colors.grey),
                     ),
                   ),
                   const SizedBox(width: 14),
@@ -950,26 +1090,43 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          i.name, 
-                          style: TextStyle(fontWeight: FontWeight.w700, fontSize: 15, height: 1.3, color: Theme.of(context).colorScheme.onSurface),
+                          i.name,
+                          style: TextStyle(
+                              fontWeight: FontWeight.w700,
+                              fontSize: 15,
+                              height: 1.3,
+                              color: Theme.of(context).colorScheme.onSurface),
                         ),
                         if (i.variantLabel != null)
                           Padding(
                             padding: const EdgeInsets.only(top: 4),
-                            child: Text(i.variantLabel!, style: const TextStyle(fontSize: 14, color: Colors.grey)),
+                            child: Text(i.variantLabel!,
+                                style: const TextStyle(
+                                    fontSize: 14, color: Colors.grey)),
                           ),
                         const SizedBox(height: 8),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text('x${i.quantity}', style: const TextStyle(fontWeight: FontWeight.w700, color: Colors.grey, fontSize: 13)),
-                            Text(_formatCurrency(i.unitPrice), style: const TextStyle(color: Colors.grey, fontWeight: FontWeight.w700, fontSize: 13)),
+                            Text('x${i.quantity}',
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.w700,
+                                    color: Colors.grey,
+                                    fontSize: 13)),
+                            Text(_formatCurrency(i.unitPrice),
+                                style: const TextStyle(
+                                    color: Colors.grey,
+                                    fontWeight: FontWeight.w700,
+                                    fontSize: 13)),
                           ],
                         ),
                         const SizedBox(height: 10),
                         Text(
-                          _formatCurrency(i.unitPrice * i.quantity), 
-                          style: const TextStyle(fontWeight: FontWeight.w800, color: Color(0xFFF26522), fontSize: 14),
+                          _formatCurrency(i.unitPrice * i.quantity),
+                          style: const TextStyle(
+                              fontWeight: FontWeight.w800,
+                              color: Color(0xFFF26522),
+                              fontSize: 14),
                         ),
                       ],
                     ),
@@ -979,11 +1136,16 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
             )),
         const SizedBox(height: 8),
         _summaryRow(Trans.subtotal, _formatCurrency(_totalPrice)),
-        _summaryRow(Trans.shippingFee, _isFreeShipping ? Trans.freeShipping : _formatCurrency(_shippingFee), valueColor: const Color(0xFF16A34A)),
+        _summaryRow(
+            Trans.shippingFee,
+            _isFreeShipping
+                ? Trans.freeShipping
+                : _formatCurrency(_shippingFee),
+            valueColor: const Color(0xFF16A34A)),
         if (_appliedCoupon != null)
-          _summaryRow(Trans.discount, '-${_formatCurrency(_discountAmount)}', valueColor: const Color(0xFF16A34A)),
+          _summaryRow(Trans.discount, '-${_formatCurrency(_discountAmount)}',
+              valueColor: const Color(0xFF16A34A)),
         const SizedBox(height: 16),
-        
         if (_appliedCoupon == null)
           Column(
             children: [
@@ -996,8 +1158,10 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                         controller: _couponCtrl,
                         decoration: InputDecoration(
                           hintText: Trans.couponCode,
-                          hintStyle: const TextStyle(color: Colors.grey, fontSize: 14),
-                          contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+                          hintStyle:
+                              const TextStyle(color: Colors.grey, fontSize: 14),
+                          contentPadding:
+                              const EdgeInsets.symmetric(horizontal: 16),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(6),
                             borderSide: BorderSide(color: Colors.grey.shade300),
@@ -1019,9 +1183,11 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                         backgroundColor: const Color(0xFFFFEDD5),
                         foregroundColor: const Color(0xFFF26522),
                         elevation: 0,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(6)),
                       ),
-                      child: Text(Trans.apply, style: TextStyle(fontWeight: FontWeight.bold)),
+                      child: Text(Trans.apply,
+                          style: TextStyle(fontWeight: FontWeight.bold)),
                     ),
                   ),
                 ],
@@ -1032,11 +1198,18 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                 height: 44,
                 child: OutlinedButton.icon(
                   onPressed: _showVoucherModal,
-                  icon: const Icon(Icons.card_giftcard, color: Color(0xFFF26522), size: 18),
-                  label: Text(Trans.selectCoupon, style: TextStyle(color: Color(0xFFF26522), fontWeight: FontWeight.bold)),
+                  icon: const Icon(Icons.card_giftcard,
+                      color: Color(0xFFF26522), size: 18),
+                  label: Text(Trans.selectCoupon,
+                      style: TextStyle(
+                          color: Color(0xFFF26522),
+                          fontWeight: FontWeight.bold)),
                   style: OutlinedButton.styleFrom(
-                    side: BorderSide(color: const Color(0xFFF26522).withOpacity(0.5), width: 1),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
+                    side: BorderSide(
+                        color: const Color(0xFFF26522).withOpacity(0.5),
+                        width: 1),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(6)),
                     backgroundColor: const Color(0xFFFFF9F2),
                   ),
                 ),
@@ -1049,32 +1222,40 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
             decoration: BoxDecoration(
               color: const Color(0xFFFFEDD5),
               borderRadius: BorderRadius.circular(6),
-              border: Border.all(color: const Color(0xFFF26522).withOpacity(0.3)),
+              border:
+                  Border.all(color: const Color(0xFFF26522).withOpacity(0.3)),
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Row(
                   children: [
-                    const Icon(Icons.local_activity, color: Color(0xFFF26522), size: 18),
+                    const Icon(Icons.local_activity,
+                        color: Color(0xFFF26522), size: 18),
                     const SizedBox(width: 8),
-                    Text('${_appliedCoupon!['code']}', style: const TextStyle(color: Color(0xFFF26522), fontWeight: FontWeight.bold)),
+                    Text('${_appliedCoupon!['code']}',
+                        style: const TextStyle(
+                            color: Color(0xFFF26522),
+                            fontWeight: FontWeight.bold)),
                   ],
                 ),
                 InkWell(
                   onTap: _removeCoupon,
-                  child: Text(Trans.removeCoupon, style: TextStyle(color: Colors.grey, fontWeight: FontWeight.bold, fontSize: 13)),
+                  child: Text(Trans.removeCoupon,
+                      style: TextStyle(
+                          color: Colors.grey,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 13)),
                 ),
               ],
             ),
           ),
-          
         if (_couponError != null)
           Padding(
             padding: const EdgeInsets.only(top: 8),
-            child: Text(_couponError!, style: const TextStyle(color: Colors.red, fontSize: 12)),
+            child: Text(_couponError!,
+                style: const TextStyle(color: Colors.red, fontSize: 12)),
           ),
-          
         const SizedBox(height: 24),
         const Divider(height: 1, color: Color(0xFFEEEEEE)),
         const SizedBox(height: 16),
@@ -1083,14 +1264,26 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     );
   }
 
-  Widget _summaryRow(String label, String value, {bool isTotal = false, Color? valueColor}) {
+  Widget _summaryRow(String label, String value,
+      {bool isTotal = false, Color? valueColor}) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(label, style: TextStyle(fontWeight: FontWeight.bold, fontSize: isTotal ? 16 : 14, color: Theme.of(context).colorScheme.onSurface)),
-          Text(value, style: TextStyle(fontWeight: FontWeight.w900, fontSize: isTotal ? 20 : 14, color: valueColor ?? (isTotal ? Colors.red : Theme.of(context).colorScheme.onSurface))),
+          Text(label,
+              style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: isTotal ? 16 : 14,
+                  color: Theme.of(context).colorScheme.onSurface)),
+          Text(value,
+              style: TextStyle(
+                  fontWeight: FontWeight.w900,
+                  fontSize: isTotal ? 20 : 14,
+                  color: valueColor ??
+                      (isTotal
+                          ? Colors.red
+                          : Theme.of(context).colorScheme.onSurface))),
         ],
       ),
     );

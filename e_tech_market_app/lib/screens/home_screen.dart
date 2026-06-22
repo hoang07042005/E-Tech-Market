@@ -146,7 +146,8 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> _loadNotifications() async {
     if (_user == null) return;
     try {
-      final response = await NotificationService.fetchNotifications(page: 1, perPage: 10);
+      final response =
+          await NotificationService.fetchNotifications(page: 1, perPage: 10);
       if (!mounted) return;
       setState(() {
         _recentNotifications = response['data'] ?? [];
@@ -170,7 +171,8 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildNotificationDrawer() {
-    int unreadInList = _recentNotifications.where((n) => n['read_at'] == null).length;
+    int unreadInList =
+        _recentNotifications.where((n) => n['read_at'] == null).length;
     int remainingUnread = _unreadNotifCount - unreadInList;
 
     return Drawer(
@@ -192,17 +194,35 @@ class _HomeScreenState extends State<HomeScreen> {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text('Thông báo', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                      const Text('Thông báo',
+                          style: TextStyle(
+                              fontSize: 18, fontWeight: FontWeight.bold)),
                       const SizedBox(height: 4),
                       Row(
                         children: [
-                          Container(width: 8, height: 8, decoration: const BoxDecoration(color: Colors.red, shape: BoxShape.circle)),
+                          Container(
+                              width: 8,
+                              height: 8,
+                              decoration: const BoxDecoration(
+                                  color: Colors.red, shape: BoxShape.circle)),
                           const SizedBox(width: 4),
-                          Text('Chưa đọc', style: TextStyle(fontSize: 11, color: Theme.of(context).colorScheme.onSurface)),
+                          Text('Chưa đọc',
+                              style: TextStyle(
+                                  fontSize: 11,
+                                  color:
+                                      Theme.of(context).colorScheme.onSurface)),
                           const SizedBox(width: 12),
-                          Container(width: 8, height: 8, decoration: const BoxDecoration(color: Colors.blue, shape: BoxShape.circle)),
+                          Container(
+                              width: 8,
+                              height: 8,
+                              decoration: const BoxDecoration(
+                                  color: Colors.blue, shape: BoxShape.circle)),
                           const SizedBox(width: 4),
-                          Text('Đã đọc', style: TextStyle(fontSize: 11, color: Theme.of(context).colorScheme.onSurface)),
+                          Text('Đã đọc',
+                              style: TextStyle(
+                                  fontSize: 11,
+                                  color:
+                                      Theme.of(context).colorScheme.onSurface)),
                         ],
                       ),
                     ],
@@ -226,7 +246,10 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             Expanded(
               child: _recentNotifications.isEmpty
-                  ? Center(child: Text(Trans.noNotificationsYet, style: TextStyle(color: Theme.of(context).colorScheme.onSurface)))
+                  ? Center(
+                      child: Text(Trans.noNotificationsYet,
+                          style: TextStyle(
+                              color: Theme.of(context).colorScheme.onSurface)))
                   : ListView.separated(
                       padding: const EdgeInsets.all(8),
                       itemCount: _recentNotifications.length,
@@ -235,7 +258,9 @@ class _HomeScreenState extends State<HomeScreen> {
                         final notif = _recentNotifications[index];
                         final isRead = notif['read_at'] != null;
                         return ListTile(
-                          tileColor: isRead ? Colors.transparent : const Color(0xFFFFF7ED),
+                          tileColor: isRead
+                              ? Colors.transparent
+                              : const Color(0xFFFFF7ED),
                           leading: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
@@ -249,23 +274,31 @@ class _HomeScreenState extends State<HomeScreen> {
                               ),
                             ],
                           ),
-                          title: Text(notif['title']?.toString() ?? 'Thông báo', style: TextStyle(fontWeight: isRead ? FontWeight.normal : FontWeight.bold, fontSize: 14, color: Theme.of(context).colorScheme.primary)),
+                          title: Text(notif['title']?.toString() ?? 'Thông báo',
+                              style: TextStyle(
+                                  fontWeight: isRead
+                                      ? FontWeight.normal
+                                      : FontWeight.bold,
+                                  fontSize: 14,
+                                  color:
+                                      Theme.of(context).colorScheme.primary)),
                           // subtitle: Text(notif['body']?.toString() ?? '', maxLines: 2, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 12)),
                           onTap: () async {
                             // 1. Đánh dấu đã đọc ngay tại Home (nếu chưa đọc) để UX mượt mà
                             if (!isRead) {
                               await _markNotifAsRead(notif['id'] as int);
                             }
-                            
+
                             // Nếu thông báo nằm trong một Drawer hoặc BottomSheet, bạn có thể uncomment dòng dưới
-                            // Navigator.pop(context); 
+                            // Navigator.pop(context);
 
                             // 2. Điều hướng sang màn hình chi tiết thông báo
                             if (context.mounted) {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => const NotificationsScreen(),
+                                  builder: (context) =>
+                                      const NotificationsScreen(),
                                 ),
                               );
                             }
@@ -277,7 +310,8 @@ class _HomeScreenState extends State<HomeScreen> {
             Container(
               width: double.infinity,
               padding: const EdgeInsets.all(12),
-              decoration: const BoxDecoration(border: Border(top: BorderSide(color: Color(0xFFE2E8F0)))),
+              decoration: const BoxDecoration(
+                  border: Border(top: BorderSide(color: Color(0xFFE2E8F0)))),
               child: Stack(
                 alignment: Alignment.center,
                 children: [
@@ -286,7 +320,12 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: ElevatedButton(
                       onPressed: () {
                         Navigator.pop(context); // close drawer
-                        Navigator.push(context, MaterialPageRoute(builder: (_) => const NotificationsScreen())).then((_) => _loadNotifications());
+                        Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (_) =>
+                                        const NotificationsScreen()))
+                            .then((_) => _loadNotifications());
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFFF8FAFC),
@@ -301,14 +340,18 @@ class _HomeScreenState extends State<HomeScreen> {
                     Positioned(
                       right: 12,
                       child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 6, vertical: 2),
                         decoration: BoxDecoration(
                           color: Colors.red,
                           borderRadius: BorderRadius.circular(10),
                         ),
                         child: Text(
                           Trans.unreadCount(remainingUnread),
-                          style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 10, fontWeight: FontWeight.bold),
+                          style: TextStyle(
+                              color: Theme.of(context).colorScheme.onSurface,
+                              fontSize: 10,
+                              fontWeight: FontWeight.bold),
                         ),
                       ),
                     ),
@@ -387,7 +430,8 @@ class _HomeScreenState extends State<HomeScreen> {
       AppSnackBar.showSuccess(context, message);
     } catch (error) {
       if (!mounted) return;
-      AppSnackBar.showError(context, error.toString().replaceFirst('Exception: ', ''));
+      AppSnackBar.showError(
+          context, error.toString().replaceFirst('Exception: ', ''));
     }
   }
 
@@ -399,7 +443,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void _onTabSelected(int index) {
     if ((index == 3 || index == 4) && _user == null) {
-      Navigator.push(context, MaterialPageRoute(builder: (_) => const LoginScreen())).then((_) => _loadUser());
+      Navigator.push(
+              context, MaterialPageRoute(builder: (_) => const LoginScreen()))
+          .then((_) => _loadUser());
       return;
     }
     setState(() {
@@ -467,8 +513,6 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  
-
   Future<void> _toggleWishlist(int productId) async {
     if (productId <= 0) return;
 
@@ -492,7 +536,8 @@ class _HomeScreenState extends State<HomeScreen> {
           _wishSet.remove(productId);
         }
       });
-      AppSnackBar.showError(context, 'Không thể cập nhật yêu thích. Vui lòng thử lại.');
+      AppSnackBar.showError(
+          context, 'Không thể cập nhật yêu thích. Vui lòng thử lại.');
     }
   }
 
@@ -563,7 +608,8 @@ class _HomeScreenState extends State<HomeScreen> {
     if (slug.isEmpty) return;
 
     // Lấy flashSalePrice từ item
-    final flashSalePrice = double.tryParse(item['flash_sale_price']?.toString() ?? '');
+    final flashSalePrice =
+        double.tryParse(item['flash_sale_price']?.toString() ?? '');
 
     Navigator.push(
       context,
@@ -579,43 +625,49 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildFeaturedProductSection() {
-  return ProductSection(
-    products: _featuredProducts,
-    wishedProductIds: _wishSet,
-    isLoading: _isHomeLoading,
-    onViewAll: () => _onTabSelected(1),
-    onProductSelected: _navigateToProductDetail,
-    onToggleWishlist: _toggleWishlist,
-    
-    // Cập nhật phần này:
-    onAddToCart: (product) async {
-      if (_user == null) {
-        AppDialogs.showLoginRequiredDialog(context, onLoginSuccess: _loadUser);
-        return;
-      }
-      try {
-        final int productId = (product['id'] as num).toInt();
-        
-        // Gọi dịch vụ giỏ hàng (đảm bảo đã import CartService)
-        await CartService.addToCart(productId, 1);
-        _loadCartCount();
-        
-        if (!mounted) return;
-        AppSnackBar.showSuccess(context, 'Đã thêm vào giỏ hàng thành công!');
-      } catch (e) {
-        if (!mounted) return;
-        AppSnackBar.showError(context, 'Lỗi: ${e.toString().replaceFirst('Exception: ', '')}');
-      }
-    },
-  );
+    return ProductSection(
+      products: _featuredProducts,
+      wishedProductIds: _wishSet,
+      isLoading: _isHomeLoading,
+      onViewAll: () => _onTabSelected(1),
+      onProductSelected: _navigateToProductDetail,
+      onToggleWishlist: _toggleWishlist,
+
+      // Cập nhật phần này:
+      onAddToCart: (product) async {
+        if (_user == null) {
+          AppDialogs.showLoginRequiredDialog(context,
+              onLoginSuccess: _loadUser);
+          return;
+        }
+        try {
+          final int productId = (product['id'] as num).toInt();
+
+          // Gọi dịch vụ giỏ hàng (đảm bảo đã import CartService)
+          await CartService.addToCart(productId, 1);
+          _loadCartCount();
+
+          if (!mounted) return;
+          AppSnackBar.showSuccess(context, 'Đã thêm vào giỏ hàng thành công!');
+        } catch (e) {
+          if (!mounted) return;
+          AppSnackBar.showError(
+              context, 'Lỗi: ${e.toString().replaceFirst('Exception: ', '')}');
+        }
+      },
+    );
   }
 
   Widget _buildTabbedCategorySection() {
     // Use fixed tab categories for products display (like web)
-    final category = tabCategoriesForTabs.isNotEmpty ? tabCategoriesForTabs[_selectedTabIndex] as Map<String, dynamic> : null;
+    final category = tabCategoriesForTabs.isNotEmpty
+        ? tabCategoriesForTabs[_selectedTabIndex] as Map<String, dynamic>
+        : null;
     final categoryId = (category?['id'] as num?)?.toInt();
-    final currentProducts = categoryId != null ? _tabProductsByCategory[categoryId] ?? [] : [];
-    final loading = _isHomeLoading || (categoryId != null && (_tabLoadingByCategory[categoryId] ?? false));
+    final currentProducts =
+        categoryId != null ? _tabProductsByCategory[categoryId] ?? [] : [];
+    final loading = _isHomeLoading ||
+        (categoryId != null && (_tabLoadingByCategory[categoryId] ?? false));
 
     return TabbedProductSection(
       categories: tabCategoriesForTabs,
@@ -634,25 +686,27 @@ class _HomeScreenState extends State<HomeScreen> {
       },
       onProductSelected: _navigateToProductDetail,
       onToggleWishlist: _toggleWishlist,
-      
+
       // CẬP NHẬT HÀM DƯỚI ĐÂY:
       onAddToCart: (product) async {
         if (_user == null) {
-          AppDialogs.showLoginRequiredDialog(context, onLoginSuccess: _loadUser);
+          AppDialogs.showLoginRequiredDialog(context,
+              onLoginSuccess: _loadUser);
           return;
         }
         try {
           final int productId = (product['id'] as num).toInt();
-          
+
           // Gọi dịch vụ thêm sản phẩm vào giỏ
           await CartService.addToCart(productId, 1);
           _loadCartCount();
-          
+
           if (!mounted) return;
           AppSnackBar.showSuccess(context, 'Đã thêm sản phẩm vào giỏ hàng!');
         } catch (e) {
           if (!mounted) return;
-          AppSnackBar.showError(context, 'Lỗi: ${e.toString().replaceFirst('Exception: ', '')}');
+          AppSnackBar.showError(
+              context, 'Lỗi: ${e.toString().replaceFirst('Exception: ', '')}');
         }
       },
     );
@@ -671,7 +725,8 @@ class _HomeScreenState extends State<HomeScreen> {
       },
       onAddToCart: (item) async {
         if (_user == null) {
-          AppDialogs.showLoginRequiredDialog(context, onLoginSuccess: _loadUser);
+          AppDialogs.showLoginRequiredDialog(context,
+              onLoginSuccess: _loadUser);
           return;
         }
         try {
@@ -686,7 +741,8 @@ class _HomeScreenState extends State<HomeScreen> {
           AppSnackBar.showSuccess(context, 'Đã thêm vào giỏ hàng thành công!');
         } catch (e) {
           if (!mounted) return;
-          AppSnackBar.showError(context, 'Lỗi: ${e.toString().replaceFirst('Exception: ', '')}');
+          AppSnackBar.showError(
+              context, 'Lỗi: ${e.toString().replaceFirst('Exception: ', '')}');
         }
       },
     );
@@ -756,7 +812,6 @@ class _HomeScreenState extends State<HomeScreen> {
               _buildReviewsSection(),
               const SizedBox(height: 20),
               const NewsletterSection(),
-              
             ],
           ),
         );
@@ -810,7 +865,6 @@ class _HomeScreenState extends State<HomeScreen> {
               backgroundColor: Theme.of(context).colorScheme.surface,
               foregroundColor: Theme.of(context).colorScheme.onSurface,
               elevation: 0,
-
               title: Image.asset(
                 Theme.of(context).brightness == Brightness.dark
                     ? 'assets/images/logo-trang.png'
@@ -820,6 +874,10 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               actions: [
                 IconButton(
+                  visualDensity: VisualDensity.compact,
+                  padding: EdgeInsets.zero,
+                  constraints:
+                      const BoxConstraints(minWidth: 36, minHeight: 36),
                   icon: const Icon(Icons.search_outlined),
                   onPressed: () {
                     Navigator.push(
@@ -829,7 +887,12 @@ class _HomeScreenState extends State<HomeScreen> {
                   },
                   tooltip: Trans.search,
                 ),
+                const SizedBox(width: 4),
                 IconButton(
+                  visualDensity: VisualDensity.compact,
+                  padding: EdgeInsets.zero,
+                  constraints:
+                      const BoxConstraints(minWidth: 36, minHeight: 36),
                   icon: Badge(
                     isLabelVisible: _unreadNotifCount > 0,
                     label: Text(_unreadNotifCount.toString()),
@@ -838,14 +901,20 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   onPressed: () {
                     if (_user == null) {
-                      AppDialogs.showLoginRequiredDialog(context, onLoginSuccess: _loadUser);
+                      AppDialogs.showLoginRequiredDialog(context,
+                          onLoginSuccess: _loadUser);
                       return;
                     }
                     _scaffoldKey.currentState?.openEndDrawer();
                   },
                   tooltip: Trans.notifications,
                 ),
+                const SizedBox(width: 4),
                 IconButton(
+                  visualDensity: VisualDensity.compact,
+                  padding: EdgeInsets.zero,
+                  constraints:
+                      const BoxConstraints(minWidth: 36, minHeight: 36),
                   icon: Badge(
                     isLabelVisible: _cartItemCount > 0,
                     label: Text(_cartItemCount.toString()),
@@ -854,23 +923,26 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   onPressed: () {
                     if (_user == null) {
-                      AppDialogs.showLoginRequiredDialog(context, onLoginSuccess: _loadUser);
+                      AppDialogs.showLoginRequiredDialog(context,
+                          onLoginSuccess: _loadUser);
                       return;
                     }
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => const CartScreen()),
+                      MaterialPageRoute(
+                          builder: (context) => const CartScreen()),
                     ).then((_) => _loadCartCount());
                   },
                   tooltip: Trans.cart,
                 ),
+                const SizedBox(width: 4),
                 GestureDetector(
                   onTap: () => _onTabSelected(4),
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                    padding: const EdgeInsets.only(left: 6, right: 12),
                     child: Container(
-                      width: 40,
-                      height: 40,
+                      width: 36,
+                      height: 36,
                       decoration: const BoxDecoration(
                         color: Color(0xFFEF7A45),
                         shape: BoxShape.circle,
@@ -887,7 +959,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                       style: const TextStyle(
                                           color: Colors.white,
                                           fontWeight: FontWeight.bold,
-                                          fontSize: 16),
+                                          fontSize: 14),
                                     ),
                                   );
                                 },
@@ -898,14 +970,13 @@ class _HomeScreenState extends State<HomeScreen> {
                                   style: const TextStyle(
                                       color: Colors.white,
                                       fontWeight: FontWeight.bold,
-                                      fontSize: 16),
+                                      fontSize: 14),
                                 ),
                               ),
                       ),
                     ),
                   ),
                 ),
-                const SizedBox(width: 8),
               ],
             ),
       body: Container(
@@ -919,7 +990,7 @@ class _HomeScreenState extends State<HomeScreen> {
             : _buildPageBody(),
       ),
       floatingActionButton: _buildChatbotFAB(),
-      bottomNavigationBar:  BottomNavigationBar(
+      bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedIndex,
         onTap: _onTabSelected,
         selectedItemColor: Color(0xFFEA6C00), // Đổi thành màu cam khi active
@@ -959,13 +1030,14 @@ class _HomeScreenState extends State<HomeScreen> {
                   height: 56,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: const Color(0xFFF26522).withValues(alpha: 1.5 - value),
+                    color:
+                        const Color(0xFFF26522).withValues(alpha: 1.5 - value),
                   ),
                 ),
               );
             },
             onEnd: () {
-              // Note: to loop this we would need an AnimationController, 
+              // Note: to loop this we would need an AnimationController,
               // but TweenAnimationBuilder works for a simple entry pulse.
             },
           ),

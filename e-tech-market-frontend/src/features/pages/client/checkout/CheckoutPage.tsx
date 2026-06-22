@@ -707,53 +707,48 @@ export default function CheckoutPage() {
               <div className="coCard coPayCard">
                 <h3 className="coCardTitle">Phương thức thanh toán</h3>
                 <div className="coPayGrid" role="radiogroup" aria-label="Phương thức thanh toán">
-                  <button
-                    type="button"
-                    disabled={!payAvail.cod}
-                    className={`coPayOption ${form.payment_method === 'cod' ? 'is-active' : ''} ${!payAvail.cod ? 'is-disabled' : ''}`}
-                    onClick={() => payAvail.cod && setForm((s) => ({ ...s, payment_method: 'cod' }))}
-                  >
-                    <div className="coPayLogo">
-                      <img className="coPayLogoImg" src={logoCod} alt="Thanh toán khi nhận (COD)" />
-                    </div>
-                    <div className="coPayLabel">Thanh toán khi nhận</div>
-                    {!payAvail.cod && <div className="coPayLockedBadge">Tạm khóa</div>}
-                  </button>
-                  <button
-                    type="button"
-                    disabled={!payAvail.vnpay}
-                    className={`coPayOption ${form.payment_method === 'vnpay' ? 'is-active' : ''} ${!payAvail.vnpay ? 'is-disabled' : ''}`}
-                    onClick={() => payAvail.vnpay && setForm((s) => ({ ...s, payment_method: 'vnpay' }))}
-                  >
-                    <div className="coPayLogo">
-                      <img className="coPayLogoImg" src={logoVnpay} alt="VNPAY" />
-                    </div>
-                    <div className="coPayLabel">VNPAY (ATM/CREDIT)</div>
-                    {!payAvail.vnpay && <div className="coPayLockedBadge">Tạm khóa</div>}
-                  </button>
-                  <button
-                    type="button"
-                    disabled={!payAvail.momo}
-                    className={`coPayOption ${form.payment_method === 'momo' ? 'is-active' : ''} ${!payAvail.momo ? 'is-disabled' : ''}`}
-                    onClick={() => payAvail.momo && setForm((s) => ({ ...s, payment_method: 'momo' }))}
-                  >
-                    <div className="coPayLogo">
-                      <img className="coPayLogoImg" src={logoMomo} alt="MoMo" />
-                    </div>
-                    <div className="coPayLabel">Ví điện tử MoMo</div>
-                    {!payAvail.momo && <div className="coPayLockedBadge">Tạm khóa</div>}
-                  </button>
+                  {payAvail.cod && (
+                    <button
+                      type="button"
+                      className={`coPayOption ${form.payment_method === 'cod' ? 'is-active' : ''}`}
+                      onClick={() => setForm((s) => ({ ...s, payment_method: 'cod' }))}
+                    >
+                      <div className="coPayLogo">
+                        <img className="coPayLogoImg" src={logoCod} alt="Thanh toán khi nhận (COD)" />
+                      </div>
+                      <div className="coPayLabel">Thanh toán khi nhận</div>
+                    </button>
+                  )}
+                  
+                  {payAvail.vnpay && (
+                    <button
+                      type="button"
+                      className={`coPayOption ${form.payment_method === 'vnpay' ? 'is-active' : ''}`}
+                      onClick={() => setForm((s) => ({ ...s, payment_method: 'vnpay' }))}
+                    >
+                      <div className="coPayLogo">
+                        <img className="coPayLogoImg" src={logoVnpay} alt="VNPAY" />
+                      </div>
+                      <div className="coPayLabel">VNPAY (ATM/CREDIT)</div>
+                    </button>
+                  )}
+                  
+                  {payAvail.momo && (
+                    <button
+                      type="button"
+                      className={`coPayOption ${form.payment_method === 'momo' ? 'is-active' : ''}`}
+                      onClick={() => setForm((s) => ({ ...s, payment_method: 'momo' }))}
+                    >
+                      <div className="coPayLogo">
+                        <img className="coPayLogoImg" src={logoMomo} alt="MoMo" />
+                      </div>
+                      <div className="coPayLabel">Ví điện tử MoMo</div>
+                    </button>
+                  )}
                 </div>
-                {(!payAvail.cod || !payAvail.vnpay || !payAvail.momo) && (
+                {(!payAvail.cod && !payAvail.vnpay && !payAvail.momo) && (
                   <div className="coPayLockedHint" aria-live="polite">
-                    Đang tạm khóa:{' '}
-                    {([
-                      !payAvail.cod ? 'COD' : null,
-                      !payAvail.vnpay ? 'VNPAY' : null,
-                      !payAvail.momo ? 'MoMo' : null,
-                    ]
-                      .filter(Boolean)
-                      .join(', '))}
+                    Hiện tại tất cả phương thức thanh toán đang được bảo trì.
                   </div>
                 )}
               </div>

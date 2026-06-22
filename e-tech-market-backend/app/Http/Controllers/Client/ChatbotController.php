@@ -437,7 +437,7 @@ PROMPT;
             });
         } else {
             // If no brand matched (e.g. "macbook" or "rog"), try to match keywords against product names
-            $stopWords = ['gợi ý', 'tư vấn', 'cho tôi', 'tầm giá', 'khoảng', 'dưới', 'triệu', 'mua', 'tìm', 'giúp', 'có', 'nào', 'không', 'giá', 'tr', 'm', 'đến', 'mình', 'bạn', 'xem', 'thử', 'nhé', 'với', 'cho', 'một', 'cái', 'chiếc', 'điện thoại', 'laptop', 'máy tính', 'pc', 'chụp ảnh', 'pin trâu', 'đẹp'];
+            $stopWords = ['gợi ý', 'tư vấn', 'cho tôi', 'tầm giá', 'khoảng', 'dưới', 'triệu', 'mua', 'tìm', 'giúp', 'có', 'nào', 'không', 'giá', 'tr', 'm', 'đến', 'mình', 'bạn', 'xem', 'thử', 'nhé', 'với', 'cho', 'một', 'cái', 'chiếc', 'điện thoại', 'laptop', 'máy tính', 'pc', 'chụp ảnh', 'pin trâu', 'đẹp', 'sản phẩm', 'hàng', 'đồ'];
             $cleanMessage = str_replace($stopWords, ' ', $message);
             preg_match_all('/[a-z0-9]{3,}/u', $cleanMessage, $matches);
             $keywords = $matches[0] ?? [];
@@ -451,12 +451,21 @@ PROMPT;
             }
         }
 
+        // Check if query is too generic (no category, no brand, no price, no valid keywords)
+        $isGeneric = empty($detectedCategories) && empty($matchedBrands) && !$minPrice && !$maxPrice && empty($keywords);
+
         // Price filter via variants
         if ($minPrice || $maxPrice) {
             $query->whereHas('variants', function ($q) use ($minPrice, $maxPrice) {
                 if ($minPrice) $q->where('price', '>=', $minPrice);
                 if ($maxPrice) $q->where('price', '<=', $maxPrice);
             });
+        }
+
+        if ($isGeneric) {
+            $context = "LƯU Ý DÀNH CHO BOT: Khách hàng yêu cầu tư vấn nhưng chưa nói rõ muốn tìm sản phẩm nào (điện thoại, laptop, chuột...), thương hiệu gì, hay ngân sách bao nhiêu.\n";
+            $context .= "=> Hãy đặt câu hỏi thân thiện để hỏi thêm nhu cầu của khách hàng (ví dụ: 'Bạn đang tìm kiếm dòng sản phẩm nào?', 'Ngân sách của bạn khoảng bao nhiêu?'). Tuyệt đối KHÔNG gợi ý sản phẩm ngẫu nhiên trong lúc này.";
+            return ['products' => [], 'context' => $context];
         }
 
         // Get products
@@ -472,7 +481,7 @@ PROMPT;
         }
 
         if ($products->isEmpty()) {
-            $context .= "Không tìm thấy sản phẩm nào phù hợp với tiêu chí tìm kiếm.\n";
+            $context .= "Không tìm thấy sản phẩm nào phù hợp với tiêu chí tìm kiếm. Hãy báo cho khách biết.\n";
         } else {
             foreach ($products as $i => $product) {
                 $price = $product->variants->min(fn($v) => $v->effective_price);
