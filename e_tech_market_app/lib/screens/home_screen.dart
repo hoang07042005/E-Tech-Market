@@ -1064,7 +1064,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
               child: const Icon(
-                Icons.smart_toy_rounded,
+                Icons.forum_outlined,
                 color: Colors.white,
                 size: 28,
               ),

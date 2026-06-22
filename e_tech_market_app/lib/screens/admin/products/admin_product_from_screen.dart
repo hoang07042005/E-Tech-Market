@@ -440,7 +440,8 @@ class _AdminProductFormScreenState extends State<AdminProductFormScreen> with Si
                   subtitle: Text(Trans.enableToDisplayOnMarketplace, style: const TextStyle(fontSize: 11, color: Color(0xFF64748B))),
                   value: _isActive,
                   contentPadding: EdgeInsets.zero,
-                  activeColor: const Color(0xFF10B981),
+                  activeColor: Colors.white,
+                  activeTrackColor: const Color(0xFF10B981),
                   onChanged: (val) => setState(() => _isActive = val),
                 ),
                 SwitchListTile(
@@ -448,7 +449,8 @@ class _AdminProductFormScreenState extends State<AdminProductFormScreen> with Si
                   subtitle: Text('Hiển thị biểu tượng sao trên trang danh sách', style: const TextStyle(fontSize: 11, color: Color(0xFF64748B))),
                   value: _isFeatured,
                   contentPadding: EdgeInsets.zero,
-                  activeColor: const Color(0xFFF59E0B),
+                  activeColor: Colors.white,
+                  activeTrackColor: const Color(0xFF10B981),
                   onChanged: (val) => setState(() => _isFeatured = val),
                 )
               ],
