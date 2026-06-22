@@ -183,14 +183,39 @@ class AuthService {
 
   static Future<bool> hasSession() async {
     final token = await _secureStorage.read(key: _tokenKey);
-    return token != null && token.isNotEmpty;
+    final prefs = await SharedPreferences.getInstance();
+    final hasUser = prefs.getString(_userKey) != null;
+    return token != null && token.isNotEmpty && hasUser;
   }
 
   static Future<Map<String, dynamic>?> getCurrentUser() async {
-    final prefs = await SharedPreferences.getInstance();
-    final json = prefs.getString(_userKey);
-    if (json == null) return null;
-    return jsonDecode(json) as Map<String, dynamic>;
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final json = prefs.getString(_userKey);
+      if (json == null) return null;
+      return jsonDecode(json) as Map<String, dynamic>;
+    } catch (e) {
+      await clearSession();
+      return null;
+    }
+  }
+
+  static Future<Map<String, dynamic>?> refreshUser() async {
+    try {
+      final token = await getToken();
+      if (token == null) return null;
+      
+      final response = await DioClient.instance.get('/me');
+      final data = response.data;
+      if (data != null && data['user'] != null) {
+        final user = data['user'] as Map<String, dynamic>;
+        await saveSession(token: token, user: user);
+        return user;
+      }
+    } catch (e) {
+      // Ignore network errors, fallback to local cache
+    }
+    return getCurrentUser();
   }
 
   static Future<String?> getToken() async {

@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import '../../services/auth_service.dart';
 import '../auth/login_screen.dart';
+import '../../utils/app_dialogs.dart';
 import '../../services/cart_service.dart';
 import '../../services/products_service.dart';
 import '../../services/reviews_service.dart';
@@ -785,6 +786,13 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     final cartPrice = (widget.showFlashSale && widget.flashSalePrice != null && widget.flashSalePrice! > 0)
         ? widget.flashSalePrice!
         : (selectedVariant?.effectivePrice ?? current.price);
+
+    final hasSession = await AuthService.hasSession();
+    if (!hasSession) {
+      if (!mounted) return;
+      AppDialogs.showLoginRequiredDialog(context);
+      return;
+    }
 
     try {
       await CartService.addToCart(current.id, quantity, variantId: selectedVariant?.id, price: cartPrice);

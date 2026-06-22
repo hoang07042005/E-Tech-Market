@@ -206,19 +206,39 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                             BoxShadow(color: Colors.black.withValues(alpha: 0.08), blurRadius: 12, offset: const Offset(0, 4)),
                           ],
                         ),
-                        child: CircleAvatar(
-                          radius: 50,
-                          backgroundColor: const Color(0xFFEF7A45),
-                          backgroundImage: _avatarFile != null
-                              ? FileImage(_avatarFile!)
-                              : (_avatarNetworkUrl != null ? NetworkImage(_avatarNetworkUrl!) : null) as ImageProvider?,
-                          onBackgroundImageError: (_avatarFile != null || _avatarNetworkUrl != null) ? (_, __) {} : null,
-                          child: (_avatarFile == null && _avatarNetworkUrl == null)
-                              ? Text(
-                                  _getAvatarInitial(),
-                                  style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 36),
-                                )
-                              : null,
+                        child: Container(
+                          width: 100,
+                          height: 100,
+                          decoration: const BoxDecoration(
+                            color: Color(0xFFEF7A45),
+                            shape: BoxShape.circle,
+                          ),
+                          child: ClipOval(
+                            child: _avatarFile != null
+                                ? Image.file(
+                                    _avatarFile!,
+                                    fit: BoxFit.cover,
+                                  )
+                                : (_avatarNetworkUrl != null
+                                    ? Image.network(
+                                        _avatarNetworkUrl!,
+                                        fit: BoxFit.cover,
+                                        errorBuilder: (context, error, stackTrace) {
+                                          return Center(
+                                            child: Text(
+                                              _getAvatarInitial(),
+                                              style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 36),
+                                            ),
+                                          );
+                                        },
+                                      )
+                                    : Center(
+                                        child: Text(
+                                          _getAvatarInitial(),
+                                          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 36),
+                                        ),
+                                      )),
+                          ),
                         ),
                       ),
                       Positioned(

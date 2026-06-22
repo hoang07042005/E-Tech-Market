@@ -11,6 +11,8 @@ import '../account/clause/payment_security_policy_screen.dart';
 import 'payment_webview_screen.dart';
 import 'payment_result_screen.dart';
 import 'package:flutter/gestures.dart';
+import '../../config/dio_client.dart';
+import '../../config/api_config.dart';
 
 class CheckoutScreen extends StatefulWidget {
   const CheckoutScreen({Key? key}) : super(key: key);
@@ -293,6 +295,26 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
         if (!mounted) return;
 
         if (resultUrl != null && resultUrl.isNotEmpty) {
+          // Bắn background request tới backend để xử lý IPN cập nhật trạng thái đơn hàng (do WebView bị intercept)
+          // TRÁNH dùng Uri.parse().toString() vì Dart sẽ re-encode query string làm hỏng chữ ký vnp_SecureHash.
+          try {
+            String fixedUrl = resultUrl;
+            final baseUri = Uri.parse(ApiConfig.apiBaseUrl);
+            final uri = Uri.parse(resultUrl);
+            
+            // Chỉ replace phần origin (scheme + authority)
+            if (uri.host == 'localhost' || uri.host == '127.0.0.1' || uri.host.startsWith('192.168.') || uri.host.startsWith('10.')) {
+              final origin = '${uri.scheme}://${uri.authority}';
+              final targetOrigin = '${baseUri.scheme}://${baseUri.authority}';
+              fixedUrl = resultUrl.replaceFirst(origin, targetOrigin);
+            }
+            
+            // Gửi GET request để kích hoạt callback cập nhật DB
+            await DioClient.instance.get(fixedUrl);
+          } catch (e) {
+            // Có thể phớt lờ lỗi này vì backend xử lý xong sẽ quăng 302 Redirect về frontend dev server, gây lỗi mạng ở App
+          }
+
           final uri = Uri.parse(resultUrl);
           final vnpResponseCode = uri.queryParameters['vnp_ResponseCode'];
           final momoResultCode = uri.queryParameters['resultCode'];

@@ -25,6 +25,7 @@ class AccountScreen extends StatelessWidget {
     required this.onLogout,
   });
 
+
   String _getAvatarInitial() {
     final name = user['name'] as String?;
     if (name == null || name.isEmpty) return 'U';
@@ -75,17 +76,34 @@ class AccountScreen extends StatelessWidget {
                 color: Colors.white,
                 shape: BoxShape.circle,
               ),
-              child: CircleAvatar(
-                radius: 50,
-                backgroundColor: const Color(0xFFEF7A45),
-                backgroundImage: avatarUrl != null ? NetworkImage(avatarUrl) : null,
-                onBackgroundImageError: avatarUrl != null ? (_, __) {} : null,
-                child: avatarUrl == null
-                    ? Text(
-                        _getAvatarInitial(),
-                        style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 36),
-                      )
-                    : null,
+              child: Container(
+                width: 100,
+                height: 100,
+                decoration: const BoxDecoration(
+                  color: Color(0xFFEF7A45),
+                  shape: BoxShape.circle,
+                ),
+                child: ClipOval(
+                  child: avatarUrl != null && avatarUrl.isNotEmpty
+                      ? Image.network(
+                          avatarUrl,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) {
+                            return Center(
+                              child: Text(
+                                _getAvatarInitial(),
+                                style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 36),
+                              ),
+                            );
+                          },
+                        )
+                      : Center(
+                          child: Text(
+                            _getAvatarInitial(),
+                            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 36),
+                          ),
+                        ),
+                ),
               ),
             ),
             const SizedBox(height: 16),

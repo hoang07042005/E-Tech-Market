@@ -23,7 +23,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future<void> _loadUser() async {
-    final user = await AuthService.getCurrentUser();
+    final user = await AuthService.refreshUser();
     if (mounted) {
       setState(() {
         _user = user;
@@ -102,17 +102,34 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       BoxShadow(color: Colors.black12, blurRadius: 10, offset: Offset(0, 4)),
                     ],
                   ),
-                  child: CircleAvatar(
-                    radius: 50,
-                    backgroundColor: const Color(0xFFEF7A45),
-                    backgroundImage: avatarUrl != null ? NetworkImage(avatarUrl) : null,
-                    onBackgroundImageError: avatarUrl != null ? (_, __) {} : null,
-                    child: avatarUrl == null
-                        ? Text(
-                            _getAvatarInitial(),
-                            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 36),
-                          )
-                        : null,
+                  child: Container(
+                    width: 100,
+                    height: 100,
+                    decoration: const BoxDecoration(
+                      color: Color(0xFFEF7A45),
+                      shape: BoxShape.circle,
+                    ),
+                    child: ClipOval(
+                      child: avatarUrl != null && avatarUrl.isNotEmpty
+                          ? Image.network(
+                              avatarUrl,
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) {
+                                return Center(
+                                  child: Text(
+                                    _getAvatarInitial(),
+                                    style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 36),
+                                  ),
+                                );
+                              },
+                            )
+                          : Center(
+                              child: Text(
+                                _getAvatarInitial(),
+                                style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 36),
+                              ),
+                            ),
+                    ),
                   ),
                 ),
               ),

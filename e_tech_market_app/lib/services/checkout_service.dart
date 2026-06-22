@@ -191,9 +191,9 @@ class CheckoutService {
   }) async {
     try {
       final body = paymentMethod == 'momo'
-          ? {'request_type': 'payWithMethod'}
-          : {};
-      final response = await DioClient.instance.post('/payments/$paymentMethod/$orderId/create', data: body);
+          ? {'request_type': 'payWithMethod', 'order_id': orderId}
+          : {'order_id': orderId};
+      final response = await DioClient.instance.post('/payments/$paymentMethod/create', data: body);
       final data = response.data as Map<String, dynamic>;
       return data['pay_url']?.toString() ?? '';
     } on DioException catch (e) {

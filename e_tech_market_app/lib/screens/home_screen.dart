@@ -16,6 +16,7 @@ import '../services/wishlist_service.dart';
 import '../services/cart_service.dart';
 import '../utils/network_utils.dart';
 import '../utils/app_snackbar.dart';
+import '../utils/app_dialogs.dart';
 import '../services/notification_service.dart';
 import 'notifications/notifications_screen.dart';
 import 'account/account_screen.dart';
@@ -52,6 +53,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   Map<String, dynamic>? _user;
+  bool _isUserLoading = true;
   int _selectedIndex = 0;
   int _cartItemCount = 0;
   int _unreadNotifCount = 0;
@@ -118,13 +120,16 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _loadUser() async {
-    final user = await AuthService.getCurrentUser();
+    final user = await AuthService.refreshUser();
     if (!mounted) return;
     setState(() {
       _user = user;
+      _isUserLoading = false;
     });
-    _loadCartCount();
-    _loadNotifications();
+    if (_user != null) {
+      _loadCartCount();
+      _loadNotifications();
+    }
   }
 
   Future<void> _loadCartCount() async {
@@ -393,6 +398,10 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _onTabSelected(int index) {
+    if ((index == 3 || index == 4) && _user == null) {
+      Navigator.push(context, MaterialPageRoute(builder: (_) => const LoginScreen())).then((_) => _loadUser());
+      return;
+    }
     setState(() {
       if (index != 1) {
         _selectedHomeCategoryId = null;
@@ -580,6 +589,10 @@ class _HomeScreenState extends State<HomeScreen> {
     
     // Cập nhật phần này:
     onAddToCart: (product) async {
+      if (_user == null) {
+        AppDialogs.showLoginRequiredDialog(context, onLoginSuccess: _loadUser);
+        return;
+      }
       try {
         final int productId = (product['id'] as num).toInt();
         
@@ -624,6 +637,10 @@ class _HomeScreenState extends State<HomeScreen> {
       
       // CẬP NHẬT HÀM DƯỚI ĐÂY:
       onAddToCart: (product) async {
+        if (_user == null) {
+          AppDialogs.showLoginRequiredDialog(context, onLoginSuccess: _loadUser);
+          return;
+        }
         try {
           final int productId = (product['id'] as num).toInt();
           
@@ -653,6 +670,10 @@ class _HomeScreenState extends State<HomeScreen> {
         _navigateToFlashSaleProductDetail(item);
       },
       onAddToCart: (item) async {
+        if (_user == null) {
+          AppDialogs.showLoginRequiredDialog(context, onLoginSuccess: _loadUser);
+          return;
+        }
         try {
           final variantId = item['variant_id'] as int?;
           final productId = (item['product_id'] as num?)?.toInt() ?? 0;
@@ -816,6 +837,10 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: const Icon(Icons.notifications_outlined),
                   ),
                   onPressed: () {
+                    if (_user == null) {
+                      AppDialogs.showLoginRequiredDialog(context, onLoginSuccess: _loadUser);
+                      return;
+                    }
                     _scaffoldKey.currentState?.openEndDrawer();
                   },
                   tooltip: Trans.notifications,
@@ -828,6 +853,10 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: const Icon(Icons.shopping_cart_outlined),
                   ),
                   onPressed: () {
+                    if (_user == null) {
+                      AppDialogs.showLoginRequiredDialog(context, onLoginSuccess: _loadUser);
+                      return;
+                    }
                     Navigator.push(
                       context,
                       MaterialPageRoute(builder: (context) => const CartScreen()),
@@ -839,23 +868,40 @@ class _HomeScreenState extends State<HomeScreen> {
                   onTap: () => _onTabSelected(4),
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 12),
-                    child: CircleAvatar(
-                      radius: 20,
-                      backgroundColor: const Color(0xFFEF7A45),
-                      backgroundImage: avatarUrl != null && avatarUrl.isNotEmpty
-                          ? NetworkImage(avatarUrl)
-                          : null,
-                      onBackgroundImageError:
-                          avatarUrl != null ? (_, __) {} : null,
-                      child: avatarUrl == null || avatarUrl.isEmpty
-                          ? Text(
-                              _getAvatarInitial(),
-                              style: const TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 16),
-                            )
-                          : null,
+                    child: Container(
+                      width: 40,
+                      height: 40,
+                      decoration: const BoxDecoration(
+                        color: Color(0xFFEF7A45),
+                        shape: BoxShape.circle,
+                      ),
+                      child: ClipOval(
+                        child: avatarUrl != null && avatarUrl.isNotEmpty
+                            ? Image.network(
+                                avatarUrl,
+                                fit: BoxFit.cover,
+                                errorBuilder: (context, error, stackTrace) {
+                                  return Center(
+                                    child: Text(
+                                      _getAvatarInitial(),
+                                      style: const TextStyle(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 16),
+                                    ),
+                                  );
+                                },
+                              )
+                            : Center(
+                                child: Text(
+                                  _getAvatarInitial(),
+                                  style: const TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16),
+                                ),
+                              ),
+                      ),
                     ),
                   ),
                 ),
@@ -868,7 +914,7 @@ class _HomeScreenState extends State<HomeScreen> {
             (_selectedIndex == 0 || _selectedIndex == 4 || _selectedIndex == 3)
                 ? EdgeInsets.zero
                 : const EdgeInsets.all(20),
-        child: _user == null
+        child: _isUserLoading
             ? const Center(child: CircularProgressIndicator())
             : _buildPageBody(),
       ),

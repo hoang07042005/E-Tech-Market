@@ -3,6 +3,7 @@ import 'package:dio/dio.dart';
 import '../main.dart' show navigatorKey;
 import '../services/auth_service.dart';
 import '../screens/auth/login_screen.dart';
+import '../screens/home_screen.dart';
 import 'api_config.dart';
 
 class DioClient {
@@ -12,6 +13,8 @@ class DioClient {
     _instance ??= _createDio();
     return _instance!;
   }
+
+  static bool _isRedirecting = false;
 
   static Dio _createDio() {
     final dio = Dio(BaseOptions(
@@ -34,19 +37,10 @@ class DioClient {
         return handler.next(options);
       },
       onError: (DioException e, handler) async {
-        // Khi token hết hạn / không hợp lệ → xóa session và về màn hình login
+        // Khi token hết hạn / không hợp lệ → chỉ xóa session ngầm, không điều hướng ép buộc
         if (e.response?.statusCode == 401) {
           await AuthService.clearSession();
           DioClient.reset(); // Tạo Dio mới cho lần đăng nhập kế tiếp
-
-          // Điều hướng về Login, xóa toàn bộ stack
-          final navigator = navigatorKey.currentState;
-          if (navigator != null && navigator.mounted) {
-            navigator.pushAndRemoveUntil(
-              MaterialPageRoute(builder: (_) => const LoginScreen()),
-              (_) => false,
-            );
-          }
         }
         return handler.next(e);
       },

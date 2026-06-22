@@ -1,33 +1,47 @@
 import '../config/api_config.dart';
 class NetworkUtils {
   static String fixDeviceUrl(String? url) {
-    if (url == null || url.isEmpty) return '';
+    if (url == null || url.trim().isEmpty) return '';
 
-    var fixedUrl = url.trim();
-    final baseUri = Uri.parse(ApiConfig.apiBaseUrl);
+    // Chuẩn hoá dấu gạch chéo ngược trên Windows
+    var s = url.trim().replaceAll('\\', '/');
+    final baseUri = Uri.parse(ApiConfig.apiBaseUrl); // VD: http://192.168.24.19:8000/api/v1
+    final targetOrigin = '${baseUri.scheme}://${baseUri.host}:${baseUri.port}'; // VD: http://192.168.24.19:8000
 
-    // If it's a relative URL, ensure it has the base scheme and host
-    if (!fixedUrl.startsWith('http://') && !fixedUrl.startsWith('https://')) {
-      if (!fixedUrl.startsWith('/')) {
-        fixedUrl = '/$fixedUrl';
+    // 1. Nếu đã là Absolute URL (Bắt đầu bằng http:// hoặc https://)
+    if (s.startsWith(RegExp(r'^https?://', caseSensitive: false))) {
+      final originRegex = RegExp(r'^https?://([^/]+)', caseSensitive: false);
+      final match = originRegex.firstMatch(s);
+      
+      if (match != null) {
+        final hostPort = match.group(1)!;
+        // Kiểm tra xem host có phải là nginx (Docker), localhost, 127.0.0.1, hoặc IP local không
+        if (hostPort.startsWith('nginx') || 
+            hostPort.startsWith('localhost') || 
+            hostPort.startsWith('127.0.0.1') || 
+            hostPort.startsWith('192.168.') || 
+            hostPort.startsWith('10.')) {
+          
+          // Trích xuất phần path bằng cách cắt bỏ origin
+          final origin = match.group(0)!;
+          final path = s.replaceFirst(origin, '');
+          // Gắn targetOrigin (IP thiết bị) vào phần path
+          s = targetOrigin + path;
+        }
       }
-      return '${baseUri.scheme}://${baseUri.host}:${baseUri.port}$fixedUrl';
+      return Uri.encodeFull(s);
     }
 
-    // It's an absolute URL. Parse it to safely replace host/port.
-    try {
-      final uri = Uri.parse(fixedUrl);
-      // Rewrite host/port if it comes from the local backend (localhost, 127.0.0.1, or 192.168.x.x)
-      if (uri.host == 'localhost' || uri.host == '127.0.0.1' || uri.host.startsWith('192.168.') || uri.host.startsWith('10.')) {
-        final newUri = uri.replace(
-          host: baseUri.host,
-          port: baseUri.port,
-        );
-        return newUri.toString();
-      }
-      return fixedUrl;
-    } catch (e) {
-      return fixedUrl;
+    // 2. Nếu là Relative path bắt đầu bằng /storage/ hoặc storage/ (nginx proxy)
+    if (s.startsWith('/storage/') || s.startsWith('storage/')) {
+      s = s.replaceFirst(RegExp(r'^/+'), '');
+      return Uri.encodeFull('$targetOrigin/$s');
     }
+
+    // 3. Các đường dẫn relative khác (ví dụ: uploads/...)
+    if (!s.startsWith('/')) {
+      s = '/$s';
+    }
+    return Uri.encodeFull('$targetOrigin$s');
   }
 }

@@ -29,8 +29,8 @@ class _PaymentWebViewScreenState extends State<PaymentWebViewScreen> {
           },
           onNavigationRequest: (NavigationRequest request) {
             // Check if VNPAY or Momo redirects back to our localhost backend
-            if (request.url.contains('/api/payments/vnpay/return') || 
-                request.url.contains('/api/payments/momo/return')) {
+            if (request.url.contains('/payments/vnpay/return') || 
+                request.url.contains('/payments/momo/return')) {
               // Intercept before it tries to load localhost on the device
               Navigator.pop(context, request.url);
               return NavigationDecision.prevent;

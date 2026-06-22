@@ -7,6 +7,8 @@ import '../../services/cart_service.dart';
 import '../../utils/network_utils.dart';
 import '../../utils/app_snackbar.dart';
 import '../../utils/translation.dart';
+import '../../utils/app_dialogs.dart';
+import '../../services/auth_service.dart';
 import 'product_detail_screen.dart';
 import '../cart/cart_screen.dart';
 
@@ -963,6 +965,12 @@ class _ProductsScreenState extends State<ProductsScreen> {
                         height: 42,
                         child: OutlinedButton.icon(
                           onPressed: () async {
+                            final hasSession = await AuthService.hasSession();
+                            if (!hasSession) {
+                              if (!mounted) return;
+                              AppDialogs.showLoginRequiredDialog(context);
+                              return;
+                            }
                             try {
                               await CartService.addToCart(productId, 1);
                               if (!mounted) return;
@@ -999,6 +1007,12 @@ class _ProductsScreenState extends State<ProductsScreen> {
                         height: 42,
                         child: ElevatedButton(
                           onPressed: () async {
+                            final hasSession = await AuthService.hasSession();
+                            if (!hasSession) {
+                              if (!mounted) return;
+                              AppDialogs.showLoginRequiredDialog(context);
+                              return;
+                            }
                             try {
                               // 1. Thêm sản phẩm vào giỏ hàng trước
                               await CartService.addToCart(productId, 1);

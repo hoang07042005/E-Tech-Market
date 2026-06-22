@@ -123,6 +123,6 @@ class _EntryPointState extends State<EntryPoint> {
       return const MaintenanceScreen();
     }
 
-    return _hasSession ? const HomeScreen() : const LoginScreen();
+    return const HomeScreen();
   }
 }
