@@ -19,6 +19,7 @@ services:
       - "9000"
     volumes:
       - ./e-tech-market-backend:/var/www
+      - /var/www/vendor
       
     command: /bin/sh -c "([ -L public/storage ] || php artisan storage:link --force) && cp /usr/local/etc/php-fpm.d/www.conf /usr/local/etc/php-fpm.d/www.conf.bak && sed -i 's|listen = 127.0.0.1:9000|listen = 0.0.0.0:9000|' /usr/local/etc/php-fpm.d/www.conf && php-fpm"
     environment:
@@ -64,6 +65,7 @@ services:
       dockerfile: Dockerfile
     volumes:
       - ./e-tech-market-backend:/var/www
+      - /var/www/vendor
       
     command: /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf
     environment:

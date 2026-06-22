@@ -171,7 +171,7 @@ class _FlashSaleSectionState extends State<FlashSaleSection> {
                   const Icon(Icons.flash_on, color: Color(0xFFFF2424), size: 28),
                   const SizedBox(width: 6),
                   Text(
-                    _flashSale?['name'] != null ? '${_flashSale!['name'].toString().toUpperCase()}' : 'FLASH SALE',
+                    'FLASH SALE',
                     style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18, letterSpacing: 0.5),
                   ),
                 ],

@@ -16,7 +16,7 @@ RUN apt-get update && apt-get install -y \
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Install PHP extensions
-RUN docker-php-ext-install pdo_mysql pdo_pgsql mbstring exif pcntl bcmath gd
+RUN docker-php-ext-install pdo_mysql pdo_pgsql mbstring exif pcntl bcmath gd opcache
 
 # Install phpredis extension (required for CACHE_DRIVER=redis / SESSION_DRIVER=redis)
 RUN pecl install redis && docker-php-ext-enable redis
@@ -29,6 +29,16 @@ RUN printf '%s\n' \
     'max_execution_time = 300' \
     'max_input_time = 300' \
     > /usr/local/etc/php/conf.d/uploads.ini
+
+# Enable and configure OPcache for development/production
+RUN printf '%s\n' \
+    'opcache.enable=1' \
+    'opcache.memory_consumption=256' \
+    'opcache.interned_strings_buffer=16' \
+    'opcache.max_accelerated_files=10000' \
+    'opcache.revalidate_freq=0' \
+    'opcache.validate_timestamps=1' \
+    > /usr/local/etc/php/conf.d/opcache.ini
 
 # Get latest Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
