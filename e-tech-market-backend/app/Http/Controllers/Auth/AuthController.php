@@ -17,7 +17,8 @@ class AuthController extends Controller
 {
     /**
      * Create a new token for the user and set as httpOnly cookie.
-     * Also returns token in body for dev fallback.
+     * In production: only cookie (no token in body) to prevent XSS theft.
+     * In dev: token in body for Bearer auth convenience.
      */
     private function createTokenResponse(User $user, int $minutes = 60 * 24): array
     {
@@ -36,7 +37,11 @@ class AuthController extends Controller
 
         $cookie = Cookie::make('sanctum_token', $token, $minutes, '/', null, $secure, true, false, $sameSite);
 
-        return [$token, $cookie];
+        // In production: only return token via httpOnly cookie (token not in body)
+        // In dev: return token in body for Bearer auth convenience
+        $tokenInBody = $isProduction ? null : $token;
+
+        return [$tokenInBody, $cookie];
     }
 
     public function login(Request $r)
@@ -58,9 +63,12 @@ class AuthController extends Controller
         [$token, $cookie] = $this->createTokenResponse($u);
         $u->load('roles');
 
-        // Always return token in response body for Bearer auth.
-        // In production, token is also in httpOnly cookie for extra security.
-        $data = ['user' => new UserResource($u), 'token' => $token];
+        // In production: token ONLY in httpOnly cookie (not in body) - prevents XSS theft
+        // In dev: token in body for Bearer auth convenience
+        $data = ['user' => new UserResource($u)];
+        if ($token !== null) {
+            $data['token'] = $token;
+        }
 
         return response()->json($data)->withCookie($cookie);
     }
@@ -93,9 +101,12 @@ class AuthController extends Controller
         [$token, $cookie] = $this->createTokenResponse($u);
         $u->load('roles');
 
-        // Always return token in response body for Bearer auth.
-        // In production, token is also in httpOnly cookie for extra security.
-        $data = ['user' => new UserResource($u), 'token' => $token];
+        // In production: token ONLY in httpOnly cookie (not in body) - prevents XSS theft
+        // In dev: token in body for Bearer auth convenience
+        $data = ['user' => new UserResource($u)];
+        if ($token !== null) {
+            $data['token'] = $token;
+        }
 
         return response()->json($data, 201)->withCookie($cookie);
     }
