@@ -144,8 +144,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/wishlist', [WishlistController::class, 'index']);
     Route::post('/wishlist/toggle', [WishlistController::class, 'toggle']);
 
-    // Chatbot
-    Route::post('/chatbot/message', [ChatbotController::class, 'message'])->middleware('throttle:30,1');
 
     Route::get('/notifications', [ClientNotificationsController::class, 'index']);
     Route::patch('/notifications/{notification}/read', [ClientNotificationsController::class, 'markRead']);
@@ -268,6 +266,9 @@ Route::get('/store/shipping', [StoreProfileController::class, 'shipping']);
 Route::get('/banners', [ClientBannerController::class, 'index']);
 Route::get('/videos', [App\Http\Controllers\Client\VideoController::class, 'index']);
 Route::get('/videos/{video}', [App\Http\Controllers\Client\VideoController::class, 'show']);
+
+// Chatbot
+Route::post('/chatbot/message', [ChatbotController::class, 'message'])->middleware('throttle:30,1');
 
 // Unified home data endpoint - reduces multiple API calls to 1
 Route::get('/home', [App\Http\Controllers\Client\HomeController::class, 'index']);

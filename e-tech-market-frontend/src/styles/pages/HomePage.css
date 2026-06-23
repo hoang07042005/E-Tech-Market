@@ -214,7 +214,7 @@
 /* Curated Excellence */
 .hpCuratedSection {
   padding-top: 40px;
-  background: var(--et-surface);
+  background: var(--et-bg);
 }
 
 .hpCuratedHeader {
@@ -901,7 +901,7 @@
 
 /* Why Us Section */
 .hpWhyUsSection {
-  background: var(--et-surface);
+  background: var(--et-bg);
 }
 
 .hpWhyUsSection .hpContainer {
@@ -1662,7 +1662,7 @@
 
 /* Coupon Section */
 .hpCouponSection {
-  background: var(--et-surface);
+  background: var(--et-bg);
   padding: 16px 0;
 }
 
@@ -1702,6 +1702,8 @@
   overflow-x: auto;
   padding: 12px 4px;
   -webkit-overflow-scrolling: touch;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 
 .hpCouponGridWrapper::-webkit-scrollbar {

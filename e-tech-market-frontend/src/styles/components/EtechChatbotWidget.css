@@ -1,0 +1,530 @@
+.etech-bot-fab {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background-color: #f26522;
+  color: white;
+  border: none;
+  box-shadow: 0 4px 12px rgba(242, 101, 34, 0.4);
+  cursor: pointer;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.etech-bot-fab:hover {
+  transform: scale(1.05);
+}
+
+.etech-bot-container {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  width: 380px;
+  height: 600px;
+  max-height: 80vh;
+  background-color: white;
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+  display: flex;
+  flex-direction: column;
+  z-index: 9999;
+  overflow: hidden;
+  border: 1px solid #e2e8f0;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.dark .etech-bot-container {
+  background-color: #1e293b;
+  border-color: #334155;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+}
+
+.etech-bot-header {
+  background: linear-gradient(135deg, #f26522, #ff8a50);
+  padding: 16px;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.dark .etech-bot-header {
+  background: linear-gradient(135deg, #c04c16, #e65100);
+}
+
+.etech-bot-header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.etech-bot-header-icon {
+  width: 36px;
+  height: 36px;
+  background-color: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.etech-bot-header-title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.etech-bot-header-status {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  opacity: 0.9;
+}
+
+.etech-bot-status-dot {
+  width: 8px;
+  height: 8px;
+  background-color: #4ade80;
+  border-radius: 50%;
+}
+
+.etech-bot-header-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.etech-bot-header-btn {
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  padding: 4px;
+  transition: opacity 0.2s;
+}
+
+.etech-bot-header-btn:hover {
+  opacity: 0.8;
+}
+
+.etech-bot-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+  background-color: #f8fafc;
+  transition: background-color 0.3s ease;
+}
+
+.dark .etech-bot-messages {
+  background-color: #0f172a;
+}
+
+.etech-bot-messages::-webkit-scrollbar {
+  display: none;
+}
+.etech-bot-messages {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.etech-bot-msg-wrapper {
+  margin-bottom: 16px;
+}
+
+.etech-bot-msg-row {
+  display: flex;
+  gap: 8px;
+  align-items: flex-end;
+}
+
+.etech-bot-msg-row.user {
+  flex-direction: row-reverse;
+}
+
+.etech-bot-avatar {
+  width: 28px;
+  height: 28px;
+  background: linear-gradient(135deg, #f26522, #ff8a50);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  flex-shrink: 0;
+}
+
+.dark .etech-bot-avatar {
+  background: linear-gradient(135deg, #c04c16, #e65100);
+}
+
+.etech-bot-msg-bubble {
+  max-width: 75%;
+  padding: 12px 16px;
+  font-size: 14px;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.dark .etech-bot-msg-bubble {
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+
+.etech-bot-msg-row.user .etech-bot-msg-bubble {
+  background-color: #f26522;
+  color: white;
+  border-radius: 16px 16px 4px 16px;
+}
+
+.dark .etech-bot-msg-row.user .etech-bot-msg-bubble {
+  background-color: #c04c16;
+}
+
+.etech-bot-msg-row.model .etech-bot-msg-bubble {
+  background-color: white;
+  color: #1e293b;
+  border-radius: 16px 16px 16px 4px;
+}
+
+.dark .etech-bot-msg-row.model .etech-bot-msg-bubble {
+  background-color: #1e293b;
+  color: #f8fafc;
+}
+
+.etech-bot-msg-time {
+  font-size: 10px;
+  margin-top: 4px;
+}
+
+.etech-bot-msg-row.user .etech-bot-msg-time {
+  color: rgba(255,255,255,0.7);
+  text-align: right;
+}
+
+.etech-bot-msg-row.model .etech-bot-msg-time {
+  color: #94a3b8;
+  text-align: left;
+}
+
+.dark .etech-bot-msg-row.model .etech-bot-msg-time {
+  color: #64748b;
+}
+
+.etech-bot-extras {
+  margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.etech-bot-extras.model {
+  margin-left: 36px;
+}
+
+.etech-bot-product-carousel {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 8px;
+  margin: 0 -16px;
+  padding-left: 16px;
+}
+
+.etech-bot-product-carousel::-webkit-scrollbar {
+  display: none;
+}
+.etech-bot-product-carousel {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.etech-bot-product-card {
+  min-width: 160px;
+  width: 160px;
+  background-color: white;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  overflow: hidden;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  flex-shrink: 0;
+  transition: transform 0.2s, background-color 0.3s, border-color 0.3s;
+}
+
+.dark .etech-bot-product-card {
+  background-color: #1e293b;
+  border-color: #334155;
+}
+
+.etech-bot-product-card:hover {
+  transform: translateY(-2px);
+}
+
+.etech-bot-product-img-wrap {
+  height: 120px;
+  background-color: #f8fafc;
+  padding: 8px;
+}
+
+.dark .etech-bot-product-img-wrap {
+  background-color: #0f172a;
+}
+
+.etech-bot-product-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.etech-bot-product-info {
+  padding: 8px;
+}
+
+.etech-bot-product-brand {
+  font-size: 10px;
+  color: #f26522;
+  font-weight: bold;
+}
+
+.etech-bot-product-name {
+  font-size: 12px;
+  font-weight: 600;
+  height: 34px;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  color: #0f172a;
+}
+
+.dark .etech-bot-product-name {
+  color: #f8fafc;
+}
+
+.etech-bot-product-rating {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 4px;
+}
+
+.etech-bot-product-price-wrap {
+  margin-top: 4px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+}
+
+.etech-bot-product-price {
+  font-size: 12px;
+  font-weight: bold;
+  color: #f26522;
+}
+
+.etech-bot-product-orig-price {
+  font-size: 10px;
+  text-decoration: line-through;
+  color: #94a3b8;
+}
+
+.etech-bot-coupon {
+  background: linear-gradient(135deg, #10b981, #34d399);
+  padding: 12px;
+  border-radius: 12px;
+  color: white;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  align-self: flex-start;
+}
+
+.dark .etech-bot-coupon {
+  background: linear-gradient(135deg, #059669, #10b981);
+}
+
+.etech-bot-coupon-text {
+  font-size: 10px;
+  opacity: 0.9;
+}
+
+.etech-bot-coupon-code {
+  font-size: 16px;
+  font-weight: bold;
+  letter-spacing: 1px;
+}
+
+.etech-bot-flash-btn {
+  background-color: #f26522;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-weight: bold;
+  font-size: 13px;
+  cursor: pointer;
+  align-self: flex-start;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: opacity 0.2s;
+}
+
+.dark .etech-bot-flash-btn {
+  background-color: #c04c16;
+}
+
+.etech-bot-flash-btn:hover {
+  opacity: 0.9;
+}
+
+.etech-bot-typing-indicator {
+  background-color: white;
+  padding: 12px 16px;
+  border-radius: 16px 16px 16px 4px;
+  display: flex;
+  gap: 4px;
+  transition: background-color 0.3s;
+}
+
+.dark .etech-bot-typing-indicator {
+  background-color: #1e293b;
+}
+
+.etech-bot-typing-dot {
+  width: 6px;
+  height: 6px;
+  background-color: #94a3b8;
+  border-radius: 50%;
+  animation: etech-typing 1s infinite;
+}
+
+.etech-bot-typing-dot:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.etech-bot-typing-dot:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes etech-typing {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+
+.etech-bot-quick-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 16px;
+  padding-left: 36px;
+}
+
+.etech-bot-quick-btn {
+  border: 1px solid #f26522;
+  background-color: white;
+  color: #f26522;
+  padding: 6px 12px;
+  border-radius: 16px;
+  font-size: 12px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.dark .etech-bot-quick-btn {
+  background-color: transparent;
+  border-color: #f26522;
+  color: #f26522;
+}
+
+.etech-bot-quick-btn:hover {
+  background-color: #f26522;
+  color: white;
+}
+
+.dark .etech-bot-quick-btn:hover {
+  background-color: #f26522;
+  color: white;
+}
+
+.etech-bot-input-wrap {
+  padding: 12px 16px;
+  background-color: white;
+  border-top: 1px solid #e2e8f0;
+  transition: background-color 0.3s, border-color 0.3s;
+}
+
+.dark .etech-bot-input-wrap {
+  background-color: #1e293b;
+  border-color: #334155;
+}
+
+.etech-bot-input-inner {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  background-color: #f8fafc;
+  border-radius: 24px;
+  padding: 4px 8px 4px 16px;
+  transition: background-color 0.3s;
+}
+
+.dark .etech-bot-input-inner {
+  background-color: #0f172a;
+}
+
+.etech-bot-input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  outline: none;
+  font-size: 14px;
+  padding: 8px 0;
+  color: #0f172a;
+}
+
+.dark .etech-bot-input {
+  color: #f8fafc;
+}
+
+.etech-bot-input::placeholder {
+  color: #94a3b8;
+}
+
+.etech-bot-send-btn {
+  border: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  transition: background-color 0.2s;
+}
+
+.etech-bot-send-btn.active {
+  background: linear-gradient(135deg, #f26522, #ff8a50);
+  cursor: pointer;
+}
+
+.dark .etech-bot-send-btn.active {
+  background: linear-gradient(135deg, #c04c16, #e65100);
+}
+
+.etech-bot-send-btn.disabled {
+  background-color: #e2e8f0;
+  cursor: not-allowed;
+}
+
+.dark .etech-bot-send-btn.disabled {
+  background-color: #334155;
+  color: #64748b;
+}

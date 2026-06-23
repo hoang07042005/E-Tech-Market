@@ -14,7 +14,7 @@ class GeminiService
     public function __construct()
     {
         $this->apiKey = config('services.gemini.api_key', env('GEMINI_API_KEY', ''));
-        $this->model = config('services.gemini.model', 'gemini-2.0-flash');
+        $this->model = config('services.gemini.model', 'gemini-1.5-flash-latest');
         $this->baseUrl = 'https://generativelanguage.googleapis.com/v1beta';
     }
 
@@ -113,10 +113,16 @@ class GeminiService
             return 'Dạ, đây là thông tin đơn hàng bạn cần tra cứu ạ:';
         }
         if (str_contains($context, 'Yêu cầu so sánh')) {
-            return 'Dạ đây là các sản phẩm bạn muốn so sánh. Hiện tại hệ thống AI đang bảo trì nên mình chưa thể phân tích chi tiết ưu nhược điểm, bạn xem tạm cấu hình trên thẻ sản phẩm nhé!';
+            return 'Dạ đây là các sản phẩm bạn muốn so sánh. Hiện tại hệ thống AI đang bảo trì nên mình chưa thể phân tích chi tiết, bạn xem cấu hình trên thẻ sản phẩm nhé!';
+        }
+        if (str_contains($context, 'LƯU Ý DÀNH CHO BOT: Khách hàng yêu cầu tư vấn')) {
+            return 'Bạn đang cần tìm sản phẩm gì ạ? (Ví dụ: điện thoại, laptop, phụ kiện) Hãy cho E-Tech biết thêm chi tiết để mình tư vấn chính xác hơn nhé!';
         }
         if (str_contains($context, 'Danh sách sản phẩm phù hợp')) {
-            return 'Dựa vào yêu cầu, E-Tech Bot xin gợi ý cho bạn một số sản phẩm sau đây:';
+            if (str_contains($context, 'Không tìm thấy sản phẩm nào phù hợp')) {
+                return 'Hiện tại E-Tech Market chưa có sản phẩm nào hoàn toàn khớp với yêu cầu này của bạn. Câu hỏi của bạn có thể cần chuyên viên kỹ thuật giải đáp kỹ hơn, bạn vui lòng đợi trong giây lát nhé!';
+            }
+            return 'Dựa vào yêu cầu, E-Tech Bot xin gợi ý cho bạn một số sản phẩm nổi bật sau đây:';
         }
         if (str_contains($context, 'Chương trình Flash Sale đang diễn ra:')) {
             return "Dạ đây là thông tin chương trình Flash Sale của E-Tech Market ạ:\n\n" . str_replace("Chương trình Flash Sale đang diễn ra:\n", "", str_replace("Một số sản phẩm nổi bật trong chương trình:\n", "", $context));
@@ -130,8 +136,8 @@ class GeminiService
         if (str_contains($context, 'Tin tức công nghệ mới nhất:')) {
             return "Dạ đây là các bài viết và tin tức công nghệ mới nhất từ E-Tech Market:\n\n" . str_replace("Tin tức công nghệ mới nhất:\n", "", $context);
         }
-        if (str_contains($context, 'Chính sách E-Tech Market:')) {
-            return "E-Tech Market hỗ trợ bảo hành chính hãng 12-24 tháng và 1 đổi 1 trong 30 ngày đầu. Bạn xem thêm thông tin chi tiết trên website nhé!";
+        if (str_contains($context, 'Thông tin chung & Chính sách E-Tech Market (FAQs):')) {
+            return "Dạ đây là thông tin và chính sách của E-Tech Market:\n\n" . str_replace("Thông tin chung & Chính sách E-Tech Market (FAQs):\n", "", $context);
         }
         if (str_contains($context, 'Chương trình khuyến mãi hiện tại:')) {
             return "Dạ hiện tại E-Tech đang có mã giảm giá này dành riêng cho bạn nhé:";
@@ -139,6 +145,6 @@ class GeminiService
         if (str_contains($context, 'Thông báo khuyến mãi:')) {
             return "Dạ rất tiếc hiện tại E-Tech Market đang không có chương trình giảm giá nào. Bạn ghé lại sau nha!";
         }
-        return 'Dạ hiện tại hệ thống AI tư vấn tự do đang được bảo trì. Nhưng bạn vẫn có thể sử dụng các chức năng tự động như tra cứu đơn hàng hay xem gợi ý sản phẩm nha!';
+        return 'Câu hỏi của bạn cần chuyên viên kỹ thuật giải đáp kỹ hơn. Bạn vui lòng đợi trong giây lát, nhân viên tư vấn của E-Tech sẽ phản hồi bạn ngay lập tức ạ!';
     }
 }

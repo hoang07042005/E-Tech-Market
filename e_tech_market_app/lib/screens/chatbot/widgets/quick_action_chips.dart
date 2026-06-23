@@ -7,34 +7,34 @@ class QuickActionChips extends StatelessWidget {
 
   static const List<Map<String, dynamic>> _actions = [
     {
-      'label': '💻 Tư vấn laptop',
-      'message': 'Tư vấn cho mình laptop phù hợp với nhu cầu học tập và làm việc',
+      'label': '🔍 Tìm & Gợi ý sản phẩm',
+      'message': 'Tìm & Gợi ý sản phẩm',
       'color': Color(0xFF3B82F6),
     },
     {
-      'label': '📱 Tư vấn điện thoại',
-      'message': 'Gợi ý điện thoại chụp ảnh đẹp, pin trâu tầm giá 10 triệu',
+      'label': '⚖️ So sánh sản phẩm',
+      'message': 'So sánh sản phẩm',
       'color': Color(0xFF10B981),
     },
     {
       'label': '📦 Tra cứu đơn hàng',
-      'message': 'Mình muốn tra cứu trạng thái đơn hàng',
+      'message': 'Tra cứu đơn hàng',
       'color': Color(0xFF8B5CF6),
     },
     {
-      'label': '🔄 So sánh sản phẩm',
-      'message': 'So sánh hai sản phẩm giúp mình',
+      'label': '🎁 Ưu đãi & Khuyến mãi',
+      'message': 'Ưu đãi & Khuyến mãi',
       'color': Color(0xFFF59E0B),
     },
     {
-      'label': '🛡️ Chính sách bảo hành',
-      'message': 'Chính sách bảo hành và đổi trả của E-Tech Market như thế nào?',
-      'color': Color(0xFFEF4444),
+      'label': '💬 Cần tư vấn chuyên sâu',
+      'message': 'Cần tư vấn chuyên sâu',
+      'color': Color(0xFFEC4899),
     },
     {
-      'label': '🎁 Mã giảm giá',
-      'message': 'Hiện tại có mã giảm giá nào không?',
-      'color': Color(0xFFEC4899),
+      'label': '❓ Câu hỏi thường gặp (FAQs)',
+      'message': 'Câu hỏi thường gặp (FAQs)',
+      'color': Color(0xFFEF4444),
     },
   ];
 

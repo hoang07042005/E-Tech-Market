@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { apiFetch } from '@/configs/api.config';
 import { useNavigate } from 'react-router-dom';
+import '@/styles/components/EtechChatbotWidget.css';
 
 type ProductCard = {
   id: number;
@@ -48,7 +49,7 @@ export default function EtechChatbotWidget() {
         {
           id: 'welcome',
           role: 'model',
-          text: 'Xin chào! 👋 Mình là **E-Tech Bot**, trợ lý tư vấn công nghệ của E-Tech Market.\n\nBạn cần mình hỗ trợ gì nào?',
+          text: 'Xin chào bạn! Chào mừng bạn đến với **E-Tech Market - Thế giới công nghệ chính hãng**. 🤖\n\nTôi có thể giúp gì cho bạn hôm nay? (Vui lòng chọn một mục dưới đây hoặc nhập câu hỏi trực tiếp nhé):',
           timestamp: new Date(),
         },
       ]);
@@ -125,24 +126,8 @@ export default function EtechChatbotWidget() {
   if (!isOpen) {
     return (
       <button
+        className="etech-bot-fab"
         onClick={() => setIsOpen(true)}
-        style={{
-          position: 'fixed',
-          bottom: '24px',
-          right: '24px',
-          width: '56px',
-          height: '56px',
-          borderRadius: '50%',
-          backgroundColor: '#f26522',
-          color: 'white',
-          border: 'none',
-          boxShadow: '0 4px 12px rgba(242, 101, 34, 0.4)',
-          cursor: 'pointer',
-          zIndex: 9999,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}
       >
         <svg width="28" height="28" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
           <path strokeLinecap="round" strokeLinejoin="round" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
@@ -152,71 +137,35 @@ export default function EtechChatbotWidget() {
   }
 
   return (
-    <div
-      style={{
-        position: 'fixed',
-        bottom: '24px',
-        right: '24px',
-        width: '380px',
-        height: '600px',
-        maxHeight: '80vh',
-        backgroundColor: 'white',
-        borderRadius: '16px',
-        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.15)',
-        display: 'flex',
-        flexDirection: 'column',
-        zIndex: 9999,
-        overflow: 'hidden',
-        border: '1px solid #e2e8f0',
-      }}
-    >
+    <div className="etech-bot-container">
       {/* Header */}
-      <div
-        style={{
-          background: 'linear-gradient(135deg, #f26522, #ff8a50)',
-          padding: '16px',
-          color: 'white',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-        }}
-      >
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <div
-            style={{
-              width: '36px',
-              height: '36px',
-              backgroundColor: 'rgba(255, 255, 255, 0.2)',
-              borderRadius: '50%',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-          >
+      <div className="etech-bot-header">
+        <div className="etech-bot-header-left">
+          <div className="etech-bot-header-icon">
             <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M12 2a2 2 0 0 1 2 2v2.26l.46.12a5 5 0 0 1 3.51 3.51l.12.46H20a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2h-1.91l-.12.46a5 5 0 0 1-3.51 3.51l-.46.12V20a2 2 0 0 1-2 2h-4a2 2 0 0 1-2-2v-1.34l-.46-.12a5 5 0 0 1-3.51-3.51l-.12-.46H4a2 2 0 0 1-2-2v-2a2 2 0 0 1 2-2h1.91l.12-.46a5 5 0 0 1 3.51-3.51l.46-.12V4a2 2 0 0 1 2-2h4zM9.5 12a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3zm5 0a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3zm-2.5 4c-1.5 0-2.83-.8-3.5-2H15c-.67 1.2-2 2-3.5 2z" />
+              <path d="M22 14h-1c0-3.87-3.13-7-7-7h-1V5.73A2 2 0 1 0 10 5.73V7H9c-3.87 0-7 3.13-7 7H1v4h1c0 2.21 1.79 4 4 4h12c2.21 0 4-1.79 4-4h1v-4zm-14-1c.83 0 1.5.67 1.5 1.5S8.83 16 8 16s-1.5-.67-1.5-1.5S7.17 13 8 13zm8 0c.83 0 1.5.67 1.5 1.5S16.83 16 16 16s-1.5-.67-1.5-1.5.67-1.5 1.5-1.5z"/>
             </svg>
           </div>
           <div>
-            <h3 style={{ margin: 0, fontSize: '16px', fontWeight: 'bold' }}>E-Tech Bot</h3>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '12px', opacity: 0.9 }}>
-              <span style={{ width: '8px', height: '8px', backgroundColor: '#4ade80', borderRadius: '50%' }}></span>
+            <h3 className="etech-bot-header-title">E-Tech Bot</h3>
+            <div className="etech-bot-header-status">
+              <span className="etech-bot-status-dot"></span>
               Sẵn sàng hỗ trợ
             </div>
           </div>
         </div>
-        <div style={{ display: 'flex', gap: '8px' }}>
+        <div className="etech-bot-header-actions">
           <button
+            className="etech-bot-header-btn"
             onClick={() => {
               setMessages([{
                 id: 'welcome',
                 role: 'model',
-                text: 'Xin chào! 👋 Mình là **E-Tech Bot**, trợ lý tư vấn công nghệ của E-Tech Market.\n\nBạn cần mình hỗ trợ gì nào?',
+                text: 'Xin chào bạn! Chào mừng bạn đến với **E-Tech Market - Thế giới công nghệ chính hãng**. 🤖\n\nTôi có thể giúp gì cho bạn hôm nay? (Vui lòng chọn một mục dưới đây hoặc nhập câu hỏi trực tiếp nhé):',
                 timestamp: new Date(),
               }]);
               setShowQuickActions(true);
             }}
-            style={{ background: 'none', border: 'none', color: 'white', cursor: 'pointer', padding: '4px' }}
             title="Làm mới"
           >
             <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -224,8 +173,8 @@ export default function EtechChatbotWidget() {
             </svg>
           </button>
           <button
+            className="etech-bot-header-btn"
             onClick={() => setIsOpen(false)}
-            style={{ background: 'none', border: 'none', color: 'white', cursor: 'pointer', padding: '4px' }}
           >
             <svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -235,112 +184,62 @@ export default function EtechChatbotWidget() {
       </div>
 
       {/* Messages */}
-      <div className="etech-bot-scroll" style={{ flex: 1, overflowY: 'auto', padding: '16px', backgroundColor: '#f8fafc' }}>
+      <div className="etech-bot-messages">
         {messages.map((msg) => {
           const isUser = msg.role === 'user';
           return (
-            <div key={msg.id} style={{ marginBottom: '16px' }}>
-              <div
-                style={{
-                  display: 'flex',
-                  flexDirection: isUser ? 'row-reverse' : 'row',
-                  gap: '8px',
-                  alignItems: 'flex-end',
-                }}
-              >
+            <div key={msg.id} className="etech-bot-msg-wrapper">
+              <div className={`etech-bot-msg-row ${isUser ? 'user' : 'model'}`}>
                 {!isUser && (
-                  <div
-                    style={{
-                      width: '28px',
-                      height: '28px',
-                      background: 'linear-gradient(135deg, #f26522, #ff8a50)',
-                      borderRadius: '50%',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      color: 'white',
-                      flexShrink: 0,
-                    }}
-                  >
+                  <div className="etech-bot-avatar">
                     <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M12 2a2 2 0 0 1 2 2v2.26l.46.12a5 5 0 0 1 3.51 3.51l.12.46H20a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2h-1.91l-.12.46a5 5 0 0 1-3.51 3.51l-.46.12V20a2 2 0 0 1-2 2h-4a2 2 0 0 1-2-2v-1.34l-.46-.12a5 5 0 0 1-3.51-3.51l-.12-.46H4a2 2 0 0 1-2-2v-2a2 2 0 0 1 2-2h1.91l.12-.46a5 5 0 0 1 3.51-3.51l.46-.12V4a2 2 0 0 1 2-2h4z" />
+                      <path d="M22 14h-1c0-3.87-3.13-7-7-7h-1V5.73A2 2 0 1 0 10 5.73V7H9c-3.87 0-7 3.13-7 7H1v4h1c0 2.21 1.79 4 4 4h12c2.21 0 4-1.79 4-4h1v-4zm-14-1c.83 0 1.5.67 1.5 1.5S8.83 16 8 16s-1.5-.67-1.5-1.5S7.17 13 8 13zm8 0c.83 0 1.5.67 1.5 1.5S16.83 16 16 16s-1.5-.67-1.5-1.5.67-1.5 1.5-1.5z"/>
                     </svg>
                   </div>
                 )}
-                <div
-                  style={{
-                    maxWidth: '75%',
-                    backgroundColor: isUser ? '#f26522' : 'white',
-                    color: isUser ? 'white' : '#1e293b',
-                    padding: '12px 16px',
-                    borderRadius: isUser ? '16px 16px 4px 16px' : '16px 16px 16px 4px',
-                    boxShadow: '0 2px 8px rgba(0,0,0,0.05)',
-                    fontSize: '14px',
-                    lineHeight: '1.5',
-                    whiteSpace: 'pre-wrap',
-                  }}
-                >
+                <div className="etech-bot-msg-bubble">
                   {renderText(msg.text)}
-                  <div
-                    style={{
-                      fontSize: '10px',
-                      color: isUser ? 'rgba(255,255,255,0.7)' : '#94a3b8',
-                      marginTop: '4px',
-                      textAlign: isUser ? 'right' : 'left',
-                    }}
-                  >
+                  <div className="etech-bot-msg-time">
                     {msg.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                   </div>
                 </div>
               </div>
 
               {/* Extras */}
-              <div style={{ marginLeft: isUser ? '0' : '36px', marginTop: '8px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              <div className={`etech-bot-extras ${isUser ? 'user' : 'model'}`}>
                 {msg.products && msg.products.length > 0 && (
-                  <div className="etech-bot-scroll" style={{ display: 'flex', gap: '8px', overflowX: 'auto', paddingBottom: '8px', margin: '0 -16px', paddingLeft: '16px' }}>
+                  <div className="etech-bot-product-carousel">
                     {msg.products.map((p) => (
                       <div
                         key={p.id}
+                        className="etech-bot-product-card"
                         onClick={() => navigate(`/products/${p.slug}`)}
-                        style={{
-                          minWidth: '160px',
-                          width: '160px',
-                          backgroundColor: 'white',
-                          borderRadius: '12px',
-                          border: '1px solid #e2e8f0',
-                          overflow: 'hidden',
-                          cursor: 'pointer',
-                          boxShadow: '0 2px 4px rgba(0,0,0,0.05)',
-                          flexShrink: 0,
-                        }}
                       >
-                        <div style={{ height: '120px', backgroundColor: '#f8fafc', padding: '8px' }}>
+                        <div className="etech-bot-product-img-wrap">
                           <img
                             src={p.main_image_url}
                             alt={p.name}
-                            style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+                            className="etech-bot-product-img"
                             onError={(e) => { (e.target as HTMLImageElement).src = '/placeholder.png' }}
                           />
                         </div>
-                        <div style={{ padding: '8px' }}>
-                          <div style={{ fontSize: '10px', color: '#f26522', fontWeight: 'bold' }}>{p.brand}</div>
-                          <div style={{ fontSize: '12px', fontWeight: '600', height: '34px', overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>
-                            {p.name}
-                          </div>
+                        <div className="etech-bot-product-info">
+                          <div className="etech-bot-product-brand">{p.brand}</div>
+                          <div className="etech-bot-product-name">{p.name}</div>
                           {p.avg_rating != null && (
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '4px', marginTop: '4px' }}>
+                            <div className="etech-bot-product-rating">
                               <span style={{ color: '#fbbf24', fontSize: '12px' }}>★</span>
                               <span style={{ fontSize: '11px', fontWeight: 'bold', color: '#fbbf24' }}>{p.avg_rating}</span>
                               <span style={{ fontSize: '10px', color: '#94a3b8' }}>({p.reviews_count || 0})</span>
                             </div>
                           )}
-                          <div style={{ marginTop: '4px', display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between' }}>
+                          <div className="etech-bot-product-price-wrap">
                             <div>
-                              <div style={{ fontSize: '12px', fontWeight: 'bold', color: '#f26522' }}>
+                              <div className="etech-bot-product-price">
                                 {new Intl.NumberFormat('vi-VN').format(p.price)}đ
                               </div>
                               {p.original_price && p.original_price > p.price && (
-                                <div style={{ fontSize: '10px', textDecoration: 'line-through', color: '#94a3b8' }}>
+                                <div className="etech-bot-product-orig-price">
                                   {new Intl.NumberFormat('vi-VN').format(p.original_price)}đ
                                 </div>
                               )}
@@ -353,45 +252,21 @@ export default function EtechChatbotWidget() {
                 )}
 
                 {msg.coupon_code && (
-                  <div
-                    style={{
-                      background: 'linear-gradient(135deg, #10b981, #34d399)',
-                      padding: '12px',
-                      borderRadius: '12px',
-                      color: 'white',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '12px',
-                      alignSelf: 'flex-start',
-                    }}
-                  >
+                  <div className="etech-bot-coupon">
                     <svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                       <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7" />
                     </svg>
                     <div>
-                      <div style={{ fontSize: '10px', opacity: 0.9 }}>Mã giảm giá dành cho bạn!</div>
-                      <div style={{ fontSize: '16px', fontWeight: 'bold', letterSpacing: '1px' }}>{msg.coupon_code}</div>
+                      <div className="etech-bot-coupon-text">Mã giảm giá dành cho bạn!</div>
+                      <div className="etech-bot-coupon-code">{msg.coupon_code}</div>
                     </div>
                   </div>
                 )}
 
                 {msg.intent === 'flashsale' && (
                   <button
+                    className="etech-bot-flash-btn"
                     onClick={() => navigate('/flash-sale')}
-                    style={{
-                      backgroundColor: '#f26522',
-                      color: 'white',
-                      border: 'none',
-                      padding: '8px 16px',
-                      borderRadius: '8px',
-                      fontWeight: 'bold',
-                      fontSize: '13px',
-                      cursor: 'pointer',
-                      alignSelf: 'flex-start',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '6px',
-                    }}
                   >
                     <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
                       <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
@@ -405,47 +280,34 @@ export default function EtechChatbotWidget() {
         })}
 
         {isLoading && (
-          <div style={{ display: 'flex', gap: '8px', alignItems: 'flex-end', marginBottom: '16px' }}>
-            <div
-              style={{
-                width: '28px',
-                height: '28px',
-                background: 'linear-gradient(135deg, #f26522, #ff8a50)',
-                borderRadius: '50%',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: 'white',
-              }}
-            >
+          <div className="etech-bot-msg-row model" style={{ marginBottom: '16px' }}>
+            <div className="etech-bot-avatar">
               <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M12 2a2 2 0 0 1 2 2v2.26l.46.12a5 5 0 0 1 3.51 3.51l.12.46H20a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2h-1.91l-.12.46a5 5 0 0 1-3.51 3.51l-.46.12V20a2 2 0 0 1-2 2h-4a2 2 0 0 1-2-2v-1.34l-.46-.12a5 5 0 0 1-3.51-3.51l-.12-.46H4a2 2 0 0 1-2-2v-2a2 2 0 0 1 2-2h1.91l.12-.46a5 5 0 0 1 3.51-3.51l.46-.12V4a2 2 0 0 1 2-2h4z" />
+                <path d="M22 14h-1c0-3.87-3.13-7-7-7h-1V5.73A2 2 0 1 0 10 5.73V7H9c-3.87 0-7 3.13-7 7H1v4h1c0 2.21 1.79 4 4 4h12c2.21 0 4-1.79 4-4h1v-4zm-14-1c.83 0 1.5.67 1.5 1.5S8.83 16 8 16s-1.5-.67-1.5-1.5S7.17 13 8 13zm8 0c.83 0 1.5.67 1.5 1.5S16.83 16 16 16s-1.5-.67-1.5-1.5.67-1.5 1.5-1.5z"/>
               </svg>
             </div>
-            <div style={{ backgroundColor: 'white', padding: '12px 16px', borderRadius: '16px 16px 16px 4px', display: 'flex', gap: '4px' }}>
-              <span className="typing-dot" style={{ width: '6px', height: '6px', backgroundColor: '#94a3b8', borderRadius: '50%', animation: 'typing 1s infinite' }}></span>
-              <span className="typing-dot" style={{ width: '6px', height: '6px', backgroundColor: '#94a3b8', borderRadius: '50%', animation: 'typing 1s infinite 0.2s' }}></span>
-              <span className="typing-dot" style={{ width: '6px', height: '6px', backgroundColor: '#94a3b8', borderRadius: '50%', animation: 'typing 1s infinite 0.4s' }}></span>
+            <div className="etech-bot-typing-indicator">
+              <span className="etech-bot-typing-dot"></span>
+              <span className="etech-bot-typing-dot"></span>
+              <span className="etech-bot-typing-dot"></span>
             </div>
           </div>
         )}
 
         {showQuickActions && messages.length === 1 && (
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginTop: '16px', paddingLeft: '36px' }}>
-            {['Sản phẩm bán chạy', 'Sản phẩm đang sale', 'Tư vấn laptop', 'Flash Sale'].map((text) => (
+          <div className="etech-bot-quick-actions">
+            {[
+              '🔍 Tìm & Gợi ý sản phẩm',
+              '⚖️ So sánh sản phẩm',
+              '📦 Tra cứu đơn hàng',
+              '🎁 Ưu đãi & Khuyến mãi',
+              '💬 Cần tư vấn chuyên sâu',
+              '❓ Câu hỏi thường gặp (FAQs)'
+            ].map((text) => (
               <button
                 key={text}
                 onClick={() => handleSend(text)}
-                style={{
-                  border: '1px solid #f26522',
-                  backgroundColor: 'white',
-                  color: '#f26522',
-                  padding: '6px 12px',
-                  borderRadius: '16px',
-                  fontSize: '12px',
-                  cursor: 'pointer',
-                  fontWeight: '500',
-                }}
+                className="etech-bot-quick-btn"
               >
                 {text}
               </button>
@@ -456,9 +318,10 @@ export default function EtechChatbotWidget() {
       </div>
 
       {/* Input */}
-      <div style={{ padding: '12px 16px', backgroundColor: 'white', borderTop: '1px solid #e2e8f0' }}>
-        <div style={{ display: 'flex', gap: '8px', alignItems: 'center', backgroundColor: '#f8fafc', borderRadius: '24px', padding: '4px 8px 4px 16px' }}>
-          <input
+      <div className="etech-bot-input-wrap">
+        <div className="etech-bot-input-inner">
+          <input 
+            className="etech-bot-input"
             type="text"
             value={inputText}
             onChange={(e) => setInputText(e.target.value)}
@@ -466,24 +329,12 @@ export default function EtechChatbotWidget() {
               if (e.key === 'Enter') handleSend(inputText);
             }}
             placeholder="Nhập câu hỏi của bạn..."
-            style={{ flex: 1, border: 'none', background: 'transparent', outline: 'none', fontSize: '14px', padding: '8px 0' }}
             disabled={isLoading}
           />
           <button
             onClick={() => handleSend(inputText)}
             disabled={!inputText.trim() || isLoading}
-            style={{
-              background: inputText.trim() && !isLoading ? 'linear-gradient(135deg, #f26522, #ff8a50)' : '#e2e8f0',
-              border: 'none',
-              width: '32px',
-              height: '32px',
-              borderRadius: '50%',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: 'white',
-              cursor: inputText.trim() && !isLoading ? 'pointer' : 'not-allowed',
-            }}
+            className={`etech-bot-send-btn ${inputText.trim() && !isLoading ? 'active' : 'disabled'}`}
           >
             <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24">
               <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" />
@@ -491,21 +342,6 @@ export default function EtechChatbotWidget() {
           </button>
         </div>
       </div>
-      <style>
-        {`
-          @keyframes typing {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-4px); }
-          }
-          .etech-bot-scroll::-webkit-scrollbar {
-            display: none;
-          }
-          .etech-bot-scroll {
-            -ms-overflow-style: none;
-            scrollbar-width: none;
-          }
-        `}
-      </style>
     </div>
   );
 }

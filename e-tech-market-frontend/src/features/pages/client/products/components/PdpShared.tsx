@@ -180,65 +180,22 @@ type PdpThumbStripProps = {
 }
 
 export function PdpThumbStrip({ mediaItems, selectedImg, onSelectImage }: PdpThumbStripProps) {
-  const [windowWidth, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1200)
-
-  useEffect(() => {
-    const handleResize = () => setWindowWidth(window.innerWidth)
-    window.addEventListener('resize', handleResize)
-    return () => window.removeEventListener('resize', handleResize)
-  }, [])
-
-  const visibleCount = windowWidth <= 768 ? 5 : PDP_THUMB_VISIBLE
-  const [thumbWindowStart, setThumbWindowStart] = useState(0)
-  const thumbTotal = mediaItems.length
-  const showThumbNav = thumbTotal > visibleCount
-  const thumbMaxStart = Math.max(0, thumbTotal - visibleCount)
-  const thumbStart = Math.min(thumbWindowStart, thumbMaxStart)
-  const thumbsToRender = showThumbNav
-    ? mediaItems.slice(thumbStart, thumbStart + visibleCount)
-    : mediaItems
-
-  const pick = (url: string) => {
-    onSelectImage(url)
-    if (!showThumbNav) return
-    const idx = mediaItems.findIndex(item => item.url === url)
-    if (idx < 0) return
-    setThumbWindowStart(s => {
-      const effective = Math.min(s, thumbMaxStart)
-      if (idx < effective) return idx
-      if (idx >= effective + visibleCount) return idx - visibleCount + 1
-      return effective
-    })
-  }
-
   return (
     <div
-      className={`pdpThumbRow${showThumbNav ? ' pdpThumbRow--paged' : ''}`}
+      className="pdpThumbRow pdpThumbRow--paged"
       aria-label="Thư viện ảnh và video"
     >
-      {showThumbNav && (
-        <button
-          type="button"
-          className="pdpThumbNav pdpThumbNav--prev"
-          disabled={thumbStart <= 0}
-          onClick={() => setThumbWindowStart(Math.max(0, thumbStart - 1))}
-          aria-label="Xem ảnh nhỏ phía trước"
-        >
-          ‹
-        </button>
-      )}
       <div className="pdpThumbCol">
-        {thumbsToRender.map((item, i) => {
-          const globalIdx = showThumbNav ? thumbStart + i : i
-          const isActive = selectedImg === item.url || (!selectedImg && i === 0 && !showThumbNav)
+        {mediaItems.map((item, i) => {
+          const isActive = selectedImg === item.url || (!selectedImg && i === 0)
           const thumbUrl = item.type === 'video' ? (item.thumbnailUrl || '') : item.url
           return (
             <button
-              key={`${item.url}-${globalIdx}`}
+              key={`${item.url}-${i}`}
               type="button"
               className={`pdpThumb ${isActive ? 'active' : ''}`}
-              onClick={() => pick(item.url)}
-              aria-label={`Chọn media ${globalIdx + 1}`}
+              onClick={() => onSelectImage(item.url)}
+              aria-label={`Chọn media ${i + 1}`}
               style={{ position: 'relative' }}
             >
               {thumbUrl ? (
@@ -259,17 +216,6 @@ export function PdpThumbStrip({ mediaItems, selectedImg, onSelectImage }: PdpThu
           )
         })}
       </div>
-      {showThumbNav && (
-        <button
-          type="button"
-          className="pdpThumbNav pdpThumbNav--next"
-          disabled={thumbStart >= thumbMaxStart}
-          onClick={() => setThumbWindowStart(Math.min(thumbMaxStart, thumbStart + 1))}
-          aria-label="Xem ảnh nhỏ tiếp theo"
-        >
-          ›
-        </button>
-      )}
     </div>
   )
 }
@@ -358,7 +304,7 @@ export function PdpFacetVariantPicker({
               const disabled = !vOpt
               const active = storageKeyNorm(st) === storageKeyNorm(selStorage)
               const priceStr = vOpt
-                ? `${parseFloat(vOpt.effective_price.toString()).toLocaleString('vi-VN')} đ`
+                ? `${parseFloat((vOpt.effective_price ?? 0).toString()).toLocaleString('vi-VN')} đ`
                 : '—'
               return (
                 <button

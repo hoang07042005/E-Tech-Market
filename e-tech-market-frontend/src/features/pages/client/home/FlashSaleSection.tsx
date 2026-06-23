@@ -128,10 +128,20 @@ export default function FlashSaleSection() {
     <section className="flashSaleSection">
       <div className="flashSaleContainer">
         <div className="flashSaleHeader">
-          <div className="flashSaleTitle">
-            <h2>⚡ FLASH SALE</h2>
+          <div className="flashSaleHeaderTop">
+            <div className="flashSaleTitleRow">
+              <svg className="flashIcon" width="28" height="28" viewBox="0 0 24 24" fill="#FF2424">
+                <path d="M7 2v11h3v9l7-12h-4l4-8z"/>
+              </svg>
+              <h2>FLASH SALE</h2>
+            </div>
+            <Link to="/flash-sale" className="viewAllBtn">
+              Xem tất cả <span className="arrowIcon">›</span>
+            </Link>
+          </div>
+          <div className="flashSaleHeaderBottom">
+            <span className="countdownLabel">CHƯƠNG TRÌNH KẾT THÚC SAU : </span>
             <div className="flashSaleCountdown">
-              <span>KẾT THÚC TRONG:</span>
               <div className="timerBox">{formatNum(timeLeft!.h)}</div>
               <span className="timerSep">:</span>
               <div className="timerBox">{formatNum(timeLeft!.m)}</div>
@@ -139,7 +149,6 @@ export default function FlashSaleSection() {
               <div className="timerBox">{formatNum(timeLeft!.s)}</div>
             </div>
           </div>
-          <Link to="/flash-sale" className="viewAllBtn">Xem tất cả ›</Link>
         </div>
 
         <div className="flashSaleGrid">
@@ -151,29 +160,43 @@ export default function FlashSaleSection() {
               : item.product.name;
             const originalPrice = item.variant ? item.variant.price : (item.product.variants?.[0]?.price || 0);
 
-            const progressPercent = Math.min(100, (item.sold_quantity / (item.quantity_limit || 100)) * 100);
+            const discountPercent =
+              originalPrice > item.flash_sale_price && originalPrice > 0
+                ? Math.round((1 - item.flash_sale_price / originalPrice) * 100)
+                : 0;
+
+            const soldQuantity = item.sold_quantity || 0;
+            const quantityLimit = item.quantity_limit || 100;
+            let progressPercent = quantityLimit > 0
+              ? (soldQuantity / quantityLimit * 100)
+              : 0;
+            progressPercent = Math.max(0, Math.min(100, progressPercent));
             const isHot = progressPercent > 80;
-            const hasProgress = progressPercent > 40;
 
             return (
               <Link key={item.id} to={productUrl} className="flashSaleCard">
-                <div className="flashSaleBadge">-{Math.round((1 - item.flash_sale_price / originalPrice) * 100)}%</div>
-                <div className="flashSaleThumb">
-                  <img src={displayImage} alt={displayName} />
+                <div className="flashSaleCardTop">
+                  <div className="flashSaleThumb">
+                    <img src={displayImage} alt={displayName} />
+                  </div>
+                  {discountPercent > 0 && (
+                    <div className="flashSaleBadge">-{discountPercent}%</div>
+                  )}
                 </div>
+                
                 <div className="flashSaleInfo">
                   <h3 className="flashSaleProductName">{displayName}</h3>
-                  <div className="flashSalePricing">
+                  <div className="flashSaleBottom">
                     <span className="flashSalePrice">{Number(item.flash_sale_price).toLocaleString()}đ</span>
-                    {/* <span className="flashSaleOldPrice">{Number(originalPrice).toLocaleString()}đ</span> */}
-                  </div>
-                  <div className={`flashSaleProgress ${isHot ? 'is-hot' : ''} ${hasProgress ? 'has-progress' : ''}`}>
-                    <div className="progressBar">
-                      <div className="progressFill" style={{ width: `${progressPercent}%` }}></div>
+                    
+                    <div className={`flashSaleProgressWrapper ${isHot ? 'is-hot' : ''}`}>
+                      <div className="flashSaleProgress">
+                        <div className="progressFill" style={{ width: `${progressPercent === 0 ? 5 : progressPercent}%` }}></div>
+                      </div>
+                      <span className="progressText">
+                        {soldQuantity === 0 ? 'Vừa mở bán' : `Đã bán ${soldQuantity}`}
+                      </span>
                     </div>
-                    <span className="progressText">
-                      {item.sold_quantity === 0 ? 'Vừa mở bán' : `Đã bán ${item.sold_quantity}`}
-                    </span>
                   </div>
                 </div>
               </Link>

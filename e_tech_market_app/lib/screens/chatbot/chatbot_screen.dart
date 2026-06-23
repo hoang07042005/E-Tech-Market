@@ -49,7 +49,7 @@ class _ChatbotScreenState extends State<ChatbotScreen>
     _messages.add(ChatMessage(
       role: 'model',
       text:
-          'Xin chào! 👋 Mình là **E-Tech Bot**, trợ lý tư vấn công nghệ của E-Tech Market.\n\nMình có thể giúp bạn:\n📱 Tư vấn chọn sản phẩm phù hợp\n🔍 So sánh cấu hình sản phẩm\n📦 Tra cứu trạng thái đơn hàng\n🛡️ Giải đáp chính sách bảo hành\n\nBạn cần mình hỗ trợ gì nào?',
+          'Xin chào bạn! Chào mừng bạn đến với **E-Tech Market - Thế giới công nghệ chính hãng**. 🤖\n\nTôi có thể giúp gì cho bạn hôm nay? (Vui lòng chọn một mục dưới đây hoặc nhập câu hỏi trực tiếp nhé):',
     ));
     _loadUserAvatar();
   }
@@ -162,7 +162,7 @@ class _ChatbotScreenState extends State<ChatbotScreen>
                 _messages.add(ChatMessage(
                   role: 'model',
                   text:
-                      'Xin chào! 👋 Mình là **E-Tech Bot**, trợ lý tư vấn công nghệ của E-Tech Market.\n\nBạn cần mình hỗ trợ gì nào?',
+                      'Xin chào bạn! Chào mừng bạn đến với **E-Tech Market - Thế giới công nghệ chính hãng**. 🤖\n\nTôi có thể giúp gì cho bạn hôm nay? (Vui lòng chọn một mục dưới đây hoặc nhập câu hỏi trực tiếp nhé):',
                 ));
               });
             },

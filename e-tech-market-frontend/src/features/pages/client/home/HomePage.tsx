@@ -680,6 +680,10 @@ export default function HomePage() {
           </section>
         )}
 
+        <div className="reveal">
+          <FlashSaleSection />
+        </div>
+
         <section className="hpCuratedSection reveal">
           <div className="hpContainer">
             <div className="hpCuratedHeader">
@@ -728,9 +732,7 @@ export default function HomePage() {
           </div>
         </section>
 
-        <div className="reveal">
-          <FlashSaleSection />
-        </div>
+        
 
         <section className="hpFeaturedSection reveal">
           <div className="hpContainer">

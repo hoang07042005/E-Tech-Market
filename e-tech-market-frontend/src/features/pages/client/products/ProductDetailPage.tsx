@@ -114,6 +114,7 @@ export default function ProductDetailPage() {
   const [qaQuestion, setQaQuestion] = useState('')
   const [qaGuestName, setQaGuestName] = useState('')
   const [qaSending, setQaSending] = useState(false)
+  const [isFullscreen, setIsFullscreen] = useState(false)
   const [qaFlash, setQaFlash] = useState<string | null>(null)
   const [qaError, setQaError] = useState<string | null>(null)
   const [buyerLoggedIn, setBuyerLoggedIn] = useState(false)
@@ -336,23 +337,8 @@ export default function ProductDetailPage() {
   }, [activeFlashSale])
 
   useEffect(() => {
-    if (!product) return
-
-    const productInfo = document.querySelector('.pdpProductInfo')
-    if (!productInfo) {
-      setShowFloatingBar(true)
-      return
-    }
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        setShowFloatingBar(!entry.isIntersecting)
-      },
-      { threshold: 0 }
-    )
-    observer.observe(productInfo)
-    return () => observer.disconnect()
-  }, [product])
+    setShowFloatingBar(true)
+  }, [])
 
   useEffect(() => {
     if (!product) {
@@ -385,6 +371,12 @@ export default function ProductDetailPage() {
 
     setSelectedVariant(null)
   }, [product, variantIdParam])
+
+  useEffect(() => {
+    if (selectedVariant?.image_url) {
+      setSelectedImg(selectedVariant.image_url)
+    }
+  }, [selectedVariant])
 
   useEffect(() => {
     if (product) {
@@ -592,8 +584,8 @@ export default function ProductDetailPage() {
         const v = selectedVariant
         const fmt = (n: number) => `${Math.round(n).toLocaleString('vi-VN')} đ`
         const unitPrice = activeFlashSale
-          ? Number.parseFloat(activeFlashSale.flash_sale_price.toString())
-          : Number.parseFloat((v?.effective_price || product.price).toString())
+          ? Number.parseFloat(activeFlashSale.flash_sale_price?.toString() || '0')
+          : Number.parseFloat((v?.effective_price ?? product.price ?? 0).toString())
         const totalPrice = unitPrice * qty
         return (
           <div className="pdpFloatingBar">
@@ -605,7 +597,7 @@ export default function ProductDetailPage() {
                   <div className="pdpFloatingPrice">
                     {activeFlashSale ? (
                       <>
-                        <span className="pdpFloatingOldPrice">{fmt(Number.parseFloat(v?.price?.toString() || product.price.toString()))}</span>
+                        <span className="pdpFloatingOldPrice">{fmt(Number.parseFloat(v?.price?.toString() || (product.price ?? 0).toString()))}</span>
                         <span className="pdpFloatingSalePrice">{fmt(unitPrice)}</span>
                       </>
                     ) : (
@@ -663,7 +655,13 @@ export default function ProductDetailPage() {
                   </div>
                 ) : (
                   <div className="pdpMainImageWrap">
-                    <img src={resolveImageUrl(selectedImg || product.main_image_url)} alt={product.name} className="pdpMainImage" />
+                    <img 
+                      src={resolveImageUrl(selectedImg || product.main_image_url)} 
+                      alt={product.name} 
+                      className="pdpMainImage" 
+                      style={{ cursor: 'zoom-in' }}
+                      onClick={() => setIsFullscreen(true)}
+                    />
                   </div>
                 )}
                 {mediaItems.length > 1 && (
@@ -679,41 +677,45 @@ export default function ProductDetailPage() {
 
             {/* Product Info */}
             <div className="pdpInfo">
-              {activeFlashSale && flashTimeLeft && (
-                <div className="pdpFlashSaleHeader">
-                  <div className="pdpFlashSaleTitle">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ color: '#fff' }}>
-                      <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
-                    </svg>
-                    <span>FLASH SALE ĐANG DIỄN RA</span>
+              {activeFlashSale && flashTimeLeft ? (
+                <div className="pdpFlashBanner">
+                  <div className="pdpFlashBanner-left">
+                    <div className="pdpFlashBanner-priceRow">
+                      <span className="pdpFlashBanner-badge">
+                        -{Math.round((1 - parseFloat(activeFlashSale.flash_sale_price?.toString() || '0') / parseFloat(selectedVariant ? selectedVariant.price : (product.price || '0').toString())) * 100)}%
+                      </span>
+                      <span className="pdpFlashBanner-price">
+                        {parseFloat(activeFlashSale.flash_sale_price?.toString() || '0').toLocaleString('vi-VN')} <u>đ</u>
+                      </span>
+                    </div>
+                    <div className="pdpFlashBanner-oldPrice">
+                      {parseFloat(selectedVariant ? selectedVariant.price : (product.price || '0').toString()).toLocaleString('vi-VN')} <u>đ</u>
+                    </div>
                   </div>
-                  <div className="pdpFlashSaleTimer">
-                    <span>KẾT THÚC TRONG</span>
-                    <div className="timerBox">{String(flashTimeLeft.h).padStart(2, '0')}</div>
-                    <span>:</span>
-                    <div className="timerBox">{String(flashTimeLeft.m).padStart(2, '0')}</div>
-                    <span>:</span>
-                    <div className="timerBox">{String(flashTimeLeft.s).padStart(2, '0')}</div>
+                  <div className="pdpFlashBanner-right">
+                    <div className="pdpFlashBanner-title">
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                         <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+                      </svg>
+                      Flash Sale
+                    </div>
+                    <div className="pdpFlashBanner-timer">
+                      Kết thúc sau {String(flashTimeLeft.h).padStart(2, '0')}:{String(flashTimeLeft.m).padStart(2, '0')}:{String(flashTimeLeft.s).padStart(2, '0')}
+                    </div>
                   </div>
                 </div>
-              )}
-
-              <div className="pdpPriceRow">
-                <span className="pdpPrice">
-                  {activeFlashSale
-                    ? `${parseFloat(activeFlashSale.flash_sale_price.toString()).toLocaleString('vi-VN')} đ`
-                    : parseFloat(selectedVariant ? selectedVariant.effective_price.toString() : product.price).toLocaleString('vi-VN') + ' đ'
-                  }
-                </span>
-                {(activeFlashSale || (selectedVariant && selectedVariant.effective_price < parseFloat(selectedVariant.price))) && (
-                  <span className="pdpOldPrice">
-                    {activeFlashSale
-                      ? `${parseFloat(selectedVariant ? selectedVariant.price : product.price).toLocaleString('vi-VN')} đ`
-                      : parseFloat(selectedVariant ? selectedVariant.price : product.price).toLocaleString('vi-VN') + ' đ'
-                    }
+              ) : (
+                <div className="pdpPriceRow">
+                  <span className="pdpPrice">
+                    {parseFloat(selectedVariant ? (selectedVariant.effective_price ?? 0).toString() : (product.price ?? 0).toString()).toLocaleString('vi-VN')} đ
                   </span>
-                )}
-              </div>
+                  {(selectedVariant && selectedVariant.effective_price < parseFloat(selectedVariant.price)) && (
+                    <span className="pdpOldPrice">
+                      {parseFloat(selectedVariant.price).toLocaleString('vi-VN')} đ
+                    </span>
+                  )}
+                </div>
+              )}
 
               {/* Variants: facet (màu + dung lượng) hoặc danh sách gọn */}
               {product.variants && product.variants.length > 0 && (
@@ -745,7 +747,7 @@ export default function ProductDetailPage() {
                                   .join(' · ') || 'Chi tiết trong tên'}
                               </span>
                               <span className="pdpVariantFallbackChip__price">
-                                {parseFloat(v.effective_price.toString()).toLocaleString('vi-VN')} đ
+                                {parseFloat((v.effective_price ?? 0).toString()).toLocaleString('vi-VN')} đ
                               </span>
                             </button>
                           )
@@ -777,79 +779,22 @@ export default function ProductDetailPage() {
                       : 'Còn hàng'}
                   </span>
                 </div>
-              </div>
-
-              <div className="pdpActions">
-                <div className="pdpQtyWrap">
-                  <button
-                    type="button"
-                    onClick={() => setQty(q => Math.max(1, q - 1))}
-                    aria-label="Giảm số lượng"
-                  >
-                    -
-                  </button>
-                  <input
-                    type="number"
-                    min={1}
-                    value={qty}
-                    onChange={(e) => setQty(Math.max(1, Math.floor(Number(e.target.value) || 1)))}
-                    aria-label="Số lượng"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setQty(q => q + 1)}
-                    aria-label="Tăng số lượng"
-                  >
-                    +
-                  </button>
+                <div className="pdpMetaItem pdpMetaItem--compare" style={{ alignItems: 'center' }}>
+                  <span className="label">COMPARE</span>
+                  <span className="value">
+                    <button
+                      type="button"
+                      className={`pdpCompareBtn ${isInCompare ? 'is-active' : ''}`}
+                      onClick={toggleCompare}
+                      title="So sánh sản phẩm"
+                    >
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M16 3h5v5M4 20l7-7M21 3l-7 7M15 14l6 6M9 3H4v5M3 21l7-7M3 3l7 7M14 15l7 7"></path>
+                      </svg>
+                      <span>{isInCompare ? 'ĐÃ THÊM' : 'SO SÁNH'}</span>
+                    </button>
+                  </span>
                 </div>
-                <button
-                  type="button"
-                  className="pdpAddBtn"
-                  onClick={() => {
-                    const v = selectedVariant
-                    const priceStr = v ? v.effective_price.toString() : product.price.toString()
-                    const price = activeFlashSale
-                      ? Number.parseFloat(activeFlashSale.flash_sale_price.toString())
-                      : Number.parseFloat(priceStr)
-
-                    const variantLabel =
-                      v
-                        ? [variantColorLabel(v), variantStorageLabel(v)]
-                          .filter(Boolean)
-                          .join(' · ') ||
-                        v.variant_name
-                        : null
-                    addToCart({
-                      item: {
-                        product_id: product.id,
-                        slug: product.slug,
-                        name: product.name,
-                        price: Number.isFinite(price) ? price : 0,
-                        image_url: resolveImageUrl(v?.image_url || product.main_image_url),
-                        variant_id: v?.id ?? null,
-                        variant_label: variantLabel,
-                        quantity: 1,
-                        from_flash_sale: isFlashSaleMode,
-                      },
-                      qty
-                    })
-                  }}
-                >
-                  THÊM VÀO GIỎ
-                </button>
-
-                <button
-                  type="button"
-                  className={`pdpCompareBtn ${isInCompare ? 'is-active' : ''}`}
-                  onClick={toggleCompare}
-                  title="So sánh sản phẩm"
-                >
-                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M16 3h5v5M4 20l7-7M21 3l-7 7M15 14l6 6M9 3H4v5M3 21l7-7M3 3l7 7M14 15l7 7"></path>
-                  </svg>
-                  <span>{isInCompare ? 'ĐÃ THÊM' : 'SO SÁNH'}</span>
-                </button>
               </div>
             </div>
           </div>
@@ -1051,6 +996,67 @@ export default function ProductDetailPage() {
           )}
         </div>
       </div>
+
+      {isFullscreen && (() => {
+        const currentUrl = selectedImg || product?.main_image_url || ''
+        const currentIndex = mediaItems.findIndex(m => m.url === currentUrl)
+        const currentItem = currentIndex >= 0 ? mediaItems[currentIndex] : null
+        
+        return (
+          <div 
+            className="pdpFullscreenOverlay"
+            onClick={() => setIsFullscreen(false)}
+          >
+            <div className="pdpFullscreenToolbar">
+              <div className="pdpFullscreenCounter">
+                {currentIndex >= 0 ? `${currentIndex + 1} / ${mediaItems.length}` : ''}
+              </div>
+              <div className="pdpFullscreenActions">
+                <button className="pdpFsBtn" onClick={() => setIsFullscreen(false)} title="Đóng">
+                  ✕
+                </button>
+              </div>
+            </div>
+
+            {currentIndex > 0 && (
+              <button 
+                className="pdpFullscreenNav pdpFullscreenNav--prev"
+                onClick={(e) => {
+                  e.stopPropagation()
+                  setSelectedImg(mediaItems[currentIndex - 1].url)
+                }}
+              >
+                ‹
+              </button>
+            )}
+
+            <div className="pdpFullscreenContent" onClick={(e) => e.stopPropagation()}>
+              {currentItem?.type === 'video' ? (
+                 <div className="pdpFullscreenVideoWrap">
+                   {renderVideoPlayer(currentItem.url, currentItem.video?.title)}
+                 </div>
+              ) : (
+                <img 
+                  src={resolveImageUrl(currentUrl)} 
+                  alt={product?.name || ''}
+                />
+              )}
+            </div>
+
+            {currentIndex >= 0 && currentIndex < mediaItems.length - 1 && (
+              <button 
+                className="pdpFullscreenNav pdpFullscreenNav--next"
+                onClick={(e) => {
+                  e.stopPropagation()
+                  setSelectedImg(mediaItems[currentIndex + 1].url)
+                }}
+              >
+                ›
+              </button>
+            )}
+          </div>
+        )
+      })()}
     </>
   )
 }

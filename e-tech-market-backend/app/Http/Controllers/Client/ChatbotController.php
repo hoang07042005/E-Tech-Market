@@ -19,25 +19,20 @@ class ChatbotController extends Controller
 Bạn là "E-Tech Bot" — chuyên viên tư vấn công nghệ thân thiện và chuyên nghiệp của E-Tech Market, sàn thương mại điện tử chuyên về đồ công nghệ tại Việt Nam.
 
 NHIỆM VỤ:
-- Tư vấn sản phẩm công nghệ (laptop, điện thoại, PC, màn hình, phụ kiện...) dựa trên ngân sách và nhu cầu khách hàng
-- So sánh cấu hình, thông số kỹ thuật giữa các sản phẩm
-- Giải đáp về chính sách bảo hành, đổi trả, vận chuyển của E-Tech Market
-- Hỗ trợ tra cứu trạng thái đơn hàng
+- Tư vấn, lọc và gợi ý sản phẩm công nghệ (laptop, điện thoại, PC, linh kiện, phụ kiện...) dựa trên ngân sách và nhu cầu khách hàng. Gợi ý tối đa 3 mẫu sản phẩm nổi bật nhất.
+- So sánh cấu hình, thông số kỹ thuật giữa các sản phẩm (hiển thị dạng gạch đầu dòng trực quan).
+- Hỗ trợ tra cứu trạng thái đơn hàng.
+- Cung cấp thông tin chương trình Sale, Ưu đãi, Khuyến mãi.
+- Tư vấn chuyên sâu về sản phẩm. Nếu câu hỏi quá chuyên sâu (VD: build cấu hình, tương thích phần cứng phức tạp) mà bạn không chắc chắn, hãy nói: "Câu hỏi của bạn cần chuyên viên kỹ thuật giải đáp kỹ hơn. Bạn vui lòng đợi trong giây lát, nhân viên tư vấn phần cứng của E-Tech sẽ phản hồi bạn ngay lập tức ạ!".
+- Giải đáp các câu hỏi thường gặp (FAQs) về bảo hành, đổi trả, địa chỉ, thanh toán, giờ làm việc...
 
 QUY TẮC:
-1. Luôn trả lời bằng tiếng Việt, giọng thân thiện, chuyên nghiệp
-2. Khi gợi ý sản phẩm, CHỈ gợi ý từ dữ liệu hệ thống được cung cấp (không bịa sản phẩm)
-3. Nếu không có sản phẩm phù hợp trong dữ liệu, thành thật nói "Hiện tại E-Tech Market chưa có sản phẩm phù hợp với yêu cầu này"
-4. Từ chối trả lời các chủ đề: chính trị, tôn giáo, nội dung nhạy cảm, không liên quan đến công nghệ/mua sắm
-5. Giữ câu trả lời ngắn gọn, dưới 300 từ
-6. Khi liệt kê sản phẩm, dùng format: "📱 [Tên SP] - Giá: [xxx]đ" để dễ đọc
-7. Luôn kết thúc bằng câu hỏi mở để tiếp tục hỗ trợ
-
-CHÍNH SÁCH E-TECH MARKET:
-- Bảo hành chính hãng theo nhà sản xuất (12-24 tháng tùy sản phẩm)
-- Đổi trả miễn phí trong 7 ngày nếu lỗi từ nhà sản xuất
-- Giao hàng toàn quốc, miễn phí nội thành TP.HCM & Hà Nội cho đơn trên 500.000đ
-- Thanh toán: COD, VNPay, MoMo, chuyển khoản ngân hàng
+1. Luôn trả lời bằng tiếng Việt, giọng thân thiện, chuyên nghiệp.
+2. Khi gợi ý sản phẩm, CHỈ gợi ý từ dữ liệu hệ thống được cung cấp (không bịa sản phẩm). Nếu không có, nói: "Hiện tại E-Tech Market chưa có sản phẩm phù hợp với yêu cầu này".
+3. Từ chối trả lời các chủ đề: chính trị, tôn giáo, nội dung nhạy cảm, không liên quan đến công nghệ/mua sắm.
+4. Giữ câu trả lời ngắn gọn, dưới 300 từ.
+5. Khi liệt kê sản phẩm, dùng format: "[Số thứ tự]. [Tên SP] - Giá: [xxx]đ".
+6. Luôn kết thúc bằng câu hỏi mở để tiếp tục hỗ trợ.
 PROMPT;
 
     public function __construct(GeminiService $gemini)
@@ -61,9 +56,20 @@ PROMPT;
 
         $userMessage = trim($request->input('message'));
         $history = $request->input('history', []);
-        $user = $request->user();
+        $user = auth('sanctum')->user();
         $phoneNumber = $request->input('phone_number');
         $productId = $request->input('product_id');
+
+        // Exact match for "Cần tư vấn chuyên sâu" quick action
+        if (str_contains(mb_strtolower($userMessage), 'cần tư vấn chuyên sâu') || str_contains(mb_strtolower($userMessage), 'chuyên viên')) {
+            return response()->json([
+                'reply' => 'Câu hỏi của bạn cần chuyên viên kỹ thuật giải đáp kỹ hơn. Bạn vui lòng đợi trong giây lát, nhân viên tư vấn phần cứng của E-Tech sẽ phản hồi bạn ngay lập tức ạ!',
+                'products' => [],
+                'order' => null,
+                'coupon_code' => null,
+                'intent' => 'expert_consultation',
+            ]);
+        }
 
         // Detect intent
         $intent = $this->detectIntent($userMessage);
@@ -89,8 +95,8 @@ PROMPT;
                 $context = $result['context'];
                 break;
 
-            case 'warranty_policy':
-                $context = $this->getWarrantyContext();
+            case 'faq':
+                $context = $this->getFaqContext();
                 break;
 
             case 'coupon_discount':
@@ -195,15 +201,28 @@ PROMPT;
      */
     private function detectIntent(string $message): string
     {
-        $prompt = "Classify into: [order_tracking, product_consultation, product_comparison, warranty_policy, coupon_discount, flashsale, top_rated, discounted_products, latest_news, stock_check, price_query, general]. Only return the intent name.";
+        $prompt = "Classify into: [order_tracking, product_consultation, product_comparison, faq, coupon_discount, flashsale, top_rated, discounted_products, latest_news, stock_check, price_query, general]. Only return the intent name.";
         $intent = $this->gemini->chat($message, $prompt, '', []);
         $intent = trim(strtolower($intent));
         
-        $validIntents = ['order_tracking', 'product_consultation', 'product_comparison', 'warranty_policy', 'coupon_discount', 'flashsale', 'top_rated', 'discounted_products', 'latest_news', 'stock_check', 'price_query', 'general'];
+        $validIntents = ['order_tracking', 'product_consultation', 'product_comparison', 'faq', 'coupon_discount', 'flashsale', 'top_rated', 'discounted_products', 'latest_news', 'stock_check', 'price_query', 'general'];
         
         if (in_array($intent, $validIntents)) {
             return $intent;
         }
+        
+        // Fallback keyword matching if Gemini returns long error or fallback text
+        $lowerMessage = mb_strtolower($message);
+        if (str_contains($lowerMessage, 'đơn hàng') || preg_match('/(?:ET-?\d+|#?\d{4,})/i', $message)) return 'order_tracking';
+        if (str_contains($lowerMessage, 'so sánh')) return 'product_comparison';
+        if (str_contains($lowerMessage, 'bảo hành') || str_contains($lowerMessage, 'đổi trả') || str_contains($lowerMessage, 'cửa hàng') || str_contains($lowerMessage, 'faq') || str_contains($lowerMessage, 'thời gian') || str_contains($lowerMessage, 'thanh toán')) return 'faq';
+        if (str_contains($lowerMessage, 'mã giảm giá') || str_contains($lowerMessage, 'ưu đãi') || str_contains($lowerMessage, 'khuyến mãi') || str_contains($lowerMessage, 'coupon')) return 'coupon_discount';
+        if (str_contains($lowerMessage, 'flash sale') || str_contains($lowerMessage, 'sale')) return 'flashsale';
+        if (str_contains($lowerMessage, 'bán chạy') || preg_match('/\btop\b/i', $lowerMessage) || str_contains($lowerMessage, 'tốt nhất')) return 'top_rated';
+        if (str_contains($lowerMessage, 'giảm giá')) return 'discounted_products';
+        if (str_contains($lowerMessage, 'tồn kho') || str_contains($lowerMessage, 'còn hàng')) return 'stock_check';
+        if (str_contains($lowerMessage, 'giá bao nhiêu')) return 'price_query';
+        if (str_contains($lowerMessage, 'laptop') || str_contains($lowerMessage, 'điện thoại') || str_contains($lowerMessage, 'máy tính') || str_contains($lowerMessage, 'gợi ý') || str_contains($lowerMessage, 'tư vấn') || str_contains($lowerMessage, 'tìm')) return 'product_consultation';
         
         return 'general';
     }
@@ -452,32 +471,33 @@ PROMPT;
     }
 
     /**
-     * Get warranty/policy context.
+     * Get FAQ context based on the script.
      */
-    private function getWarrantyContext(): string
+    private function getFaqContext(): string
     {
         return <<<'CTX'
-Chính sách E-Tech Market:
-1. BẢO HÀNH:
-   - Bảo hành chính hãng theo nhà sản xuất (12-24 tháng tùy sản phẩm)
-   - Bảo hành 1 đổi 1 trong 30 ngày đầu nếu lỗi từ nhà sản xuất
-   - Hỗ trợ gửi bảo hành miễn phí qua hệ thống vận chuyển
+Thông tin chung & Chính sách E-Tech Market (FAQs):
+1. THỜI GIAN LÀM VIỆC:
+   - E-Tech Market làm việc từ 8:00 sáng đến 10:00 tối hàng ngày, kể cả Chủ Nhật và ngày lễ ạ!
 
-2. ĐỔI TRẢ:
-   - Đổi trả miễn phí trong 7 ngày nếu sản phẩm lỗi từ nhà sản xuất
-   - Sản phẩm phải còn nguyên tem, hộp, phụ kiện đi kèm
-   - Không áp dụng cho sản phẩm đã qua sử dụng hoặc hư hỏng do người dùng
+2. ĐỊA CHỈ CỬA HÀNG:
+   - Cửa hàng E-Tech Market hiện tại ở Địa chỉ số 25 Ngõ Thái Hà, Đống Đa.
 
-3. VẬN CHUYỂN:
-   - Giao hàng toàn quốc
-   - Miễn phí giao hàng nội thành TP.HCM & Hà Nội cho đơn trên 500.000đ
-   - Thời gian giao hàng: 1-2 ngày (nội thành), 3-5 ngày (tỉnh)
+3. CHÍNH SÁCH BẢO HÀNH:
+   - Tất cả sản phẩm Laptop/Điện thoại tại E-Tech được bảo hành theo tiêu chuẩn hãng (thường từ 12 - 36 tháng).
+   - Chúng tôi có dịch vụ bảo hành tận nơi cho một số dòng máy cao cấp.
 
-4. THANH TOÁN:
-   - COD (thanh toán khi nhận hàng)
-   - VNPay QR
-   - Ví MoMo
-   - Chuyển khoản ngân hàng
+4. THANH TOÁN VÀ TRẢ GÓP:
+   - Hỗ trợ thanh toán tiền mặt, chuyển khoản, thẻ ATM/Visa.
+   - Đặc biệt, có thể mua trả góp 0% lãi suất qua thẻ tín dụng hoặc công ty tài chính (HD Saison, Home Credit).
+
+5. CHÍNH SÁCH ĐỔI TRẢ:
+   - Nếu sản phẩm lỗi trong 7 ngày đầu mua hàng, E-Tech sẽ đổi mới 100% cho bạn.
+   - Nếu lỗi do sử dụng, chúng tôi sẽ hỗ trợ bảo hành chính hãng.
+
+6. CÁC LƯU Ý KHI MUA HÀNG ONLINE:
+   - Khi mua hàng online, E-Tech luôn đóng gói cẩn thận và có quay video unbox để đảm bảo quyền lợi của bạn.
+   - Quá trình vận chuyển thường mất 1-3 ngày tùy khu vực.
 CTX;
     }
 

@@ -156,7 +156,7 @@ html.dark .hpFeaturedSection {
 }
 
 html.dark .hpFutureSection {
-    background: #0d1322;
+    background: var(--et-bg);
     border-top-color: #1e293b;
     border-bottom-color: #1e293b;
 }
@@ -281,6 +281,15 @@ html.dark .hpReviewBottom {
 /* FLASHSALE DARK MODE OVERRIDES */
 html.dark .flashSaleSection {
     background: var(--et-bg);
+
+}
+
+html.dark .flashSaleContainer {
+    background: var(--et-bg);
+}
+
+html.dark .flashSaleTitleRow h2, html.dark .countdownLabel {
+    color: var(--et-text);
 }
 
 html.dark .flashSaleSection::before {
