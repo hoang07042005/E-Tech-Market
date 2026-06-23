@@ -1,2 +1,3 @@
 .env
-/etech_backup.sql
+/database/*.sql
+*.sql
