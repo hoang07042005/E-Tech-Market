@@ -59,10 +59,8 @@ class OrderService
                 }
 
                 $variant = $this->findPurchasableVariant($product, $variantId);
-                // Use frontend price if provided, otherwise use variant price
-                $originalPrice = isset($it['unit_price']) && $it['unit_price'] > 0
-                    ? (float) $it['unit_price']
-                    : (float) $variant->effective_price;
+                // ALWAYS get price from DB - NEVER trust client price to prevent price manipulation attacks
+                $originalPrice = (float) $variant->effective_price;
                 $subtotal += ($originalPrice * $qty);
 
                 $processedItems[] = [
@@ -75,10 +73,11 @@ class OrderService
 
             // 2. Flash Sale Discount
             $flashSaleDiscount = 0;
-            foreach ($processedItems as $it) {
+            foreach ($processedItems as $index => $it) {
                 $productId = $it['product']->id;
                 $variantId = $it['variant']->id;
                 $qty = $it['quantity'];
+                $originalPrice = $it['unit_price']; // Already from DB
 
                 $activeFlashSale = FlashSaleItem::query()
                     ->where('product_id', $productId)
@@ -96,21 +95,25 @@ class OrderService
                     ->first();
 
                 if ($activeFlashSale) {
-                    $isFlashSalePrice = isset($it['unit_price']) && abs((float)$it['unit_price'] - (float)$activeFlashSale->flash_sale_price) < 0.01;
-                    
-                    if ($isFlashSalePrice || !isset($it['unit_price'])) {
-                        if ($activeFlashSale->quantity_limit !== null && $activeFlashSale->sold_quantity + $qty > $activeFlashSale->quantity_limit) {
-                            throw ValidationException::withMessages(['items' => "Sản phẩm {$it['product']->name} đã hết suất Flash Sale."]);
-                        }
-
-                        if (!isset($it['unit_price'])) {
-                            $saving = ($originalPrice - (float) $activeFlashSale->flash_sale_price) * $qty;
-                            $flashSaleDiscount += max(0, $saving);
-                        }
-
-                        $activeFlashSale->increment('sold_quantity', $qty);
+                    if ($activeFlashSale->quantity_limit !== null && $activeFlashSale->sold_quantity + $qty > $activeFlashSale->quantity_limit) {
+                        throw ValidationException::withMessages(['items' => "Sản phẩm {$it['product']->name} đã hết suất Flash Sale."]);
                     }
+
+                    $flashSalePrice = (float) $activeFlashSale->flash_sale_price;
+                    $saving = ($originalPrice - $flashSalePrice) * $qty;
+                    $flashSaleDiscount += max(0, $saving);
+
+                    // Update processed item price to flash sale price
+                    $processedItems[$index]['unit_price'] = $flashSalePrice;
+
+                    $activeFlashSale->increment('sold_quantity', $qty);
                 }
+            }
+
+            // Recalculate subtotal after Flash Sale for accurate reporting
+            $subtotal = 0;
+            foreach ($processedItems as $it) {
+                $subtotal += ((float) $it['unit_price'] * $it['quantity']);
             }
 
             // 3. Coupon Discount
