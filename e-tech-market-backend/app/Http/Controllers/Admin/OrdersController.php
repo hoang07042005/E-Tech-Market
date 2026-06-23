@@ -141,8 +141,9 @@ class OrdersController extends Controller
         $order->load([
             'user:id,name,email,phone,avatar_url',            
             'payment:id,order_id,method,status,transaction_code,paid_at',
-            'items:id,order_id,product_id,product_name_snapshot,quantity,unit_price,total_price',
+            'items:id,order_id,product_id,variant_id,product_name_snapshot,quantity,unit_price,total_price',
             'items.product:id,main_image_url',
+            'items.variant:id,color,configuration,image_url',
             'statusHistories:id,order_id,from_status,to_status,changed_by_user_id,note,created_at',
             'statusHistories.changedBy:id,name,avatar_url',
             'returnRequest:id,order_id,user_id,status,content,media,admin_note,refund_proof,approved_by_user_id,approved_at,refunded_at,customer_confirmed_at,created_at,updated_at',

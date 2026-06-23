@@ -59,9 +59,9 @@ export async function syncCartFromBackend() {
           slug: it.product?.slug || '',
           name: it.product?.name || '',
           price: Number(it.variant?.effective_price ?? it.unit_price) || 0,
-          image_url: it.product?.main_image_url || null,
+          image_url: it.variant?.image_url || it.product?.main_image_url || null,
           variant_id: it.variant_id,
-          variant_label: it.variant?.attribute_values ? Object.values(it.variant.attribute_values).join(', ') : null,
+          variant_label: [it.variant?.color, it.variant?.configuration].filter(Boolean).join(' - ') || null,
           quantity: Number(it.quantity) || 1,
         })),
       }
@@ -107,7 +107,6 @@ export function removeFromCart(key: string) {
 }
 
 export function clearCart() {
-  const state = getCart()
   setCart({ items: [] })
 }
 

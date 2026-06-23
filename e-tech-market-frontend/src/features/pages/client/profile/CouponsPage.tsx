@@ -21,9 +21,10 @@ export default function CouponsPage() {
   const [activeCoupons, setActiveCoupons] = useState<CouponPublic[]>([])
   const [loading, setLoading] = useState(true)
 
+  const userStr = useAuthStore((state) => state.userStr)
+
   useEffect(() => {
     let cancelled = false
-    const userStr = useAuthStore((state) => state.userStr)
     if (!userStr) {
       setLoading(false)
       return

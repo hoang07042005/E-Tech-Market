@@ -271,7 +271,7 @@ class OrderService
             ->where('user_id', $user->id)
             ->where('status', '!=', 'pending_payment') // Exclude orders waiting for payment
             ->orderBy('created_at', 'desc')
-            ->with(['items.product', 'payment'])
+            ->with(['items.product', 'items.variant', 'payment'])
             ->paginate($perPage);
     }
 
@@ -281,7 +281,7 @@ class OrderService
             throw new \Exception('Unauthorized', 403);
         }
 
-        $order->load(['items.product', 'payment', 'returnRequest', 'statusHistories', 'statusHistories.changedBy']);
+        $order->load(['items.product', 'items.variant', 'payment', 'returnRequest', 'statusHistories', 'statusHistories.changedBy']);
 
         return $order;
     }

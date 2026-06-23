@@ -46,10 +46,14 @@ class OrderResource extends JsonResource
         $items = ($this->items ?? collect())->map(static function ($it) {
             return [
                 'product_id' => (int) ($it->product_id ?? 0),
+                'variant_id' => $it->variant_id ? (int) $it->variant_id : null,
                 'name' => (string) ($it->product_name_snapshot ?? '—'),
                 'quantity' => (int) ($it->quantity ?? 0),
                 'unit_price' => (float) ($it->unit_price ?? 0),
                 'total_price' => (float) ($it->total_price ?? 0),
+                'variant_color' => $it->variant?->color ? (string) $it->variant->color : null,
+                'variant_config' => $it->variant?->configuration ? (string) $it->variant->configuration : null,
+                'variant_image_url' => $it->variant?->image_url ? (string) $it->variant->image_url : null,
             ];
         })->values()->all();
 
@@ -63,10 +67,11 @@ class OrderResource extends JsonResource
 
         $items = array_map(static function (array $it) use ($productImages) {
             $pid = (int) $it['product_id'];
+            $img = !empty($it['variant_image_url']) ? $it['variant_image_url'] : ($pid > 0 && array_key_exists($pid, $productImages) ? $productImages[$pid] : null);
 
             return [
                 ...$it,
-                'image_url' => $pid > 0 && array_key_exists($pid, $productImages) ? $productImages[$pid] : null,
+                'image_url' => $img,
             ];
         }, $items);
 

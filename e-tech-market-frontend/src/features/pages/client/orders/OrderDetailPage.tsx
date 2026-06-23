@@ -269,7 +269,6 @@ export default function OrderDetailPage() {
     setActionError(null)
     try {
       const updated = await apiFetch<OrderDetail>(`/orders/${order.id}/cancel`, {
-        token,
         method: 'PATCH',
         body: JSON.stringify({}),
       })
@@ -289,7 +288,6 @@ export default function OrderDetailPage() {
     setActionError(null)
     try {
       const updated = await apiFetch<OrderDetail>(`/orders/${order.id}/confirm-received`, {
-        token,
         method: 'PATCH',
         body: JSON.stringify({}),
       })
@@ -312,7 +310,6 @@ export default function OrderDetailPage() {
       fd.set('content', returnContent.trim())
       returnFiles.forEach((f) => fd.append('media[]', f))
       const updated = await apiFetch<OrderDetail>(`/orders/${order.id}/return-request`, {
-        token,
         method: 'POST',
         body: fd,
       })
@@ -344,7 +341,6 @@ export default function OrderDetailPage() {
     setActionError(null)
     try {
       const updated = await apiFetch<OrderDetail>(`/orders/${order.id}/return-request/confirm-refund`, {
-        token,
         method: 'PATCH',
         body: JSON.stringify({}),
       })
@@ -365,7 +361,6 @@ export default function OrderDetailPage() {
     setActionError(null)
     try {
       const updated = await apiFetch<OrderDetail>(`/orders/${order.id}/confirm-payment`, {
-        token,
         method: 'PATCH',
         body: JSON.stringify({}),
       })
@@ -418,10 +413,15 @@ export default function OrderDetailPage() {
             </div>
             <div className="oudItems">
               {order.items.map((it, idx) => {
-                const img = resolveUrl(it.product?.main_image_url || null)
+                const img = resolveUrl((it as any)?.variant?.image_url || it.product?.main_image_url || null)
                 const name = (it.product?.name || it.product_name_snapshot || '—').toString()
                 const unit = Number(it.unit_price ?? 0)
                 const line = Number(it.total_price ?? unit * (it.quantity ?? 0))
+                const variantLabel = [
+                  (it as any)?.variant?.color,
+                  (it as any)?.variant?.configuration
+                ].filter(Boolean).join(' - ') || null
+
                 return (
                   <div key={`${it.product_id}-${idx}`} className="oudItem">
                     {img ? (
@@ -431,6 +431,7 @@ export default function OrderDetailPage() {
                     )}
                     <div className="oudItemInfo">
                       <div className="oudItemName">{name}</div>
+                      {variantLabel && <div className="oudItemSub" style={{ color: 'var(--et-text)', fontWeight: 600 }}>{variantLabel}</div>}
                       <div className="oudItemSub">Số lượng: {it.quantity}</div>
                     </div>
                     <div className="oudItemPrice">{fmtVnd(line)}đ</div>

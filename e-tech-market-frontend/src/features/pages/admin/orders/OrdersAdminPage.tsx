@@ -1,4 +1,4 @@
-﻿import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { API_BASE_URL } from '@/configs/api.config'
 import { fetchOrders, fetchOrderDetail, updateOrder, processOrderReturn } from '@/features/services/admin/api.admin.service'
 
@@ -97,11 +97,14 @@ type OrderDetail = {
   }>
   items: Array<{
     product_id: number
+    variant_id?: number | null
     name: string
     image_url?: string | null
     quantity: number
     unit_price: number
     total_price: number
+    variant_color?: string | null
+    variant_config?: string | null
   }>
 }
 
@@ -515,7 +518,9 @@ export default function OrdersAdminPage() {
                       </tr>
                     </thead>
                     <tbody>
-                      {detail.items.map((it, i) => (
+                      {detail.items.map((it, i) => {
+                        const variantSub = [it.variant_color, it.variant_config].filter(Boolean).join(' - ')
+                        return (
                         <tr key={`${it.product_id}-${i}`}>
                           <td className="admOrderProd">
                             <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
@@ -530,14 +535,21 @@ export default function OrdersAdminPage() {
                               ) : (
                                 <span style={{ width: 42, height: 42, borderRadius: 10, border: '1px solid rgba(15,23,42,.08)', background: 'rgba(148,163,184,.12)', flex: '0 0 auto' }} />
                               )}
-                              <span style={{ minWidth: 0 }}>{it.name}</span>
+                              <div style={{ minWidth: 0, display: 'flex', flexDirection: 'column' }}>
+                                <span>{it.name}</span>
+                                {variantSub && (
+                                  <span style={{ fontSize: 13, color: 'var(--admin-text-s)', marginTop: 2 }}>
+                                    {variantSub}
+                                  </span>
+                                )}
+                              </div>
                             </div>
                           </td>
                           <td className="admOrderMoney">{fmtVnd(it.unit_price)}đ</td>
                           <td className="admOrderQty">{it.quantity}</td>
                           <td className="admOrderMoney strong">{fmtVnd(it.total_price)}đ</td>
                         </tr>
-                      ))}
+                      )})}
                     </tbody>
                   </table>
                 </div>

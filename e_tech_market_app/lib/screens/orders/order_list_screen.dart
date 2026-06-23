@@ -99,7 +99,9 @@ class _OrderListScreenState extends State<OrderListScreen> {
 
   String _resolveOrderImageUrl(dynamic item) {
     final product = item is Map<String, dynamic> ? item['product'] as Map<String, dynamic>? : null;
+    final variant = item is Map<String, dynamic> ? item['variant'] as Map<String, dynamic>? : null;
     final candidates = <String?>[
+      variant?['image_url']?.toString(),
       product?['main_image_url']?.toString(),
       product?['image_url']?.toString(),
       item['image_url']?.toString(),

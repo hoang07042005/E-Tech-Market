@@ -553,6 +553,7 @@ export default function ProfilePage() {
                             const p = (it as any)?.product as any
                             // try multiple common fields for an image
                             const candidates = [
+                              (it as any)?.variant?.image_url,
                               (it as any)?.image,
                               p?.image,
                               p?.image_url,

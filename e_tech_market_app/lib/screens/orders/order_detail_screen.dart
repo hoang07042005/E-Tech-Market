@@ -91,7 +91,9 @@ String _formatMoney(dynamic value) {
 
   String _resolveOrderItemImageUrl(dynamic item) {
     final product = item is Map<String, dynamic> ? item['product'] as Map<String, dynamic>? : null;
+    final variant = item is Map<String, dynamic> ? item['variant'] as Map<String, dynamic>? : null;
     final candidates = <String?>[
+      variant?['image_url']?.toString(),
       product?['main_image_url']?.toString(),
       product?['image_url']?.toString(),
       item['image_url']?.toString(),
@@ -376,6 +378,18 @@ String _formatMoney(dynamic value) {
     final quantity = item['quantity']?.toString() ?? '1';
     final total = _formatMoney(item['total_price'] ?? item['price'] ?? 0);
 
+    final variant = item is Map<String, dynamic> ? item['variant'] as Map<String, dynamic>? : null;
+    String? variantLabel;
+    if (variant != null) {
+      final parts = [
+        variant['color']?.toString(),
+        (variant['configuration'] ?? variant['storage'])?.toString(),
+      ].where((part) => part != null && part.trim().isNotEmpty).toList();
+      if (parts.isNotEmpty) {
+        variantLabel = parts.join(' - ');
+      }
+    }
+
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(12),
@@ -411,11 +425,10 @@ String _formatMoney(dynamic value) {
 
           // 2. Khu vực thông tin chi tiết (Chiếm trọn phần không gian còn lại)
           Expanded(
-            child: SizedBox(
-              height: 72, // Khóa chiều cao bằng với ảnh để dễ dàn trang dọc
+            child: Container(
+              constraints: const BoxConstraints(minHeight: 72),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween, // Đẩy tên lên đỉnh, giá xuống đáy
                 children: [
                   // Tên sản phẩm
                   Text(
@@ -428,7 +441,22 @@ String _formatMoney(dynamic value) {
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                   ),
+                  if (variantLabel != null)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 2),
+                      child: Text(
+                        variantLabel,
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                          color: colorScheme.onSurface,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
                   
+                  const SizedBox(height: 8),
                   // Hàng hiển thị Giá và Số lượng phía dưới
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,

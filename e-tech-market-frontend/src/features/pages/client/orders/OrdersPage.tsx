@@ -307,6 +307,7 @@ export default function OrdersPage() {
                   const thumbs = ((o.items ?? []).map((it) => {
                     const p = (it as any)?.product as any
                     const candidates = [
+                      (it as any)?.variant?.image_url,
                       (it as any)?.image,
                       p?.image,
                       p?.image_url,
@@ -401,6 +402,7 @@ export default function OrdersPage() {
                   const imgs = (o.items ?? [])
                     .map((it) => {
                       if (!it) return null
+                      if ('variant' in it && (it as any).variant?.image_url) return (it as any).variant.image_url
                       if ('product' in it) return it.product?.main_image_url ?? null
                       if ('product_name_snapshot' in it) return (it as any).main_image_url ?? null
                       return null

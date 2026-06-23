@@ -36,7 +36,7 @@ class CartItem {
     final variant = json['variant'] is Map<String, dynamic>
         ? json['variant'] as Map<String, dynamic>
         : <String, dynamic>{};
-    final image = _imageFrom(product['main_image_url']);
+    final image = _imageFrom(variant['image_url'] ?? product['main_image_url']);
 
     return CartItem(
       id: _toInt(json['id']),
@@ -56,7 +56,7 @@ class CartItem {
     if (direct != null && direct.trim().isNotEmpty) return direct.trim();
     final parts = [
       variant['color']?.toString(),
-      variant['storage']?.toString(),
+      (variant['configuration'] ?? variant['storage'])?.toString(),
     ].where((part) => part != null && part.trim().isNotEmpty).cast<String>();
     final label = parts.join(' - ');
     return label.isEmpty ? null : label;

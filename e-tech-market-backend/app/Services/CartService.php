@@ -150,7 +150,7 @@ class CartService
         $item->quantity = $quantity;
         $item->save();
 
-        return $cart->load('items.product');
+        return $cart->load(['items.product', 'items.variant']);
     }
 
     /**

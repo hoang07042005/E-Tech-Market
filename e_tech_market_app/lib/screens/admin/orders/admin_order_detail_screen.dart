@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:e_tech_market_app/services/admin_orders_service.dart';
 import '../../../config/api_config.dart';
 // Đảm bảo import đúng đường dẫn chứa file NetworkUtils trong dự án của bạn
@@ -755,7 +755,11 @@ class _AdminOrderDetailScreenState extends State<AdminOrderDetailScreen> {
                         child: Column(
                           children: items.map((item) {
                             final imgUrl = _getResolvedProductImage(item);
-                            
+                            final variantColor = item['variant_color']?.toString();
+                            final variantConfig = item['variant_config']?.toString();
+                            String? variantLabel;
+                            final vParts = [variantColor, variantConfig].where((p) => p != null && p.trim().isNotEmpty).toList();
+                            if (vParts.isNotEmpty) variantLabel = vParts.join(' - ');
                             return Padding(
                               padding: const EdgeInsets.symmetric(vertical: 8.0),
                               child: Row(
@@ -792,6 +796,15 @@ class _AdminOrderDetailScreenState extends State<AdminOrderDetailScreen> {
                                           maxLines: 2, 
                                           overflow: TextOverflow.ellipsis,
                                         ),
+                                        if (variantLabel != null)
+                                          Padding(
+                                            padding: const EdgeInsets.only(top: 2),
+                                            child: Text(
+                                              variantLabel,
+                                              style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Theme.of(context).colorScheme.onSurface),
+                                              maxLines: 1, overflow: TextOverflow.ellipsis,
+                                            ),
+                                          ),
                                         const SizedBox(height: 4),
                                         Text(
                                           'SL: ${item['quantity']}  ×  ${AdminOrdersService.formatVnd(item['unit_price'] ?? 0)}₫', 
