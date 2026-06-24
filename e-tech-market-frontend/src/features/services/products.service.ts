@@ -116,6 +116,7 @@ export type Product = {
   reviews?: ProductReview[]
   /** Tổng hợp từ API list `/products` (không phải lúc nào cũng có). */
   avg_rating?: number | string | null
+  reviews_avg_rating?: number | string | null
   reviews_count?: number | null
   flash_sale_items?: {
     id: number
@@ -143,12 +144,23 @@ export type Category = {
   children?: Category[]
 }
 
-export type PaginatedResponse<T> = {
-  data: T[]
+export type PaginatedMeta = {
   current_page: number
   last_page: number
   total: number
   per_page: number
+  from?: number
+  to?: number
+  links?: { url: string | null; label: string; active: boolean }[]
+}
+
+export type PaginatedResponse<T> = {
+  data: T[]
+  current_page?: number
+  last_page?: number
+  total?: number
+  per_page?: number
+  meta?: PaginatedMeta
 }
 
 export async function fetchProducts(params: Record<string, unknown> = {}): Promise<PaginatedResponse<Product>> {

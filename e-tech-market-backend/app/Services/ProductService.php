@@ -182,6 +182,9 @@ class ProductService
             ->withCount([
                 'reviews as reviews_count' => fn ($q) => $q->where('status', 'approved'),
             ])
+            ->withAvg([
+                'reviews as avg_rating' => fn ($q) => $q->where('status', 'approved'),
+            ], 'rating')
             ->paginate($limit > 0 ? $limit : $defaultLimit);
     }
 

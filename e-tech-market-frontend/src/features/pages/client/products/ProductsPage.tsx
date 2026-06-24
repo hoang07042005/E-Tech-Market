@@ -163,10 +163,11 @@ function ProductCard({
   }, [product.variants])
 
   const isNew = isNewWithinTenDays(product.created_at)
-  const { avgRating } = useMemo(() => {
+  const { avgRating, ratingCount } = useMemo(() => {
     // Ưu tiên số liệu tổng hợp từ API list
     const count = typeof product.reviews_count === 'number' ? product.reviews_count : 0
-    const avgRaw = product.avg_rating
+    // Laravel withAvg trả về avg_rating hoặc reviews_avg_rating
+    const avgRaw = product.avg_rating ?? product.reviews_avg_rating
     const avgFromApi =
       typeof avgRaw === 'number'
         ? avgRaw
@@ -184,7 +185,7 @@ function ProductCard({
     const sum = approved.reduce((acc, r) => acc + r.rating, 0)
     const avg = sum / approved.length
     return { avgRating: Math.min(5, Math.max(0, avg)), ratingCount: approved.length }
-  }, [product.avg_rating, product.reviews, product.reviews_count])
+  }, [product.avg_rating, product.reviews_avg_rating, product.reviews, product.reviews_count])
 
   const stars = useMemo(() => {
     const full = Math.floor(avgRating)
@@ -277,6 +278,7 @@ function ProductCard({
                 </span>
               ))}
             </span>
+            {ratingCount > 0 && <span className="ppCardRatingText"> ({ratingCount})</span>}
           </span>
         </div>
         <Link to={`/products/${product.slug}`} className="ppCardTitleLink">
@@ -380,7 +382,12 @@ export default function ProductsPage() {
   const [selectedBrand, setSelectedBrand] = useState<string | null>(null)
   const [page, setPage] = useState(1)
   const [lastPage, setLastPage] = useState(1)
+  const [totalItems, setTotalItems] = useState(0)
+  const [perPage, setPerPage] = useState(20) // Sẽ được cập nhật từ API
   const [showMobileFilters, setShowMobileFilters] = useState(false)
+
+  // Pagination constants
+  const PAGE_SIZE = 20
   const userStr = useAuthStore((state) => state.userStr)
   const hasAuth = !!userStr
 
@@ -390,6 +397,22 @@ export default function ProductsPage() {
 
   const sortRef = useRef<HTMLDivElement>(null)
   const [sortOpen, setSortOpen] = useState(false)
+
+  // Pagination computation (matches admin ProductPage pattern)
+  const safePage = Math.min(Math.max(1, page), lastPage)
+  const pageStart = totalItems > 0 ? (safePage - 1) * perPage + 1 : 0
+  const pageEnd = totalItems > 0 ? Math.min(totalItems, safePage * perPage) : 0
+
+  const pageNumbers = useMemo(() => {
+    const maxBtns = 7
+    const half = Math.floor(maxBtns / 2)
+    let start = Math.max(1, safePage - half)
+    const end = Math.min(lastPage, start + maxBtns - 1)
+    start = Math.max(1, end - maxBtns + 1)
+    const arr: number[] = []
+    for (let i = start; i <= end; i++) arr.push(i)
+    return arr
+  }, [safePage, lastPage])
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
@@ -446,9 +469,11 @@ export default function ProductsPage() {
 
   useEffect(() => {
     queueMicrotask(() => setLoading(true))
+    console.log('[ProductsPage] Fetching with params:', { query, selectedCatId, sort, page, maxPrice, selectedBrand })
     const params: Record<string, unknown> = {
       search: query || undefined,
       page,
+      // KHÔNG truyền limit để backend dùng giá trị từ settings (products_per_page)
     }
 
     if (priceTouched) {
@@ -471,8 +496,14 @@ export default function ProductsPage() {
 
     fetchProducts(params)
       .then(res => {
+        console.log('[ProductsPage] API Response:', res)
+        // Backend returns pagination in meta object, fallback to root level for compatibility
+        const meta = res.meta
         setProducts(res.data)
-        setLastPage(res.last_page)
+        setLastPage(meta?.last_page ?? res.last_page ?? 1)
+        setTotalItems(meta?.total ?? res.total ?? 0)
+        // per_page từ settings (products_per_page)
+        setPerPage(meta?.per_page ?? res.per_page ?? 20)
       })
       .catch(console.error)
       .finally(() => setLoading(false))
@@ -734,29 +765,57 @@ export default function ProductsPage() {
               </div>
             )}
 
-            <div className="ppPagination">
-              <button
-                className="ppPagBtn"
-                disabled={page <= 1}
-                onClick={() => setPage(p => p - 1)}
-              >&lt;</button>
+            {!loading && totalItems > 0 && (
+              <div className="ppPagination">
+                <div className="ppPaginationInfo">
+                  Hiển thị <b>{pageStart}</b>–<b>{pageEnd}</b> / <b>{totalItems}</b>
+                </div>
+                <div className="ppPaginationBtns">
+                  <button
+                    type="button"
+                    className="ppPagBtn"
+                    disabled={safePage <= 1}
+                    onClick={() => setPage(s => Math.max(1, s - 1))}
+                  >
+                    &lt;
+                  </button>
 
-              {[...Array(lastPage)].map((_, i) => (
-                <button
-                  key={i}
-                  className={`ppPagBtn ${page === i + 1 ? 'ppPagBtn--active' : ''}`}
-                  onClick={() => setPage(i + 1)}
-                >
-                  {(i + 1).toString().padStart(2, '0')}
-                </button>
-              ))}
+                  {pageNumbers[0] > 1 && (
+                    <>
+                      <button type="button" className="ppPagBtn" onClick={() => setPage(1)}>1</button>
+                      {pageNumbers[0] > 2 && <span className="ppPageDots">…</span>}
+                    </>
+                  )}
 
-              <button
-                className="ppPagBtn"
-                disabled={page >= lastPage}
-                onClick={() => setPage(p => p + 1)}
-              >&gt;</button>
-            </div>
+                  {pageNumbers.map(n => (
+                    <button
+                      key={n}
+                      type="button"
+                      className={`ppPagBtn ${n === safePage ? 'ppPagBtn--active' : ''}`}
+                      onClick={() => setPage(n)}
+                    >
+                      {n}
+                    </button>
+                  ))}
+
+                  {pageNumbers[pageNumbers.length - 1] < lastPage && (
+                    <>
+                      {pageNumbers[pageNumbers.length - 1] < lastPage - 1 && <span className="ppPageDots">…</span>}
+                      <button type="button" className="ppPagBtn" onClick={() => setPage(lastPage)}>{lastPage}</button>
+                    </>
+                  )}
+
+                  <button
+                    type="button"
+                    className="ppPagBtn"
+                    disabled={safePage >= lastPage}
+                    onClick={() => setPage(s => Math.min(lastPage, s + 1))}
+                  >
+                    &gt;
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>

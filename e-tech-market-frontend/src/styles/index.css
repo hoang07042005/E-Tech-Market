@@ -348,7 +348,9 @@ html.dark .ppSearchInput {
 html.dark .ppFilterTitle {
     color: var(--et-text);
 }
-
+html.dark .ppPaginationInfo b {
+    color: var(--et-text);
+}
 html.dark .ppPriceInput {
     background: var(--et-surface);
     border-color: var(--et-border);
