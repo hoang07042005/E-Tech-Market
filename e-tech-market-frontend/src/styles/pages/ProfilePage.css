@@ -237,10 +237,10 @@
 
 .pfSaveBtn {
   border: none;
-  background: #a16207;
+  background: #ef9e2c;
   color: #fff;
-  padding: 10px 14px;
-  border-radius: 10px;
+  padding: 10px 10px;
+  border-radius: 999px;
   font-weight: 600;
   font-size: 12px;
   cursor: pointer;

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { apiFetch } from '@/configs/api.config'
-import '@/styles/pages/CheckoutPage.css' // Reuse the modal and coupon styling
 import { useAuthStore } from '@/features/store/useAuthStore'
+import '@/styles/pages/HomePage.css'
 
 type CouponPublic = {
   id: number
@@ -43,6 +43,11 @@ export default function CouponsPage() {
     }
   }, [])
 
+  const handleCopyCode = (code: string) => {
+    navigator.clipboard.writeText(code)
+    alert('Đã lưu mã vào bộ nhớ tạm!')
+  }
+
   if (loading) {
     return <div style={{ padding: '20px 0', color: 'var(--et-text-muted)' }}>Đang tải kho voucher...</div>
   }
@@ -54,36 +59,38 @@ export default function CouponsPage() {
           Hiện bạn chưa có mã giảm giá nào.
         </div>
       ) : (
-        <div className="coCouponList" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '16px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '20px' }}>
           {activeCoupons.map((c) => (
-            <div key={c.id} className="coCouponItem" style={{ flexWrap: 'wrap' }}>
-              <div className="coCouponItemLeft" style={{ width: '100%' }}>
-                <div className="coCouponItemCode" style={{ fontSize: '1.25rem' }}>{c.code}</div>
-                <div className="coCouponItemValue">
-                  {c.coupon_type === 'percentage' ? `Giảm ${c.value}%` : `Giảm ${formatVnd(c.value)}`}
+            <div key={c.id} className="hpCouponCard" style={{ width: '100%', boxSizing: 'border-box' }}>
+              <div className="hpCouponCardTop">
+                <div className="hpCouponInfo">
+                  <div className="hpCouponValue">
+                    {c.coupon_type === 'percentage' ? `Giảm ${c.value}%` : `Giảm ${formatVnd(c.value)}`}
+                  </div>
+                  {c.min_order_amount ? (
+                    <div className="hpCouponMin">Đơn tối thiểu {formatVnd(c.min_order_amount)}</div>
+                  ) : (
+                    <div className="hpCouponMin">Không giới hạn đơn</div>
+                  )}
+                  {c.end_at && (
+                    <div style={{ fontSize: '11px', color: '#dc2626', marginTop: '4px' }}>
+                      HSD: {new Date(c.end_at).toLocaleDateString('vi-VN')}
+                    </div>
+                  )}
                 </div>
-                {c.min_order_amount && (
-                  <div className="coCouponItemMin">
-                    Đơn tối thiểu {formatVnd(c.min_order_amount)}
-                  </div>
-                )}
-                {c.end_at && (
-                  <div style={{ fontSize: '0.8rem', color: '#dc2626', marginTop: '8px' }}>
-                    HSD: {new Date(c.end_at).toLocaleDateString('vi-VN')}
-                  </div>
-                )}
+                <button
+                  type="button"
+                  className="hpCouponSaveBtn"
+                  onClick={() => handleCopyCode(c.code)}
+                >
+                  Lưu mã
+                </button>
               </div>
-              <button
-                type="button"
-                className="coGhostBtn"
-                style={{ width: '100%', textAlign: 'center', marginTop: '10px' }}
-                onClick={() => {
-                  navigator.clipboard.writeText(c.code)
-                  alert('Đã lưu mã vào bộ nhớ tạm!')
-                }}
-              >
-                Sao chép mã
-              </button>
+              <div className="hpCouponDivider" />
+              <div className="hpCouponCardBottom" onClick={() => handleCopyCode(c.code)}>
+                <span className="hpCouponCode">{c.code}</span>
+                <span className="hpCouponCopyAction">Sao chép</span>
+              </div>
             </div>
           ))}
         </div>

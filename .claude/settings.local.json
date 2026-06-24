@@ -1,7 +1,9 @@
 {
   "permissions": {
     "allow": [
-      "Bash(curl -s \"http://localhost:8000/api/v1/products?limit=2&page=1\")"
+      "Bash(curl -s \"http://localhost:8000/api/v1/products?limit=2&page=1\")",
+      "Bash(php artisan cache:clear)",
+      "Bash(php artisan config:clear)"
     ]
   }
 }

@@ -129,8 +129,10 @@ function ProductCard({
   // Handle image URL
   const imageUrl = resolveImageUrl(product.main_image_url)
   // Calculate display price and old price based on variants (uses backend effective_price)
-  const { displayPrice, displayPriceMax, displayOldPrice, discountPercent, hasMultiplePrices } = useMemo(() => {
+  const { displayPrice, displayPriceMax, displayOldPrice, discountPercent, hasMultiplePrices, showDiscountBadge } = useMemo(() => {
     const activeVariants = (product.variants || []).filter(v => v.is_active)
+    const isSingleVariant = activeVariants.length === 1
+
     if (activeVariants.length > 0) {
       // Sort by effective_price (already computed by backend with discount logic)
       const sorted = [...activeVariants].sort((a, b) => a.effective_price - b.effective_price)
@@ -138,16 +140,20 @@ function ProductCard({
       const highest = sorted[sorted.length - 1]
       const hasMultiplePrices = lowest.effective_price !== highest.effective_price
 
+      // Only show discount badge when there's exactly 1 variant
+      const showDiscountBadge = isSingleVariant
+
       // Calculate discount based on lowest price variant
       const originalPrice = Number.parseFloat(lowest.price)
       const finalPrice = lowest.effective_price
-      const hasDiscount = finalPrice < originalPrice
+      const hasDiscount = finalPrice < originalPrice && showDiscountBadge
 
       return {
         displayPrice: finalPrice,
         displayPriceMax: hasMultiplePrices ? highest.effective_price : null,
         displayOldPrice: hasDiscount ? originalPrice : null,
         hasMultiplePrices,
+        showDiscountBadge,
         discountPercent: hasDiscount ? Math.round((1 - finalPrice / originalPrice) * 100) : 0,
         variantId: lowest.id,
         variantLabel: [variantColorLabel(lowest), variantStorageLabel(lowest)].filter(Boolean).join(' · ') || lowest.variant_name
@@ -160,6 +166,7 @@ function ProductCard({
       displayPriceMax: null,
       displayOldPrice: null,
       hasMultiplePrices: false,
+      showDiscountBadge: false,
       discountPercent: 0,
       variantId: null,
       variantLabel: null
@@ -236,7 +243,7 @@ function ProductCard({
 
   return (
     <div className="ppCardNew">
-      <Link to={`/products/${product.slug}${displayOldPrice && displayOldPrice > displayPrice ? `?variant=${(product.variants || []).find(v => v.effective_price === displayPrice)?.id}` : ''}`} className="ppCardImageWrap">
+      <Link to={`/products/${product.slug}${showDiscountBadge ? `?variant=${(product.variants || []).find(v => v.effective_price === displayPrice)?.id}` : ''}`} className="ppCardImageWrap">
         <img src={imageUrl} alt={product.name} className="ppCardImg" />
         <button
           type="button"
@@ -290,11 +297,13 @@ function ProductCard({
         </Link>
         <div className="ppCardPriceRow">
           <span className="ppCardPrice">
-            {hasMultiplePrices
-              ? `${displayPrice.toLocaleString('vi-VN')} - ${displayPriceMax!.toLocaleString('vi-VN')} đ`
-              : `${displayPrice.toLocaleString('vi-VN')} đ`}
+            {showDiscountBadge
+              ? `${displayPrice.toLocaleString('vi-VN')} đ`
+              : hasMultiplePrices
+                ? `Từ ${displayPrice.toLocaleString('vi-VN')} - ${displayPriceMax!.toLocaleString('vi-VN')} đ`
+                : `${displayPrice.toLocaleString('vi-VN')} đ`}
           </span>
-          {displayOldPrice && displayOldPrice > displayPrice && (
+          {displayOldPrice && displayOldPrice > displayPrice && showDiscountBadge && (
             <span className="ppCardOldPrice">{displayOldPrice.toLocaleString('vi-VN')} đ</span>
           )}
         </div>
