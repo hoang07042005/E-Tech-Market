@@ -1,289 +1,336 @@
 .flashSalePage {
-  max-width: 1200px;
-  margin: 40px auto;
-  padding: 0 20px;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 16px;
   font-family: "Inter", sans-serif;
-  color: #1e293b;
+  color: #1a1c1e;
+  background: #f9f9fc;
+  min-height: 100vh;
 }
-
-/* Stunning Top Banner */
-.fspHeroBanner {
-  background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #311005 100%);
-  border-radius: 24px;
-  padding: 56px 40px;
-  text-align: center;
+.fspHero {
   position: relative;
+  width: 100%;
+  height: 480px;
+  background-image: url(../public/screen.png);
+  background-repeat: no-repeat;
+  background-size: cover;
   overflow: hidden;
-  box-shadow: 0 25px 50px -12px rgba(234, 88, 12, 0.15);
-  margin-bottom: 40px;
-  border: 1px solid rgba(249, 115, 22, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
-.fspHeroBanner::before {
+.fspHero::before {
   content: "";
   position: absolute;
-  top: -50%;
-  left: -50%;
-  width: 200%;
-  height: 200%;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   background: radial-gradient(
-    circle,
-    rgba(249, 115, 22, 0.12) 0%,
+    ellipse at 50% 0%,
+    rgba(255, 87, 34, 0.15) 0%,
     transparent 60%
   );
   pointer-events: none;
 }
-.fspStatusBadge {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 20px;
-  border-radius: 50px;
-  font-size: 0.85rem;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  margin-bottom: 24px;
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+.fspHeroContent {
+  position: relative;
+  z-index: 10;
+  text-align: center;
+  max-width: 900px;
+  padding: 0 64px;
 }
-.fspStatusBadge.active {
-  background: linear-gradient(135deg, #22c55e 0%, #15803d 100%);
-  color: #fff;
-  border: 1.5px solid rgba(34, 197, 94, 0.4);
-}
-.fspStatusBadge.upcoming {
-  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
-  color: #fff;
-  border: 1.5px solid rgba(59, 130, 246, 0.4);
-}
-.fspHeroTitle {
-  font-size: 3rem;
-  font-weight: 900;
-  margin: 0 0 16px 0;
-  letter-spacing: -1.5px;
-  background: linear-gradient(to right, #ffffff 10%, #f97316 50%, #facc15 90%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  color: transparent;
+.fspHeroTitleWrap {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 12px;
+  gap: 16px;
+  margin-bottom: 24px;
 }
-.fspHeroSubtitle {
-  color: #cbd5e1;
-  font-size: 1.15rem;
-  margin: 0 0 36px 0;
-  max-width: 600px;
-  margin-left: auto;
-  margin-right: auto;
-  line-height: 1.6;
+.fspHeroIcon {
+  font-size: 48px;
+  color: #ff5722;
+  font-variation-settings: "FILL" 1;
 }
-
-/* Timer Wrap */
-.fspTimerWrap {
-  display: inline-flex;
-  align-items: center;
-  gap: 12px;
-  background: rgba(255, 255, 255, 0.04);
-  backdrop-filter: blur(16px);
-  padding: 18px 32px;
-  border-radius: 100px;
-  border: 1.5px solid rgba(255, 255, 255, 0.08);
-  box-shadow: inset 0 2px 4px 0 rgba(255, 255, 255, 0.05);
-}
-.fspTimerLabel {
-  color: #f8fafc;
-  font-weight: 800;
-  font-size: 0.9rem;
-  letter-spacing: 1px;
-  margin-right: 6px;
+.fspHeroTitle {
+  font-family: "Chivo", sans-serif;
+  font-size: 40px;
+  font-weight: 300;
+  color: #fff;
+  letter-spacing: -0.02em;
   text-transform: uppercase;
+  margin: 0;
+}
+.fspTimerWrap {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  align-items: flex-end;
+  margin-top: 32px;
+}
+.fspTimerBlock {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 .fspTimerBox {
-  background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
-  color: #fff;
-  font-size: 1.6rem;
-  font-weight: 900;
-  padding: 10px 16px;
-  border-radius: 14px;
-  min-width: 56px;
-  text-align: center;
-  box-shadow: 0 6px 15px rgba(234, 88, 12, 0.4);
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  width: 96px;
+  height: 112px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ff5722;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 48px;
+  font-weight: 700;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+.fspTimerLabel {
+  margin-top: 8px;
+  font-family: "Inter", sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  color: #e0e0e0;
+  opacity: 0.7;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
 }
 .fspTimerSep {
-  color: #ea580c;
-  font-size: 1.8rem;
-  font-weight: 900;
-  animation: blink 1s ease-in-out infinite;
+  color: #fff;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 48px;
+  font-weight: 700;
+  padding-bottom: 24px;
 }
 
-/* Filter & Search Bar */
-.fspFilterBar {
+.fspTimeline {
+  background: #fff;
+  position: sticky;
+  top: 73px;
+  z-index: 40;
+  border-bottom: 1px solid rgba(228, 190, 180, 0.3);
+}
+.fspTimelineWrapper {
+  max-width: 1280px;
+  margin: 0 auto;
   display: flex;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.fspTimelineWrapper::-webkit-scrollbar {
+  height: 4px;
+}
+.fspTimelineWrapper::-webkit-scrollbar-thumb {
+  background: #ff5722;
+  border-radius: 10px;
+}
+.fspTimelineBtn {
+  flex: 1;
+  padding: 24px 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border: none;
+  background: transparent;
+  border-bottom: 4px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.fspTimelineBtn:hover {
+  background: #f3f3f6;
+}
+.fspTimelineBtn.passed {
+  opacity: 0.5;
+  filter: grayscale(100%);
+}
+.fspTimelineBtn.passed:hover {
+  filter: grayscale(0);
+  opacity: 1;
+}
+.fspTimelineBtn.active {
+  border-bottom-color: #ff5722;
+  background: rgba(255, 87, 34, 0.05);
+}
+.fspTimelineTime {
+  font-family: "Chivo", sans-serif;
+  font-size: 20px;
+  font-weight: 500;
+  color: #1a1c1e;
+}
+.fspTimelineBtn.active .fspTimelineTime {
+  color: #ff5722;
+  font-weight: 700;
+}
+.fspTimelineLabel {
+  font-size: 14px;
+  font-weight: 400;
+  color: #5b4039;
+}
+.fspTimelineBtn.active .fspTimelineLabel {
+  color: #ff5722;
+  font-weight: 700;
+}
+.fspFilterSection {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 32px 64px;
+  display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
   align-items: center;
-  background: #ffffff;
-  padding: 20px 24px;
-  border-radius: 16px;
-  border: 1px solid #e2e8f0;
-  margin-bottom: 32px;
-  gap: 20px;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
+  gap: 24px;
 }
 .fspSearchBox {
   position: relative;
-  flex: 1;
-  max-width: 400px;
-}
-.fspSearchInput {
   width: 100%;
-  height: 46px;
-  border-radius: 12px;
-  border: 1.5px solid #cbd5e1;
-  padding: 0 16px 0 44px;
-  font-size: 0.95rem;
-  font-weight: 500;
-  color: #1e293b;
-  outline: none;
-  transition: all 0.2s;
-}
-.fspSearchInput:focus {
-  border-color: #ea580c;
-  box-shadow: 0 0 0 4px rgba(234, 88, 12, 0.1);
+  max-width: 320px;
 }
 .fspSearchIcon {
   position: absolute;
   left: 16px;
   top: 50%;
   transform: translateY(-50%);
-  color: #94a3b8;
-  font-size: 1.1rem;
+  color: #5b4039;
+  font-size: 20px;
+}
+.fspSearchInput {
+  width: 100%;
+  background: #fff;
+  border: 1px solid #e4beb4;
+  border-radius: 9999px;
+  padding: 12px 16px 12px 48px;
+  font-size: 16px;
+  color: #1a1c1e;
+  outline: none;
+  transition: all 0.2s;
+}
+.fspSearchInput:focus {
+  border-color: #ff5722;
+  box-shadow: 0 0 0 3px rgba(255, 87, 34, 0.1);
 }
 .fspSortOptions {
   display: flex;
-  align-items: center;
-  gap: 10px;
-}
-.fspSortLabel {
-  font-size: 0.85rem;
-  font-weight: 700;
-  color: #64748b;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+  flex-wrap: wrap;
+  gap: 12px;
 }
 .fspSortBtn {
-  height: 40px;
-  padding: 0 16px;
-  border-radius: 10px;
-  border: 1.5px solid #cbd5e1;
+  padding: 8px 24px;
+  border-radius: 9999px;
+  border: 1px solid #e4beb4;
   background: #fff;
-  font-weight: 600;
-  font-size: 0.85rem;
-  color: #475569;
+  font-size: 14px;
+  font-weight: 500;
+  color: #5b4039;
   cursor: pointer;
   transition: all 0.2s;
 }
 .fspSortBtn:hover {
-  border-color: #ea580c;
-  color: #ea580c;
+  border-color: #ff5722;
+  color: #ff5722;
 }
 .fspSortBtn.active {
-  background: #ea580c;
-  border-color: #ea580c;
+  background: #ff5722;
+  border-color: #ff5722;
   color: #fff;
-  box-shadow: 0 4px 6px -1px rgba(234, 88, 12, 0.2);
 }
-
-/* Product Grid */
+.fspProductsSection {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 64px 96px;
+}
 .fspGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 28px;
-  margin-bottom: 60px;
+  grid-template-columns: 1fr;
+  gap: 24px;
+}
+@media (min-width: 640px) {
+  .fspGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (min-width: 1024px) {
+  .fspGrid {
+    grid-template-columns: repeat(4, 1fr);
+  }
 }
 .fspCard {
-  background: #fff;
-  border-radius: 20px;
-  border: 1.5px solid #e2e8f0;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
   position: relative;
+  background: #fff;
+  border-radius: 5px;
+  overflow: hidden;
+  border: 1px solid rgba(228, 190, 180, 0.3);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  transition: all 0.3s;
   text-decoration: none;
   color: inherit;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.01);
+  display: flex;
+  flex-direction: column;
 }
 .fspCard:hover {
-  transform: translateY(-8px);
-  box-shadow:
-    0 20px 30px -5px rgba(0, 0, 0, 0.08),
-    0 10px 10px -5px rgba(234, 88, 12, 0.02);
-  border-color: rgba(234, 88, 12, 0.3);
+  transform: translateY(-4px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
+  border-color: rgba(255, 87, 34, 0.3);
+}
+.fspCard.scarcity {
+  border: 2px solid transparent;
+  animation: scarcityBreath 2s infinite ease-in-out;
+}
+@keyframes scarcityBreath {
+  0%,
+  100% {
+    border-color: rgba(188, 0, 0, 0.2);
+    box-shadow: 0 0 0px rgba(188, 0, 0, 0);
+  }
+  50% {
+    border-color: rgba(188, 0, 0, 0.8);
+    box-shadow: 0 0 10px rgba(188, 0, 0, 0.4);
+  }
 }
 .fspBadge {
   position: absolute;
-  top: 14px;
-  left: 14px;
-  background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%);
-  color: #fff;
-  padding: 5px 12px;
-  border-radius: 10px;
-  font-weight: 900;
-  font-size: 0.85rem;
-  z-index: 2;
-  box-shadow: 0 6px 12px rgba(239, 68, 68, 0.35);
-}
-.fspThumb {
-  position: relative;
-  padding-top: 100%;
-  background: #f8fafc;
-  overflow: hidden;
-}
-.fspThumb img {
-  position: absolute;
   top: 0;
   left: 0;
+  z-index: 10;
+  background: #FF2424;
+  color: #fff;
+  font-weight: 700;
+  padding: 12px 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border-radius: 0 0 8px 0;
+}
+.fspBadgeTop {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  line-height: 1;
+}
+.fspBadgePercent {
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+.fspThumb {
+  aspect-ratio: 1;
+  width: 100%;
+  overflow: hidden;
+  background: #f3f3f6;
+  padding: 16px;
+}
+.fspThumb img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
   transition: transform 0.5s ease;
 }
 .fspCard:hover .fspThumb img {
-  transform: scale(1.08);
-}
-
-/* Glass overlay for upcoming items */
-.fspUpcomingOverlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(15, 23, 42, 0.4);
-  backdrop-filter: blur(4px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  opacity: 0;
-  transition: all 0.3s;
-  z-index: 3;
-}
-.fspCard:hover .fspUpcomingOverlay {
-  opacity: 1;
-}
-.fspUpcomingBadge {
-  background: rgba(255, 255, 255, 0.9);
-  color: #1e1b4b;
-  font-weight: 800;
-  font-size: 0.85rem;
-  padding: 10px 18px;
-  border-radius: 30px;
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
+  transform: scale(1.1);
 }
 .fspInfo {
   padding: 24px;
@@ -292,156 +339,192 @@
   flex-grow: 1;
 }
 .fspName {
-  font-size: 0.95rem;
-  font-weight: 700;
-  color: #1e293b;
-  margin: 0 0 12px 0;
-  line-height: 1.45;
-  height: 2.9em;
-  overflow: hidden;
+  color: #111;
+  margin-bottom: 15px;
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.3;
   display: -webkit-box;
+  overflow: hidden;
   -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
   line-clamp: 2;
-  transition: color 0.2s;
+  -webkit-box-orient: vertical;
 }
 .fspCard:hover .fspName {
-  color: #ea580c;
+  color: #ff5722;
 }
 .fspPricing {
   display: flex;
   align-items: baseline;
-  gap: 8px;
-  margin-bottom: 18px;
+  gap: 12px;
+  margin-bottom: 24px;
 }
 .fspSalePrice {
-  color: #ea580c;
-  font-size: 1.35rem;
-  font-weight: 900;
-  letter-spacing: -0.5px;
+  font-size: 15px;
+  font-weight: 700;
+  color: #ff5722;
 }
 .fspOldPrice {
-  color: #94a3b8;
-  font-size: 0.9rem;
+  font-size: 13px;
+  color: #5b4039;
   text-decoration: line-through;
 }
-
-/* Progress bar styles */
 .fspProgress {
   margin-bottom: 24px;
 }
+.fspProgressRow {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+.fspProgressLabel {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #5b4039;
+}
+.fspProgressLabel.hot {
+  color: #bc0000;
+  font-style: italic;
+}
+.fspStockLabel {
+  font-size: 12px;
+  font-weight: 700;
+  color: #bc0000;
+}
 .fspProgressBar {
-  height: 10px;
-  background: #f1f5f9;
-  border-radius: 12px;
+  width: 100%;
+  height: 3px;
+  background: rgba(228, 190, 180, 0.3);
+  border-radius: 9999px;
   overflow: hidden;
-  margin-bottom: 8px;
-  position: relative;
-  border: 1px solid #e2e8f0;
 }
 .fspProgressFill {
   height: 100%;
-  background: linear-gradient(90deg, #f97316 0%, #ef4444 100%);
-  border-radius: 12px;
+  background: linear-gradient(to right, #ff5722, #bc0000);
+  border-radius: 9999px;
   transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
 }
-.fspProgressText {
-  display: flex;
-  justify-content: space-between;
-  font-size: 0.75rem;
-  font-weight: 700;
-  color: #64748b;
-  align-items: center;
+.fspProgressFill.hot {
+  background: #bc0000;
 }
-.fspHotFire {
-  color: #ef4444;
-  animation: flicker 1s infinite alternate;
-}
-
-@keyframes flicker {
-  0% {
-    transform: scale(1);
-    opacity: 0.8;
-  }
-  100% {
-    transform: scale(1.15);
-    opacity: 1;
-  }
-}
-
 .fspCTA {
   width: 100%;
-  height: 44px;
-  border: none;
-  border-radius: 12px;
-  background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+  padding: 16px;
+  background: #ff5722;
   color: #fff;
-  font-weight: 800;
-  font-size: 0.9rem;
+  border-radius: 5px;
+  font-weight: 700;
+  font-size: 16px;
+  border: none;
   cursor: pointer;
   transition: all 0.3s;
-  text-align: center;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  box-shadow: 0 4px 10px rgba(234, 88, 12, 0.2);
+  margin-top: auto;
+  box-shadow: 0 4px 14px rgba(255, 87, 34, 0.4);
 }
-.fspCTA.upcoming {
-  background: #0f172a;
-  box-shadow: 0 4px 10px rgba(15, 23, 42, 0.15);
-}
-.fspCard:hover .fspCTA {
+.fspCTA:hover {
+  box-shadow: 0 0 20px rgba(255, 87, 34, 0.6);
   transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(234, 88, 12, 0.35);
 }
-.fspCard:hover .fspCTA.upcoming {
-  background: #ea580c;
-  box-shadow: 0 8px 20px rgba(234, 88, 12, 0.25);
+.fspCTA:active {
+  transform: scale(0.98);
 }
-
-/* No sale active state */
+.fspCTAIcon {
+  font-size: 20px;
+  font-variation-settings: "FILL" 1;
+}
+.fspLoading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  gap: 16px;
+}
+.fspLoader {
+  width: 48px;
+  height: 48px;
+  border: 4px solid #f3f3f6;
+  border-top-color: #ff5722;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
 .fspEmptyState {
   text-align: center;
   padding: 80px 20px;
   background: #fff;
   border-radius: 24px;
-  border: 1.5px solid #e2e8f0;
+  border: 1px solid #e2e8f0;
   box-shadow: 0 10px 35px rgba(0, 0, 0, 0.03);
+  max-width: 600px;
+  margin: 80px auto;
 }
 .fspEmptyIcon {
-  font-size: 4.5rem;
+  font-size: 72px;
   margin-bottom: 24px;
   display: inline-block;
-  animation: bounce 2s infinite;
+  font-variation-settings: "FILL" 1;
 }
 .fspEmptyTitle {
-  font-size: 1.85rem;
+  font-size: 28px;
   font-weight: 800;
-  color: #0f172a;
+  color: #1a1c1e;
   margin-bottom: 12px;
 }
 .fspEmptyText {
-  color: #64748b;
+  color: #5b4039;
   max-width: 480px;
-  margin: 0 auto 32px auto;
+  margin: 0 auto 32px;
   line-height: 1.65;
-  font-size: 1rem;
+  font-size: 16px;
 }
 .fspBackHomeBtn {
   display: inline-flex;
   align-items: center;
   padding: 14px 32px;
-  background: #0f172a;
+  background: #1a1c1e;
   color: #fff;
   border-radius: 12px;
   font-weight: 700;
   text-decoration: none;
   transition: all 0.2s ease;
-  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.2);
+  box-shadow: 0 4px 12px rgba(26, 28, 30, 0.2);
 }
 .fspBackHomeBtn:hover {
-  background: #ea580c;
+  background: #ff5722;
   transform: translateY(-2px);
-  box-shadow: 0 10px 15px -3px rgba(234, 88, 12, 0.3);
+  box-shadow: 0 10px 15px -3px rgba(255, 87, 34, 0.3);
+}
+@media (max-width: 768px) {
+  .fspHeroTitle {
+    font-size: 32px;
+  }
+  .fspTimerBox {
+    width: 72px;
+    height: 84px;
+    font-size: 36px;
+  }
+  .fspTimerSep {
+    font-size: 36px;
+    padding-bottom: 18px;
+  }
+  .fspFilterSection {
+    padding: 24px 16px;
+  }
+  .fspProductsSection {
+    padding: 0 16px 48px;
+  }
+  .fspGrid {
+    gap: 16px;
+  }
 }

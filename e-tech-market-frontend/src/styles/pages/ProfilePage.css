@@ -432,7 +432,7 @@
 }
 
 .pfOrderName {
-  font-weight: 700;
+  font-weight: 600;
   color: var(--et-text);
   grid-column: 1 / -1;
   margin-top: 2px;
@@ -525,14 +525,14 @@
 }
 
 .pfOrderAmount {
-  font-weight: 900;
+  font-weight: 600;
 }
 
 .pfOrderDetailsBtn {
   border: none;
   background: transparent;
   color: var(--et-primary-hover);
-  font-weight: 800;
+  font-weight: 600;
   cursor: pointer;
 }
 
@@ -544,7 +544,7 @@
 }
 
 .pfOrderCode {
-  font-weight: 900;
+  font-weight: 600;
   font-size: 14px;
   color: var(--et-primary);
 }
@@ -572,7 +572,7 @@
 
 /* ensure amount and actions sit to the right */
 .pfOrderAmount {
-  font-weight: 900;
+  font-weight: 600;
   margin-left: auto;
 }
 

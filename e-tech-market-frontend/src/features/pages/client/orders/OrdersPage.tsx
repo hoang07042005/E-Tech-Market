@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+﻿import { useEffect, useMemo, useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import '@/styles/pages/OrdersPage.css'
 import { apiFetch, API_BASE_URL } from '@/configs/api.config'
@@ -36,7 +36,7 @@ function fmtDateVi(iso?: string | null) {
   if (!Number.isFinite(t)) return '—'
   const d = new Date(t)
   const m = d.getMonth() + 1
-  return `${d.getDate()} Tháng ${m}, ${d.getFullYear()}`
+  return `${d.getDate()}/${m}/${d.getFullYear()}`
 }
 
 function statusMeta(status?: string | null) {

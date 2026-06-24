@@ -728,7 +728,7 @@ export default function ProfilePage() {
                     <h3 className="pfMiniTitle">Bảo mật</h3>
                     <div className="pfMiniTopRow">
                       <div>
-                        <div style={{ fontWeight: 900, marginBottom: 4 }}>
+                        <div style={{ fontWeight: 600, marginBottom: 4 }}>
                           Xác thực 2 yếu tố (2FA)
                         </div>
                         <div className="pfToggleText">Tăng cường bảo mật cho tài khoản của bạn.</div>
@@ -751,7 +751,7 @@ export default function ProfilePage() {
                       }}
                     >
                       <div>
-                        <div style={{ fontWeight: 900 }}>Thay đổi mật khẩu</div>
+                        <div style={{ fontWeight: 600 }}>Thay đổi mật khẩu</div>
                         <div className="pfToggleText">Cập nhật mật khẩu để an toàn hơn.</div>
                       </div>
                       <span className="pfChevron" aria-hidden="true">
