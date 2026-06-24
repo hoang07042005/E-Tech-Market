@@ -129,22 +129,25 @@ function ProductCard({
   // Handle image URL
   const imageUrl = resolveImageUrl(product.main_image_url)
   // Calculate display price and old price based on variants (uses backend effective_price)
-  const { displayPrice, displayOldPrice, discountPercent } = useMemo(() => {
+  const { displayPrice, displayPriceMax, displayOldPrice, discountPercent, hasMultiplePrices } = useMemo(() => {
     const activeVariants = (product.variants || []).filter(v => v.is_active)
     if (activeVariants.length > 0) {
       // Sort by effective_price (already computed by backend with discount logic)
       const sorted = [...activeVariants].sort((a, b) => a.effective_price - b.effective_price)
       const lowest = sorted[0]
       const highest = sorted[sorted.length - 1]
+      const hasMultiplePrices = lowest.effective_price !== highest.effective_price
 
+      // Calculate discount based on lowest price variant
       const originalPrice = Number.parseFloat(lowest.price)
       const finalPrice = lowest.effective_price
       const hasDiscount = finalPrice < originalPrice
 
       return {
         displayPrice: finalPrice,
+        displayPriceMax: hasMultiplePrices ? highest.effective_price : null,
         displayOldPrice: hasDiscount ? originalPrice : null,
-        hasMultiplePrices: lowest.effective_price !== highest.effective_price,
+        hasMultiplePrices,
         discountPercent: hasDiscount ? Math.round((1 - finalPrice / originalPrice) * 100) : 0,
         variantId: lowest.id,
         variantLabel: [variantColorLabel(lowest), variantStorageLabel(lowest)].filter(Boolean).join(' · ') || lowest.variant_name
@@ -154,6 +157,7 @@ function ProductCard({
     const basePrice = 0
     return {
       displayPrice: basePrice,
+      displayPriceMax: null,
       displayOldPrice: null,
       hasMultiplePrices: false,
       discountPercent: 0,
@@ -286,7 +290,9 @@ function ProductCard({
         </Link>
         <div className="ppCardPriceRow">
           <span className="ppCardPrice">
-            {displayPrice.toLocaleString('vi-VN')} đ
+            {hasMultiplePrices
+              ? `${displayPrice.toLocaleString('vi-VN')} - ${displayPriceMax!.toLocaleString('vi-VN')} đ`
+              : `${displayPrice.toLocaleString('vi-VN')} đ`}
           </span>
           {displayOldPrice && displayOldPrice > displayPrice && (
             <span className="ppCardOldPrice">{displayOldPrice.toLocaleString('vi-VN')} đ</span>
