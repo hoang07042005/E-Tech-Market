@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import '@/styles/admin/CategoryPage.css'
 import ConfirmModal from '@/components/ConfirmModal'
 
@@ -340,6 +340,4 @@ function TrashIcon() {
     </svg>
   )
 }
-
-
 

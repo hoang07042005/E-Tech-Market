@@ -1,4 +1,4 @@
-﻿import { useEffect, useState, useMemo } from 'react'
+import { useEffect, useState, useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { apiFetch, API_BASE_URL } from '@/configs/api.config'
 import '@/styles/pages/FlashSalePage.css'
@@ -315,7 +315,6 @@ export default function FlashSalePage() {
     </div>
   )
 }
-
 
 
 
