@@ -561,11 +561,11 @@ class _SecurityScreenState extends State<SecurityScreen> {
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8),
-          borderSide: BorderSide(color: Colors.grey.shade300),
+          borderSide: BorderSide(color: Theme.of(context).colorScheme.outline, width: 0.15),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8),
-          borderSide: BorderSide(color: primaryColor, width: 1.5),
+          borderSide: BorderSide(color: Theme.of(context).colorScheme.outline, width: 0.15),
         ),
         suffixIcon: IconButton(
           icon: Icon(obscureText ? Icons.visibility_off_outlined : Icons.visibility_outlined, size: 18),

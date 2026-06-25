@@ -393,133 +393,219 @@ class _AdminProductScreenState extends State<AdminProductScreen> {
     );
   }
 
-  Widget _buildFiltersCard() {
+Widget _buildFiltersCard() {
     return Container(
-      padding: const EdgeInsets.all(14),
+      padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: Theme.of(context).colorScheme.outline, width: 0.15),
       ),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          TextField(
-            controller: _searchController,
-            decoration: InputDecoration(
-              hintText: Trans.searchByNameBrand,
-              prefixIcon: const Icon(Icons.search, size: 22, color: Colors.grey),
-              filled: true,
-              fillColor: Theme.of(context).colorScheme.surface,
-              contentPadding: const EdgeInsets.symmetric(vertical: 0),
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide(color: Theme.of(context).colorScheme.outline, width: 0.15)),
-              enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide(color: Theme.of(context).colorScheme.outline, width: 0.15)),
-            ),
-            onChanged: (v) {
-              setState(() {
-                _currentPage = 1;
-                _applyFilters();
-              });
-            },
-          ),
-          const SizedBox(height: 12),
+          // 1. Thanh tìm kiếm và Nút Icon Đặt lại bên phải
           Row(
             children: [
               Expanded(
-                child: DropdownButtonFormField<String>(
-                  value: _selectedCategory,
-                  isExpanded: true,
-                  decoration: InputDecoration(
-                    labelText: Trans.category,
-                    filled: true,
-                    fillColor: Theme.of(context).colorScheme.surface,
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide(color: Theme.of(context).colorScheme.outline, width: 0.15)),
-                    enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide(color: Theme.of(context).colorScheme.outline, width: 0.15)),
+                child: SizedBox(
+                  height: 44,
+                  child: TextField(
+                    controller: _searchController,
+                    decoration: InputDecoration(
+                      hintText: 'Tên, Brand, Loại...',
+                      prefixIcon: Icon(Icons.search, size: 20, color: Theme.of(context).colorScheme.onSurface),
+                      filled: true,
+                      fillColor: Theme.of(context).colorScheme.surface,
+                      contentPadding: const EdgeInsets.symmetric(vertical: 0),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(color: Theme.of(context).colorScheme.outline, width: 0.15),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(color: Theme.of(context).colorScheme.outline, width: 0.15),
+                      ),
+                    ),
+                    onChanged: (v) {
+                      setState(() {
+                        _currentPage = 1;
+                        _applyFilters();
+                      });
+                    },
                   ),
-                  items: [
-                    DropdownMenuItem(value: 'all', child: Text(Trans.all, style: const TextStyle(fontSize: 13))),
-                    ..._categories.map((c) => DropdownMenuItem(
-                          value: c['id'],
-                          child: Text(c['name'], overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 13)),
-                        ))  
-                  ],
-                  onChanged: (val) {
-                    setState(() {
-                      _selectedCategory = val!;
-                      _currentPage = 1;
-                      _applyFilters();
-                    });
-                  },
                 ),
               ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: DropdownButtonFormField<String>(
-                  value: _selectedBrand,
-                  isExpanded: true,
-                  decoration: InputDecoration(
-                    labelText: Trans.brand,
-                    filled: true,
-                    fillColor: Theme.of(context).colorScheme.surface,
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide(color: Theme.of(context).colorScheme.outline, width: 0.15)),
-                    enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide(color: Theme.of(context).colorScheme.outline, width: 0.15)),
+              const SizedBox(width: 10),
+              // Nút Đặt lại đã được chuyển thành Nút Icon Bo Góc màu xanh dương
+              SizedBox(
+                height: 44,
+                width: 44, // Khóa cứng chiều rộng vuông bằng chiều cao để tạo khối đẹp
+                child: FilledButton(
+                  onPressed: _clearFilters,
+                  style: FilledButton.styleFrom(
+                    backgroundColor: Colors.blue[700], // Màu xanh dương đồng bộ
+                    padding: EdgeInsets.zero, // Xóa padding mặc định để icon căn giữa
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12), // Bo góc 12 khớp với TextField
+                    ),
                   ),
-                  items: [
-                    DropdownMenuItem(value: 'all', child: Text(Trans.all, style: const TextStyle(fontSize: 13))),
-                    ..._brands.map((b) => DropdownMenuItem(
-                          value: b,
-                          child: Text(b, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 13)),
-                        ))
-                  ],
-                  onChanged: (val) {
-                    setState(() {
-                      _selectedBrand = val!;
-                      _currentPage = 1;
-                      _applyFilters();
-                    });
-                  },
+                  child: const Icon(
+                    Icons.refresh_sharp, // Hoặc dùng Icons.restart_alt
+                    color: Colors.white,
+                    size: 22,
+                  ),
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 12),
+
+          // 2. Danh sách hàng ngang các nút Chọn Loại (Categories) dạng Chips
+          SizedBox(
+            height: 36,
+            child: ListView(
+              scrollDirection: Axis.horizontal,
+              children: [
+                // Nút "Tất cả" danh mục
+                Padding(
+                  padding: const EdgeInsets.only(right: 8),
+                  child: ChoiceChip(
+                    label: const Text('Tất cả'),
+                    selected: _selectedCategory == 'all',
+                    onSelected: (selected) {
+                      if (selected) {
+                        setState(() {
+                          _selectedCategory = 'all';
+                          _currentPage = 1;
+                          _applyFilters();
+                        });
+                      }
+                    },
+                    selectedColor: Colors.blue[700],
+                    backgroundColor: Theme.of(context).colorScheme.surface,
+                    labelStyle: TextStyle(
+                      color: _selectedCategory == 'all' ? Colors.white : Theme.of(context).colorScheme.onSurface,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 13,
+                    ),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+                    showCheckmark: false,
+                  ),
+                ),
+                // Các danh mục động từ dữ liệu API
+                ..._categories.map((c) {
+                  final isSelected = _selectedCategory == c['id'];
+                  return Padding(
+                    padding: const EdgeInsets.only(right: 8),
+                    child: ChoiceChip(
+                      label: Text(c['name']),
+                      selected: isSelected,
+                      onSelected: (selected) {
+                        setState(() {
+                          _selectedCategory = selected ? c['id'] : 'all';
+                          _currentPage = 1;
+                          _applyFilters();
+                        });
+                      },
+                      selectedColor: Colors.blue[700],
+                      backgroundColor: Theme.of(context).colorScheme.surface,
+                      labelStyle: TextStyle(
+                        color: isSelected ? Colors.white : Theme.of(context).colorScheme.onSurface,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 13,
+                      ),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+                      showCheckmark: false,
+                    ),
+                  );
+                }),
+              ],
+            ),
+          ),
+          const SizedBox(height: 12),
+
+          // 3. Hai Dropdown chọn Thương hiệu và Trạng thái hiển thị ở hàng dưới cùng
           Row(
             children: [
               Expanded(
-                child: DropdownButtonFormField<String>(
-                  value: _selectedStatus,
-                  isExpanded: true,
-                  decoration: InputDecoration(
-
-                    labelText: Trans.displayStatus,
-                    filled: true,
-                    fillColor: Theme.of(context).colorScheme.surface,
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: Theme.of(context).colorScheme.outline, width: 0.15)),
-                    enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: Theme.of(context).colorScheme.outline, width: 0.15)),
-                  ),
-                  items: [
-                    DropdownMenuItem(value: 'all', child: Text(Trans.allStatuses, style: const TextStyle(fontSize: 13))),
-                    DropdownMenuItem(value: 'active', child: Text(Trans.displaying, style: const TextStyle(fontSize: 13))),
-                    DropdownMenuItem(value: 'inactive', child: Text(Trans.hidden, style: const TextStyle(fontSize: 13))),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Padding(
+                      padding: EdgeInsets.only(left: 4, bottom: 4),
+                      child: Text('Thương hiệu', style: TextStyle(fontSize: 11, color: Colors.grey)),
+                    ),
+                    SizedBox(
+                      height: 40,
+                      child: DropdownButtonFormField<String>(
+                        value: _selectedBrand,
+                        isExpanded: true,
+                        alignment: Alignment.centerLeft,
+                        decoration: InputDecoration(
+                          filled: true,
+                          fillColor: Theme.of(context).colorScheme.surface,
+                          contentPadding: const EdgeInsets.symmetric(horizontal: 10),
+                          border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: Theme.of(context).colorScheme.outline, width: 0.15)),
+                          enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: Theme.of(context).colorScheme.outline, width: 0.15)),
+                        ),
+                        items: [
+                          const DropdownMenuItem(value: 'all', child: Text('Tất cả', style: TextStyle(fontSize: 13))),
+                          ..._brands.map((b) => DropdownMenuItem(
+                                value: b,
+                                child: Text(b, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 13)),
+                              ))
+                        ],
+                        onChanged: (val) {
+                          setState(() {
+                            _selectedBrand = val!;
+                            _currentPage = 1;
+                            _applyFilters();
+                          });
+                        },
+                      ),
+                    ),
                   ],
-                  onChanged: (val) {
-                    setState(() {
-                      _selectedStatus = val!;
-                      _currentPage = 1;
-                      _applyFilters();
-                    });
-                  },
                 ),
               ),
-              const SizedBox(width: 8),
-              TextButton.icon(
-                onPressed: _clearFilters,
-                icon: const Icon(Icons.refresh_sharp, size: 18),
-                label: Text(Trans.reset, style: const TextStyle(fontSize: 13)),
-                style: TextButton.styleFrom(foregroundColor: Colors.redAccent),
-              )
+              const SizedBox(width: 10),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Padding(
+                      padding: EdgeInsets.only(left: 4, bottom: 4),
+                      child: Text('Trạng thái', style: TextStyle(fontSize: 11, color: Colors.grey)),
+                    ),
+                    SizedBox(
+                      height: 40,
+                      child: DropdownButtonFormField<String>(
+                        value: _selectedStatus,
+                        isExpanded: true,
+                        decoration: InputDecoration(
+                          filled: true,
+                          fillColor: Theme.of(context).colorScheme.surface,
+                          contentPadding: const EdgeInsets.symmetric(horizontal: 10),
+                          border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: Theme.of(context).colorScheme.outline, width: 0.15)),
+                          enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: Theme.of(context).colorScheme.outline, width: 0.15)),
+                        ),
+                        items: const [
+                          DropdownMenuItem(value: 'all', child: Text('Tất cả', style: TextStyle(fontSize: 13))),
+                          DropdownMenuItem(value: 'active', child: Text('Đang hiển thị', style: TextStyle(fontSize: 13))),
+                          DropdownMenuItem(value: 'inactive', child: Text('Tạm ẩn', style: TextStyle(fontSize: 13))),
+                        ],
+                        onChanged: (val) {
+                          setState(() {
+                            _selectedStatus = val!;
+                            _currentPage = 1;
+                            _applyFilters();
+                          });
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ],
           )
         ],

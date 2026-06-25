@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-
+import 'package:float_column/float_column.dart';
 import '../../services/products_service.dart';
 import '../../services/wishlist_service.dart';
 import '../../services/cart_service.dart';
@@ -1101,57 +1101,117 @@ class _ProductsScreenState extends State<ProductsScreen> {
                     ),
                   ],
                   const SizedBox(height: 4),
-                  // Description + Cart button on same row
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      Expanded(
-                        child: Text(
-                          product['short_description'] ??
-                              product['description'] ??
-                              '',
-                          style: TextStyle(
-                              color: Theme.of(context).colorScheme.onSurfaceVariant,
-                              fontSize: 11,
-                              height: 1.3),
-                          maxLines: 3,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                      const SizedBox(width: 6),
-                      GestureDetector(
-                        onTap: () async {
-                          final hasSession = await AuthService.hasSession();
-                          if (!hasSession) {
-                            if (!mounted) return;
-                            AppDialogs.showLoginRequiredDialog(context);
-                            return;
-                          }
-                          try {
-                            await CartService.addToCart(productId, 1);
-                            if (!mounted) return;
-                            AppSnackBar.showSuccess(context, Trans.addedToCart);
-                          } catch (e) {
-                            if (!mounted) return;
-                            AppSnackBar.showError(context, Trans.errorLabel + e.toString().replaceFirst('Exception: ', ''));
-                          }
-                        },
-                        child: Container(
-                          width: 32,
-                          height: 32,
-                          decoration: BoxDecoration(
-                            color: const Color(0xFFF26522),
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                          child: const Icon(
-                            Icons.add_shopping_cart,
-                            size: 16,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
+                  // Description (3 lines) with Add button at bottom right
+LayoutBuilder(
+  builder: (context, constraints) {
+    final fullText = product['short_description'] ?? product['description'] ?? '';
+    final textStyle = TextStyle(
+      color: Theme.of(context).colorScheme.onSurfaceVariant,
+      fontSize: 11,
+      height: 1.3,
+    );
+
+    // 1. Đo kích thước để kiểm tra xem chữ có dài quá 1 dòng không
+    final textPainter = TextPainter(
+      text: TextSpan(text: fullText, style: textStyle),
+      maxLines: 1,
+      textDirection: TextDirection.ltr,
+    )..layout(maxWidth: constraints.maxWidth);
+
+    // Kiểm tra trạng thái vượt quá 1 dòng
+    final isMultiLine = textPainter.didExceedMaxLines;
+
+    // Định nghĩa nhanh cấu trúc Nút Bấm Giỏ Hàng để dùng chung cho cả 2 trường hợp
+    final cartButton = GestureDetector(
+      onTap: () async {
+        final hasSession = await AuthService.hasSession();
+        if (!hasSession) {
+          if (!mounted) return;
+          AppDialogs.showLoginRequiredDialog(context);
+          return;
+        }
+        try {
+          await CartService.addToCart(productId, 1);
+          if (!mounted) return;
+          AppSnackBar.showSuccess(context, Trans.addedToCart);
+        } catch (e) {
+          if (!mounted) return;
+          AppSnackBar.showError(
+            context, 
+            Trans.errorLabel + e.toString().replaceFirst('Exception: ', '')
+          );
+        }
+      },
+      child: Container(
+        width: 32,
+        height: 32,
+        decoration: BoxDecoration(
+          color: const Color(0xFFF26522),
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: const Icon(
+          Icons.add_shopping_cart,
+          size: 16,
+          color: Colors.white,
+        ),
+      ),
+    );
+
+    // TRƯỜNG HỢP A: Văn bản ngắn (Chỉ có 1 dòng)
+    if (!isMultiLine) {
+      return Row(
+        children: [
+          Expanded(
+            child: Text(
+              fullText,
+              style: textStyle,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+          const SizedBox(width: 8),
+          cartButton,
+        ],
+      );
+    }
+
+    // TRƯỜNG HỢP B: Văn bản dài nhiều dòng (Dòng 1 full width, dòng 2-3 né nút bấm)
+    final firstLineEndIndex = textPainter.getPositionForOffset(Offset(constraints.maxWidth, 0)).offset;
+    final firstLineText = fullText.substring(0, firstLineEndIndex);
+    final remainingText = fullText.substring(firstLineEndIndex);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Dòng 1: Luôn hiển thị Full Width tuyệt đối
+        Text(
+          firstLineText,
+          style: textStyle,
+          maxLines: 1,
+        ),
+        // Dòng 2 & 3: Tự động chừa 40px bên phải để né nút bấm giỏ hàng
+        Stack(
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(right: 40), // 32px nút + 8px khoảng cách an toàn
+              child: Text(
+                remainingText,
+                style: textStyle,
+                maxLines: 2, // Giới hạn đúng 3 dòng tổng cộng (1 dòng trên + 2 dòng dưới)
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+            Positioned(
+              right: 0,
+              bottom: 0,
+              child: cartButton,
+            ),
+          ],
+        ),
+      ],
+    );
+  },
+)
                 ],
               ),
             ),
