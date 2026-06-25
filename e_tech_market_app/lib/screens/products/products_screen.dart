@@ -623,6 +623,79 @@ class _ProductsScreenState extends State<ProductsScreen> {
         RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]}.');
   }
 
+  Widget _buildPagBtn(String label, VoidCallback? onPressed, {bool isActive = false}) {
+    final isDisabled = onPressed == null;
+    return GestureDetector(
+      onTap: onPressed,
+      child: Container(
+        constraints: const BoxConstraints(minWidth: 44, minHeight: 44),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        margin: const EdgeInsets.only(left: 6),
+        decoration: BoxDecoration(
+          color: isActive ? const Color(0xFFF26522) : (isDisabled ? Colors.grey.shade100 : Theme.of(context).colorScheme.surface),
+          border: Border.all(color: isActive ? const Color(0xFFF26522) : Colors.grey.shade300),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        alignment: Alignment.center,
+        child: Text(
+          label,
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
+            color: isActive ? Colors.white : (isDisabled ? Colors.grey : Theme.of(context).colorScheme.onSurface),
+          ),
+        ),
+      ),
+    );
+  }
+
+  List<Widget> _buildPagButtons() {
+    final btns = <Widget>[];
+    final maxBtns = 7;
+    final half = maxBtns ~/ 2;
+    int start = _currentPage - half;
+    if (start < 1) start = 1;
+    int end = start + maxBtns - 1;
+    if (end > _lastPage) end = _lastPage;
+    start = end - maxBtns + 1;
+    if (start < 1) start = 1;
+
+    // Prev button
+    btns.add(_buildPagBtn('<', _currentPage > 1 ? () { setState(() => _currentPage--); _fetchProducts(); } : null));
+
+    // First page if needed
+    if (start > 1) {
+      btns.add(_buildPagBtn('1', () { setState(() => _currentPage = 1); _fetchProducts(); }));
+      if (start > 2) {
+        btns.add(Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8),
+          child: Text('…', style: TextStyle(color: Colors.grey)),
+        ));
+      }
+    }
+
+    // Page numbers
+    for (int i = start; i <= end; i++) {
+      btns.add(_buildPagBtn(i.toString(), () { setState(() => _currentPage = i); _fetchProducts(); }, isActive: i == _currentPage));
+    }
+
+    // Last page if needed
+    if (end < _lastPage) {
+      if (end < _lastPage - 1) {
+        btns.add(Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8),
+          child: Text('…', style: TextStyle(color: Colors.grey)),
+        ));
+      }
+      btns.add(_buildPagBtn(_lastPage.toString(), () { setState(() => _currentPage = _lastPage); _fetchProducts(); }));
+    }
+
+    // Next button
+    btns.add(_buildPagBtn('>', _currentPage < _lastPage ? () { setState(() => _currentPage++); _fetchProducts(); } : null));
+
+    return btns;
+  }
+
   String _resolveProductImageUrl(Map<String, dynamic> product) {
     final rawMainImage = product['main_image_url']?.toString().trim();
     if (rawMainImage != null && rawMainImage.isNotEmpty) {
@@ -699,6 +772,62 @@ class _ProductsScreenState extends State<ProductsScreen> {
     return ((1 - newP / oldP) * 100).round();
   }
 
+  bool _hasMultiplePrices(Map<String, dynamic> product) {
+    final variants = product['variants'] as List<dynamic>?;
+    if (variants != null && variants.length > 1) {
+      final sortedVariants = List.from(variants);
+      sortedVariants.sort((a, b) {
+        final aPrice =
+            double.tryParse(a['effective_price']?.toString() ?? '0') ?? 0;
+        final bPrice =
+            double.tryParse(b['effective_price']?.toString() ?? '0') ?? 0;
+        return aPrice.compareTo(bPrice);
+      });
+      final lowest = double.tryParse(
+              sortedVariants[0]['effective_price']?.toString() ?? '0') ??
+          0.0;
+      final highest = double.tryParse(
+              sortedVariants[sortedVariants.length - 1]['effective_price']
+                  ?.toString() ??
+                  '0') ??
+          0.0;
+      return lowest != highest;
+    }
+    return false;
+  }
+
+  double? _getMaxDisplayPrice(Map<String, dynamic> product) {
+    final variants = product['variants'] as List<dynamic>?;
+    if (variants != null && variants.isNotEmpty) {
+      final sortedVariants = List.from(variants);
+      sortedVariants.sort((a, b) {
+        final aPrice =
+            double.tryParse(a['effective_price']?.toString() ?? '0') ?? 0;
+        final bPrice =
+            double.tryParse(b['effective_price']?.toString() ?? '0') ?? 0;
+        return aPrice.compareTo(bPrice);
+      });
+      return double.tryParse(
+              sortedVariants[sortedVariants.length - 1]['effective_price']
+                  ?.toString() ??
+                  '0') ??
+          0.0;
+    }
+    return null;
+  }
+
+  bool _showDiscountBadge(Map<String, dynamic> product) {
+    // Only show discount badge when there's exactly 1 variant
+    final variants = product['variants'] as List<dynamic>?;
+    if (variants == null || variants.length != 1) return false;
+
+    final originalPrice =
+        double.tryParse(variants[0]['price']?.toString() ?? '0') ?? 0.0;
+    final finalPrice =
+        double.tryParse(variants[0]['effective_price']?.toString() ?? '0') ?? 0.0;
+    return finalPrice < originalPrice;
+  }
+
   bool _isNewWithinTenDays(String? createdAtStr) {
     if (createdAtStr == null) return false;
     final createdAt = DateTime.tryParse(createdAtStr);
@@ -722,7 +851,9 @@ class _ProductsScreenState extends State<ProductsScreen> {
 
   Widget _buildProductCard(Map<String, dynamic> product) {
     final displayPrice = _getDisplayPrice(product);
-    final displayOldPrice = _getDisplayOldPrice(product);
+    final displayPriceMax = _hasMultiplePrices(product) ? _getMaxDisplayPrice(product) : null;
+    final displayOldPrice = _hasMultiplePrices(product) ? null : _getDisplayOldPrice(product);
+    final showDiscountBadge = _showDiscountBadge(product);
     final discountPercent = _getDiscountPercent(product);
     final isNew = _isNewWithinTenDays(product['created_at']);
     final isFeatured = product['is_featured'] == true;
@@ -740,7 +871,6 @@ class _ProductsScreenState extends State<ProductsScreen> {
     return GestureDetector(
       onTap: () => _navigateToProductDetail(product),
       child: Container(
-        margin: const EdgeInsets.only(bottom: 20),
         decoration: BoxDecoration(
           color: Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(12),
@@ -752,311 +882,281 @@ class _ProductsScreenState extends State<ProductsScreen> {
             ),
           ],
           border: Border.all(color: Theme.of(context).colorScheme.outline, width: 0.15),
-
         ),
         child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          // Image and badges
-          Stack(
-            children: [
-              ClipRRect(
-                borderRadius:
-                    const BorderRadius.vertical(top: Radius.circular(12)),
-                child: Container(
-                  width: double.infinity,
-                  height: 350,
-                  color: Theme.of(context).colorScheme.surface,
-                  child: imageUrl.isEmpty
-                      ? Center(
-                          child: Icon(Icons.computer,
-                              size: 80, color: Theme.of(context).colorScheme.outline))
-                      : Image.network(
-                          imageUrl,
-                          width: double.infinity,
-                          height: 220,
-                          fit: BoxFit.contain,
-                          alignment: Alignment.center,
-                          loadingBuilder: (context, child, loadingProgress) {
-                            if (loadingProgress == null) return child;
-                            return Center(
-                                child:
-                                    CircularProgressIndicator(strokeWidth: 2));
-                          },
-                          errorBuilder: (_, __, ___) => Center(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            // Image and badges
+            Stack(
+              children: [
+                ClipRRect(
+                  borderRadius:
+                      const BorderRadius.vertical(top: Radius.circular(12)),
+                  child: Container(
+                    width: double.infinity,
+                    height: 180,
+                    color: Theme.of(context).colorScheme.surface,
+                    child: imageUrl.isEmpty
+                        ? Center(
                             child: Icon(Icons.computer,
-                                size: 80, color: Theme.of(context).colorScheme.outline),
+                                size: 48, color: Theme.of(context).colorScheme.outline))
+                        : Image.network(
+                            imageUrl,
+                            width: double.infinity,
+                            height: 180,
+                            fit: BoxFit.contain,
+                            alignment: Alignment.center,
+                            loadingBuilder: (context, child, loadingProgress) {
+                              if (loadingProgress == null) return child;
+                              return Center(
+                                  child:
+                                      CircularProgressIndicator(strokeWidth: 2));
+                            },
+                            errorBuilder: (_, __, ___) => Center(
+                              child: Icon(Icons.computer,
+                                  size: 48, color: Theme.of(context).colorScheme.outline),
+                            ),
                           ),
-                        ),
+                  ),
                 ),
-              ),
-              // Wishlist button
-              Positioned(
-                top: 10,
-                left: 10,
-                child: GestureDetector(
-                  onTap: () => _toggleWishlist(productId),
-                  child: CircleAvatar(
-                    backgroundColor: Theme.of(context).colorScheme.surface,
-                    radius: 16,
-                    child: Icon(
-                      isLiked ? Icons.favorite : Icons.favorite_border,
-                      size: 18,
-                      color: isLiked ? Colors.red : Theme.of(context).colorScheme.onSurfaceVariant,
+                // Wishlist button
+                Positioned(
+                  top: 6,
+                  left: 6,
+                  child: GestureDetector(
+                    onTap: () => _toggleWishlist(productId),
+                    child: CircleAvatar(
+                      backgroundColor: Theme.of(context).colorScheme.surface,
+                      radius: 14,
+                      child: Icon(
+                        isLiked ? Icons.favorite : Icons.favorite_border,
+                        size: 15,
+                        color: isLiked ? Colors.red : Theme.of(context).colorScheme.onSurfaceVariant,
+                      ),
                     ),
                   ),
                 ),
-              ),
-              // Top-right badges (MỚI, -%, NỔI BẬT hiển thị đồng thời theo HÀNG NGANG)
-              Positioned(
-                top: 10,
-                right: 10,
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    // Badge NỔI BẬT
-                    if (isFeatured) ...[
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                        decoration: BoxDecoration(
-                          color: Colors.amber.shade700,
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                        child: Text(
-                          'NỔI BẬT',
-                          style: TextStyle(
-                            color: Theme.of(context).colorScheme.surface,
-                            fontSize: 10,
-                            fontWeight: FontWeight.bold,
+                // Top-right badges
+                Positioned(
+                  top: 6,
+                  right: 6,
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      // Badge GIẢM GIÁ (first)
+                      if (showDiscountBadge && discountPercent > 0)
+                        Container(
+                          margin: const EdgeInsets.only(right: 3),
+                          padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+                          decoration: BoxDecoration(
+                            color: Colors.red,
+                            borderRadius: BorderRadius.circular(3),
                           ),
-                        ),
-                      ),
-                      const SizedBox(width: 4), // Khoảng cách ngang giữa các badge
-                    ],
-
-                    // Badge MỚI
-                    if (isNew) ...[
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                        decoration: BoxDecoration(
-                          color: Colors.green,
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                        child: Text(
-                          'MỚI',
-                          style: TextStyle(
-                            color: Theme.of(context).colorScheme.surface,
-                            fontSize: 10,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 4),
-                    ],
-
-                    // Badge GIẢM GIÁ
-                    if (discountPercent > 0)
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                        decoration: BoxDecoration(
-                          color: Colors.red,
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                        child: Text(
-                          '-$discountPercent%',
-                          style: TextStyle(
-                            color: Theme.of(context).colorScheme.surface,
-                            fontSize: 10,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                  ],
-                ),
-              ),
-
-            ],
-          ),
-
-          // Content
-
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      brand.toString().toUpperCase(),
-                      style: TextStyle(
-                          color: Theme.of(context).colorScheme.onSurfaceVariant,
-                          fontSize: 12,
-                          fontWeight: FontWeight.bold,
-                          letterSpacing: 1),
-                    ),
-                    Row(
-                      children: List.generate(5, (index) {
-                        if (index < rating.floor()) {
-                          return const Icon(Icons.star,
-                              size: 14, color: Colors.amber);
-                        } else if (index < rating) {
-                          return const Icon(Icons.star_half,
-                              size: 14, color: Colors.amber);
-                        } else {
-                          return Icon(Icons.star,
-                              size: 14, color: Theme.of(context).colorScheme.outline);
-                        }
-                      }),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  product['name'] ?? '',
-                  style: TextStyle(
-                      fontSize: 16, fontWeight: FontWeight.bold, height: 1.3),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                const SizedBox(height: 12),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Text(
-                      '${_formatPrice(displayPrice)} đ',
-                      style: TextStyle(
-                          color: Color(0xFFF26522),
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold),
-                    ),
-                    if (displayOldPrice != null &&
-                        displayOldPrice > displayPrice) ...[
-                      const SizedBox(width: 8),
-                      Text(
-                        '${_formatPrice(displayOldPrice)} đ',
-                        style: TextStyle(
-                          color: Theme.of(context).colorScheme.onSurfaceVariant,
-                          fontSize: 14,
-                          decoration: TextDecoration.lineThrough,
-                        ),
-                      ),
-                    ],
-                  ],
-                ),
-                const SizedBox(height: 12),
-                Text(
-                  product['short_description'] ??
-                      product['description'] ??
-                      'Chưa có mô tả.',
-                  style: TextStyle(
-                      color: Theme.of(context).colorScheme.onSurfaceVariant, fontSize: 13, height: 1.4),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                const SizedBox(height: 16),
-
-                Row(
-                  children: [
-                    // Nút Thêm Vào Giỏ (Viền cam, nền trắng/trong suốt)
-                    Expanded(
-                      child: SizedBox(
-                        height: 42,
-                        child: OutlinedButton.icon(
-                          onPressed: () async {
-                            final hasSession = await AuthService.hasSession();
-                            if (!hasSession) {
-                              if (!mounted) return;
-                              AppDialogs.showLoginRequiredDialog(context);
-                              return;
-                            }
-                            try {
-                              await CartService.addToCart(productId, 1);
-                              if (!mounted) return;
-                              AppSnackBar.showSuccess(context, Trans.addedToCart);
-                            } catch (e) {
-                              if (!mounted) return;
-                              AppSnackBar.showError(context, Trans.errorLabel + e.toString().replaceFirst('Exception: ', ''));
-                            }
-                          },
-                          icon: const Icon(Icons.add_shopping_cart, size: 18, color: Color(0xFFF26522)),
-                          label: Text(
-                            Trans.addToCart,
-                            style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: Color(0xFFF26522),
-                              fontSize: 13,
-                            ),
-                          ),
-                          style: OutlinedButton.styleFrom(
-                            side: const BorderSide(color: Color(0xFFF26522), width: 1),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(6),
-                            ),
-                            padding: EdgeInsets.zero,
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 10), // Khoảng cách giữa 2 nút
-                    
-                    // Nút Mua Ngay (Nền cam chữ trắng đầy đủ)
-                    Expanded(
-                      child: SizedBox(
-                        height: 42,
-                        child: ElevatedButton(
-                          onPressed: () async {
-                            final hasSession = await AuthService.hasSession();
-                            if (!hasSession) {
-                              if (!mounted) return;
-                              AppDialogs.showLoginRequiredDialog(context);
-                              return;
-                            }
-                            try {
-                              // 1. Thêm sản phẩm vào giỏ hàng trước
-                              await CartService.addToCart(productId, 1);
-                              if (!mounted) return;
-                              
-                              // 2. Chuyển hướng NGAY lập tức sang trang Giỏ hàng
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => const CartScreen(), 
-                                ),
-                              );
-                            } catch (e) {
-                              if (!mounted) return;
-                              AppSnackBar.showError(context, Trans.errorLabel + e.toString().replaceFirst('Exception: ', ''));
-                            }
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFFF26522),
-                            foregroundColor: Colors.white,
-                            elevation: 0,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(6),
-                            ),
-                            padding: EdgeInsets.zero,
-                          ),
-                          child: const Text(
-                            'Mua ngay',
+                          child: Text(
+                            '-$discountPercent%',
                             style: TextStyle(
+                              color: Theme.of(context).colorScheme.surface,
+                              fontSize: 8,
                               fontWeight: FontWeight.bold,
-                              letterSpacing: 0.5,
-                              fontSize: 13,
                             ),
                           ),
                         ),
-                      ),
-                    ),
-                  ],
+
+                      // Badge MỚI (second)
+                      if (isNew)
+                        Container(
+                          margin: const EdgeInsets.only(right: 3),
+                          padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+                          decoration: BoxDecoration(
+                            color: Colors.green,
+                            borderRadius: BorderRadius.circular(3),
+                          ),
+                          child: Text(
+                            'MỚI',
+                            style: TextStyle(
+                              color: Theme.of(context).colorScheme.surface,
+                              fontSize: 8,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+
+                      // Badge NỔI BẬT (last)
+                      if (isFeatured)
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+                          decoration: BoxDecoration(
+                            color: Colors.amber.shade700,
+                            borderRadius: BorderRadius.circular(3),
+                          ),
+                          child: Text(
+                            'NỔI BẬT',
+                            style: TextStyle(
+                              color: Theme.of(context).colorScheme.surface,
+                              fontSize: 8,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
                 ),
               ],
             ),
-          ),
-        ],
-      ),
+
+            // Content
+            Padding(
+              padding: const EdgeInsets.all(6),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Brand + Rating on same row
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Flexible(
+                        child: Text(
+                          brand.toString().toUpperCase(),
+                          style: TextStyle(
+                              color: Theme.of(context).colorScheme.onSurfaceVariant,
+                              fontSize: 10,
+                              fontWeight: FontWeight.bold,
+                              letterSpacing: 0.5),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          ...List.generate(5, (index) {
+                            if (index < rating.floor()) {
+                              return const Icon(Icons.star,
+                                  size: 10, color: Colors.amber);
+                            } else if (index < rating) {
+                              return const Icon(Icons.star_half,
+                                  size: 10, color: Colors.amber);
+                            } else {
+                              return Icon(Icons.star,
+                                  size: 10, color: Theme.of(context).colorScheme.outline);
+                            }
+                          }),
+                          const SizedBox(width: 2),
+                          Text(
+                            '(${product['reviews_count'] ?? 0})',
+                            style: TextStyle(
+                              color: Theme.of(context).colorScheme.onSurfaceVariant,
+                              fontSize: 9,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 4),
+                  // Product name
+                  Text(
+                    product['name'] ?? '',
+                    style: TextStyle(
+                        fontSize: 13, fontWeight: FontWeight.bold, height: 1.3),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(height: 6),
+                  // Price
+                  if (showDiscountBadge)
+                    Text(
+                      '${_formatPrice(displayPrice)}đ',
+                      style: TextStyle(
+                          color: Color(0xFFF26522),
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold),
+                    )
+                  else if (displayPriceMax != null)
+                    Text(
+                      '${_formatPrice(displayPrice)} - ${_formatPrice(displayPriceMax!)}đ',
+                      style: TextStyle(
+                          color: Color(0xFFF26522),
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold),
+                    )
+                  else
+                    Text(
+                      '${_formatPrice(displayPrice)}đ',
+                      style: TextStyle(
+                          color: Color(0xFFF26522),
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold),
+                    ),
+                  if (displayOldPrice != null &&
+                      displayOldPrice > displayPrice &&
+                      showDiscountBadge) ...[
+                    const SizedBox(height: 2),
+                    Text(
+                      '${_formatPrice(displayOldPrice)}đ',
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        fontSize: 11,
+                        decoration: TextDecoration.lineThrough,
+                      ),
+                    ),
+                  ],
+                  const SizedBox(height: 4),
+                  // Description + Cart button on same row
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Expanded(
+                        child: Text(
+                          product['short_description'] ??
+                              product['description'] ??
+                              '',
+                          style: TextStyle(
+                              color: Theme.of(context).colorScheme.onSurfaceVariant,
+                              fontSize: 11,
+                              height: 1.3),
+                          maxLines: 3,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                      const SizedBox(width: 6),
+                      GestureDetector(
+                        onTap: () async {
+                          final hasSession = await AuthService.hasSession();
+                          if (!hasSession) {
+                            if (!mounted) return;
+                            AppDialogs.showLoginRequiredDialog(context);
+                            return;
+                          }
+                          try {
+                            await CartService.addToCart(productId, 1);
+                            if (!mounted) return;
+                            AppSnackBar.showSuccess(context, Trans.addedToCart);
+                          } catch (e) {
+                            if (!mounted) return;
+                            AppSnackBar.showError(context, Trans.errorLabel + e.toString().replaceFirst('Exception: ', ''));
+                          }
+                        },
+                        child: Container(
+                          width: 32,
+                          height: 32,
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFF26522),
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          child: const Icon(
+                            Icons.add_shopping_cart,
+                            size: 16,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -1093,7 +1193,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
           decoration: BoxDecoration(
             color: Theme.of(context).colorScheme.surface,
             border: Border.all(color: Theme.of(context).colorScheme.outline, width: 0.15),
-            borderRadius: BorderRadius.circular(4),
+            borderRadius: BorderRadius.circular(12),
           ),
           child: Row(
             children: [
@@ -1104,7 +1204,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
                     hintText: Trans.searchProductsPlaceholder,
                     hintStyle: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant),
                     border: InputBorder.none,
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                     suffixIcon: _searchQuery.isNotEmpty
                         ? IconButton(
                             icon: Icon(Icons.clear, color: Theme.of(context).colorScheme.onSurfaceVariant, size: 18),
@@ -1147,7 +1247,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
                 decoration: BoxDecoration(
                   color: Theme.of(context).colorScheme.surface,
                   border: Border.all(color: Theme.of(context).colorScheme.outline, width: 0.15),
-                  borderRadius: BorderRadius.circular(4),
+                  borderRadius: BorderRadius.circular(12),
                 ),
                 child: DropdownButtonHideUnderline(
                   child: DropdownButton<String>(
@@ -1190,7 +1290,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
                   backgroundColor: Theme.of(context).colorScheme.surface,
                   side: BorderSide(color: Theme.of(context).colorScheme.outline, width: 0.15),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(4),
+                    borderRadius: BorderRadius.circular(12),
                   ),
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                 ),
@@ -1214,51 +1314,70 @@ class _ProductsScreenState extends State<ProductsScreen> {
                 child: Text(Trans.noProductsMatchFilter)),
           )
         else
-          ListView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: _products.length,
-            itemBuilder: (context, index) {
-              return _buildProductCard(_products[index]);
+          Builder(
+            builder: (context) {
+              // Split products into 2 columns
+              final leftItems = <dynamic>[];
+              final rightItems = <dynamic>[];
+              for (int i = 0; i < _products.length; i++) {
+                if (i % 2 == 0) {
+                  leftItems.add(_products[i]);
+                } else {
+                  rightItems.add(_products[i]);
+                }
+              }
+              return Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    child: Column(
+                      children: leftItems
+                          .map((p) => Padding(
+                                padding: const EdgeInsets.only(bottom: 12),
+                                child: _buildProductCard(p),
+                              ))
+                          .toList(),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      children: rightItems
+                          .map((p) => Padding(
+                                padding: const EdgeInsets.only(bottom: 12),
+                                child: _buildProductCard(p),
+                              ))
+                          .toList(),
+                    ),
+                  ),
+                ],
+              );
             },
           ),
           
         if (_lastPage > 1)
-          Padding(
+          Container(
             padding: const EdgeInsets.symmetric(vertical: 24),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+            child: Column(
               children: [
-                OutlinedButton(
-                  onPressed: _currentPage > 1
-                      ? () {
-                          setState(() => _currentPage--);
-                          _fetchProducts();
-                        }
-                      : null,
-                  style: OutlinedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
-                  ),
-                  child: Text('<'),
-                ),
+                // Page info: "Trang X / Y"
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: Text(Trans.pageOf(_currentPage, _lastPage),
-                      style: TextStyle(fontWeight: FontWeight.bold)),
-                ),
-                OutlinedButton(
-                  onPressed: _currentPage < _lastPage
-                      ? () {
-                          setState(() => _currentPage++);
-                          _fetchProducts();
-                        }
-                      : null,
-                  style: OutlinedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
+                  padding: const EdgeInsets.only(bottom: 16),
+                  child: Text(
+                    'Trang $_currentPage / $_lastPage',
+                    style: TextStyle(
+                      color: Colors.grey.shade600,
+                      fontSize: 14,
+                    ),
                   ),
-                  child: Text('>'),
+                ),
+                // Pagination buttons
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: _buildPagButtons(),
+                  ),
                 ),
               ],
             ),
