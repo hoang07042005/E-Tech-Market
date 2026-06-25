@@ -105,9 +105,9 @@ class _HeroBannerSectionState extends State<HeroBannerSection> {
                         begin: Alignment.centerLeft,
                         end: Alignment.centerRight,
                         colors: [
-                          Colors.white.withValues(alpha: 0.30),
-                          Colors.orange.shade50.withValues(alpha: 0.15),
-                          Colors.orange.shade100.withValues(alpha: 0.05),
+                          Colors.black54.withValues(alpha: 0.30),
+                          Colors.black.withValues(alpha: 0.20),
+                          Colors.black.withValues(alpha: 0.15),
                         ],
                       ),
                     ),
@@ -126,13 +126,13 @@ class _HeroBannerSectionState extends State<HeroBannerSection> {
                   children: [
                     Text(
                       widget.banners[widget.currentBannerIndex]['title'] ?? 'Khám phá ưu đãi mới',
-                      style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w600, height: 1.15),
+                      style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w600, height: 1.15, color: Colors.white),
                     ),
                     const SizedBox(height: 8),
                     if ((widget.banners[widget.currentBannerIndex]['description'] as String?)?.isNotEmpty ?? false)
                       Text(
                         widget.banners[widget.currentBannerIndex]['description'] ?? '',
-                        style: const TextStyle(fontSize: 13, color: Colors.black54, height: 1.4),
+                        style: const TextStyle(fontSize: 13, color: Colors.white70, height: 1.4),
                       ),
                     const SizedBox(height: 14),
                     ElevatedButton(

@@ -176,13 +176,19 @@ class _ProductCard extends StatelessWidget {
                 child: Stack(
                   children: [
                     Positioned.fill(
-                      child: imageUrl.isEmpty
-                          ? _buildImageFallback()
-                          : Image.network(
-                              imageUrl,
-                              fit: BoxFit.cover,
-                              errorBuilder: (_, __, ___) => _buildImageFallback(),
-                            ),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
+                        ),
+                        clipBehavior: Clip.antiAlias, 
+                        child: imageUrl.isEmpty
+                            ? _buildImageFallback()
+                            : Image.network(
+                                imageUrl,
+                                fit: BoxFit.cover,
+                                errorBuilder: (_, __, ___) => _buildImageFallback(),
+                              ),
+                      ),
                     ),
                     Positioned(
                       top: 8,

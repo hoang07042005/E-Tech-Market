@@ -213,13 +213,19 @@ class _TabbedProductCard extends StatelessWidget {
                 child: Stack(
                   children: [
                     Positioned.fill(
-                      child: imageUrl.isEmpty
-                          ? _buildFallback(context)
-                          : Image.network(
-                              imageUrl,
-                              fit: BoxFit.cover,
-                              errorBuilder: (_, __, ___) => _buildFallback(context),
-                            ),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
+                        ),
+                        clipBehavior: Clip.antiAlias, 
+                        child: imageUrl.isEmpty
+                            ? _buildFallback(context)
+                            : Image.network(
+                                imageUrl,
+                                fit: BoxFit.cover,
+                                errorBuilder: (_, __, ___) => _buildFallback(context),
+                              ),
+                      ),
                     ),
                     Positioned(
                       top: 8,
