@@ -54,7 +54,7 @@ return [
     'channels' => [
         'stack' => [
             'driver' => 'stack',
-            'channels' => ['single', 'telegram'],
+            'channels' => ['single', 'stderr', 'telegram'],
             'ignore_exceptions' => false,
         ],
 

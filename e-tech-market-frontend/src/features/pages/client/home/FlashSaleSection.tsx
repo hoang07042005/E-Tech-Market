@@ -37,8 +37,11 @@ type FlashSale = {
   items: FlashSaleItem[]
 }
 
+// API có thể trả về object (1 sale) hoặc mảng (nhiều sale)
+type FlashSaleResponse = FlashSale | FlashSale[]
+
 const resolveImageUrl = (url?: string | null) => {
-  if (!url) return '/placeholder.png'
+  if (!url || typeof url !== 'string') return '/placeholder.png'
   const s = url.trim()
   if (!s) return '/placeholder.png'
   if (/^https?:\/\//i.test(s)) {
@@ -55,7 +58,7 @@ const resolveImageUrl = (url?: string | null) => {
 }
 
 export default function FlashSaleSection() {
-  const [sale, setSale] = useState<FlashSale | null>(null)
+  const [sales, setSales] = useState<FlashSale[]>([])
   const [timeLeft, setTimeLeft] = useState<{ h: number; m: number; s: number } | null>(null)
   const [loading, setLoading] = useState(true)
   const [isCurrentlyActive, setIsCurrentlyActive] = useState(false)
@@ -63,14 +66,26 @@ export default function FlashSaleSection() {
   useEffect(() => {
     const loadSale = async () => {
       try {
-        const res = await apiFetch<FlashSale>('/api/flash-sale/current')
-        setSale(res)
+        const res = await apiFetch<FlashSaleResponse>('/api/flash-sale/current')
 
-        // Initial check if active
-        if (res) {
-          const now = new Date().getTime()
-          const start = new Date(res.start_at).getTime()
-          const end = new Date(res.end_at).getTime()
+        // API trả về object (1 sale) hoặc mảng (nhiều sale) - normalize về mảng
+        const saleList: FlashSale[] = Array.isArray(res) ? res : res ? [res] : []
+        setSales(saleList)
+
+        // Lấy flash sale đang active đầu tiên
+        const now = new Date().getTime()
+        const activeSale = saleList.find(s => {
+          if (!s.start_at || !s.end_at) return false
+          const start = new Date(String(s.start_at).replace(' ', 'T')).getTime()
+          const end = new Date(String(s.end_at).replace(' ', 'T')).getTime()
+          return now >= start && now <= end
+        })
+
+        if (activeSale) {
+          const startStr = String(activeSale.start_at).replace(' ', 'T')
+          const endStr = String(activeSale.end_at).replace(' ', 'T')
+          const start = new Date(startStr).getTime()
+          const end = new Date(endStr).getTime()
           setIsCurrentlyActive(now >= start && now <= end)
         }
       } catch (e) {
@@ -83,13 +98,21 @@ export default function FlashSaleSection() {
   }, [])
 
   useEffect(() => {
-    if (!sale) return
+    // Tìm flash sale đang active đầu tiên từ danh sách
+    const now = new Date().getTime()
+    const activeSale = sales.find(s => {
+      if (!s.start_at || !s.end_at) return false
+      const start = new Date(String(s.start_at).replace(' ', 'T')).getTime()
+      const end = new Date(String(s.end_at).replace(' ', 'T')).getTime()
+      return now >= start && now <= end
+    })
+
+    if (!activeSale) return
 
     const timer = setInterval(() => {
       const now = new Date().getTime()
-      // Fix for some browsers not parsing 'YYYY-MM-DD HH:mm:ss'
-      const startStr = sale.start_at.replace(' ', 'T')
-      const endStr = sale.end_at.replace(' ', 'T')
+      const startStr = String(activeSale.start_at).replace(' ', 'T')
+      const endStr = String(activeSale.end_at).replace(' ', 'T')
 
       const start = new Date(startStr).getTime()
       const end = new Date(endStr).getTime()
@@ -100,7 +123,6 @@ export default function FlashSaleSection() {
         if (diff <= 0) {
           clearInterval(timer)
           setTimeLeft(null)
-          setSale(null)
         }
       } else {
         setIsCurrentlyActive(true)
@@ -115,12 +137,21 @@ export default function FlashSaleSection() {
     }, 1000)
 
     return () => clearInterval(timer)
-  }, [sale])
+  }, [sales])
+
+  // Lấy flash sale đang active để hiển thị
+  const now = new Date().getTime()
+  const activeSale = sales.find(s => {
+    if (!s.start_at || !s.end_at) return false
+    const start = new Date(String(s.start_at).replace(' ', 'T')).getTime()
+    const end = new Date(String(s.end_at).replace(' ', 'T')).getTime()
+    return now >= start && now <= end
+  })
 
   const isValidTime = timeLeft && !isNaN(timeLeft.h)
-  const hasItems = (sale?.items?.length ?? 0) > 0
+  const hasItems = (activeSale?.items?.length ?? 0) > 0
 
-  if (loading || !sale || !isCurrentlyActive || !isValidTime || !hasItems) return null
+  if (loading || !activeSale || !isCurrentlyActive || !isValidTime || !hasItems) return null
 
   const formatNum = (n: number) => String(n).padStart(2, '0')
 
@@ -152,7 +183,7 @@ export default function FlashSaleSection() {
         </div>
 
         <div className="flashSaleGrid">
-          {(sale.items || []).filter(i => i.product).slice(0, 5).map(item => {
+          {(activeSale.items || []).filter(i => i.product).slice(0, 5).map(item => {
             const productUrl = `/products/${item.product.slug}?flashSale=true${item.variant_id ? `&variant=${item.variant_id}` : ''}`;
             const displayImage = resolveImageUrl(item.variant?.image_url || item.product.main_image_url);
             const displayName = item.variant

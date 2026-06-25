@@ -39,6 +39,9 @@ services:
       - MEILISEARCH_KEY=${MEILISEARCH_KEY:-etech-master-key-1234}
       - CACHE_DRIVER=redis
       - SESSION_DRIVER=redis
+      # Logging: stack (file + stderr for docker logs)
+      - LOG_CHANNEL=stack
+      - LOG_LEVEL=debug
     depends_on:
       - db
       - redis
