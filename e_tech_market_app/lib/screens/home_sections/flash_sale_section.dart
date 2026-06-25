@@ -22,6 +22,8 @@ class FlashSaleSection extends StatefulWidget {
 
 class _FlashSaleSectionState extends State<FlashSaleSection> {
   Map<String, dynamic>? _flashSale;
+  List<Map<String, dynamic>> _allSales = [];
+  int _currentSaleIndex = 0;
   bool _isLoading = true;
   bool _isCurrentlyActive = false;
   int _hours = 0;
@@ -48,12 +50,33 @@ class _FlashSaleSectionState extends State<FlashSaleSection> {
       final data = await FlashSaleService.fetchCurrentFlashSale();
       if (!mounted) return;
 
-      setState(() {
+      // Handle single or multiple flash sale programs
+      if (data is List) {
+        _allSales = data.whereType<Map<String, dynamic>>().toList();
+        final now = DateTime.now().millisecondsSinceEpoch;
+        
+        for (int i = 0; i < _allSales.length; i++) {
+          final sale = _allSales[i];
+          final startStr = (sale['start_at'] ?? '').toString().replaceAll(' ', 'T');
+          final endStr = (sale['end_at'] ?? '').toString().replaceAll(' ', 'T');
+          final start = DateTime.tryParse(startStr)?.millisecondsSinceEpoch ?? 0;
+          final end = DateTime.tryParse(endStr)?.millisecondsSinceEpoch ?? 0;
+          
+          if (now >= start && now <= end) {
+            _currentSaleIndex = i;
+            _flashSale = sale;
+            break;
+          }
+        }
+      } else if (data is Map<String, dynamic>) {
         _flashSale = data;
+      }
+
+      setState(() {
         _isLoading = false;
       });
 
-      if (data != null) {
+      if (_flashSale != null) {
         _updateActiveStatus();
         _startCountdown();
       }
@@ -91,14 +114,23 @@ class _FlashSaleSectionState extends State<FlashSaleSection> {
       final diff = end - now;
 
       if (diff <= 0) {
-        setState(() {
-          _isCurrentlyActive = false;
-          _hours = 0;
-          _minutes = 0;
-          _seconds = 0;
-          _flashSale = null;
-        });
-        _timer?.cancel();
+        // Nếu có nhiều chương trình, chuyển sang chương trình tiếp theo
+        if (_allSales.length > 1 && _currentSaleIndex < _allSales.length - 1) {
+          _currentSaleIndex++;
+          _flashSale = _allSales[_currentSaleIndex];
+          // Reset timer for new program
+          _startCountdown();
+        } else {
+          setState(() {
+            _isCurrentlyActive = false;
+            _hours = 0;
+            _minutes = 0;
+            _seconds = 0;
+            _flashSale = null;
+          });
+          _timer?.cancel();
+        }
+        return;
       } else {
         final h = (diff ~/ (1000 * 60 * 60)) % 24;
         final m = (diff ~/ (1000 * 60)) % 60;
@@ -129,7 +161,10 @@ class _FlashSaleSectionState extends State<FlashSaleSection> {
   Widget build(BuildContext context) {
     if (_isLoading) return const SizedBox.shrink();
 
-    final allItems = (_flashSale?['items'] as List<dynamic>?)
+    // Nếu có nhiều chương trình, lấy chương trình hiện tại
+    if (_flashSale == null) return const SizedBox.shrink();
+
+    final allItems = (_flashSale!['items'] as List<dynamic>?)
             ?.where((item) => item != null && item['product'] != null)
             .toList() ??
         [];
