@@ -2,7 +2,8 @@
   "permissions": {
     "allow": [
       "Read(//d/E-Tech-Market/e_tech_market_app/**)",
-      "Bash(flutter analyze lib/screens/products/products_screen.dart)"
+      "Bash(flutter analyze lib/screens/products/products_screen.dart)",
+      "Bash(redis-cli -n 0 DEL active_flash_sale)"
     ]
   }
 }

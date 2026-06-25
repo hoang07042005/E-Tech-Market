@@ -136,32 +136,52 @@ class FlashSaleService
 
     /**
      * Lấy chiến dịch Flash Sale hiện tại hoặc sắp tới cho Client
+     * Trả về một flash sale (để tương thích) hoặc mảng flash sales (nếu có nhiều)
      */
-    public function getCurrentClientSale(): ?FlashSale
+    public function getCurrentClientSale(): mixed
     {
         $now = Carbon::now();
         $this->endExpiredSales();
 
         return Cache::remember('active_flash_sale', 60, function () use ($now) {
-            $sale = FlashSale::where('status', FlashSale::STATUS_ACTIVE)
+            // Lấy TẤT CẢ flash sale đang active (có thể có nhiều chương trình chạy song song)
+            $activeSales = FlashSale::where('status', FlashSale::STATUS_ACTIVE)
                 ->where('start_at', '<=', $now)
                 ->where('end_at', '>=', $now)
                 ->with(['items' => function ($query) {
                     $query->with(['product.category', 'variant']);
                 }])
-                ->first();
+                ->get();
 
-            if (! $sale) {
-                $sale = FlashSale::whereIn('status', [FlashSale::STATUS_ACTIVE, FlashSale::STATUS_WAITING])
-                    ->where('start_at', '>', $now)
-                    ->orderBy('start_at', 'asc')
-                    ->with(['items' => function ($query) {
-                        $query->with(['product.category', 'variant']);
-                    }])
-                    ->first();
+            // Lấy các flash sale sắp tới (waiting)
+            $upcomingSales = FlashSale::where('status', FlashSale::STATUS_WAITING)
+                ->where('start_at', '>', $now)
+                ->orderBy('start_at', 'asc')
+                ->with(['items' => function ($query) {
+                    $query->with(['product.category', 'variant']);
+                }])
+                ->limit(10)
+                ->get();
+
+            $allSales = collect();
+
+            // Thêm tất cả flash sale đang active
+            foreach ($activeSales as $sale) {
+                $allSales->push($sale);
             }
 
-            return $sale;
+            // Thêm các flash sale sắp tới
+            foreach ($upcomingSales as $sale) {
+                $allSales->push($sale);
+            }
+
+            // Nếu chỉ có 1 flash sale, trả về object (tương thích ngược)
+            if ($allSales->count() === 1) {
+                return $allSales->first();
+            }
+
+            // Nếu có 2+ flash sales, trả về mảng
+            return $allSales->values()->all();
         });
     }
 }

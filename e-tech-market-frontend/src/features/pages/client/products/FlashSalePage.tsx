@@ -70,14 +70,55 @@ const defaultTimelineSlots: TimelineSlot[] = [
   { time: '20:00', label: 'Sap toi', status: 'upcoming' },
 ]
 
+function getSaleStatus(sale: FlashSale): 'active' | 'upcoming' | 'ended' {
+  const now = new Date().getTime()
+  const start = new Date(sale.start_at.replace(' ', 'T')).getTime()
+  const end = new Date(sale.end_at.replace(' ', 'T')).getTime()
+  if (now >= start && now <= end) return 'active'
+  if (now < start) return 'upcoming'
+  return 'ended'
+}
+
+function getTimeLeftObject(sale: FlashSale): { h: number; m: number; s: number } | null {
+  const now = new Date().getTime()
+  const saleStatus = getSaleStatus(sale)
+  if (saleStatus === 'ended') return null
+
+  const targetTime = saleStatus === 'upcoming'
+    ? new Date(sale.start_at.replace(' ', 'T')).getTime()
+    : new Date(sale.end_at.replace(' ', 'T')).getTime()
+
+  const diff = targetTime - now
+  if (diff <= 0) return null
+
+  const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))
+  const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60))
+  const s = Math.floor((diff % (1000 * 60)) / 1000)
+  return isNaN(h) ? null : { h, m, s }
+}
+
+function formatDateTimeVN(dateStr: string): string {
+  const date = new Date(dateStr.replace(' ', 'T'))
+  const day = date.getDate()
+  const month = date.getMonth() + 1
+  const hours = date.getHours()
+  const minutes = date.getMinutes().toString().padStart(2, '0')
+  return `${day}/${month} lúc ${hours}:${minutes}`
+}
+
 export default function FlashSalePage() {
-  const [sale, setSale] = useState<FlashSale | null>(null)
+  const [salesData, setSalesData] = useState<FlashSale | FlashSale[] | null>(null)
   const [timeLeft, setTimeLeft] = useState<{ h: number; m: number; s: number } | null>(null)
   const [loading, setLoading] = useState(true)
-  const [status, setStatus] = useState<'active' | 'upcoming' | 'ended'>('ended')
+  const [currentSaleIndex, setCurrentSaleIndex] = useState(0)
   const [searchQuery, setSearchQuery] = useState('')
   const [sortBy, setSortBy] = useState<SortType>('popular')
   const [timelineSlots] = useState<TimelineSlot[]>(defaultTimelineSlots)
+
+  const isMultiple = Array.isArray(salesData) && salesData.length >= 2
+  const currentSale = isMultiple
+    ? (salesData as FlashSale[])[currentSaleIndex]
+    : (salesData as FlashSale | null)
 
   useEffect(() => {
     document.title = 'E-Tech Market'
@@ -86,20 +127,8 @@ export default function FlashSalePage() {
   useEffect(() => {
     const loadSale = async () => {
       try {
-        const res = await apiFetch<FlashSale>('/api/flash-sale/current')
-        setSale(res)
-        if (res) {
-          const now = new Date().getTime()
-          const start = new Date(res.start_at.replace(' ', 'T')).getTime()
-          const end = new Date(res.end_at.replace(' ', 'T')).getTime()
-          if (now >= start && now <= end) {
-            setStatus('active')
-          } else if (now < start) {
-            setStatus('upcoming')
-          } else {
-            setStatus('ended')
-          }
-        }
+        const res = await apiFetch<FlashSale | FlashSale[]>('/api/flash-sale/current')
+        setSalesData(res)
       } catch (e) {
         console.error('Failed to load flash sale:', e)
       } finally {
@@ -110,47 +139,40 @@ export default function FlashSalePage() {
   }, [])
 
   useEffect(() => {
-    if (!sale) return
+    if (!currentSale) return
     const timer = setInterval(() => {
-      const now = new Date().getTime()
-      const startStr = sale.start_at.replace(' ', 'T')
-      const endStr = sale.end_at.replace(' ', 'T')
-      const start = new Date(startStr).getTime()
-      const end = new Date(endStr).getTime()
-      let targetTime: number
-      if (now < start) {
-        setStatus('upcoming')
-        targetTime = start
-      } else if (now >= start && now <= end) {
-        setStatus('active')
-        targetTime = end
-      } else {
-        setStatus('ended')
-        clearInterval(timer)
-        setTimeLeft(null)
-        setSale(null)
+      const saleStatus = getSaleStatus(currentSale)
+      if (saleStatus === 'ended') {
+        const timeLeftObj = getTimeLeftObject(currentSale)
+        setTimeLeft(timeLeftObj)
         return
       }
-      const diff = targetTime - now
-      if (diff <= 0) {
-        clearInterval(timer)
-        setTimeLeft(null)
-        window.location.reload()
-      } else {
-        const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))
-        const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60))
-        const s = Math.floor((diff % (1000 * 60)) / 1000)
-        if (!isNaN(h)) {
-          setTimeLeft({ h, m, s })
+      const timeLeftObj = getTimeLeftObject(currentSale)
+      if (!timeLeftObj) {
+        if (isMultiple) {
+          setCurrentSaleIndex(prev => {
+            const next = prev + 1
+            if (next >= (salesData as FlashSale[]).length) {
+              window.location.reload()
+              return prev
+            }
+            return next
+          })
+        } else {
+          setTimeLeft(null)
+          setSalesData(null)
+          window.location.reload()
         }
+        return
       }
+      setTimeLeft(timeLeftObj)
     }, 1000)
     return () => clearInterval(timer)
-  }, [sale])
+  }, [currentSale, isMultiple, salesData])
 
   const filteredAndSortedItems = useMemo(() => {
-    if (!sale || !sale.items) return []
-    let items = sale.items.filter(item => {
+    if (!currentSale || !currentSale.items) return []
+    let items = currentSale.items.filter(item => {
       if (!item.product) return false
       const name = item.variant
         ? `${item.product.name} ${item.variant.variant_name}`
@@ -171,11 +193,12 @@ export default function FlashSalePage() {
       }
     })
     return items
-  }, [sale, searchQuery, sortBy])
+  }, [currentSale, searchQuery, sortBy])
 
+  const status = currentSale ? getSaleStatus(currentSale) : 'ended'
   const formatNum = (n: number) => n.toString().padStart(2, '0')
 
-
+  // Empty state
   if (loading) {
     return (
       <div className="fspLoading">
@@ -185,7 +208,7 @@ export default function FlashSalePage() {
     )
   }
 
-  if (!sale || status === 'ended') {
+  if (!salesData || status === 'ended') {
     return (
       <div className="flashSalePage">
         <div className="fspEmptyState">
@@ -198,17 +221,187 @@ export default function FlashSalePage() {
     )
   }
 
+  // Multiple flash sales - Banner style (theo mau dark theme)
+  if (isMultiple) {
+    const allSales = salesData as FlashSale[]
+    return (
+      <div className="flashSalePage">
+        {/* Hero Section / Flash Sale Banner - Dark theme */}
+        <section className="fspMultiBanner">
+          {/* Atmospheric Particles/Glow */}
+          <div className="fspMultiBannerGlow">
+            <div className="fspGlowLeft"></div>
+            <div className="fspGlowRight"></div>
+          </div>
+
+          <div className="fspMultiBannerContent">
+            {/* Heading */}
+            <div className="fspMultiBannerTitle">
+              <span className="material-symbols-outlined fspBoltIcon">
+                <svg className="flashIcon" width="60" height="60" viewBox="0 0 24 24" fill="#FF2424">
+                <path d="M7 2v11h3v9l7-12h-4l4-8z"/>
+              </svg>
+              </span>
+              <h1 className="fspMultiTitleText">FLASH SALE</h1>
+            </div>
+            <p className="fspMultiText">
+              Chỉ trong thời gian có hạn. Hệ thống thương mại tốc độ cao của <strong>E-Tech Market</strong> mang đến cho bạn những sản phẩm độc quyền nhất mùa hè với mức giá đột phá.
+            </p>
+
+            {/* Countdown Timer Module */}
+            <div className="fspMultiTimerWrap">
+              {/* Hours */}
+              <div className="fspMultiTimerCol">
+                <div className="fspMultiTimerBox">
+                  <span className="fspMultiTimerNum">{formatNum(timeLeft?.h ?? 0).slice(0, 2)}</span>
+                </div>
+                <span className="fspMultiTimerLabel">HOURS</span>
+              </div>
+              <span className="fspMultiTimerSep">:</span>
+              {/* Minutes */}
+              <div className="fspMultiTimerCol">
+                <div className="fspMultiTimerBox">
+                  <span className="fspMultiTimerNum">{formatNum(timeLeft?.m ?? 0).slice(0, 2)}</span>
+                </div>
+                <span className="fspMultiTimerLabel">MINUTES</span>
+              </div>
+              <span className="fspMultiTimerSep">:</span>
+              {/* Seconds */}
+              <div className="fspMultiTimerCol">
+                <div className="fspMultiTimerBox">
+                  <span className="fspMultiTimerNum">{formatNum(timeLeft?.s ?? 0).slice(0, 2)}</span>
+                </div>
+                <span className="fspMultiTimerLabel">SECONDS</span>
+              </div>
+            </div>
+
+            {/* Program Items - Multiple buttons */}
+            <div className="fspMultiProgramBtns">
+              {allSales.map((sale, index) => (
+                <button
+                  key={sale.id}
+                  onClick={() => setCurrentSaleIndex(index)}
+                  className={`fspMultiProgramBtn ${index === currentSaleIndex ? 'active' : ''}`}
+                >
+                  <span className="fspMultiProgramName">{sale.name}</span>
+                  <span className="fspMultiProgramTime">
+                    {getSaleStatus(sale) === 'active' ? 'Kết thúc: ' : 'Bắt đầu: '}
+                    {formatDateTimeVN(sale.end_at)}
+                  </span>
+                </button>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Current Program Info */}
+        <section className="fspCurrentProgramInfo">
+          <h2 className="fspCurrentProgramTitle">
+            <span className="material-symbols-outlined">
+              <svg className="flashIcon" width="24" height="24" viewBox="0 0 24 24" fill="#FF2424">
+                <path d="M7 2v11h3v9l7-12h-4l4-8z"/>
+              </svg>
+            </span>
+            {currentSale?.name}
+          </h2>
+          <span className="fspCurrentProgramTime">
+            {status === 'active' ? 'Kết thúc: ' : 'Bắt đầu: '}
+            {formatDateTimeVN(currentSale?.end_at || '')}
+          </span>
+        </section>
+
+        <section className="fspFilterSection">
+          <div className="fspSearchBox">
+            <span className="fspSearchIcon material-symbols-outlined">
+              <svg className="hfSearchIcon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <circle cx="11" cy="11" r="7" stroke="currentColor" strokeWidth="1.8" />
+                <path d="m16.5 16.5 4 4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+              </svg>
+            </span>
+            <input type="text" className="fspSearchInput" placeholder="Tim san pham flash sale..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)} />
+          </div>
+          <div className="fspSortOptions">
+            <button type="button" className={`fspSortBtn ${sortBy === 'popular' ? 'active' : ''}`} onClick={() => setSortBy('popular')}>Bán chạy</button>
+            <button type="button" className={`fspSortBtn ${sortBy === 'priceAsc' ? 'active' : ''}`} onClick={() => setSortBy('priceAsc')}>Giá tăng dần</button>
+            <button type="button" className={`fspSortBtn ${sortBy === 'discount' ? 'active' : ''}`} onClick={() => setSortBy('discount')}>Giảm nhiều nhất</button>
+            <button type="button" className={`fspSortBtn ${sortBy === 'priceDesc' ? 'active' : ''}`} onClick={() => setSortBy('priceDesc')}>Mới nhất</button>
+          </div>
+        </section>
+
+        <section className="fspProductsSection">
+          <div className="fspGrid">
+            {filteredAndSortedItems.map(item => {
+              const productUrl = `/products/${item.product.slug}?flashSale=true${item.variant_id ? `&variant=${item.variant_id}` : ''}`
+              const displayImage = resolveImageUrl(item.variant?.image_url || item.product.main_image_url)
+              const displayName = item.variant ? `${item.product.name} - ${item.variant.variant_name}` : item.product.name
+              const originalPrice = item.variant ? item.variant.price : item.product.price
+              const progressPercent = Math.min(100, (item.sold_quantity / (item.quantity_limit || 100)) * 100)
+              const isHot = progressPercent >= 80
+              const isScarcity = progressPercent >= 95
+
+              return (
+                <Link key={item.id} to={productUrl} className={`fspCard ${isScarcity ? 'scarcity' : ''}`}>
+                  <div className="fspBadge">
+                    <span className="fspBadgePercent">-{Math.round((1 - item.flash_sale_price / originalPrice) * 100)}%</span>
+                  </div>
+                  <div className="fspThumb">
+                    <img src={displayImage} alt={displayName} />
+                  </div>
+                  <div className="fspInfo">
+                    <h3 className="fspName">{displayName}</h3>
+                    <div className="fspPricing">
+                      <span className="fspSalePrice">{Number(item.flash_sale_price).toLocaleString()}đ</span>
+                      <span className="fspOldPrice">{Number(originalPrice).toLocaleString()}đ</span>
+                    </div>
+                    <div className="fspProgress">
+                      <div className="fspProgressRow">
+                        <span className={`fspProgressLabel ${isHot ? 'hot' : ''}`}>
+                          {status === 'upcoming' ? 'Chưa mở bán' : item.sold_quantity === 0 ? 'Vừa mở bán' : `Đã bán ${item.sold_quantity}`}
+                        </span>
+                        <span className="fspStockLabel">
+                          {status === 'upcoming' ? 'Sắp diễn ra' : item.quantity_limit && (item.quantity_limit - item.sold_quantity) <= 3 ? `Chỉ còn ${item.quantity_limit - item.sold_quantity} chiếc` : isHot ? 'ĐANG CHÁY HÀNG!' : 'Còn hàng'}
+                        </span>
+                      </div>
+                      <div className="fspProgressBar">
+                        <div className={`fspProgressFill ${isHot ? 'hot' : ''}`} style={{ width: `${progressPercent}%` }}></div>
+                      </div>
+                    </div>
+                    <button type="button" className="fspCTA">
+                      <span className="fspCTAIcon material-symbols-outlined">
+                        <svg className="hfIconSvg" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                          <path d="M7 6h15l-2 9H8L7 6Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"></path>
+                          <path d="M7 6 6 3H2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"></path>
+                          <path d="M9 20a1 1 0 1 0 0-2 1 1 0 0 0 0 2ZM19 20a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z" fill="currentColor"></path>
+                        </svg>
+                      </span>
+                      MUA NGAY
+                    </button>
+                  </div>
+                </Link>
+              )
+            })}
+          </div>
+        </section>
+      </div>
+    )
+  }
+
+  // Single flash sale - Original style (with timer in hero)
   return (
     <div className="flashSalePage">
       <section className="fspHero">
         <div className="fspHeroContent">
-          <div className="fspHeroTitleWrap">
-            <span className="fspHeroIcon material-symbols-outlined">
-              <svg className="flashIcon" width="40" height="40" viewBox="0 0 24 24" fill="#FF2424">
+          <div className="fspMultiBannerTitle">
+              <span className="material-symbols-outlined fspBoltIcon">
+                <svg className="flashIcon" width="60" height="60" viewBox="0 0 24 24" fill="#FF2424">
                 <path d="M7 2v11h3v9l7-12h-4l4-8z"/>
-              </svg></span>
-            <h1 className="fspHeroTitle">{sale?.name || "Flash Sale"}</h1>
-          </div>
+              </svg>
+              </span>
+              <h1 className="fspHeroTitle">{currentSale?.name || "Flash Sale"}</h1>
+            </div>
+            <p className="fspMultiText">
+              Chỉ trong thời gian có hạn. Hệ thống thương mại tốc độ cao của <strong>E-Tech Market</strong> mang đến cho bạn những sản phẩm độc quyền nhất mùa hè với mức giá đột phá.
+            </p>
           <div className="fspTimerWrap">
             <div className="fspTimerBlock">
               <div className="fspTimerBox">{formatNum(timeLeft?.h ?? 0).slice(0, 2)}</div>
@@ -228,20 +421,9 @@ export default function FlashSalePage() {
         </div>
       </section>
 
-      {/* <section className="fspTimeline">        
-        <div className="fspTimelineWrapper">
-          {timelineSlots.length > 0 ? timelineSlots.map((slot, index) => (
-            <button key={index} className={`fspTimelineBtn ${slot.status === 'active' ? 'active' : ''} ${slot.status === 'passed' ? 'passed' : ''}`}>
-              <span className="fspTimelineTime">{slot.time}</span>
-              <span className="fspTimelineLabel">{slot.label}</span>
-            </button>
-          )) : <div></div>}
-        </div>
-      </section> */}
-
       <section className="fspFilterSection">
         <div className="fspSearchBox">
-          <span className="fspSearchIcon material-symbols-outlined"> 
+          <span className="fspSearchIcon material-symbols-outlined">
             <svg className="hfSearchIcon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
               <circle cx="11" cy="11" r="7" stroke="currentColor" strokeWidth="1.8" />
               <path d="m16.5 16.5 4 4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
@@ -271,7 +453,6 @@ export default function FlashSalePage() {
             return (
               <Link key={item.id} to={productUrl} className={`fspCard ${isScarcity ? 'scarcity' : ''}`}>
                 <div className="fspBadge">
-                  
                   <span className="fspBadgePercent">-{Math.round((1 - item.flash_sale_price / originalPrice) * 100)}%</span>
                 </div>
                 <div className="fspThumb">
@@ -315,8 +496,3 @@ export default function FlashSalePage() {
     </div>
   )
 }
-
-
-
-
-
