@@ -103,6 +103,11 @@ export default function CheckoutPage() {
   const [activeCoupons, setActiveCoupons] = useState<CouponPublic[]>([])
   const [showCouponModal, setShowCouponModal] = useState(false)
 
+  // --- Loyalty ---
+  const [loyaltyData, setLoyaltyData] = useState<any>(null)
+  const [pointsInput, setPointsInput] = useState<number | ''>('')
+  const [pointsToUse, setPointsToUse] = useState<number>(0)
+
   const userStr = useAuthStore((state) => state.userStr)
   const account = useMemo(() => readStoredUser(userStr), [userStr])
   const hasAuth = !!userStr
@@ -156,6 +161,14 @@ export default function CheckoutPage() {
         if (!cancelled && Array.isArray(res)) setActiveCoupons(res)
       })
       .catch(() => { })
+
+    if (hasAuth) {
+      apiFetch<any>('/api/me/loyalty')
+        .then((res) => {
+          if (!cancelled) setLoyaltyData(res)
+        })
+        .catch(() => { })
+    }
 
     return () => {
       cancelled = true
@@ -246,12 +259,21 @@ export default function CheckoutPage() {
   }, [shipPolicy.apply_global, shipPolicy.free_shipping_min, totalPrice])
 
   const discountAmount = appliedCoupon?.discount_amount ?? 0
+  const pointsDiscountAmount = pointsToUse * 500;
+
+  const maxPointsAllowed = useMemo(() => {
+    const selected = shippingMethods.find((m) => m.id === form.shipping_method_id) || null
+    const selectedZone = shippingZones.find((z) => z.id === form.shipping_zone_id) || null
+    const shipFee = (selected?.base_fee ?? 0) + (selectedZone?.fee ?? 0)
+    const baseForPoints = Math.max(0, totalPrice - discountAmount + (isFreeShipping ? 0 : shipFee))
+    return Math.floor(baseForPoints * 0.20 / 500)
+  }, [form.shipping_method_id, form.shipping_zone_id, isFreeShipping, shippingMethods, shippingZones, totalPrice, discountAmount])
 
   const grandTotal = useMemo(() => {
     const selected = shippingMethods.find((m) => m.id === form.shipping_method_id) || null
     const selectedZone = shippingZones.find((z) => z.id === form.shipping_zone_id) || null
     const shipFee = (selected?.base_fee ?? 0) + (selectedZone?.fee ?? 0)
-    return Math.max(0, totalPrice - discountAmount + (isFreeShipping ? 0 : shipFee))
+    return Math.max(0, totalPrice - discountAmount + (isFreeShipping ? 0 : shipFee) - pointsDiscountAmount)
   }, [
     form.shipping_method_id,
     form.shipping_zone_id,
@@ -260,6 +282,7 @@ export default function CheckoutPage() {
     shippingZones,
     totalPrice,
     discountAmount,
+    pointsDiscountAmount
   ])
 
   const applyCoupon = async (overrideCode?: string) => {
@@ -331,6 +354,7 @@ export default function CheckoutPage() {
               shipping_ward: null,
               notes: form.notes.trim() || null,
               coupon_code: appliedCoupon?.code || null,
+              points_used: pointsToUse,
               payment_method: 'cod',
               items: cart.items.map((it) => ({
                 product_id: it.product_id,
@@ -358,6 +382,7 @@ export default function CheckoutPage() {
               total_qty: totalQty,
               subtotal_amount: totalPrice,
               total_amount: grandTotal,
+              points_used: pointsToUse,
               items: cart.items,
             }),
           )
@@ -384,6 +409,7 @@ export default function CheckoutPage() {
             total_qty: totalQty,
             subtotal_amount: totalPrice,
             total_amount: grandTotal,
+            points_used: pointsToUse,
             items: cart.items,
           }),
         )
@@ -401,7 +427,6 @@ export default function CheckoutPage() {
       // For online payments: create 1 backend order from localStorage cart (no duplicates).
       type PendingPayment = { order_id: number; order_code: string; method: PaymentMethod }
       const rawPending = localStorage.getItem(pendingPaymentKey)
-      const pending: PendingPayment | null = rawPending ? (JSON.parse(rawPending) as PendingPayment) : null
 
       let order_id: number
       let order_code: string
@@ -417,6 +442,7 @@ export default function CheckoutPage() {
           shipping_ward: null,
           notes: form.notes.trim() || null,
           coupon_code: appliedCoupon?.code || null,
+          points_used: pointsToUse,
           payment_method: form.payment_method,
           items: cart.items.map((it) => ({
             product_id: it.product_id,
@@ -456,7 +482,6 @@ export default function CheckoutPage() {
         
         setWaitingPayment(true)
 
-        let timer: number;
         const poll = async () => {
           if (!paymentReturn.order_id) {
              setWaitingPayment(false)
@@ -472,10 +497,10 @@ export default function CheckoutPage() {
                setWaitingPayment(false)
                setError('Thanh toán thất bại. Bạn có thể bấm “Xác nhận đặt hàng” để thử thanh toán lại.')
              } else {
-               timer = window.setTimeout(poll, 2000)
+               window.setTimeout(poll, 2000)
              }
           } catch(e) {
-             timer = window.setTimeout(poll, 2000)
+             window.setTimeout(poll, 2000)
           }
         };
         poll();
@@ -827,10 +852,57 @@ export default function CheckoutPage() {
                 </div>
                 {couponError && <div className="coCouponError">{couponError}</div>}
 
+                {hasAuth && loyaltyData && loyaltyData.current_points > 0 && (
+                  <div className="coLoyaltyBlock" style={{ marginTop: '16px', padding: '12px', background: '#f8f9fa', borderRadius: '8px', border: '1px solid #e9ecef' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', fontSize: '14px' }}>
+                      <strong>Điểm thưởng: {loyaltyData.current_points}</strong>
+                      <span style={{ color: '#d97706' }}>1 điểm = 500đ</span>
+                    </div>
+                    <div className="coCouponInputRow" style={{ marginBottom: '8px' }}>
+                      <input
+                        type="number"
+                        min="0"
+                        max={Math.min(loyaltyData.current_points, maxPointsAllowed)}
+                        className="coCouponInput"
+                        placeholder="Số điểm muốn dùng"
+                        value={pointsInput}
+                        onChange={(e) => {
+                          const val = e.target.value === '' ? '' : Number(e.target.value);
+                          setPointsInput(val);
+                        }}
+                      />
+                      <button
+                        type="button"
+                        className="coCouponBtn"
+                        disabled={pointsInput === '' || pointsInput <= 0 || pointsInput > Math.min(loyaltyData.current_points, maxPointsAllowed)}
+                        onClick={() => setPointsToUse(Number(pointsInput))}
+                      >
+                        Áp dụng
+                      </button>
+                    </div>
+                    {pointsToUse > 0 && (
+                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '14px', alignItems: 'center' }}>
+                        <span style={{ color: '#16a34a' }}>Đã dùng {pointsToUse} điểm (-{formatVnd(pointsToUse * 500)})</span>
+                        <button type="button" style={{ background: 'none', border: 'none', color: '#dc2626', cursor: 'pointer', fontSize: '12px', textDecoration: 'underline' }} onClick={() => { setPointsToUse(0); setPointsInput(''); }}>Hủy</button>
+                      </div>
+                    )}
+                    <div style={{ fontSize: '12px', color: '#6b7280' }}>
+                      (Tối đa dùng {maxPointsAllowed} điểm cho đơn hàng này)
+                    </div>
+                  </div>
+                )}
+
                 {discountAmount > 0 && (
                   <div className="coSummaryRow coDiscountRow">
-                    <span>Giảm giá</span>
+                    <span>Giảm giá (Coupon)</span>
                     <b className="coDiscountValue">-{formatVnd(discountAmount)}</b>
+                  </div>
+                )}
+
+                {pointsDiscountAmount > 0 && (
+                  <div className="coSummaryRow coDiscountRow">
+                    <span>Giảm giá (Điểm thưởng)</span>
+                    <b className="coDiscountValue">-{formatVnd(pointsDiscountAmount)}</b>
                   </div>
                 )}
 

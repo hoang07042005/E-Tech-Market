@@ -221,6 +221,8 @@ export default function ProfilePage() {
     }
   }
 
+  const [loyaltyData, setLoyaltyData] = useState<any>(null)
+
   useEffect(() => {
     let revoked = false
     fetchMe()
@@ -262,29 +264,24 @@ export default function ProfilePage() {
         setLoading(false)
       })
 
+    apiFetch<any>('/api/me/loyalty')
+      .then((res) => {
+        if (!revoked) setLoyaltyData(res)
+      })
+      .catch(() => {})
+
     return () => {
       revoked = true
     }
   }, [navigate])
 
-  
-
-
-
   const orderCount = orders.length
-  const totalSpent = useMemo(() => {
-    return orders.reduce((acc, o) => {
-      const n = typeof o.total_amount === 'number' ? o.total_amount : Number.parseFloat(o.total_amount)
-      return acc + (Number.isFinite(n) ? n : 0)
-    }, 0)
-  }, [orders])
+
 
   const tier = useMemo(() => {
-    if (totalSpent >= 100_000_000) return 'Thành viên Platinum'
-    if (totalSpent >= 30_000_000) return 'Thành viên Vàng'
-    if (totalSpent >= 10_000_000) return 'Thành viên Bạc'
+    if (loyaltyData?.membership_rank?.name) return loyaltyData.membership_rank.name;
     return 'Thành viên'
-  }, [totalSpent])
+  }, [loyaltyData])
 
   // const etId = useMemo(() => {
   //   const n = me?.id
@@ -451,6 +448,35 @@ export default function ProfilePage() {
               <div className="pfDashGrid">
                 {/* CỘT TRÁI: Thông tin cá nhân + Đơn hàng gần đây */}
                 <div className="pfDashLeft">
+                  {/* Thẻ Thành Viên */}
+                  {loyaltyData && (
+                    <section className="pfCard" aria-label="Thẻ thành viên" style={{ marginBottom: 24, background: 'linear-gradient(135deg, #1f2937, #111827)', color: 'white', borderRadius: 16 }}>
+                      <div className="pfCardHead" style={{ borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
+                        <h2 className="pfCardTitle" style={{ color: 'white' }}>Thẻ Thành Viên E-Tech</h2>
+                        <div style={{ fontWeight: 600, fontSize: 18, color: '#fbbf24' }}>{loyaltyData.current_points} Điểm</div>
+                      </div>
+                      <div style={{ padding: '20px 24px' }}>
+                        <div style={{ fontSize: 24, fontWeight: 'bold', marginBottom: 8, color: '#fcd34d' }}>{loyaltyData.membership_rank?.name || 'Thành viên'}</div>
+                        <div style={{ fontSize: 14, opacity: 0.9, marginBottom: 16 }}>Chi tiêu tích lũy: {formatMoneyVnd(loyaltyData.total_spent)}</div>
+                        
+                        {loyaltyData.next_rank && (
+                          <>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, marginBottom: 8, opacity: 0.9 }}>
+                              <span>Tiến trình thăng hạng {loyaltyData.next_rank.name}</span>
+                              <span>Cần thêm {formatMoneyVnd(loyaltyData.next_rank.min_spend - loyaltyData.total_spent)}</span>
+                            </div>
+                            <div style={{ height: 6, background: 'rgba(255,255,255,0.2)', borderRadius: 3, overflow: 'hidden' }}>
+                              <div style={{ height: '100%', background: '#fbbf24', width: `${Math.min(100, Math.max(0, (loyaltyData.total_spent / loyaltyData.next_rank.min_spend) * 100))}%` }}></div>
+                            </div>
+                          </>
+                        )}
+                        {!loyaltyData.next_rank && (
+                          <div style={{ fontSize: 13, opacity: 0.9, marginTop: 16 }}>Bạn đã đạt hạng thẻ cao nhất! Tiếp tục mua sắm để duy trì thẻ.</div>
+                        )}
+                      </div>
+                    </section>
+                  )}
+
                   {/* Thông tin cá nhân */}
                   <section className="pfCard" aria-label="Thông tin cá nhân">
                     <div className="pfCardHead">

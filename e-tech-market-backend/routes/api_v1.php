@@ -112,6 +112,7 @@ Route::middleware('auth:sanctum')->group(function () {
         ]);
     });
     Route::get('/sse/stream', [SseController::class, 'stream']);
+    Route::get('/me/loyalty', [AuthController::class, 'loyalty']);
     Route::patch('/me', [AuthController::class, 'updateMe']);
     Route::post('/me/avatar', [AuthController::class, 'updateAvatar']);
     Route::patch('/me/password', [AuthController::class, 'changePassword'])->middleware('throttle:5,1');

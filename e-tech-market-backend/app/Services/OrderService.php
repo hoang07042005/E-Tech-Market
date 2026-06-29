@@ -184,6 +184,34 @@ class OrderService
                 $shippingFee = 0;
             }
 
+            // 5. Points Discount (Loyalty)
+            $pointsUsed = 0;
+            $pointsDiscount = 0;
+            \Illuminate\Support\Facades\Log::info('OrderService points debug', [
+                'data_points_used'    => $data['points_used'] ?? 'KEY_NOT_FOUND',
+                'user_current_points' => $user?->current_points,
+                'all_keys'            => array_keys($data),
+            ]);
+            if ($user && !empty($data['points_used'])) {
+                $requestedPoints = (int) $data['points_used'];
+                if ($requestedPoints > 0) {
+                    if ($user->current_points < $requestedPoints) {
+                        throw ValidationException::withMessages(['points_used' => 'Điểm tích luỹ không đủ']);
+                    }
+                    
+                    $pointsDiscountValue = $requestedPoints * 500;
+                    $currentTotal = max(0, $subtotal - $discount + $shippingFee);
+                    $maxPointDiscount = $currentTotal * 0.20; // 20% of current total
+                    
+                    if ($pointsDiscountValue > $maxPointDiscount) {
+                        throw ValidationException::withMessages(['points_used' => 'Số điểm quy đổi vượt quá 20% giá trị đơn hàng']);
+                    }
+                    
+                    $pointsUsed = $requestedPoints;
+                    $pointsDiscount = $pointsDiscountValue;
+                }
+            }
+
             $orderCode = $this->generateOrderCode();
 
             $order = Order::query()->create([
@@ -199,7 +227,9 @@ class OrderService
                 'subtotal_amount' => $subtotal,
                 'discount_amount' => $discount,
                 'shipping_fee' => $shippingFee,
-                'total_amount' => max(0, $subtotal - $discount + $shippingFee),
+                'points_used' => $pointsUsed,
+                'points_discount' => $pointsDiscount,
+                'total_amount' => max(0, $subtotal - $discount + $shippingFee - $pointsDiscount),
                 'shipping_name' => $data['shipping_name'],
                 'shipping_phone' => $data['shipping_phone'],
                 'shipping_address_line' => $data['shipping_address_line'],
@@ -208,6 +238,19 @@ class OrderService
                 'shipping_ward' => $data['shipping_ward'] ?? null,
                 'notes' => $data['notes'] ?? null,
             ]);
+
+            // Deduct points from user if used
+            if ($user && $pointsUsed > 0) {
+                $user->decrement('current_points', $pointsUsed);
+                
+                \App\Models\PointHistory::create([
+                    'user_id' => $user->id,
+                    'order_id' => $order->id,
+                    'points_changed' => -$pointsUsed,
+                    'action_type' => 'SPEND',
+                    'description' => "Đổi điểm mua hàng cho đơn #{$order->order_code}",
+                ]);
+            }
 
             $paymentMethod = (string) ($data['payment_method'] ?? 'cod');
             if (! in_array($paymentMethod, ['cod', 'vnpay', 'momo'], true)) {
@@ -349,6 +392,35 @@ class OrderService
         }
 
         $order->status = 'completed';
+        
+        // --- Calculate Loyalty Points & Update User ---
+        $pointsEarned = 0;
+        $user->loadMissing('membershipRank');
+        $multiplier = $user->membershipRank ? (float) $user->membershipRank->point_multiplier : 1.0;
+        
+        // Points calculation: (Subtotal - Discount) / 100,000 * multiplier
+        // Exclude shipping fee
+        $eligibleAmount = max(0, $order->subtotal_amount - $order->discount_amount);
+        $pointsEarned = (int) floor(($eligibleAmount / 100000) * $multiplier);
+        
+        if ($pointsEarned > 0) {
+            $order->points_earned = $pointsEarned;
+            
+            $user->increment('current_points', $pointsEarned);
+            $user->increment('total_spent', $eligibleAmount);
+            
+            \App\Models\PointHistory::create([
+                'user_id' => $user->id,
+                'order_id' => $order->id,
+                'points_changed' => $pointsEarned,
+                'action_type' => 'EARN',
+                'description' => "Tích điểm từ đơn hàng #{$order->order_code}",
+            ]);
+            
+            // Re-evaluate rank immediately
+            $this->updateUserRank($user);
+        }
+        
         $order->save();
 
         OrderStatusHistory::create([
@@ -579,7 +651,20 @@ class OrderService
             }
         }
 
-        // Ultimate fallback: UUID-based code (practically impossible to collide)
+    // Ultimate fallback: UUID-based code (practically impossible to collide)
         return 'ET-'.strtoupper(substr(str_replace('-', '', (string) \Illuminate\Support\Str::uuid()), 0, 10));
+    }
+
+    public function updateUserRank(User $user): void
+    {
+        $totalSpent = $user->total_spent;
+        $newRank = \App\Models\MembershipRank::query()
+            ->where('min_spend', '<=', $totalSpent)
+            ->orderBy('min_spend', 'desc')
+            ->first();
+
+        if ($newRank && $newRank->id !== $user->rank_id) {
+            $user->update(['rank_id' => $newRank->id]);
+        }
     }
 }

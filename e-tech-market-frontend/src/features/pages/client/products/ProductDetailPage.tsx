@@ -717,6 +717,15 @@ export default function ProductDetailPage() {
                 </div>
               )}
 
+              <div className="pdpLoyaltyBadge" style={{ marginTop: '12px', padding: '12px', background: 'rgba(255, 193, 7, 0.1)', border: '1px solid rgba(255, 193, 7, 0.3)', borderRadius: '8px', color: '#b78103', fontSize: '14px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <span style={{ fontSize: '18px' }}>💡</span>
+                <span>
+                  <strong>Đặc quyền Hội viên:</strong> Mua ngay sản phẩm này và tích lũy thêm 
+                  <strong style={{ color: '#d97706' }}> +{Math.floor(Number(selectedVariant ? selectedVariant.effective_price : (product.price ?? 0)) / 100000)} điểm</strong> 
+                  (tương đương tiết kiệm {Math.floor(Number(selectedVariant ? selectedVariant.effective_price : (product.price ?? 0)) / 100000) * 500}đ cho các đơn sắm sửa phụ kiện lần sau).
+                </span>
+              </div>
+
               {/* Variants: facet (màu + dung lượng) hoặc danh sách gọn */}
               {product.variants && product.variants.length > 0 && (
                 <div className="pdpConfigurator">

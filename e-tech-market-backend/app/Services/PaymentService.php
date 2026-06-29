@@ -48,6 +48,15 @@ class PaymentService
         $appUrl = rtrim((string) config('app.url'), '/');
         $returnUrl = $appUrl.'/api/v1/payments/vnpay/return';
 
+        \Illuminate\Support\Facades\Log::info('VNPay amount debug', [
+            'order_code'      => $order->order_code,
+            'subtotal_amount' => $order->subtotal_amount,
+            'discount_amount' => $order->discount_amount,
+            'shipping_fee'    => $order->shipping_fee,
+            'points_used'     => $order->points_used,
+            'points_discount' => $order->points_discount,
+            'total_amount'    => $order->total_amount,
+        ]);
         $amountVnd = (int) round((float) $order->total_amount);
         $startTime = Carbon::now('Asia/Ho_Chi_Minh');
         $expireTime = $startTime->copy()->addMinutes(15);
@@ -373,14 +382,11 @@ class PaymentService
 
     private function recalculateOrderTotal(Order $order): Order
     {
-        $order->load(["items"]);
-        $subtotal = 0;
-        foreach ($order->items as $item) {
-            $subtotal += (float)$item->unit_price * (int)$item->quantity;
-        }
-        $order->subtotal_amount = $subtotal;
-        $order->total_amount = max(0, $subtotal - ($order->discount_amount ?? 0) + ($order->shipping_fee ?? 0));
-        $order->save();
+        // Do NOT recalculate - the total_amount was already correctly computed
+        // during order creation (including points_discount, coupon discount, etc.)
+        // Overwriting it here would lose those discounts.
+        // Just ensure items are loaded for any callers that need them.
+        $order->loadMissing(["items"]);
         return $order;
     }
 

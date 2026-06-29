@@ -140,14 +140,18 @@ class CategoryService
         return array_values(array_unique($ids));
     }
 
-    private function collectDescendantIds(array $tree, int $parentId, array &$ids): void
+    private function collectDescendantIds(iterable $nodes, int $targetId, array &$ids, bool $collecting = false): void
     {
-        foreach ($tree as $node) {
-            if ($node->parent_id == $parentId) {
+        foreach ($nodes as $node) {
+            $isTarget = ($node->id == $targetId);
+            $shouldCollect = $collecting || $isTarget;
+
+            if ($collecting) {
                 $ids[] = $node->id;
-                if ($node->children && $node->children->isNotEmpty()) {
-                    $this->collectDescendantIds($node->children->toArray(), $node->id, $ids);
-                }
+            }
+
+            if ($node->children && count($node->children) > 0) {
+                $this->collectDescendantIds($node->children, $targetId, $ids, $shouldCollect);
             }
         }
     }

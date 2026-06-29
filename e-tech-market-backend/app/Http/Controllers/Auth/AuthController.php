@@ -264,4 +264,32 @@ class AuthController extends Controller
 
         return response()->json(["message"=>"Account deleted"]);
     }
+
+    public function loyalty(Request $r)
+    {
+        $user = $r->user();
+        if(!$user instanceof User) {
+            return response()->json(["message"=>"Unauthorized"], 401);
+        }
+
+        $user->load('membershipRank');
+        
+        $nextRank = \App\Models\MembershipRank::query()
+            ->where('min_spend', '>', $user->total_spent)
+            ->orderBy('min_spend', 'asc')
+            ->first();
+
+        $pointHistory = \App\Models\PointHistory::query()
+            ->where('user_id', $user->id)
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return response()->json([
+            'current_points' => $user->current_points,
+            'total_spent' => $user->total_spent,
+            'membership_rank' => $user->membershipRank,
+            'next_rank' => $nextRank,
+            'point_history' => $pointHistory,
+        ]);
+    }
 }

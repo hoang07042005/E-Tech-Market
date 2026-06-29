@@ -50,6 +50,9 @@ class User extends Authenticatable implements MustVerifyEmail
         'is_active',
         'email_verified_at',
         'remember_token',
+        'current_points',
+        'total_spent',
+        'rank_id',
     ];
 
     /**
@@ -85,5 +88,15 @@ class User extends Authenticatable implements MustVerifyEmail
     public function savedCoupons(): BelongsToMany
     {
         return $this->belongsToMany(Coupon::class, 'user_coupons', 'user_id', 'coupon_id')->withTimestamps();
+    }
+
+    public function membershipRank()
+    {
+        return $this->belongsTo(MembershipRank::class, 'rank_id');
+    }
+
+    public function pointHistory()
+    {
+        return $this->hasMany(PointHistory::class, 'user_id');
     }
 }

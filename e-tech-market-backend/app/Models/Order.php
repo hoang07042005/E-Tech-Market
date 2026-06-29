@@ -31,6 +31,9 @@ class Order extends Model
         'discount_amount',
         'shipping_fee',
         'total_amount',
+        'points_used',
+        'points_discount',
+        'points_earned',
         'shipping_name',
         'shipping_phone',
         'shipping_address_line',
@@ -50,6 +53,9 @@ class Order extends Model
         'discount_amount' => 'decimal:2',
         'shipping_fee' => 'decimal:2',
         'total_amount' => 'decimal:2',
+        'points_discount' => 'decimal:2',
+        'points_used' => 'integer',
+        'points_earned' => 'integer',
     ];
 
     public function user(): BelongsTo
