@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import '@/styles/pages/CheckoutPage.css'
 
 import { cartCount, cartTotal, clearCart, getCart, type CartState } from '@/features/services/cart.service'
+import { useCartMutation } from '@/features/services/mutations'
 import { apiFetch } from '@/configs/api.config'
 import logoMomo from '@/assets/logo-momo.png'
 import logoVnpay from '@/assets/vnpay-logo.png'
@@ -94,6 +95,9 @@ export default function CheckoutPage() {
     free_shipping_min: 0,
     apply_global: true,
   })
+
+  // --- Cart mutations ---
+  const { clearCart: clearBackendCart } = useCartMutation()
 
   // --- Coupon ---
   const [couponInput, setCouponInput] = useState('')
@@ -387,6 +391,7 @@ export default function CheckoutPage() {
             }),
           )
           clearCart()
+          clearBackendCart()
           localStorage.removeItem(pendingPaymentKey)
           setOrderCode(created.order_code)
           return
@@ -414,6 +419,7 @@ export default function CheckoutPage() {
           }),
         )
         clearCart()
+          clearBackendCart()
         localStorage.removeItem(pendingPaymentKey)
         setOrderCode(code)
         return
@@ -479,6 +485,7 @@ export default function CheckoutPage() {
       if (paymentReturn.success) {
         localStorage.removeItem(pendingPaymentKey)
         clearCart()
+          clearBackendCart()
         
         setWaitingPayment(true)
 

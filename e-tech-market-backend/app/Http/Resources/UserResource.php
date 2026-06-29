@@ -26,6 +26,11 @@ class UserResource extends JsonResource
             'is_active' => $this->is_active,
             'roles' => $this->whenLoaded('roles'),
             'created_at' => $this->created_at,
+            // Loyalty fields
+            'current_points' => $this->current_points,
+            'total_spent' => $this->total_spent,
+            'rank_id' => $this->rank_id,
+            'membership_rank' => $this->whenLoaded('membershipRank'),
         ];
     }
 }

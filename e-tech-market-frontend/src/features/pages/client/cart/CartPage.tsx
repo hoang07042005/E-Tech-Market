@@ -49,6 +49,8 @@ export default function CartPage() {
     const onChange = () => setCart(getCart())
     window.addEventListener('cart-change', onChange)
     window.addEventListener('storage', onChange)
+    // Reload cart when page mounts (in case user returned from checkout)
+    setCart(getCart())
     return () => {
       window.removeEventListener('cart-change', onChange)
       window.removeEventListener('storage', onChange)

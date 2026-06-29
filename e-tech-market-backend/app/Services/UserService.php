@@ -40,12 +40,12 @@ class UserService
     }
 
     /**
-     * Cập nhật thông tin User (is_active, role_ids)
+     * Cập nhật thông tin User (is_active, role_ids, rank_id, points)
      */
     public function updateUser(User $user, array $data, User $currentUser): User
     {
-        if (! array_key_exists('is_active', $data) && ! array_key_exists('role_ids', $data)) {
-            throw new \Exception('Gửi ít nhất một trường: is_active hoặc role_ids.', 422);
+        if (! array_key_exists('is_active', $data) && ! array_key_exists('role_ids', $data) && ! array_key_exists('rank_id', $data) && ! array_key_exists('current_points', $data) && ! array_key_exists('total_spent', $data)) {
+            throw new \Exception('Gửi ít nhất một trường: is_active, role_ids, rank_id, current_points hoặc total_spent.', 422);
         }
 
         if ($currentUser->id === $user->id) {
@@ -71,6 +71,23 @@ class UserService
 
         if (array_key_exists('is_active', $data)) {
             $user->update(['is_active' => $data['is_active']]);
+        }
+
+        // Loyalty fields: rank_id, current_points, total_spent
+        $loyaltyData = [];
+        if (array_key_exists('rank_id', $data)) {
+            $rankId = $data['rank_id'];
+            $loyaltyData['rank_id'] = $rankId !== null ? (int) $rankId : null;
+        }
+        if (array_key_exists('current_points', $data)) {
+            $loyaltyData['current_points'] = max(0, (int) $data['current_points']);
+        }
+        if (array_key_exists('total_spent', $data)) {
+            $loyaltyData['total_spent'] = max(0, (int) $data['total_spent']);
+        }
+
+        if (!empty($loyaltyData)) {
+            $user->update($loyaltyData);
         }
 
         return $user->fresh()->load('roles');

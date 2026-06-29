@@ -172,6 +172,18 @@ export default function SettingsAdminPage() {
   const [addMethodErr, setAddMethodErr] = useState<string | null>(null)
   const [editingMethodId, setEditingMethodId] = useState<number | null>(null)
   const [manageMethodsOpen, setManageMethodsOpen] = useState(false)
+  const [ranks, setRanks] = useState<Array<{ id: number; rank_name: string; min_spend: number; point_multiplier: number; benefits: string | null }>>([])
+  const [ranksLoading, setRanksLoading] = useState(false)
+  const [manageRanksOpen, setManageRanksOpen] = useState(false)
+  const [addRankForm, setAddRankForm] = useState({
+    rank_name: '',
+    min_spend: '0',
+    point_multiplier: '1',
+    benefits: '',
+  })
+  const [addRankErr, setAddRankErr] = useState<string | null>(null)
+  const [addingRank, setAddingRank] = useState(false)
+  const [editingRankId, setEditingRankId] = useState<number | null>(null)
   const [addMethodForm, setAddMethodForm] = useState<{
     name: string
     description: string
@@ -220,6 +232,13 @@ export default function SettingsAdminPage() {
           if (!cancelled) setMethods(Array.isArray(m) ? m : [])
         } catch {
           // keep from settings payload
+        }
+        // Load membership ranks
+        try {
+          const r = await apiFetch<{ data: Array<{ id: number; rank_name: string; min_spend: number; point_multiplier: number; benefits: string | null }> }>('/api/admin/membership-ranks')
+          if (!cancelled) setRanks(r?.data || [])
+        } catch {
+          // keep empty
         }
         setTwoFa(s.security.two_fa_enabled)
       } catch (e) {
@@ -779,7 +798,41 @@ export default function SettingsAdminPage() {
         </div>
       </section>
 
-      {/* 3) Shipping */}
+      {/* 3) Membership Ranks */}
+      <div className="admSetSectionHead">
+        <h3>Cài đặt hạng thành viên</h3>
+        <div className="admSetSectionSub">Quản lý hạng thành viên và tiêu chí tích lũy.</div>
+      </div>
+
+      <div className="admShipShotLayout">
+        <section className="admShipCurrentCard">
+          <div className="admShipCurrentHead">
+            <div className="admShipCurrentTitle">
+              <span className="admSetIcon" aria-hidden>
+                <IconStar />
+              </span>{' '}
+              Các hạng thành viên
+            </div>
+            <button type="button" className="admShipManageLink" disabled={ranksLoading} onClick={() => { setRanksLoading(true); apiFetch<{ data: Array<{ id: number; rank_name: string; min_spend: number; point_multiplier: number; benefits: string | null }> }>('/api/admin/membership-ranks').then(r => { setRanks(r?.data || []); setRanksLoading(false); setManageRanksOpen(true); }).catch(() => setRanksLoading(false)) }}>
+              {ranksLoading ? 'Đang tải...' : 'Quản lý tất cả'}
+            </button>
+          </div>
+          <div className="admShipCurrentGrid">
+            {ranks.slice(0, 4).map((r) => (
+              <div key={r.id} className="admShipMethodTile">
+                <div className="admShipMethodTop">
+                  <div className="admShipMethodName">{r.rank_name}</div>
+                </div>
+                <div className="admShipMethodMeta">Tích lũy tối thiểu: {fmtVnd(r.min_spend)}</div>
+                <div className="admShipMethodMeta">Hệ số điểm: x{r.point_multiplier}</div>
+              </div>
+            ))}
+            {ranks.length === 0 && <div style={{ padding: 16, color: 'var(--admin-text-s)' }}>Chưa có hạng thành viên.</div>}
+          </div>
+        </section>
+      </div>
+
+      {/* 4) Shipping */}
       <div className="admSetSectionHead">
         <h3>Cài đặt vận chuyển</h3>
         <div className="admSetSectionSub">Quản lý đối tác và biểu phí giao hàng toàn quốc.</div>
@@ -1100,6 +1153,77 @@ export default function SettingsAdminPage() {
         </div>
       </section>
 
+      {manageRanksOpen && (
+        <div className="admModalOverlay" role="dialog" aria-modal="true" aria-label="Quản lý hạng thành viên" onClick={() => setManageRanksOpen(false)}>
+          <div className="admModal" onClick={(e) => e.stopPropagation()}>
+            <div className="admModalHead">
+              <div>
+                <div className="admModalTitle">Quản lý hạng thành viên</div>
+                <div className="admModalSub">Cấu hình các hạng và tiêu chí tích lũy</div>
+              </div>
+              <button type="button" className="admModalClose" onClick={() => setManageRanksOpen(false)} aria-label="Đóng">
+                <IconX />
+              </button>
+            </div>
+            <div className="admModalBody" style={{ maxHeight: '70vh', overflowY: 'auto' }}>
+              <table className="admTxnTable">
+                <thead>
+                  <tr>
+                    <th>Tên hạng</th>
+                    <th>Tích lũy tối thiểu</th>
+                    <th>Hệ số điểm</th>
+                    <th>Thao tác</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {ranks.map((r) => (
+                    <tr key={r.id}>
+                      <td>{r.rank_name}</td>
+                      <td>{fmtVnd(r.min_spend)}</td>
+                      <td>x{r.point_multiplier}</td>
+                      <td>
+                        <button type="button" className="admTxtBtn" onClick={() => { setEditingRankId(r.id); setAddRankForm({ rank_name: r.rank_name, min_spend: String(r.min_spend), point_multiplier: String(r.point_multiplier), benefits: r.benefits || '' }); setAddRankErr(null); }}>Sửa</button>
+                        <span style={{ margin: '0 4px' }}>|</span>
+                        <button type="button" className="admTxtBtn" style={{ color: '#ef4444' }} onClick={async () => { if (!confirm(`Xóa hạng "${r.rank_name}"?`)) return; try { await apiFetch(`/api/admin/membership-ranks/${r.id}`, { method: 'DELETE' }); const r2 = await apiFetch<{ data: Array<{ id: number; rank_name: string; min_spend: number; point_multiplier: number; benefits: string | null }> }>('/api/admin/membership-ranks'); setRanks(r2?.data || []); } catch (e) { alert(e instanceof Error ? e.message : 'Xóa thất bại'); } }}>Xóa</button>
+                      </td>
+                    </tr>
+                  ))}
+                  {ranks.length === 0 && (
+                    <tr>
+                      <td colSpan={4} style={{ padding: 14, color: 'var(--admin-text-s)', fontWeight: 700 }}>Chưa có hạng thành viên.</td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+              <div style={{ marginTop: 16, borderTop: '1px solid var(--admin-border)', paddingTop: 16 }}>
+                <h4 style={{ marginBottom: 12 }}>{editingRankId ? 'Sửa hạng' : 'Thêm hạng mới'}</h4>
+                <label className="admSetField">
+                  <span>Tên hạng</span>
+                  <input value={addRankForm.rank_name} onChange={(e) => setAddRankForm((p) => ({ ...p, rank_name: e.target.value }))} placeholder="Ví dụ: Kim Cương (Diamond)" />
+                </label>
+                <label className="admSetField">
+                  <span>Tích lũy tối thiểu (VND)</span>
+                  <input type="number" value={addRankForm.min_spend} onChange={(e) => setAddRankForm((p) => ({ ...p, min_spend: e.target.value }))} />
+                </label>
+                <label className="admSetField">
+                  <span>Hệ số điểm</span>
+                  <input type="number" value={addRankForm.point_multiplier} onChange={(e) => setAddRankForm((p) => ({ ...p, point_multiplier: e.target.value }))} min="1" />
+                </label>
+                <label className="admSetField">
+                  <span>Quyền lợi</span>
+                  <textarea value={addRankForm.benefits} onChange={(e) => setAddRankForm((p) => ({ ...p, benefits: e.target.value }))} placeholder="Mô tả quyền lợi..." rows={3} style={{ width: '100%', padding: 8 }} />
+                </label>
+                {addRankErr && <div style={{ color: '#ef4444', fontSize: 13, marginBottom: 8 }}>{addRankErr}</div>}
+                <div style={{ display: 'flex', gap: 8 }}>
+                  <button type="button" className="admShipPolicyBtn" onClick={async () => { if (!addRankForm.rank_name || !addRankForm.min_spend) { setAddRankErr('Vui lòng nhập tên và tích lũy tối thiểu'); return; } setAddingRank(true); setAddRankErr(null); try { if (editingRankId) { await apiFetch(`/api/admin/membership-ranks/${editingRankId}`, { method: 'PATCH', body: JSON.stringify({ rank_name: addRankForm.rank_name, min_spend: parseInt(addRankForm.min_spend), point_multiplier: parseInt(addRankForm.point_multiplier) || 1, benefits: addRankForm.benefits || null }) }); } else { await apiFetch('/api/admin/membership-ranks', { method: 'POST', body: JSON.stringify({ rank_name: addRankForm.rank_name, min_spend: parseInt(addRankForm.min_spend), point_multiplier: parseInt(addRankForm.point_multiplier) || 1, benefits: addRankForm.benefits || null }) }); } const r = await apiFetch<{ data: Array<{ id: number; rank_name: string; min_spend: number; point_multiplier: number; benefits: string | null }> }>('/api/admin/membership-ranks'); setRanks(r?.data || []); setAddRankForm({ rank_name: '', min_spend: '0', point_multiplier: '1', benefits: '' }); setEditingRankId(null); } catch (e) { setAddRankErr(e instanceof Error ? e.message : 'Lỗi'); } finally { setAddingRank(false); } }} disabled={addingRank}>{editingRankId ? 'Lưu' : 'Thêm'}</button>
+                  {editingRankId && <button type="button" className="admShipPolicyBtn" style={{ background: '#6b7280' }} onClick={() => { setEditingRankId(null); setAddRankForm({ rank_name: '', min_spend: '0', point_multiplier: '1', benefits: '' }); }}>Hủy</button>}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {addZoneOpen && (
         <div className="admModalOverlay" role="dialog" aria-modal="true" aria-label="Thêm vùng vận chuyển" onClick={() => setAddZoneOpen(false)}>
           <div className="admModal" onClick={(e) => e.stopPropagation()}>
@@ -1306,3 +1430,4 @@ function IconTrash({ className, title }: IconProps) {return (<svg className={cla
 function IconX({ className, title }: IconProps) {return (<svg className={className} width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden={title ? undefined : true}>{title ? <title>{title}</title> : null}<path d="M18 6 6 18M6 6l12 12" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" /></svg>)}
 function IconFuel({ className, title }: IconProps) {return (<svg className={className} width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden={title ? undefined : true}>{title ? <title>{title}</title> : null}<path d="M6 3h8v18H6V3Z"stroke="currentColor"strokeWidth="1.7"strokeLinejoin="round"/><path d="M6 7h8" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" /><path d="M14 6h3l2 2v9a2 2 0 0 1-2 2h-3"stroke="currentColor"strokeWidth="1.7"strokeLinejoin="round"strokeLinecap="round"/><path d="M18 11v-2" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" /></svg>)}
 function IconClock({ className, title }: IconProps) {return (<svg className={className} width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden={title ? undefined : true}>{title ? <title>{title}</title> : null}<path d="M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20Z"stroke="currentColor"strokeWidth="1.7"/><path d="M12 7v6l4 2" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" /></svg>)}
+function IconStar({ className, title }: IconProps) {return (<svg className={className} width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden={title ? undefined : true}>{title ? <title>{title}</title> : null}<path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-5.18 2.25L7 14.14 2 9.27l6.91-1.01L12 2Z" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round"/></svg>)}

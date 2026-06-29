@@ -17,4 +17,11 @@ class MembershipRank extends Model
         'point_multiplier',
         'benefits',
     ];
+
+    protected $appends = ['name'];
+
+    public function getNameAttribute(): string
+    {
+        return $this->rank_name;
+    }
 }

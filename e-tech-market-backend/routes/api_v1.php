@@ -13,6 +13,7 @@ use App\Http\Controllers\Admin\ReviewsController as AdminReviewsController;
 use App\Http\Controllers\Admin\RolesController as AdminRolesController;
 use App\Http\Controllers\Admin\SettingsController as AdminSettingsController;
 use App\Http\Controllers\Admin\ShippingMethodsController as AdminShippingMethodsController;
+use App\Http\Controllers\Admin\MembershipRanksController;
 use App\Http\Controllers\Admin\ShippingZonesController as AdminShippingZonesController;
 use App\Http\Controllers\Admin\UploadsController as AdminUploadsController;
 use App\Http\Controllers\Admin\UsersController as AdminUsersController;
@@ -128,6 +129,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/cart/items', [CartController::class, 'addItem']);
     Route::put('/cart/items/{product}', [CartController::class, 'updateItem']);
     Route::delete('/cart/items/{product}', [CartController::class, 'removeItem']);
+    Route::delete('/cart', [CartController::class, 'clear']);
 
     Route::post('/orders', [OrdersController::class, 'store']);
     Route::post('/orders/from-items', [OrdersController::class, 'storeFromItems']);
@@ -161,6 +163,11 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/orders/{order}/return-request/refunded', [AdminOrdersController::class, 'markReturnRefunded'])->name('orders.return-request.refunded');
         Route::get('/settings', [AdminSettingsController::class, 'show'])->name('settings');
         Route::patch('/settings', [AdminSettingsController::class, 'update'])->name('settings');
+        // Membership Ranks
+        Route::get('/membership-ranks', [MembershipRanksController::class, 'index'])->name('membership-ranks');
+        Route::post('/membership-ranks', [MembershipRanksController::class, 'store'])->name('membership-ranks');
+        Route::patch('/membership-ranks/{membershipRank}', [MembershipRanksController::class, 'update'])->name('membership-ranks');
+        Route::delete('/membership-ranks/{membershipRank}', [MembershipRanksController::class, 'destroy'])->name('membership-ranks');
         Route::get('/shipping/zones', [AdminShippingZonesController::class, 'index'])->name('shipping.zones');
         Route::post('/shipping/zones', [AdminShippingZonesController::class, 'store'])->name('shipping.zones');
         Route::patch('/shipping/zones/{zone}', [AdminShippingZonesController::class, 'update'])->name('shipping.zones');

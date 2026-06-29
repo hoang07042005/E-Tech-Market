@@ -7,7 +7,13 @@
       "Bash(php artisan config:clear)",
       "Bash(powershell.exe -Command \"\\(Get-Content ''d:/E-Tech-Market/e_tech_market_app/lib/screens/orders/order_detail_screen.dart''\\)[310..335]\")",
       "Bash(git -C \"d:/E-Tech-Market/e_tech_market_app\" checkout lib/screens/orders/order_detail_screen.dart)",
-      "Bash(flutter analyze lib/screens/orders/order_detail_screen.dart)"
+      "Bash(flutter analyze lib/screens/orders/order_detail_screen.dart)",
+      "Bash(php artisan tinker --execute=\"echo \\\\App\\\\Models\\\\User::where\\(''email'', ''like'', ''%dohoangpc%''\\)->first\\([''id'', ''email'', ''name'', ''rank_id'', ''total_spent'', ''current_points'']\\);\")",
+      "Bash(npx tsc --noEmit)",
+      "Bash(npm run build)",
+      "Bash(docker ps --format \"{{.Names}}\")",
+      "Bash(docker exec -it e-tech-market-backend-1 php artisan loyalty:update-ranks)",
+      "Bash(docker exec e-tech-market-backend-1 php artisan loyalty:update-ranks)"
     ]
   }
 }

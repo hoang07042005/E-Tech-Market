@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\UserResource;
+use App\Http\Resources\MembershipRankResource;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -61,7 +62,7 @@ class AuthController extends Controller
         }
 
         [$token, $cookie] = $this->createTokenResponse($u);
-        $u->load('roles');
+        $u->load(['roles', 'membershipRank']);
 
         // In production: token ONLY in httpOnly cookie (not in body) - prevents XSS theft
         // In dev: token in body for Bearer auth convenience
@@ -91,7 +92,9 @@ class AuthController extends Controller
             "email"=>$r->email,
             "phone"=>$r->phone,
             "password"=>Hash::make($r->password),
-            "is_active"=>true
+            "is_active"=>true,
+            "rank_id"=>1,
+            "total_spent"=>0
         ]);
 
         // Assign default role 'customer' to the newly created user
@@ -99,7 +102,7 @@ class AuthController extends Controller
         $u->assignRole($customerRole);
 
         [$token, $cookie] = $this->createTokenResponse($u);
-        $u->load('roles');
+        $u->load(['roles', 'membershipRank']);
 
         // In production: token ONLY in httpOnly cookie (not in body) - prevents XSS theft
         // In dev: token in body for Bearer auth convenience
@@ -138,7 +141,7 @@ class AuthController extends Controller
             return response()->json(["message"=>"Unauthorized"], 401);
         }
 
-        $user->load('roles');
+        $user->load(['roles', 'membershipRank']);
         return response()->json(["user"=>new UserResource($user)]);
     }
 
@@ -160,7 +163,7 @@ class AuthController extends Controller
         ]);
 
         $user->fill(array_filter($data))->save();
-        $user->load('roles');
+        $user->load(['roles', 'membershipRank']);
 
         return response()->json(["user"=>new UserResource($user)]);
     }
@@ -179,7 +182,7 @@ class AuthController extends Controller
         $path = $data['file']->store('avatars', 'public');
         $user->avatar_url = asset('storage/'.$path);
         $user->save();
-        $user->load('roles');
+        $user->load(['roles', 'membershipRank']);
 
         return response()->json(["user"=>new UserResource($user)]);
     }
@@ -272,8 +275,9 @@ class AuthController extends Controller
             return response()->json(["message"=>"Unauthorized"], 401);
         }
 
-        $user->load('membershipRank');
-        
+        // Refresh user data to get latest rank and total_spent
+        $user = User::with('membershipRank')->find($user->id);
+
         $nextRank = \App\Models\MembershipRank::query()
             ->where('min_spend', '>', $user->total_spent)
             ->orderBy('min_spend', 'asc')
@@ -287,8 +291,8 @@ class AuthController extends Controller
         return response()->json([
             'current_points' => $user->current_points,
             'total_spent' => $user->total_spent,
-            'membership_rank' => $user->membershipRank,
-            'next_rank' => $nextRank,
+            'membership_rank' => $user->membershipRank ? new MembershipRankResource($user->membershipRank) : null,
+            'next_rank' => $nextRank ? new MembershipRankResource($nextRank) : null,
             'point_history' => $pointHistory,
         ]);
     }

@@ -108,7 +108,9 @@ export function useCartMutation() {
 
   const clearMutation = useMutation({
     mutationFn: async () => {
-      return Promise.resolve() // The cart.service.ts clearCart loops over items and calls DELETE. We can just use the service.
+      // Clear both backend cart and localStorage
+      await apiFetch('/api/cart', { method: 'DELETE' })
+      cartServiceClearCart()
     },
     onMutate: async () => {
       cartServiceClearCart()

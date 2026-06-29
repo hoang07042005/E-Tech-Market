@@ -26,29 +26,32 @@ class UpdateUserRanksCommand extends Command
     public function handle()
     {
         $this->info('Starting loyalty rank evaluation...');
-        
+
         $ranks = \App\Models\MembershipRank::orderBy('min_spend', 'desc')->get();
-        $oneYearAgo = now()->subYear();
 
         $users = \App\Models\User::all();
         $count = 0;
 
         foreach ($users as $user) {
-            // Calculate total spent in the last 365 days
-            $annualSpent = \App\Models\Order::where('user_id', $user->id)
-                ->where('payment_status', 'paid')
-                ->where('status', 'delivered')
-                ->where('created_at', '>=', $oneYearAgo)
+            // Calculate total spent from ALL orders except cancelled (regardless of payment status)
+            // This includes: pending, pending_payment, confirmed, delivering, delivered, completed
+            $totalSpent = \App\Models\Order::where('user_id', $user->id)
+                ->where('status', '!=', 'cancelled')
                 ->sum('total_amount');
 
-            $user->total_spent = $annualSpent;
-            
-            $newRank = $ranks->firstWhere('min_spend', '<=', $annualSpent);
-            
+            $user->total_spent = $totalSpent;
+
+            // If user has no rank, assign default rank (1 = Bronze/Đồng)
+            if (!$user->rank_id) {
+                $user->rank_id = 1;
+            }
+
+            $newRank = $ranks->firstWhere('min_spend', '<=', $totalSpent);
+
             if ($newRank && $newRank->id !== $user->rank_id) {
                 $user->rank_id = $newRank->id;
             }
-            
+
             $user->save();
             $count++;
         }

@@ -177,4 +177,24 @@ class CartService
 
         return $cart;
     }
+
+    /**
+     * Clear all items from cart
+     */
+    public function clear(User $user): Cart
+    {
+        $cart = Cart::query()
+            ->where('user_id', $user->id)
+            ->where('status', 'active')
+            ->first();
+
+        if ($cart) {
+            CartItem::query()
+                ->where('cart_id', $cart->id)
+                ->delete();
+            $cart->load(['items.product', 'items.variant']);
+        }
+
+        return $cart ?? new Cart(['user_id' => $user->id, 'status' => 'active']);
+    }
 }

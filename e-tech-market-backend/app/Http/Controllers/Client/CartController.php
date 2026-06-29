@@ -69,4 +69,10 @@ class CartController extends Controller
         $cart = $this->cartService->removeItem($request->user(), $product, $variantId ? (int) $variantId : null);
         return response()->json($cart);
     }
+
+    public function clear(Request $request): JsonResponse
+    {
+        $cart = $this->cartService->clear($request->user());
+        return response()->json($cart);
+    }
 }
