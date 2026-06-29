@@ -346,31 +346,29 @@ html.dark .fspCard{
   transform: scale(1.1);
 }
 .fspInfo {
-  padding: 24px;
+  padding: 12px;
   display: flex;
   flex-direction: column;
   flex-grow: 1;
 }
 .fspName {
-  color: #111;
-  margin-bottom: 15px;
-  font-size: 18px;
+  font-size: 1rem;
   font-weight: 600;
-  line-height: 1.3;
+  line-height: 1.4;
+  color: #0f172a;
+  margin: 0 0 10px 0;
   display: -webkit-box;
-  overflow: hidden;
-  -webkit-line-clamp: 2;
+    -webkit-line-clamp: 2;
   line-clamp: 2;
-  -webkit-box-orient: vertical;
+    -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 html.dark .fspName{
   color: var(--et-text);
 }
 
-.fspCard:hover .fspName {
-  color: #ff5722;
-}
+
 .fspPricing {
   display: flex;
   align-items: baseline;
@@ -428,12 +426,12 @@ html.dark .fspName{
   background: #bc0000;
 }
 .fspCTA {
-  width: 100%;
-  padding: 16px;
+ width: 100%;
+  padding: 10px;
   background: #ff5722;
   color: #fff;
   border-radius: 5px;
-  font-weight: 700;
+  font-weight: 600;
   font-size: 16px;
   border: none;
   cursor: pointer;

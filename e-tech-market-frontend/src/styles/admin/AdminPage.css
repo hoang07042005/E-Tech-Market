@@ -2930,6 +2930,26 @@
     white-space: nowrap;
 }
 
+.admKpiBadge--up {
+    background: rgba(22, 163, 74, .10);
+    color: #16a34a;
+}
+
+.admKpiBadge--down {
+    background: rgba(239, 68, 68, .10);
+    color: #ef4444;
+}
+
+.admKpiSubPrev {
+    font-size: 11px;
+    font-weight: 500;
+    color: #94a3b8;
+    margin-top: 3px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
 .admKpiLabel2 {
     font-size: 18px;
     font-weight: 600;

@@ -307,59 +307,45 @@ export default function ProfilePage() {
   return (
     <main className="pfPage">
       <div className="pfInner">
-        <section className="pfTopCard" aria-label="Tóm tắt tài khoản">
-          <div className="pfTopRow">
-            <div className="pfAvatarWrap">
-              {loading ? (
-                <Skeleton width="100%" height="100%" borderRadius="50%" />
-              ) : (
-                <>
+        <section className="pfGrid" aria-label="Khu vực tài khoản">
+          <aside className="pfSidebar">
+            {/* ── Avatar + Tên + Badge trong sidebar ── */}
+            <div className="pfSideProfile">
+              <div className="pfSideAvatarWrap">
+                {loading ? (
+                  <Skeleton width="100%" height="100%" borderRadius="50%" />
+                ) : (
                   <img
                     className="pfAvatar"
                     src={resolveMediaUrl(me?.avatar_url) || AVATAR_URL}
                     alt=""
                     loading="lazy"
                   />
-                </>
-              )}
-            </div>
-
-            <div className="pfTopInfo">
-              {loading ? (
-                <>
-                  <Skeleton width="180px" height="32px" style={{ marginBottom: '8px' }} />
-                  <Skeleton width="120px" height="24px" />
-                </>
-              ) : (
-                <>
-                  <h1 className="pfName">{displayName}</h1>
-                  <div className="pfBadges">
-                    <span className="pfBadge">{tier}</span>
-                  </div>
-                </>
-              )}
-            </div>
-
-            <div className="pfStats" aria-label="Thống kê tài khoản">
-              <div className="pfStat">
+                )}
+              </div>
+              <div className="pfSideInfo">
                 {loading ? (
                   <>
-                    <Skeleton width="40px" height="32px" style={{ marginBottom: '4px' }} />
-                    <Skeleton width="60px" height="14px" />
+                    <Skeleton width="120px" height="20px" style={{ marginBottom: '6px' }} />
+                    <Skeleton width="90px" height="18px" />
                   </>
                 ) : (
                   <>
-                    <p className="pfStatNum">{orderCount}</p>
-                    <p className="pfStatLabel">Đơn hàng</p>
+                    <div className="pfSideName">{displayName}</div>
+                    <div className="pfSideBottomRow">
+                      <div className="pfBadges">
+                        <span className="pfBadge">{tier}</span>
+                      </div>
+                      <div className="pfSideStat">
+                        <span className="pfSideStatNum">{orderCount}</span>
+                        <span className="pfSideStatLabel">Đơn hàng</span>
+                      </div>
+                    </div>
                   </>
                 )}
               </div>
             </div>
-          </div>
-        </section>
-
-        <section className="pfGrid" aria-label="Khu vực tài khoản">
-          <aside className="pfSidebar">
+            <div className="pfNavSep" />
             <button
               type="button"
               className={activeTab === 'profile' ? 'pfNavBtn pfNavBtnActive' : 'pfNavBtn'}
@@ -442,91 +428,76 @@ export default function ProfilePage() {
           </aside>
 
           <div className="pfContent">
-            <section className="pfCard" aria-label="Thông tin">
-              <div className="pfCardHead">
-                <h2 className="pfCardTitle">
-                  {activeTab === 'profile'
-                    ? 'Thông tin cá nhân'
-                    : activeTab === 'orders'
+            {/* ── Outlet cho các route con (orders / security / coupons …) ── */}
+            {(ordersRoute || notifsRoute || securityRoute || couponsRoute) && (
+              <section className="pfCard" aria-label="Thông tin">
+                <div className="pfCardHead">
+                  <h2 className="pfCardTitle">
+                    {activeTab === 'orders'
                       ? 'Lịch sử đơn hàng'
                       : activeTab === 'notifications'
                         ? 'Thông báo'
-                        : activeTab === 'payments'
-                          ? 'Phương thức thanh toán'
-                          : activeTab === 'coupons'
-                            ? 'Kho Voucher'
-                            : 'Bảo mật'}
-                </h2>
-                {activeTab === 'profile' && (
-                  <button
-                    type="button"
-                    className="pfSaveBtn"
-                    onClick={openEditModal}
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-pencil-square" viewBox="0 0 16 16">
-                      <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
-                      <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z"/>
-                    </svg>
-                  </button>
-                )}
-              </div>
-              {saveError && (
-                <div style={{ marginBottom: 12, color: '#b91c1c', fontWeight: 800 }}>
-                  {saveError}
+                        : activeTab === 'coupons'
+                          ? 'Kho Voucher'
+                          : 'Bảo mật'}
+                  </h2>
                 </div>
-              )}
-
-              {ordersRoute || notifsRoute || securityRoute || couponsRoute ? (
                 <Outlet />
-              ) : tab === 'profile' ? (
-                <div className="pfFormGrid">
-                  {loading ? (
-                    Array.from({ length: 6 }).map((_, i) => (
-                      <div key={i} className="pfField">
-                        <Skeleton width="100px" height="14px" style={{ marginBottom: '8px' }} />
-                        <Skeleton width="100%" height="48px" borderRadius="10px" />
-                      </div>
-                    ))
-                  ) : (
-                    <>
-                      <div className="pfSimpleRow">
-                        <div className="pfSimpleLabel">Họ và tên :</div>
-                        <div className="pfSimpleValue">{profileDraft.name || '—'}</div>
-                      </div>
-                      <div className="pfSimpleRow">
-                        <div className="pfSimpleLabel">Email :</div>
-                        <div className="pfSimpleValue">{profileDraft.email || '—'}</div>
-                      </div>
-                      <div className="pfSimpleRow">
-                        <div className="pfSimpleLabel">Số điện thoại :</div>
-                        <div className="pfSimpleValue">{profileDraft.phone || '—'}</div>
-                      </div>
-                      <div className="pfSimpleRow">
-                        <div className="pfSimpleLabel">Địa chỉ :</div>
-                        <div className="pfSimpleValue">
-                          <div style={{ marginTop: 6, color: 'var(--et-text)' }}>
-                            {[
-                              profileDraft.address_line,
-                              profileDraft.ward,
-                              profileDraft.district,
-                              profileDraft.province,
-                            ].filter(Boolean).join(', ')}
-                          </div>
-                        </div>
-                      </div>
-                    </>
-                  )}
-                </div>
-              ) : (
-                <div style={{ color: 'var(--et-text-muted)', lineHeight: 1.7, fontSize: 14 }}>
-                  Chức năng này sẽ được hoàn thiện tiếp. Hiện tại trang đã được dựng UI đúng bố cục.
-                </div>
-              )}
-            </section>
+              </section>
+            )}
 
-            {tab === 'profile' && !ordersRoute && (
-              <div className="pfTwoCol">
-                <section className="pfCard" aria-label="Đơn hàng gần đây">
+            {/* ── Dashboard 2 cột (chỉ hiện khi tab profile) ── */}
+            {tab === 'profile' && !ordersRoute && !notifsRoute && !securityRoute && !couponsRoute && (
+              <div className="pfDashGrid">
+                {/* CỘT TRÁI: Thông tin cá nhân + Đơn hàng gần đây */}
+                <div className="pfDashLeft">
+                  {/* Thông tin cá nhân */}
+                  <section className="pfCard" aria-label="Thông tin cá nhân">
+                    <div className="pfCardHead">
+                      <h2 className="pfCardTitle">Thông tin cá nhân</h2>
+                      <button type="button" className="pfSaveBtn" onClick={openEditModal}>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                          <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
+                          <path fillRule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z"/>
+                        </svg>
+                      </button>
+                    </div>
+                    {saveError && <div style={{ marginBottom: 12, color: '#b91c1c', fontWeight: 800 }}>{saveError}</div>}
+                    <div className="pfFormGrid">
+                      {loading ? (
+                        Array.from({ length: 4 }).map((_, i) => (
+                          <div key={i} className="pfField">
+                            <Skeleton width="100px" height="14px" style={{ marginBottom: '8px' }} />
+                            <Skeleton width="100%" height="48px" borderRadius="10px" />
+                          </div>
+                        ))
+                      ) : (
+                        <>
+                          <div className="pfSimpleRow">
+                            <div className="pfSimpleLabel">Họ và tên :</div>
+                            <div className="pfSimpleValue">{profileDraft.name || '—'}</div>
+                          </div>
+                          <div className="pfSimpleRow">
+                            <div className="pfSimpleLabel">Email :</div>
+                            <div className="pfSimpleValue">{profileDraft.email || '—'}</div>
+                          </div>
+                          <div className="pfSimpleRow">
+                            <div className="pfSimpleLabel">Số điện thoại :</div>
+                            <div className="pfSimpleValue">{profileDraft.phone || '—'}</div>
+                          </div>
+                          <div className="pfSimpleRow">
+                            <div className="pfSimpleLabel">Địa chỉ :</div>
+                            <div className="pfSimpleValue">
+                              {[profileDraft.address_line, profileDraft.ward, profileDraft.district, profileDraft.province].filter(Boolean).join(', ')}
+                            </div>
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  </section>
+
+                  {/* Đơn hàng gần đây */}
+                  <section className="pfCard" aria-label="Đơn hàng gần đây">
                   <div className="pfCardHead" style={{ marginBottom: 0 }}>
                     <h3 className="pfCardTitle">Đơn hàng gần đây</h3>
                     <button
@@ -653,84 +624,84 @@ export default function ProfilePage() {
                     )}
                   </div>
                 </section>
+                </div>{/* end pfDashLeft */}
 
-                {editOpen && (
-                  <div className="pfModalOverlay" role="dialog" aria-modal="true">
-                    <div className="pfModal">
-                      <div className="pfModalHeader">
-                        <h3 className="pfModalTitle">Chỉnh sửa thông tin</h3>
-                        <button type="button" className="pfModalClose" onClick={closeEditModal} aria-label="Đóng">✕</button>
-                      </div>
-                      <div className="pfModalBody">
-                        <aside className="pfModalSidebar">
-                          <div className="pfModalAvatarWrap">
-                            <img src={editAvatarPreview || AVATAR_URL} alt="" className="pfAvatar" />
-                            <input
-                              id="pf-avatar-input"
-                              type="file"
-                              accept="image/png,image/jpeg,image/jpg,image/webp"
-                              onChange={(e) => {
-                                const f = e.currentTarget.files?.[0] ?? null
-                                setEditAvatarFile(f)
-                                if (f) setEditAvatarPreview(URL.createObjectURL(f))
-                              }}
-                              style={{ display: 'none' }}
-                            />
-                            <label htmlFor="pf-avatar-input" className="pfFileBtn">Chọn ảnh</label>
-                          </div>
-                        </aside>
-                        <div className="pfModalContent">
-                          <div className="pfFormGrid">
-                            <div className="pfField">
-                              <label className="pfLabel">Họ và tên</label>
-                              <input className="pfInput" value={editDraft.name} onChange={(e) => setEditDraft((s) => ({ ...s, name: e.target.value }))} />
+                {/* Modal chỉnh sửa thông tin */}
+                  {editOpen && (
+                    <div className="pfModalOverlay" role="dialog" aria-modal="true">
+                      <div className="pfModal">
+                        <div className="pfModalHeader">
+                          <h3 className="pfModalTitle">Chỉnh sửa thông tin</h3>
+                          <button type="button" className="pfModalClose" onClick={closeEditModal} aria-label="Đóng">✕</button>
+                        </div>
+                        <div className="pfModalBody">
+                          <aside className="pfModalSidebar">
+                            <div className="pfModalAvatarWrap">
+                              <img src={editAvatarPreview || AVATAR_URL} alt="" className="pfAvatar" />
+                              <input
+                                id="pf-avatar-input"
+                                type="file"
+                                accept="image/png,image/jpeg,image/jpg,image/webp"
+                                onChange={(e) => {
+                                  const f = e.currentTarget.files?.[0] ?? null
+                                  setEditAvatarFile(f)
+                                  if (f) setEditAvatarPreview(URL.createObjectURL(f))
+                                }}
+                                style={{ display: 'none' }}
+                              />
+                              <label htmlFor="pf-avatar-input" className="pfFileBtn">Chọn ảnh</label>
                             </div>
-                            <div className="pfField">
-                              <label className="pfLabel">Số điện thoại</label>
-                              <input className="pfInput" value={editDraft.phone} onChange={(e) => setEditDraft((s) => ({ ...s, phone: e.target.value }))} />
+                          </aside>
+                          <div className="pfModalContent">
+                            <div className="pfFormGrid">
+                              <div className="pfField">
+                                <label className="pfLabel">Họ và tên</label>
+                                <input className="pfInput" value={editDraft.name} onChange={(e) => setEditDraft((s) => ({ ...s, name: e.target.value }))} />
+                              </div>
+                              <div className="pfField">
+                                <label className="pfLabel">Số điện thoại</label>
+                                <input className="pfInput" value={editDraft.phone} onChange={(e) => setEditDraft((s) => ({ ...s, phone: e.target.value }))} />
+                              </div>
+                              <div className="pfField">
+                                <label className="pfLabel">Email</label>
+                                <input className="pfInput" value={editDraft.email} onChange={(e) => setEditDraft((s) => ({ ...s, email: e.target.value }))} type="email" />
+                              </div>
+                              <div className="pfField" style={{ gridColumn: '1 / -1' }}>
+                                <label className="pfLabel">Địa chỉ</label>
+                                <input className="pfInput" value={editDraft.address_line} onChange={(e) => setEditDraft((s) => ({ ...s, address_line: e.target.value }))} />
+                              </div>
+                              <div className="pfField">
+                                <label className="pfLabel">Phường/Xã</label>
+                                <input className="pfInput" value={editDraft.ward} onChange={(e) => setEditDraft((s) => ({ ...s, ward: e.target.value }))} />
+                              </div>
+                              <div className="pfField">
+                                <label className="pfLabel">Quận/Huyện</label>
+                                <input className="pfInput" value={editDraft.district} onChange={(e) => setEditDraft((s) => ({ ...s, district: e.target.value }))} />
+                              </div>
+                              <div className="pfField">
+                                <label className="pfLabel">Tỉnh/Thành phố</label>
+                                <input className="pfInput" value={editDraft.province} onChange={(e) => setEditDraft((s) => ({ ...s, province: e.target.value }))} />
+                              </div>
                             </div>
-                            <div className="pfField">
-                              <label className="pfLabel">Email</label>
-                              <input className="pfInput" value={editDraft.email} onChange={(e) => setEditDraft((s) => ({ ...s, email: e.target.value }))} type="email" />
+                            <div className="pfModalActions">
+                              <button type="button" className="pfBtn pfBtnPrimary" onClick={saveFromModal} disabled={saving}>
+                                {saving ? 'Đang lưu...' : 'Lưu'}
+                              </button>
+                              <button type="button" className="pfBtn" onClick={closeEditModal} disabled={saving}>Hủy</button>
                             </div>
-                            <div className="pfField" style={{ gridColumn: '1 / -1' }}>
-                              <label className="pfLabel">Địa chỉ</label>
-                              <input className="pfInput" value={editDraft.address_line} onChange={(e) => setEditDraft((s) => ({ ...s, address_line: e.target.value }))} />
-                            </div>
-                            <div className="pfField">
-                              <label className="pfLabel">Phường/Xã</label>
-                              <input className="pfInput" value={editDraft.ward} onChange={(e) => setEditDraft((s) => ({ ...s, ward: e.target.value }))} />
-                            </div>
-                             <div className="pfField">
-                              <label className="pfLabel">Quận/Huyện</label>
-                              <input className="pfInput" value={editDraft.district} onChange={(e) => setEditDraft((s) => ({ ...s, district: e.target.value }))} />
-                            </div>
-                            <div className="pfField">
-                              <label className="pfLabel">Tỉnh/Thành phố</label>
-                              <input className="pfInput" value={editDraft.province} onChange={(e) => setEditDraft((s) => ({ ...s, province: e.target.value }))} />
-                            </div>
-                          </div>
-
-                          <div className="pfModalActions">
-                            <button type="button" className="pfBtn pfBtnPrimary" onClick={saveFromModal} disabled={saving}>
-                              {saving ? 'Đang lưu...' : 'Lưu'}
-                            </button>
-                            <button type="button" className="pfBtn" onClick={closeEditModal} disabled={saving}>Hủy</button>
                           </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                )}
+                  )}
 
-                <div className="pfRowGrid">
+                {/* CỘT PHẢI: Bảo mật + Ưu đãi */}
+                <div className="pfDashRight">
                   <section className="pfMiniCard" aria-label="Bảo mật">
                     <h3 className="pfMiniTitle">Bảo mật</h3>
                     <div className="pfMiniTopRow">
                       <div>
-                        <div style={{ fontWeight: 600, marginBottom: 4 }}>
-                          Xác thực 2 yếu tố (2FA)
-                        </div>
+                        <div style={{ fontWeight: 600, marginBottom: 4, fontSize:15 }}>Xác thực 2 yếu tố (2FA)</div>
                         <div className="pfToggleText">Tăng cường bảo mật cho tài khoản của bạn.</div>
                       </div>
                       <button
@@ -745,18 +716,13 @@ export default function ProfilePage() {
                     <button
                       type="button"
                       className="pfToggleRow pfToggleRowBtn"
-                      onClick={() => {
-                        setTab('security')
-                        navigate('/profile/security')
-                      }}
+                      onClick={() => { setTab('security'); navigate('/profile/security') }}
                     >
                       <div>
-                        <div style={{ fontWeight: 600 }}>Thay đổi mật khẩu</div>
+                        <div style={{ fontWeight: 600, marginTop: 4, marginBottom: 4, fontSize:15 }}>Thay đổi mật khẩu</div>
                         <div className="pfToggleText">Cập nhật mật khẩu để an toàn hơn.</div>
                       </div>
-                      <span className="pfChevron" aria-hidden="true">
-                        ›
-                      </span>
+                      <span className="pfChevron" aria-hidden="true">›</span>
                     </button>
                   </section>
 
@@ -768,16 +734,12 @@ export default function ProfilePage() {
                       <p className="pfPromoSub">
                         Nâng cấp tài khoản để nhận ưu đãi vận chuyển miễn phí và hoàn tiền 5% cho mọi linh kiện.
                       </p>
-                      <button
-                        type="button"
-                        className="pfPromoBtn"
-                        onClick={() => navigate('/products')}
-                      >
+                      <button type="button" className="pfPromoBtn" onClick={() => navigate('/products')}>
                         Tìm hiểu thêm
                       </button>
                     </div>
                   </section>
-                </div>
+                </div>{/* end pfDashRight */}
               </div>
             )}
           </div>

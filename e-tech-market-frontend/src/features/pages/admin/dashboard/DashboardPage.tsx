@@ -253,6 +253,7 @@ export default function DashboardPage({
   const [dashLoading, setDashLoading] = useState(true);
   const [dashError, setDashError] = useState<string | null>(null);
   const [dash, setDash] = useState<DashStats | null>(null);
+  const [prevDash, setPrevDash] = useState<DashStats | null>(null);
   const [lowStockThreshold, setLowStockThreshold] = useState(10);
   const [lowStockProducts, setLowStockProducts] = useState<
     Array<{
@@ -279,7 +280,15 @@ export default function DashboardPage({
       setDashLoading(true);
       setDashError(null);
       try {
-        const [res, productsRes] = await Promise.all([
+        const now = new Date();
+        const prevMonthStart = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+        const prevMonthEnd = new Date(now.getFullYear(), now.getMonth(), 0);
+        const fmt = (d: Date) => {
+          const mm = String(d.getMonth() + 1).padStart(2, '0');
+          const dd = String(d.getDate()).padStart(2, '0');
+          return `${d.getFullYear()}-${mm}-${dd}`;
+        };
+        const [res, productsRes, prevRes] = await Promise.all([
           // 🔒 Token is sent via httpOnly cookie automatically
           fetchDashboardStats<DashStats>(
             analyticsRange,
@@ -288,9 +297,11 @@ export default function DashboardPage({
             resolution,
           ),
           apiFetch<any>("/api/admin/products?per_page=100"),
+          fetchDashboardStats<DashStats>('custom', fmt(prevMonthStart), fmt(prevMonthEnd), resolution),
         ]);
         if (cancelled) return;
         setDash(res);
+        setPrevDash(prevRes);
 
         const products = Array.isArray(productsRes?.data)
           ? productsRes.data
@@ -472,13 +483,25 @@ export default function DashboardPage({
     tone: "orange" | "blue" | "green" | "purple" | "cyan";
   };
 
+  const pctChange = (curr: number, prev: number) => {
+    if (!prev) return null;
+    const pct = ((curr - prev) / prev) * 100;
+    return pct;
+  };
+  const fmtPct = (pct: number | null) => {
+    if (pct === null) return '';
+    const sign = pct >= 0 ? '+' : '';
+    return `${sign}${pct.toFixed(1)}%`;
+  };
+  const prevKpi = prevDash?.kpi;
+
   const kpis: KpiCard[] = [
     {
       key: "rev",
       label: "Tổng doanh thu",
       value: kpi ? `${fmtMoneyShort(kpi.revenue_30d)} đ` : "—",
-      sub: "",
-      badge: "+12.5%",
+      sub: prevKpi ? `Tháng trước: ${fmtMoneyShort(prevKpi.revenue_30d)} đ` : "",
+      badge: fmtPct(pctChange(kpi?.revenue_30d ?? 0, prevKpi?.revenue_30d ?? 0)) || "+0%",
       icon: <RevenueIcon />,
       tone: "orange" as const,
     },
@@ -486,8 +509,8 @@ export default function DashboardPage({
       key: "orders",
       label: "Đơn hàng hiện tại",
       value: kpi ? String(kpi.current_orders) : "—",
-      sub: "",
-      badge: "Đang xử lý",
+      sub: prevKpi ? `Tháng trước: ${prevKpi.current_orders}` : "",
+      badge: fmtPct(pctChange(kpi?.current_orders ?? 0, prevKpi?.current_orders ?? 0)) || "0%",
       icon: <CartIcon />,
       tone: "blue" as const,
     },
@@ -496,7 +519,7 @@ export default function DashboardPage({
       label: "Tổng số sản phẩm",
       value: kpi ? String(kpi.total_products) : "—",
       sub: "",
-      badge: "Kho: 98%",
+      badge: "Kho",
       icon: <BoxIcon />,
       tone: "green" as const,
     },
@@ -504,8 +527,8 @@ export default function DashboardPage({
       key: "newCus",
       label: "Khách hàng mới",
       value: kpi ? `+${kpi.new_customers_7d}` : "—",
-      sub: "",
-      badge: "+18%",
+      sub: prevKpi ? `Tháng trước: +${prevKpi.new_customers_7d}` : "",
+      badge: fmtPct(pctChange(kpi?.new_customers_7d ?? 0, prevKpi?.new_customers_7d ?? 0)) || "+0%",
       icon: <UserGroupIcon />,
       tone: "purple" as const,
     },
@@ -513,8 +536,8 @@ export default function DashboardPage({
       key: "avg",
       label: "Giá trị đơn hàng TB",
       value: kpi ? `${fmtMoneyShort(kpi.avg_order_value_30d)} đ` : "—",
-      sub: "",
-      badge: "+5.2%",
+      sub: prevKpi ? `Tháng trước: ${fmtMoneyShort(prevKpi.avg_order_value_30d)} đ` : "",
+      badge: fmtPct(pctChange(kpi?.avg_order_value_30d ?? 0, prevKpi?.avg_order_value_30d ?? 0)) || "+0%",
       icon: <GridIcon />,
       tone: "cyan" as const,
     },
@@ -535,7 +558,6 @@ export default function DashboardPage({
       : Array.from({ length: 7 }).map((_, i) =>
           Math.max(0, Math.round(base * (0.7 + Math.sin(i) * 0.15))),
         );
-    // Decide chart type per KPI key
     let chartType: "area" | "bars" | "donut" | "line" = "line";
     if (kp.key === "rev") chartType = "area";
     else if (kp.key === "orders") chartType = "bars";
@@ -543,14 +565,15 @@ export default function DashboardPage({
     else if (kp.key === "newCus") chartType = "bars";
     else if (kp.key === "avg") chartType = "line";
 
-    // For donut, try parse percent from badge (e.g., 'Kho: 98%')
+    // For products donut: show total_products as the label inside donut
+    const donutTotal = kp.key === "products" ? (kpi?.total_products ?? 0) : 0;
+    // Still compute pct for the arc (use stock fullness, fallback 85%)
     let donutPct = 0;
     if (chartType === "donut") {
-      const m = String(kp.badge || "").match(/(\d{1,3})/);
-      donutPct = m ? Math.max(0, Math.min(100, Number(m[1]))) : 75;
+      donutPct = 85; // fallback: show mostly-filled ring
     }
 
-    return { ...(kp as any), sparkline: pts, chartType, donutPct };
+    return { ...(kp as any), sparkline: pts, chartType, donutPct, donutTotal };
   });
   const resolveAdminImg = (url?: string | null) => {
     if (!url) return "/logo.png";
@@ -953,7 +976,7 @@ export default function DashboardPage({
     );
   };
 
-  const renderDonut = (pct = 0, color = "#10b981", size = 56) => {
+  const renderDonut = (pct = 0, color = "#10b981", size = 56, label?: string) => {
     const r = size / 2 - 6;
     const c = 2 * Math.PI * r;
     const offset = c * (1 - Math.max(0, Math.min(1, pct / 100)));
@@ -990,10 +1013,10 @@ export default function DashboardPage({
           y="50%"
           dominantBaseline="middle"
           textAnchor="middle"
-          fontSize={12}
+          fontSize={label && label.length > 3 ? 9 : 11}
           fontWeight={700}
           fill="#111"
-        >{`${pct}%`}</text>
+        >{label ?? `${pct}%`}</text>
       </svg>
     );
   };
@@ -1046,56 +1069,63 @@ export default function DashboardPage({
         </div>
 
         <div className="admKpiGrid">
-          {kpisWithSpark.map((k) => (
-            <div
-              key={k.key}
-              className={`admKpiCard2 tone-${k.tone} ${(k as any).key === "rev" ? "admKpiCard2--chartCenter" : ""}`}
-            >
-              <div className="admKpiTop">
-                <div className="admKpiIcon2" aria-hidden>
-                  {k.icon}
+          {kpisWithSpark.map((k) => {
+            const badgeStr = String(k.badge || '');
+            const isPositive = badgeStr.startsWith('+');
+            const isNegative = badgeStr.startsWith('-');
+            const badgeTone = isPositive ? 'admKpiBadge--up' : isNegative ? 'admKpiBadge--down' : '';
+            return (
+              <div
+                key={k.key}
+                className={`admKpiCard2 tone-${k.tone} ${(k as any).key === "rev" ? "admKpiCard2--chartCenter" : ""}`}
+              >
+                <div className="admKpiTop">
+                  <div className="admKpiIcon2" aria-hidden>
+                    {k.icon}
+                  </div>
+                  <div className={`admKpiBadge ${badgeTone}`} aria-hidden>
+                    {k.badge}
+                  </div>
                 </div>
-                <div className="admKpiBadge" aria-hidden>
-                  {k.badge}
+                <div className="admKpiLabel2">{k.label}</div>
+                <div className="admKpiValue2">{k.value}</div>
+                {k.sub && (
+                  <div className="admKpiSubPrev">{k.sub}</div>
+                )}
+                <div className="admKpiSparkWrap">
+                  {(() => {
+                    const kt = (k as any).chartType as string;
+                    const keyColorMap: Record<string, string> = {
+                      rev: "#10b981",
+                      orders: "#3b82f6",
+                      products: "#10b981",
+                      newCus: "#8b5cf6",
+                      avg: "#3b82f6",
+                    };
+                    const color = keyColorMap[(k as any).key] || colorOfTone((k as any).tone);
+                    if ((k as any).key === "rev")
+                      return renderRevenueArea((k as any).sparkline || [], color);
+                    if ((k as any).key === "avg")
+                      return renderThinArea((k as any).sparkline || [], color);
+                    if ((k as any).key === "newCus")
+                      return renderPurpleColumns((k as any).sparkline || [], "#d8c7ff", "#7c3aed");
+                    if (kt === "area")
+                      return renderArea((k as any).sparkline || [], color);
+                    if (kt === "bars")
+                      return renderBars((k as any).sparkline || [], color);
+                    if (kt === "donut")
+                      return renderDonut(
+                        (k as any).donutPct || 0,
+                        color,
+                        56,
+                        (k as any).donutTotal ? String((k as any).donutTotal) : undefined,
+                      );
+                    return renderLine((k as any).sparkline || [], color);
+                  })()}
                 </div>
               </div>
-              <div className="admKpiLabel2">{k.label}</div>
-              <div className="admKpiValue2">{k.value}</div>
-              <div className="admKpiSparkWrap">
-                {(() => {
-                  const kt = (k as any).chartType as string;
-                  // Prefer explicit colors per KPI key to match reference
-                  const keyColorMap: Record<string, string> = {
-                    rev: "#10b981",
-                    orders: "#3b82f6",
-                    products: "#10b981",
-                    newCus: "#8b5cf6",
-                    avg: "#3b82f6",
-                  };
-                  const color =
-                    keyColorMap[(k as any).key] || colorOfTone((k as any).tone);
-                  if ((k as any).key === "rev")
-                    return renderRevenueArea((k as any).sparkline || [], color);
-                  if ((k as any).key === "avg")
-                    return renderThinArea((k as any).sparkline || [], color);
-                  if ((k as any).key === "newCus")
-                    return renderPurpleColumns(
-                      (k as any).sparkline || [],
-                      "#d8c7ff",
-                      "#7c3aed",
-                    );
-                  if (kt === "area")
-                    return renderArea((k as any).sparkline || [], color);
-                  if (kt === "bars")
-                    return renderBars((k as any).sparkline || [], color);
-                  if (kt === "donut")
-                    return renderDonut((k as any).donutPct || 0, color);
-                  return renderLine((k as any).sparkline || [], color);
-                })()}
-              </div>
-              <div className="admKpiSub2">{k.sub}</div>
-            </div>
-          ))}
+            );
+          })}
           <div className="admKpiCard2 tone-red">
             <div className="admKpiTop">
               <div className="admKpiIcon2" aria-hidden>

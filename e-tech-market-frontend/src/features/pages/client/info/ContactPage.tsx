@@ -6,9 +6,9 @@ const CONTACT_BANNER_URL =
   (import.meta.env.VITE_CONTACT_BANNER_IMAGE_URL as string | undefined)?.trim() ||
   'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1600&q=80'
 
-const CONTACT_MAP_IMAGE_URL =
-  (import.meta.env.VITE_CONTACT_MAP_IMAGE_URL as string | undefined)?.trim() ||
-  'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&w=1200&q=80'
+/** Embed src cho Google Maps – có thể override bằng env nếu cần */
+const CONTACT_MAP_EMBED_URL =
+  (import.meta.env.VITE_CONTACT_MAP_EMBED_URL as string | undefined)?.trim() || ''
 
 /** Khi không tải được API hoặc trường trống trong cài đặt admin */
 const FALLBACK_ADDRESS =
@@ -244,12 +244,28 @@ export default function ContactPage() {
               </div>
             </div>
 
-            <div className="ctMap" aria-label="Bản đồ">
-              <img className="ctMapImg" src={CONTACT_MAP_IMAGE_URL} alt="" loading="lazy" />
-              <div className="ctMapPill">
+            <div className="ctMap" aria-label="Bản đồ vị trí cửa hàng">
+              <iframe
+                className="ctMapFrame"
+                src={
+                  CONTACT_MAP_EMBED_URL ||
+                  `https://maps.google.com/maps?q=${encodeURIComponent(displayAddress)}&output=embed&z=15`
+                }
+                title="Bản đồ vị trí E-Tech Market"
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                allowFullScreen
+              />
+              <a
+                className="ctMapPill"
+                href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(displayAddress)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                title="Mở trong Google Maps"
+              >
                 <span className="ctMapDot" aria-hidden="true" />
-                Tìm đường đến {displayStoreName}
-              </div>
+                Tìm đường đến {displayStoreName} ↗
+              </a>
             </div>
           </div>
         </section>

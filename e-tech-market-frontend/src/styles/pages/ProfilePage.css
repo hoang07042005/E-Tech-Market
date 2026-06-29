@@ -81,8 +81,8 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  padding: 7px 10px;
-  border-radius: 999px;
+  padding: 6px 6px;
+  border-radius: 8px;
   background: rgba(249, 115, 22, .12);
   color: var(--et-primary-hover);
   font-weight: 600;
@@ -124,7 +124,7 @@
 }
 
 .pfGrid {
-  margin-top: 18px;
+  margin-top: 0;
   display: grid;
   grid-template-columns: 260px 1fr;
   gap: 18px;
@@ -133,20 +133,100 @@
 
 .pfSidebar {
   position: sticky;
-  top: 92px;
   border: 1px solid var(--et-border);
   border-radius: 5px;
   background: #fff;
   box-shadow: 0 14px 40px rgba(15, 23, 42, .04);
   padding: 14px;
+  overflow: hidden;
 }
+
+/* ── Profile block ở đầu sidebar ── */
+.pfSideProfile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  text-align: center;
+  margin-bottom: 25px;
+}
+
+.pfSideAvatarWrap {
+  width: 72px;
+  height: 72px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: #f3f4f6;
+  flex-shrink: 0;
+}
+
+.pfSideAvatarWrap .pfAvatar {
+  width: 72px;
+  height: 72px;
+  border-radius: 999px;
+}
+
+.pfSideInfo {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.pfSideName {
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--et-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+.pfSideBottomRow {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.pfSideStats {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 2px;
+}
+
+.pfSideStat {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  padding: 4px 10px;
+  border-radius: 8px;
+  background: #f4f4f5;
+}
+
+.pfSideStatNum {
+  font-weight: 600;
+  font-size: 13px;
+  color: #333;
+}
+
+.pfSideStatLabel {
+  font-size: 11px;
+  color: #000000;
+}
+
 
 .pfNavBtn {
   width: 100%;
   display: flex;
   align-items: center;
   justify-content: flex-start;
-  gap: 12px;
+  gap: 18px;
   padding: 12px 12px;
   border-radius: 5px;
   border: 1px solid transparent;
@@ -155,6 +235,7 @@
   color: var(--et-text);
   font-weight: 600;
   font-size: 12px;
+  margin-top: 8px;
 }
 
 .pfNavBtn:hover {
@@ -331,6 +412,35 @@
   gap: 18px;
 }
 
+/* ── Dashboard 2 cột chính ── */
+.pfDashGrid {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 18px;
+  align-items: start;
+}
+
+.pfDashLeft {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.pfDashRight {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  position: sticky;
+}
+
+.pfDashRight .pfMiniCard {
+  padding: 45px;
+}
+
+.pfDashRight .pfPromo {
+  min-height: 200px;
+}
+
 .pfOrdersWrapper {
   margin-top: 12px;
 }
@@ -483,7 +593,7 @@
   margin-top: 14px;
   align-items: start;
 }
-.pfModalSidebar { display:flex; align-items:flex-start; }
+.pfModalSidebar {align-items:flex-start; }
 .pfModalAvatarWrap { display:flex; flex-direction:column; align-items:center; gap:12px }
 .pfModalAvatarWrap .pfAvatar { width:96px; height:96px; border-radius:999px; box-shadow:0 12px 30px rgba(15,23,42,0.12)}
 .pfFileBtn {
@@ -495,7 +605,7 @@
   cursor:pointer;
   font-size:13px;
 }
-.pfModalContent { }
+
 .pfModalActions { display:flex; justify-content:flex-end; gap:8px; margin-top:16px }
 .pfBtn { padding:8px 12px; border-radius:8px; border:none; cursor:pointer }
 .pfBtnPrimary { background: var(--et-primary); color:#fff; }
@@ -621,7 +731,7 @@
 
 .pfMiniCard {
   border: 1px solid var(--et-border);
-  border-radius: 16px;
+  border-radius: 5px;
   padding: 50px;
   background: #fff;
   box-shadow: 0 14px 40px rgba(15, 23, 42, .04);
@@ -631,9 +741,10 @@
 }
 
 .pfMiniTitle {
-  margin: 0 0 12px;
+  margin: 0;
   font-weight: 600;
-  font-size: 14px;
+  font-size: 16px;
+  letter-spacing: -.01em;
 }
 
 .pfMiniTopRow {
@@ -643,6 +754,7 @@
   gap: 12px;
   border-bottom: 1px solid var(--et-border);
   padding-bottom: 30px;
+  padding-top:10px;
 }
 
 .pfToggleRow {
@@ -676,12 +788,12 @@
 
 .pfToggleText {
   color: var(--et-text-muted);
-  font-size: 12px;
+  font-size: 14px;
   line-height: 1.4;
 }
 
 .pfSwitch {
-  width: 46px;
+  width: 60px;
   height: 26px;
   border-radius: 999px;
   background: #e5e7eb;
@@ -695,13 +807,13 @@
 }
 
 .pfSwitchKnob {
-  width: 22px;
-  height: 22px;
+  width: 20px;
+  height: 20px;
   border-radius: 999px;
   background: #fff;
   position: absolute;
-  top: 2px;
-  left: 2px;
+  top: 3px;
+  left: 3px;
   transition: transform .2s ease;
 }
 
@@ -710,7 +822,7 @@
 }
 
 .pfPromo {
-  border-radius: 16px;
+  border-radius: 5px;
   overflow: hidden;
   border: 1px solid var(--et-border);
   background: #111827;
@@ -735,13 +847,12 @@
 .pfPromoContent {
   position: absolute;
   inset: 0;
-  padding: 57px;
+  padding: 50px;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
   gap: 10px;
   color: #fff;
-  margin-top: 28px;
 }
 
 .pfPromoTitle {
@@ -865,7 +976,19 @@
     background: transparent;
     border: none;
     box-shadow: none;
-    position: static
+    position: static;
+    align-items: stretch;
+  }
+
+  /* Avatar + profile block chiếm toàn bộ chiều rộng */
+  .pfSideProfile {
+    grid-column: 1 / -1;
+    background: #fff;
+    border: 1px solid var(--et-border);
+    border-radius: 16px;
+    padding: 20px 16px 16px;
+    box-shadow: 0 4px 12px rgba(15, 23, 42, .03);
+    margin-bottom: 0;
   }
 
   .pfNavBtn {
@@ -1008,6 +1131,8 @@
 
   /* Ensure profile two-column blocks collapse */
   .pfTwoCol { grid-template-columns: 1fr }
+  .pfDashGrid { grid-template-columns: 1fr }
+  .pfDashRight { position: static }
 
   /* Tighten order thumb grids for small screens */
   .pfThumbLayout-two { grid-template-columns: repeat(2, 56px); grid-auto-rows: 56px }
