@@ -18,9 +18,9 @@ class DioClient {
 
   static Dio _createDio() {
     final dio = Dio(BaseOptions(
-      baseUrl: ApiConfig.apiBaseUrl,
-      connectTimeout: const Duration(seconds: 15),
-      receiveTimeout: const Duration(seconds: 15),
+      baseUrl: ApiConfig.apiBaseUrl, // sẽ được cập nhật động bên dưới
+      connectTimeout: const Duration(seconds: 20),
+      receiveTimeout: const Duration(seconds: 20),
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json',
@@ -29,6 +29,11 @@ class DioClient {
 
     dio.interceptors.add(InterceptorsWrapper(
       onRequest: (options, handler) async {
+        // Cập nhật baseUrl động mỗi request — hỗ trợ auto-discovery IP
+        final currentBase = ApiConfig.apiBaseUrl;
+        if (options.baseUrl != currentBase) {
+          options.baseUrl = currentBase;
+        }
         // Đọc token mới nhất trước mỗi request
         final token = await AuthService.getToken();
         if (token != null && token.isNotEmpty) {

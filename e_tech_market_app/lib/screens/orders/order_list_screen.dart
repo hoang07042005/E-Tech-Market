@@ -20,7 +20,8 @@ class _OrderListScreenState extends State<OrderListScreen> {
   List<dynamic> _orders = [];
   String _search = '';
   String _statusFilter = 'all';
-  bool _showSearch = false;
+  bool _isSearching = false;
+  final _searchCtrl = TextEditingController();
 
   @override
   void initState() {
@@ -131,16 +132,35 @@ class _OrderListScreenState extends State<OrderListScreen> {
         backgroundColor: Theme.of(context).colorScheme.surface,
         foregroundColor: Theme.of(context).colorScheme.onSurface,
         elevation: 0,
-        title: Row(
-          children: [
-            Text(Trans.myOrders, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 17)),
-            const Spacer(),
+        title: _isSearching
+            ? TextField(
+                controller: _searchCtrl,
+                autofocus: true,
+                style: const TextStyle(fontSize: 16),
+                decoration: InputDecoration(
+                  hintText: 'Tìm mã đơn hàng hoặc sản phẩm...',
+                  hintStyle: TextStyle(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5)),
+                  border: InputBorder.none,
+                ),
+                onChanged: (value) => setState(() => _search = value),
+              )
+            : Text(Trans.myOrders, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 17)),
+        actions: [
+          if (_isSearching)
+            IconButton(
+              icon: const Icon(Icons.close),
+              onPressed: () => setState(() {
+                _isSearching = false;
+                _search = '';
+                _searchCtrl.clear();
+              }),
+            )
+          else
             IconButton(
               icon: const Icon(Icons.search_outlined),
-              onPressed: () => setState(() => _showSearch = true),
+              onPressed: () => setState(() => _isSearching = true),
             ),
-          ],
-        ),
+        ],
       ),
       body: Container(
         color: Theme.of(context).colorScheme.surface,
@@ -175,7 +195,6 @@ class _OrderListScreenState extends State<OrderListScreen> {
                           physics: const AlwaysScrollableScrollPhysics(),
                           padding: const EdgeInsets.all(16),
                           children: [
-                            if (_showSearch) _buildSearchBar() else const SizedBox.shrink(),
                             const SizedBox(height: 12),
                             _buildStatusChips(),
                             const SizedBox(height: 12),
@@ -189,56 +208,7 @@ class _OrderListScreenState extends State<OrderListScreen> {
     );
   }
 
-  Widget _buildSearchSection() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const SizedBox.shrink(),
-      ],
-    );
-  }
-
-  Widget _buildSearchBar() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            Expanded(
-              child: Container(
-                height: 48,
-                decoration: BoxDecoration(color: Theme.of(context).colorScheme.surfaceContainerHighest, borderRadius: BorderRadius.circular(12)),
-                child: TextField(
-                  autofocus: true,
-                  decoration: const InputDecoration(
-                    hintText: 'Tìm mã đơn hoặc sản phẩm...',
-                    prefixIcon: Icon(Icons.search_outlined),
-                    border: InputBorder.none,
-                    contentPadding: EdgeInsets.symmetric(vertical: 14),
-                  ),
-                  onChanged: (value) => setState(() => _search = value),
-                ),
-              ),
-            ),
-            const SizedBox(width: 8),
-            GestureDetector(
-              onTap: () => setState(() {
-                _showSearch = false;
-                _search = '';
-              }),
-              child: Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(color: Theme.of(context).colorScheme.surfaceContainerHighest, borderRadius: BorderRadius.circular(12)),
-                child: const Icon(Icons.close, size: 20),
-              ),
-            )
-          ],
-        ),
-        const SizedBox(height: 12),
-        const SizedBox.shrink(),
-      ],
-    );
-  }
+  Widget _buildSearchSection() => const SizedBox.shrink();
 
   Widget _buildStatusChips() {
     return Container(
@@ -282,7 +252,7 @@ class _OrderListScreenState extends State<OrderListScreen> {
   Widget _statusChip(String value, String label) {
     final selected = _statusFilter == value;
     return ChoiceChip(
-      label: Text(label, style: TextStyle(color: selected ? Theme.of(context).colorScheme.onPrimary : Theme.of(context).colorScheme.surface, fontSize: 13)),
+      label: Text(label, style: TextStyle(color: selected ? Theme.of(context).colorScheme.surface : Theme.of(context).colorScheme.onSurface, fontSize: 13)),
       selected: selected,
       onSelected: (_) => setState(() => _statusFilter = value),
       selectedColor: const Color(0xFFF26522),
@@ -315,6 +285,11 @@ class _OrderListScreenState extends State<OrderListScreen> {
     if (firstItem is Map<String, dynamic>) {
       final product = firstItem['product'] as Map<String, dynamic>?;
       prodName = (product?['name'] ?? firstItem['product_name_snapshot'] ?? 'Sản phẩm').toString();
+      final variant = firstItem['variant'] as Map<String, dynamic>?;
+      final color = variant?['color']?.toString();
+      if (color != null && color.isNotEmpty) {
+        prodName = '$prodName ($color)';
+      }
       // Đã sửa đổi: Sửa lỗi NetworkUtils.buildImage thành Image.network cục bộ dựa trên URL xử lý bằng hàm nội bộ
       prodImg = _resolveOrderImageUrl(firstItem);
       prodQty = firstItem['quantity']?.toString() ?? '1';
@@ -342,54 +317,120 @@ class _OrderListScreenState extends State<OrderListScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text('${Trans.orderCodeLabel}$code', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
-                      Text(
-                        meta['label'] as String,
-                        style: TextStyle(color: meta['color'] as Color, fontWeight: FontWeight.bold, fontSize: 13),
+                      Text('#$code', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                        decoration: BoxDecoration(
+                          color: (meta['color'] as Color).withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                        child: Text(
+                          meta['label'] as String,
+                          style: TextStyle(color: meta['color'] as Color, fontWeight: FontWeight.bold, fontSize: 13),
+                        ),
                       ),
                     ],
                   ),
                   const SizedBox(height: 4),
                   Text(Trans.orderDateLabel(date), style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6), fontSize: 12)),
                   // const Divider(height: 24),
-                  Row(
-                    children: [
-                      if (prodImg.isNotEmpty)
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(5),
-                          child: Image.network(
-                            prodImg,
+                  if (items.length > 1) ...[
+                    // Hàng 1: Cuộn ngang ảnh sản phẩm
+                    SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        children: items.map((item) {
+                          final imgUrl = _resolveOrderImageUrl(item);
+                          if (imgUrl.isNotEmpty) {
+                            return Padding(
+                              padding: const EdgeInsets.only(right: 8.0),
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(5),
+                                child: Image.network(
+                                  imgUrl,
+                                  width: 64,
+                                  height: 64,
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (_, __, ___) => Container(color: Theme.of(context).colorScheme.surfaceContainerHighest, width: 64, height: 64, child: Icon(Icons.image_not_supported, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.4))),
+                                ),
+                              ),
+                            );
+                          } else {
+                            return Padding(
+                              padding: const EdgeInsets.only(right: 8.0),
+                              child: Container(
+                                width: 64,
+                                height: 64,
+                                decoration: BoxDecoration(color: Theme.of(context).colorScheme.surfaceContainerHighest, borderRadius: BorderRadius.circular(12)),
+                                child: Icon(Icons.image_not_supported, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.4)),
+                              ),
+                            );
+                          }
+                        }).toList(),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    // Hàng 2: Tất cả tên sản phẩm dạng gạch đầu dòng
+                    ...items.map((item) {
+                      final product = item is Map<String, dynamic> ? item['product'] as Map<String, dynamic>? : null;
+                      String name = (product?['name'] ?? item['product_name_snapshot'] ?? 'Sản phẩm').toString();
+                      final variant = item is Map<String, dynamic> ? item['variant'] as Map<String, dynamic>? : null;
+                      final color = variant?['color']?.toString();
+                      if (color != null && color.isNotEmpty) {
+                        name = '$name ($color)';
+                      }
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 2.0),
+                        child: Text(
+                          '- $name',
+                          style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      );
+                    }),
+                    const SizedBox(height: 4),
+                    // Hàng 3: Tổng số lượng
+                    Text(
+                      'Tổng số lượng: ${items.fold<int>(0, (sum, item) => sum + (int.tryParse(item['quantity']?.toString() ?? '1') ?? 1))}',
+                      style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6), fontSize: 13),
+                    ),
+                  ] else ...[
+                    Row(
+                      children: [
+                        if (prodImg.isNotEmpty)
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(5),
+                            child: Image.network(
+                              prodImg,
+                              width: 64,
+                              height: 64,
+                              fit: BoxFit.cover,
+                              errorBuilder: (_, __, ___) => Container(color: Theme.of(context).colorScheme.surfaceContainerHighest, width: 64, height: 64, child: Icon(Icons.image_not_supported, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.4))),
+                            ),
+                          )
+                        else
+                          Container(
                             width: 64,
                             height: 64,
-                            fit: BoxFit.cover,
-                            errorBuilder: (_, __, ___) => Container(color: Theme.of(context).colorScheme.surfaceContainerHighest, width: 64, height: 64, child: Icon(Icons.image_not_supported, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.4))),
+                            decoration: BoxDecoration(color: Theme.of(context).colorScheme.surfaceContainerHighest, borderRadius: BorderRadius.circular(12)),
+                            child: Icon(Icons.image_not_supported, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.4)),
                           ),
-                        )
-                      else
-                        Container(
-                          width: 64,
-                          height: 64,
-                          decoration: BoxDecoration(color: Theme.of(context).colorScheme.surfaceContainerHighest, borderRadius: BorderRadius.circular(12)),
-                          child: Icon(Icons.image_not_supported, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.4)),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(prodName, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14), maxLines: 2, overflow: TextOverflow.ellipsis),
+                              const SizedBox(height: 4),
+                              Text(
+                                Trans.quantityLabel(int.tryParse(prodQty) ?? 1),
+                                style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6), fontSize: 13),
+                              ),
+                            ],
+                          ),
                         ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(prodName, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14), maxLines: 2, overflow: TextOverflow.ellipsis),
-                            const SizedBox(height: 4),
-                            Text(Trans.quantityLabel(int.tryParse(prodQty) ?? 1), style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6), fontSize: 13)),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                  if (items.length > 1) ...[
-                    const SizedBox(height: 8),
-                    Align(
-                      alignment: Alignment.center,
-                      child: Text(Trans.andOtherProducts(items.length - 1), style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6), fontSize: 12, fontStyle: FontStyle.italic)),
+                      ],
                     ),
                   ],
                   // const Divider(height: 24),
@@ -411,11 +452,13 @@ class _OrderListScreenState extends State<OrderListScreen> {
                           }
                         },
                         style: TextButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                          minimumSize: Size.zero,
-                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                          backgroundColor: const Color(0xFF4F46E5),
+                          foregroundColor: Colors.white,
+                          elevation: 0,
+                          padding: const EdgeInsets.symmetric(horizontal: 10),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
                         ),
-                        child: Text(Trans.viewDetails, style: TextStyle(color: Theme.of(context).colorScheme.primary)),
+                        child: Text(Trans.detail, style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
                       )
                     ],
                   ),
@@ -443,5 +486,11 @@ class _OrderListScreenState extends State<OrderListScreen> {
         ),
       ],
     );
+  }
+
+  @override
+  void dispose() {
+    _searchCtrl.dispose();
+    super.dispose();
   }
 }

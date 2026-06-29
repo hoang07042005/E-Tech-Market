@@ -4,7 +4,10 @@
       "Read(//d/E-Tech-Market/e_tech_market_app/**)",
       "Bash(flutter analyze lib/screens/products/products_screen.dart)",
       "Bash(redis-cli -n 0 DEL active_flash_sale)",
-      "Bash(php artisan config:clear)"
+      "Bash(php artisan config:clear)",
+      "Bash(powershell.exe -Command \"\\(Get-Content ''d:/E-Tech-Market/e_tech_market_app/lib/screens/orders/order_detail_screen.dart''\\)[310..335]\")",
+      "Bash(git -C \"d:/E-Tech-Market/e_tech_market_app\" checkout lib/screens/orders/order_detail_screen.dart)",
+      "Bash(flutter analyze lib/screens/orders/order_detail_screen.dart)"
     ]
   }
 }

@@ -7,6 +7,7 @@ import 'controllers/theme_controller.dart';
 import 'screens/auth/login_screen.dart';
 import 'screens/home_screen.dart';
 import 'services/auth_service.dart';
+import 'config/api_config.dart';
 
 import 'screens/maintenance_screen.dart';
 import 'services/store_service.dart';
@@ -18,6 +19,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await ThemeController.instance.initialize();
   await LocaleController.instance.initialize();
+  await ApiConfig.initialize(); // Tự động tìm IP server trong mạng LAN
   runApp(const MyApp());
 }
 

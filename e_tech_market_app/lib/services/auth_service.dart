@@ -90,13 +90,128 @@ class AuthService {
 
   static void _handleError(dynamic e, String defaultMessage) {
     if (e is DioException) {
+      final statusCode = e.response?.statusCode;
       final data = e.response?.data;
-      if (data is Map<String, dynamic>) {
-        final message = data['message'] ?? _findFirstError(data) ?? defaultMessage;
-        throw Exception(message);
+
+      // Lỗi kết nối / timeout
+      if (e.type == DioExceptionType.connectionTimeout ||
+          e.type == DioExceptionType.receiveTimeout ||
+          e.type == DioExceptionType.sendTimeout) {
+        throw Exception('Kết nối máy chủ quá thời gian. Vui lòng thử lại.');
       }
+      if (e.type == DioExceptionType.connectionError) {
+        throw Exception('Không thể kết nối máy chủ. Vui lòng kiểm tra kết nối mạng.');
+      }
+
+      if (data is Map<String, dynamic>) {
+        // Ưu tiên lấy message từ backend rồi dịch sang tiếng Việt
+        final rawMessage = data['message']?.toString() ??
+            _findFirstError(data) ??
+            defaultMessage;
+        throw Exception(_translateError(rawMessage, statusCode, defaultMessage));
+      }
+
+      // Body là String (một số backend trả plain text)
+      if (data is String && data.isNotEmpty) {
+        throw Exception(_translateError(data, statusCode, defaultMessage));
+      }
+
+      // HTTP status code không có body (hoặc body không parse được)
+      if (statusCode == 401) throw Exception('Email hoặc mật khẩu không chính xác. Vui lòng thử lại.');
+      if (statusCode == 403) throw Exception('Bạn không có quyền thực hiện thao tác này.');
+      if (statusCode == 404) throw Exception('Không tìm thấy tài khoản với email này.');
+      if (statusCode == 422) throw Exception('Dữ liệu nhập vào không hợp lệ.');
+      if (statusCode == 429) throw Exception('Bạn đã thử quá nhiều lần. Vui lòng đợi một lúc.');
+      if (statusCode != null && statusCode >= 500) throw Exception('Lỗi máy chủ. Vui lòng thử lại sau.');
     }
-    throw Exception(e is Exception ? e.toString().replaceFirst('Exception: ', '') : defaultMessage);
+    throw Exception(defaultMessage);
+  }
+
+  /// Dịch thông báo lỗi tiếng Anh từ backend sang tiếng Việt
+  static String _translateError(String raw, int? statusCode, String fallback) {
+    final lower = raw.toLowerCase();
+
+    // ── Đăng nhập / Sai mật khẩu ──
+    if (lower.contains('credentials do not match') ||
+        lower.contains('invalid credentials') ||
+        lower.contains('these credentials') ||
+        lower.contains('wrong password') ||
+        lower.contains('password is incorrect') ||
+        lower.contains('incorrect password') ||
+        lower.contains('password mismatch') ||
+        lower.contains('the provided password') ||
+        lower.contains('given password') ||
+        lower.contains('unauthenticated') ||
+        lower.contains('unauthorized') ||
+        statusCode == 401) {
+      return 'Email hoặc mật khẩu không chính xác. Vui lòng thử lại.';
+    }
+
+    // ── Email ──
+    if (lower.contains('email has already been taken') ||
+        lower.contains('email already exists') ||
+        lower.contains('already registered')) {
+      return 'Email này đã được đăng ký. Vui lòng dùng email khác hoặc đăng nhập.';
+    }
+    if (lower.contains('email') && lower.contains('invalid')) {
+      return 'Địa chỉ email không hợp lệ.';
+    }
+    if (lower.contains('email') && lower.contains('required')) {
+      return 'Vui lòng nhập địa chỉ email.';
+    }
+
+    // ── Mật khẩu ──
+    if (lower.contains('password') && (lower.contains('min') || lower.contains('least 8') || lower.contains('at least 6'))) {
+      return 'Mật khẩu phải có ít nhất 6 ký tự.';
+    }
+    if (lower.contains('password') && lower.contains('confirmation')) {
+      return 'Xác nhận mật khẩu không khớp.';
+    }
+    if (lower.contains('current password') || lower.contains('old password')) {
+      return 'Mật khẩu hiện tại không đúng.';
+    }
+
+    // ── Số điện thoại ──
+    if (lower.contains('phone') && lower.contains('taken')) {
+      return 'Số điện thoại này đã được sử dụng.';
+    }
+    if (lower.contains('phone') && lower.contains('invalid')) {
+      return 'Số điện thoại không hợp lệ.';
+    }
+
+    // ── Tài khoản ──
+    if (lower.contains('account') && lower.contains('deactivated') ||
+        lower.contains('account') && lower.contains('disabled') ||
+        lower.contains('account') && lower.contains('banned')) {
+      return 'Tài khoản của bạn đã bị vô hiệu hóa. Vui lòng liên hệ hỗ trợ.';
+    }
+    if (lower.contains('user not found') || lower.contains('account not found')) {
+      return 'Không tìm thấy tài khoản với email này.';
+    }
+    if (lower.contains('too many') || lower.contains('rate limit')) {
+      return 'Bạn đã thử quá nhiều lần. Vui lòng đợi một lúc rồi thử lại.';
+    }
+
+    // ── Validation chung ──
+    if (lower.contains('required')) return 'Vui lòng điền đầy đủ thông tin bắt buộc.';
+    if (lower.contains('invalid')) return 'Thông tin không hợp lệ. Vui lòng kiểm tra lại.';
+
+    // ── Lỗi server ──
+    if (statusCode != null && statusCode >= 500) {
+      return 'Lỗi hệ thống. Vui lòng thử lại sau ít phút.';
+    }
+
+    // Nếu message gốc đã là tiếng Việt (có dấu) thì dùng luôn
+    if (_isVietnamese(raw)) return raw;
+
+    // Fallback
+    return fallback;
+  }
+
+  /// Kiểm tra chuỗi có chứa ký tự tiếng Việt không
+  static bool _isVietnamese(String text) {
+    return RegExp(r'[àáạảãăắặẳẵâấầẩẫèéẹẻẽêếềệểễìíịỉĩòóọỏõôốồộổỗơớờợởỡùúụủũưứừựửữỳýỵỷỹđÀÁẠẢÃĂẮẶẲẴÂẤẦẨẪÈÉẸẺẼÊẾỀỆỂỄÌÍỊỈĨÒÓỌỎÕÔỐỒỘỔỖƠỚỜỢỞỠÙÚỤỦŨƯỨỪỰỬỮỲÝỴỶỸĐ]')
+        .hasMatch(text);
   }
 
   static String? _findFirstError(Map<String, dynamic> body) {
@@ -110,6 +225,7 @@ class AuthService {
     }
     return null;
   }
+
 
   static Future<void> saveSession({
     required String token,

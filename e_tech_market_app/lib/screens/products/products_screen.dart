@@ -25,6 +25,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
   final TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
   String _sortValue = 'default';
+  bool _showSearch = false; // toggle ô tìm kiếm
   bool _useCustomPrice = false;
   bool _priceTouched = false;
   double _maxPrice = 100000000;
@@ -623,75 +624,122 @@ class _ProductsScreenState extends State<ProductsScreen> {
         RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]}.');
   }
 
-  Widget _buildPagBtn(String label, VoidCallback? onPressed, {bool isActive = false}) {
-    final isDisabled = onPressed == null;
-    return GestureDetector(
-      onTap: onPressed,
-      child: Container(
-        constraints: const BoxConstraints(minWidth: 44, minHeight: 44),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        margin: const EdgeInsets.only(left: 6),
-        decoration: BoxDecoration(
-          color: isActive ? const Color(0xFFF26522) : (isDisabled ? Colors.grey.shade100 : Theme.of(context).colorScheme.surface),
-          border: Border.all(color: isActive ? const Color(0xFFF26522) : Colors.grey.shade300),
-          borderRadius: BorderRadius.circular(12),
-        ),
+  // ── PHÂN TRANG ── //
+
+  Widget _buildPageChip(String label, VoidCallback? onTap, {bool isActive = false, bool isEllipsis = false}) {
+    if (isEllipsis) {
+      return Container(
+        width: 36,
         alignment: Alignment.center,
+        child: Text('•••', style: TextStyle(color: Colors.grey.shade400, fontSize: 11, letterSpacing: 1)),
+      );
+    }
+    final disabled = onTap == null;
+    return GestureDetector(
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 150),
+        width: 38,
+        height: 38,
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          color: isActive
+              ? const Color(0xFFF26522)
+              : disabled
+                  ? Colors.transparent
+                  : Theme.of(context).colorScheme.surface,
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(
+            color: isActive
+                ? const Color(0xFFF26522)
+                : disabled
+                    ? Colors.transparent
+                    : Theme.of(context).colorScheme.outline.withOpacity(0.4),
+            width: 1,
+          ),
+          boxShadow: isActive
+              ? [BoxShadow(color: const Color(0xFFF26522).withOpacity(0.3), blurRadius: 8, offset: const Offset(0, 2))]
+              : null,
+        ),
         child: Text(
           label,
           style: TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w600,
-            color: isActive ? Colors.white : (isDisabled ? Colors.grey : Theme.of(context).colorScheme.onSurface),
+            fontSize: 13,
+            fontWeight: isActive ? FontWeight.w700 : FontWeight.w500,
+            color: isActive ? Colors.white : disabled ? Colors.grey.shade400 : Theme.of(context).colorScheme.onSurface,
           ),
         ),
       ),
     );
   }
 
+  Widget _buildNavArrow(IconData icon, VoidCallback? onTap) {
+    final disabled = onTap == null;
+    return GestureDetector(
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 150),
+        width: 40,
+        height: 38,
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          color: disabled ? Colors.transparent : Theme.of(context).colorScheme.surface,
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(
+            color: disabled ? Colors.transparent : Theme.of(context).colorScheme.outline.withOpacity(0.4),
+          ),
+        ),
+        child: Icon(icon, size: 18, color: disabled ? Colors.grey.shade300 : Theme.of(context).colorScheme.onSurface),
+      ),
+    );
+  }
+
   List<Widget> _buildPagButtons() {
     final btns = <Widget>[];
-    final maxBtns = 7;
-    final half = maxBtns ~/ 2;
-    int start = _currentPage - half;
-    if (start < 1) start = 1;
-    int end = start + maxBtns - 1;
-    if (end > _lastPage) end = _lastPage;
-    start = end - maxBtns + 1;
-    if (start < 1) start = 1;
+    const maxNums = 5; // số trang hiển thị giữa
+    final half = maxNums ~/ 2;
+    int start = (_currentPage - half).clamp(1, _lastPage);
+    int end = (start + maxNums - 1).clamp(1, _lastPage);
+    start = (end - maxNums + 1).clamp(1, _lastPage);
 
-    // Prev button
-    btns.add(_buildPagBtn('<', _currentPage > 1 ? () { setState(() => _currentPage--); _fetchProducts(); } : null));
+    // ◀ Prev
+    btns.add(_buildNavArrow(
+      Icons.chevron_left_rounded,
+      _currentPage > 1 ? () { setState(() => _currentPage--); _fetchProducts(); } : null,
+    ));
+    btns.add(const SizedBox(width: 4));
 
-    // First page if needed
+    // Trang 1 + ellipsis trái
     if (start > 1) {
-      btns.add(_buildPagBtn('1', () { setState(() => _currentPage = 1); _fetchProducts(); }));
-      if (start > 2) {
-        btns.add(Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8),
-          child: Text('…', style: TextStyle(color: Colors.grey)),
-        ));
-      }
+      btns.add(_buildPageChip('1', () { setState(() => _currentPage = 1); _fetchProducts(); }));
+      if (start > 2) btns.add(_buildPageChip('', null, isEllipsis: true));
     }
 
-    // Page numbers
+    // Các trang giữa
     for (int i = start; i <= end; i++) {
-      btns.add(_buildPagBtn(i.toString(), () { setState(() => _currentPage = i); _fetchProducts(); }, isActive: i == _currentPage));
+      btns.add(_buildPageChip(
+        i.toString(),
+        () { setState(() => _currentPage = i); _fetchProducts(); },
+        isActive: i == _currentPage,
+      ));
+      if (i < end) btns.add(const SizedBox(width: 4));
     }
 
-    // Last page if needed
+    // Ellipsis phải + trang cuối
     if (end < _lastPage) {
-      if (end < _lastPage - 1) {
-        btns.add(Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8),
-          child: Text('…', style: TextStyle(color: Colors.grey)),
-        ));
-      }
-      btns.add(_buildPagBtn(_lastPage.toString(), () { setState(() => _currentPage = _lastPage); _fetchProducts(); }));
+      if (end < _lastPage - 1) btns.add(_buildPageChip('', null, isEllipsis: true));
+      btns.add(_buildPageChip(
+        _lastPage.toString(),
+        () { setState(() => _currentPage = _lastPage); _fetchProducts(); },
+      ));
     }
 
-    // Next button
-    btns.add(_buildPagBtn('>', _currentPage < _lastPage ? () { setState(() => _currentPage++); _fetchProducts(); } : null));
+    btns.add(const SizedBox(width: 4));
+    // ▶ Next
+    btns.add(_buildNavArrow(
+      Icons.chevron_right_rounded,
+      _currentPage < _lastPage ? () { setState(() => _currentPage++); _fetchProducts(); } : null,
+    ));
 
     return btns;
   }
@@ -1247,51 +1295,10 @@ LayoutBuilder(
         ),
         const SizedBox(height: 20),
 
-        // Search
-        Container(
-          height: 48,
-          decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.surface,
-            border: Border.all(color: Theme.of(context).colorScheme.outline, width: 0.15),
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: Row(
-            children: [
-              Expanded(
-                child: TextField(
-                  controller: _searchController,
-                  decoration: InputDecoration(
-                    hintText: Trans.searchProductsPlaceholder,
-                    hintStyle: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant),
-                    border: InputBorder.none,
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                    suffixIcon: _searchQuery.isNotEmpty
-                        ? IconButton(
-                            icon: Icon(Icons.clear, color: Theme.of(context).colorScheme.onSurfaceVariant, size: 18),
-                            onPressed: () {
-                              _searchController.clear();
-                              _onSearchChanged('');
-                            },
-                          )
-                        : null,
-                  ),
-                  textInputAction: TextInputAction.search,
-                  onChanged: _onSearchChanged,
-                  onSubmitted: (val) => _fetchProducts(),
-                ),
-              ),
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16),
-                child: Icon(Icons.search, color: Theme.of(context).colorScheme.onSurfaceVariant),
-              ),
-            ],
-          ),
-        ),
-        const SizedBox(height: 16),
-
-        // Sort and Filter Row
+        // ── TOOLBAR: Sort + Filter + Search toggle ──
         Row(
           children: [
+            // Sắp xếp
             Text(
               Trans.sort,
               style: TextStyle(
@@ -1335,7 +1342,8 @@ LayoutBuilder(
                 ),
               ),
             ),
-            const SizedBox(width: 12),
+            const SizedBox(width: 8),
+            // Bộ lọc
             SizedBox(
               height: 40,
               child: OutlinedButton.icon(
@@ -1352,13 +1360,103 @@ LayoutBuilder(
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                ),
+              ),
+            ),
+            const SizedBox(width: 8),
+            // Icon toggle tìm kiếm
+            AnimatedContainer(
+              duration: const Duration(milliseconds: 200),
+              height: 40,
+              width: 40,
+              decoration: BoxDecoration(
+                color: _showSearch
+                    ? const Color(0xFFF26522)
+                    : Theme.of(context).colorScheme.surface,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: _showSearch
+                      ? const Color(0xFFF26522)
+                      : Theme.of(context).colorScheme.outline.withOpacity(0.4),
+                  width: 1,
+                ),
+              ),
+              child: IconButton(
+                padding: EdgeInsets.zero,
+                onPressed: () {
+                  setState(() {
+                    _showSearch = !_showSearch;
+                    if (!_showSearch) {
+                      _searchController.clear();
+                      _onSearchChanged('');
+                    }
+                  });
+                },
+                icon: Icon(
+                  Icons.search_rounded,
+                  size: 20,
+                  color: _showSearch ? Colors.white : Theme.of(context).colorScheme.onSurface,
                 ),
               ),
             ),
           ],
         ),
-        const SizedBox(height: 24),
+
+        // ── Ô tìm kiếm (hiện/ẩn) ──
+        AnimatedSwitcher(
+          duration: const Duration(milliseconds: 250),
+          transitionBuilder: (child, anim) => FadeTransition(
+            opacity: anim,
+            child: SizeTransition(sizeFactor: anim, axisAlignment: -1, child: child),
+          ),
+          child: _showSearch
+              ? Padding(
+                  key: const ValueKey('search_bar'),
+                  padding: const EdgeInsets.only(top: 10),
+                  child: Container(
+                    height: 48,
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.surface,
+                      border: Border.all(color: const Color(0xFFF26522), width: 1.2),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: TextField(
+                            controller: _searchController,
+                            autofocus: true,
+                            decoration: InputDecoration(
+                              hintText: Trans.searchProductsPlaceholder,
+                              hintStyle: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant),
+                              border: InputBorder.none,
+                              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                            ),
+                            textInputAction: TextInputAction.search,
+                            onChanged: _onSearchChanged,
+                            onSubmitted: (val) => _fetchProducts(),
+                          ),
+                        ),
+                        // Nút X để đóng ô tìm kiếm
+                        IconButton(
+                          onPressed: () {
+                            setState(() {
+                              _showSearch = false;
+                              _searchController.clear();
+                              _onSearchChanged('');
+                            });
+                          },
+                          icon: const Icon(Icons.close_rounded, size: 20, color: Color(0xFFF26522)),
+                        ),
+                      ],
+                    ),
+                  ),
+                )
+              : const SizedBox.shrink(key: ValueKey('search_hidden')),
+        ),
+
+        const SizedBox(height: 16),
 
         // Products List
         if (_isLoading)
@@ -1417,27 +1515,53 @@ LayoutBuilder(
           
         if (_lastPage > 1)
           Container(
-            padding: const EdgeInsets.symmetric(vertical: 24),
+            margin: const EdgeInsets.fromLTRB(16, 8, 16, 24),
+            padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.surface,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: Theme.of(context).colorScheme.outline.withOpacity(0.2)),
+            ),
             child: Column(
               children: [
-                // Page info: "Trang X / Y"
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 16),
-                  child: Text(
-                    'Trang $_currentPage / $_lastPage',
-                    style: TextStyle(
-                      color: Colors.grey.shade600,
-                      fontSize: 14,
-                    ),
+                // Thanh tiến trình
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(4),
+                  child: LinearProgressIndicator(
+                    value: _lastPage > 0 ? _currentPage / _lastPage : 0,
+                    minHeight: 3,
+                    backgroundColor: Colors.grey.shade200,
+                    valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFFF26522)),
                   ),
                 ),
-                // Pagination buttons
-                SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: _buildPagButtons(),
-                  ),
+                const SizedBox(height: 14),
+                // Nhãn trang
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Trang $_currentPage / $_lastPage',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.grey.shade500,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    Text(
+                      '${_products.length} sản phẩm',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.grey.shade500,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 14),
+                // Các nút phân trang
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: _buildPagButtons(),
                 ),
               ],
             ),

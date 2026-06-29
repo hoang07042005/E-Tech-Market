@@ -2,10 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../utils/app_snackbar.dart';
-import '../../../config/api_config.dart';
 import '../../../config/dio_client.dart';
-
-const String _baseUrl = String.fromEnvironment('API_BASE_URL', defaultValue: ApiConfig.apiBaseUrl);
 
 const String _fallbackStoreName = 'E-Tech Market';
 const String _fallbackPhone = '1900 8888';

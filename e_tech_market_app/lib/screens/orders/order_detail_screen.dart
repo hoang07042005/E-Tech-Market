@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
+import '../../../services/auth_service.dart';
 import '../../../services/order_service.dart';
 import '../../../utils/network_utils.dart';
 import '../../../utils/translation.dart';
@@ -22,6 +23,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
   bool _loading = true;
   String? _error;
   Map<String, dynamic>? _order;
+  Map<String, dynamic>? _currentUser;
   bool _actionBusy = false;
   String? _actionError;
   String _returnContent = '';
@@ -40,9 +42,14 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
     });
 
     try {
-      final result = await OrderService.fetchOrderDetail(widget.orderId);
+      // Load order and current user in parallel
+      final results = await Future.wait([
+        OrderService.fetchOrderDetail(widget.orderId),
+        AuthService.getCurrentUser(),
+      ]);
       setState(() {
-        _order = result;
+        _order = results[0] as Map<String, dynamic>?;
+        _currentUser = results[1] as Map<String, dynamic>?;
       });
     } catch (e) {
       setState(() {
@@ -220,25 +227,21 @@ String _formatMoney(dynamic value) {
       padding: const EdgeInsets.all(16),
       children: [
         // Status Card
-        _buildStatusCard(statusColor, statusLabel),
+        _buildStatusCard(statusColor, statusLabel, order),
+        const SizedBox(height: 16),
+
+        // Shipping Info Card
+        _buildShippingCard(order),
         const SizedBox(height: 16),
         
         // Products Card
         _buildProductsCard(order),
         const SizedBox(height: 16),
         
-        // Shipping Info Card
-        _buildShippingCard(order),
-        const SizedBox(height: 16),
-        
-        // Payment Info Card
+        // Payment Info Card (includes amounts & payment details)
         _buildPaymentCard(order),
         const SizedBox(height: 16),
-        
-        // Price Summary Card
-        _buildSummaryCard(order),
-        const SizedBox(height: 16),
-        
+
         // Actions
         if (_actionError != null) ...[
           Container(
@@ -271,58 +274,23 @@ String _formatMoney(dynamic value) {
     );
   }
 
-  Widget _buildStatusCard(Color statusColor, String statusLabel) {
+  Widget _buildStatusCard(Color statusColor, String statusLabel, Map<String, dynamic> order) {
     final colorScheme = Theme.of(context).colorScheme;
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: colorScheme.surface,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: colorScheme.outline, width: 0.15),
-      ),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: statusColor.withValues(alpha: 0.15),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Icon(Icons.local_shipping_outlined, color: statusColor, size: 28),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Trạng thái đơn hàng',
-                  style: TextStyle(
-                    color: colorScheme.onSurface,
-                    fontSize: 13,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  statusLabel,
-                  style: TextStyle(
-                    color: statusColor,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+    final status = (order['status'] ?? '').toString().toLowerCase();
 
-  Widget _buildProductsCard(Map<String, dynamic> order) {
-    final colorScheme = Theme.of(context).colorScheme;
-    final items = (order['items'] as List<dynamic>?) ?? [];
-    
+    // Calculate step from status value (like TypeScript)
+    int currentStep = 1;
+    if (status == 'processing') currentStep = 2;
+    else if (status == 'paid') currentStep = 3;
+    else if (status == 'shipped') currentStep = 4;
+    else if (status == 'delivered') currentStep = 5;
+    else if (status == 'completed') currentStep = 6;
+    else if (status == 'returned') currentStep = 7;
+    else if (status == 'cancelled') currentStep = 0;
+
+    // Check if has return request
+    final hasReturnRequest = order['return_request'] != null;
+
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -335,29 +303,177 @@ String _formatMoney(dynamic value) {
         children: [
           Row(
             children: [
-              Icon(Icons.shopping_bag_outlined, color: Colors.orange, size: 22),
-              const SizedBox(width: 8),
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(Icons.local_shipping_outlined, color: statusColor, size: 28),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Trạng thái đơn hàng',
+                      style: TextStyle(
+                        color: colorScheme.onSurface,
+                        fontSize: 13,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      statusLabel,
+                      style: TextStyle(
+                        color: statusColor,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          // Only show step tracker if NOT in final state (completed/returned)
+          if (status != 'cancelled' && status != 'completed' && status != 'returned') ...[
+            const SizedBox(height: 16),
+            _buildOrderStepsTracker(currentStep: currentStep, hasReturnRequest: hasReturnRequest),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _buildOrderStepsTracker({required int currentStep, bool hasReturnRequest = false}) {
+    // Build steps list - show Hoàn trả instead of Hoàn thành if has return request
+    final List<Map<String, dynamic>> baseSteps = [
+      {'value': 'pending', 'label': 'Chờ XN', 'step': 1},
+      {'value': 'processing', 'label': 'Đã XN', 'step': 2},
+      {'value': 'paid', 'label': 'Chuẩn bị', 'step': 3},
+      {'value': 'shipped', 'label': 'Đang giao', 'step': 4},
+      {'value': 'delivered', 'label': 'Đã giao', 'step': 5},
+    ];
+
+    // Add final step: Hoàn thành or Hoàn trả (if has return request)
+    final lastStep = hasReturnRequest
+        ? {'value': 'returned', 'label': 'Hoàn trả', 'step': 7}
+        : {'value': 'completed', 'label': 'Đã HT', 'step': 6};
+
+    final stepsList = [...baseSteps, lastStep];
+
+    const Color activeStepColor = Color(0xFF10B981);
+
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 4),
+      padding: const EdgeInsets.symmetric(vertical: 0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: List.generate(stepsList.length, (index) {
+          final sData = stepsList[index];
+          final sStep = sData['step'] as int;
+          final sLabel = sData['label'] as String;
+
+          final isDone = currentStep >= sStep;
+          final isActive = currentStep == sStep;
+
+          return Expanded(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Row(
+                  children: [
+                    Expanded(
+                      child: Divider(
+                        color: index == 0 ? Colors.transparent : (isDone ? activeStepColor : const Color(0xFFE2E8F0)),
+                        thickness: 2.2,
+                      ),
+                    ),
+                    Container(
+                      width: 22,
+                      height: 22,
+                      decoration: BoxDecoration(
+                        color: isActive ? activeStepColor : (isDone ? activeStepColor.withValues(alpha: 0.12) : Colors.white),
+                        border: Border.all(color: isDone ? activeStepColor : const Color(0xFFCBD5E1), width: 2),
+                        shape: BoxShape.circle,
+                      ),
+                      child: Center(
+                        child: isDone && !isActive
+                            ? const Icon(Icons.check, size: 12, color: activeStepColor)
+                            : Text(
+                                '${index + 1}',
+                                style: TextStyle(
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.bold,
+                                  color: isActive ? Colors.white : const Color(0xFF64748B),
+                                ),
+                              ),
+                      ),
+                    ),
+                    Expanded(
+                      child: Divider(
+                        color: index == stepsList.length - 1 ? Colors.transparent : (currentStep > sStep ? activeStepColor : const Color(0xFFE2E8F0)),
+                        thickness: 2.2,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  sLabel,
+                  style: TextStyle(
+                    fontSize: 10,
+                    fontWeight: isActive ? FontWeight.bold : FontWeight.w500,
+                    color: isActive ? activeStepColor : const Color(0xFF64748B),
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ],
+            ),
+          );
+        }),
+      ),
+    );
+  }
+
+  Widget _buildProductsCard(Map<String, dynamic> order) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final items = (order['items'] as List<dynamic>?) ?? [];
+
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: colorScheme.surface,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: colorScheme.outline, width: 0.15),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
               Text(
-                'Sản phẩm',
+                Trans.productList,
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
-                  fontSize: 16,
+                  fontSize: 14,
                   color: colorScheme.onSurface,
                 ),
               ),
-              const Spacer(),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                 decoration: BoxDecoration(
-                  color: colorScheme.primary.withValues(alpha: 0.1),
+                  color: colorScheme.surface,
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Text(
-                  '${items.length} sản phẩm',
+                  '(${items.length})',
                   style: TextStyle(
-                    color: colorScheme.primary,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 11,
+                    color: colorScheme.onSurface,
                   ),
                 ),
               ),
@@ -390,96 +506,69 @@ String _formatMoney(dynamic value) {
       }
     }
 
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: colorScheme.surface,
-        borderRadius: BorderRadius.circular(12),
-        // Thêm shadow nhẹ để item nổi bật và cao cấp hơn
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.03),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start, // Căn đỉnh để ảnh và chữ thẳng hàng phía trên
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // 1. Hình ảnh sản phẩm
+          // 1. Hình ảnh sản phẩm - 56x56 như admin
           ClipRRect(
             borderRadius: BorderRadius.circular(8),
-            child: imageUrl.isNotEmpty
-                ? Image.network(
-                    imageUrl,
-                    width: 72, // Tăng nhẹ kích thước ảnh cho rõ ràng hơn
-                    height: 72,
-                    fit: BoxFit.cover,
-                    errorBuilder: (_, __, ___) => _buildImagePlaceholder(),
-                  )
-                : _buildImagePlaceholder(),
+            child: Container(
+              width: 56,
+              height: 56,
+              decoration: BoxDecoration(
+                color: const Color(0xFFF1F5F9),
+                border: Border.all(color: const Color(0xFFE2E8F0)),
+              ),
+              child: imageUrl.isNotEmpty
+                  ? Image.network(
+                      imageUrl,
+                      width: 56,
+                      height: 56,
+                      fit: BoxFit.cover,
+                      errorBuilder: (_, __, ___) => const Icon(Icons.image_rounded, color: Color(0xFF94A3B8), size: 20),
+                    )
+                  : const Icon(Icons.image_rounded, color: Color(0xFF94A3B8), size: 20),
+            ),
           ),
           const SizedBox(width: 12),
 
-          // 2. Khu vực thông tin chi tiết (Chiếm trọn phần không gian còn lại)
+          // 2. Thông tin sản phẩm
           Expanded(
-            child: Container(
-              constraints: const BoxConstraints(minHeight: 72),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Tên sản phẩm
-                  Text(
-                    name,
-                    style: TextStyle(
-                      fontWeight: FontWeight.w600, 
-                      color: colorScheme.onSurface,
-                      fontSize: 14,
-                    ),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  name,
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 13,
+                    color: colorScheme.onSurface,
                   ),
-                  if (variantLabel != null)
-                    Padding(
-                      padding: const EdgeInsets.only(top: 2),
-                      child: Text(
-                        variantLabel,
-                        style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600,
-                          color: colorScheme.onSurface,
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                if (variantLabel != null)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 2),
+                    child: Text(
+                      variantLabel,
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                        color: colorScheme.onSurface,
                       ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
-                  
-                  const SizedBox(height: 8),
-                  // Hàng hiển thị Giá và Số lượng phía dưới
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      // Giá tiền (Đưa xuống dưới giúp hiển thị được số lớn mà không bị đè chữ)
-                      Text(
-                        '${total}đ',
-                        style: TextStyle(fontWeight: FontWeight.bold, color: Color(0xFFF26522), fontSize: 16),
-                      ),
-                      
-                      // Số lượng bên góc phải đáy
-                      Text(
-                        'x$quantity', // Viết dạng 'x1' trông sẽ gọn gàng và chuẩn e-commerce hơn
-                        style: TextStyle(
-                          color: colorScheme.onSurface.withOpacity(0.6),
-                          fontSize: 13,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ],
                   ),
-                ],
-              ),
+                const SizedBox(height: 4),
+                Text(
+                  'SL: $quantity × ${total}₫',
+                  style: const TextStyle(color: Color(0xFF64748B), fontSize: 12, fontWeight: FontWeight.w500),
+                ),
+              ],
             ),
           ),
         ],
@@ -503,6 +592,40 @@ String _formatMoney(dynamic value) {
 
   Widget _buildShippingCard(Map<String, dynamic> order) {
     final colorScheme = Theme.of(context).colorScheme;
+    // Try multiple paths for customer info (API may return different structures)
+    String customerName = '—';
+    String customerEmail = '—';
+
+    // Try order['customer']
+    var customer = order['customer'];
+    if (customer is Map) {
+      customerName = customer['name']?.toString() ?? '—';
+      customerEmail = customer['email']?.toString() ?? '—';
+    }
+    // Fallback: try order['user']
+    if (customerName == '—' || customerEmail == '—') {
+      final user = order['user'];
+      if (user is Map) {
+        if (customerName == '—') customerName = user['name']?.toString() ?? '—';
+        if (customerEmail == '—') customerEmail = user['email']?.toString() ?? '—';
+      }
+    }
+    // Fallback: try direct fields
+    if (customerName == '—') {
+      customerName = order['customer_name']?.toString() ?? order['user_name']?.toString() ?? '—';
+    }
+    if (customerEmail == '—') {
+      customerEmail = order['customer_email']?.toString() ?? order['user_email']?.toString() ?? '—';
+    }
+    // Final fallback: use current logged in user from local storage
+    if (customerName == '—' && _currentUser != null) {
+      customerName = _currentUser!['name']?.toString() ?? '—';
+    }
+    if (customerEmail == '—' && _currentUser != null) {
+      customerEmail = _currentUser!['email']?.toString() ?? '—';
+    }
+
+    // Shipping info
     final name = order['shipping_name']?.toString() ?? '—';
     final phone = order['shipping_phone']?.toString() ?? '—';
     final parts = [
@@ -514,7 +637,7 @@ String _formatMoney(dynamic value) {
     final address = parts.isEmpty ? '—' : parts.join(', ');
 
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: colorScheme.surface,
         borderRadius: BorderRadius.circular(12),
@@ -523,66 +646,59 @@ String _formatMoney(dynamic value) {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              Icon(Icons.location_on_outlined, color: Colors.orange, size: 22),
-              const SizedBox(width: 8),
-              Text(
-                'Địa chỉ nhận hàng',
+          // Customer info (người đặt)
+          Text(
+                "Thông tin khách hàng",
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
-                  fontSize: 16,
+                  fontSize: 14,
                   color: colorScheme.onSurface,
                 ),
               ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          _buildInfoRow('Người nhận', name, Icons.person_outline),
+              
+          const Divider(height: 16, color: Color(0xFFF1F5F9)),
+          _buildInfoRow(Trans.customerNameLabel, customerName),
+          _buildInfoRow(Trans.customerEmailLabel, customerEmail),
+          const Divider(height: 16, color: Color(0xFFF1F5F9)),
+          // Shipping info (người nhận)
+          _buildInfoRow(Trans.receiverNameLabel, name),
           const SizedBox(height: 8),
-          _buildInfoRow('Số điện thoại', phone, Icons.phone_outlined),
+          _buildInfoRow(Trans.phone, phone),
           const SizedBox(height: 8),
-          _buildInfoRow('Địa chỉ', address, Icons.home_outlined),
+          _buildInfoRow(Trans.shippingAddressLabel, address),
         ],
       ),
     );
   }
 
-  Widget _buildInfoRow(String label, String value, IconData icon) {
-    final colorScheme = Theme.of(context).colorScheme;
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Icon(icon, size: 18, color: colorScheme.onSurface),
-        const SizedBox(width: 8),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                label,
-                style: TextStyle(
-                  color: colorScheme.onSurface.withValues(alpha: 0.6),
-                  fontSize: 12,
-                ),
-              ),
-              const SizedBox(height: 2),
-              Text(
-                value,
-                style: TextStyle(
-                  color: colorScheme.onSurface,
-                  fontSize: 14,
-                ),
-              ),
-            ],
+  Widget _buildInfoRow(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4.0),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            width: 110,
+            child: Text(label, style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 13)),
           ),
-        ),
-      ],
+          Expanded(
+            child: Text(value, style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13, color: Theme.of(context).colorScheme.onSurface)),
+          ),
+        ],
+      ),
     );
   }
 
   Widget _buildPaymentCard(Map<String, dynamic> order) {
     final colorScheme = Theme.of(context).colorScheme;
+
+    // Amounts
+    final subtotal = _formatMoney(order['subtotal_amount']);
+    final discount = _formatMoney(order['discount_amount']);
+    final shipping = _formatMoney(order['shipping_fee']);
+    final total = _formatMoney(order['total_amount']);
+
+    // Payment info
     final payment = order['payment'] as Map<String, dynamic>?;
     final method = payment?['method']?.toString() ?? '—';
     final status = payment?['status']?.toString() ?? '—';
@@ -590,7 +706,7 @@ String _formatMoney(dynamic value) {
     final paidAt = _formatDateTime(payment?['paid_at']?.toString());
 
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: colorScheme.surface,
         borderRadius: BorderRadius.circular(12),
@@ -599,81 +715,86 @@ String _formatMoney(dynamic value) {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              Icon(Icons.payment_outlined, color: Colors.orange, size: 22),
-              const SizedBox(width: 8),
-              Text(
-                'Thanh toán',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
-                  color: colorScheme.onSurface,
-                ),
-              ),
-            ],
+          Text(
+            Trans.paymentCost,
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 14,
+              color: colorScheme.onSurface,
+            ),
           ),
-          const SizedBox(height: 16),
-          _buildInfoRow('Phương thức', _payLabel(method), Icons.account_balance_wallet_outlined),
-          const SizedBox(height: 8),
-          _buildInfoRow('Trạng thái', status.isNotEmpty ? status : '—', Icons.check_circle_outline),
-          const SizedBox(height: 8),
-          _buildInfoRow('Mã giao dịch', transactionCode, Icons.receipt_long_outlined),
-          const SizedBox(height: 8),
-          _buildInfoRow('Thời gian thanh toán', paidAt, Icons.access_time),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildSummaryCard(Map<String, dynamic> order) {
-    final colorScheme = Theme.of(context).colorScheme;
-    final subtotal = _formatMoney(order['subtotal_amount']);
-    final discount = _formatMoney(order['discount_amount']);
-    final shipping = _formatMoney(order['shipping_fee']);
-    final total = _formatMoney(order['total_amount']);
-
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: colorScheme.surface,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: colorScheme.outline, width: 0.15),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Icon(Icons.receipt_long_outlined, color: Colors.orange, size: 22),
-              const SizedBox(width: 8),
-              Text(
-                'Tổng kết đơn hàng',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
-                  color: colorScheme.onSurface,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          _buildPriceRow('Tổng tiền hàng', '${subtotal}đ'),
-          const SizedBox(height: 8),
-          _buildPriceRow('Giảm giá', '-${discount}đ', isDiscount: true),
-          const SizedBox(height: 8),
-          _buildPriceRow('Phí vận chuyển', '${shipping}đ'),
+          const SizedBox(height: 12),
+          // Amount rows like admin
+          _buildAmountRow('Tạm tính', '$subtotal₫'),
+          const SizedBox(height: 6),
+          _buildAmountRow('Phí vận chuyển', '$shipping₫'),
+          const SizedBox(height: 6),
+          _buildAmountRow('Mã giảm giá', '-$discount₫', isDiscount: true),
           Padding(
-            padding: const EdgeInsets.symmetric(vertical: 12),
-            child: Divider(color: colorScheme.outlineVariant),
+            padding: const EdgeInsets.symmetric(vertical: 8),
+            child: Divider(height: 1, color: const Color(0xFFF1F5F9)),
           ),
-          _buildPriceRow('Tổng thanh toán', '${total}đ', isTotal: true),
+          _buildAmountRow('Thành tiền', '$total₫', isTotal: true),
+          const SizedBox(height: 8),
+          // Payment method
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(Trans.paymentMethod, style: TextStyle(color: colorScheme.onSurface, fontSize: 13)),
+              Flexible(
+                child: Text(
+                  _payLabel(method),
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: colorScheme.onSurface),
+                  textAlign: TextAlign.end,
+                ),
+              ),
+            ],
+          ),
+          // Payment status (if available)
+          if (status.isNotEmpty) ...[
+            const SizedBox(height: 8),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text('Trạng thái', style: TextStyle(color: colorScheme.onSurface, fontSize: 13)),
+                Flexible(
+                  child: Text(status, style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13, color: colorScheme.onSurface), textAlign: TextAlign.end),
+                ),
+              ],
+            ),
+          ],
+          // Transaction code
+          if (transactionCode != '—') ...[
+            const SizedBox(height: 8),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text('Mã giao dịch', style: TextStyle(color: colorScheme.onSurface, fontSize: 13)),
+                Flexible(
+                  child: Text(transactionCode, style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13, color: colorScheme.onSurface), textAlign: TextAlign.end),
+                ),
+              ],
+            ),
+          ],
+          // Paid at
+          if (paidAt != '—') ...[
+            const SizedBox(height: 8),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text('Thời gian', style: TextStyle(color: colorScheme.onSurface, fontSize: 13)),
+                Flexible(
+                  child: Text(paidAt, style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13, color: colorScheme.onSurface), textAlign: TextAlign.end),
+                ),
+              ],
+            ),
+          ],
         ],
       ),
     );
   }
 
-  Widget _buildPriceRow(String label, String value, {bool isTotal = false, bool isDiscount = false}) {
+  Widget _buildAmountRow(String label, String value, {bool isDiscount = false, bool isTotal = false}) {
     final colorScheme = Theme.of(context).colorScheme;
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -681,16 +802,17 @@ String _formatMoney(dynamic value) {
         Text(
           label,
           style: TextStyle(
-            color: colorScheme.onSurface,
-            fontSize: isTotal ? 16 : 14,
+            fontSize: isTotal ? 14 : 13,
+            fontWeight: isTotal ? FontWeight.bold : FontWeight.normal,
+            color: isTotal ? colorScheme.primary : colorScheme.onSurface,
           ),
         ),
         Text(
           value,
           style: TextStyle(
-            fontWeight: isTotal ? FontWeight.bold : FontWeight.normal,
-            fontSize: isTotal ? 18 : 14,
-            color: isTotal ? Colors.red : (isDiscount ? Colors.green : colorScheme.onSurface),
+            fontSize: isTotal ? 15 : 13,
+            fontWeight: isTotal ? FontWeight.bold : FontWeight.w500,
+            color: isDiscount ? Colors.green : (isTotal ? const Color(0xFFFF2424) : colorScheme.onSurface),
           ),
         ),
       ],
@@ -896,7 +1018,7 @@ String _formatMoney(dynamic value) {
     if (history is! List || history.isEmpty) return const SizedBox.shrink();
 
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: colorScheme.surface,
         borderRadius: BorderRadius.circular(12),
@@ -917,42 +1039,57 @@ String _formatMoney(dynamic value) {
                   color: colorScheme.onSurface,
                 ),
               ),
+              const Spacer(),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                decoration: BoxDecoration(
+                  color: colorScheme.surface,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Text('${history.length} lần', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: colorScheme.onSurface)),
+              ),
             ],
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 12),
           ...history.map<Widget>((entry) {
-            final from = entry['from_status']?.toString() ?? '—';
-            final to = entry['to_status']?.toString() ?? '—';
-            final changedAt = _formatDateTime(entry['changed_at']?.toString());
-            final note = entry['note']?.toString();
+            // Use from_label/to_label like admin (or fallback to from_status/to_status)
+            final fromLabel = entry['from_label']?.toString() ?? entry['from_status']?.toString() ?? '—';
+            final toLabel = entry['to_label']?.toString() ?? entry['to_status']?.toString() ?? '—';
+            final changedAt = entry['changed_at']?.toString() ?? '';
+            final note = entry['note']?.toString() ?? '';
             final changedByName = entry['changed_by']?['name']?.toString() ?? 'Hệ thống';
+
             return Container(
-              margin: const EdgeInsets.only(bottom: 12),
+              margin: const EdgeInsets.only(bottom: 8),
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
                 color: colorScheme.surface,
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: const Color(0xFFE2E8F0)),
               ),
-              child: Column(
+              child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    '$from → $to',
-                    style: TextStyle(fontWeight: FontWeight.bold, color: colorScheme.onSurface),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          '$fromLabel  ➔  $toLabel',
+                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: colorScheme.onSurface),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          '${_formatDateTime(changedAt)} • $changedByName',
+                          style: TextStyle(fontSize: 11, color: colorScheme.onSurface, fontWeight: FontWeight.w500),
+                        ),
+                        if (note.trim().isNotEmpty) ...[
+                          const SizedBox(height: 6),
+                          Text('Ghi chú: $note', style: TextStyle(fontSize: 12, color: const Color(0xFF475569), fontStyle: FontStyle.italic)),
+                        ],
+                      ],
+                    ),
                   ),
-                  const SizedBox(height: 4),
-                  Text(
-                    'Thay đổi: $changedAt',
-                    style: TextStyle(color: colorScheme.onSurface.withValues(alpha: 0.6), fontSize: 12),
-                  ),
-                  Text(
-                    'Người thay đổi: $changedByName',
-                    style: TextStyle(color: colorScheme.onSurface.withValues(alpha: 0.6), fontSize: 12),
-                  ),
-                  if (note != null && note.isNotEmpty) ...[
-                    const SizedBox(height: 4),
-                    Text(Trans.noteLabel(note), style: TextStyle(color: colorScheme.onSurface)),
-                  ],
                 ],
               ),
             );

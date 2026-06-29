@@ -43,4 +43,8 @@
             <data android:mimeType="text/plain"/>
         </intent>
     </queries>
+    <!-- Quyền đọc thông tin WiFi để tự động tìm IP server -->
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.INTERNET"/>
 </manifest>

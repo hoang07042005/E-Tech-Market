@@ -237,7 +237,7 @@ class Trans {
   static String quantityLabel(int qty) => isVietnamese ? 'Số lượng: $qty' : 'Quantity: $qty';
   static String andOtherProducts(int count) => isVietnamese ? 'và $count sản phẩm khác' : 'and $count other products';
   static String get totalLabel => isVietnamese ? 'Tổng tiền: ' : 'Total: ';
-  static String get viewDetails => isVietnamese ? 'Xem chi tiết' : 'View details';
+  static String get detail => isVietnamese ? 'Chi tiết' : 'Details';
   static String pageOf(int current, int last) => isVietnamese ? 'Trang $current / $last' : 'Page $current / $last';
 
   // Order detail screen translations
