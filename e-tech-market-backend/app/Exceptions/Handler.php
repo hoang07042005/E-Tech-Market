@@ -23,6 +23,70 @@ class Handler extends ExceptionHandler
     ];
 
     /**
+     * Render an exception into an HTTP response.
+     */
+    public function render($request, Throwable $e)
+    {
+        // Nếu là request gọi từ API, chuẩn hóa toàn bộ response lỗi về dạng JSON
+        if ($request->is('api/*') || $request->wantsJson()) {
+            
+            // Lỗi Validation
+            if ($e instanceof \Illuminate\Validation\ValidationException) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Dữ liệu không hợp lệ.',
+                    'errors' => $e->errors()
+                ], 422);
+            }
+
+            // Lỗi Authentication (chưa đăng nhập)
+            if ($e instanceof \Illuminate\Auth\AuthenticationException) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Bạn chưa đăng nhập hoặc phiên đã hết hạn.',
+                ], 401);
+            }
+
+            // Lỗi 403 Forbidden
+            if ($e instanceof \Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Bạn không có quyền thực hiện hành động này.',
+                ], 403);
+            }
+
+            // Lỗi Không tìm thấy tài nguyên (ModelNotFound, RouteNotFound)
+            if ($e instanceof \Illuminate\Database\Eloquent\ModelNotFoundException || 
+                $e instanceof \Symfony\Component\HttpKernel\Exception\NotFoundHttpException) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Không tìm thấy dữ liệu yêu cầu.',
+                ], 404);
+            }
+
+            // Các lỗi mặc định khác của HTTP (405, 429...)
+            if ($e instanceof \Symfony\Component\HttpKernel\Exception\HttpException) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => $e->getMessage() ?: 'Lỗi HTTP từ máy chủ.',
+                ], $e->getStatusCode());
+            }
+
+            // Lỗi Server 500 (chỉ hiển thị chi tiết ở môi trường local)
+            $statusCode = 500;
+            return response()->json([
+                'status' => 'error',
+                'message' => config('app.debug') ? $e->getMessage() : 'Đã có lỗi nghiêm trọng xảy ra từ phía máy chủ.',
+                'exception' => config('app.debug') ? class_basename($e) : null,
+                'file' => config('app.debug') ? $e->getFile() : null,
+                'line' => config('app.debug') ? $e->getLine() : null,
+            ], $statusCode);
+        }
+
+        return parent::render($request, $e);
+    }
+
+    /**
      * Register the exception handling callbacks for the application.
      */
     public function register(): void
@@ -30,73 +94,5 @@ class Handler extends ExceptionHandler
         $this->reportable(function (Throwable $e) {
             //
         });
-
-        // Custom rendering for ValidationException
-        $this->renderable(function (ValidationException $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Validation failed',
-                'errors' => $e->errors(),
-            ], 422);
-        });
-
-        // Custom rendering for AuthenticationException
-        $this->renderable(function (AuthenticationException $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Unauthenticated',
-            ], 401);
-        });
-
-        // Custom rendering for AccessDeniedHttpException
-        $this->renderable(function (AccessDeniedHttpException $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Access denied',
-            ], 403);
-        });
-
-        // Custom rendering for NotFoundHttpException
-        $this->renderable(function (NotFoundHttpException $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Resource not found',
-            ], 404);
-        });
-    }
-
-    /**
-     * Prepare a JSON response for the given exception.
-     */
-    protected function prepareJsonResponse($request, Throwable $e)
-    {
-        $status = $this->isHttpException($e) ? $e->getStatusCode() : 500;
-
-        return response()->json([
-            'success' => false,
-            'message' => app()->environment('production')
-                ? 'Server error occurred'
-                : $this->getMessage($e),
-            'debug' => !app()->environment('production') ? [
-                'exception' => get_class($e),
-                'file' => $e->getFile(),
-                'line' => $e->getLine(),
-                'trace' => $e->getTraceAsString(),
-            ] : null,
-        ], $status);
-    }
-
-    /**
-     * Get the message from the exception.
-     */
-    private function getMessage(Throwable $e): string
-    {
-        $message = $e->getMessage();
-
-        if (empty($message)) {
-            return 'No error message available';
-        }
-
-        return $message;
     }
 }

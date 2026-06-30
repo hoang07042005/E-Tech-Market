@@ -42,7 +42,7 @@ class CouponTest extends TestCase
             'end_at' => Carbon::now()->addDay(),
         ]);
 
-        $response = $this->postJson('/api/coupons/apply', [
+        $response = $this->postJson('/api/v1/coupons/apply', [
             'code' => 'ETECH20',
             'order_amount' => 500000,
         ]);
@@ -64,7 +64,7 @@ class CouponTest extends TestCase
             'end_at' => Carbon::now()->addDay(),
         ]);
 
-        $response = $this->postJson('/api/coupons/apply', [
+        $response = $this->postJson('/api/v1/coupons/apply', [
             'code' => 'ETECH100K',
             'order_amount' => 300000,
         ]);
@@ -86,7 +86,7 @@ class CouponTest extends TestCase
             'end_at' => Carbon::now()->subDays(1),
         ]);
 
-        $response = $this->postJson('/api/coupons/apply', [
+        $response = $this->postJson('/api/v1/coupons/apply', [
             'code' => 'EXPIRED50',
             'order_amount' => 300000,
         ]);
@@ -107,7 +107,7 @@ class CouponTest extends TestCase
             'end_at' => Carbon::now()->addDay(),
         ]);
 
-        $response = $this->postJson('/api/coupons/apply', [
+        $response = $this->postJson('/api/v1/coupons/apply', [
             'code' => 'VIP500K',
             'order_amount' => 200000,
         ]);
@@ -144,7 +144,7 @@ class CouponTest extends TestCase
             'used_at' => Carbon::now(),
         ]);
 
-        $response = $this->postJson('/api/coupons/apply', [
+        $response = $this->postJson('/api/v1/coupons/apply', [
             'code' => 'LIMITED10',
             'order_amount' => 200000,
         ]);
@@ -176,7 +176,7 @@ class CouponTest extends TestCase
 
         Sanctum::actingAs($this->customerUser);
 
-        $response = $this->postJson('/api/coupons/apply', [
+        $response = $this->postJson('/api/v1/coupons/apply', [
             'code' => 'ONETIME',
             'order_amount' => 200000,
         ]);

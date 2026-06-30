@@ -38,7 +38,10 @@ export default function AuthPage({
   const [loginForm, setLoginForm] = useState({
     email: '',
     password: '',
+    otp: '',
   })
+  
+  const [showOtpModal, setShowOtpModal] = useState(false)
 
   const [registerForm, setRegisterForm] = useState({
     name: '',
@@ -122,10 +125,21 @@ export default function AuthPage({
       setUser(res.user as MeUser)
       onAuthed?.(res.user as MeUser)
       navigate('/')
-    } catch (err: unknown) {
+    } catch (err: any) {
       setLoading(false)
-      const message = err instanceof Error ? err.message : null
-      setError(message || 'Đăng nhập hoặc đăng ký thất bại. Vui lòng thử lại.')
+      if (err?.requires_2fa) {
+        setShowOtpModal(true)
+        return
+      }
+      
+      let message = err instanceof Error ? err.message : (err?.message || 'Đăng nhập hoặc đăng ký thất bại. Vui lòng thử lại.')
+      if (err?.errors) {
+        const firstErrorKey = Object.keys(err.errors)[0]
+        if (firstErrorKey && err.errors[firstErrorKey].length > 0) {
+          message = err.errors[firstErrorKey][0]
+        }
+      }
+      setError(message)
     }
   }
 
@@ -361,6 +375,47 @@ export default function AuthPage({
           </div>
         </div>
       </div>
+      
+      {showOtpModal && (
+        <div className="authModalOverlay">
+          <div className="authModalContent">
+            <h3 className="authModalTitle">Xác thực 2 bước (2FA)</h3>
+            <p className="authModalSub">Mở ứng dụng Google Authenticator và nhập mã 6 số để tiếp tục.</p>
+            <input
+              type="text"
+              className="authInput"
+              placeholder="123456"
+              maxLength={6}
+              value={loginForm.otp}
+              onChange={(e) => setLoginForm((prev) => ({ ...prev, otp: e.target.value.replace(/\D/g, '') }))}
+            />
+            {error && <div className="authError" style={{ marginTop: 10 }}>{error}</div>}
+            <div className="authModalActions" style={{ display: 'flex', gap: 10, marginTop: 20, justifyContent: 'flex-end' }}>
+              <button 
+                type="button" 
+                className="authSwitchBtn" 
+                style={{ padding: '8px 16px', background: 'rgba(255,255,255,0.1)', borderRadius: 6 }}
+                onClick={() => {
+                  setShowOtpModal(false)
+                  setError(null)
+                  setLoginForm((p) => ({ ...p, otp: '' }))
+                }}
+              >
+                Hủy
+              </button>
+              <button 
+                type="button" 
+                className="authSubmit" 
+                style={{ margin: 0, width: 'auto', padding: '8px 24px' }}
+                disabled={loading || loginForm.otp.length !== 6}
+                onClick={onSubmit}
+              >
+                {loading ? 'Đang xử lý...' : 'Xác nhận'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

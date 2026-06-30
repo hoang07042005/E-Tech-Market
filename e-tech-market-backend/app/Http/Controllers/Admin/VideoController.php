@@ -53,7 +53,7 @@ class VideoController extends Controller
         }
 
         if (empty($data['video_url'])) {
-            return response()->json(['message' => 'The video url or video file field is required.'], 422);
+            abort(422, 'The video url or video file field is required.');
         }
 
         $video = Video::create($data);

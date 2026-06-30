@@ -38,7 +38,7 @@ class ProductNewsController extends Controller
             return response()->json($updatedNews);
         } catch (\Exception $e) {
             $code = $e->getCode() ?: 404;
-            return response()->json(['message' => $e->getMessage()], $code);
+            abort($code, $e->getMessage());
         }
     }
 
@@ -46,10 +46,10 @@ class ProductNewsController extends Controller
     {
         try {
             $this->newsService->deleteProductNews($product, $news);
-            return response()->json(['message' => 'Deleted']);
+            abort($code, 'Deleted']);
         } catch (\Exception $e) {
             $code = $e->getCode() ?: 404;
-            return response()->json(['message' => $e->getMessage()], $code);
+            return response()->json(['message' => $e->getMessage());
         }
     }
 }

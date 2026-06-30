@@ -68,7 +68,7 @@ class OrderCheckoutTest extends TestCase
     {
         Sanctum::actingAs($this->customerUser);
 
-        $response = $this->postJson('/api/orders/from-items', [
+        $response = $this->postJson('/api/v1/orders/from-items', [
             'shipping_name' => 'Do Hoang',
             'shipping_phone' => '0987654321',
             'shipping_address_line' => '123 Nguyen Trai, Q.5',
@@ -116,7 +116,7 @@ class OrderCheckoutTest extends TestCase
     {
         Sanctum::actingAs($this->customerUser);
 
-        $response = $this->postJson('/api/orders/from-items', [
+        $response = $this->postJson('/api/v1/orders/from-items', [
             'shipping_name' => 'Do Hoang',
             'shipping_phone' => '0987654321',
             'shipping_address_line' => '123 Nguyen Trai, Q.5',
@@ -165,7 +165,7 @@ class OrderCheckoutTest extends TestCase
             ]
         );
 
-        $response = $this->postJson('/api/orders/from-items', [
+        $response = $this->postJson('/api/v1/orders/from-items', [
             'shipping_name' => 'Do Hoang',
             'shipping_phone' => '0987654321',
             'shipping_address_line' => '123 Nguyen Trai, Q.5',
@@ -200,7 +200,7 @@ class OrderCheckoutTest extends TestCase
             'end_at' => Carbon::now()->addDay(),
         ]);
 
-        $response = $this->postJson('/api/orders/from-items', [
+        $response = $this->postJson('/api/v1/orders/from-items', [
             'shipping_name' => 'Do Hoang',
             'shipping_phone' => '0987654321',
             'shipping_address_line' => '123 Nguyen Trai, Q.5',

@@ -29,11 +29,11 @@ class OrdersController extends Controller
     {
         $order->loadMissing(['returnRequest']);
         if (! $order->returnRequest) {
-            return response()->json(['message' => 'Đơn hàng chưa có yêu cầu hoàn trả.'], 422);
+            abort(422, 'Đơn hàng chưa có yêu cầu hoàn trả.');
         }
 
         if ($order->returnRequest->status !== 'pending') {
-            return response()->json(['message' => 'Yêu cầu hoàn trả không ở trạng thái chờ duyệt.'], 422);
+            abort(422, 'Yêu cầu hoàn trả không ở trạng thái chờ duyệt.');
         }
 
         $data = $request->validated();
@@ -49,11 +49,11 @@ class OrdersController extends Controller
     {
         $order->loadMissing(['returnRequest']);
         if (! $order->returnRequest) {
-            return response()->json(['message' => 'Đơn hàng chưa có yêu cầu hoàn trả.'], 422);
+            abort(422, 'Đơn hàng chưa có yêu cầu hoàn trả.');
         }
 
         if ($order->returnRequest->status !== 'pending') {
-            return response()->json(['message' => 'Yêu cầu hoàn trả không ở trạng thái chờ duyệt.'], 422);
+            abort(422, 'Yêu cầu hoàn trả không ở trạng thái chờ duyệt.');
         }
 
         $data = $request->validated();
@@ -67,11 +67,11 @@ class OrdersController extends Controller
     {
         $order->loadMissing(['returnRequest']);
         if (! $order->returnRequest) {
-            return response()->json(['message' => 'Đơn hàng chưa có yêu cầu hoàn trả.'], 422);
+            abort(422, 'Đơn hàng chưa có yêu cầu hoàn trả.');
         }
 
         if ($order->returnRequest->status !== 'approved') {
-            return response()->json(['message' => 'Chỉ có thể hoàn tiền sau khi đã phê duyệt yêu cầu.'], 422);
+            abort(422, 'Chỉ có thể hoàn tiền sau khi đã phê duyệt yêu cầu.');
         }
 
         $data = $request->validated();
@@ -93,7 +93,7 @@ class OrdersController extends Controller
         if ($status !== null && $status !== '') {
             $allowed = ['pending', 'paid', 'processing', 'shipped', 'delivered', 'completed', 'cancelled', 'returned'];
             if (! in_array($status, $allowed, true)) {
-                return response()->json(['message' => 'Status invalid'], 422);
+                abort(422, 'Status invalid');
             }
 
             $statusStep = static function (?string $s): int {
@@ -117,11 +117,11 @@ class OrdersController extends Controller
             $nextStep = $statusStep($status);
 
             if (in_array($cur, ['completed', 'cancelled', 'returned'], true) && $status !== $cur) {
-                return response()->json(['message' => 'Không thể cập nhật đơn đã kết thúc (hoàn thành/hủy/hoàn trả).'], 422);
+                abort(422, 'Không thể cập nhật đơn đã kết thúc (hoàn thành/hủy/hoàn trả).');
             }
 
             if (! in_array($status, ['cancelled', 'returned'], true) && $curStep > 0 && $nextStep > 0 && $nextStep < $curStep) {
-                return response()->json(['message' => 'Không thể cập nhật trạng thái lùi về trước.'], 422);
+                abort(422, 'Không thể cập nhật trạng thái lùi về trước.');
             }
 
             if (in_array($status, ['completed', 'returned', 'cancelled'], true)) {

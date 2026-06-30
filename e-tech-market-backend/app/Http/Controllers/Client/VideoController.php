@@ -32,7 +32,7 @@ class VideoController extends Controller
     public function show(Video $video): JsonResponse
     {
         if (! $video->is_active) {
-            return response()->json(['message' => 'Video không hoạt động'], 404);
+            abort(404, 'Video không hoạt động');
         }
         $video->load(['product', 'videoCategory']);
 

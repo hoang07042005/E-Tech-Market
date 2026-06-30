@@ -30,7 +30,7 @@ class ClientBlogPostsController extends Controller
             $post = $this->blogPostService->getClientPost($slug);
             return response()->json($post);
         } catch (\Exception $e) {
-            return response()->json(['message' => 'Not found'], 404);
+            abort(404, 'Not found');
         }
     }
 
@@ -48,7 +48,7 @@ class ClientBlogPostsController extends Controller
             $comment = $this->blogPostService->storeComment($slug, $data, $user);
             return response()->json($comment->load('user:id,name,avatar_url'), 201);
         } catch (\Exception $e) {
-            return response()->json(['message' => 'Post not found'], 404);
+            abort(404, 'Post not found');
         }
     }
 

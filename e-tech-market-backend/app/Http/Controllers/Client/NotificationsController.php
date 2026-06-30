@@ -30,7 +30,7 @@ class NotificationsController extends Controller
             $this->notificationService->markAsRead($notification, $request->user());
             return response()->json(['ok' => true]);
         } catch (\Exception $e) {
-            return response()->json(['message' => $e->getMessage()], $e->getCode() ?: 403);
+            abort($e->getCode() ?: 403, $e->getMessage());
         }
     }
 

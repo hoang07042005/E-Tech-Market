@@ -25,7 +25,7 @@ class ProductShopQnaController extends Controller
             return response()->json($rows);
         } catch (\Exception $e) {
             $code = $e->getCode() ?: 404;
-            return response()->json(['message' => $e->getMessage()], $code);
+            abort($code, $e->getMessage());
         }
     }
 
@@ -63,7 +63,7 @@ class ProductShopQnaController extends Controller
             ], 201);
         } catch (\Exception $e) {
             $code = $e->getCode() ?: 422;
-            return response()->json(['message' => $e->getMessage()], $code);
+            abort($code, $e->getMessage());
         }
     }
 }

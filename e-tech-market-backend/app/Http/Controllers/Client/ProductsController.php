@@ -144,7 +144,7 @@ class ProductsController extends Controller
             $product = $this->productService->getClientProduct($product);
             return response()->json(new ProductResource($product));
         } catch (\Exception $e) {
-            return response()->json(['message' => $e->getMessage()], 404);
+            abort(404, $e->getMessage());
         }
     }
 

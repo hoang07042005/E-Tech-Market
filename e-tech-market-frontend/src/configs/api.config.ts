@@ -118,6 +118,9 @@ export async function apiFetch<T>(
       // Silent 401: user simply not logged in, no toast
       throw new ApiRequestError('Unauthorized', { globalErrorNotified: true })
     }
+    if (res.status === 403 && data && (data as any).requires_2fa) {
+      throw { message: data.message, requires_2fa: true }
+    }
     const fallbackText = data ? null : await res.text().catch(() => null)
     const message =
       data && typeof data.message === 'string'

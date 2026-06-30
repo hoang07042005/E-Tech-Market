@@ -1,4 +1,4 @@
-﻿import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { apiFetch, API_BASE_URL } from '@/configs/api.config'
 import { useAuthStore } from '@/features/store/useAuthStore'
 import logoMomo from '@/assets/logo-momo.png'
@@ -164,6 +164,73 @@ export default function SettingsAdminPage() {
     fee: '0',
     is_active: true,
   })
+
+  // 2FA states
+  const [twoFaSetupOpen, setTwoFaSetupOpen] = useState(false)
+  const [twoFaSetupData, setTwoFaSetupData] = useState<{ secret: string; qr_code_url: string } | null>(null)
+  const [twoFaOtp, setTwoFaOtp] = useState('')
+  const [twoFaError, setTwoFaError] = useState<string | null>(null)
+  
+  const [twoFaDisableOpen, setTwoFaDisableOpen] = useState(false)
+  const [twoFaPassword, setTwoFaPassword] = useState('')
+  const [twoFaLoading, setTwoFaLoading] = useState(false)
+
+  const openTwoFaSetup = async () => {
+    try {
+      setTwoFaLoading(true)
+      const res = await apiFetch<{ secret: string; qr_code_url: string }>('/api/2fa/setup', { method: 'POST' })
+      setTwoFaSetupData(res)
+      setTwoFaSetupOpen(true)
+      setTwoFaError(null)
+      setTwoFaOtp('')
+    } catch (e: any) {
+      alert(e.message)
+      setTwoFa(false)
+    } finally {
+      setTwoFaLoading(false)
+    }
+  }
+
+  const verifyTwoFa = async () => {
+    if (twoFaOtp.length !== 6) return
+    try {
+      setTwoFaLoading(true)
+      await apiFetch('/api/2fa/verify', {
+        method: 'POST',
+        body: JSON.stringify({ otp: twoFaOtp })
+      })
+      setTwoFa(true)
+      setTwoFaSetupOpen(false)
+    } catch (e: any) {
+      setTwoFaError(e.message)
+    } finally {
+      setTwoFaLoading(false)
+    }
+  }
+
+  const openTwoFaDisable = () => {
+    setTwoFaDisableOpen(true)
+    setTwoFaError(null)
+    setTwoFaPassword('')
+  }
+
+  const disableTwoFa = async () => {
+    if (!twoFaPassword) return
+    try {
+      setTwoFaLoading(true)
+      await apiFetch('/api/2fa/disable', {
+        method: 'POST',
+        body: JSON.stringify({ password: twoFaPassword })
+      })
+      setTwoFa(false)
+      setTwoFaDisableOpen(false)
+    } catch (e: any) {
+      setTwoFaError(e.message)
+      setTwoFa(true)
+    } finally {
+      setTwoFaLoading(false)
+    }
+  }
 
   const [methods, setMethods] = useState<MethodRow[]>([])
   const [methodQuery, setMethodQuery] = useState('')
@@ -542,21 +609,21 @@ export default function SettingsAdminPage() {
           <div className="admSetForm">
             <label className="admSetField">
               <span>Tên cửa hàng</span>
-              <input value={store.store_name} onChange={(e) => setStore((p) => ({ ...p, store_name: e.target.value }))} />
+              <input value={store.store_name || ''} onChange={(e) => setStore((p) => ({ ...p, store_name: e.target.value }))} />
             </label>
             <div className="admSet2Col">
               <label className="admSetField">
                 <span>Email liên hệ</span>
-                <input value={store.contact_email} onChange={(e) => setStore((p) => ({ ...p, contact_email: e.target.value }))} />
+                <input value={store.contact_email || ''} onChange={(e) => setStore((p) => ({ ...p, contact_email: e.target.value }))} />
               </label>
               <label className="admSetField">
                 <span>Số điện thoại</span>
-                <input value={store.contact_phone} onChange={(e) => setStore((p) => ({ ...p, contact_phone: e.target.value }))} />
+                <input value={store.contact_phone || ''} onChange={(e) => setStore((p) => ({ ...p, contact_phone: e.target.value }))} />
               </label>
             </div>
             <label className="admSetField">
               <span>Địa chỉ</span>
-              <textarea value={store.warehouse_address} onChange={(e) => setStore((p) => ({ ...p, warehouse_address: e.target.value }))} />
+              <textarea value={store.warehouse_address || ''} onChange={(e) => setStore((p) => ({ ...p, warehouse_address: e.target.value }))} />
             </label>
           </div>
         </section>
@@ -1319,7 +1386,7 @@ export default function SettingsAdminPage() {
               <label className="admSetField">
                 <span>Facebook Page ID</span>
                 <input 
-                  value={chat.facebook_page_id} 
+                  value={chat.facebook_page_id || ''} 
                   onChange={(e) => setChat(p => ({ ...p, facebook_page_id: e.target.value }))} 
                   placeholder="Ví dụ: 123456789012345"
                 />
@@ -1335,7 +1402,7 @@ export default function SettingsAdminPage() {
               <label className="admSetField">
                 <span>Zalo OA ID</span>
                 <input 
-                  value={chat.zalo_oa_id} 
+                  value={chat.zalo_oa_id || ''} 
                   onChange={(e) => setChat(p => ({ ...p, zalo_oa_id: e.target.value }))} 
                   placeholder="Ví dụ: 383215286595568541"
                 />
@@ -1348,7 +1415,7 @@ export default function SettingsAdminPage() {
               <label className="admSetField">
                 <span>Property ID</span>
                 <input 
-                  value={chat.tawkto_property_id} 
+                  value={chat.tawkto_property_id || ''} 
                   onChange={(e) => setChat(p => ({ ...p, tawkto_property_id: e.target.value }))} 
                   placeholder="60f1..."
                 />
@@ -1356,7 +1423,7 @@ export default function SettingsAdminPage() {
               <label className="admSetField">
                 <span>Widget ID</span>
                 <input 
-                  value={chat.tawkto_widget_id} 
+                  value={chat.tawkto_widget_id || ''} 
                   onChange={(e) => setChat(p => ({ ...p, tawkto_widget_id: e.target.value }))} 
                   placeholder="1f..."
                 />
@@ -1391,7 +1458,15 @@ export default function SettingsAdminPage() {
               </div>
             </div>
             <label className="admSwitch">
-              <input type="checkbox" checked={twoFa} onChange={(e) => setTwoFa(e.target.checked)} />
+              <input 
+                type="checkbox" 
+                checked={twoFa} 
+                onChange={(e) => {
+                  if (e.target.checked) openTwoFaSetup()
+                  else openTwoFaDisable()
+                }} 
+                disabled={twoFaLoading}
+              />
               <span />
             </label>
           </div>
@@ -1408,6 +1483,88 @@ export default function SettingsAdminPage() {
 
       {userAvatarUrl && (
         <img className="admHiddenPreload" src={resolveAvatar(userAvatarUrl) || undefined} alt="" aria-hidden />
+      )}
+
+      {twoFaSetupOpen && twoFaSetupData && (
+        <div className="admModalOverlay" role="dialog" aria-modal="true" onClick={() => { setTwoFaSetupOpen(false); setTwoFa(false); }}>
+          <div className="admModal" onClick={(e) => e.stopPropagation()}>
+            <div className="admModalHead">
+              <div>
+                <div className="admModalTitle">Bật xác thực 2 bước (2FA)</div>
+                <div className="admModalSub">Sử dụng Google Authenticator để quét mã QR</div>
+              </div>
+              <button type="button" className="admModalClose" onClick={() => { setTwoFaSetupOpen(false); setTwoFa(false); }} aria-label="Đóng">
+                <IconX />
+              </button>
+            </div>
+            <div className="admModalBody" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16 }}>
+              <img src={twoFaSetupData.qr_code_url} alt="QR Code" style={{ width: 200, height: 200, background: '#fff', padding: 8, borderRadius: 8 }} />
+              <div style={{ textAlign: 'center' }}>
+                <div style={{ fontSize: 13, color: 'var(--admin-text-s)' }}>Hoặc nhập mã bí mật này vào ứng dụng:</div>
+                <code style={{ background: 'var(--admin-bg)', padding: '4px 8px', borderRadius: 4, fontWeight: 700, marginTop: 4, display: 'inline-block' }}>{twoFaSetupData.secret}</code>
+              </div>
+              <div style={{ width: '100%', marginTop: 8 }}>
+                <label className="admSetField">
+                  <span>Nhập mã OTP (6 số) để xác nhận</span>
+                  <input 
+                    type="text" 
+                    maxLength={6} 
+                    value={twoFaOtp} 
+                    onChange={(e) => setTwoFaOtp(e.target.value.replace(/\D/g, ''))}
+                    placeholder="123456"
+                    style={{ textAlign: 'center', letterSpacing: 4, fontWeight: 'bold' }}
+                  />
+                </label>
+              </div>
+              {twoFaError && <div style={{ color: '#ef4444', fontSize: 13 }}>{twoFaError}</div>}
+              <button 
+                type="button" 
+                className="admSettingsSaveBtn" 
+                style={{ width: '100%' }} 
+                onClick={verifyTwoFa} 
+                disabled={twoFaLoading || twoFaOtp.length !== 6}
+              >
+                {twoFaLoading ? 'Đang xác nhận...' : 'Xác nhận bật 2FA'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {twoFaDisableOpen && (
+        <div className="admModalOverlay" role="dialog" aria-modal="true" onClick={() => { setTwoFaDisableOpen(false); setTwoFa(true); }}>
+          <div className="admModal" onClick={(e) => e.stopPropagation()}>
+            <div className="admModalHead">
+              <div>
+                <div className="admModalTitle">Tắt xác thực 2 bước</div>
+                <div className="admModalSub">Vui lòng xác nhận mật khẩu để tiếp tục</div>
+              </div>
+              <button type="button" className="admModalClose" onClick={() => { setTwoFaDisableOpen(false); setTwoFa(true); }} aria-label="Đóng">
+                <IconX />
+              </button>
+            </div>
+            <div className="admModalBody">
+              <label className="admSetField">
+                <span>Mật khẩu của bạn</span>
+                <input 
+                  type="password" 
+                  value={twoFaPassword} 
+                  onChange={(e) => setTwoFaPassword(e.target.value)}
+                  placeholder="Nhập mật khẩu..."
+                />
+              </label>
+              {twoFaError && <div style={{ color: '#ef4444', fontSize: 13, marginBottom: 12 }}>{twoFaError}</div>}
+              <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end' }}>
+                <button type="button" className="admShipPolicyBtn" onClick={() => { setTwoFaDisableOpen(false); setTwoFa(true); }}>
+                  Hủy
+                </button>
+                <button type="button" className="admSettingsSaveBtn" style={{ background: '#ef4444' }} onClick={disableTwoFa} disabled={twoFaLoading || !twoFaPassword}>
+                  {twoFaLoading ? 'Đang tắt...' : 'Tắt 2FA'}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   )

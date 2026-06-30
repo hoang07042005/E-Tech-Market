@@ -105,7 +105,7 @@ class PaymentFlowIntegrationTest extends TestCase
             'app.frontend_url' => 'https://frontend.example.test',
         ]);
 
-        $createResponse = $this->postJson('/api/payments/vnpay/'.$this->vnpayOrder->id.'/create');
+        $createResponse = $this->postJson('/api/v1/payments/vnpay/'.$this->vnpayOrder->id.'/create');
 
         $createResponse->assertOk()
             ->assertJsonPath('order_id', $this->vnpayOrder->id)
@@ -143,7 +143,7 @@ class PaymentFlowIntegrationTest extends TestCase
 
         $params['vnp_SecureHash'] = hash_hmac('sha512', $hashData, 'vnpaysecretkey');
 
-        $ipnResponse = $this->getJson('/api/payments/vnpay/ipn?'.http_build_query($params));
+        $ipnResponse = $this->getJson('/api/v1/payments/vnpay/ipn?'.http_build_query($params));
 
         $ipnResponse->assertOk()
             ->assertJsonPath('RspCode', '00')
@@ -179,7 +179,7 @@ class PaymentFlowIntegrationTest extends TestCase
             ], 200),
         ]);
 
-        $createResponse = $this->postJson('/api/payments/momo/'.$this->momoOrder->id.'/create', [
+        $createResponse = $this->postJson('/api/v1/payments/momo/'.$this->momoOrder->id.'/create', [
             'request_type' => 'payWithMethod',
         ]);
 
@@ -234,7 +234,7 @@ class PaymentFlowIntegrationTest extends TestCase
 
         $payload['signature'] = hash_hmac('sha256', $rawHash, 'MOMO_SECRET');
 
-        $ipnResponse = $this->postJson('/api/payments/momo/ipn', $payload);
+        $ipnResponse = $this->postJson('/api/v1/payments/momo/ipn', $payload);
 
         $ipnResponse->assertOk()
             ->assertJsonPath('verified', true)
@@ -275,7 +275,7 @@ class PaymentFlowIntegrationTest extends TestCase
             'status' => 'pending',
         ]);
 
-        $response = $this->patchJson('/api/orders/'.$order->id.'/confirm-payment');
+        $response = $this->patchJson('/api/v1/orders/'.$order->id.'/confirm-payment');
 
         $response->assertOk();
         $this->assertEquals('paid', $order->fresh()->payment_status);

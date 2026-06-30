@@ -19,7 +19,7 @@ class CartFeatureTest extends TestCase
             'status' => 'active',
         ]);
 
-        $response = $this->actingAs($user)->getJson('/api/cart');
+        $response = $this->actingAs($user)->getJson('/api/v1/cart');
 
         $response->assertStatus(200);
         $response->assertJsonStructure([
@@ -31,7 +31,7 @@ class CartFeatureTest extends TestCase
 
     public function test_unauthenticated_user_cannot_access_cart()
     {
-        $response = $this->getJson('/api/cart');
+        $response = $this->getJson('/api/v1/cart');
         $response->assertStatus(401);
     }
 }

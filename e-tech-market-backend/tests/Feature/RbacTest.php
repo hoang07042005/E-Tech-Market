@@ -34,11 +34,11 @@ class RbacTest extends TestCase
         Sanctum::actingAs($adminUser);
 
         // Access products list
-        $response1 = $this->getJson('/api/admin/products');
+        $response1 = $this->getJson('/api/v1/admin/products');
         $response1->assertOk();
 
         // Access orders list
-        $response2 = $this->getJson('/api/admin/orders');
+        $response2 = $this->getJson('/api/v1/admin/orders');
         $response2->assertOk();
     }
 
@@ -54,11 +54,11 @@ class RbacTest extends TestCase
         Sanctum::actingAs($staffUser);
 
         // Can access products list
-        $response1 = $this->getJson('/api/admin/products');
+        $response1 = $this->getJson('/api/v1/admin/products');
         $response1->assertOk();
 
         // Access orders list is blocked
-        $response2 = $this->getJson('/api/admin/orders');
+        $response2 = $this->getJson('/api/v1/admin/orders');
         $response2->assertStatus(403);
         $response2->assertJsonPath('message', 'Bạn không có quyền thực hiện hành động này. Yêu cầu quyền: manage-orders.');
     }
@@ -76,11 +76,11 @@ class RbacTest extends TestCase
         Sanctum::actingAs($editorUser);
 
         // 1. Can view products list (read-only GET)
-        $response1 = $this->getJson('/api/admin/products');
+        $response1 = $this->getJson('/api/v1/admin/products');
         $response1->assertOk();
 
         // 2. Cannot create a product (POST blocked)
-        $response2 = $this->postJson('/api/admin/products', [
+        $response2 = $this->postJson('/api/v1/admin/products', [
             'name' => 'New Test Product',
         ]);
         $response2->assertStatus(403);
@@ -88,7 +88,7 @@ class RbacTest extends TestCase
 
         // 3. Can access product news endpoint (manage-blog permission mapping)
         // Bypasses middleware 403 check and triggers 404 on non-existing product, which is correct!
-        $response3 = $this->getJson('/api/admin/products/9999/news');
+        $response3 = $this->getJson('/api/v1/admin/products/9999/news');
         $response3->assertNotFound();
     }
 
@@ -98,7 +98,7 @@ class RbacTest extends TestCase
 
         Sanctum::actingAs($customerUser);
 
-        $response = $this->getJson('/api/admin/products');
+        $response = $this->getJson('/api/v1/admin/products');
         $response->assertStatus(403);
     }
 }

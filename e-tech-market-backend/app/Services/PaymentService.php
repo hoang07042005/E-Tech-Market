@@ -200,7 +200,7 @@ class PaymentService
 
         $appUrl = rtrim((string) config('app.url'), '/');
         $redirectUrl = $appUrl.'/api/v1/payments/momo/return';
-        $ipnUrl = $appUrl.'/api/v1/payments/momo/ipn';
+        $ipnUrl = $appUrl.'/api/v2/webhooks/momo/ipn';
 
         $amountVnd = (string) ((int) round((float) $order->total_amount));
         $orderId = $order->order_code.'__'.Str::uuid()->toString();

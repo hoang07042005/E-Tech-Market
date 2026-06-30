@@ -34,7 +34,7 @@ class OrdersController extends Controller
         try {
             $order = app(OrderService::class)->getClientOrder($order, $request->user());
         } catch (\Exception $e) {
-            return response()->json(['message' => $e->getMessage()], $e->getCode() ?: 403);
+            abort($e->getCode() ?: 403, $e->getMessage());
         }
 
         $payload = $order->toArray();
@@ -77,7 +77,7 @@ class OrdersController extends Controller
             $order = app(OrderService::class)->cancelOrder($order, $request->user());
             return $this->show($order, $request);
         } catch (\Exception $e) {
-            return response()->json(['message' => $e->getMessage()], $e->getCode() ?: 422);
+            abort($e->getCode() ?: 422, $e->getMessage());
         }
     }
 
@@ -88,7 +88,7 @@ class OrdersController extends Controller
             $order = app(OrderService::class)->confirmReceived($order, $request->user());
             return $this->show($order, $request);
         } catch (\Exception $e) {
-            return response()->json(['message' => $e->getMessage()], $e->getCode() ?: 422);
+            abort($e->getCode() ?: 422, $e->getMessage());
         }
     }
 
@@ -99,7 +99,7 @@ class OrdersController extends Controller
             $order = app(OrderService::class)->confirmPayment($order, $request->user());
             return $this->show($order, $request);
         } catch (\Exception $e) {
-            return response()->json(['message' => $e->getMessage()], $e->getCode() ?: 422);
+            abort($e->getCode() ?: 422, $e->getMessage());
         }
     }
 
@@ -111,7 +111,7 @@ class OrdersController extends Controller
             $order = app(OrderService::class)->requestReturn($order, $request->user(), $request->validated(), is_array($files) ? $files : [$files]);
             return $this->show($order, $request);
         } catch (\Exception $e) {
-            return response()->json(['message' => $e->getMessage()], $e->getCode() ?: 422);
+            abort($e->getCode() ?: 422, $e->getMessage());
         }
     }
 
@@ -122,7 +122,7 @@ class OrdersController extends Controller
             $order = app(OrderService::class)->confirmRefundReceived($order, $request->user());
             return $this->show($order, $request);
         } catch (\Exception $e) {
-            return response()->json(['message' => $e->getMessage()], $e->getCode() ?: 422);
+            abort($e->getCode() ?: 422, $e->getMessage());
         }
     }
 
@@ -133,7 +133,7 @@ class OrdersController extends Controller
 
         $cart = Cart::query()->where('user_id', $user->id)->first();
         if (! $cart) {
-            return response()->json(['message' => 'Không tìm thấy giỏ hàng'], 422);
+            abort(422, 'Không tìm thấy giỏ hàng');
         }
 
         $items = CartItem::query()
@@ -142,7 +142,7 @@ class OrdersController extends Controller
             ->get();
 
         if ($items->isEmpty()) {
-            return response()->json(['message' => 'Giỏ hàng của bạn đang trống'], 422);
+            abort(422, 'Giỏ hàng của bạn đang trống');
         }
 
         $itemsInput = [];
@@ -186,7 +186,7 @@ class OrdersController extends Controller
 
         $paymentMethod = (string) $data['payment_method'];
         if (! in_array($paymentMethod, ['cod', 'vnpay', 'momo'], true)) {
-            return response()->json(['message' => 'Phương thức thanh toán không hợp lệ'], 422);
+            abort(422, 'Phương thức thanh toán không hợp lệ');
         }
 
         // COD: create order immediately as before

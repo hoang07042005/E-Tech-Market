@@ -117,7 +117,7 @@ class PaymentGatewayTest extends TestCase
         $secureHash = hash_hmac('sha512', $hashData, 'vnpaysecretkey');
         $params['vnp_SecureHash'] = $secureHash;
 
-        $response = $this->getJson('/api/payments/vnpay/ipn?'.http_build_query($params));
+        $response = $this->getJson('/api/v1/payments/vnpay/ipn?'.http_build_query($params));
 
         $response->assertOk()
             ->assertJsonPath('RspCode', '00')
@@ -153,7 +153,7 @@ class PaymentGatewayTest extends TestCase
             'vnp_SecureHash' => 'wrongsignature',
         ];
 
-        $response = $this->getJson('/api/payments/vnpay/ipn?'.http_build_query($params));
+        $response = $this->getJson('/api/v1/payments/vnpay/ipn?'.http_build_query($params));
 
         $response->assertOk()
             ->assertJsonPath('RspCode', '97')
@@ -208,7 +208,7 @@ class PaymentGatewayTest extends TestCase
         $signature = hash_hmac('sha256', $rawHash, 'momosecretkey');
         $payload['signature'] = $signature;
 
-        $response = $this->postJson('/api/payments/momo/ipn', $payload);
+        $response = $this->postJson('/api/v1/payments/momo/ipn', $payload);
 
         $response->assertOk()
             ->assertJsonPath('verified', true)
@@ -277,7 +277,7 @@ class PaymentGatewayTest extends TestCase
         $signature = hash_hmac('sha256', $rawHash, 'momosecretkey');
         $payload['signature'] = $signature;
 
-        $response = $this->postJson('/api/payments/momo/ipn', $payload);
+        $response = $this->postJson('/api/v1/payments/momo/ipn', $payload);
 
         $response->assertOk()
             ->assertJsonPath('verified', true)

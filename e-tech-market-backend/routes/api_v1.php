@@ -121,6 +121,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/auth/logout', [AuthController::class, 'logout']);
     Route::delete('/me', [AuthController::class, 'deleteAccount']);
 
+    // 2FA Routes
+    Route::post('/2fa/setup', [\App\Http\Controllers\Auth\TwoFactorController::class, 'setup']);
+    Route::post('/2fa/verify', [\App\Http\Controllers\Auth\TwoFactorController::class, 'verify']);
+    Route::post('/2fa/disable', [\App\Http\Controllers\Auth\TwoFactorController::class, 'disable']);
+
     Route::post('/auth/email/verification-notification', [VerificationController::class, 'resend'])
         ->middleware(['throttle:6,1'])
         ->name('verification.send');

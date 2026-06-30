@@ -41,7 +41,7 @@ class ReviewsController extends Controller
             return response()->json($review, 201);
         } catch (\Exception $e) {
             $code = $e->getCode() ?: 400;
-            return response()->json(['message' => $e->getMessage()], $code);
+            abort($code, $e->getMessage());
         }
     }
 }

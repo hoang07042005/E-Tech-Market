@@ -30,7 +30,7 @@ class QueueTest extends TestCase
             'email' => 'test-reset-queue@etechmarket.vn',
         ]);
 
-        $response = $this->postJson('/api/auth/forgot-password', [
+        $response = $this->postJson('/api/v1/auth/forgot-password', [
             'email' => $user->email,
         ]);
 
@@ -46,7 +46,7 @@ class QueueTest extends TestCase
     {
         Notification::fake();
 
-        $response = $this->postJson('/api/newsletter/subscriptions', [
+        $response = $this->postJson('/api/v1/newsletter/subscriptions', [
             'email' => 'newsletter-queue-test@etechmarket.vn',
             'source' => 'footer',
         ]);
@@ -95,7 +95,7 @@ class QueueTest extends TestCase
             'is_active' => true,
         ]);
 
-        $response = $this->postJson('/api/orders/from-items', [
+        $response = $this->postJson('/api/v1/orders/from-items', [
             'shipping_name' => 'John Doe',
             'shipping_phone' => '0987654321',
             'shipping_address_line' => '123 E-Tech Street',

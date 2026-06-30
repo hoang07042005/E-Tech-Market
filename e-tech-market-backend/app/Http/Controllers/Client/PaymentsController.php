@@ -29,7 +29,7 @@ class PaymentsController extends Controller
 
         $order = Order::query()->find($data['order_id']);
         if (! $order) {
-            return response()->json(['message' => 'Order not found'], 404);
+            abort(404, 'Order not found');
         }
 
         // Allow payment for pending_payment orders (not visible in regular list, but accessible here)
@@ -38,7 +38,7 @@ class PaymentsController extends Controller
         $result = $this->paymentService->createVnpayPaymentUrl($order, $request->ip());
 
         if (isset($result['error'])) {
-            return response()->json(['message' => $result['error']], $result['code']);
+            abort($result['code'], $result['error']);
         }
 
         return response()->json($result);
@@ -89,7 +89,7 @@ class PaymentsController extends Controller
 
         $order = Order::query()->find($data['order_id']);
         if (! $order) {
-            return response()->json(['message' => 'Order not found'], 404);
+            abort(404, 'Order not found');
         }
 
         // Allow payment for pending_payment orders (not visible in regular list, but accessible here)
@@ -121,7 +121,7 @@ class PaymentsController extends Controller
     {
         $data = $request->all();
         if (! is_array($data)) {
-            return response()->json(['message' => 'Invalid payload'], 400);
+            abort(400, 'Invalid payload');
         }
 
         $result = $this->paymentService->handleMomoCallback($data);

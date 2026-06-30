@@ -43,7 +43,7 @@ class CartController extends Controller
             return response()->json($cart);
         } catch (\Exception $e) {
             $code = $e->getCode() ?: 400;
-            return response()->json(['message' => $e->getMessage()], $code);
+            abort($code, $e->getMessage());
         }
     }
 
@@ -59,7 +59,7 @@ class CartController extends Controller
             return response()->json($cart);
         } catch (\Exception $e) {
             $code = $e->getCode() ?: 400;
-            return response()->json(['message' => $e->getMessage()], $code);
+            abort($code, $e->getMessage());
         }
     }
 

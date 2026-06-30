@@ -11,13 +11,13 @@ class NewsletterSubscriptionTest extends TestCase
 
     public function test_guest_can_subscribe_to_newsletter(): void
     {
-        $this->postJson('/api/newsletter/subscriptions', [
+        $this->postJson('/api/v1/newsletter/subscriptions', [
             'email' => 'reader@example.com',
             'source' => 'blog',
         ])->assertCreated()
             ->assertJsonPath('data.email', 'reader@example.com');
 
-        $this->postJson('/api/newsletter/subscriptions', [
+        $this->postJson('/api/v1/newsletter/subscriptions', [
             'email' => 'reader@example.com',
             'source' => 'blog',
         ])->assertOk()

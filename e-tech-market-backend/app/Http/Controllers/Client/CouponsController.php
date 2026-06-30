@@ -40,7 +40,7 @@ class CouponsController extends Controller
             return response()->json(['message' => 'Đã lưu mã thành công.']);
         } catch (\Exception $e) {
             $code = $e->getCode() ?: 400;
-            return response()->json(['message' => $e->getMessage()], $code);
+            abort($code, $e->getMessage());
         }
     }
 
@@ -60,7 +60,7 @@ class CouponsController extends Controller
             return response()->json($result);
         } catch (\Exception $e) {
             $code = $e->getCode() ?: 400;
-            return response()->json(['message' => $e->getMessage()], $code);
+            abort($code, $e->getMessage());
         }
     }
 }

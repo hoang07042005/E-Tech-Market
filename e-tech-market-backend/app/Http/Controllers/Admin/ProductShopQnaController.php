@@ -33,7 +33,7 @@ class ProductShopQnaController extends Controller
             return response()->json($updatedQna);
         } catch (\Exception $e) {
             $code = $e->getCode() ?: 404;
-            return response()->json(['message' => $e->getMessage()], $code);
+            abort($code, $e->getMessage());
         }
     }
 }

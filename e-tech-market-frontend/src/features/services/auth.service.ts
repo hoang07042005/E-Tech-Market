@@ -3,6 +3,7 @@ import { apiFetch, setAuthToken, getAuthToken, clearAuthToken } from '@/configs/
 export type LoginPayload = {
   email: string
   password: string
+  otp?: string
 }
 
 export type RegisterPayload = {

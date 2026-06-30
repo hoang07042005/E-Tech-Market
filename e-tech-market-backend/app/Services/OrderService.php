@@ -187,7 +187,7 @@ class OrderService
             // 5. Points Discount (Loyalty)
             $pointsUsed = 0;
             $pointsDiscount = 0;
-            \Illuminate\Support\Facades\Log::info('OrderService points debug', [
+            \Illuminate\Support\Facades\Log::debug('OrderService points debug', [
                 'data_points_used'    => $data['points_used'] ?? 'KEY_NOT_FOUND',
                 'user_current_points' => $user?->current_points,
                 'all_keys'            => array_keys($data),

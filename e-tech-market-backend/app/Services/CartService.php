@@ -69,6 +69,12 @@ class CartService
             ->first();
 
         return DB::transaction(function () use ($cart, $product, $variant, $data, $cartItem) {
+            // Lock variant for update to prevent race conditions
+            $lockedVariant = ProductVariant::lockForUpdate()->find($variant->id);
+            if (! $lockedVariant || ! $lockedVariant->is_active) {
+                throw new \Exception('Variant not available', 422);
+            }
+
             if ($cartItem) {
                 $cartItem->quantity = $cartItem->quantity + (int) $data['quantity'];
                 // Update unit_price to reflect current pricing (discount may have changed)

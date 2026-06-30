@@ -23,6 +23,6 @@ class AdminAccessTest extends TestCase
 
         Sanctum::actingAs($user);
 
-        $this->getJson('/api/admin/users')->assertForbidden();
+        $this->getJson('/api/v1/admin/users')->assertForbidden();
     }
 }

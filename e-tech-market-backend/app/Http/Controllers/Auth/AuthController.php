@@ -61,6 +61,20 @@ class AuthController extends Controller
             throw ValidationException::withMessages(["email"=>["Account is disabled"]]);
         }
 
+        if ($u->google2fa_enabled) {
+            if (!$r->filled('otp')) {
+                return response()->json(['message' => '2FA authentication required.', 'requires_2fa' => true], 403);
+            }
+            $google2fa = new \PragmaRX\Google2FAQRCode\Google2FA();
+            if (!$google2fa->verifyKey($u->google2fa_secret, $r->otp)) {
+                throw ValidationException::withMessages(["otp" => ["Mã 2FA không chính xác."]]);
+            }
+        }
+
+        if ($r->hasSession()) {
+            $r->session()->regenerate();
+        }
+
         [$token, $cookie] = $this->createTokenResponse($u);
         $u->load(['roles', 'membershipRank']);
 
