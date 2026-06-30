@@ -400,44 +400,48 @@ class AdminDashboardService
 
     private function buildTopCustomers(): array
     {
-        $vipOf = static function (float $spent): array {
-            if ($spent >= 40_000_000) {
-                return ['VIP GOLD', 'gold'];
+        // Get top customers with rank >= 3 (Vàng)
+        $vipOf = static function (string $rankName): array {
+            if ($rankName === 'Kim Cương') {
+                return ['VIP KIM CƯƠNG', 'diamond'];
             }
-            if ($spent >= 20_000_000) {
-                return ['VIP SILVER', 'silver'];
+            if ($rankName === 'Vàng') {
+                return ['VIP VÀNG', 'gold'];
+            }
+            if ($rankName === 'Bạc') {
+                return ['VIP BẠC', 'silver'];
             }
 
-            return ['VIP BRONZE', 'bronze'];
+            return ['VIP ĐỒNG', 'bronze'];
         };
 
-        return DB::table('orders')
-            ->join('users', 'users.id', '=', 'orders.user_id')
+        $users = DB::table('users')
+            ->join('membership_ranks', 'membership_ranks.id', '=', 'users.rank_id')
             ->whereNull('users.deleted_at')
-            ->whereNotNull('orders.user_id')
-            ->where('orders.payment_status', '=', 'paid')
-            ->groupBy('orders.user_id', 'users.name', 'users.avatar_url')
+            ->where('users.rank_id', '>=', 3) // Vàng and above
             ->select([
-                'orders.user_id as user_id',
+                'users.id as user_id',
                 'users.name as name',
                 'users.avatar_url as avatar_url',
-                DB::raw('SUM(orders.total_amount) as spent'),
-                DB::raw('COUNT(orders.id) as orders_count'),
+                'users.total_spent as spent',
+                'users.rank_id as rank_id',
+                'membership_ranks.rank_name as rank_name',
             ])
-            ->orderByDesc('spent')
-            ->limit(3)
-            ->get()
-            ->map(static function ($row) use ($vipOf) {
-                $spent = (float) $row->spent;
-                [$vipLabel, $vipTone] = $vipOf($spent);
+            ->orderByDesc('users.total_spent')
+            ->limit(10)
+            ->get();
 
-                return [
-                    'user_id' => (int) $row->user_id,
-                    'name' => (string) ($row->name ?? '—'),
-                    'avatar_url' => $row->avatar_url ? (string) $row->avatar_url : null,
-                    'spent' => $spent,
-                    'orders_count' => (int) $row->orders_count,
-                    'vip_label' => $vipLabel,
+        return $users->map(static function ($row) use ($vipOf) {
+            $spent = (float) $row->spent;
+            [$vipLabel, $vipTone] = $vipOf($row->rank_name ?? 'Đồng');
+
+            return [
+                'user_id' => (int) $row->user_id,
+                'name' => (string) ($row->name ?? '—'),
+                'avatar_url' => $row->avatar_url ? (string) $row->avatar_url : null,
+                'spent' => $spent,
+                'orders_count' => 0,
+                'vip_label' => $vipLabel,
                     'vip_tone' => $vipTone,
                 ];
             })

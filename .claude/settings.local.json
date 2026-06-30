@@ -13,7 +13,20 @@
       "Bash(npm run build)",
       "Bash(docker ps --format \"{{.Names}}\")",
       "Bash(docker exec -it e-tech-market-backend-1 php artisan loyalty:update-ranks)",
-      "Bash(docker exec e-tech-market-backend-1 php artisan loyalty:update-ranks)"
+      "Bash(docker exec e-tech-market-backend-1 php artisan loyalty:update-ranks)",
+      "Bash(php artisan cache:clear --tags=admin_dashboard)",
+      "Bash(php artisan tinker --execute=\"DB::table\\(''users''\\)->select\\(''id'', ''name'', ''rank_id'', ''total_spent''\\)->where\\(''rank_id'', ''>='', 4\\)->orderByDesc\\(''total_spent''\\)->limit\\(5\\)->get\\(\\)->toJson\\(JSON_PRETTY_PRINT\\)\")",
+      "Bash(docker ps --format \"table {{.Names}}\\\\t{{.Status}}\")",
+      "Bash(docker exec e-tech-market-db-1 psql -U postgres -d etech_market -c \"SELECT id, name, rank_id, total_spent FROM users WHERE rank_id >= 4 ORDER BY total_spent DESC LIMIT 5;\")",
+      "Bash(docker exec e-tech-market-db-1 psql -U postgres -d etech -c \"SELECT id, name, rank_id, total_spent FROM users WHERE rank_id >= 4 ORDER BY total_spent DESC LIMIT 5;\")",
+      "Bash(docker exec e-tech-market-backend-1 php artisan cache:clear)",
+      "Bash(docker exec e-tech-market-backend-1 php artisan cache:clear --tags=admin_dashboard)",
+      "Bash(docker exec e-tech-market-backend-1 php artisan tinker --execute=\"echo json_encode\\(App\\\\Services\\\\AdminDashboardService::new\\(\\)->getStats\\(''month'', null, null, ''daily''\\)[''top_customers''], JSON_PRETTY_PRINT\\);\")",
+      "Bash(docker exec e-tech-market-backend-1 php artisan route:list)",
+      "Bash(docker exec e-tech-market-backend-1 curl -s \"http://127.0.0.1/api/v1/admin/dashboard/stats?range=month\" -H \"Accept: application/json\")",
+      "Bash(docker exec e-tech-market-nginx-1 curl -s \"http://backend/api/v1/admin/dashboard/stats?range=month\")",
+      "Bash(docker exec e-tech-market-backend-1 tail -20 storage/logs/laravel.log)",
+      "Bash(docker restart e-tech-market-redis-1)"
     ]
   }
 }

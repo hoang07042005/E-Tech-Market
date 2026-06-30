@@ -4163,6 +4163,26 @@
     padding: 2px 0 10px;
 }
 
+.admLoyalList--scroll {
+    max-height: 280px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: #ddd transparent;
+}
+
+.admLoyalList--scroll::-webkit-scrollbar {
+    width: 6px;
+}
+
+.admLoyalList--scroll::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.admLoyalList--scroll::-webkit-scrollbar-thumb {
+    background: #ddd;
+    border-radius: 3px;
+}
+
 .admLoyalRow {
     display: flex;
     align-items: center;
@@ -4244,6 +4264,13 @@
     background: rgba(234, 88, 12, 0.12);
     color: #9a3412;
     border-color: rgba(234, 88, 12, 0.18);
+}
+
+.admVipBadge.tone-diamond {
+    background: rgba(139, 92, 246, 0.16);
+    color: #6d28d9;
+    border-color: rgba(139, 92, 246, 0.26);
+    box-shadow: 0 0 8px rgba(139, 92, 246, 0.2);
 }
 
 .admLoyalRight {

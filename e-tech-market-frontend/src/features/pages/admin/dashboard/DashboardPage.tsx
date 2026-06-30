@@ -628,7 +628,7 @@ export default function DashboardPage({
   };
   const recentOrders = (dash?.recent_orders ?? []).slice(0, 10);
   const recentReviews = (dash?.recent_reviews ?? []).slice(0, 2);
-  const topCustomers = (dash?.top_customers ?? []).slice(0, 3);
+  const topCustomers = (dash?.top_customers ?? []);
   const resolveUserAvatar = (url?: string | null) => {
     if (!url) return null;
     const s = url.trim();
@@ -2212,7 +2212,7 @@ export default function DashboardPage({
                 <MedalIcon />
               </button>
             </div>
-            <div className="admLoyalList">
+            <div className={`admLoyalList${topCustomers.length > 3 ? ' admLoyalList--scroll' : ''}`}>
               {(topCustomers.length ? topCustomers : []).map((c) => (
                 <div key={c.user_id} className="admLoyalRow">
                   <div className="admLoyalLeft">
@@ -2255,9 +2255,9 @@ export default function DashboardPage({
                 </div>
               )}
             </div>
-            <button type="button" className="admLoyalAllBtn">
+            {/* <button type="button" className="admLoyalAllBtn">
               Xem tất cả khách hàng
-            </button>
+            </button> */}
           </section>
         </div>
       </div>

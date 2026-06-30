@@ -301,6 +301,239 @@
   padding: 16px;
 }
 
+/* Membership Card - Thẻ thành viên */
+.pfMemberCard {
+  position: relative;
+  width: 100%;
+  max-width: 580px;
+  aspect-ratio: 1.6 / 1;
+  border-radius: 5px;
+  padding: 55px;
+  overflow: hidden;
+  border-top: 1px solid rgba(255,255,255,0.05);
+  border-left: 1px solid rgba(255,255,255,0.05);
+  cursor: default;
+}
+
+.pfMemberBg {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  border-radius: 5px;
+  z-index: 0;
+}
+
+.pfMemberBg img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.4;
+}
+
+.pfMemberBgOverlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(7, 20, 36, 0.9) 0%, rgba(7, 20, 36, 0.4) 100%);
+}
+
+.pfMemberContent {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+}
+
+.pfMemberHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.pfMemberBrand {
+  display: flex;
+  flex-direction: column;
+}
+
+.pfMemberBrandLabel {
+  font-family: 'Manrope', sans-serif;
+  font-size: 12px;
+  line-height: 1.1;
+  letter-spacing: 0.08em;
+  font-weight: 600;
+  color: #d0c6ab;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+.pfMemberTitle {
+  font-family: 'Manrope', sans-serif;
+  font-size: 24px;
+  line-height: 1.3;
+  font-weight: 700;
+  color: #fff;
+  margin: 0;
+}
+
+.pfMemberPoints {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: rgba(42, 53, 71, 0.4);
+  backdrop-filter: blur(12px);
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 225, 109, 0.2);
+}
+
+.pfMemberPointsValue {
+  font-family: 'Manrope', sans-serif;
+  font-size: 28px;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  font-weight: 800;
+  color: #e3b707;
+}
+
+.pfMemberPointsLabel {
+  font-family: 'Manrope', sans-serif;
+  font-size: 12px;
+  line-height: 1.1;
+  letter-spacing: 0.08em;
+  font-weight: 600;
+  color: #ffe16d;
+  margin-top: 4px;
+}
+
+.pfMemberTier {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.pfMemberTierName {
+  font-family: 'Manrope', sans-serif;
+  font-size: 32px;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  font-weight: 800;
+  color: #e3b707;
+  text-shadow: 0 0 20px rgba(227, 183, 7, 0.4);
+}
+
+.pfMemberTierInfo {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.pfMemberFooter {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+
+.pfMemberMeta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 11px;
+  line-height: 1.3;
+}
+
+.pfMemberMetaRow {
+  display: flex;
+  gap: 6px;
+}
+
+/* Member Card Progress */
+.pfMemberProgress {
+  padding-top: 8px;
+}
+
+.pfMemberProgressBar {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.pfMemberProgressTrack {
+  width: 100%;
+  height: 6px;
+  background-color: rgba(31, 43, 60, 1);
+  border-radius: 9999px;
+  overflow: hidden;
+}
+
+.pfMemberProgressFill {
+  height: 100%;
+  background: linear-gradient(to right, #e9c400, #ffe16d);
+  border-radius: 9999px;
+  box-shadow: 0 0 10px rgba(233, 196, 0, 0.4);
+}
+
+.pfMemberProgressInfo {
+  display: flex;
+  justify-content: space-between;
+}
+
+.pfMemberProgressLabel {
+  font-family: 'Manrope', sans-serif;
+  font-size: 14px;
+  color: #d0c6ab;
+}
+
+.pfMemberProgressValue {
+  font-family: 'Manrope', sans-serif;
+  font-size: 14px;
+  color: #ffe16d;
+}
+
+.pfMemberMaxRankMsg {
+  font-family: 'Manrope', sans-serif;
+  font-size: 14px;
+  line-height: 1.6;
+  font-weight: 400;
+  color: rgba(208, 198, 171, 0.8);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+}
+
+.pfMemberIconVerified {
+  font-size: 14px;
+  color: #ffe16d;
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  flex-shrink: 0;
+}
+
+/* Member Card Decor */
+.pfMemberDecor {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  transition: opacity 700ms;
+  opacity: 0.2;
+}
+
+.group:hover .pfMemberDecor {
+  opacity: 0.4;
+}
+
+.pfMemberDecorIcon {
+  font-size: 64px;
+  font-weight: 100;
+  color: #ffe16d;
+  font-variation-settings: 'FILL' 1;
+}
+
 .pfCardHead {
   display: flex;
   justify-content: space-between;
