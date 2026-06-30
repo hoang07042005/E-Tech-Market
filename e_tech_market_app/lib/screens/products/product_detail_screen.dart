@@ -1181,7 +1181,50 @@ Widget _buildGallery(Product current, List<ProductImage> images) {
                   ),
                 ),
               ],
+            )
+          else if (!hasFlashSale)
+            Text(
+              '${formatCurrency(displayPrice)} đ',
+              style: TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFFF26522),
+              ),
             ),
+          const SizedBox(height: 12),
+          // Bảng tính điểm thưởng
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            decoration: BoxDecoration(
+              color: const Color(0xFFFFF7ED),
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: const Color(0xFFFFEDD5)),
+            ),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Icon(Icons.stars, color: Colors.amber, size: 20),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: RichText(
+                    text: TextSpan(
+                      style: const TextStyle(fontSize: 13, color: Colors.black87, height: 1.4),
+                      children: [
+                        const TextSpan(text: '💡 Đặc quyền Hội viên: Mua ngay sản phẩm này và tích lũy thêm '),
+                        TextSpan(
+                          text: '+${(displayPrice / 100000).floor()} điểm',
+                          style: const TextStyle(color: Color(0xFFEA580C), fontWeight: FontWeight.bold),
+                        ),
+                        TextSpan(
+                          text: ' (tương đương tiết kiệm ${formatCurrency((displayPrice / 100000).floor() * 500)}đ cho các đơn sắm sửa phụ kiện lần sau).',
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
         ],
       ),
     );

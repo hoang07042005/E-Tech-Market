@@ -69,6 +69,7 @@ type OrderDetail = {
   amounts: {
     subtotal: number
     discount: number
+    points_discount?: number
     shipping_fee: number
     total: number
   }
@@ -593,9 +594,13 @@ export default function OrdersAdminPage() {
                       <span className="admOrderMoney">{fmtVnd(detail.amounts.shipping_fee)}đ</span>
                     </div>
                     <div className="admOrderPayRow">
-                      <span>Mã giảm giá</span>
+                      <span>Giảm giá khuyến mãi</span>
                       <span className="admOrderMoney neg">-{fmtVnd(detail.amounts.discount)}đ</span>
                     </div>
+                    {(detail.amounts.points_discount ?? 0) > 0 && <div className="admOrderPayRow">
+                      <span>Giảm giá (Điểm thưởng)</span>
+                      <span className="admOrderMoney neg">-{fmtVnd(detail.amounts.points_discount ?? 0)}đ</span>
+                    </div>}
                     <div className="admOrderPayDivider" />
                     <div className="admOrderPayRow total">
                       <span>Thành tiền</span>

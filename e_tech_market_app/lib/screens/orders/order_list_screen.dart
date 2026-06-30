@@ -161,6 +161,10 @@ class _OrderListScreenState extends State<OrderListScreen> {
               onPressed: () => setState(() => _isSearching = true),
             ),
         ],
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(48),
+          child: _buildTopTabs(),
+        ),
       ),
       body: Container(
         color: Theme.of(context).colorScheme.surface,
@@ -195,9 +199,7 @@ class _OrderListScreenState extends State<OrderListScreen> {
                           physics: const AlwaysScrollableScrollPhysics(),
                           padding: const EdgeInsets.all(16),
                           children: [
-                            const SizedBox(height: 12),
-                            _buildStatusChips(),
-                            const SizedBox(height: 12),
+                            const SizedBox(height: 8),
                             ..._filteredOrders.map((order) => _buildOrderCard(context, order)).toList(),
                             const SizedBox(height: 16),
                             _buildPagination(),
@@ -210,58 +212,64 @@ class _OrderListScreenState extends State<OrderListScreen> {
 
   Widget _buildSearchSection() => const SizedBox.shrink();
 
-  Widget _buildStatusChips() {
+  Widget _buildTopTabs() {
+    final tabs = [
+      {'value': 'all', 'label': 'Tất cả'},
+      {'value': 'pending', 'label': 'Chờ xác nhận'},
+      {'value': 'processing', 'label': 'Chờ lấy hàng'}, // Changed from 'Đã xác nhận'
+      {'value': 'shipped', 'label': 'Chờ giao hàng'}, // Changed from 'Đang giao'
+      {'value': 'delivered', 'label': 'Đã giao'},
+      {'value': 'completed', 'label': 'Hoàn thành'},
+      {'value': 'returned', 'label': 'Hoàn trả'},
+      {'value': 'cancelled', 'label': 'Đã hủy'},
+    ];
+
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-      decoration: BoxDecoration(color: Theme.of(context).colorScheme.surface, borderRadius: BorderRadius.circular(12)),
-      child: Row(
-        children: [
-          Text(Trans.orderStatus, style: const TextStyle(fontWeight: FontWeight.w600)),
-          const SizedBox(width: 12),
-          Expanded(
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                children: [
-                  _statusChip('all', 'Tất cả'),
-                  const SizedBox(width: 8),
-                  _statusChip('pending', 'Chờ xác nhận'),
-                  const SizedBox(width: 8),
-                  _statusChip('processing', 'Đã xác nhận'),
-                  const SizedBox(width: 8),
-                  _statusChip('paid', 'Đang chuẩn bị'),
-                  const SizedBox(width: 8),
-                  _statusChip('shipped', 'Đang giao'),
-                  const SizedBox(width: 8),
-                  _statusChip('delivered', 'Đã giao'),
-                  const SizedBox(width: 8),
-                  _statusChip('completed', 'Hoàn thành'),
-                  const SizedBox(width: 8),
-                  _statusChip('returned', 'Hoàn trả'),
-                  const SizedBox(width: 8),
-                  _statusChip('cancelled', 'Đã hủy'),
-                ],
+      width: double.infinity,
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surface,
+        border: Border(bottom: BorderSide(color: Theme.of(context).colorScheme.outline, width: 0.2)),
+      ),
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Row(
+          children: tabs.map((tab) {
+            final isSelected = _statusFilter == tab['value'];
+            return InkWell(
+              onTap: () {
+                setState(() {
+                  _statusFilter = tab['value'] as String;
+                  _page = 1; // Reset to page 1 when changing filter
+                });
+                _loadOrders(page: 1);
+              },
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                decoration: BoxDecoration(
+                  border: Border(
+                    bottom: BorderSide(
+                      color: isSelected ? const Color(0xFFF26522) : Colors.transparent,
+                      width: 2,
+                    ),
+                  ),
+                ),
+                child: Text(
+                  tab['label'] as String,
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                    color: isSelected ? const Color(0xFFF26522) : Theme.of(context).colorScheme.onSurface,
+                  ),
+                ),
               ),
-            ),
-          ),
-        ],
+            );
+          }).toList(),
+        ),
       ),
     );
   }
 
-  Widget _statusChip(String value, String label) {
-    final selected = _statusFilter == value;
-    return ChoiceChip(
-      label: Text(label, style: TextStyle(color: selected ? Theme.of(context).colorScheme.surface : Theme.of(context).colorScheme.onSurface, fontSize: 13)),
-      selected: selected,
-      onSelected: (_) => setState(() => _statusFilter = value),
-      selectedColor: const Color(0xFFF26522),
-      backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
-      side: BorderSide.none,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      showCheckmark: false,
-    );
-  }
+
 
   Widget _buildOrderCard(BuildContext context, dynamic order) {
     if (order is! Map<String, dynamic>) return const SizedBox.shrink();
@@ -270,7 +278,7 @@ class _OrderListScreenState extends State<OrderListScreen> {
     final code = order['order_code']?.toString() ?? '#$id';
     final date = _formatDate(order['created_at']?.toString());
     // Đã sửa đổi: Sửa lỗi NetworkUtils.formatPrice không định nghĩa thành hàm _formatMoney cục bộ
-    final finalPrice = _formatMoney(order['subtotal_amount']);
+    final finalPrice = _formatMoney(order['total_amount']);
     final status = (order['status'] ?? '').toString().toLowerCase();
     final meta = _statusMeta(status);
 

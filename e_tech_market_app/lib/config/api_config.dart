@@ -147,7 +147,18 @@ class ApiConfig {
     try {
       final s = await Socket.connect(ip, _backendPort, timeout: timeout);
       s.destroy();
-      return ip;
+      
+      // Xác minh thêm bằng HTTP request để tránh nhận diện nhầm thiết bị khác
+      final client = HttpClient();
+      client.connectionTimeout = timeout;
+      final request = await client.getUrl(Uri.parse('http://$ip:$_backendPort/'));
+      final response = await request.close().timeout(timeout);
+      client.close();
+      
+      if (response.statusCode >= 200) {
+        return ip;
+      }
+      return null;
     } catch (_) {
       return null;
     }

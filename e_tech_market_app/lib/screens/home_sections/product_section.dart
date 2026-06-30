@@ -148,8 +148,10 @@ class _ProductCard extends StatelessWidget {
                 : Trans.defaultProductExcerpt;
     final imageUrl = _resolveProductImageUrl(product);
     final displayPrice = _getDisplayPrice(product);
-    final oldPrice = _getDisplayOldPrice(product);
-    final discountPercent = _getDiscountPercent(displayPrice, oldPrice);
+    final displayPriceMax = _hasMultiplePrices(product) ? _getMaxDisplayPrice(product) : null;
+    final displayOldPrice = _hasMultiplePrices(product) ? null : _getDisplayOldPrice(product);
+    final showDiscountBadge = _showDiscountBadge(product);
+    final discountPercent = _getDiscountPercent(displayPrice, displayOldPrice);
     final rating =
         double.tryParse(product['avg_rating']?.toString() ?? '0') ?? 0;
     final ratingCount = (product['reviews_count'] as num?)?.toInt() ?? 0;
@@ -206,11 +208,11 @@ class _ProductCard extends StatelessWidget {
                         child: Container(
                           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                           decoration: BoxDecoration(
-                            color: discountPercent > 0 ? Colors.red : _brandColor,
+                            color: (showDiscountBadge && discountPercent > 0) ? Colors.red : _brandColor,
                             borderRadius: BorderRadius.circular(3),
                           ),
                           child: Text(
-                            discountPercent > 0 ? '-$discountPercent%' : Trans.newBadge,
+                            (showDiscountBadge && discountPercent > 0) ? '-$discountPercent%' : Trans.newBadge,
                             style: const TextStyle(
                                 color: Colors.white,
                                 fontSize: 10,
@@ -266,16 +268,33 @@ class _ProductCard extends StatelessWidget {
                       runSpacing: 2,
                       crossAxisAlignment: WrapCrossAlignment.center,
                       children: [
-                        Text(
-                          '${_formatPrice(displayPrice)} đ',
-                          style: const TextStyle(
-                              color: _brandColor,
-                              fontSize: 13,
-                              fontWeight: FontWeight.w800),
-                        ),
-                        if (oldPrice != null && oldPrice > displayPrice)
+                        if (showDiscountBadge)
                           Text(
-                            '${_formatPrice(oldPrice)} đ',
+                            '${_formatPrice(displayPrice)} đ',
+                            style: const TextStyle(
+                                color: _brandColor,
+                                fontSize: 12,
+                                fontWeight: FontWeight.w800),
+                          )
+                        else if (displayPriceMax != null)
+                          Text(
+                            '${_formatPrice(displayPrice)} - ${_formatPrice(displayPriceMax)} đ',
+                            style: const TextStyle(
+                                color: _brandColor,
+                                fontSize: 12,
+                                fontWeight: FontWeight.w800),
+                          )
+                        else
+                          Text(
+                            '${_formatPrice(displayPrice)} đ',
+                            style: const TextStyle(
+                                color: _brandColor,
+                                fontSize: 12,
+                                fontWeight: FontWeight.w800),
+                          ),
+                        if (displayOldPrice != null && displayOldPrice > displayPrice && showDiscountBadge)
+                          Text(
+                            '${_formatPrice(displayOldPrice)} đ',
                             style: TextStyle(
                               color: Theme.of(context).colorScheme.onSurfaceVariant,
                               fontSize: 10,
@@ -303,10 +322,10 @@ class _ProductCard extends StatelessWidget {
                         ),
                         const SizedBox(width: 6),
                         _CircleActionButton(
-                          icon: Icons.add_shopping_cart_outlined,
+                          icon: Icons.arrow_forward_rounded,
                           color: Colors.white,
                           backgroundColor: _brandColor,
-                          onTap: onAddToCart,
+                          onTap: onTap,
                         ),
                       ],
                     ),
@@ -373,6 +392,44 @@ class _ProductCard extends StatelessWidget {
     }
 
     return double.tryParse(product['price']?.toString() ?? '0') ?? 0;
+  }
+
+  bool _hasMultiplePrices(Map<String, dynamic> product) {
+    final variants = product['variants'] as List<dynamic>?;
+    if (variants != null && variants.length > 1) {
+      final sortedVariants = List.from(variants);
+      sortedVariants.sort((a, b) {
+        final aPrice = double.tryParse(a['effective_price']?.toString() ?? '0') ?? 0;
+        final bPrice = double.tryParse(b['effective_price']?.toString() ?? '0') ?? 0;
+        return aPrice.compareTo(bPrice);
+      });
+      final lowest = double.tryParse(sortedVariants.first['effective_price']?.toString() ?? '0') ?? 0.0;
+      final highest = double.tryParse(sortedVariants.last['effective_price']?.toString() ?? '0') ?? 0.0;
+      return lowest != highest;
+    }
+    return false;
+  }
+
+  double? _getMaxDisplayPrice(Map<String, dynamic> product) {
+    final variants = product['variants'] as List<dynamic>?;
+    if (variants != null && variants.isNotEmpty) {
+      final sortedVariants = List.from(variants);
+      sortedVariants.sort((a, b) {
+        final aPrice = double.tryParse(a['effective_price']?.toString() ?? '0') ?? 0;
+        final bPrice = double.tryParse(b['effective_price']?.toString() ?? '0') ?? 0;
+        return aPrice.compareTo(bPrice);
+      });
+      return double.tryParse(sortedVariants.last['effective_price']?.toString() ?? '0') ?? 0.0;
+    }
+    return null;
+  }
+
+  bool _showDiscountBadge(Map<String, dynamic> product) {
+    final variants = product['variants'] as List<dynamic>?;
+    if (variants == null || variants.length != 1) return false;
+    final originalPrice = double.tryParse(variants[0]['price']?.toString() ?? '0') ?? 0.0;
+    final finalPrice = double.tryParse(variants[0]['effective_price']?.toString() ?? '0') ?? 0.0;
+    return finalPrice < originalPrice;
   }
 
   double? _getDisplayOldPrice(Map<String, dynamic> product) {

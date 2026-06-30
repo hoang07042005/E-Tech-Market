@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:e_tech_market_app/services/admin_orders_service.dart';
 import '../../../config/api_config.dart';
 // Đảm bảo import đúng đường dẫn chứa file NetworkUtils trong dự án của bạn
@@ -832,7 +832,20 @@ class _AdminOrderDetailScreenState extends State<AdminOrderDetailScreen> {
                           children: [
                             _buildAmountRow('Tạm tính', amounts['subtotal'] ?? 0),
                             _buildAmountRow('Phí vận chuyển', amounts['shipping_fee'] ?? 0),
-                            _buildAmountRow('Mã giảm giá', amounts['discount'] ?? 0, isDiscount: true),
+                            if ((amounts['discount'] ?? 0) > 0)
+                              _buildAmountRow(
+                                (_detail?['coupon_code'] != null && _detail!['coupon_code'].toString().isNotEmpty) 
+                                    ? 'Mã giảm giá (${_detail!['coupon_code']})' 
+                                    : 'Giảm giá', 
+                                amounts['discount'] ?? 0, 
+                                isDiscount: true,
+                              ),
+                            if ((amounts['points_discount'] ?? 0) > 0)
+                              _buildAmountRow(
+                                'Giảm giá (Điểm thưởng)', 
+                                amounts['points_discount'] ?? 0, 
+                                isDiscount: true,
+                              ),
                             const Divider(height: 16, color: Color(0xFFF1F5F9)),
                             _buildAmountRow('Thành tiền', amounts['total'] ?? 0, isTotal: true),
                             const SizedBox(height: 6),

@@ -14,6 +14,7 @@ type OrderDetail = {
   currency?: string | null
   subtotal_amount?: number | string
   discount_amount?: number | string
+  points_discount?: number | string
   shipping_fee?: number | string
   total_amount?: number | string
   created_at?: string | null
@@ -233,6 +234,7 @@ export default function OrderDetailPage() {
 
   const subtotal = Number(order.subtotal_amount ?? 0)
   const discount = Number(order.discount_amount ?? 0)
+  const pointsDiscount = Number(order.points_discount ?? 0)
   const shipping = Number(order.shipping_fee ?? 0)
   const total = Number(order.total_amount ?? 0)
   const inProfile = (location.pathname || '').toLowerCase().startsWith('/profile/')
@@ -513,7 +515,8 @@ export default function OrderDetailPage() {
             <div className="oudCardTitle">Tổng kết đơn hàng</div>
             <div className="oudSumRow"><span>Tạm tính</span><span>{fmtVnd(subtotal)}đ</span></div>
             <div className="oudSumRow"><span>Phí vận chuyển</span><span>{fmtVnd(shipping)}đ</span></div>
-            <div className="oudSumRow"><span>Giảm giá khuyến mãi</span><span className="neg">-{fmtVnd(discount)}đ</span></div>
+            {discount > 0 && <div className="oudSumRow"><span>Giảm giá khuyến mãi</span><span className="neg">-{fmtVnd(discount)}đ</span></div>}
+            {pointsDiscount > 0 && <div className="oudSumRow"><span>Giảm giá (Điểm thưởng)</span><span className="neg">-{fmtVnd(pointsDiscount)}đ</span></div>}
             <div className="oudSumDivider" />
             <div className="oudSumTotal"><span>Tổng cộng</span><span>{fmtVnd(total)}đ</span></div>
             <div className="oudSumVat">Đã bao gồm VAT</div>

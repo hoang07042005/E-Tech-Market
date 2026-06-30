@@ -939,7 +939,7 @@ class _AdminDashboardView extends StatelessWidget {
                   method: 'cod',
                   title: 'COD (Thanh toán khi nhận)',
                   desc:
-                      'Khách thanh toán tiền mặt cho shipper hoặc tại cửa hàng khi nhận hàng.\nGhi chú: Không cần Partner ID hay API — chỉ bật/tắt phương thức này cho đơn hàng.',
+                      'Thanh toán tiền mặt khi nhận hàng hoặc tại cửa hàng.',
                   imagePath: 'assets/images/COD.png',
                   enabled: codEnabled,
                 ),
@@ -961,7 +961,7 @@ class _AdminDashboardView extends StatelessWidget {
     required bool enabled,
   }) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(12),
@@ -975,70 +975,58 @@ class _AdminDashboardView extends StatelessWidget {
           ),
         ],
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Container(
-                width: 48,
-                height: 48,
-                padding: const EdgeInsets.all(6),
-                decoration: BoxDecoration(
-                  color: Colors.grey.shade100,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Image.asset(imagePath, fit: BoxFit.contain),
-              ),
-              Switch(
-                value: enabled,
-                activeColor: Colors.white,
-                activeTrackColor: Colors.green,
-                inactiveThumbColor: Colors.white,
-                inactiveTrackColor: Colors.grey.shade300,
-                onChanged: (val) async {
-                  final success =
-                      await provider.updatePaymentGateway(method, val);
-                  if (success) {
-                    if (context.mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text(
-                              'Cập nhật trạng thái cổng thanh toán thành công',
-                              style: TextStyle(color: Colors.white)),
-                          backgroundColor: Colors.green,
-                        ),
-                      );
-                    }
-                  } else {
-                    if (context.mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Có lỗi xảy ra, vui lòng thử lại',
-                              style: TextStyle(color: Colors.white)),
-                          backgroundColor: Colors.red,
-                        ),
-                      );
-                    }
-                  }
-                },
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          Text(title,
-              style:
-                  const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
-          const SizedBox(height: 4),
-          Text(
+      child: SwitchListTile(
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        value: enabled,
+        activeColor: Colors.white,
+        activeTrackColor: Colors.green,
+        inactiveThumbColor: Colors.white,
+        inactiveTrackColor: Colors.grey.shade300,
+        title: Text(
+          title,
+          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+        ),
+        subtitle: Padding(
+          padding: const EdgeInsets.only(top: 4),
+          child: Text(
             desc,
             style: TextStyle(
-                fontSize: 12,
-                color:
-                    Theme.of(context).colorScheme.onSurface.withOpacity(0.6)),
+              fontSize: 12,
+              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+            ),
           ),
-        ],
+        ),
+        secondary: Container(
+          width: 74,
+          height: 74,
+          padding: const EdgeInsets.all(0),
+          
+          child: Image.asset(imagePath, fit: BoxFit.contain),
+        ),
+        onChanged: (val) async {
+          final success = await provider.updatePaymentGateway(method, val);
+          if (success) {
+            if (context.mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('Cập nhật trạng thái cổng thanh toán thành công',
+                      style: TextStyle(color: Colors.white)),
+                  backgroundColor: Colors.green,
+                ),
+              );
+            }
+          } else {
+            if (context.mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('Có lỗi xảy ra, vui lòng thử lại',
+                      style: TextStyle(color: Colors.white)),
+                  backgroundColor: Colors.red,
+                ),
+              );
+            }
+          }
+        },
       ),
     );
   }

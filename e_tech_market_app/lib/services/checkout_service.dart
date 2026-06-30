@@ -147,6 +147,15 @@ class CheckoutService {
     }
   }
 
+  static Future<Map<String, dynamic>> fetchLoyaltyData() async {
+    try {
+      final response = await DioClient.instance.get('/me/loyalty');
+      return response.data as Map<String, dynamic>;
+    } catch (_) {
+      return {};
+    }
+  }
+
   static Future<Map<String, dynamic>> createOrder({
     required String shippingName,
     required String shippingPhone,
@@ -157,6 +166,7 @@ class CheckoutService {
     required List<Map<String, dynamic>> items,
     int? shippingMethodId,
     int? shippingZoneId,
+    int? pointsUsed,
   }) async {
     try {
       final response = await DioClient.instance.post('/orders/from-items', data: {
@@ -172,6 +182,7 @@ class CheckoutService {
         'items': items,
         'shipping_method_id': shippingMethodId,
         'shipping_zone_id': shippingZoneId,
+        if (pointsUsed != null && pointsUsed > 0) 'points_used': pointsUsed,
       });
       return response.data as Map<String, dynamic>;
     } on DioException catch (e) {

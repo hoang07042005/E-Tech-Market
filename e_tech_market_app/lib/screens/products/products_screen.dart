@@ -1171,25 +1171,7 @@ LayoutBuilder(
 
     // Định nghĩa nhanh cấu trúc Nút Bấm Giỏ Hàng để dùng chung cho cả 2 trường hợp
     final cartButton = GestureDetector(
-      onTap: () async {
-        final hasSession = await AuthService.hasSession();
-        if (!hasSession) {
-          if (!mounted) return;
-          AppDialogs.showLoginRequiredDialog(context);
-          return;
-        }
-        try {
-          await CartService.addToCart(productId, 1);
-          if (!mounted) return;
-          AppSnackBar.showSuccess(context, Trans.addedToCart);
-        } catch (e) {
-          if (!mounted) return;
-          AppSnackBar.showError(
-            context, 
-            Trans.errorLabel + e.toString().replaceFirst('Exception: ', '')
-          );
-        }
-      },
+      onTap: () => _navigateToProductDetail(product),
       child: Container(
         width: 32,
         height: 32,
@@ -1198,8 +1180,8 @@ LayoutBuilder(
           borderRadius: BorderRadius.circular(16),
         ),
         child: const Icon(
-          Icons.add_shopping_cart,
-          size: 16,
+          Icons.arrow_forward_rounded,
+          size: 18,
           color: Colors.white,
         ),
       ),

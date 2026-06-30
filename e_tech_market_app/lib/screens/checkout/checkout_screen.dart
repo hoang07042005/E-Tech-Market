@@ -47,6 +47,11 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   bool _couponLoading = false;
   bool _acceptedPolicy = false;
 
+  Map<String, dynamic>? _loyaltyData;
+  int _pointsToUse = 0;
+  final TextEditingController _pointsCtrl = TextEditingController();
+  bool _hasAuth = false;
+
   @override
   void initState() {
     super.initState();
@@ -60,6 +65,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     _addressCtrl.dispose();
     _notesCtrl.dispose();
     _couponCtrl.dispose();
+    _pointsCtrl.dispose();
     super.dispose();
   }
 
@@ -72,6 +78,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     try {
       final user = await AuthService.getCurrentUser();
       if (user != null) {
+        _hasAuth = true;
         _nameCtrl.text = user['name']?.toString() ?? '';
         _phoneCtrl.text = user['phone']?.toString() ?? '';
 
@@ -97,12 +104,18 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       final cart = await CartService.fetchCart();
       final payAvail = await CheckoutService.fetchPaymentConfig();
       final shipData = await CheckoutService.fetchShippingConfig();
+      
+      Map<String, dynamic>? loyaltyData;
+      if (_hasAuth) {
+        loyaltyData = await CheckoutService.fetchLoyaltyData();
+      }
 
       if (!mounted) return;
 
       setState(() {
         _cart = cart;
         _payAvail = payAvail;
+        _loyaltyData = loyaltyData;
 
         if (shipData['policy'] != null) {
           _shipPolicy = ShippingPolicy.fromJson(shipData['policy']);
@@ -171,8 +184,49 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
 
   double get _discountAmount => _toDouble(_appliedCoupon?['discount_amount']);
 
+  double get _pointsDiscountAmount => _pointsToUse * 500.0;
+  
+  int get _maxPointsAllowed {
+    final baseForPoints = (_totalPrice - _discountAmount + _shippingFee).clamp(0, double.infinity);
+    return (baseForPoints * 0.20 / 500).floor();
+  }
+
   double get _grandTotal =>
-      (_totalPrice - _discountAmount + _shippingFee).clamp(0, double.infinity);
+      (_totalPrice - _discountAmount + _shippingFee - _pointsDiscountAmount).clamp(0, double.infinity);
+
+  void _applyPoints() {
+    final points = int.tryParse(_pointsCtrl.text.trim()) ?? 0;
+    final currentPoints = (_loyaltyData?['current_points'] as num?)?.toInt() ?? 0;
+    final maxAllowed = _maxPointsAllowed;
+    
+    if (points <= 0) {
+      AppSnackBar.showError(context, 'Số điểm không hợp lệ');
+      return;
+    }
+    
+    if (points > currentPoints) {
+      AppSnackBar.showError(context, 'Bạn không đủ điểm');
+      return;
+    }
+    
+    if (points > maxAllowed) {
+      AppSnackBar.showError(context, 'Chỉ được dùng tối đa $maxAllowed điểm cho đơn hàng này');
+      return;
+    }
+    
+    setState(() {
+      _pointsToUse = points;
+      _pointsCtrl.clear();
+      FocusScope.of(context).unfocus();
+    });
+  }
+  
+  void _removePoints() {
+    setState(() {
+      _pointsToUse = 0;
+      _pointsCtrl.clear();
+    });
+  }
 
   Future<void> _applyCoupon() async {
     final code = _couponCtrl.text.trim();
@@ -251,6 +305,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
         items: items,
         shippingMethodId: _selectedShipMethodId,
         shippingZoneId: _selectedShipZoneId,
+        pointsUsed: _pointsToUse,
       );
 
       final orderId = _toInt(orderRes['id']);
@@ -1145,7 +1200,82 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
         if (_appliedCoupon != null)
           _summaryRow(Trans.discount, '-${_formatCurrency(_discountAmount)}',
               valueColor: const Color(0xFF16A34A)),
+        if (_pointsToUse > 0)
+          _summaryRow('Giảm giá (Điểm thưởng)', '-${_formatCurrency(_pointsDiscountAmount)}',
+              valueColor: const Color(0xFF16A34A)),
         const SizedBox(height: 16),
+        if (_hasAuth && _loyaltyData != null && (_loyaltyData!['current_points'] ?? 0) > 0)
+          Container(
+            margin: const EdgeInsets.only(bottom: 16),
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.surface,
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: Theme.of(context).colorScheme.outline, width: 0.15),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text('Điểm thưởng: ${_loyaltyData!['current_points']}', style: const TextStyle(fontWeight: FontWeight.bold)),
+                    const Text('1 điểm = 500đ', style: TextStyle(color: Colors.orange, fontSize: 13)),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                Row(
+                  children: [
+                    Expanded(
+                      child: SizedBox(
+                        height: 44,
+                        child: TextField(
+                          controller: _pointsCtrl,
+                          keyboardType: TextInputType.number,
+                          decoration: InputDecoration(
+                            hintText: 'Số điểm muốn dùng',
+                            hintStyle: const TextStyle(color: Colors.grey, fontSize: 14),
+                            contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+                            border: OutlineInputBorder(borderRadius: BorderRadius.circular(6), borderSide: BorderSide(color: Colors.grey.shade300)),
+                            enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(6), borderSide: BorderSide(color: Colors.grey.shade300)),
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    SizedBox(
+                      height: 44,
+                      child: ElevatedButton(
+                        onPressed: _applyPoints,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFFFFEDD5),
+                          foregroundColor: const Color(0xFFF26522),
+                          elevation: 0,
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
+                        ),
+                        child: const Text('Áp dụng', style: TextStyle(fontWeight: FontWeight.bold)),
+                      ),
+                    ),
+                  ],
+                ),
+                if (_pointsToUse > 0) ...[
+                  const SizedBox(height: 8),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text('Đã dùng $_pointsToUse điểm (-${_formatCurrency(_pointsDiscountAmount)})', style: const TextStyle(color: Color(0xFF16A34A), fontSize: 13)),
+                      InkWell(
+                        onTap: _removePoints,
+                        child: const Text('Hủy', style: TextStyle(color: Colors.red, fontSize: 13, decoration: TextDecoration.underline)),
+                      ),
+                    ],
+                  ),
+                ],
+                const SizedBox(height: 4),
+                Text('(Tối đa dùng $_maxPointsAllowed điểm cho đơn hàng này)', style: const TextStyle(color: Colors.grey, fontSize: 12)),
+              ],
+            ),
+          ),
         if (_appliedCoupon == null)
           Column(
             children: [

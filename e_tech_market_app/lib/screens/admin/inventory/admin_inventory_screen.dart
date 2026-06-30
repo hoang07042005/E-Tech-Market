@@ -17,6 +17,8 @@ class _AdminInventoryScreenState extends State<AdminInventoryScreen> {
   String _searchQuery = '';
   String _filterStatus = 'all'; // all, low, out
   int _lowStockThreshold = 10; // Ngưỡng động đồng bộ từ Web
+  bool _isSearching = false;
+  final TextEditingController _searchCtrl = TextEditingController();
 
   @override
   void initState() {
@@ -155,53 +157,64 @@ class _AdminInventoryScreenState extends State<AdminInventoryScreen> {
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
       appBar: AppBar(
-        title: Text(Trans.inventoryManagement, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+        title: _isSearching
+            ? TextField(
+                controller: _searchCtrl,
+                autofocus: true,
+                style: const TextStyle(fontSize: 16),
+                decoration: InputDecoration(
+                  hintText: 'Tìm theo tên, biến thể hoặc SKU...',
+                  hintStyle: TextStyle(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5)),
+                  border: InputBorder.none,
+                ),
+                onChanged: (value) => setState(() => _searchQuery = value),
+              )
+            : Text(Trans.inventoryManagement, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
         backgroundColor: Theme.of(context).colorScheme.surface,
         foregroundColor: Theme.of(context).colorScheme.onSurface,
         elevation: 0,
         actions: [
+          if (_isSearching)
+            IconButton(
+              icon: const Icon(Icons.close),
+              onPressed: () => setState(() {
+                _isSearching = false;
+                _searchQuery = '';
+                _searchCtrl.clear();
+              }),
+            )
+          else
+            IconButton(
+              icon: const Icon(Icons.search_outlined),
+              onPressed: () => setState(() => _isSearching = true),
+            ),
           IconButton(
             icon: const Icon(Icons.refresh),
             onPressed: _loadInventory,
           )
         ],
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(48),
+          child: Container(
+            width: double.infinity,
+            decoration: BoxDecoration(
+              border: Border(bottom: BorderSide(color: Theme.of(context).colorScheme.outline, width: 0.2)),
+            ),
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: [
+                  _buildFilterChip('Tất cả', 'all', _countAll),
+                  _buildFilterChip('Sắp hết hàng', 'low', _countLowStock),
+                  _buildFilterChip('Đã hết hàng', 'out', _countOutStock),
+                ],
+              ),
+            ),
+          ),
+        ),
       ),
       body: Column(
         children: [
-          Container(
-            color: Theme.of(context).colorScheme.surface,
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              children: [
-                TextField(
-                  onChanged: (val) => setState(() => _searchQuery = val),
-                  decoration: InputDecoration(
-                    hintText: 'Tìm theo tên, biến thể hoặc SKU...',
-                    prefixIcon: const Icon(Icons.search),
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
-                    filled: true,
-                    fillColor: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.1),
-                    isDense: true,
-                  ),
-                ),
-                const SizedBox(height: 12),
-                // Bọc trong SingleChildScrollView để tránh tràn màn hình khi kích thước badge dài ra
-                SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Row(
-                    children: [
-                      _buildFilterChip('Tất cả', 'all', _countAll),
-                      const SizedBox(width: 8),
-                      _buildFilterChip('Sắp hết hàng', 'low', _countLowStock),
-                      const SizedBox(width: 8),
-                      _buildFilterChip('Đã hết hàng', 'out', _countOutStock),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const Divider(height: 1),
           Expanded(
             child: _isLoading 
               ? const Center(child: CircularProgressIndicator(color: Color(0xFFF26522)))
@@ -221,48 +234,57 @@ class _AdminInventoryScreenState extends State<AdminInventoryScreen> {
   // Cập nhật hàm nhận thêm tham số count để hiển thị số lượng badge quả bóng số tròn
   Widget _buildFilterChip(String label, String value, int count) {
     final isSelected = _filterStatus == value;
-    return ChoiceChip(
-      label: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(label),
-          const SizedBox(width: 6),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-            decoration: BoxDecoration(
-                color: isSelected 
-                    ? Colors.white.withOpacity(0.25) 
-                    : (value == 'out' && count > 0 ?  Theme.of(context).colorScheme.error.withValues(alpha: 0.1) : Theme.of(context).colorScheme.primary.withValues(alpha: 0.1)),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Text(
-              '$count',
-              style: TextStyle(
-                fontSize: 11,
-                fontWeight: FontWeight.bold,
-                // Đổi màu chữ động theo trạng thái của Tab
-                color: isSelected 
-                    ? Colors.white 
-                    : (value == 'out' && count > 0 ?  Theme.of(context).colorScheme.error : Theme.of(context).colorScheme.onSurface),
-              ),
+    return InkWell(
+      onTap: () {
+        setState(() => _filterStatus = value);
+      },
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        decoration: BoxDecoration(
+          border: Border(
+            bottom: BorderSide(
+              color: isSelected ? const Color(0xFFF26522) : Colors.transparent,
+              width: 2,
             ),
           ),
-        ],
-      ),
-      selected: isSelected,
-      onSelected: (selected) {
-        if (selected) setState(() => _filterStatus = value);
-      },
-      selectedColor: const Color(0xFFF26522),
-      labelStyle: TextStyle(
-        color: isSelected ? Colors.white : Theme.of(context).colorScheme.onSurface,
-        fontWeight: FontWeight.bold,
-        fontSize: 13
-      ),
-      backgroundColor: Theme.of(context).colorScheme.surface,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-        side: BorderSide(color: isSelected ? Colors.transparent : Theme.of(context).colorScheme.outline, width: 0.15),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                color: isSelected ? const Color(0xFFF26522) : Theme.of(context).colorScheme.onSurface,
+              ),
+            ),
+            const SizedBox(width: 6),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+              decoration: BoxDecoration(
+                color: isSelected 
+                    ? const Color(0xFFF26522).withOpacity(0.15) 
+                    : (value == 'out' && count > 0 
+                        ? Theme.of(context).colorScheme.error.withValues(alpha: 0.1) 
+                        : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.1)),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Text(
+                '$count',
+                style: TextStyle(
+                  fontSize: 11,
+                  fontWeight: FontWeight.bold,
+                  color: isSelected 
+                      ? const Color(0xFFF26522) 
+                      : (value == 'out' && count > 0 
+                          ? Theme.of(context).colorScheme.error 
+                          : Theme.of(context).colorScheme.onSurface),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

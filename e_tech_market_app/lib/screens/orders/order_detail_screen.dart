@@ -695,6 +695,7 @@ String _formatMoney(dynamic value) {
     // Amounts
     final subtotal = _formatMoney(order['subtotal_amount']);
     final discount = _formatMoney(order['discount_amount']);
+    final pointsDiscount = _formatMoney(order['points_discount']);
     final shipping = _formatMoney(order['shipping_fee']);
     final total = _formatMoney(order['total_amount']);
 
@@ -728,8 +729,20 @@ String _formatMoney(dynamic value) {
           _buildAmountRow('Tạm tính', '$subtotal₫'),
           const SizedBox(height: 6),
           _buildAmountRow('Phí vận chuyển', '$shipping₫'),
-          const SizedBox(height: 6),
-          _buildAmountRow('Mã giảm giá', '-$discount₫', isDiscount: true),
+          if (discount != '0')
+            _buildAmountRow(
+              (order['coupon_code'] != null && order['coupon_code'].toString().isNotEmpty) 
+                  ? 'Mã giảm giá (${order['coupon_code']})' 
+                  : 'Giảm giá',
+              '-$discount₫', 
+              isDiscount: true,
+            ),
+          if (pointsDiscount != '0')
+            _buildAmountRow(
+              'Giảm giá (Điểm thưởng)',
+              '-$pointsDiscount₫', 
+              isDiscount: true,
+            ),
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 8),
             child: Divider(height: 1, color: const Color(0xFFF1F5F9)),

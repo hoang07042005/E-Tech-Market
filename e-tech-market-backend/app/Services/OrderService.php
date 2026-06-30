@@ -117,7 +117,7 @@ class OrderService
             }
 
             // 3. Coupon Discount
-            $discount = $flashSaleDiscount;
+            $discount = 0;
             $coupon = null;
             if (! empty($data['coupon_code'])) {
                 $coupon = Coupon::query()->lockForUpdate()->where('code', $data['coupon_code'])->first();
@@ -125,7 +125,7 @@ class OrderService
                     throw ValidationException::withMessages(['coupon_code' => 'Mã giảm giá không hợp lệ hoặc đã hết hạn']);
                 }
 
-                $calcBase = max(0, $subtotal - $flashSaleDiscount);
+                $calcBase = $subtotal;
 
                 if ($calcBase < (float) $coupon->min_order_amount) {
                     throw ValidationException::withMessages(['coupon_code' => 'Giá trị đơn hàng chưa đạt tối thiểu để áp dụng mã này']);
