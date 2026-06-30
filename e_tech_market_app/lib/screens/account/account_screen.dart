@@ -109,56 +109,72 @@ class _AccountScreenState extends State<AccountScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            // Profile Image
-            Container(
-              padding: const EdgeInsets.all(4),
-              decoration: const BoxDecoration(
-                color: Colors.white,
-                shape: BoxShape.circle,
-              ),
-              child: Container(
-                width: 100,
-                height: 100,
-                decoration: const BoxDecoration(
-                  color: Color(0xFFEF7A45),
-                  shape: BoxShape.circle,
-                ),
-                child: ClipOval(
-                  child: avatarUrl != null && avatarUrl.isNotEmpty
-                      ? Image.network(
-                          avatarUrl,
-                          fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) {
-                            return Center(
+            // Profile Section (Avatar on the left, Name & Email on the right)
+            Row(
+              children: [
+                // Profile Image
+                Container(
+                  padding: const EdgeInsets.all(4),
+                  decoration: const BoxDecoration(
+                    color: Colors.white,
+                    shape: BoxShape.circle,
+                  ),
+                  child: Container(
+                    width: 72,
+                    height: 72,
+                    decoration: const BoxDecoration(
+                      color: Color(0xFFEF7A45),
+                      shape: BoxShape.circle,
+                    ),
+                    child: ClipOval(
+                      child: avatarUrl != null && avatarUrl.isNotEmpty
+                          ? Image.network(
+                              avatarUrl,
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) {
+                                return Center(
+                                  child: Text(
+                                    _getAvatarInitial(),
+                                    style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 28),
+                                  ),
+                                );
+                              },
+                            )
+                          : Center(
                               child: Text(
                                 _getAvatarInitial(),
-                                style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 36),
+                                style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 28),
                               ),
-                            );
-                          },
-                        )
-                      : Center(
-                          child: Text(
-                            _getAvatarInitial(),
-                            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 36),
-                          ),
-                        ),
+                            ),
+                    ),
+                  ),
                 ),
-              ),
+                const SizedBox(width: 16),
+                
+                // Name and Email
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        name,
+                        style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.onSurface),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        email,
+                        style: TextStyle(fontSize: 14, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6)),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ),
-            const SizedBox(height: 16),
-            
-            // Name and Email
-            Text(
-              name,
-              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.onSurface),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              email,
-              style: TextStyle(fontSize: 14, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6)),
-            ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 24),
 
             // Điểm thưởng & Hạng thành viên
             if (_isLoadingLoyalty)
@@ -235,8 +251,20 @@ class _AccountScreenState extends State<AccountScreen> {
                             ),
                             const SizedBox(height: 24),
                             Text(
-                              _loyaltyData!['membership_rank']?['rank_name'] != null ? 'Thành viên (${_loyaltyData!['membership_rank']['rank_name']})' : 'Thành viên',
-                              style: const TextStyle(color: Color(0xFFE3B707), fontSize: 22, fontWeight: FontWeight.bold),
+                              (_loyaltyData!['membership_rank']?['rank_name'] != null ? 'Thành viên (${_loyaltyData!['membership_rank']['rank_name']})' : 'Thành viên').toUpperCase(), // Viết hoa toàn bộ
+                              style: TextStyle(
+                                color: const Color(0xFFE3B707), // Giữ màu cũ của bạn
+                                fontSize: 20,
+                                fontWeight: FontWeight.w800, // Rất đậm
+                                letterSpacing: 1.2, // Giãn chữ nhìn rất "pro"
+                                shadows: [
+                                  Shadow(
+                                    blurRadius: 4.0,
+                                    color: Colors.black.withOpacity(0.3),
+                                    offset: const Offset(1.0, 1.0),
+                                  ),
+                                ],
+                              ),
                             ),
                             const SizedBox(height: 8),
                             Row(
