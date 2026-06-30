@@ -50,7 +50,7 @@ class FlashSaleController extends Controller
     {
         $this->flashSaleService->deleteSale($flashSale);
 
-        abort($e->getCode() ?: 400, 'Flash Sale deleted successfully']);
+        abort(204, 'Flash Sale deleted successfully');
     }
 
     // Items management
@@ -67,7 +67,7 @@ class FlashSaleController extends Controller
             $this->flashSaleService->removeItem($flashSale, $item);
             return response()->json(['message' => 'Item removed successfully']);
         } catch (\Exception $e) {
-            return response()->json(['message' => $e->getMessage());
+            return response()->json(['message' => $e->getMessage()]);
         }
     }
 

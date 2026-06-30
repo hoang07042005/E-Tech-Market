@@ -67,13 +67,20 @@ export async function apiFetch<T>(
 ): Promise<T> {
   const { silent401 = false, ...fetchOptions } = options as RequestInit & { silent401?: boolean }
   const normalizedPath = path.startsWith('/') ? path : `/${path}`
-  const baseHasApi = API_BASE_URL.endsWith('/api')
-  const pathHasApi = normalizedPath === '/api' || normalizedPath.startsWith('/api/')
-  const effectivePath =
-    baseHasApi && pathHasApi ? normalizedPath.slice(4) || '/' : !baseHasApi && !pathHasApi ? `/api${normalizedPath}` : normalizedPath
 
-  const versionedPath = effectivePath.replace(/^\/api\//, '/api/v1/');
-  const url = `${API_BASE_URL}${versionedPath}`
+  let effectivePath: string
+  if (!API_BASE_URL) {
+    // Dev mode: dùng relative path qua proxy (ví dụ: /api/auth/login)
+    effectivePath = normalizedPath.startsWith('/api') ? normalizedPath : `/api${normalizedPath}`
+  } else {
+    // Prod mode: nối base URL với path (ví dụ: http://localhost:8000/api/auth/login)
+    const needsApiPrefix = !normalizedPath.startsWith('/api')
+    effectivePath = needsApiPrefix ? `${API_BASE_URL}/api${normalizedPath}` : `${API_BASE_URL}${normalizedPath}`
+  }
+
+  // Thêm version /v1/ vào path (chỉ /api/ -> /api/v1/, không thay đổi /api/v1/ hay /api/v2/)
+  const versionedPath = effectivePath.replace(/^\/api\//, '/api/v1/').replace(/^\/api$/, '/api/v1');
+  const url = versionedPath
 
   if (typeof window !== 'undefined') {
     ensureAuthExpiryMigrated()

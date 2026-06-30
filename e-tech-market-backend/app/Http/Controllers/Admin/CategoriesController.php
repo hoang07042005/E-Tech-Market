@@ -50,9 +50,9 @@ class CategoriesController extends Controller
     {
         try {
             $this->categoryService->deleteCategory($category);
-            abort(422, 'Category deleted']);
+            abort(422, 'Category deleted');
         } catch (\Exception $e) {
-            return response()->json(['message' => $e->getMessage());
+            return response()->json(['message' => $e->getMessage()]);
         }
     }
 }

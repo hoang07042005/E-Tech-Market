@@ -46,10 +46,10 @@ class ProductNewsController extends Controller
     {
         try {
             $this->newsService->deleteProductNews($product, $news);
-            abort($code, 'Deleted']);
+            abort(204, 'Deleted');
         } catch (\Exception $e) {
             $code = $e->getCode() ?: 404;
-            return response()->json(['message' => $e->getMessage());
+            return response()->json(['message' => $e->getMessage()]);
         }
     }
 }

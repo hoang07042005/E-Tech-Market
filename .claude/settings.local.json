@@ -26,7 +26,8 @@
       "Bash(docker exec e-tech-market-backend-1 curl -s \"http://127.0.0.1/api/v1/admin/dashboard/stats?range=month\" -H \"Accept: application/json\")",
       "Bash(docker exec e-tech-market-nginx-1 curl -s \"http://backend/api/v1/admin/dashboard/stats?range=month\")",
       "Bash(docker exec e-tech-market-backend-1 tail -20 storage/logs/laravel.log)",
-      "Bash(docker restart e-tech-market-redis-1)"
+      "Bash(docker restart e-tech-market-redis-1)",
+      "Bash(php artisan route:list)"
     ]
   }
 }
