@@ -18,12 +18,21 @@ class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _otpController = TextEditingController();
   bool _isLoading = false;
   String? _error;
   bool _obscurePassword = true;
+  bool _requires2FA = false;
 
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
+
+    if (_requires2FA && _otpController.text.trim().isEmpty) {
+      setState(() {
+        _error = 'Vui lòng nhập mã 2FA.';
+      });
+      return;
+    }
 
     setState(() {
       _isLoading = true;
@@ -31,16 +40,28 @@ class _LoginScreenState extends State<LoginScreen> {
     });
 
     try {
-      await AuthService.login(
+      final result = await AuthService.login(
         email: _emailController.text.trim(),
         password: _passwordController.text,
+        otp: _requires2FA ? _otpController.text.trim() : null,
       );
+
+      if (result['requires_2fa'] == true) {
+        if (!mounted) return;
+        setState(() {
+          _requires2FA = true;
+          _error = result['message']?.toString() ?? 'Vui lòng nhập mã 2FA.';
+        });
+        return;
+      }
+
       if (!mounted) return;
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(builder: (_) => const EntryPoint()),
       );
     } catch (exception) {
       setState(() {
+        _requires2FA = false;
         _error = exception.toString().replaceFirst('Exception: ', '');
       });
     } finally {
@@ -279,18 +300,42 @@ class _LoginScreenState extends State<LoginScreen> {
                                   return null;
                                 },
                               ),
-                              const SizedBox(height: 8),
-                                Align(
-                                  alignment: Alignment.centerRight,
-                                  child: TextButton(
-                                    onPressed: () {
-                                      Navigator.of(context).push(
-                                        MaterialPageRoute(builder: (_) => const ForgotPasswordScreen()),
-                                      );
-                                    },
-                                    child: Text(Trans.forgotPassword + '?', style: TextStyle(color: Color(0xFF6B7280))),
+                              if (_requires2FA) ...[
+                                const SizedBox(height: 16),
+                                Text('Mã 2FA', style: TextStyle(color: Color(0xFF7C6B61), fontSize: 13)),
+                                TextFormField(
+                                  style: TextStyle(color: Colors.black),
+                                  controller: _otpController,
+                                  keyboardType: TextInputType.number,
+                                  maxLength: 6,
+                                  decoration: _inputDecoration('Nhập mã 6 chữ số').copyWith(
+                                    prefixIcon: const Icon(Icons.lock_clock, color: Colors.grey, size: 20),
                                   ),
+                                  validator: (value) {
+                                    if (_requires2FA && (value == null || value.trim().isEmpty)) {
+                                      return 'Vui lòng nhập mã 2FA';
+                                    }
+                                    return null;
+                                  },
                                 ),
+                                const SizedBox(height: 8),
+                                Text(
+                                  'Nhập mã từ ứng dụng Google Authenticator hoặc Authy.',
+                                  style: TextStyle(color: Color(0xFF6B7280), fontSize: 12),
+                                ),
+                              ],
+                              const SizedBox(height: 8),
+                              Align(
+                                alignment: Alignment.centerRight,
+                                child: TextButton(
+                                  onPressed: () {
+                                    Navigator.of(context).push(
+                                      MaterialPageRoute(builder: (_) => const ForgotPasswordScreen()),
+                                    );
+                                  },
+                                  child: Text(Trans.forgotPassword + '?', style: TextStyle(color: Color(0xFF6B7280))),
+                                ),
+                              ),
                             ],
                           ),
                         ),
@@ -318,10 +363,10 @@ class _LoginScreenState extends State<LoginScreen> {
                                   children: [
                                     SizedBox(height: 18, width: 18, child: CircularProgressIndicator(color: Color(0xFFFFFFFF), strokeWidth: 2)),
                                     const SizedBox(width: 8),
-                                    Text('ĐANG ĐĂNG NHẬP...', style: TextStyle(letterSpacing: 1, fontWeight: FontWeight.w700, color: Color(0xFFFFFFFF))),
+                                    Text(_requires2FA ? 'ĐANG XÁC NHẬN...' : 'ĐANG ĐĂNG NHẬP...', style: TextStyle(letterSpacing: 1, fontWeight: FontWeight.w700, color: Color(0xFFFFFFFF))),
                                   ],
                                 )
-                              : Text(Trans.loginButton, style: TextStyle(letterSpacing: 2, fontWeight: FontWeight.w700, color: Color(0xFFFFFFFF))),
+                              : Text(_requires2FA ? 'XÁC NHẬN' : Trans.loginButton, style: TextStyle(letterSpacing: 2, fontWeight: FontWeight.w700, color: Color(0xFFFFFFFF))),
                         ),
                         const SizedBox(height: 20),
                         Row(children: [Expanded(child: Divider(color: Color(0xFFEDE6E0))), Padding(padding: EdgeInsets.symmetric(horizontal: 12), child: Text(Trans.orText, style: TextStyle(color: Color(0xFFBDBDBD), fontWeight: FontWeight.w600, fontSize: 12))), Expanded(child: Divider(color: Color(0xFFEDE6E0))) ]),
@@ -365,4 +410,13 @@ class _LoginScreenState extends State<LoginScreen> {
       ),
     );
   }
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    _otpController.dispose();
+    super.dispose();
+  }
 }
+

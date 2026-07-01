@@ -14,14 +14,22 @@ class AuthService {
   static Future<Map<String, dynamic>> login({
     required String email,
     required String password,
+    String? otp,
   }) async {
     try {
       final response = await DioClient.instance.post('/auth/login', data: {
         'email': email,
         'password': password,
+        if (otp != null && otp.isNotEmpty) 'otp': otp,
       });
       return await _parseAuthResponse(response.data);
     } catch (e) {
+      if (e is DioException) {
+        final data = e.response?.data;
+        if (e.response?.statusCode == 403 && data is Map && data['requires_2fa'] == true) {
+          return parseLoginResponse(data);
+        }
+      }
       _handleError(e, 'Đăng nhập thất bại.');
       rethrow;
     }
@@ -73,6 +81,11 @@ class AuthService {
   }
 
   static Future<Map<String, dynamic>> _parseAuthResponse(dynamic body) async {
+    final parsed = parseLoginResponse(body);
+    if (parsed['requires_2fa'] == true) {
+      return parsed;
+    }
+
     if (body is! Map<String, dynamic>) {
       throw Exception('Phản hồi máy chủ không hợp lệ.');
     }
@@ -86,6 +99,21 @@ class AuthService {
 
     await saveSession(token: token, user: user);
     return {'user': user, 'token': token};
+  }
+
+  static Map<String, dynamic> parseLoginResponse(dynamic body) {
+    if (body is Map) {
+      final data = Map<String, dynamic>.from(
+        body.map((key, value) => MapEntry(key.toString(), value)),
+      );
+      if (data['requires_2fa'] == true) {
+        return {
+          'requires_2fa': true,
+          'message': data['message']?.toString() ?? 'Vui lòng nhập mã 2FA.',
+        };
+      }
+    }
+    return {'requires_2fa': false};
   }
 
   static void _handleError(dynamic e, String defaultMessage) {
