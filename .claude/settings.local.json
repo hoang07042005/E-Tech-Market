@@ -27,7 +27,26 @@
       "Bash(docker exec e-tech-market-nginx-1 curl -s \"http://backend/api/v1/admin/dashboard/stats?range=month\")",
       "Bash(docker exec e-tech-market-backend-1 tail -20 storage/logs/laravel.log)",
       "Bash(docker restart e-tech-market-redis-1)",
-      "Bash(php artisan route:list)"
+      "Bash(php artisan route:list)",
+      "Bash(docker exec -it e-tech-market-backend-app-1 php artisan migrate:rollback --step=1)",
+      "Bash(docker exec -it e-tech-market-backend-1 php artisan migrate:rollback --step=1)",
+      "Bash(docker exec e-tech-market-backend-1 php artisan migrate:rollback --step=1)",
+      "Bash(docker exec e-tech-market-backend-1 php artisan migrate:status)",
+      "Bash(docker exec e-tech-market-backend-1 php artisan migrate)",
+      "Bash(docker exec e-tech-market-db-1 psql -U postgres -c \"DROP DATABASE IF EXISTS etech_market;\")",
+      "Bash(docker exec e-tech-market-db-1 psql -U postgres -c \"CREATE DATABASE etech_market;\")",
+      "Bash(docker cp d:/E-Tech-Market/database_real_data_backup.sql e-tech-market-db-1:/tmp/etech_backup.sql)",
+      "Bash(docker exec -i e-tech-market-db-1 psql -U postgres -d etech_market -f /tmp/etech_backup.sql)",
+      "Bash(docker exec e-tech-market-db-1 ls -la /tmp/etech_backup.sql)",
+      "Bash(docker exec e-tech-market-db-1 psql -U postgres -d etech -c \"SELECT COUNT\\(*\\) as count, ''users'' as table_name FROM users UNION ALL SELECT COUNT\\(*\\), ''orders'' FROM orders UNION ALL SELECT COUNT\\(*\\), ''products'' FROM products UNION ALL SELECT COUNT\\(*\\), ''membership_ranks'' FROM membership_ranks\")",
+      "Bash(docker exec e-tech-market-db-1 psql -U postgres -d etech -c \"SELECT id, migration, batch FROM migrations ORDER BY id DESC LIMIT 15\")",
+      "Bash(docker exec e-tech-market-db-1 psql -U postgres -d etech -c \"\\\\d users\")",
+      "Bash(docker exec e-tech-market-backend-1 php artisan migrate:rollback --path=/database/migrations/2026_06_29_113627_create_loyalty_tables.php)",
+      "Bash(docker exec e-tech-market-db-1 psql -U postgres -d etech -c \"DELETE FROM migrations WHERE migration LIKE ''%loyalty%''; DROP TABLE IF EXISTS point_history CASCADE; DROP TABLE IF EXISTS membership_ranks CASCADE;\")",
+      "Bash(docker exec e-tech-market-db-1 psql -U postgres -d etech -c \"ALTER TABLE users DROP COLUMN IF EXISTS rank_id; ALTER TABLE users DROP COLUMN IF EXISTS current_points; ALTER TABLE users DROP COLUMN IF EXISTS total_spent; ALTER TABLE orders DROP COLUMN IF EXISTS points;\")",
+      "Bash(docker exec e-tech-market-db-1 psql -U postgres -d etech -c \"DELETE FROM migrations WHERE migration LIKE ''%2026_06%'';\")",
+      "Bash(docker exec e-tech-market-db-1 psql -U postgres -d etech -c \"SELECT migration, batch FROM migrations ORDER BY id DESC LIMIT 5\")",
+      "Bash(docker exec e-tech-market-db-1 psql -U postgres -d etech -c \"SELECT name, province FROM users WHERE name LIKE ''%Viet%'' OR name LIKE ''%Hong%'' OR name LIKE ''%%'' LIMIT 10\")"
     ]
   }
 }

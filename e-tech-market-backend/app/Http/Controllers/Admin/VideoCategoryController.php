@@ -64,6 +64,11 @@ class VideoCategoryController extends Controller
         return response()->json((new VideoCategoryResource($videoCategory))->resolve());
     }
 
+    public function show(VideoCategory $videoCategory): JsonResponse
+    {
+        return response()->json((new VideoCategoryResource($videoCategory))->resolve());
+    }
+
     public function destroy(VideoCategory $videoCategory): JsonResponse
     {
         $videoCategory->delete();

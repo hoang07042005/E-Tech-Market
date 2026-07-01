@@ -18,8 +18,6 @@ export default function VideoCategoryPage() {
   const [confirmOpen, setConfirmOpen] = useState(false)
   const [pendingDeleteCategory, setPendingDeleteCategory] = useState<Category | null>(null)
 
-  const hasAuth = true  // Always authenticated — behind ProtectedRoute
-
   const [formData, setFormData] = useState({
     name: '',
     slug: '',
