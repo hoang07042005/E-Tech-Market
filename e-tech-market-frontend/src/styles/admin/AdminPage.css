@@ -515,6 +515,25 @@
     border: 2px solid #ffffff;
 }
 
+.adminNotificationBadge {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    min-width: 20px;
+    height: 20px;
+    padding: 0 6px;
+    background: var(--admin-accent);
+    color: #ffffff;
+    font-size: 12px;
+    font-weight: 700;
+    border-radius: 10px;
+    border: 2px solid #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+}
+
 .adminNotifMenu {
     position: absolute;
     right: 0;

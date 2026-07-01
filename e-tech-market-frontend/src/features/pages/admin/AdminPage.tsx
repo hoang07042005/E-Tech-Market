@@ -633,7 +633,14 @@ export default function AdminPage() {
                 onClick={() => setNotifOpen((v) => !v)}
               >
                 <BellIcon />
-                {notifUnread > 0 && <span className="adminNotificationDot" aria-hidden />}
+                {notifUnread > 0 && (
+                  <>
+                    <span className="adminNotificationDot" aria-hidden />
+                    <span className="adminNotificationBadge" aria-label={`${notifUnread} thông báo mới`}>
+                      {notifUnread > 99 ? '99+' : notifUnread}
+                    </span>
+                  </>
+                )}
               </button>
               {notifOpen ? (
                 <div className="adminNotifMenu" role="menu">
