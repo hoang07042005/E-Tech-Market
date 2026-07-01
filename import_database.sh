@@ -22,6 +22,8 @@ if [ ! -f "$INPUT_FILE" ]; then
   exit 1
 fi
 
+export PGCLIENTENCODING=UTF8
+
 echo "Importing database from ${INPUT_FILE}"
-cat "$INPUT_FILE" | $COMPOSE_CMD exec -T db psql -U postgres -d etech
+$COMPOSE_CMD exec -T db psql -U postgres -d etech -v ON_ERROR_STOP=1 < "$INPUT_FILE"
 echo "Import completed"
