@@ -46,6 +46,15 @@ const resolveImageUrl = (url: string | null) => {
   return `${API_BASE_URL}${s.startsWith('/') ? s : `/${s}`}`
 }
 
+// Extract YouTube thumbnail from video_url to avoid broken thumbnail_url stored in DB
+const getVideoThumbnail = (videoUrl: string, fallbackUrl?: string | null): string => {
+  const ytMatch = videoUrl?.match(/(?:youtube\.com\/(?:[^/]+\/.+\/|(?:v|e(?:mbed)?\/)|.*[?&]v=)|youtu\.be\/)([^"&?/\s]{11})/)
+  if (ytMatch) {
+    return `https://img.youtube.com/vi/${ytMatch[1]}/hqdefault.jpg`
+  }
+  return resolveImageUrl(fallbackUrl ?? null)
+}
+
 function renderVideoPlayer(videoUrl: string, title?: string | null) {
   if (!videoUrl) return null
 
@@ -246,7 +255,7 @@ export default function VideoDetailPage() {
                       >
                         <div className="vdpRecThumbWrap">
                           <img
-                            src={resolveImageUrl(rec.thumbnail_url || (rec.product?.main_image_url ?? null))}
+                            src={getVideoThumbnail(rec.video_url, rec.product?.main_image_url)}
                             alt={rec.title || ''}
                             className="vdpRecThumb"
                           />

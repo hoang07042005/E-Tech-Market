@@ -31,7 +31,7 @@ class AdminDashboardService
             $cacheKey .= '_'.md5($startDateParam.'_'.$endDateParam);
         }
 
-        return Cache::tags(['admin_dashboard'])->remember($cacheKey, 600, function () use ($range, $startDateParam, $endDateParam, $resolution) {
+        return Cache::tags(['admin_dashboard'])->remember($cacheKey, 60, function () use ($range, $startDateParam, $endDateParam, $resolution) {
             $now = Carbon::now();
             $from30d = $now->copy()->subDays(30);
             $from7d = $now->copy()->subDays(7);
@@ -93,15 +93,20 @@ class AdminDashboardService
 
     private function buildKpi(Carbon $from30d, Carbon $from7d, Carbon $now): array
     {
-        $paidOrders30d = Order::query()
-            ->where('payment_status', 'paid')
-            ->where('created_at', '>=', $from30d)
-            ->count();
+        // Count paid orders OR completed COD orders
+        $revenueQuery = Order::query()
+            ->where(function ($q) {
+                $q->where('payment_status', 'paid')
+                  ->orWhere(function ($q2) {
+                      $q2->whereIn('status', ['completed', 'delivered'])
+                         ->where('payment_status', '!=', 'refunded');
+                  });
+            })
+            ->where('created_at', '>=', $from30d);
 
-        $revenue30d = (float) Order::query()
-            ->where('payment_status', 'paid')
-            ->where('created_at', '>=', $from30d)
-            ->sum('total_amount');
+        $paidOrders30d = (clone $revenueQuery)->count();
+
+        $revenue30d = (float) (clone $revenueQuery)->sum('total_amount');
 
         $currentOrders = Order::query()
             ->whereIn('status', ['pending', 'processing'])
@@ -277,7 +282,13 @@ class AdminDashboardService
     private function buildAnalyticsSeries(Carbon $analyticsStart, Carbon $toEnd, string $resolution): array
     {
         $analyticsByDay = Order::query()
-            ->where('payment_status', 'paid')
+            ->where(function ($q) {
+                $q->where('payment_status', 'paid')
+                  ->orWhere(function ($q2) {
+                      $q2->whereIn('status', ['completed', 'delivered'])
+                         ->where('payment_status', '!=', 'refunded');
+                  });
+            })
             ->whereBetween('created_at', [$analyticsStart, $toEnd])
             ->selectRaw('DATE(created_at) as d, SUM(total_amount) as sum, COUNT(id) as cnt')
             ->groupBy('d')
@@ -287,7 +298,13 @@ class AdminDashboardService
 
         $itemsSoldByDay = DB::table('order_items')
             ->join('orders', 'orders.id', '=', 'order_items.order_id')
-            ->where('orders.payment_status', '=', 'paid')
+            ->where(function ($q) {
+                $q->where('orders.payment_status', '=', 'paid')
+                  ->orWhere(function ($q2) {
+                      $q2->whereIn('orders.status', ['completed', 'delivered'])
+                         ->where('orders.payment_status', '!=', 'refunded');
+                  });
+            })
             ->whereBetween('orders.created_at', [$analyticsStart, $toEnd])
             ->selectRaw('DATE(orders.created_at) as d, SUM(order_items.quantity) as qty')
             ->groupBy('d')
@@ -351,7 +368,13 @@ class AdminDashboardService
             ->join('products', 'products.id', '=', 'order_items.product_id')
             ->leftJoin('categories', 'categories.id', '=', 'products.category_id')
             ->whereNull('products.deleted_at')
-            ->where('orders.payment_status', '=', 'paid')
+            ->where(function ($q) {
+                $q->where('orders.payment_status', '=', 'paid')
+                  ->orWhere(function ($q2) {
+                      $q2->whereIn('orders.status', ['completed', 'delivered'])
+                         ->where('orders.payment_status', '!=', 'refunded');
+                  });
+            })
             ->whereBetween('orders.created_at', [$analyticsStart, $toEnd])
             ->groupBy('categories.name')
             ->select([

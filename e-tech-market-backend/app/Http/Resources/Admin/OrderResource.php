@@ -99,7 +99,7 @@ class OrderResource extends JsonResource
                 'from_label' => (string) $fromLabel,
                 'to_label' => (string) $toLabel,
                 'note' => $h->note ? (string) $h->note : null,
-                'changed_at' => $h->created_at ? $h->created_at->toISOString() : null,
+                'changed_at' => $h->created_at ? $h->created_at->format('Y-m-d\TH:i:s') : null,
                 'changed_by' => $h->changedBy ? [
                     'id' => (int) $h->changedBy->id,
                     'name' => (string) ($h->changedBy->name ?? '—'),
@@ -119,11 +119,11 @@ class OrderResource extends JsonResource
                 'media' => $this->returnRequest->media ?? null,
                 'admin_note' => $this->returnRequest->admin_note ? (string) $this->returnRequest->admin_note : null,
                 'refund_proof' => $this->returnRequest->refund_proof ?? null,
-                'approved_at' => $this->returnRequest->approved_at ? $this->returnRequest->approved_at->toISOString() : null,
-                'refunded_at' => $this->returnRequest->refunded_at ? $this->returnRequest->refunded_at->toISOString() : null,
-                'customer_confirmed_at' => $this->returnRequest->customer_confirmed_at ? $this->returnRequest->customer_confirmed_at->toISOString() : null,
-                'created_at' => $this->returnRequest->created_at ? $this->returnRequest->created_at->toISOString() : null,
-                'updated_at' => $this->returnRequest->updated_at ? $this->returnRequest->updated_at->toISOString() : null,
+                'approved_at' => $this->returnRequest->approved_at ? $this->returnRequest->approved_at->format('Y-m-d\TH:i:s') : null,
+                'refunded_at' => $this->returnRequest->refunded_at ? $this->returnRequest->refunded_at->format('Y-m-d\TH:i:s') : null,
+                'customer_confirmed_at' => $this->returnRequest->customer_confirmed_at ? $this->returnRequest->customer_confirmed_at->format('Y-m-d\TH:i:s') : null,
+                'created_at' => $this->returnRequest->created_at ? $this->returnRequest->created_at->format('Y-m-d\TH:i:s') : null,
+                'updated_at' => $this->returnRequest->updated_at ? $this->returnRequest->updated_at->format('Y-m-d\TH:i:s') : null,
             ];
         }
 

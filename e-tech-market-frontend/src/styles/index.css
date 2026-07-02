@@ -1873,7 +1873,8 @@ html.dark .oudCardMiniHead,
 html.dark .oudItemSub,
 html.dark .oudAddrSub,
 html.dark .oudPaySub,
-html.dark .oudSumVat {
+html.dark .oudSumVat,
+html.dark .oudStepTime {
     color: var(--et-text-muted);
 }
 

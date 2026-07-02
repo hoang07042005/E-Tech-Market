@@ -2373,6 +2373,10 @@
     margin-top: 12px;
 }
 
+.admOrderStatusCard {
+    box-shadow: 0 6px 20px rgba(15, 23, 42, .04);
+}
+
 .admOrderCardHead {
     display: flex;
     align-items: center;
@@ -2424,12 +2428,69 @@
     display: flex;
     align-items: center;
     gap: 8px;
+    padding: 6px 10px;
+    border: 1px solid rgba(15, 23, 42, .08);
+    border-radius: 999px;
+    background: rgba(248, 250, 252, .95);
 }
 
 .admOrderStatusPickLabel {
     font-weight: 600;
     font-size: 12px;
     color: #64748b;
+}
+
+.admOrderStatusForm {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 240px;
+    margin-top: 10px;
+    padding: 14px 16px;
+    border: 1px solid rgba(15, 23, 42, .08);
+    border-radius: 14px;
+    background: linear-gradient(135deg, #fffdf9 0%, #f8fafc 100%);
+}
+
+.admOrderStatusFormText {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 220px;
+}
+
+.admOrderStatusFormLabel {
+    font-weight: 700;
+    font-size: 13px;
+    color: #0f172a;
+}
+
+.admOrderStatusFormHint {
+    margin: 0;
+    font-size: 12px;
+    font-weight: 600;
+    color: #64748b;
+    line-height: 1.4;
+}
+
+.admOrderStatusFormControls {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 1;
+    justify-content: flex-end;
+    min-width: 280px;
+}
+
+.admOrderStatusFormControls select {
+    flex: 1;
+    min-width: 0;
+    border-radius: 10px;
+}
+
+.admOrderStatusFormControls button {
+    white-space: nowrap;
+    min-width: 92px;
 }
 
 .admOrderStatusControlRow {
@@ -2452,59 +2513,84 @@
 
 .admOrderSteps {
     display: flex;
-    flex-wrap: nowrap;
-    gap: 10px;
-    padding-top: 15px;
-    overflow-x: auto;
-    /* overflow-x: hidden; */
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-
-}
-
-.admOrderStep {
-    flex: 0 0 auto;
-    min-width: 200px;
-}
-
-.admOrderStep {
-    display: grid;
-    grid-template-columns: 28px 1fr;
-    gap: 8px;
     align-items: center;
-    padding: 10px;
-    border-radius: 12px;
-    border: 1px dashed rgba(15, 23, 42, .12);
-    background: #fff;
+    justify-content: space-between;
+    gap: 14px;
+    padding-top: 28px;
+    position: relative;
 }
 
-.admOrderStep.done {
-    border-style: solid;
-    border-color: rgba(249, 115, 22, .22);
-    background: rgba(249, 115, 22, .06);
+.admOrderSteps::before {
+    content: '';
+    position: absolute;
+    top: 42px;
+    left: 18px;
+    right: 18px;
+    height: 2px;
+    background: rgb(34 197 94 / 56%);
+    z-index: 0;
+}
+
+.admOrderStep {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 6px;
+    min-width: 0;
+    padding: 0;
+    background: transparent;
+    border: none;
+    z-index: 1;
+    padding: 0 10px;
+}
+
+.admOrderStep:not(:last-child) {
+    flex: 1;
 }
 
 .admOrderStepDot {
-    width: 24px;
-    height: 24px;
+    position: relative;
+    width: 28px;
+    height: 28px;
     border-radius: 999px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    font-weight: 600;
-    font-size: 12px;
-    background: rgba(148, 163, 184, .18);
+    font-weight: 700;
+    font-size: 14px;
+    background: #f8fafc;
     color: #475569;
+    border: 1px solid rgba(148, 163, 184, .28);
+    transition: background .2s ease, border-color .2s ease, color .2s ease;
 }
 
-.admOrderStep.done .admOrderStepDot {
-    background: rgba(249, 115, 22, .18);
-    color: #9a3412;
+.admOrderStep.done .admOrderStepDot,
+.admOrderStep.active .admOrderStepDot {
+    background: #16a34a;
+    color: #fff;
+    border-color: rgba(34, 197, 94, .45);
 }
 
 .admOrderStepLabel {
-    font-weight: 600;
+    font-weight: 700;
     font-size: 12px;
+    color: #0f172a;
+    white-space: normal;
+    line-height: 1.4;
+    text-align: center;
+}
+
+.admOrderStepTime {
+    margin-top: 4px;
+    font-size: 11px;
+    color: #64748b;
+    font-weight: 600;
+}
+
+.admOrderStep.done .admOrderStepLabel,
+.admOrderStep.active .admOrderStepLabel {
     color: #0f172a;
 }
 
@@ -2796,9 +2882,14 @@
         grid-template-columns: 1fr
     }
 
-    .admOrderSteps {
-        flex-wrap: wrap;
-        overflow-x: hidden
+    .admOrderStatusForm {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .admOrderStatusFormControls {
+        min-width: 0;
+        justify-content: stretch;
     }
 }
 

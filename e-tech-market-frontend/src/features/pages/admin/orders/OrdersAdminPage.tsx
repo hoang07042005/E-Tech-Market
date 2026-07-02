@@ -158,11 +158,40 @@ function fmtVnd(n: number) {
   return n.toLocaleString('vi-VN')
 }
 
+function parseDateString(iso: string) {
+  const raw = iso.trim()
+  if (!raw) return null
+
+  const normalized = raw.includes('T') ? raw : raw.replace(' ', 'T')
+  const naiveTimestamp = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?$/.test(normalized)
+
+  if (naiveTimestamp) {
+    // Backend stores local Vietnam time (UTC+7) as naive strings.
+    // Explicitly tag as +07:00 so the Date object is correct UTC internally,
+    // then Intl.DateTimeFormat(Asia/Ho_Chi_Minh) will display the right local time
+    // regardless of the browser's own timezone.
+    const d = new Date(normalized + '+07:00')
+    return Number.isNaN(d.getTime()) ? null : d
+  }
+
+  const d = new Date(normalized)
+  return Number.isNaN(d.getTime()) ? null : d
+}
+
 function fmtViTime(iso?: string | null) {
-  if (!iso) return '—'
-  const d = new Date(iso)
-  if (Number.isNaN(d.getTime())) return '—'
-  return d.toLocaleString('vi-VN')
+  const d = iso ? parseDateString(iso) : null
+  if (!d) return '—'
+
+  return new Intl.DateTimeFormat('vi-VN', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: false,
+    timeZone: 'Asia/Ho_Chi_Minh',
+  }).format(d)
 }
 
 export default function OrdersAdminPage() {
@@ -441,7 +470,7 @@ export default function OrdersAdminPage() {
               </div>
             </div>
 
-            <section className="admOrderCard">
+            <section className="admOrderCard admOrderStatusCard">
               <div className="admOrderCardHead">
                 <div className="admOrderCardTitle">Quản lý trạng thái</div>
                 <div className="admOrderStatusPick">
@@ -449,56 +478,95 @@ export default function OrdersAdminPage() {
                   <span className={`admOrdersStatus2 tone-${detail.status_tone}`}>{detail.status_label}</span>
                 </div>
               </div>
-              <div className="admOrderStatusControlRow">
-                <div className="admOrderStatusControlLabel">Cập nhật trạng thái</div>
-                <select
-                  className="admOrdersSelect"
-                  value={draftStatus}
-                  onChange={(e) => setDraftStatus(e.target.value)}
-                  aria-label="Chọn trạng thái đơn hàng"
-                >
-                  {ORDER_STATUS_STEPS.map((s) => {
-                    const isTerminal = detail.status === 'cancelled' || detail.status === 'returned' || detail.status === 'completed'
-                    // Admin không được set completed/returned/cancelled. Chỉ hiển thị option này khi đơn đang ở đúng trạng thái (để xem).
-                    if ((s.value === 'completed' || s.value === 'returned' || s.value === 'cancelled') && detail.status !== s.value) return null
-                    const disableBack =
-                      s.value !== 'cancelled' &&
-                      s.step > 0 &&
-                      detail.status_step > 0 &&
-                      s.step < detail.status_step
-                    const disabled = isTerminal ? s.value !== detail.status : disableBack
-                    return (
-                      <option key={s.value} value={s.value} disabled={disabled}>
-                        {s.label}
-                      </option>
-                    )
-                  })}
-                </select>
-                <button
-                  type="button"
-                  className="admOrdersBtn primary"
-                  style={{ padding: '8px 10px' }}
-                  onClick={() => void saveDetail()}
-                  disabled={savingDetail || draftStatus === detail.status}
-                >
-                  {savingDetail ? 'Đang lưu…' : 'Lưu'}
-                </button>
+              <div className="admOrderStatusForm">
+                <div className="admOrderStatusFormText">
+                  <label className="admOrderStatusFormLabel" htmlFor="order-status-select">
+                    Cập nhật trạng thái
+                  </label>
+                  <p className="admOrderStatusFormHint">Chọn trạng thái phù hợp để cập nhật tiến trình xử lý đơn hàng.</p>
+                </div>
+                <div className="admOrderStatusFormControls">
+                  <select
+                    id="order-status-select"
+                    className="admOrdersSelect"
+                    value={draftStatus}
+                    onChange={(e) => setDraftStatus(e.target.value)}
+                    aria-label="Chọn trạng thái đơn hàng"
+                  >
+                    {ORDER_STATUS_STEPS.map((s) => {
+                      const isTerminal = detail.status === 'cancelled' || detail.status === 'returned' || detail.status === 'completed'
+                      // Admin không được set completed/returned/cancelled. Chỉ hiển thị option này khi đơn đang ở đúng trạng thái (để xem).
+                      if ((s.value === 'completed' || s.value === 'returned' || s.value === 'cancelled') && detail.status !== s.value) return null
+                      const disableBack =
+                        s.value !== 'cancelled' &&
+                        s.step > 0 &&
+                        detail.status_step > 0 &&
+                        s.step < detail.status_step
+                      const disabled = isTerminal ? s.value !== detail.status : disableBack
+                      return (
+                        <option key={s.value} value={s.value} disabled={disabled}>
+                          {s.label}
+                        </option>
+                      )
+                    })}
+                  </select>
+                  <button
+                    type="button"
+                    className="admOrdersBtn primary"
+                    onClick={() => void saveDetail()}
+                    disabled={savingDetail || draftStatus === detail.status}
+                  >
+                    {savingDetail ? 'Đang lưu…' : 'Lưu'}
+                  </button>
+                </div>
               </div>
               <div className="admOrderSteps">
-                {(detail.status === 'cancelled'
-                  ? [{ k: 0, label: 'Hủy' }]
-                  : ORDER_STATUS_STEPS.filter((s) => s.value !== 'cancelled' && s.step <= detail.status_step).map((s) => ({ k: s.step, label: s.label }))
-                ).map((s, idx) => {
-                  const isCancel = s.k === 0
-                  const done = isCancel ? true : detail.status_step >= s.k
-                  const active = isCancel ? detail.status === 'cancelled' : detail.status_step === s.k
-                  return (
-                    <div key={s.k} className={`admOrderStep ${done ? 'done' : ''} ${active ? 'active' : ''}`}>
-                      <div className="admOrderStepDot" aria-hidden>{done ? '✓' : idx + 1}</div>
-                      <div className="admOrderStepLabel">{s.label}</div>
-                    </div>
-                  )
-                })}
+                {(() => {
+                  const showReturnStep = detail.status === 'returned' || detail.return_request?.status === 'approved' || detail.return_request?.status === 'refunded'
+                  const baseSteps = detail.status === 'cancelled'
+                    ? [{ value: 'cancelled', label: 'Hủy', step: 0 }]
+                    : ORDER_STATUS_STEPS.filter((s) => s.value !== 'cancelled' && (s.value !== 'returned' || showReturnStep))
+                  const steps = showReturnStep
+                    ? baseSteps.map((s) => {
+                        if (s.value === 'returned') return { ...s, step: 6 }
+                        if (s.value === 'completed') return { ...s, step: 7 }
+                        return s
+                      }).sort((a, b) => a.step - b.step)
+                    : baseSteps
+                  const historyMap = new Map(detail.status_history?.map((h) => [h.to_status, h.changed_at ?? null]) ?? [])
+                  const effectiveStep = detail.status === 'cancelled'
+                    ? 0
+                    : detail.return_request?.status === 'refunded'
+                      ? 7
+                      : detail.status === 'returned' || detail.return_request?.status === 'approved'
+                        ? 6
+                        : detail.status_step
+                  return steps.map((s, idx) => {
+                    const isCancel = s.step === 0
+                    const done = isCancel ? detail.status === 'cancelled' : s.step <= effectiveStep
+                    const active = isCancel ? detail.status === 'cancelled' : s.step === effectiveStep
+                    const historyTime = historyMap.get(s.value)
+                    const time = historyTime
+                      ? fmtViTime(historyTime)
+                      : s.value === 'pending'
+                        ? `${detail.created_time} ${detail.created_date}`
+                        : s.value === 'returned' && detail.return_request?.status === 'approved'
+                          ? fmtViTime(detail.return_request.approved_at)
+                          : s.value === 'completed' && detail.return_request?.status === 'refunded'
+                            ? fmtViTime(detail.return_request.refunded_at)
+                            : null
+                    const label = s.value === 'completed' && showReturnStep ? 'Hoàn thành (hoàn trả)' : s.label
+                    return (
+                      <div key={`${s.value}-${s.step}`} className={`admOrderStep ${done ? 'done' : ''} ${active ? 'active' : ''}`}>
+                        <div className="admOrderStepDot" aria-hidden>{done ? '✓' : idx + 1}</div>
+                        <div>
+                          <div className="admOrderStepLabel">{label}</div>
+                          {time ? <div className="admOrderStepTime">{time}</div> : null}
+                        </div>
+                      </div>
+                    )
+                  })
+                })()}
               </div>
             </section>
 

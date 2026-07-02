@@ -66,15 +66,49 @@ function fmtVnd(n: number) {
   return Math.round(n).toLocaleString('vi-VN')
 }
 
+/** Parse ISO string from backend (naive = treated as +07:00, UTC Z = kept as-is). */
+function parseDateString(iso: string) {
+  const raw = iso.trim()
+  if (!raw) return null
+  const normalized = raw.includes('T') ? raw : raw.replace(' ', 'T')
+  const naiveTimestamp = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?$/.test(normalized)
+  if (naiveTimestamp) {
+    // Backend stores local Vietnam time as naive strings → tag +07:00 explicitly
+    const d = new Date(normalized + '+07:00')
+    return Number.isNaN(d.getTime()) ? null : d
+  }
+  const d = new Date(normalized)
+  return Number.isNaN(d.getTime()) ? null : d
+}
+
+/** Format a backend date string to Vietnam local time (HH:mm:ss DD/MM/YYYY). */
+function fmtViTime(iso?: string | null) {
+  const d = iso ? parseDateString(iso) : null
+  if (!d) return '—'
+  return new Intl.DateTimeFormat('vi-VN', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: false,
+    timeZone: 'Asia/Ho_Chi_Minh',
+  }).format(d)
+}
+
 function fmtDateTimeVi(iso?: string | null) {
-  if (!iso) return '—'
-  const t = Date.parse(iso)
-  if (!Number.isFinite(t)) return '—'
-  const d = new Date(t)
-  const m = d.getMonth() + 1
-  const hh = d.getHours().toString().padStart(2, '0')
-  const mm = d.getMinutes().toString().padStart(2, '0')
-  return `${d.getDate()} Tháng ${m}, ${d.getFullYear()} • ${hh}:${mm}`
+  const d = iso ? parseDateString(iso) : null
+  if (!d) return '—'
+  return new Intl.DateTimeFormat('vi-VN', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+    timeZone: 'Asia/Ho_Chi_Minh',
+  }).format(d)
 }
 
 function resolveUrl(url?: string | null) {
@@ -115,14 +149,15 @@ function statusMeta(status?: string | null) {
   return { label: s || '—', tone: 'muted' as const, step: 1 }
 }
 
-const USER_ORDER_STEPS: Array<{ k: number; label: string }> = [
-  { k: 1, label: 'Chờ xác nhận' },
-  { k: 2, label: 'Đã xác nhận' },
-  { k: 3, label: 'Chuyển bị hàng' },
-  { k: 4, label: 'Đang giao' },
-  { k: 5, label: 'Đã giao hàng' },
-  { k: 6, label: 'Hoàn thành' },
-  { k: 7, label: 'Hoàn trả' },
+const ORDER_STATUS_STEPS: Array<{ value: string; label: string; step: number }> = [
+  { value: 'pending',    label: 'Chờ xác nhận', step: 1 },
+  { value: 'processing', label: 'Đã xác nhận',  step: 2 },
+  { value: 'paid',       label: 'Chuyển bị hàng', step: 3 },
+  { value: 'shipped',    label: 'Đang giao',     step: 4 },
+  { value: 'delivered',  label: 'Đã giao',       step: 5 },
+  { value: 'completed',  label: 'Hoàn thành',    step: 6 },
+  { value: 'returned',   label: 'Hoàn trả',      step: 7 },
+  { value: 'cancelled',  label: 'Hủy',           step: 0 },
 ]
 
 export default function OrderDetailPage() {
@@ -189,7 +224,6 @@ export default function OrderDetailPage() {
   }, [id, navigate, hasAuth])
 
   const meta = useMemo(() => statusMeta(order?.status), [order?.status])
-  const step = meta.step
   const address = useMemo(() => {
     if (!order) return '—'
     const parts = [order.shipping_address_line, order.shipping_ward, order.shipping_district, order.shipping_province]
@@ -390,25 +424,82 @@ export default function OrderDetailPage() {
         </div>
       </div>
 
+      <section className="oudCard">
+        <div className="oudCardTitle">Trạng thái đơn hàng</div>
+        <div className="oudSteps">
+          {(() => {
+            const showReturnStep =
+              status === 'returned' ||
+              order.return_request?.status === 'approved' ||
+              order.return_request?.status === 'refunded'
+
+            const baseSteps = status === 'cancelled'
+              ? [{ value: 'cancelled', label: 'Hủy', step: 0 }]
+              : ORDER_STATUS_STEPS.filter(
+                  (s) => s.value !== 'cancelled' && (s.value !== 'returned' || showReturnStep)
+                )
+
+            const steps = showReturnStep
+              ? baseSteps
+                  .map((s) => {
+                    if (s.value === 'returned') return { ...s, step: 6 }
+                    if (s.value === 'completed') return { ...s, step: 7 }
+                    return s
+                  })
+                  .sort((a, b) => a.step - b.step)
+              : baseSteps
+
+            // Build map: to_status → changed_at from history
+            const historyMap = new Map(
+              (order.status_history ?? []).map((h) => [h.to_status, h.changed_at ?? null])
+            )
+
+            const effectiveStep =
+              status === 'cancelled'
+                ? 0
+                : order.return_request?.status === 'refunded'
+                ? 7
+                : status === 'returned' || order.return_request?.status === 'approved'
+                ? 6
+                : meta.step
+
+            return steps.map((s, idx) => {
+              const isCancel = s.step === 0
+              const done = isCancel ? status === 'cancelled' : s.step <= effectiveStep
+              const active = isCancel ? status === 'cancelled' : s.step === effectiveStep
+              const historyTime = historyMap.get(s.value)
+              const time = historyTime
+                ? fmtViTime(historyTime)
+                : s.value === 'pending'
+                ? fmtViTime(order.created_at)
+                : s.value === 'returned' && order.return_request?.status === 'approved'
+                ? fmtViTime(order.return_request.approved_at)
+                : s.value === 'completed' && order.return_request?.status === 'refunded'
+                ? fmtViTime(order.return_request.refunded_at)
+                : null
+              const label =
+                s.value === 'completed' && showReturnStep ? 'Hoàn thành (hoàn trả)' : s.label
+              return (
+                <div
+                  key={`${s.value}-${s.step}`}
+                  className={`oudStep ${done ? 'done' : ''} ${active ? 'active' : ''}`}
+                >
+                  <div className="oudStepDot" aria-hidden>
+                    {done ? '✓' : idx + 1}
+                  </div>
+                  <div>
+                    <div className="oudStepLabel">{label}</div>
+                    {time ? <div className="oudStepTime">{time}</div> : null}
+                  </div>
+                </div>
+              )
+            })
+          })()}
+        </div>
+      </section>
+
       <div className="oudGrid">
         <div className="oudLeft">
-          <section className="oudCard">
-            <div className="oudCardTitle">Trạng thái đơn hàng</div>
-            <div className="oudSteps">
-              {(status === 'cancelled' ? [{ k: 0, label: 'Hủy' }] : USER_ORDER_STEPS.filter((s) => s.k <= step)).map((s, idx) => {
-                const isCancel = s.k === 0
-                const done = isCancel ? true : step >= s.k
-                const active = isCancel ? status === 'cancelled' : step === s.k
-                return (
-                  <div key={s.k} className={`oudStep ${done ? 'done' : ''} ${active ? 'active' : ''}`}>
-                    <div className="oudStepDot" aria-hidden>{done ? '✓' : idx + 1}</div>
-                    <div className="oudStepLabel">{s.label}</div>
-                  </div>
-                )
-              })}
-            </div>
-          </section>
-
           <section className="oudCard oudCardSoft">
             <div className="oudCardHeadRow">
               <div className="oudCardTitle">Sản phẩm ({order.items.length})</div>

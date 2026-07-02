@@ -61,6 +61,15 @@ const resolveImageUrl = (url: string | null) => {
   return `${API_BASE_URL}${s.startsWith('/') ? s : `/${s}`}`
 }
 
+// Extract YouTube thumbnail from video_url to avoid broken thumbnail_url stored in DB
+const getVideoThumbnail = (videoUrl: string, fallbackUrl?: string | null): string => {
+  const ytMatch = videoUrl?.match(/(?:youtube\.com\/(?:[^/]+\/.+\/|(?:v|e(?:mbed)?\/)|.*[?&]v=)|youtu\.be\/)([^"&?/\s]{11})/)
+  if (ytMatch) {
+    return `https://img.youtube.com/vi/${ytMatch[1]}/hqdefault.jpg`
+  }
+  return resolveImageUrl(fallbackUrl ?? null)
+}
+
 export default function VideoPage() {
   const navigate = useNavigate()
   const [videos, setVideos] = useState<NormalizedVideo[]>([])
@@ -200,7 +209,7 @@ export default function VideoPage() {
                 <div key={video.id} className="cvCard" onClick={() => navigate(`/videos/${video.id}`)}>
                   <div className="cvThumbnailWrap">
                     <img
-                      src={resolveImageUrl(video.thumbnail_url || (video.product?.main_image_url ?? null))}
+                      src={getVideoThumbnail(video.video_url, video.product?.main_image_url)}
                       alt={video.title || 'Product Video'}
                       className="cvThumbnail"
                     />

@@ -558,12 +558,12 @@ export default function DashboardPage({
       : Array.from({ length: 7 }).map((_, i) =>
           Math.max(0, Math.round(base * (0.7 + Math.sin(i) * 0.15))),
         );
-    let chartType: "area" | "bars" | "donut" | "line" = "line";
-    if (kp.key === "rev") chartType = "area";
-    else if (kp.key === "orders") chartType = "bars";
+    let chartType: "area" | "bars" | "donut" | "line" | "thinArea" | "slope" = "line";
+    if (kp.key === "rev") chartType = "line";
+    else if (kp.key === "orders") chartType = "line";
     else if (kp.key === "products") chartType = "donut";
     else if (kp.key === "newCus") chartType = "bars";
-    else if (kp.key === "avg") chartType = "line";
+    else if (kp.key === "avg") chartType = "slope";
 
     // For products donut: show total_products as the label inside donut
     const donutTotal = kp.key === "products" ? (kpi?.total_products ?? 0) : 0;
@@ -694,6 +694,43 @@ export default function DashboardPage({
     );
   };
 
+  const renderSlopeLine = (values: number[] = [], stroke = "#3b82f6") => {
+    if (!values || values.length === 0) return null;
+    const w = 120;
+    const h = 36;
+    const min = Math.min(...values);
+    const max = Math.max(...values);
+    const range = max - min || 1;
+    const step = w / Math.max(1, values.length - 1);
+    const pts = values.map((v, i) => ({
+      x: i * step,
+      y: h - 8 - ((v - min) / range) * (h - 16),
+    }));
+    const points = pts.map((p) => `${p.x.toFixed(2)},${p.y.toFixed(2)}`).join(" ");
+    return (
+      <svg
+        className="admKpiSparkline"
+        width={w}
+        height={h}
+        viewBox={`0 0 ${w} ${h}`}
+        preserveAspectRatio="none"
+        aria-hidden
+      >
+        <polyline
+          points={points}
+          fill="none"
+          stroke={stroke}
+          strokeWidth="2.2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+        {pts.map((p, i) => (
+          <circle key={i} cx={p.x} cy={p.y} r={1.7} fill={stroke} />
+        ))}
+      </svg>
+    );
+  };
+
   const renderArea = (
     values: number[] = [],
     stroke = "#10b981",
@@ -747,7 +784,7 @@ export default function DashboardPage({
     );
   };
 
-  // Specialized revenue area to match reference style (gradient fill + dots)
+  // Specialized revenue sparkline to match reference style (simple green line)
   const renderRevenueArea = (values: number[] = [], stroke = "#10b981") => {
     if (!values || values.length === 0) return null;
     const w = 140;
@@ -772,7 +809,6 @@ export default function DashboardPage({
       return d;
     };
     const linePath = buildSmooth();
-    const areaPath = `${linePath} L ${w} ${h} L 0 ${h} Z`;
     return (
       <svg
         className="admKpiSparkline admKpiRevenue"
@@ -782,13 +818,6 @@ export default function DashboardPage({
         preserveAspectRatio="none"
         aria-hidden
       >
-        <defs>
-          <linearGradient id="revGrad" x1="0" x2="0" y1="0" y2="1">
-            <stop offset="0%" stopColor="#10b981" stopOpacity="0.18" />
-            <stop offset="100%" stopColor="#10b981" stopOpacity="0.02" />
-          </linearGradient>
-        </defs>
-        <path d={areaPath} fill="url(#revGrad)" stroke="none" />
         <path
           d={linePath}
           fill="none"
@@ -797,7 +826,6 @@ export default function DashboardPage({
           strokeLinecap="round"
           strokeLinejoin="round"
         />
-        {/* only mark the last point to avoid clutter */}
         {pts.length > 0 &&
           (() => {
             const p = pts[pts.length - 1];
@@ -1105,12 +1133,18 @@ export default function DashboardPage({
                     const color = keyColorMap[(k as any).key] || colorOfTone((k as any).tone);
                     if ((k as any).key === "rev")
                       return renderRevenueArea((k as any).sparkline || [], color);
+                    if ((k as any).key === "orders")
+                      return renderLine((k as any).sparkline || [], color);
                     if ((k as any).key === "avg")
-                      return renderThinArea((k as any).sparkline || [], color);
+                      return renderSlopeLine((k as any).sparkline || [], color);
                     if ((k as any).key === "newCus")
                       return renderPurpleColumns((k as any).sparkline || [], "#d8c7ff", "#7c3aed");
                     if (kt === "area")
                       return renderArea((k as any).sparkline || [], color);
+                    if (kt === "thinArea")
+                      return renderThinArea((k as any).sparkline || [], color);
+                    if (kt === "slope")
+                      return renderSlopeLine((k as any).sparkline || [], color);
                     if (kt === "bars")
                       return renderBars((k as any).sparkline || [], color);
                     if (kt === "donut")

@@ -45,11 +45,11 @@ class OrdersController extends Controller
             'media' => $order->returnRequest->media ?? null,
             'admin_note' => $order->returnRequest->admin_note ? (string) $order->returnRequest->admin_note : null,
             'refund_proof' => $order->returnRequest->refund_proof ?? null,
-            'approved_at' => $order->returnRequest->approved_at ? $order->returnRequest->approved_at->toISOString() : null,
-            'refunded_at' => $order->returnRequest->refunded_at ? $order->returnRequest->refunded_at->toISOString() : null,
-            'customer_confirmed_at' => $order->returnRequest->customer_confirmed_at ? $order->returnRequest->customer_confirmed_at->toISOString() : null,
-            'created_at' => $order->returnRequest->created_at ? $order->returnRequest->created_at->toISOString() : null,
-            'updated_at' => $order->returnRequest->updated_at ? $order->returnRequest->updated_at->toISOString() : null,
+            'approved_at' => $order->returnRequest->approved_at ? $order->returnRequest->approved_at->format('Y-m-d\TH:i:s') : null,
+            'refunded_at' => $order->returnRequest->refunded_at ? $order->returnRequest->refunded_at->format('Y-m-d\TH:i:s') : null,
+            'customer_confirmed_at' => $order->returnRequest->customer_confirmed_at ? $order->returnRequest->customer_confirmed_at->format('Y-m-d\TH:i:s') : null,
+            'created_at' => $order->returnRequest->created_at ? $order->returnRequest->created_at->format('Y-m-d\TH:i:s') : null,
+            'updated_at' => $order->returnRequest->updated_at ? $order->returnRequest->updated_at->format('Y-m-d\TH:i:s') : null,
         ] : null;
 
         $payload['status_history'] = ($order->statusHistories ?? collect())->map(static function ($h) {
@@ -58,7 +58,7 @@ class OrdersController extends Controller
                 'from_status' => $h->from_status ? (string) $h->from_status : null,
                 'to_status' => (string) ($h->to_status ?? ''),
                 'note' => $h->note ? (string) $h->note : null,
-                'changed_at' => $h->created_at ? $h->created_at->toISOString() : null,
+                'changed_at' => $h->created_at ? $h->created_at->format('Y-m-d\TH:i:s') : null,
                 'changed_by' => $h->changedBy ? [
                     'id' => (int) $h->changedBy->id,
                     'name' => (string) ($h->changedBy->name ?? '—'),
