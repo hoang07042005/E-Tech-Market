@@ -14,8 +14,8 @@ class StoreBlogCategoryRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|string|max:255',
-            'sort_order' => 'integer',
+            'name' => 'sometimes|required|string|max:255',
+            'sort_order' => 'sometimes|integer',
         ];
     }
 }

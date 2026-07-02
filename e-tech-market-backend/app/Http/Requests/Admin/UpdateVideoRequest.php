@@ -11,13 +11,32 @@ class UpdateVideoRequest extends FormRequest
         return true;
     }
 
+    protected function prepareForValidation(): void
+    {
+        $data = $this->all();
+
+        foreach (['product_id', 'video_category_id'] as $field) {
+            if (array_key_exists($field, $data) && $data[$field] === '') {
+                $data[$field] = null;
+            }
+        }
+
+        foreach (['title', 'description', 'video_url', 'thumbnail_url'] as $field) {
+            if (array_key_exists($field, $data) && $data[$field] === '') {
+                $data[$field] = null;
+            }
+        }
+
+        $this->replace($data);
+    }
+
     public function rules(): array
     {
         return [
             'product_id' => 'nullable|integer|exists:products,id',
             'video_category_id' => 'nullable|integer|exists:video_categories,id',
             'title' => 'nullable|string|max:255',
-            'description' => 'nullable|string|max:1000',
+            'description' => 'nullable|string|max:2500',
             'video_url' => 'nullable|string|max:1000',
             'video_file' => 'nullable|file|mimetypes:video/mp4,video/quicktime,video/ogg,video/webm|max:51200',
             'thumbnail_url' => 'nullable|string|max:1000',

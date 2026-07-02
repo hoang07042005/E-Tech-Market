@@ -49,6 +49,44 @@ export const deleteAdminVideo = (id: number) => {
   return apiFetch(`/api/admin/videos/${id}`, { method: 'DELETE' })
 }
 
+export interface VideoFormPayload {
+  linked_type: 'product' | 'general'
+  product_id: string
+  category_id: string
+  title: string
+  description: string
+  video_url: string
+  thumbnail_url: string
+  is_active: boolean
+  sort_order: number
+}
+
+export const buildVideoPayload = (formData: VideoFormPayload) => {
+  const payload = new FormData()
+
+  if (formData.linked_type === 'product') {
+    if (formData.product_id?.trim()) {
+      payload.append('product_id', formData.product_id.trim())
+    }
+    payload.append('video_category_id', '')
+  } else {
+    if (formData.category_id?.trim()) {
+      payload.append('video_category_id', formData.category_id.trim())
+    }
+    payload.append('product_id', '')
+  }
+
+  if (formData.title?.trim()) payload.append('title', formData.title.trim())
+  if (formData.description?.trim()) payload.append('description', formData.description.trim().slice(0, 2500))
+  if (formData.video_url?.trim()) payload.append('video_url', formData.video_url.trim())
+  if (formData.thumbnail_url?.trim()) payload.append('thumbnail_url', formData.thumbnail_url.trim())
+
+  payload.append('is_active', formData.is_active ? '1' : '0')
+  payload.append('sort_order', String(formData.sort_order ?? 0))
+
+  return payload
+}
+
 export const saveAdminVideo = async (data: FormData, id: number | null | undefined) => {
   const url = id ? `/api/admin/videos/${id}` : '/api/admin/videos'
 

@@ -49,6 +49,39 @@
   max-width: 850px;
 }
 
+.sqInboxFilter {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 14px;
+}
+
+.sqFilterBtn {
+  border: 1px solid #d1d5db;
+  background: #fff;
+  color: #374151;
+  padding: 10px 16px;
+  border-radius: 12px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.sqFilterBtn:hover:not(:disabled) {
+  border-color: #9ca3af;
+}
+
+.sqFilterBtnActive {
+  background: #f8fafc;
+  border-color: #2563eb;
+  color: #1d4ed8;
+}
+
+.sqFilterBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 /* ===== Refresh Button ===== */
 .sqInboxRefresh {
   border: none;
@@ -234,7 +267,31 @@
 .sqCardActions {
   display: flex;
   justify-content: flex-end;
+  gap: 12px;
   margin-top: 16px;
+}
+
+/* ===== Delete Button ===== */
+.sqDeleteBtn {
+  border: none;
+  background: #fee2e2;
+  color: #b91c1c;
+  padding: 12px 22px;
+  border-radius: 14px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: 0.25s;
+}
+
+.sqDeleteBtn:hover {
+  transform: translateY(-1px);
+  opacity: 0.95;
+}
+
+.sqDeleteBtn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
 }
 
 /* ===== Send Button ===== */

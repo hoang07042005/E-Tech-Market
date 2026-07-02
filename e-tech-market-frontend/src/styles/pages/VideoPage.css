@@ -262,6 +262,8 @@
   line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
+  white-space: pre-wrap;
+  word-break: break-word;
 }
 
 .dark .cvCardDesc {
@@ -655,13 +657,17 @@
   color: #f8fafc;
 }
 
-.vdpDescription p {
+.vdpDescription p,
+.vdpDescriptionText {
   font-size: 15px;
   color: #475569;
   line-height: 1.6;
+  white-space: pre-wrap;
+  word-break: break-word;
 }
 
-.dark .vdpDescription p {
+.dark .vdpDescription p,
+.dark .vdpDescriptionText {
   color: #94a3b8;
 }
 

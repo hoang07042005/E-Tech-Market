@@ -42,6 +42,11 @@ class ProductResource extends JsonResource
         unset($data['cost_price']);
         unset($data['deleted_at']);
 
+        // Ensure rich_html is included
+        if (isset($this->resource->rich_html)) {
+            $data['rich_html'] = $this->resource->rich_html;
+        }
+
         return $data;
     }
 }

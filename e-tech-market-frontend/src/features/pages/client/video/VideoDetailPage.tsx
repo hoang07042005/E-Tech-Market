@@ -195,9 +195,9 @@ export default function VideoDetailPage() {
               {/* Product description / Video info */}
               <div className="vdpDescription">
                 <h3>Về video này</h3>
-                <p>
+                <div className="vdpDescriptionText">
                   {video.description || video.product?.short_description || 'Đây là video giới thiệu trực quan, giúp bạn có cái nhìn khách quan và rõ nét nhất về thiết kế, tính năng và hiệu năng thực tế của sản phẩm. Video được tổng hợp và phân phối bởi E-Tech Market.'}
-                </p>
+                </div>
               </div>
             </div>
 

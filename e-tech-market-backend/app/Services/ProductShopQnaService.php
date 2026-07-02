@@ -22,6 +22,15 @@ class ProductShopQnaService
             ->get();
     }
 
+    public function getAllQnas()
+    {
+        return ProductShopQna::query()
+            ->with(['product:id,name,slug,is_active'])
+            ->orderByDesc('created_at')
+            ->limit(1000)
+            ->get();
+    }
+
     /**
      * Lấy toàn bộ Q&A của một sản phẩm (Admin).
      */

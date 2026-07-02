@@ -202,9 +202,11 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::delete('/products/{product}', [AdminProductsController::class, 'destroy'])->name('products');
         Route::patch('/product-variants/{variant}/restock', [AdminProductsController::class, 'restockVariant'])->name('product-variants.restock');
 
+        Route::get('/shop-qna', [AdminProductShopQnaController::class, 'all'])->name('shop-qna.index');
         Route::get('/shop-qna/pending', [AdminProductShopQnaController::class, 'pendingAll'])->name('shop-qna.pending');
         Route::get('/products/{product}/shop-qna', [AdminProductShopQnaController::class, 'index'])->name('products.shop-qna');
         Route::patch('/products/{product}/shop-qna/{shopQna}', [AdminProductShopQnaController::class, 'update'])->name('products.shop-qna');
+        Route::delete('/products/{product}/shop-qna/{shopQna}', [AdminProductShopQnaController::class, 'destroy'])->name('products.shop-qna.destroy');
 
         Route::get('/reviews', [AdminReviewsController::class, 'index'])->name('reviews');
         Route::patch('/reviews/{review}', [AdminReviewsController::class, 'update'])->name('reviews');
@@ -228,6 +230,8 @@ Route::middleware('auth:sanctum')->group(function () {
         // Tech Blog (Global)
         Route::apiResource('blog-posts', App\Http\Controllers\Admin\AdminBlogPostsController::class);
         Route::post('/blog-categories', [App\Http\Controllers\Admin\AdminBlogPostsController::class, 'storeCategory'])->name('blog-categories');
+        Route::put('/blog-categories/{category}', [App\Http\Controllers\Admin\AdminBlogPostsController::class, 'updateCategory'])->name('blog-categories.update');
+        Route::delete('/blog-categories/{category}', [App\Http\Controllers\Admin\AdminBlogPostsController::class, 'destroyCategory'])->name('blog-categories.destroy');
 
         Route::apiResource('flash-sales', App\Http\Controllers\Admin\FlashSaleController::class);
         Route::post('flash-sales/{flash_sale}/items', [App\Http\Controllers\Admin\FlashSaleController::class, 'addItem'])->name('flash-sales.items');

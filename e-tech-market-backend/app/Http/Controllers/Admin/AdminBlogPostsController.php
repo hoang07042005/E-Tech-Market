@@ -58,6 +58,20 @@ class AdminBlogPostsController extends Controller
     {
         $category = $this->blogPostService->createCategory($request->validated());
 
-        return response()->json((new BlogPostResource($category))->resolve(), 201);
+        return response()->json($category->toArray(), 201);
+    }
+
+    public function updateCategory(StoreBlogCategoryRequest $request, BlogCategory $category): JsonResponse
+    {
+        $updatedCategory = $this->blogPostService->updateCategory($category, $request->validated());
+
+        return response()->json($updatedCategory->toArray());
+    }
+
+    public function destroyCategory(BlogCategory $category): JsonResponse
+    {
+        $this->blogPostService->deleteCategory($category);
+
+        return response()->json(['message' => 'Category deleted successfully']);
     }
 }

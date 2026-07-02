@@ -63,6 +63,11 @@ export default function AdminBlogPage() {
   const [submitting, setSubmitting] = useState(false)
   const [confirmOpen, setConfirmOpen] = useState(false)
   const [pendingDeletePost, setPendingDeletePost] = useState<BlogPost | null>(null)
+  
+  // Category management
+  const [categoryConfirmOpen, setCategoryConfirmOpen] = useState(false)
+  const [pendingDeleteCategory, setPendingDeleteCategory] = useState<BlogCategory | null>(null)
+  const [dropdownOpen, setDropdownOpen] = useState(false)
 
   const loadData = async () => {
     if (!hasAuth) return
@@ -84,6 +89,15 @@ export default function AdminBlogPage() {
   useEffect(() => {
     loadData()
   }, [])
+
+  const reloadCategories = async () => {
+    try {
+      const catsRes = await apiFetch<BlogCategory[]>('/api/blog/categories')
+      setCategories(catsRes)
+    } catch (e: any) {
+      alert('Lỗi tải danh mục: ' + e.message)
+    }
+  }
 
   const handleOpenForm = (post?: BlogPost) => {
     if (post) {
@@ -162,6 +176,46 @@ export default function AdminBlogPage() {
       loadData()
     } catch (e: any) {
       alert(e.message)
+    }
+  }
+
+  // Category management handlers
+  const handleEditCategory = (category: BlogCategory) => {
+    const newName = window.prompt('Nhập tên danh mục mới:', category.name)
+    if (!newName || !newName.trim() || !hasAuth) return
+    
+    const submitEdit = async () => {
+      try {
+        await apiFetch<BlogCategory>(`/api/admin/blog-categories/${category.id}`, {
+          method: 'PUT',
+          body: JSON.stringify({ name: newName.trim() })
+        })
+        await reloadCategories()
+      } catch (e: any) {
+        alert('Lỗi cập nhật danh mục: ' + e.message)
+      }
+    }
+    submitEdit()
+  }
+
+  const handleDeleteCategory = (category: BlogCategory) => {
+    setPendingDeleteCategory(category)
+    setCategoryConfirmOpen(true)
+  }
+
+  const confirmDeleteCategory = async () => {
+    if (!hasAuth || !pendingDeleteCategory) return
+    const categoryId = pendingDeleteCategory.id
+    setCategoryConfirmOpen(false)
+    setPendingDeleteCategory(null)
+    try {
+      await apiFetch(`/api/admin/blog-categories/${categoryId}`, { method: 'DELETE' })
+      if (formData.blog_category_id === categoryId.toString()) {
+        setFormData({ ...formData, blog_category_id: '' })
+      }
+      await reloadCategories()
+    } catch (e: any) {
+      alert('Lỗi xóa danh mục: ' + e.message)
     }
   }
 
@@ -286,6 +340,26 @@ export default function AdminBlogPage() {
         }}
       />
 
+      <ConfirmModal
+        open={categoryConfirmOpen}
+        title="Xác nhận xóa danh mục"
+        message={
+          pendingDeleteCategory ? (
+            <div>
+              <p>Bạn có chắc chắn muốn xóa danh mục <strong>"{pendingDeleteCategory.name}"</strong> không?</p>
+              <p style={{ color: '#64748b', fontSize: '0.9rem', marginTop: '8px' }}>Lưu ý: Các bài viết trong danh mục này có thể bị ảnh hưởng.</p>
+            </div>
+          ) : (
+            'Bạn có chắc chắn muốn xóa danh mục này không?'
+          )
+        }
+        onConfirm={confirmDeleteCategory}
+        onCancel={() => {
+          setCategoryConfirmOpen(false)
+          setPendingDeleteCategory(null)
+        }}
+      />
+
       {isFormOpen && (
         <div  className="adminblogpage-style-14">
           <div  className="adminblogpage-style-15">
@@ -316,7 +390,7 @@ export default function AdminBlogPage() {
                             method: 'POST',
                             body: JSON.stringify({ name: name.trim() })
                           })
-                          setCategories(prev => [...prev, res])
+                          await reloadCategories()
                           setFormData({ ...formData, blog_category_id: res.id.toString() })
                         } catch (e: any) {
                           alert('Lỗi tạo danh mục: ' + e.message)
@@ -327,16 +401,117 @@ export default function AdminBlogPage() {
                       + Thêm mới
                     </button>
                   </div>
-                  <select 
-                    value={formData.blog_category_id} 
-                    onChange={e => setFormData({ ...formData, blog_category_id: e.target.value })} 
-                    style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #ccc' }}
-                  >
-                    <option value="">-- Chọn danh mục --</option>
-                    {categories.map(c => (
-                      <option key={c.id} value={c.id}>{c.name}</option>
-                    ))}
-                  </select>
+                  <div style={{ position: 'relative' }}>
+                    <button
+                      type="button"
+                      onClick={() => setDropdownOpen(!dropdownOpen)}
+                      style={{
+                        width: '100%',
+                        padding: '10px',
+                        borderRadius: '8px',
+                        border: '1px solid #ccc',
+                        textAlign: 'left',
+                        background: '#fff',
+                        cursor: 'pointer'
+                      }}
+                    >
+                      {formData.blog_category_id
+                        ? categories.find(c => c.id === Number(formData.blog_category_id))?.name
+                        : '-- Chọn danh mục --'}
+                    </button>
+                    {dropdownOpen && (
+                      <div
+                         className="dropdown"
+                        style={{
+                          position: 'absolute',
+                          top: '100%',
+                          left: 0,
+                          right: 0,
+                          background: '#fff',
+                          border: '1px solid #ccc',
+                          borderTop: 'none',
+                          borderRadius: '0 0 8px 8px',
+                          maxHeight: '300px',
+                          overflowY: 'auto',
+                          zIndex: 10,
+                          boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
+                          msOverflowStyle: 'none',
+                          scrollbarWidth: 'none',
+                        }}
+                      >
+                        <div
+                          onClick={() => {
+                            setFormData({ ...formData, blog_category_id: '' })
+                            setDropdownOpen(false)
+                          }}
+                          style={{
+                            padding: '10px',
+                            cursor: 'pointer',
+                            borderBottom: '1px solid #eee',
+                            color: '#666'
+                          }}
+                        >
+                          -- Chọn danh mục --
+                        </div>
+                        {categories.map(c => (
+                          <div
+                            key={c.id}
+                            style={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'space-between',
+                              padding: '10px',
+                              borderBottom: '1px solid #eee',
+                              background: formData.blog_category_id === c.id.toString() ? '#f0f0f0' : '#fff',
+                              cursor: 'pointer'
+                            }}
+                            onClick={() => {
+                              setFormData({ ...formData, blog_category_id: c.id.toString() })
+                              setDropdownOpen(false)
+                            }}
+                          >
+                            <span style={{ flex: 1 }}>{c.name}</span>
+                            <div style={{ display: 'flex', gap: '6px' }} onClick={(e: React.MouseEvent) => e.stopPropagation()}>
+                              <button
+                                type="button"
+                                onClick={(e: React.MouseEvent) => {
+                                  e.stopPropagation()
+                                  handleEditCategory(c)
+                                }}
+                                style={{
+                                  padding: '4px 8px',
+                                  fontSize: '12px',
+                                  color: '#3b82f6',
+                                  border: 'none',
+                                  borderRadius: '4px',
+                                  cursor: 'pointer'
+                                }}
+                              >
+                               Sửa
+                              </button>
+                              <button
+                                type="button"
+                                onClick={(e) => {
+                                  e.stopPropagation()
+                                  handleDeleteCategory(c)
+                                }}
+                                style={{
+                                  padding: '4px 8px',
+                                  fontSize: '12px',
+                                  color: '#ef4444',
+                                  border: 'none',
+                                  borderRadius: '4px',
+                                  cursor: 'pointer'
+                                }}
+                              >
+                                Xóa
+                              </button>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
                 </div>
                 <div  className="adminblogpage-style-22">
                   <label  className="adminblogpage-style-23">Ảnh Thumbnail</label>

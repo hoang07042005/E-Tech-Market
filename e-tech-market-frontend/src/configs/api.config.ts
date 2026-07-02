@@ -129,12 +129,23 @@ export async function apiFetch<T>(
       throw { message: data.message, requires_2fa: true }
     }
     const fallbackText = data ? null : await res.text().catch(() => null)
+
+    // Build a message and include any returned errors for easier debugging (dev only)
+    const responseDetail = data ? JSON.stringify(data) : fallbackText
+
     const message =
-      data && typeof data.message === 'string'
-        ? data.message
-        : fallbackText && fallbackText.trim().length > 0
-          ? `Request failed: ${res.status} (${fallbackText.slice(0, 140)})`
-          : `Request failed: ${res.status}`
+        data && typeof data.message === 'string'
+          ? data.message + (responseDetail ? ` — ${responseDetail.slice(0, 1000)}` : '')
+          : fallbackText && fallbackText.trim().length > 0
+            ? `Request failed: ${res.status} (${fallbackText.slice(0, 140)})`
+            : `Request failed: ${res.status}`
+
+    // Log full details to console to help debug 422 validation errors during development
+    try {
+      // eslint-disable-next-line no-console
+      console.error('[apiFetch] Request failed', { url, status: res.status, data, fallbackText })
+    } catch {}
+
     notifyGlobalError(message)
     throw new ApiRequestError(message, { globalErrorNotified: true })
   }

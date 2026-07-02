@@ -195,6 +195,12 @@ export default function SettingsAdminPage() {
     is_active: true,
   });
 
+  // Quick-paste add zones
+  const [zonePasteOpen, setZonePasteOpen] = useState(false);
+  const [zonePasteText, setZonePasteText] = useState("");
+  const [addingZones, setAddingZones] = useState(false);
+  const [zonePasteErr, setZonePasteErr] = useState<string | null>(null);
+
   // 2FA states
   const [twoFaSetupOpen, setTwoFaSetupOpen] = useState(false);
   const [twoFaSetupData, setTwoFaSetupData] = useState<{
@@ -466,6 +472,52 @@ export default function SettingsAdminPage() {
       setAddZoneErr(e instanceof Error ? e.message : "Không thể thêm khu vực.");
     } finally {
       setAddingZone(false);
+    }
+  };
+
+  const handleSubmitZonePaste = async () => {
+    if (!hasAuth) return;
+    const lines = zonePasteText
+      .split(/\r?\n/)
+      .map((l) => l.trim())
+      .filter(Boolean);
+    if (lines.length === 0) {
+      setZonePasteErr("Vui lòng nhập ít nhất một dòng.");
+      return;
+    }
+    const parsed: { name: string; eta: string | null; fee: number }[] = [];
+    const errors: string[] = [];
+    lines.forEach((ln, idx) => {
+      const parts = ln.split("|").map((p) => p.trim());
+      const name = parts[0] || "";
+      const eta = parts[1] || null;
+      const feeStr = parts[2] || "0";
+      const fee = Number(feeStr.replaceAll(".", "").replaceAll(",", "")) || 0;
+      if (!name) errors.push(`Dòng ${idx + 1}: thiếu tên khu vực.`);
+      if (fee < 0) errors.push(`Dòng ${idx + 1}: đơn giá không hợp lệ.`);
+      parsed.push({ name, eta, fee });
+    });
+    if (errors.length) {
+      setZonePasteErr(errors.join(" "));
+      return;
+    }
+    setAddingZones(true);
+    setZonePasteErr(null);
+    try {
+      const created = await Promise.all(
+        parsed.map((p) =>
+          apiFetch<ZoneRow>("/api/admin/shipping/zones", {
+            method: "POST",
+            body: JSON.stringify({ name: p.name, eta: p.eta, fee: p.fee }),
+          }),
+        ),
+      );
+      setZones((z) => [...created, ...z]);
+      setZonePasteOpen(false);
+    } catch (e) {
+      setZonePasteErr(e instanceof Error ? e.message : "Không thể thêm vùng.");
+    } finally {
+      setAddingZones(false);
     }
   };
 
@@ -1678,6 +1730,18 @@ export default function SettingsAdminPage() {
             />
             <button
               type="button"
+              className="admShipPolicyBtn"
+              onClick={() => {
+                setZonePasteErr(null);
+                setZonePasteText("");
+                setZonePasteOpen(true);
+              }}
+              style={{ marginRight: 8 }}
+            >
+              Dán nhiều vùng
+            </button>
+            <button
+              type="button"
               className="admShipAddZoneBtn"
               onClick={openAddZone}
             >
@@ -2031,6 +2095,59 @@ export default function SettingsAdminPage() {
                     </button>
                   )}
                 </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {zonePasteOpen && (
+        <div
+          className="admModalOverlay"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Dán nhiều vùng vận chuyển"
+          onClick={() => setZonePasteOpen(false)}
+        >
+          <div className="admModal" onClick={(e) => e.stopPropagation()}>
+            <div className="admModalHead">
+              <div>
+                <div className="admModalTitle">Dán nhiều vùng vận chuyển</div>
+                <div className="admModalSub">Dán mỗi dòng: Tên|Thời gian dự kiến|Đơn giá (VND)</div>
+              </div>
+              <button
+                type="button"
+                className="admModalClose"
+                onClick={() => setZonePasteOpen(false)}
+                aria-label="Đóng"
+              >
+                <IconX />
+              </button>
+            </div>
+            <div className="admModalBody">
+              <label className="admSetField">
+                <span>Dán nhiều vùng</span>
+                <textarea
+                  value={zonePasteText}
+                  onChange={(e) => setZonePasteText(e.target.value)}
+                  placeholder={`Ví dụ:\nNội thành TP.HCM|1-3 ngày|50000\nNgoại thành|2-5 ngày|70000`}
+                  rows={8}
+                />
+              </label>
+
+              {zonePasteErr && (
+                <div className="admSettingsEmpty" style={{ padding: 10 }}>
+                  {zonePasteErr}
+                </div>
+              )}
+
+              <div style={{ display: "flex", gap: 10, justifyContent: "flex-end", marginTop: 8 }}>
+                <button type="button" className="admShipPolicyBtn" onClick={() => setZonePasteOpen(false)} disabled={addingZones}>
+                  Huỷ
+                </button>
+                <button type="button" className="admSettingsSaveBtn" onClick={() => void handleSubmitZonePaste()} disabled={addingZones}>
+                  {addingZones ? "Đang thêm…" : "Thêm vùng"}
+                </button>
               </div>
             </div>
           </div>

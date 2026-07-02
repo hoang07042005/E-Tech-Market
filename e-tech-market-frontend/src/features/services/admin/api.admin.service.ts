@@ -38,7 +38,11 @@ export const fetchFlashSales = <T>() => apiFetch<T>('/api/admin/flash-sales')
 export const fetchFlashSaleDetail = <T>(id: number) => apiFetch<T>(`/api/admin/flash-sales/${id}`)
 
 // Shop QnA
-export const fetchPendingQna = <T>() => apiFetch<T>('/api/admin/shop-qna/pending')
+export const fetchShopQna = <T>(status: 'pending' | 'all' = 'pending') =>
+  apiFetch<T>(`/api/admin/shop-qna?status=${status}`)
+export const fetchPendingQna = <T>() => fetchShopQna<T>('pending')
+export const deleteShopQna = <T>(productId: number, qnaId: number) =>
+  apiFetch<T>(`/api/admin/products/${productId}/shop-qna/${qnaId}`, { method: 'DELETE' })
 
 // Coupons
 export const fetchCoupons = <T>(page: number, limit: number) => apiFetch<T>(`/api/admin/coupons?page=${page}&limit=${limit}`)

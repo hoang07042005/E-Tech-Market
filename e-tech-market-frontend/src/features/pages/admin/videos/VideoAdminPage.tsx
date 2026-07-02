@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { API_BASE_URL, apiFetch } from '@/configs/api.config'
 import '@/styles/admin/CategoryPage.css'
 import { fetchAdminVideoCategories } from '@/features/services/admin/video-categories.admin.service'
-import { fetchAdminVideos, deleteAdminVideo, saveAdminVideo, type Video } from '@/features/services/admin/videos.admin.service'
+import { fetchAdminVideos, deleteAdminVideo, saveAdminVideo, buildVideoPayload, type Video } from '@/features/services/admin/videos.admin.service'
 import type { VideoCategory } from '@/features/services/admin/video-categories.admin.service'
 import '@/styles/admin/VideoAdminPage.css'
 import ConfirmModal from '@/components/ConfirmModal'
@@ -128,32 +128,7 @@ export default function VideoAdminPage() {
     }
 
     try {
-      const payload = new FormData()
-
-      if (formData.linked_type === 'product') {
-        // Liên kết sản phẩm => gửi product_id, video_category_id = rỗng
-        if (formData.product_id) {
-          payload.append('product_id', formData.product_id)
-        } else {
-          payload.append('product_id', '')
-        }
-        payload.append('video_category_id', '')
-      } else {
-        // Video chung => gửi video_category_id, product_id = rỗng
-        payload.append('product_id', '')
-        if (formData.category_id) {
-          payload.append('video_category_id', formData.category_id)
-        } else {
-          payload.append('video_category_id', '')
-        }
-      }
-
-      if (formData.title) payload.append('title', formData.title)
-      if (formData.description) payload.append('description', formData.description)
-      if (formData.video_url) payload.append('video_url', formData.video_url)
-      if (formData.thumbnail_url) payload.append('thumbnail_url', formData.thumbnail_url)
-      payload.append('is_active', formData.is_active ? '1' : '0')
-      payload.append('sort_order', formData.sort_order.toString())
+      const payload = buildVideoPayload(formData)
 
       if (videoFile) {
         payload.append('video_file', videoFile)
@@ -240,6 +215,7 @@ export default function VideoAdminPage() {
               <tr>
                 <th>HÌNH THU NHỎ</th>
                 <th>TIÊU ĐỀ</th>
+                <th>MÔ TẢ</th>
                 <th>LIÊN KẾT</th>
                 <th>VIDEO URL / SOURCE</th>
                 <th>THỨ TỰ</th>
@@ -279,6 +255,11 @@ export default function VideoAdminPage() {
                           {video.description || '—'}
                         </span>
                       </td> */}
+                      <td>
+                        <span className="videoadminpage-style-5" style={{ whiteSpace: 'pre-wrap' }}>
+                          {video.description || '—'}
+                        </span>
+                      </td>
                       <td>
                         {video.product ? (
                           <span  className="videoadminpage-style-6">
@@ -406,13 +387,23 @@ export default function VideoAdminPage() {
 
               <div className="catFormField videoadminpage-style-15" >
                 <label>NỘI DUNG / MÔ TẢ NGẮN</label>
-                <textarea
-                  rows={4}
-                  value={formData.description}
-                  onChange={e => setFormData({...formData, description: e.target.value})}
-                  placeholder="Mô tả ngắn về video, tính năng nổi bật hoặc thông điệp chính"
-                  style={{ width: '100%', padding: '10px', border: '1px solid var(--admin-border)', borderRadius: '6px', background: 'var(--admin-card-bg)', color: 'var(--admin-text-p)', resize: 'vertical' }}
-                />
+                  <textarea
+                    rows={4}
+                    value={formData.description}
+                    onChange={e => setFormData({...formData, description: e.target.value})}
+                    placeholder="Mô tả ngắn về video, tính năng nổi bật hoặc thông điệp chính"
+                    maxLength={2500}
+                    style={{
+                      width: '100%',
+                      padding: '10px',
+                      border: '1px solid var(--admin-border)',
+                      borderRadius: '6px',
+                      background: 'var(--admin-card-bg)',
+                      color: 'var(--admin-text-p)',
+                      resize: 'vertical',
+                      whiteSpace: 'pre-wrap'
+                    }}
+                  />
               </div>
 
               <div className="catFormField videoadminpage-style-16" >

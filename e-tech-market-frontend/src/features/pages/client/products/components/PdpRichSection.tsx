@@ -18,18 +18,27 @@ export function PdpRichSection({
   const [canExpandRich, setCanExpandRich] = useState(false);
   const richRef = useRef<HTMLDivElement | null>(null);
 
+  // Reset trạng thái khi sản phẩm thay đổi
   useEffect(() => {
-    if (!richRef.current) return;
-    const ro = new ResizeObserver((entries) => {
-      for (const entry of entries) {
-        if (entry.target.scrollHeight > 600) {
-          setCanExpandRich(true);
-        } else {
-          setCanExpandRich(false);
-        }
-      }
-    });
-    ro.observe(richRef.current);
+    setIsRichExpanded(false);
+    setCanExpandRich(false);
+  }, [product.rich_html]);
+
+  useEffect(() => {
+    const el = richRef.current;
+    if (!el) return;
+
+    const check = () => {
+      // scrollHeight = chiều cao thực của nội dung (không bị clip)
+      // 680 = max-height của .is-collapsed trong CSS
+      setCanExpandRich(el.scrollHeight > 680);
+    };
+
+    // Đo ngay sau khi mount
+    check();
+
+    const ro = new ResizeObserver(check);
+    ro.observe(el);
     return () => ro.disconnect();
   }, [product.rich_html]);
 

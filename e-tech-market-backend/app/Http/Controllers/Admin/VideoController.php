@@ -34,7 +34,7 @@ class VideoController extends Controller
         $data['is_active'] = $request->has('is_active') ? filter_var($request->is_active, FILTER_VALIDATE_BOOLEAN) : true;
         $data['sort_order'] = $request->has('sort_order') ? (int) $request->sort_order : 0;
 
-        if ($request->product_id) {
+        if ($request->exists('product_id') && $request->product_id) {
             $data['product_id'] = (int) $request->product_id;
             $data['video_category_id'] = null;
         } else {
@@ -82,18 +82,18 @@ class VideoController extends Controller
             $data['sort_order'] = (int) $request->sort_order;
         }
 
-        if ($request->has('product_id')) {
+        if ($request->exists('product_id')) {
             if ($request->product_id) {
                 $data['product_id'] = (int) $request->product_id;
                 $data['video_category_id'] = null;
             } else {
                 $data['product_id'] = null;
-                if ($request->has('video_category_id')) {
+                if ($request->exists('video_category_id')) {
                     $data['video_category_id'] = $request->video_category_id ? (int) $request->video_category_id : null;
                 }
             }
         } else {
-            if ($request->has('video_category_id')) {
+            if ($request->exists('video_category_id')) {
                 $data['video_category_id'] = $request->video_category_id ? (int) $request->video_category_id : null;
             }
         }

@@ -113,7 +113,39 @@ class BlogPostService
         $data['slug'] = Str::slug($data['name']).'-'.uniqid();
         $data['sort_order'] = $data['sort_order'] ?? 0;
 
-        return BlogCategory::create($data);
+        $category = BlogCategory::create($data);
+        Cache::forget('blog_categories_all');
+        
+        return $category;
+    }
+
+    /**
+     * Update a blog category.
+     */
+    public function updateCategory(BlogCategory $category, array $data): BlogCategory
+    {
+        if (isset($data['name'])) {
+            $category->name = $data['name'];
+            $category->slug = Str::slug($data['name']).'-'.uniqid();
+        }
+
+        if (isset($data['sort_order'])) {
+            $category->sort_order = $data['sort_order'];
+        }
+
+        $category->save();
+        Cache::forget('blog_categories_all');
+
+        return $category;
+    }
+
+    /**
+     * Delete a blog category.
+     */
+    public function deleteCategory(BlogCategory $category): void
+    {
+        $category->delete();
+        Cache::forget('blog_categories_all');
     }
 
     /**
