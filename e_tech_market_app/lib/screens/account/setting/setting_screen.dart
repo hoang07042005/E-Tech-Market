@@ -6,8 +6,16 @@ import '../../../l10n/app_localizations.dart';
 import '../../../main.dart' show navigatorKey;
 import '../../../screens/auth/login_screen.dart';
 import '../../../services/auth_service.dart';
+import '../../../config/api_config.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:path_provider/path_provider.dart';
+import 'dart:io';
+import 'package:flutter/painting.dart';
 import '../../../utils/app_snackbar.dart';
 import '../../../utils/translation.dart';
+import 'package:package_info_plus/package_info_plus.dart';
+import '../../../config/dio_client.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class SettingScreen extends StatefulWidget {
   const SettingScreen({super.key});
@@ -88,16 +96,16 @@ class _SettingScreenState extends State<SettingScreen> {
             const SizedBox(height: 24),
             _buildSectionTitle(l10n.data),
             _buildCard(children: [
-              _buildActionTile(icon: Icons.delete_outline, iconColor: const Color(0xFFEF4444), iconBgColor: const Color(0xFFFEF2F2), title: l10n.clearCache, onTap: () => _showComingSoon(context)),
+              _buildActionTile(icon: Icons.delete_outline, iconColor: const Color(0xFFEF4444), iconBgColor: const Color(0xFFFEF2F2), title: l10n.clearCache, onTap: () => _handleClearCache(context)),
               const Divider(height: 1, indent: 56),
-              _buildActionTile(icon: Icons.refresh, iconColor: const Color(0xFFF59E0B), iconBgColor: const Color(0xFFFFFBEB), title: l10n.refreshData, onTap: () => _showComingSoon(context)),
+              _buildActionTile(icon: Icons.refresh, iconColor: const Color(0xFFF59E0B), iconBgColor: const Color(0xFFFFFBEB), title: l10n.refreshData, onTap: () => _handleRefreshData(context)),
             ]),
             const SizedBox(height: 24),
             _buildSectionTitle(l10n.appInfo),
             _buildCard(children: [
               ListTile(leading: Container(padding: const EdgeInsets.all(8), decoration: BoxDecoration(color: const Color(0xFFF3E8FF), borderRadius: BorderRadius.circular(8)), child: const Icon(Icons.info_outline, color: Color(0xFFA855F7), size: 20)), title: Text(l10n.appVersion, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w500)), trailing: const Text('v1.0.0', style: TextStyle(color: Color(0xFF64748B), fontSize: 14))),
               const Divider(height: 1, indent: 56),
-              _buildActionTile(icon: Icons.system_update_alt, iconColor: const Color(0xFFA855F7), iconBgColor: const Color(0xFFF3E8FF), title: l10n.checkUpdate, onTap: () => _showComingSoon(context)),
+              _buildActionTile(icon: Icons.system_update_alt, iconColor: const Color(0xFFA855F7), iconBgColor: const Color(0xFFF3E8FF), title: l10n.checkUpdate, onTap: () => _handleCheckUpdate(context)),
             ]),
             const SizedBox(height: 24),
             _buildSectionTitle(l10n.dangerZone, color: const Color(0xFFEF4444)),
@@ -213,6 +221,228 @@ class _SettingScreenState extends State<SettingScreen> {
         ),
       ),
     );
+  }
+
+  Future<void> _handleClearCache(BuildContext context) async {
+    // Ask user whether to also clear login session
+    bool clearSession = false;
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (dCtx) => StatefulBuilder(
+        builder: (ctx, setState) => AlertDialog(
+          title: Text(LocaleController.instance.locale.languageCode == 'vi' ? 'Xóa bộ nhớ đệm' : 'Clear cache'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(LocaleController.instance.locale.languageCode == 'vi'
+                  ? 'Bạn có muốn xóa bộ nhớ đệm của ứng dụng không?'
+                  : 'Do you want to clear the application cache?'),
+              const SizedBox(height: 12),
+              CheckboxListTile(
+                value: clearSession,
+                onChanged: (v) => setState(() => clearSession = v ?? false),
+                title: Text(LocaleController.instance.locale.languageCode == 'vi' ? 'Xóa cả phiên đăng nhập (Đăng xuất)' : 'Also clear login session (log out)'),
+                controlAffinity: ListTileControlAffinity.leading,
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(onPressed: () => Navigator.of(dCtx).pop(false), child: Text(Trans.cancel)),
+            ElevatedButton(onPressed: () => Navigator.of(dCtx).pop(true), child: Text(Trans.confirm)),
+          ],
+        ),
+      ),
+    );
+
+    if (confirm != true) return;
+
+    final danger = LocaleController.instance.locale.languageCode == 'vi'
+        ? 'Đang xóa bộ nhớ đệm...'
+        : 'Clearing cache...';
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => AlertDialog(
+        content: Row(children: [const CircularProgressIndicator(), const SizedBox(width: 12), Expanded(child: Text(danger))]),
+      ),
+    );
+
+    try {
+      // Clear selected shared prefs entries
+      final prefs = await SharedPreferences.getInstance();
+      final keys = prefs.getKeys().toList();
+      for (final k in keys) {
+        if (!clearSession && k == 'auth_user') continue;
+        if (clearSession) {
+          await prefs.remove(k);
+        } else {
+          if (k.startsWith('cached') || k.contains('cache') || k.contains('temp')) {
+            await prefs.remove(k);
+          }
+        }
+      }
+
+      // Clear temporary files
+      try {
+        final tempDir = await getTemporaryDirectory();
+        if (await tempDir.exists()) {
+          await tempDir.delete(recursive: true);
+        }
+      } catch (_) {}
+
+      // Clear Flutter image cache
+      try {
+        PaintingBinding.instance.imageCache.clear();
+        PaintingBinding.instance.imageCache.clearLiveImages();
+      } catch (_) {}
+
+      // If requested, also clear secure token + session
+      if (clearSession) {
+        try {
+          await AuthService.clearSession();
+        } catch (_) {}
+      }
+
+      Navigator.of(context, rootNavigator: true).pop();
+
+      if (clearSession) {
+        final successMsg = LocaleController.instance.locale.languageCode == 'vi' ? 'Đã xóa bộ nhớ đệm và đăng xuất' : 'Cache cleared and logged out';
+        AppSnackBar.showSuccess(context, successMsg);
+        // Navigate to login
+        navigatorKey.currentState?.pushAndRemoveUntil(
+          MaterialPageRoute(builder: (_) => const LoginScreen()),
+          (route) => false,
+        );
+      } else {
+        final successMsg = LocaleController.instance.locale.languageCode == 'vi' ? 'Đã xóa bộ nhớ đệm' : 'Cache cleared';
+        AppSnackBar.showSuccess(context, successMsg);
+      }
+    } catch (e) {
+      Navigator.of(context, rootNavigator: true).pop();
+      final errMsg = LocaleController.instance.locale.languageCode == 'vi' ? 'Xảy ra lỗi khi xóa bộ nhớ đệm' : 'Failed to clear cache';
+      AppSnackBar.showError(context, errMsg);
+    }
+  }
+
+  Future<void> _handleRefreshData(BuildContext context) async {
+    final msg = LocaleController.instance.locale.languageCode == 'vi' ? 'Đang làm mới dữ liệu...' : 'Refreshing app data...';
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => AlertDialog(
+        content: Row(children: [const CircularProgressIndicator(), const SizedBox(width: 12), Expanded(child: Text(msg))]),
+      ),
+    );
+
+    try {
+      // Rediscover backend server (if applicable)
+      await ApiConfig.rediscover();
+
+      // Refresh current user from server if possible
+      await AuthService.refreshUser();
+
+      Navigator.of(context, rootNavigator: true).pop();
+      final successMsg = LocaleController.instance.locale.languageCode == 'vi' ? 'Dữ liệu đã được làm mới' : 'App data refreshed';
+      AppSnackBar.showSuccess(context, successMsg);
+    } catch (e) {
+      Navigator.of(context, rootNavigator: true).pop();
+      final errMsg = LocaleController.instance.locale.languageCode == 'vi' ? 'Làm mới dữ liệu thất bại' : 'Failed to refresh data';
+      AppSnackBar.showError(context, errMsg);
+    }
+  }
+
+  Future<void> _handleCheckUpdate(BuildContext context) async {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => AlertDialog(
+        content: Row(children: [const CircularProgressIndicator(), const SizedBox(width: 12), Expanded(child: Text(LocaleController.instance.locale.languageCode == 'vi' ? 'Đang kiểm tra cập nhật...' : 'Checking for updates...'))]),
+      ),
+    );
+
+    try {
+      final info = await PackageInfo.fromPlatform();
+      final current = info.version;
+
+      // Candidate endpoints to discover latest version (best-effort)
+      final candidates = [
+        '/app/version',
+        '/meta/version',
+        '/version',
+        '/latest',
+      ];
+
+      String? latest;
+      String? updateUrl;
+
+      for (final path in candidates) {
+        try {
+          final resp = await DioClient.instance.get(path);
+          final data = resp.data;
+          if (data == null) continue;
+          if (data is String) {
+            latest = data;
+          } else if (data is Map) {
+            latest = data['latest']?.toString() ?? data['version']?.toString() ?? data['tag_name']?.toString() ?? data['name']?.toString();
+            updateUrl = data['url']?.toString() ?? data['download_url']?.toString() ?? data['html_url']?.toString();
+          }
+          if (latest != null) break;
+        } catch (_) {
+          // ignore and try next
+        }
+      }
+
+      Navigator.of(context, rootNavigator: true).pop();
+
+      if (latest == null) {
+        AppSnackBar.showInfo(context, LocaleController.instance.locale.languageCode == 'vi' ? 'Không có thông tin cập nhật.' : 'No update information available.');
+        return;
+      }
+
+      bool isNewer = _isVersionNewer(latest, current);
+      if (isNewer) {
+        final title = LocaleController.instance.locale.languageCode == 'vi' ? 'Cập nhật mới' : 'Update available';
+        final body = LocaleController.instance.locale.languageCode == 'vi' ? 'Phiên bản mới $latest có sẵn. Bạn có muốn cập nhật?' : 'Version $latest is available. Do you want to update?';
+        showDialog(
+          context: context,
+          builder: (_) => AlertDialog(
+            title: Text(title),
+            content: Text(body),
+            actions: [
+              TextButton(onPressed: () => Navigator.pop(context), child: Text(Trans.cancel)),
+              ElevatedButton(
+                onPressed: () async {
+                  Navigator.pop(context);
+                  // Try to open updateUrl, fallback to API base host
+                  final uri = updateUrl != null ? Uri.parse(updateUrl) : Uri.parse(ApiConfig.apiBaseUrl.replaceAll('/api/v1', ''));
+                  if (await canLaunchUrl(uri)) await launchUrl(uri, mode: LaunchMode.externalApplication);
+                },
+                child: Text(LocaleController.instance.locale.languageCode == 'vi' ? 'Cập nhật' : 'Update'),
+              ),
+            ],
+          ),
+        );
+      } else {
+        AppSnackBar.showSuccess(context, LocaleController.instance.locale.languageCode == 'vi' ? 'Ứng dụng đã là phiên bản mới nhất' : 'App is up to date');
+      }
+    } catch (e) {
+      Navigator.of(context, rootNavigator: true).pop();
+      AppSnackBar.showError(context, LocaleController.instance.locale.languageCode == 'vi' ? 'Kiểm tra cập nhật thất bại' : 'Failed to check updates');
+    }
+  }
+
+  bool _isVersionNewer(String latest, String current) {
+    List<int> toInts(String v) => v.split(RegExp(r'[\.-]')).map((s) => int.tryParse(RegExp(r'\d+').stringMatch(s) ?? '') ?? 0).toList();
+    final a = toInts(latest);
+    final b = toInts(current);
+    final n = a.length > b.length ? a.length : b.length;
+    for (int i = 0; i < n; i++) {
+      final ai = i < a.length ? a[i] : 0;
+      final bi = i < b.length ? b[i] : 0;
+      if (ai > bi) return true;
+      if (ai < bi) return false;
+    }
+    return false;
   }
 
   void _showDeleteAccountDialog(BuildContext context) {

@@ -1,3 +1,6 @@
+import 'dart:io';
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import '../../utils/network_utils.dart';
@@ -5,13 +8,109 @@ import '../../utils/translation.dart';
 import '../../utils/app_snackbar.dart';
 import '../../services/blog_service.dart';
 
+// ─────────────────────────────────────────────────────────────────────────────
+// Widget tải ảnh với HttpClient tự-bypass SSL (self-signed cert), fallback về
+// Image.network nếu thất bại.
+// ─────────────────────────────────────────────────────────────────────────────
+class _TrustAllImage extends StatefulWidget {
+  final String url;
+  final double? width;
+  final double? height;
+  final BoxFit fit;
+
+  const _TrustAllImage({
+    required this.url,
+    this.width,
+    this.height,
+    this.fit = BoxFit.cover,
+  });
+
+  @override
+  State<_TrustAllImage> createState() => _TrustAllImageState();
+}
+
+class _TrustAllImageState extends State<_TrustAllImage> {
+  Uint8List? _bytes;
+  bool _failed = false;
+  bool _loading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _load();
+  }
+
+  Future<void> _load() async {
+    if (widget.url.isEmpty) {
+      if (mounted) setState(() { _failed = true; _loading = false; });
+      return;
+    }
+    try {
+      final uri = Uri.parse(widget.url);
+      final client = HttpClient()
+        ..badCertificateCallback = (_, __, ___) => true;
+      final req = await client.getUrl(uri);
+      req.headers.set('user-agent', 'Mozilla/5.0 (Flutter)');
+      final res = await req.close();
+      if (res.statusCode == 200) {
+        final chunks = <int>[];
+        await for (final chunk in res) {
+          chunks.addAll(chunk);
+        }
+        if (mounted) setState(() { _bytes = Uint8List.fromList(chunks); _loading = false; });
+      } else {
+        if (mounted) setState(() { _failed = true; _loading = false; });
+      }
+      client.close(force: true);
+    } catch (_) {
+      if (mounted) setState(() { _failed = true; _loading = false; });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (_loading) {
+      return SizedBox(
+        width: widget.width ?? double.infinity,
+        height: widget.height ?? 200,
+        child: const Center(
+          child: CircularProgressIndicator(strokeWidth: 2, color: Color(0xFFF26522)),
+        ),
+      );
+    }
+    if (_failed || _bytes == null) {
+      return Image.network(
+        widget.url,
+        width: widget.width ?? double.infinity,
+        height: widget.height,
+        fit: widget.fit,
+        errorBuilder: (_, __, ___) => Container(
+          width: widget.width ?? double.infinity,
+          height: widget.height ?? 200,
+          color: Colors.grey[200],
+          child: const Icon(Icons.image_not_supported, size: 48, color: Colors.grey),
+        ),
+      );
+    }
+    return Image.memory(
+      _bytes!,
+      width: widget.width ?? double.infinity,
+      height: widget.height,
+      fit: widget.fit,
+    );
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Screen
+// ─────────────────────────────────────────────────────────────────────────────
 class BlogDetailScreen extends StatefulWidget {
   final dynamic post;
 
   const BlogDetailScreen({
-    Key? key,
+    super.key,
     required this.post,
-  }) : super(key: key);
+  });
 
   @override
   State<BlogDetailScreen> createState() => _BlogDetailScreenState();
@@ -45,9 +144,7 @@ class _BlogDetailScreenState extends State<BlogDetailScreen> {
     final slug = post['slug'];
     if (slug == null) return;
 
-    setState(() {
-      isSubmitting = true;
-    });
+    setState(() { isSubmitting = true; });
 
     try {
       final newComment = await BlogService.addComment(slug, text);
@@ -63,9 +160,48 @@ class _BlogDetailScreenState extends State<BlogDetailScreen> {
         AppSnackBar.showError(context, e.toString().replaceFirst('Exception: ', ''));
       }
     } finally {
-      setState(() {
-        isSubmitting = false;
-      });
+      setState(() { isSubmitting = false; });
+    }
+  }
+
+  // Resolve và fix URLs ảnh trong HTML content (cả single & double quote)
+  String _fixImageUrls(String html) {
+    if (html.trim().isEmpty) return html;
+    return html.replaceAllMapped(
+      RegExp(r'<img[^>]*>', caseSensitive: false),
+      (tagMatch) {
+        var tag = tagMatch.group(0)!;
+        // double-quoted src
+        tag = tag.replaceFirstMapped(
+          RegExp(r'src="([^"]*)"', caseSensitive: false),
+          (m) {
+            final raw = m.group(1) ?? '';
+            if (raw.trim().startsWith('data:') || raw.trim().isEmpty) return m.group(0)!;
+            return 'src="${NetworkUtils.fixDeviceUrl(raw.trim())}"';
+          },
+        );
+        // single-quoted src
+        tag = tag.replaceFirstMapped(
+          RegExp(r"src='([^']*)'", caseSensitive: false),
+          (m) {
+            final raw = m.group(1) ?? '';
+            if (raw.trim().startsWith('data:') || raw.trim().isEmpty) return m.group(0)!;
+            return 'src="${NetworkUtils.fixDeviceUrl(raw.trim())}"';
+          },
+        );
+        return tag;
+      },
+    );
+  }
+
+  String _formatDate(String dateString) {
+    try {
+      final date = DateTime.parse(dateString);
+      return '${date.day.toString().padLeft(2, '0')}/'
+          '${date.month.toString().padLeft(2, '0')}/'
+          '${date.year}';
+    } catch (_) {
+      return 'N/A';
     }
   }
 
@@ -74,12 +210,14 @@ class _BlogDetailScreenState extends State<BlogDetailScreen> {
     final imageUrl = NetworkUtils.fixDeviceUrl(post['thumbnail_url'] ?? '');
     final title = post['title'] ?? '';
     final excerpt = post['excerpt'] ?? '';
-    final content = post['content'] ?? post['content_html'] ?? 'No content available';
+    final content = post['content'] ?? post['content_html'] ?? '';
     final categoryName = post['category']?['name'] ?? 'News';
     final authorName = post['author']?['name'] ?? 'E-Tech Market';
     final createdAt = post['published_at'] ?? '';
     final readingTime = post['reading_time'] ?? 5;
     final views = (post['views'] as num?)?.toInt() ?? 0;
+
+    final processedHtml = _fixImageUrls(content);
 
     return Scaffold(
       appBar: AppBar(
@@ -95,12 +233,16 @@ class _BlogDetailScreenState extends State<BlogDetailScreen> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            Image.network(
-              imageUrl,
-              width: double.infinity,
-              height: 280,
-              fit: BoxFit.cover,
-              errorBuilder: (_, __, ___) => Container(
+            // ── Thumbnail header
+            if (imageUrl.isNotEmpty)
+              _TrustAllImage(
+                url: imageUrl,
+                width: double.infinity,
+                height: 280,
+                fit: BoxFit.cover,
+              )
+            else
+              Container(
                 height: 280,
                 color: Theme.of(context).colorScheme.surfaceContainerHighest,
                 child: Icon(
@@ -109,17 +251,15 @@ class _BlogDetailScreenState extends State<BlogDetailScreen> {
                   color: Theme.of(context).colorScheme.onSurfaceVariant,
                 ),
               ),
-            ),
+
             Padding(
               padding: const EdgeInsets.all(20),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  // ── Category badge
                   Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 6,
-                    ),
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                     decoration: BoxDecoration(
                       color: Theme.of(context).colorScheme.primaryContainer,
                       borderRadius: BorderRadius.circular(6),
@@ -138,6 +278,8 @@ class _BlogDetailScreenState extends State<BlogDetailScreen> {
                     ),
                   ),
                   const SizedBox(height: 16),
+
+                  // ── Title
                   Text(
                     title,
                     style: TextStyle(
@@ -148,54 +290,54 @@ class _BlogDetailScreenState extends State<BlogDetailScreen> {
                     ),
                   ),
                   const SizedBox(height: 16),
+
+                  // ── Author + date
                   Row(
                     children: [
-                      Row(
-                        children: [
-                          Container(
-                            width: 32,
-                            height: 32,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: Theme.of(context).colorScheme.primaryContainer,
-                            ),
-                            child: Center(
-                              child: Text(
-                                authorName.isNotEmpty ? authorName[0] : 'E',
-                                style: TextStyle(
-                                  color: Theme.of(context).colorScheme.onPrimaryContainer,
-                                  fontWeight: FontWeight.w700,
-                                  fontSize: 14,
-                                ),
-                              ),
+                      Container(
+                        width: 32,
+                        height: 32,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Theme.of(context).colorScheme.primaryContainer,
+                        ),
+                        child: Center(
+                          child: Text(
+                            authorName.isNotEmpty ? authorName[0] : 'E',
+                            style: TextStyle(
+                              color: Theme.of(context).colorScheme.onPrimaryContainer,
+                              fontWeight: FontWeight.w700,
+                              fontSize: 14,
                             ),
                           ),
-                          const SizedBox(width: 8),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                authorName,
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w600,
-                                  color: Theme.of(context).colorScheme.onSurface,
-                                ),
-                              ),
-                              Text(
-                                _formatDate(createdAt),
-                                style: TextStyle(
-                                  fontSize: 11,
-                                  color: Theme.of(context).colorScheme.onSurfaceVariant,
-                                ),
-                              ),
-                            ],
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            authorName,
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                              color: Theme.of(context).colorScheme.onSurface,
+                            ),
+                          ),
+                          Text(
+                            _formatDate(createdAt),
+                            style: TextStyle(
+                              fontSize: 11,
+                              color: Theme.of(context).colorScheme.onSurfaceVariant,
+                            ),
                           ),
                         ],
                       ),
                     ],
                   ),
                   const SizedBox(height: 16),
+
+                  // ── Meta: reading time + views
                   Row(
                     children: [
                       _buildMetaItem(Trans.readingTimeLabel(readingTime), context),
@@ -204,11 +346,11 @@ class _BlogDetailScreenState extends State<BlogDetailScreen> {
                     ],
                   ),
                   const SizedBox(height: 24),
-                  Container(
-                    height: 1,
-                    color: Theme.of(context).colorScheme.outline,
-                  ),
+
+                  Container(height: 1, color: Theme.of(context).colorScheme.outline),
                   const SizedBox(height: 24),
+
+                  // ── Excerpt
                   if (excerpt.isNotEmpty) ...[
                     Container(
                       padding: const EdgeInsets.all(16),
@@ -231,16 +373,73 @@ class _BlogDetailScreenState extends State<BlogDetailScreen> {
                     ),
                     const SizedBox(height: 24),
                   ],
-                  _buildContent(content, context),
+
+                  // ── HTML content với custom image rendering (bypass SSL)
+                  SizedBox(
+                  width: double.infinity,
+                  child: Html(
+                    data: processedHtml,
+                    style: {
+                      'body': Style(
+                        margin: Margins.zero,
+                        padding: HtmlPaddings.zero,
+                        fontSize: FontSize(15),
+                        lineHeight: const LineHeight(1.8),
+                        color: Theme.of(context).colorScheme.onSurface,
+                      ),
+                      'p': Style(margin: Margins.only(bottom: 12)),
+                      'h1': Style(fontSize: FontSize(22), fontWeight: FontWeight.bold),
+                      'h2': Style(fontSize: FontSize(19), fontWeight: FontWeight.bold),
+                      'h3': Style(fontSize: FontSize(16), fontWeight: FontWeight.bold),
+                      'img': Style(
+                        width: Width(100, Unit.percent),
+                        margin: Margins.only(top: 8, bottom: 8),
+                      ),
+                      'table': Style(
+                        backgroundColor: Theme.of(context).colorScheme.surfaceContainerLow,
+                        border: Border.all(color: Theme.of(context).colorScheme.outline),
+                      ),
+                      'th': Style(
+                        padding: HtmlPaddings.all(6),
+                        backgroundColor: Theme.of(context).colorScheme.surfaceContainerLow,
+                      ),
+                      'td': Style(
+                        padding: HtmlPaddings.all(6),
+                        border: Border.all(color: Theme.of(context).colorScheme.outline),
+                      ),
+                    },
+                    extensions: [
+                      // Override <img> rendering → dùng _TrustAllImage (bypass SSL cert)
+                      TagExtension(
+                        tagsToExtend: {'img'},
+                        builder: (extensionContext) {
+                          final src = extensionContext.attributes['src'] ?? '';
+                          if (src.isEmpty) return const SizedBox.shrink();
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 6),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(6),
+                              child: _TrustAllImage(
+                                url: src,
+                                width: double.infinity,
+                                fit: BoxFit.contain,
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ],
+                  ), // Html
+                  ), // SizedBox
+
                   const SizedBox(height: 32),
                   const Divider(),
                   const SizedBox(height: 16),
+
+                  // ── Comments
                   Text(
                     'Bình luận (${comments.length})',
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 16),
                   _buildCommentForm(),
@@ -265,9 +464,7 @@ class _BlogDetailScreenState extends State<BlogDetailScreen> {
           maxLines: 3,
           decoration: InputDecoration(
             hintText: 'Viết bình luận của bạn...',
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-            ),
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
             filled: true,
             fillColor: Theme.of(context).colorScheme.surfaceContainerHighest.withAlpha(50),
           ),
@@ -279,9 +476,7 @@ class _BlogDetailScreenState extends State<BlogDetailScreen> {
             padding: const EdgeInsets.symmetric(vertical: 12),
             backgroundColor: Theme.of(context).colorScheme.primary,
             foregroundColor: Theme.of(context).colorScheme.onPrimary,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(8),
-            ),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
           ),
           child: isSubmitting
               ? const SizedBox(
@@ -315,7 +510,7 @@ class _BlogDetailScreenState extends State<BlogDetailScreen> {
       itemBuilder: (context, index) {
         final comment = comments[index];
         final author = comment['author_name'] ?? 'Khách';
-        final content = comment['content'] ?? '';
+        final commentContent = comment['content'] ?? '';
         final date = _formatDate(comment['created_at'] ?? '');
 
         return Padding(
@@ -344,25 +539,16 @@ class _BlogDetailScreenState extends State<BlogDetailScreen> {
                       children: [
                         Text(
                           author,
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 14,
-                          ),
+                          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
                         ),
                         Text(
                           date,
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: Theme.of(context).colorScheme.onSurfaceVariant,
-                          ),
+                          style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.onSurfaceVariant),
                         ),
                       ],
                     ),
                     const SizedBox(height: 6),
-                    Text(
-                      content,
-                      style: const TextStyle(fontSize: 14),
-                    ),
+                    Text(commentContent, style: const TextStyle(fontSize: 14)),
                   ],
                 ),
               ),
@@ -382,49 +568,5 @@ class _BlogDetailScreenState extends State<BlogDetailScreen> {
         fontWeight: FontWeight.w500,
       ),
     );
-  }
-
-  Widget _buildContent(String htmlContent, BuildContext context) {
-    // Fix relative image URLs
-    final fixedContent = _fixImageUrls(htmlContent);
-    return Html(
-      data: fixedContent,
-      style: {
-        'body': Style(
-          margin: Margins.zero,
-          padding: HtmlPaddings.zero,
-          fontSize: FontSize(15),
-          lineHeight: const LineHeight(1.8),
-          color: Theme.of(context).colorScheme.onSurface,
-        ),
-        'p': Style(
-          margin: Margins.only(bottom: 12),
-        ),
-        'img': Style(
-          width: Width(100, Unit.percent),
-          height: Height.auto(),
-        ),
-      },
-    );
-  }
-
-  String _fixImageUrls(String htmlContent) {
-    // Simple fix for relative image URLs
-    final regex = RegExp(r'src="([^"]+)"');
-    return htmlContent.replaceAllMapped(regex, (match) {
-      final url = match.group(1) ?? '';
-      if (url.startsWith('http')) return match.group(0) ?? '';
-      final fixedUrl = NetworkUtils.fixDeviceUrl(url);
-      return 'src="$fixedUrl"';
-    });
-  }
-
-  String _formatDate(String dateString) {
-    try {
-      final date = DateTime.parse(dateString);
-      return '${date.day.toString().padLeft(2, '0')}/${date.month.toString().padLeft(2, '0')}/${date.year}';
-    } catch (_) {
-      return 'N/A';
-    }
   }
 }
