@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState, type FormEvent } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import '@/styles/pages/CheckoutPage.css'
 
-import { cartCount, cartTotal, clearCart, getCart, type CartState } from '@/features/services/cart.service'
+import { cartCount, cartTotal, getCart, setCart as setCartStorage, type CartState } from '@/features/services/cart.service'
 import { useCartMutation } from '@/features/services/mutations'
 import { apiFetch } from '@/configs/api.config'
 import logoMomo from '@/assets/logo-momo.png'
@@ -81,6 +81,28 @@ function buildAccountAddressLine(u: StoredUser) {
 export default function CheckoutPage() {
   const navigate = useNavigate()
   const [cart, setCart] = useState<CartState>(() => getCart())
+  const CHECKOUT_SELECTED_KEY = 'checkout_selected_keys'
+  const [checkoutKeys, setCheckoutKeys] = useState<string[] | null>(null)
+
+  // If user initiated checkout from cart with selected keys, filter cart to those items
+  useEffect(() => {
+    try {
+      const raw = window.localStorage.getItem(CHECKOUT_SELECTED_KEY)
+      if (!raw) return
+      const keys = JSON.parse(raw) as string[]
+      if (!Array.isArray(keys) || keys.length === 0) return
+      const all = getCart()
+      const filtered = { items: all.items.filter((it) => keys.includes(it.key)) }
+      if (filtered.items.length > 0) {
+        setCart(filtered)
+        setCheckoutKeys(keys)
+      }
+    } catch (e) { void 0 } finally {
+      try {
+        window.localStorage.removeItem(CHECKOUT_SELECTED_KEY)
+      } catch (e) { void 0 }
+    }
+  }, [])
   const [submitting, setSubmitting] = useState(false)
   const [orderCode, setOrderCode] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
@@ -97,7 +119,37 @@ export default function CheckoutPage() {
   })
 
   // --- Cart mutations ---
-  const { clearCart: clearBackendCart } = useCartMutation()
+  const { clearCart: clearBackendCart, removeFromCart: removeBackendItem } = useCartMutation()
+
+  function removeSelectedLocalCartItems() {
+    try {
+      const all = getCart()
+      if (!checkoutKeys || checkoutKeys.length === 0) {
+        setCartStorage({ items: [] })
+        setCart({ items: [] })
+        return
+      }
+      const remaining = all.items.filter((it) => !checkoutKeys.includes(it.key))
+      setCartStorage({ items: remaining })
+      setCart({ items: remaining })
+    } catch { void 0 }
+  }
+
+  function removeSelectedBackendItems() {
+    try {
+      if (!checkoutKeys || checkoutKeys.length === 0) {
+        try { clearBackendCart() } catch { void 0 }
+        return
+      }
+      const all = getCart()
+      const toRemove = all.items.filter((it) => checkoutKeys.includes(it.key))
+      toRemove.forEach((it) => {
+        try {
+          removeBackendItem({ key: it.key, productId: it.product_id, variantId: it.variant_id })
+        } catch { void 0 }
+      })
+    } catch { void 0 }
+  }
 
   // --- Coupon ---
   const [couponInput, setCouponInput] = useState('')
@@ -155,23 +207,21 @@ export default function CheckoutPage() {
             momo: !!cfg.momo?.enabled,
           }
           if (!cancelled) setPayAvail(next)
-        } catch {
-          // keep defaults
-        }
+        } catch (e) { void 0 }
       })()
 
     apiFetch<CouponPublic[]>('/api/coupons')
       .then((res) => {
         if (!cancelled && Array.isArray(res)) setActiveCoupons(res)
       })
-      .catch(() => { })
+      .catch(() => { void 0 })
 
     if (hasAuth) {
       apiFetch<any>('/api/me/loyalty')
         .then((res) => {
           if (!cancelled) setLoyaltyData(res)
         })
-        .catch(() => { })
+        .catch(() => { void 0 })
     }
 
     return () => {
@@ -216,9 +266,7 @@ export default function CheckoutPage() {
 
             return next
           })
-        } catch {
-          // keep defaults
-        }
+        } catch (e) { void 0 }
       })()
     return () => {
       cancelled = true
@@ -390,8 +438,8 @@ export default function CheckoutPage() {
               items: cart.items,
             }),
           )
-          clearCart()
-          clearBackendCart()
+          removeSelectedLocalCartItems()
+          removeSelectedBackendItems()
           localStorage.removeItem(pendingPaymentKey)
           setOrderCode(created.order_code)
           return
@@ -418,8 +466,8 @@ export default function CheckoutPage() {
             items: cart.items,
           }),
         )
-        clearCart()
-          clearBackendCart()
+        removeSelectedLocalCartItems()
+        removeSelectedBackendItems()
         localStorage.removeItem(pendingPaymentKey)
         setOrderCode(code)
         return
@@ -431,12 +479,6 @@ export default function CheckoutPage() {
       }
 
       // For online payments: create 1 backend order from localStorage cart (no duplicates).
-      type PendingPayment = { order_id: number; order_code: string; method: PaymentMethod }
-      const rawPending = localStorage.getItem(pendingPaymentKey)
-
-      let order_id: number
-      let order_code: string
-
       const created = await apiFetch<{ id: number; order_code: string }>(`/orders/from-items`, {
         method: 'POST',
         body: JSON.stringify({
@@ -460,15 +502,13 @@ export default function CheckoutPage() {
           shipping_zone_id: form.shipping_zone_id,
         }),
       })
-      order_id = created.id
-      order_code = created.order_code
-      localStorage.setItem(pendingPaymentKey, JSON.stringify({ order_id, order_code, method: form.payment_method }))
+      localStorage.setItem(pendingPaymentKey, JSON.stringify({ order_id: created.id, order_code: created.order_code, method: form.payment_method }))
 
       // Create payment link & redirect to gateway
       const pay = await apiFetch<{ pay_url: string }>(`/payments/${form.payment_method}/create`, {
         method: 'POST',
         // MoMo will show "choose payment method" screen by default
-        body: JSON.stringify({ order_id: order_id }),
+        body: JSON.stringify({ order_id: created.id }),
       })
       window.location.href = pay.pay_url
     } catch (err: unknown) {
@@ -484,8 +524,8 @@ export default function CheckoutPage() {
     queueMicrotask(() => {
       if (paymentReturn.success) {
         localStorage.removeItem(pendingPaymentKey)
-        clearCart()
-          clearBackendCart()
+        removeSelectedLocalCartItems()
+        removeSelectedBackendItems()
         
         setWaitingPayment(true)
 
@@ -506,9 +546,9 @@ export default function CheckoutPage() {
              } else {
                window.setTimeout(poll, 2000)
              }
-          } catch(e) {
+           } catch {
              window.setTimeout(poll, 2000)
-          }
+           }
         };
         poll();
 

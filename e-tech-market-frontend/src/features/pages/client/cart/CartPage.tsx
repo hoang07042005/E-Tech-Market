@@ -7,7 +7,6 @@ import Skeleton from '@/components/Skeleton'
 
 import {
   cartCount,
-  cartTotal,
   getCart,
   type CartState,
 } from '@/features/services/cart.service'
@@ -28,7 +27,7 @@ function resolveImageUrl(url: string | null | undefined) {
         const path = s.replace(/^https?:\/\/[^/]+/, '')
         return window.location.origin + path
       }
-    } catch { /* keep original */ }
+    } catch { void 0 }
     return s
   }
   const path = s.startsWith('/') ? s : `/${s}`
@@ -39,6 +38,15 @@ function resolveImageUrl(url: string | null | undefined) {
 export default function CartPage() {
   const navigate = useNavigate()
   const [cart, setCart] = useState<CartState>(() => getCart())
+  const SELECTED_KEY = 'cart_selected_keys'
+  const CHECKOUT_SELECTED_KEY = 'checkout_selected_keys'
+  const [selectedKeys, setSelectedKeys] = useState<string[]>(() => {
+    try {
+      const raw = window.localStorage.getItem(SELECTED_KEY)
+      if (raw) return JSON.parse(raw)
+    } catch { void 0 }
+    return getCart().items.map((it) => it.key)
+  })
   const [suggested, setSuggested] = useState<ApiProduct[]>([])
   const [boughtTogether, setBoughtTogether] = useState<ApiProduct[]>([])
   const [loadingSuggestions, setLoadingSuggestions] = useState(true)
@@ -56,6 +64,24 @@ export default function CartPage() {
       window.removeEventListener('storage', onChange)
     }
   }, [])
+
+  // Keep selectedKeys in sync with cart items
+  useEffect(() => {
+    const keys = cart.items.map((it) => it.key)
+    setSelectedKeys((prev) => {
+      // keep previous selections that still exist
+      const next = prev.filter((k) => keys.includes(k))
+      if (next.length === 0 && keys.length > 0) return keys
+      return next
+    })
+  }, [cart.items.map((i) => i.key).join('|')])
+
+  // persist selections
+  useEffect(() => {
+    try {
+      window.localStorage.setItem(SELECTED_KEY, JSON.stringify(selectedKeys))
+    } catch { void 0 }
+  }, [selectedKeys])
 
   useEffect(() => {
     let cancelled = false
@@ -96,7 +122,9 @@ export default function CartPage() {
   }, [cart.items.length])
 
   const totalQty = useMemo(() => cartCount(cart), [cart])
-  const totalPrice = useMemo(() => cartTotal(cart), [cart])
+  const selectedItems = useMemo(() => cart.items.filter((it) => selectedKeys.includes(it.key)), [cart, selectedKeys])
+  const selectedQty = useMemo(() => selectedItems.reduce((s, it) => s + it.quantity, 0), [selectedItems])
+  const selectedTotal = useMemo(() => selectedItems.reduce((s, it) => s + it.quantity * it.price, 0), [selectedItems])
 
   function ProductSuggestionSkeleton() {
     return (
@@ -131,9 +159,22 @@ export default function CartPage() {
           <div className="cartHeaderRight">
             <span className="cartMeta">{totalQty} sản phẩm</span>
             {cart.items.length > 0 && (
-              <button type="button" className="cartClearBtn" onClick={() => clearCart()}>
-                <TrashIcon /> Xoá tất cả
-              </button>
+              <>
+                <label style={{ display: 'inline-flex', alignItems: 'center', gap: 8, marginRight: 12 }}>
+                  <input
+                    type="checkbox"
+                    checked={selectedItems.length === cart.items.length}
+                    onChange={(e) => {
+                      if (e.target.checked) setSelectedKeys(cart.items.map((it) => it.key))
+                      else setSelectedKeys([])
+                    }}
+                  />
+                  <span>Chọn tất cả</span>
+                </label>
+                <button type="button" className="cartClearBtn" onClick={() => clearCart()}>
+                  <TrashIcon /> Xoá tất cả
+                </button>
+              </>
             )}
           </div>
         </div>
@@ -190,6 +231,7 @@ export default function CartPage() {
             <div className="cartGrid">
               <div className="cartList">
                 <div className="cartListHead">
+                  <div />
                   <div className="hideMd">Ảnh</div>
                   <div className="hideMd">Sản phẩm</div>
                   <div className="hideSm">Đơn giá</div>
@@ -199,6 +241,18 @@ export default function CartPage() {
                 </div>
                 {cart.items.map((it) => (
                   <div key={it.key} className="cartItem">
+                    <div style={{ display: 'flex', alignItems: 'center', marginRight: 12 }}>
+                      <input
+                        type="checkbox"
+                        checked={selectedKeys.includes(it.key)}
+                        onChange={(e) => {
+                          setSelectedKeys((prev) => {
+                            if (e.target.checked) return Array.from(new Set([...prev, it.key]))
+                            return prev.filter((k) => k !== it.key)
+                          })
+                        }}
+                      />
+                    </div>
                     <div className="cartItemImgWrap">
                       {it.image_url ? (
                         <img src={it.image_url} alt={it.name} className="cartItemImg" />
@@ -254,12 +308,25 @@ export default function CartPage() {
                 ))}
                 <div className="cartFooterBar">
                   <div className="cartFooterLeft">
-                    <span className="cartFooterLabel">Tổng tiền</span>
-                    <span className="cartFooterValue">{formatVnd(totalPrice)}</span>
+                    <span className="cartFooterLabel">Tổng (đã chọn) — {selectedQty} sản phẩm</span>
+                    <span className="cartFooterValue">{formatVnd(selectedTotal)}</span>
                   </div>
                   <div className="cartFooterRight">
                     <Link to="/products" className="cartBackLinkSmall"> ← Quay lại cửa hàng</Link>
-                    <button type="button" className="cartCheckoutBtn" onClick={() => navigate('/checkout')}>
+                    <button
+                      type="button"
+                      className="cartCheckoutBtn"
+                      onClick={() => {
+                        if (selectedKeys.length === 0) {
+                          alert('Vui lòng chọn ít nhất một sản phẩm để thanh toán.')
+                          return
+                        }
+                        try {
+                          window.localStorage.setItem(CHECKOUT_SELECTED_KEY, JSON.stringify(selectedKeys))
+                        } catch { void 0 }
+                        navigate('/checkout')
+                      }}
+                    >
                       Thanh toán
                     </button>
                   </div>
