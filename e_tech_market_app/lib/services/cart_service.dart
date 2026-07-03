@@ -11,6 +11,8 @@ class CartItem {
   final String slug;
   final String name;
   final String? variantLabel;
+  final String? variantColor;
+  final String? variantConfig;
   final String? imageUrl;
   final double unitPrice;
   final int quantity;
@@ -22,6 +24,8 @@ class CartItem {
     required this.slug,
     required this.name,
     required this.variantLabel,
+    required this.variantColor,
+    required this.variantConfig,
     required this.imageUrl,
     required this.unitPrice,
     required this.quantity,
@@ -38,6 +42,9 @@ class CartItem {
         : <String, dynamic>{};
     final image = _imageFrom(variant['image_url'] ?? product['main_image_url']);
 
+    final color = variant['color']?.toString().trim();
+    final config = (variant['configuration'] ?? variant['storage'])?.toString().trim();
+
     return CartItem(
       id: _toInt(json['id']),
       productId: _toInt(json['product_id'] ?? product['id']),
@@ -45,6 +52,8 @@ class CartItem {
       slug: product['slug']?.toString() ?? '',
       name: product['name']?.toString() ?? 'San pham',
       variantLabel: _variantLabel(variant),
+      variantColor: (color != null && color.isNotEmpty) ? color : null,
+      variantConfig: (config != null && config.isNotEmpty) ? config : null,
       imageUrl: image.isEmpty ? null : image,
       unitPrice: _toDouble(json['unit_price'] ?? variant['effective_price'] ?? product['price']),
       quantity: _toInt(json['quantity']).clamp(1, 999),
@@ -58,7 +67,7 @@ class CartItem {
       variant['color']?.toString(),
       (variant['configuration'] ?? variant['storage'])?.toString(),
     ].where((part) => part != null && part.trim().isNotEmpty).cast<String>();
-    final label = parts.join(' - ');
+    final label = parts.join(' · ');
     return label.isEmpty ? null : label;
   }
 }
@@ -141,12 +150,16 @@ class CartService {
     return CartState.fromJson(response.data as Map<String, dynamic>);
   }
 
-  static Future<CartState> clearCart(CartState cart) async {
-    var next = cart;
-    for (final item in List<CartItem>.from(cart.items)) {
+  static Future<CartState> removeItems(List<CartItem> items, {CartState? currentCart}) async {
+    var next = currentCart ?? CartState.empty();
+    for (final item in List<CartItem>.from(items)) {
       next = await removeItem(productId: item.productId);
     }
     return next;
+  }
+
+  static Future<CartState> clearCart(CartState cart) async {
+    return removeItems(cart.items, currentCart: cart);
   }
 
   static Future<String> _requireToken() async {

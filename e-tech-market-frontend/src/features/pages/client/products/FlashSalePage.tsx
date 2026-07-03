@@ -366,16 +366,9 @@ export default function FlashSalePage() {
                         <div className={`fspProgressFill ${isHot ? 'hot' : ''}`} style={{ width: `${progressPercent}%` }}></div>
                       </div>
                     </div>
-                    <button type="button" className="fspCTA">
-                      <span className="fspCTAIcon material-symbols-outlined">
-                        <svg className="hfIconSvg" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                          <path d="M7 6h15l-2 9H8L7 6Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"></path>
-                          <path d="M7 6 6 3H2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"></path>
-                          <path d="M9 20a1 1 0 1 0 0-2 1 1 0 0 0 0 2ZM19 20a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z" fill="currentColor"></path>
-                        </svg>
-                      </span>
-                      MUA NGAY
-                    </button>
+                    <div className="fspCTA">
+                      XEM CHI TIẾT →
+                    </div>
                   </div>
                 </Link>
               )
@@ -477,16 +470,9 @@ export default function FlashSalePage() {
                       <div className={`fspProgressFill ${isHot ? 'hot' : ''}`} style={{ width: `${progressPercent}%` }}></div>
                     </div>
                   </div>
-                  <button type="button" className="fspCTA">
-                    <span className="fspCTAIcon material-symbols-outlined">
-                      <svg className="hfIconSvg" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                        <path d="M7 6h15l-2 9H8L7 6Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"></path>
-                        <path d="M7 6 6 3H2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"></path>
-                        <path d="M9 20a1 1 0 1 0 0-2 1 1 0 0 0 0 2ZM19 20a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z" fill="currentColor"></path>
-                      </svg>
-                    </span>
-                    MUA NGAY
-                  </button>
+                   <div className="fspCTA">
+                      XEM CHI TIẾT →
+                    </div>
                 </div>
               </Link>
             )

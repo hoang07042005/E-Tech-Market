@@ -699,23 +699,29 @@
 }
 
 .ppCardAddBtn {
-  background: var(--et-primary);
-  color: #fff;
-  letter-spacing: .1em;
-  cursor: pointer;
-  border: none;
+  display: block;
   width: 100%;
-  padding: 15px;
-  font-size: 11px;
+  background: #f97316;
+  color: #fff;
+  border: none;
+  padding: 16px 16px;
+  font-size: 0.95rem;
   font-weight: 600;
-  transition: all .2s;
+  letter-spacing: 0.08em;
   border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
+  text-transform: uppercase;
+  text-align: center;
+  text-decoration: none;
+  line-height: 1;
+  box-sizing: border-box;
 }
 
 .ppCardAddBtn:hover {
-  background: var(--et-primary-hover);
-  letter-spacing: .15em;
-  border-radius: 5px;
+  background: #ea6c0a;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(249, 115, 22, 0.35);
 }
 
 .ppPagination {

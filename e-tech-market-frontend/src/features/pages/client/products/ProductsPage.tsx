@@ -124,7 +124,6 @@ function ProductCard({
   onToggleLike: (productId: number) => void
 }) {
   const brand = product.brand || 'TECH'
-  const { addToCart } = useCartMutation()
 
   // Handle image URL
   const imageUrl = resolveImageUrl(product.main_image_url)
@@ -312,28 +311,12 @@ function ProductCard({
           {product.short_description || product.description || 'Chưa có mô tả.'}
         </p>
 
-        <button
-          type="button"
+        <Link
+          to={`/products/${product.slug}`}
           className="ppCardAddBtn"
-          onClick={() => {
-            const lowestVariant = (product.variants || []).sort((a, b) => a.effective_price - b.effective_price)[0]
-            addToCart({
-              item: {
-                product_id: product.id,
-                slug: product.slug,
-                name: product.name,
-                price: displayPrice,
-                image_url: imageUrl,
-                variant_id: lowestVariant?.id ?? null,
-                variant_label: lowestVariant ? [variantColorLabel(lowestVariant), variantStorageLabel(lowestVariant)].filter(Boolean).join(' · ') : null,
-                quantity: 1,
-              },
-              qty: 1
-            })
-          }}
         >
-          THÊM VÀO GIỎ
-        </button>
+          XEM CHI TIẾT →
+        </Link>
       </div>
     </div>
   )
@@ -402,7 +385,6 @@ export default function ProductsPage() {
   const [showMobileFilters, setShowMobileFilters] = useState(false)
 
   // Pagination constants
-  const PAGE_SIZE = 20
   const userStr = useAuthStore((state) => state.userStr)
   const hasAuth = !!userStr
 

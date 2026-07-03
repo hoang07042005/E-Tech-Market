@@ -1,4 +1,5 @@
 import '@/styles/pages/HomePage.css'
+import '@/styles/pages/ProductsPage.css'
 import '@/styles/pages/VideoPage.css'
 import heroImg from '@/assets/banner.jpg'
 import cpuImg from '@/assets/unnamed.png'
@@ -109,38 +110,39 @@ function ProductCard({
   onToggleLike: (id: number) => void
 }) {
   const imageUrl = resolveImageUrl(product.main_image_url)
-  const { addToCart } = useCartMutation()
 
   const brand = product.brand ? product.brand : 'ECOVACS'
   const excerpt = product.short_description || 'Thiết kế thông minh, lực hút mạnh mẽ, làm sạch hoàn hảo mọi ngóc ngách trong ngôi nhà của bạn...'
 
   // Calculate display price and old price based on variants (uses backend effective_price)
-  const { displayPrice, displayOldPrice, hasMultiplePrices, discountPercent } = useMemo(() => {
+  const { displayPrice, displayPriceMax, displayOldPrice, discountPercent, hasMultiplePrices, showDiscountBadge } = useMemo(() => {
     const activeVariants = (product.variants || []).filter(v => v.is_active)
+    const isSingleVariant = activeVariants.length === 1
+
     if (activeVariants.length > 0) {
-      // Sort by effective_price (already computed by backend with discount logic)
       const sorted = [...activeVariants].sort((a, b) => a.effective_price - b.effective_price)
       const lowest = sorted[0]
       const highest = sorted[sorted.length - 1]
-
+      const hasMultiplePrices = lowest.effective_price !== highest.effective_price
+      const showDiscountBadge = isSingleVariant
       const originalPrice = Number.parseFloat(lowest.price)
       const finalPrice = lowest.effective_price
-      const hasDiscount = finalPrice < originalPrice
-
+      const hasDiscount = finalPrice < originalPrice && showDiscountBadge
       return {
-        displayPrice: finalPrice.toString(),
-        displayOldPrice: hasDiscount ? originalPrice.toString() : null,
-        hasMultiplePrices: lowest.effective_price !== highest.effective_price,
+        displayPrice: finalPrice,
+        displayPriceMax: hasMultiplePrices ? highest.effective_price : null,
+        displayOldPrice: hasDiscount ? originalPrice : null,
+        hasMultiplePrices,
+        showDiscountBadge,
         discountPercent: hasDiscount ? Math.round((1 - finalPrice / originalPrice) * 100) : 0,
       }
     }
-    // Fallback: no variants → 0
-    const basePrice = 0
-
     return {
-      displayPrice: basePrice.toString(),
+      displayPrice: 0,
+      displayPriceMax: null,
       displayOldPrice: null,
       hasMultiplePrices: false,
+      showDiscountBadge: false,
       discountPercent: 0,
     }
   }, [product.variants])
@@ -163,7 +165,7 @@ function ProductCard({
         name: product.name,
         slug: product.slug,
         image_url: imageUrl,
-        price: Number.parseFloat(displayPrice),
+        price: displayPrice,
       })
       if (!res.success && res.message) {
         alert(res.message)
@@ -255,43 +257,26 @@ function ProductCard({
           <h3 className="hpProductName">{product.name}</h3>
         </Link>
 
-        <div className="hpProductPriceRowNew">
-          <span className="hpProductPrice">
-            {hasMultiplePrices && <span style={{ fontSize: '0.8rem', marginRight: '4px', opacity: 0.8 }}></span>}
-            {formatPriceVnd(displayPrice)}
+        <div className="ppCardPriceRow">
+          <span className="ppCardPrice">
+            {showDiscountBadge
+              ? `${displayPrice.toLocaleString('vi-VN')} đ`
+              : hasMultiplePrices
+                ? `Từ ${displayPrice.toLocaleString('vi-VN')} - ${displayPriceMax!.toLocaleString('vi-VN')} đ`
+                : `${displayPrice.toLocaleString('vi-VN')} đ`}
           </span>
-          {displayOldPrice && discountPercent > 0 && (
-            <span className="hpProductOldPrice">
-              {formatPriceVnd(displayOldPrice)}
-            </span>
+          {displayOldPrice && displayOldPrice > displayPrice && showDiscountBadge && (
+            <span className="ppCardOldPrice">{displayOldPrice.toLocaleString('vi-VN')} đ</span>
           )}
         </div>
 
         <p className="hpProductExcerpt">{excerpt}</p>
 
-        <button
-          type="button"
+        <Link
+          to={`/products/${product.slug}`}
           className="hpAddToCartFullBtn"
-          onClick={() => {
-            const lowestVariant = (product.variants || []).filter(v => v.is_active).sort((a, b) => a.effective_price - b.effective_price)[0]
-            addToCart({
-              item: {
-                product_id: product.id,
-                slug: product.slug,
-                name: product.name,
-                price: Number.parseFloat(displayPrice),
-                image_url: imageUrl,
-                variant_id: lowestVariant?.id ?? null,
-                variant_label: lowestVariant ? (lowestVariant.variant_name || null) : null,
-                quantity: 1,
-              },
-              qty: 1
-            })
-            window.dispatchEvent(new Event('toast', { bubbles: false }))
-          }}
         >
-          THÊM VÀO GIỎ
-        </button>
+          XEM CHI TIẾT →        </Link>
       </div>
     </div>
   )

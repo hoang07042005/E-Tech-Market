@@ -1548,7 +1548,7 @@ Widget _buildGallery(Product current, List<ProductImage> images) {
                                 ? FontWeight.w600
                                 : FontWeight.normal,
                             color: isSelected
-                                ? Theme.of(context).colorScheme.primary
+                                ? Theme.of(context).colorScheme.surface
                                 : Theme.of(context).colorScheme.onSurface,
                           ),
                         ),
@@ -1610,7 +1610,7 @@ Widget _buildGallery(Product current, List<ProductImage> images) {
                         fontWeight:
                             isSelected ? FontWeight.w600 : FontWeight.normal,
                         color: isSelected
-                            ? Theme.of(context).colorScheme.primary
+                            ? Theme.of(context).colorScheme.surface
                             : Theme.of(context).colorScheme.onSurface,
                       ),
                     ),
@@ -1851,7 +1851,7 @@ Widget _buildGallery(Product current, List<ProductImage> images) {
                 Icon(item.$1, color: Color(0xFF1D3557), size: 22),
                 const SizedBox(width: 12),
                 Expanded(
-                  child: Text(item.$2, style: TextStyle(height: 1.35)),
+                  child: Text(item.$2, style: TextStyle(height: 1.35, color: Color(0xFF1D3557))),
                 ),
               ],
             ),

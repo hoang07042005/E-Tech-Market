@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:url_launcher/url_launcher.dart';
 import '../../services/auth_service.dart';
 import '../../services/cart_service.dart';
 import '../../services/checkout_service.dart';
 import '../../services/voucher_service.dart';
-import '../../utils/network_utils.dart';
 import '../../utils/app_snackbar.dart';
 import '../../utils/translation.dart';
 import '../account/clause/payment_security_policy_screen.dart';
@@ -15,7 +13,9 @@ import '../../config/dio_client.dart';
 import '../../config/api_config.dart';
 
 class CheckoutScreen extends StatefulWidget {
-  const CheckoutScreen({Key? key}) : super(key: key);
+  final List<CartItem>? selectedItems;
+
+  const CheckoutScreen({Key? key, this.selectedItems}) : super(key: key);
 
   @override
   State<CheckoutScreen> createState() => _CheckoutScreenState();
@@ -113,7 +113,9 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       if (!mounted) return;
 
       setState(() {
-        _cart = cart;
+        _cart = widget.selectedItems != null && widget.selectedItems!.isNotEmpty
+            ? CartState(id: cart.id, items: widget.selectedItems!)
+            : cart;
         _payAvail = payAvail;
         _loyaltyData = loyaltyData;
 
@@ -339,7 +341,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
 
       if (_selectedPayment == 'cod') {
         // success
-        await CartService.clearCart(_cart);
+        await CartService.removeItems(_cart.items, currentCart: _cart);
         if (!mounted) return;
         navigateToResult(true);
         return;
@@ -397,7 +399,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
           }
 
           if (isSuccess) {
-            await CartService.clearCart(_cart);
+            await CartService.removeItems(_cart.items, currentCart: _cart);
             if (!mounted) return;
             navigateToResult(true);
           } else {
@@ -432,7 +434,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
           );
 
           if (result == true) {
-            await CartService.clearCart(_cart);
+            await CartService.removeItems(_cart.items, currentCart: _cart);
             if (!mounted) return;
             navigateToResult(true);
           } else {
@@ -493,7 +495,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                     if (snap.hasError) {
                       return Center(child: Text('Lỗi: ${snap.error}'));
                     }
-                    final vouchers = snap.data as List<dynamic>? ?? [];
+                    final vouchers = snap.data ?? [];
                     if (vouchers.isEmpty) {
                       return const Center(
                           child: Text('Bạn chưa có mã giảm giá nào.'));
