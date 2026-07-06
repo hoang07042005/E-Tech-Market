@@ -180,6 +180,8 @@ export default function OrderDetailPage() {
   const [showConfirmRefundReceived, setShowConfirmRefundReceived] = useState(false)
   const [returnContent, setReturnContent] = useState('')
   const [returnFiles, setReturnFiles] = useState<File[]>([])
+  const [lightboxOpen, setLightboxOpen] = useState(false)
+  const [lightboxUrl, setLightboxUrl] = useState<string | null>(null)
 
   useEffect(() => {
     if (!showReturnForm) return
@@ -194,6 +196,25 @@ export default function OrderDetailPage() {
       window.removeEventListener('keydown', onKey)
     }
   }, [showReturnForm])
+
+  useEffect(() => {
+    if (!lightboxOpen) return
+    const prev = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setLightboxOpen(false)
+    }
+    window.addEventListener('keydown', onKey)
+    return () => {
+      document.body.style.overflow = prev
+      window.removeEventListener('keydown', onKey)
+    }
+  }, [lightboxOpen])
+
+  function openLightbox(u: string) {
+    setLightboxUrl(u)
+    setLightboxOpen(true)
+  }
 
   useEffect(() => {
     if (!hasAuth) {
@@ -426,7 +447,7 @@ export default function OrderDetailPage() {
 
       <section className="oudCard">
         <div className="oudCardTitle">Trạng thái đơn hàng</div>
-        <div className="oudSteps">
+        <div className={`oudSteps ${hasReturnRequest ? 'oudSteps--has-return' : ''}`}>
           {(() => {
             const showReturnStep =
               status === 'returned' ||
@@ -670,7 +691,15 @@ export default function OrderDetailPage() {
                     return isVideo ? (
                       <video key={i} src={u} controls style={{ width: '100%', height: 92, objectFit: 'cover', borderRadius: 10, background: '#111827' }} />
                     ) : (
-                      <img key={i} src={u} alt="" style={{ width: '100%', height: 92, objectFit: 'cover', borderRadius: 10, background: '#f3f4f6' }} />
+                      <button
+                        key={i}
+                        type="button"
+                        onClick={() => openLightbox(u)}
+                        style={{ padding: 0, border: 'none', background: 'transparent', cursor: 'zoom-in' }}
+                        aria-label={`Mở ảnh ${i + 1}`}
+                      >
+                        <img src={u} alt="" style={{ width: '100%', height: 92, objectFit: 'cover', borderRadius: 10, background: '#f3f4f6', display: 'block' }} />
+                      </button>
                     )
                   })}
                 </div>
@@ -716,7 +745,15 @@ export default function OrderDetailPage() {
                         return isVideo ? (
                           <video key={i} src={u} controls style={{ width: '100%', height: 92, objectFit: 'cover', borderRadius: 10, background: '#111827' }} />
                         ) : (
-                          <img key={i} src={u} alt="" style={{ width: '100%', height: 92, objectFit: 'cover', borderRadius: 10, background: '#f3f4f6' }} />
+                            <button
+                              key={i}
+                              type="button"
+                              onClick={() => openLightbox(u)}
+                              style={{ padding: 0, border: 'none', background: 'transparent', cursor: 'zoom-in' }}
+                              aria-label={`Mở ảnh ${i + 1}`}
+                            >
+                              <img src={u} alt="" style={{ width: '100%', height: 92, objectFit: 'cover', borderRadius: 10, background: '#f3f4f6', display: 'block' }} />
+                            </button>
                         )
                       })}
                     </div>
@@ -851,6 +888,21 @@ export default function OrderDetailPage() {
         onConfirm={() => void onConfirmRefundReceived()}
         onCancel={() => setShowConfirmRefundReceived(false)}
       />
+      {lightboxOpen && lightboxUrl ? (
+        <div
+          className="imageLightboxOverlay"
+          role="dialog"
+          aria-modal="true"
+          onMouseDown={(e) => {
+            if (e.target === e.currentTarget) setLightboxOpen(false)
+          }}
+        >
+          <div className="imageLightboxContent">
+            <img src={lightboxUrl} alt="" />
+            <button className="imageLightboxClose" type="button" onClick={() => setLightboxOpen(false)} aria-label="Đóng">×</button>
+          </div>
+        </div>
+      ) : null}
     </div>
   )
 }

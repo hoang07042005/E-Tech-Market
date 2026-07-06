@@ -1304,7 +1304,7 @@ export default function ProfilePage() {
                                 className="pfBtn"
                                 onClick={closeEditModal}
                                 disabled={saving}
-                              >
+                              >pfDashRight 
                                 Hủy
                               </button>
                             </div>
@@ -1319,7 +1319,7 @@ export default function ProfilePage() {
                     <section className="pfMiniCard" aria-label="Bảo mật">
                       <h3 className="pfMiniTitle">Bảo mật</h3>
                       <div className="pfMiniTopRow">
-                        <div>
+                        <div style={{ maxWidth: "calc(100% - 60px)" }}>
                           <div
                             style={{
                               fontWeight: 600,

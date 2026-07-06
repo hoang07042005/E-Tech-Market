@@ -667,7 +667,7 @@
 }
 
 .pfDashRight .pfMiniCard {
-  padding: 45px;
+  padding: 40px;
 }
 
 .pfDashRight .pfPromo {
@@ -1026,7 +1026,7 @@
 }
 
 .pfSwitch {
-  width: 60px;
+  width: 46px;
   height: 26px;
   border-radius: 999px;
   background: #e5e7eb;
@@ -1036,7 +1036,7 @@
 }
 
 .pfSwitchOn {
-  background: #d97706;
+  background: rgb(11 176 34 / 95%);
 }
 
 .pfSwitchKnob {

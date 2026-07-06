@@ -357,7 +357,7 @@ export default function CartPage() {
                         <div className="ppCardContent">
                           <div className="ppCardTopRow">
                             <span className="ppCardBrand">{(p.brand || 'TECH').toUpperCase()}</span>
-                            <span className="ppCardPrice">{formatVnd(Number.parseFloat(p.price || '0'))}</span>
+                            {/* <span className="ppCardPrice">{formatVnd(Number.parseFloat(p.price || '0'))}</span> */}
                           </div>
                           <Link to={`/products/${p.slug}`} className="ppCardTitleLink">
                             <h3 className="ppCardTitle">{p.name}</h3>
