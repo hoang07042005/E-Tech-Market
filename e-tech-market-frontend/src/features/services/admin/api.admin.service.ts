@@ -4,6 +4,7 @@ import { apiFetch } from '@/configs/api.config'
 
 // Users & Roles
 export const fetchRoles = <T>() => apiFetch<T>('/api/admin/roles')
+export const updateRole = <T>(id: number, body: any) => apiFetch<T>(`/api/admin/roles/${id}`, { method: 'PATCH', body: JSON.stringify(body) })
 export const fetchUsers = <T>(query: string) => apiFetch<T>(`/api/admin/users?${query}`)
 export const fetchUserDetail = <T>(id: number) => apiFetch<T>(`/api/admin/users/${id}`)
 export const updateUser = <T>(id: number, body: any) => apiFetch<T>(`/api/admin/users/${id}`, { method: 'PATCH', body: JSON.stringify(body) })

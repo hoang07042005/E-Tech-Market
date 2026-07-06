@@ -16,4 +16,15 @@ class RolesController extends Controller
 
         return response()->json($roles);
     }
+    public function update(\Illuminate\Http\Request $request, Role $role): JsonResponse
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'description' => 'nullable|string|max:1000',
+        ]);
+
+        $role->update($validated);
+
+        return response()->json($role);
+    }
 }

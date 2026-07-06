@@ -68,7 +68,7 @@
 }
 
 .hfLogoImg {
-    height: clamp(34px, 4.5vw, 42px);
+    height: clamp(34px, 4.5vw, 55px);
     width: auto;
     max-width: min(220px, 52vw);
     display: block;
@@ -543,7 +543,7 @@
 }
 
 .hfFooterLogoImg {
-    height: 34px;
+    height: 55px;
     width: auto;
     max-width: 220px;
     display: block;

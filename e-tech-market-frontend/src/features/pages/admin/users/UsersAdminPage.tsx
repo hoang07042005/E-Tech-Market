@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useAuthStore } from '@/features/store/useAuthStore'
 
 import { apiFetch } from '@/configs/api.config'
-import { fetchRoles, fetchUsers } from '@/features/services/admin/api.admin.service'
+import { fetchRoles, fetchUsers, updateRole } from '@/features/services/admin/api.admin.service'
 import '@/styles/admin/ProductPage.css'
 import '@/styles/admin/UsersAdminPage.css'
 
@@ -85,6 +85,12 @@ export default function UsersAdminPage() {
 
   const [roleEditor, setRoleEditor] = useState<{ user: AdminUserRow; selectedIds: number[] } | null>(null)
 
+  const [roleCatalogOpen, setRoleCatalogOpen] = useState(false)
+  const [editingRole, setEditingRole] = useState<Role | null>(null)
+  const [editingRoleName, setEditingRoleName] = useState('')
+  const [editingRoleDesc, setEditingRoleDesc] = useState('')
+  const [roleSaving, setRoleSaving] = useState(false)
+
   useEffect(() => {
     const t = window.setTimeout(() => setDebouncedSearch(search.trim()), 350)
     return () => window.clearTimeout(t)
@@ -112,6 +118,40 @@ export default function UsersAdminPage() {
       cancelled = true
     }
   }, [])
+
+  const reloadRoleCatalog = async () => {
+    setRolesCatalogLoading(true)
+    try {
+      const list = await fetchRoles<Role[]>()
+      setRoleCatalog(list ?? [])
+    } catch (e: unknown) {
+      setRolesCatalogError(e instanceof Error ? e.message : 'Không tải được danh sách vai trò.')
+    } finally {
+      setRolesCatalogLoading(false)
+    }
+  }
+
+  const handleUpdateRole = async () => {
+    if (!editingRole) return
+    if (!editingRoleName.trim()) {
+      alert('Tên vai trò không được để trống')
+      return
+    }
+    setRoleSaving(true)
+    setError(null)
+    try {
+      await updateRole(editingRole.id, {
+        name: editingRoleName,
+        description: editingRoleDesc
+      })
+      setEditingRole(null)
+      await reloadRoleCatalog()
+    } catch (e: unknown) {
+      alert(e instanceof Error ? e.message : 'Lỗi khi cập nhật vai trò')
+    } finally {
+      setRoleSaving(false)
+    }
+  }
 
   const load = useCallback(async () => {
     setLoading(true)
@@ -229,6 +269,14 @@ export default function UsersAdminPage() {
           </p>
         </div>
         <div className="usersAdminToolbar">
+          <button 
+            type="button"
+            className="pAddBtn"
+            style={{ marginRight: '10px' }}
+            onClick={() => setRoleCatalogOpen(true)}
+          >
+            Cập nhật vai trò
+          </button>
           <input
             type="search"
             className="usersAdminSearch"
@@ -507,6 +555,73 @@ export default function UsersAdminPage() {
               >
                 {busy?.kind === 'roles' ? 'Đang lưu…' : 'Lưu'}
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Role Catalog Management Modal */}
+      {roleCatalogOpen && (
+        <div className="usersRoleModalOverlay" role="presentation" onClick={() => !roleSaving && setRoleCatalogOpen(false)}>
+          <div className="usersRoleModal" role="dialog" onClick={e => e.stopPropagation()} style={{ maxWidth: '600px' }}>
+            <div className="usersRoleModalHead">
+              <h3 className="usersRoleModalTitle">Danh sách vai trò</h3>
+              <button type="button" className="usersRoleModalClose" disabled={roleSaving} onClick={() => setRoleCatalogOpen(false)}>×</button>
+            </div>
+            <div className="usersRoleModalBody">
+              {roleCatalog.map(r => (
+                <div key={r.id} className="usersRoleCheckRow" style={{ flexDirection: 'column', gap: '12px', alignItems: 'stretch' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
+                    <div className="usersRoleCheckText">
+                      <span className="usersRoleCheckDesc" style={{ fontSize: '12px', textTransform: 'uppercase', letterSpacing: '1px' }}>
+                        Mã: <code>{r.slug}</code>
+                      </span>
+                    </div>
+                    {editingRole?.id !== r.id && (
+                      <button 
+                        type="button" 
+                        className="pEdit usersAdminIconBtn" 
+                        onClick={() => { setEditingRole(r); setEditingRoleName(r.name); setEditingRoleDesc(r.description || ''); }}
+                        title="Sửa vai trò"
+                      >
+                        <PencilIcon />
+                      </button>
+                    )}
+                  </div>
+                  
+                  {editingRole?.id === r.id ? (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', width: '100%', marginTop: '4px' }}>
+                      <input 
+                        className="usersAdminSearch" 
+                        style={{ maxWidth: '100%' }}
+                        placeholder="Tên vai trò (Vd: Quản trị viên)" 
+                        value={editingRoleName} 
+                        onChange={e => setEditingRoleName(e.target.value)} 
+                        disabled={roleSaving} 
+                      />
+                      <input 
+                        className="usersAdminSearch" 
+                        style={{ maxWidth: '100%' }}
+                        placeholder="Mô tả vai trò (Không bắt buộc)" 
+                        value={editingRoleDesc} 
+                        onChange={e => setEditingRoleDesc(e.target.value)} 
+                        disabled={roleSaving} 
+                      />
+                      <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end', marginTop: '8px' }}>
+                        <button type="button" className="usersRoleModalBtnGhost" disabled={roleSaving} onClick={() => setEditingRole(null)}>Hủy</button>
+                        <button type="button" className="usersRoleModalBtnSave" disabled={roleSaving} onClick={() => void handleUpdateRole()}>
+                          {roleSaving ? 'Đang lưu...' : 'Lưu thay đổi'}
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="usersRoleCheckText">
+                      <span className="usersRoleCheckLabel" style={{ fontSize: '16px' }}>{roleDisplayLabel(r)}</span>
+                      <span className="usersRoleCheckDesc" style={{ marginTop: '4px' }}>{r.description || 'Chưa có mô tả cho vai trò này.'}</span>
+                    </div>
+                  )}
+                </div>
+              ))}
             </div>
           </div>
         </div>

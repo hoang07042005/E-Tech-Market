@@ -448,13 +448,13 @@ export default function ProductPage({
                         >
                           <div className="prodThumb">
                             {p.main_image_url && <img src={resolveImageUrl(p.main_image_url)} alt="" />}
-                          </div>
-                          <div className="prodInfo">
                             {p.is_featured && (
-                              <span title="Sản phẩm nổi bật" style={{ display: 'inline-flex', marginRight: 4, color: '#f51f0bff' }}>
+                              <span className="prodFeaturedBadge" title="Sản phẩm nổi bật">
                                 <StarIcon />
                               </span>
                             )}
+                          </div>
+                          <div className="prodInfo">
                             <span className="pName hover-accent" style={{ transition: 'color 0.2s' }}>{p.name}</span>
                             <span className="pBrand">{p.brand || 'Chưa có thương hiệu'}</span>
                           </div>

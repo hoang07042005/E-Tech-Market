@@ -151,7 +151,8 @@ Route::middleware('auth:sanctum')->group(function () {
 
         Route::apiResource('video-categories', App\Http\Controllers\Admin\VideoCategoryController::class);
 
-        Route::get('/roles', [AdminRolesController::class, 'index'])->name('roles');
+        Route::get('/roles', [AdminRolesController::class, 'index'])->name('roles.index');
+        Route::patch('/roles/{role}', [AdminRolesController::class, 'update'])->name('roles.update');
 
         Route::get('/users', [AdminUsersController::class, 'index'])->name('users');
         Route::patch('/users/{user}', [AdminUsersController::class, 'update'])->name('users');

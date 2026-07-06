@@ -869,7 +869,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 Theme.of(context).brightness == Brightness.dark
                     ? 'assets/images/logo-trang.png'
                     : 'assets/images/logo.png',
-                height: 40,
+                height: 50,
                 fit: BoxFit.contain,
               ),
               actions: [

@@ -1730,13 +1730,12 @@ export default function SettingsAdminPage() {
             />
             <button
               type="button"
-              className="admShipPolicyBtn"
+              className="admShipToolbarBtn"
               onClick={() => {
                 setZonePasteErr(null);
                 setZonePasteText("");
                 setZonePasteOpen(true);
               }}
-              style={{ marginRight: 8 }}
             >
               Dán nhiều vùng
             </button>
@@ -1977,6 +1976,7 @@ export default function SettingsAdminPage() {
                   <span>Hệ số điểm</span>
                   <input
                     type="number"
+                    step="0.1"
                     value={addRankForm.point_multiplier}
                     onChange={(e) =>
                       setAddRankForm((p) => ({
@@ -2032,7 +2032,7 @@ export default function SettingsAdminPage() {
                                 rank_name: addRankForm.rank_name,
                                 min_spend: parseInt(addRankForm.min_spend),
                                 point_multiplier:
-                                  parseInt(addRankForm.point_multiplier) || 1,
+                                  parseFloat(addRankForm.point_multiplier) || 1,
                                 benefits: addRankForm.benefits || null,
                               }),
                             },
@@ -2044,7 +2044,7 @@ export default function SettingsAdminPage() {
                               rank_name: addRankForm.rank_name,
                               min_spend: parseInt(addRankForm.min_spend),
                               point_multiplier:
-                                parseInt(addRankForm.point_multiplier) || 1,
+                                parseFloat(addRankForm.point_multiplier) || 1,
                               benefits: addRankForm.benefits || null,
                             }),
                           });

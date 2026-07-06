@@ -89,24 +89,35 @@ class _EntryPointState extends State<EntryPoint> {
   }
 
   Future<void> _loadSession() async {
-    try {
-      final config = await StoreService.fetchConfig();
-      _isMaintenanceMode = config['maintenance_mode'] == true;
-    } catch (_) {}
+    bool isMaintenance = false;
+    bool isAdmin = false;
+    bool hasSession = false;
 
-    final hasSession = await AuthService.hasSession();
-    if (hasSession) {
-      final user = await AuthService.getCurrentUser();
-      if (user != null) {
-        final roles = user['roles'];
-        if (roles is List) {
-          _isAdmin = roles.any((r) => r is Map && r['slug'] == 'admin');
+    await Future.wait([
+      Future.delayed(const Duration(milliseconds: 1500)),
+      Future(() async {
+        try {
+          final config = await StoreService.fetchConfig();
+          isMaintenance = config['maintenance_mode'] == true;
+        } catch (_) {}
+
+        hasSession = await AuthService.hasSession();
+        if (hasSession) {
+          final user = await AuthService.getCurrentUser();
+          if (user != null) {
+            final roles = user['roles'];
+            if (roles is List) {
+              isAdmin = roles.any((r) => r is Map && r['slug'] == 'admin');
+            }
+          }
         }
-      }
-    }
+      }),
+    ]);
 
     if (mounted) {
       setState(() {
+        _isMaintenanceMode = isMaintenance;
+        _isAdmin = isAdmin;
         _initialized = true;
         _hasSession = hasSession;
       });
@@ -116,8 +127,34 @@ class _EntryPointState extends State<EntryPoint> {
   @override
   Widget build(BuildContext context) {
     if (!_initialized) {
-      return const Scaffold(
-        body: Center(child: CircularProgressIndicator(color: Color(0xFFF26522))),
+      return Scaffold(
+        backgroundColor: Theme.of(context).colorScheme.surface,
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Image.asset(
+                Theme.of(context).brightness == Brightness.dark
+                    ? 'assets/images/logo-trang.png'
+                    : 'assets/images/logo.png',
+                width: 220,
+                fit: BoxFit.contain,
+              ),
+              const SizedBox(height: 16),
+              Text(
+                'Thế giới công nghệ trong tầm tay',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                  color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                  letterSpacing: 0.5,
+                ),
+              ),
+              const SizedBox(height: 48),
+              const CircularProgressIndicator(color: Color(0xFFF26522)),
+            ],
+          ),
+        ),
       );
     }
 

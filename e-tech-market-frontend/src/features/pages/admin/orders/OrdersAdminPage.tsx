@@ -242,7 +242,7 @@ export default function OrdersAdminPage() {
   const queryString = useMemo(() => {
     const q = new URLSearchParams()
     q.set('page', String(page))
-    q.set('per_page', '10')
+    q.set('per_page', '20')
     if (filters.order_code.trim()) q.set('order_code', filters.order_code.trim())
     if (filters.customer.trim()) q.set('customer', filters.customer.trim())
     if (filters.date_from.trim()) q.set('date_from', filters.date_from.trim())

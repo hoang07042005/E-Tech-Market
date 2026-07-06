@@ -39,10 +39,10 @@
 }
 
 .adminBrand {
-    padding: 24px 20px;
+    padding: 10px 20px;
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: left;
     gap: 12px;
     overflow: hidden;
 }
@@ -69,8 +69,8 @@
 }
 
 .adminLayout.collapsed .adminBrandLogoImg {
-    max-width: 48px;
-    height: 34px;
+    max-width: 52px;
+    height: 44px;
 }
 
 .adminSidebarNav {
@@ -1020,7 +1020,7 @@
 }
 
 .admSwitch input:checked+span {
-    background: rgba(249, 115, 22, .95);
+    background: rgb(11 176 34 / 95%);
 }
 
 .admSwitch input:checked+span::after {
@@ -1362,10 +1362,17 @@
     border: 1px solid rgba(249, 115, 22, .40);
     background: rgba(249, 115, 22, .08);
     color: #ea580c;
-    border-radius: 5px;
-    padding: 8px 10px;
+    border-radius: 6px;
+    padding: 0 16px;
+    height: 38px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
     font-weight: 600;
     cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
 }
 
 .admShipAddZoneBtn:hover {
@@ -1373,21 +1380,45 @@
     border-color: rgba(249, 115, 22, .55);
 }
 
+.admShipToolbarBtn {
+    border: 1px solid rgba(15, 23, 42, .15);
+    background: #fff;
+    color: #0f172a;
+    border-radius: 6px;
+    padding: 0 16px;
+    height: 38px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.admShipToolbarBtn:hover {
+    background: #f8fafc;
+    border-color: rgba(15, 23, 42, .3);
+}
+
 .admShipZoneTools {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
 }
 
 .admShipZoneSearch {
-    width: min(360px, 42vw);
-    border: 1px solid rgba(15, 23, 42, .10);
+    width: min(320px, 42vw);
+    border: 1px solid rgba(15, 23, 42, .15);
     background: #fff;
-    border-radius: 5px;
-    padding: 9px 10px;
-    font-size: 12px;
-    font-weight: 600;
+    border-radius: 6px;
+    padding: 0 14px;
+    height: 38px;
+    font-size: 13px;
+    font-weight: 500;
     outline: none;
+    transition: all 0.2s ease;
 }
 
 .admShipZoneSearch:focus {
