@@ -66,9 +66,9 @@ class HtmlSanitizer
             . 'audio[src|controls|class|style],'
             . 'source[src|type],'
             // iframes (for YouTube embeds etc.) — src is URI-filtered
-            . 'iframe[src|width|height|frameborder|allow|allowfullscreen|class|style|title],'
+            . 'iframe[src|width|height|frameborder|class|style|title],'
             // Font Awesome / icon spans
-            . 'i[class|style],svg[class|style|width|height|viewBox|xmlns],'
+            . 'i[class|style],svg[class|style|width|height|viewbox|xmlns],'
             . 'path[d|fill|stroke|class],use[href]'
         );
 
@@ -94,13 +94,53 @@ class HtmlSanitizer
         $config->set('HTML.TidyLevel', 'none');  // don't alter formatting aggressively
         $config->set('Output.Newline', "\n");
 
-        // ── Cache ─────────────────────────────────────────────────────────────
         // Store the serializer cache in Laravel's storage folder.
         $cacheDir = storage_path('framework/htmlpurifier');
         if (! is_dir($cacheDir)) {
             mkdir($cacheDir, 0755, true);
         }
         $config->set('Cache.SerializerPath', $cacheDir);
+
+        // Required for iframe
+        $config->set('HTML.SafeIframe', true);
+
+        // Required to add custom elements
+        $config->set('HTML.DefinitionID', 'html5-definitions');
+        $config->set('HTML.DefinitionRev', 1);
+
+        // Add HTML5 elements definitions
+        if ($def = $config->maybeGetRawHTMLDefinition()) {
+            $def->addElement('section', 'Block', 'Flow', 'Common');
+            $def->addElement('article', 'Block', 'Flow', 'Common');
+            $def->addElement('header', 'Block', 'Flow', 'Common');
+            $def->addElement('footer', 'Block', 'Flow', 'Common');
+            $def->addElement('main', 'Block', 'Flow', 'Common');
+            $def->addElement('aside', 'Block', 'Flow', 'Common');
+            $def->addElement('nav', 'Block', 'Flow', 'Common');
+            $def->addElement('figure', 'Block', 'Flow', 'Common');
+            $def->addElement('figcaption', 'Inline', 'Flow', 'Common');
+            
+            $def->addElement('video', 'Block', 'Flow', 'Common', [
+                'src' => 'URI', 'controls' => 'Bool', 'width' => 'Length', 'height' => 'Length',
+                'autoplay' => 'Bool', 'loop' => 'Bool', 'muted' => 'Bool', 'preload' => 'Text'
+            ]);
+            $def->addElement('audio', 'Block', 'Flow', 'Common', [
+                'src' => 'URI', 'controls' => 'Bool', 'autoplay' => 'Bool', 'loop' => 'Bool', 'muted' => 'Bool'
+            ]);
+            $def->addElement('source', 'Block', 'Empty', 'Common', [
+                'src' => 'URI', 'type' => 'Text'
+            ]);
+            
+            $def->addElement('svg', 'Block', 'Flow', 'Common', [
+                'width' => 'Text', 'height' => 'Text', 'viewbox' => 'Text', 'xmlns' => 'URI'
+            ]);
+            $def->addElement('path', 'Inline', 'Empty', 'Common', [
+                'd' => 'Text', 'fill' => 'Text', 'stroke' => 'Text'
+            ]);
+            $def->addElement('use', 'Inline', 'Empty', 'Common', [
+                'href' => 'URI'
+            ]);
+        }
 
         self::$purifier = new HTMLPurifier($config);
         return self::$purifier;
