@@ -83,18 +83,50 @@ class ReviewService
             }
         }
 
+        $reviewData = [
+            'rating' => (int) $data['rating'],
+            'exp_performance' => isset($data['exp_performance']) ? (int) $data['exp_performance'] : null,
+            'exp_battery' => isset($data['exp_battery']) ? (int) $data['exp_battery'] : null,
+            'exp_camera' => isset($data['exp_camera']) ? (int) $data['exp_camera'] : null,
+            'comment' => $data['comment'] ?? null,
+            'order_id' => $data['order_id'] ?? null,
+            'status' => 'pending',
+        ];
+
         $review = Review::query()->updateOrCreate(
             ['user_id' => $user->id, 'product_id' => $product->id],
-            [
-                'rating' => (int) $data['rating'],
-                'exp_performance' => isset($data['exp_performance']) ? (int) $data['exp_performance'] : null,
-                'exp_battery' => isset($data['exp_battery']) ? (int) $data['exp_battery'] : null,
-                'exp_camera' => isset($data['exp_camera']) ? (int) $data['exp_camera'] : null,
-                'comment' => $data['comment'] ?? null,
-                'order_id' => $data['order_id'] ?? null,
-                'status' => 'pending',
-            ]
+            $reviewData
         );
+
+        if (! empty($data['media']) && is_array($data['media'])) {
+            $mediaItems = [];
+            foreach ($data['media'] as $file) {
+                if (! $file instanceof \Illuminate\Http\UploadedFile) {
+                    continue;
+                }
+                $mime = strtolower($file->getClientMimeType() ?? '');
+                $type = str_starts_with($mime, 'video/') ? 'video' : (str_starts_with($mime, 'image/') ? 'image' : null);
+                if (! $type) {
+                    continue;
+                }
+                $folder = $type === 'video' ? 'review-media/videos' : 'review-media/images';
+                $path = $file->store($folder, 'public');
+                if (! $path) {
+                    continue;
+                }
+                $normalizedPath = str_replace('\\', '/', $path);
+                $mediaItems[] = [
+                    'type' => $type,
+                    'url' => url('storage/' . ltrim($normalizedPath, '/')),
+                    'original_name' => $file->getClientOriginalName(),
+                ];
+            }
+            if (! empty($mediaItems)) {
+                $existingMedia = is_array($review->media) ? $review->media : [];
+                $review->media = array_values(array_merge($existingMedia, $mediaItems));
+                $review->save();
+            }
+        }
 
         $review->load(['product']);
 

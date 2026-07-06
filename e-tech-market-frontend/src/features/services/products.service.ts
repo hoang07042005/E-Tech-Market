@@ -53,6 +53,12 @@ export type ProductShopQnaPublic = {
   user?: { id: number; name?: string | null; avatar_url?: string | null } | null
 }
 
+export type ReviewMediaItem = {
+  type: 'image' | 'video'
+  url: string
+  original_name?: string | null
+}
+
 export type ProductReview = {
   id: number
   product_id: number
@@ -66,6 +72,7 @@ export type ProductReview = {
   status: 'pending' | 'approved' | 'rejected'
   created_at: string
   updated_at: string
+  media?: ReviewMediaItem[]
   user?: { id: number; name: string; avatar_url?: string | null } | null
   product?: Product | null
 }

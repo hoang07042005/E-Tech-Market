@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Stars, ratingLabel, timeAgoVi, resolveImageUrl, avatarInitial } from './PdpShared'
-import type { ProductReview, Product } from '@/features/services/products.service'
+import type { ProductReview, Product, ReviewMediaItem } from '@/features/services/products.service'
 
 type ProductReviewsSectionProps = {
   product: Product;
@@ -20,6 +20,7 @@ export function ProductReviewsSection({
   setIsReviewModalOpen
 }: ProductReviewsSectionProps) {
   const [visibleCount, setVisibleCount] = useState(10)
+  const [selectedMedia, setSelectedMedia] = useState<ReviewMediaItem | null>(null)
 
   useEffect(() => {
     setVisibleCount(10)
@@ -102,7 +103,7 @@ export function ProductReviewsSection({
               <div className="pdpReviewsFiltersLabel">Lọc đánh giá theo</div>
               <div className="pdpReviewChips">
                 <button type="button" className={`pdpChip ${reviewFilter === 'all' ? 'active' : ''}`} onClick={() => setReviewFilter('all')}>Tất cả</button>
-                <button type="button" className={`pdpChip ${reviewFilter === 'with_images' ? 'active' : ''}`} onClick={() => setReviewFilter('with_images')}>Có hình ảnh</button>
+                <button type="button" className={`pdpChip ${reviewFilter === 'with_images' ? 'active' : ''}`} onClick={() => setReviewFilter('with_images')}>Có ảnh/video</button>
                 <button type="button" className={`pdpChip ${reviewFilter === 'verified' ? 'active' : ''}`} onClick={() => setReviewFilter('verified')}>Đã mua hàng</button>
                 <button type="button" className={`pdpChip ${reviewFilter === 'star_5' ? 'active' : ''}`} onClick={() => setReviewFilter('star_5')}>5 sao</button>
                 <button type="button" className={`pdpChip ${reviewFilter === 'star_4' ? 'active' : ''}`} onClick={() => setReviewFilter('star_4')}>4 sao</button>
@@ -152,6 +153,44 @@ export function ProductReviewsSection({
                         {!!r.order_id && <span className="pdpReviewPill verified">Đã mua hàng</span>}
                       </div>
                       {r.comment && <div className="pdpReviewComment">{r.comment}</div>}
+                      {Array.isArray(r.media) && r.media.length > 0 && (
+                        <div className="pdpReviewMediaRow">
+                          {r.media.map((item, idx) => (
+                            <button
+                              key={`${item.url}-${idx}`}
+                              type="button"
+                              className="pdpReviewMediaItem"
+                              onClick={() => {
+                                setSelectedMedia(item)
+                              }}
+                            >
+                              {item.type === 'image' ? (
+                                <img
+                                  className="pdpReviewMediaImage"
+                                  src={resolveImageUrl(item.url)}
+                                  alt={`Ảnh đánh giá ${idx + 1}`}
+                                  loading="lazy"
+                                  decoding="async"
+                                />
+                              ) : (
+                                <div className="pdpReviewMediaVideoWrap">
+                                  <video
+                                    className="pdpReviewMediaVideoPreview"
+                                    src={resolveImageUrl(item.url)}
+                                    muted
+                                    playsInline
+                                    loop
+                                    preload="metadata"
+                                  />
+                                  <span className="pdpReviewMediaVideoBadge" aria-hidden>
+                                    ▶
+                                  </span>
+                                </div>
+                              )}
+                            </button>
+                          ))}
+                        </div>
+                      )}
                       <div className="pdpReviewTime">
                         <span className="pdpReviewClock" aria-hidden>🕒</span>
                         Đánh giá đã đăng vào {timeAgoVi(r.created_at)}
@@ -168,6 +207,39 @@ export function ProductReviewsSection({
                 </button>
               </div>
             ) : null}
+
+            {selectedMedia && (
+              <div className="pdpReviewMediaModalOverlay" onClick={() => setSelectedMedia(null)}>
+                <div
+                  className="pdpReviewMediaModal"
+                  onClick={(event) => event.stopPropagation()}
+                >
+                  <button
+                    type="button"
+                    className="pdpReviewMediaModalClose"
+                    onClick={() => setSelectedMedia(null)}
+                    aria-label="Đóng"
+                  >
+                    ×
+                  </button>
+                  <div className="pdpReviewMediaModalContent">
+                    {selectedMedia.type === 'image' ? (
+                      <img
+                        src={resolveImageUrl(selectedMedia.url)}
+                        alt="Ảnh đánh giá"
+                      />
+                    ) : (
+                      <video
+                        src={resolveImageUrl(selectedMedia.url)}
+                        controls
+                        autoPlay
+                        className="pdpReviewMediaModalVideo"
+                      />
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
           </section>
 
           

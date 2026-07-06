@@ -106,7 +106,7 @@ export default function ProductDetailPage() {
   const [expPerformance, setExpPerformance] = useState(5)
   const [expBattery, setExpBattery] = useState(5)
   const [expCamera, setExpCamera] = useState(5)
-  const [reviewImages, setReviewImages] = useState<File[]>([])
+  const [reviewMediaFiles, setReviewMediaFiles] = useState<File[]>([])
   const [reviewFilter, setReviewFilter] = useState<
     'all' | 'with_images' | 'verified' | 'star_5' | 'star_4' | 'star_3' | 'star_2' | 'star_1'
   >('all')
@@ -238,7 +238,7 @@ export default function ProductDetailPage() {
   const filteredReviews = useMemo(() => {
     const base = [...visibleReviews].sort((a, b) => Date.parse(b.created_at) - Date.parse(a.created_at))
     if (reviewFilter === 'all') return base
-    if (reviewFilter === 'with_images') return base // chưa lưu ảnh review, giữ UI filter
+    if (reviewFilter === 'with_images') return base.filter(r => Array.isArray(r.media) && r.media.length > 0)
     if (reviewFilter === 'verified') return base.filter(r => !!r.order_id)
     if (reviewFilter === 'star_5') return base.filter(r => Math.round(r.rating) === 5)
     if (reviewFilter === 'star_4') return base.filter(r => Math.round(r.rating) === 4)
@@ -397,7 +397,7 @@ export default function ProductDetailPage() {
         
         // Exclude current product from displaying in the recently viewed section
         setRecentlyViewed(rv.filter((p: Product) => p.id !== product.id));
-      } catch (e) {
+      } catch {
         // ignore JSON parse error
       }
     }
@@ -717,7 +717,7 @@ export default function ProductDetailPage() {
                 </div>
               )}
 
-              <div className="pdpLoyaltyBadge" style={{ marginTop: '12px', padding: '12px', background: 'rgba(255, 193, 7, 0.1)', border: '1px solid rgba(255, 193, 7, 0.3)', borderRadius: '8px', color: '#b78103', fontSize: '14px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <div className="pdpLoyaltyBadge" style={{ marginBottom: '12px', padding: '12px', background: 'rgba(255, 193, 7, 0.1)', border: '1px solid rgba(255, 193, 7, 0.3)', borderRadius: '8px', color: '#b78103', fontSize: '14px', display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <span style={{ fontSize: '18px' }}>💡</span>
                 <span>
                   <strong>Đặc quyền Hội viên:</strong> Mua ngay sản phẩm này và tích lũy thêm 
@@ -925,37 +925,47 @@ export default function ProductDetailPage() {
                   </div>
 
                   <div className="pdpReviewUploadRow">
-                    {/* <label className="pdpReviewUploadBtn">
-                    <input
-                      type="file"
-                      accept="image/*"
-                      multiple
-                      hidden
-                      onChange={e => {
-                        const files = Array.from(e.target.files || [])
-                        if (files.length === 0) return
-                        setReviewImages(prev => [...prev, ...files].slice(0, 5))
-                        e.currentTarget.value = ''
-                      }}
-                    />
-                    <span className="pdpReviewUploadIcon" aria-hidden>📷</span>
-                    <span>Thêm hình ảnh</span>
-                  </label> */}
+                    <label className="pdpReviewUploadBtn">
+                      <input
+                        type="file"
+                        accept="image/*,video/*"
+                        multiple
+                        hidden
+                        onChange={e => {
+                          const files = Array.from(e.target.files || [])
+                          if (files.length === 0) return
+                          setReviewMediaFiles(prev => [...prev, ...files].slice(0, 5))
+                          e.currentTarget.value = ''
+                        }}
+                      />
+                      <span className="pdpReviewUploadIcon" aria-hidden>📷</span>
+                      <span>Thêm ảnh / video</span>
+                    </label>
 
-                    {reviewImages.length > 0 && (
+                    {reviewMediaFiles.length > 0 && (
                       <div className="pdpReviewThumbs">
-                        {reviewImages.map((f, i) => (
-                          <div key={`${f.name}-${i}`} className="pdpReviewThumb">
-                            <img src={URL.createObjectURL(f)} alt="" />
-                            <button
-                              type="button"
-                              className="pdpReviewThumbRemove"
-                              onClick={() => setReviewImages(prev => prev.filter((_, idx) => idx !== i))}
-                            >
-                              ×
-                            </button>
-                          </div>
-                        ))}
+                        {reviewMediaFiles.map((f, i) => {
+                          const isVideo = f.type.startsWith('video/')
+                          return (
+                            <div key={`${f.name}-${i}`} className="pdpReviewThumb">
+                              {isVideo ? (
+                                <div className="pdpReviewThumbVideo">
+                                  <video src={URL.createObjectURL(f)} muted preload="metadata" />
+                                  <div className="pdpReviewThumbVideoOverlay" aria-hidden>▶</div>
+                                </div>
+                              ) : (
+                                <img src={URL.createObjectURL(f)} alt="" />
+                              )}
+                              <button
+                                type="button"
+                                className="pdpReviewThumbRemove"
+                                onClick={() => setReviewMediaFiles(prev => prev.filter((_, idx) => idx !== i))}
+                              >
+                                ×
+                              </button>
+                            </div>
+                          )
+                        })}
                       </div>
                     )}
                   </div>
@@ -976,23 +986,25 @@ export default function ProductDetailPage() {
                       }
                       try {
                         // 🔒 Token is sent via httpOnly cookie automatically
+                        const body = new FormData()
+                        body.append('rating', String(reviewRating))
+                        body.append('exp_performance', String(expPerformance))
+                        body.append('exp_battery', String(expBattery))
+                        body.append('exp_camera', String(expCamera))
+                        body.append('comment', reviewComment || '')
+                        reviewMediaFiles.forEach(file => body.append('media[]', file))
+
                         await apiFetch(`/api/products/${product.id}/reviews`, {
                           method: 'POST',
-                          body: JSON.stringify({
-                            rating: reviewRating,
-                            exp_performance: expPerformance,
-                            exp_battery: expBattery,
-                            exp_camera: expCamera,
-                            comment: reviewComment || null,
-                          }),
+                          body,
                         })
                         setIsReviewModalOpen(false)
                         await queryClient.invalidateQueries({ queryKey: ['productBySlug', slug, variantIdParam] })
                         toast.showToast({ type: 'success', message: 'Cảm ơn bạn đã gửi đánh giá!' })
-                      } catch (e: unknown) {
+                      } catch (error: unknown) {
                         toast.showToast({
                           type: 'error',
-                          message: e instanceof Error ? e.message : 'Gửi đánh giá thất bại.',
+                          message: error instanceof Error ? error.message : 'Gửi đánh giá thất bại.',
                         })
                       }
                     }}

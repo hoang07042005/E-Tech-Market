@@ -34,14 +34,20 @@ class ReviewsController extends Controller
             'exp_camera' => ['nullable', 'integer', 'min:1', 'max:5'],
             'comment' => ['nullable', 'string'],
             'order_id' => ['nullable', 'integer', 'min:1'],
+            'media' => ['nullable', 'array', 'max:8'],
+            'media.*' => ['file', 'mimetypes:image/jpeg,image/png,image/webp,image/gif,video/mp4,video/quicktime,video/webm', 'max:51200'],
         ]);
 
         try {
+            $data['media'] = $request->file('media') ?: [];
             $review = $this->reviewService->submitReview($request->user(), $product, $data);
             return response()->json($review, 201);
         } catch (\Exception $e) {
-            $code = $e->getCode() ?: 400;
-            abort($code, $e->getMessage());
+            $status = (int) $e->getCode();
+            if ($status < 100 || $status > 599) {
+                $status = 500;
+            }
+            return response()->json(['message' => $e->getMessage()], $status);
         }
     }
 }

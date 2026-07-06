@@ -6,7 +6,7 @@ import { apiFetch } from '@/configs/api.config'
 
 export const resolveImageUrl = (url: string | null) => {
   if (!url) return 'https://via.placeholder.com/600'
-  const s = url.trim()
+  const s = url.trim().replace(/\\\\/g, '/')
   if (!s) return 'https://via.placeholder.com/600'
   if (/^https?:\/\//i.test(s)) {
     try {
@@ -49,7 +49,8 @@ export function renderVideoPlayer(videoUrl: string, title?: string | null) {
     )
   }
 
-  const videoSrc = videoUrl.startsWith('http') ? videoUrl : `${API_BASE_URL}${videoUrl.startsWith('/') ? videoUrl : `/${videoUrl}`}`
+  const normalizedVideoUrl = videoUrl.replace(/\\\\/g, '/')
+  const videoSrc = normalizedVideoUrl.startsWith('http') ? normalizedVideoUrl : `${API_BASE_URL}${normalizedVideoUrl.startsWith('/') ? normalizedVideoUrl : `/${normalizedVideoUrl}`}`
   return (
     <video
       src={videoSrc}

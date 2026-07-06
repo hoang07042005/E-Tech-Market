@@ -2228,14 +2228,16 @@
 
 .pdpReviewLeft {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   min-width: 0;
+  text-align: center;
 }
 
 .pdpReviewAvatar {
-  width: 34px;
-  height: 34px;
+  width: 48px;
+  height: 48px;
   border-radius: 999px;
   background: none;
   color: #fff;
@@ -2265,7 +2267,8 @@
   font-size: 13px;
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
+  white-space: normal;
+  line-height: 1.2;
 }
 
 .pdpReviewRight {
@@ -2618,11 +2621,39 @@
   background: #fff;
 }
 
-.pdpReviewThumb img {
+.pdpReviewThumb img,
+.pdpReviewThumb video {
   width: 100%;
   height: 100%;
   object-fit: cover;
   display: block;
+}
+
+.pdpReviewThumbVideo {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  background: #000;
+}
+
+.pdpReviewThumbVideo video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.pdpReviewThumbVideoOverlay {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: #fff;
+  font-size: 18px;
+  pointer-events: none;
+  text-shadow: 0 0 6px rgba(0, 0, 0, .8);
 }
 
 .pdpReviewThumbRemove {
@@ -2640,6 +2671,144 @@
   place-items: center;
   line-height: 1;
   font-size: 16px;
+}
+
+.pdpReviewMediaRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.pdpReviewMediaRow .pdpReviewMediaItem {
+  display: inline-flex;
+  width: 50px;
+  height: 50px;
+  padding: 0;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid #e2e8f0;
+  background: #fff;
+  text-align: left;
+  flex: 0 0 auto;
+}
+
+.pdpReviewMediaItem img,
+.pdpReviewMediaItem video,
+.pdpReviewMediaVideoPreview {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.pdpReviewMediaVideoWrap {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background: #000;
+}
+
+.pdpReviewMediaVideoPreview {
+  background: #000;
+}
+
+.pdpReviewMediaVideo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.pdpReviewMediaVideoBadge {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: rgba(255, 255, 255, 0.92);
+  font-size: 15px;
+  text-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+  pointer-events: none;
+}
+
+.pdpReviewMediaItem {
+  padding: 0;
+}
+
+.pdpReviewMediaItem[disabled] {
+  pointer-events: none;
+}
+
+.pdpReviewMediaModalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.85);
+  z-index: 100000;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+}
+
+.pdpReviewMediaModal {
+  position: relative;
+  width: min(960px, 100%);
+  max-height: min(90vh, 100%);
+  background: #0f172a;
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 40px 120px rgba(0, 0, 0, 0.5);
+}
+
+.pdpReviewMediaModalClose {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  z-index: 1;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  font-size: 24px;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+}
+
+.pdpReviewMediaModalContent {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  place-items: center;
+  min-height: 360px;
+}
+
+.pdpReviewMediaModalContent img,
+.pdpReviewMediaModalContent video {
+  max-width: 100%;
+  max-height: 90vh;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+}
+
+.pdpReviewMediaModalVideo {
+  width: 100%;
+  height: auto;
+  max-height: 80vh;
+}
+
+@media (max-width: 1024px) {
+  .pdpReviewMediaRow {
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  }
+}
+
+@media (max-width: 720px) {
+  .pdpReviewMediaRow {
+    grid-template-columns: 1fr;
+  }
 }
 
 @media (max-width: 720px) {

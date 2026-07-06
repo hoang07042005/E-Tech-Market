@@ -20,6 +20,7 @@ class Review extends Model
         'exp_camera',
         'comment',
         'status',
+        'media',
     ];
 
     protected $casts = [
@@ -30,6 +31,7 @@ class Review extends Model
         'exp_performance' => 'integer',
         'exp_battery' => 'integer',
         'exp_camera' => 'integer',
+        'media' => 'array',
     ];
 
     protected $hidden = [
