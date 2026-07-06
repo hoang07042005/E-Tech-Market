@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react'
 import { Stars, ratingLabel, timeAgoVi, resolveImageUrl, avatarInitial } from './PdpShared'
 import type { ProductReview, Product } from '@/features/services/products.service'
 
@@ -18,6 +19,15 @@ export function ProductReviewsSection({
   setReviewFilter,
   setIsReviewModalOpen
 }: ProductReviewsSectionProps) {
+  const [visibleCount, setVisibleCount] = useState(10)
+
+  useEffect(() => {
+    setVisibleCount(10)
+  }, [reviewFilter, product?.id])
+
+  const visibleReviews = filteredReviews.slice(0, visibleCount)
+  const hasMoreReviews = filteredReviews.length > visibleCount
+
   return (
     <section className="pdpReviewsSection" aria-label="Đánh giá sản phẩm">
             <div className="pdpReviewsHeader">
@@ -106,7 +116,7 @@ export function ProductReviewsSection({
               {filteredReviews.length === 0 ? (
                 <div className="pdpNoReviews">Chưa có đánh giá nào.</div>
               ) : (
-                filteredReviews.slice(0, 5).map(r => (
+                visibleReviews.map(r => (
                   <div key={r.id} className="pdpReviewItem">
                     <div className="pdpReviewLeft">
                       <div className="pdpReviewAvatar" aria-hidden>
@@ -151,6 +161,13 @@ export function ProductReviewsSection({
                 ))
               )}
             </div>
+            {hasMoreReviews ? (
+              <div className="pdpReviewsMore">
+                <button type="button" className="pdpSeeAll" onClick={() => setVisibleCount((current) => current + 10)}>
+                  Xem thêm {Math.min(filteredReviews.length - visibleCount, 10)} đánh giá
+                </button>
+              </div>
+            ) : null}
           </section>
 
           
