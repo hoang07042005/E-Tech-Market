@@ -8,8 +8,17 @@ services:
     ports:
       - "5173:5173"
     command: sh -c "npm install && npm run dev"
+    restart: always
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:5173"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
     depends_on:
       - backend
+    networks:
+      - etech
 
   backend:
     build:
@@ -20,23 +29,31 @@ services:
     volumes:
       - ./e-tech-market-backend:/var/www
       - /var/www/vendor
-      
-    command: /bin/sh -c "([ -L public/storage ] || php artisan storage:link --force) && cp /usr/local/etc/php-fpm.d/www.conf /usr/local/etc/php-fpm.d/www.conf.bak && sed -i 's|listen = 127.0.0.1:9000|listen = 0.0.0.0:9000|' /usr/local/etc/php-fpm.d/www.conf && php-fpm"
+    restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "php -r 'if (!@fsockopen(\"127.0.0.1\", 9000)) { exit(1); }'"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 40s
+    command: /bin/sh -c "([ -L public/storage ] || php artisan storage:link --force) && cp /usr/local/etc/php-fpm.d/www.conf /usr/local/etc/php-fpm.d/www.conf.bak && sed -i 's|listen = 127.0.0.1:9000|listen = 0.0.0.0:9000|' /usr/local/etc/php-fpm.d/www.conf && sed -i 's|;pm.status_listen = 127.0.0.1:9001|pm.status_listen = 127.0.0.1:9001|' /usr/local/etc/php-fpm.d/www.conf && php-fpm"
+    networks:
+      - etech
     environment:
       - DB_CONNECTION=pgsql
       - DB_HOST=db
       - DB_PORT=5432
       - DB_DATABASE=etech
       - DB_USERNAME=postgres
-      - DB_PASSWORD=${POSTGRES_PASSWORD:-postgres}
+      - DB_PASSWORD=${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required. Set it in your .env file.}
       - QUEUE_CONNECTION=database
       - REDIS_HOST=redis
       - REDIS_PORT=6379
       # Redis password is set via environment variable.
-      - REDIS_PASSWORD=${REDIS_PASSWORD:-etech-redis-secret-123}
+      - REDIS_PASSWORD=${REDIS_PASSWORD:?REDIS_PASSWORD is required. Set it in your .env file.}
       - SCOUT_DRIVER=meilisearch
       - MEILISEARCH_HOST=http://meilisearch:7700
-      - MEILISEARCH_KEY=${MEILISEARCH_KEY:-etech-master-key-1234}
+      - MEILISEARCH_KEY=${MEILISEARCH_KEY:?MEILISEARCH_KEY is required. Set it in your .env file.}
       - CACHE_DRIVER=redis
       - SESSION_DRIVER=redis
       # Logging: stack (file + stderr for docker logs)
@@ -45,12 +62,6 @@ services:
     depends_on:
       - db
       - redis
-#    healthcheck:
-#      test: ["CMD-SHELL", "php artisan env || exit 1"]
-#      interval: 30s
-#      timeout: 10s
-#      retries: 5
-#      start_period: 10s
 
   nginx:
     image: nginx:alpine
@@ -59,8 +70,17 @@ services:
     volumes:
       - ./e-tech-market-backend:/var/www
       - ./e-tech-market-backend/docker-nginx.conf:/etc/nginx/conf.d/default.conf
+    restart: always
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8000"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
     depends_on:
       - backend
+    networks:
+      - etech
 
   queue_worker:
     build:
@@ -69,7 +89,13 @@ services:
     volumes:
       - ./e-tech-market-backend:/var/www
       - /var/www/vendor
-      
+    restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "ps aux | grep -q '[s]upervisord' || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
     command: /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf
     environment:
       - DB_CONNECTION=pgsql
@@ -77,46 +103,79 @@ services:
       - DB_PORT=5432
       - DB_DATABASE=etech
       - DB_USERNAME=postgres
-      - DB_PASSWORD=${POSTGRES_PASSWORD:-postgres}
+      - DB_PASSWORD=${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required. Set it in your .env file.}
       - QUEUE_CONNECTION=database
       - REDIS_HOST=redis
       - REDIS_PORT=6379
       # Redis password is set via environment variable.
-      - REDIS_PASSWORD=${REDIS_PASSWORD:-etech-redis-secret-123}
+      - REDIS_PASSWORD=${REDIS_PASSWORD:?REDIS_PASSWORD is required. Set it in your .env file.}
       - CACHE_DRIVER=redis
       - SESSION_DRIVER=redis
     depends_on:
       - backend
       - db
+    networks:
+      - etech
 
   db:
     image: postgres:15-alpine
+    restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d etech || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
     environment:
       - POSTGRES_DB=etech
       - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-postgres}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required. Set it in your .env file.}
     ports:
       - "127.0.0.1:5433:5432"
     volumes:
       - db_data:/var/lib/postgresql/data
+    networks:
+      - etech
 
   redis:
     image: redis:alpine
-    command: redis-server --requirepass ${REDIS_PASSWORD:-etech-redis-secret-123}
+    restart: always
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    command: redis-server --requirepass ${REDIS_PASSWORD:?REDIS_PASSWORD is required. Set it in your .env file.}
     ports:
       - "127.0.0.1:6379:6379"
+    networks:
+      - etech
 
   meilisearch:
     image: getmeili/meilisearch:v1.6
+    restart: always
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:7700/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
     environment:
-      - MEILI_MASTER_KEY=${MEILISEARCH_KEY:-etech-master-key-1234}
+      - MEILI_MASTER_KEY=${MEILISEARCH_KEY:?MEILISEARCH_KEY is required. Set it in your .env file.}
     ports:
       - "127.0.0.1:7700:7700"
     volumes:
       - meili_data:/meili_data
+    networks:
+      - etech
 
 volumes:
   meili_data:
   db_data:
+
+networks:
+  etech:
+    driver: bridge
 
 

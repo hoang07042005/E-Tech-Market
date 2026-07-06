@@ -37,8 +37,7 @@ use App\Http\Controllers\Client\SseController;
 use App\Http\Controllers\Client\StoreProfileController;
 use App\Http\Controllers\Client\ChatbotController;
 use App\Http\Controllers\Client\WishlistController;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Redis;
+use App\Http\Controllers\Admin\MetricsController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -55,14 +54,7 @@ use Illuminate\Support\Facades\Route;
     Route::post('/auth/register', [AuthController::class, 'register'])->middleware('throttle:auth.register');
     Route::post('/auth/login', [AuthController::class, 'login'])->middleware('throttle:auth.login');
 
-Route::get('/auth/test', function (Illuminate\Http\Request $r) {
-    $token = $r->bearerToken();
-    $user = $r->user();
-    return response()->json([
-        'token' => $token ? substr($token, 0, 20) . '...' : null,
-        'user' => $user ? $user->email : 'null',
-    ]);
-});
+
     Route::post('/auth/google-login', [AuthController::class, 'googleLogin'])->middleware('throttle:auth.login');
     Route::post('/auth/forgot-password', [PasswordResetController::class, 'forgot'])->middleware('throttle:auth.password');
     Route::post('/auth/reset-password', [PasswordResetController::class, 'reset'])->middleware('throttle:auth.password');
@@ -75,44 +67,14 @@ Route::middleware('throttle:60,1')->group(function () {
     Route::post('/contact/messages', [ContactMessagesController::class, 'store']);
 });
 
-Route::get('/health', function () {
-    $services = [
-        'database' => 'unknown',
-        'redis' => 'unknown',
-    ];
-
-    try {
-        DB::connection()->getPdo();
-        $services['database'] = 'ok';
-    } catch (\Throwable $exception) {
-        $services['database'] = 'error';
-    }
-
-    try {
-        $pong = Redis::connection()->ping();
-        $services['redis'] = $pong === 'PONG' || $pong === '+PONG' ? 'ok' : 'error';
-    } catch (\Throwable $exception) {
-        $services['redis'] = 'error';
-    }
-
-    $ok = $services['database'] === 'ok' && $services['redis'] === 'ok';
-
-    return response()->json([
-        'status' => $ok ? 'ok' : 'error',
-        'services' => $services,
-        'timestamp' => now()->toISOString(),
-    ], $ok ? 200 : 503);
-});
+// Metrics and Health Check Endpoints
+Route::get('/health', [MetricsController::class, 'health']);
+Route::get('/metrics/prometheus', [MetricsController::class, 'prometheus'])->middleware('authenticate.prometheus');
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/me', [AuthController::class, 'me']);
-    Route::get('/auth/test-token', function (Illuminate\Http\Request $r) {
-        return response()->json([
-            'token' => $r->bearerToken() ? substr($r->bearerToken(), 0, 20) . '...' : 'null',
-            'user' => $r->user() ? $r->user()->email : 'null',
-        ]);
-    });
     Route::get('/sse/stream', [SseController::class, 'stream']);
+
     Route::get('/me/loyalty', [AuthController::class, 'loyalty']);
     Route::patch('/me', [AuthController::class, 'updateMe']);
     Route::post('/me/avatar', [AuthController::class, 'updateAvatar']);

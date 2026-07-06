@@ -4,7 +4,7 @@ import { useApiQuery } from '@/features/api/useApiQuery'
 import ErrorBoundary from '@/components/ErrorBoundary'
 import { GlobalToastProvider } from '@/components/GlobalToastProvider'
 import { useQueryClient } from '@tanstack/react-query'
-import { API_BASE_URL } from '@/configs/api.config'
+import { API_BASE_URL, getAuthToken } from '@/configs/api.config'
 import { useAuthStore } from '@/features/store/useAuthStore'
 
 import {
@@ -169,7 +169,9 @@ function AppFrame() {
       let retryTimeout: number | undefined;
       
       const connectSSE = () => {
-        es = new EventSource(`${API_BASE_URL}/api/v1/sse/stream`, { withCredentials: true });
+        const token = getAuthToken();
+        const url = `${API_BASE_URL}/api/v1/sse/stream` + (token ? `?token=${token}` : '');
+        es = new EventSource(url, { withCredentials: true });
         
         es.onmessage = (event) => {
           try {

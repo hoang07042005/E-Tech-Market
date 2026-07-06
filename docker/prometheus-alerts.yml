@@ -1,0 +1,194 @@
+# Prometheus Alert Rules
+# docker/prometheus-alerts.yml
+
+groups:
+  - name: laravel_alerts
+    interval: 30s
+    rules:
+      # High error rate alert
+      - alert: HighErrorRate
+        expr: |
+          (count(rate(etech_http_request_duration_seconds_bucket{le="+Inf"}[5m])) 
+           - ignoring(le) group_left() 
+           count(rate(etech_http_request_duration_seconds_bucket{le="+Inf",status!~"5.."}[5m]))) 
+          / 
+          count(rate(etech_http_request_duration_seconds_bucket{le="+Inf"}[5m])) > 0.05
+        for: 5m
+        labels:
+          severity: warning
+          component: api
+        annotations:
+          summary: "High HTTP error rate detected"
+          description: "Error rate is {{ $value | humanizePercentage }} over 5m window"
+
+      # High request latency alert
+      - alert: HighRequestLatency
+        expr: |
+          histogram_quantile(0.95, rate(etech_http_request_duration_seconds_bucket[5m])) > 5
+        for: 5m
+        labels:
+          severity: warning
+          component: api
+        annotations:
+          summary: "High HTTP request latency"
+          description: "95th percentile request latency is {{ $value | humanizeDuration }}"
+
+      # Queue job processing latency
+      - alert: HighQueueLatency
+        expr: |
+          histogram_quantile(0.95, rate(etech_queue_job_duration_seconds_bucket[5m])) > 30
+        for: 10m
+        labels:
+          severity: warning
+          component: queue
+        annotations:
+          summary: "Queue job processing latency is high"
+          description: "95th percentile queue latency is {{ $value | humanizeDuration }}"
+
+      # Queue job failure rate
+      - alert: HighQueueFailureRate
+        expr: |
+          rate(etech_queue_jobs_total{status="failed"}[5m]) > 0.1
+        for: 5m
+        labels:
+          severity: critical
+          component: queue
+        annotations:
+          summary: "High queue job failure rate"
+          description: "Failure rate is {{ $value | humanize }}/sec"
+
+      # Database query performance degradation
+      - alert: SlowDatabase
+        expr: |
+          histogram_quantile(0.95, rate(etech_database_query_duration_seconds_bucket[5m])) > 1
+        for: 5m
+        labels:
+          severity: warning
+          component: database
+        annotations:
+          summary: "Database queries are slow"
+          description: "95th percentile query latency is {{ $value | humanizeDuration }}"
+
+      # Flash sale conversion rate low
+      - alert: LowFlashSaleConversion
+        expr: |
+          etech_flash_sale_conversion_rate < 50
+        for: 2m
+        labels:
+          severity: warning
+          component: sales
+        annotations:
+          summary: "Flash sale conversion rate is low"
+          description: "Conversion rate is {{ $value | humanize }}%"
+
+      # Flash sale items oversold (inventory issue)
+      - alert: FlashSaleOversold
+        expr: |
+          etech_flash_sale_items_sold > 1.0 * on() group_left() etech_flash_sale_quantity_limit
+        for: 1m
+        labels:
+          severity: critical
+          component: sales
+        annotations:
+          summary: "CRITICAL: Flash sale items oversold!"
+          description: "Race condition may have occurred - items sold exceeds limit"
+
+      # High API error rate for specific endpoint
+      - alert: EndpointHighErrorRate
+        expr: |
+          rate(etech_api_errors_total[5m]) > 10
+        for: 5m
+        labels:
+          severity: warning
+          component: api
+        annotations:
+          summary: "High error rate on endpoint {{ $labels.endpoint }}"
+          description: "Error rate is {{ $value | humanize }}/sec"
+
+      # Payment gateway failure
+      - alert: PaymentGatewayFailure
+        expr: |
+          rate(etech_payment_transactions_total{result="failure"}[5m]) > 0.05
+        for: 5m
+        labels:
+          severity: critical
+          component: payments
+        annotations:
+          summary: "Payment gateway failures detected"
+          description: "{{ $labels.gateway }} failure rate is {{ $value | humanizePercentage }}"
+
+      # Authentication failures spike
+      - alert: AuthenticationFailureSpike
+        expr: |
+          rate(etech_auth_events_total{type="login",result="failure"}[5m]) > 1
+        for: 5m
+        labels:
+          severity: warning
+          component: auth
+        annotations:
+          summary: "Spike in authentication failures"
+          description: "Auth failures: {{ $value | humanize }}/sec"
+
+      # Cache hit rate too low
+      - alert: LowCacheHitRate
+        expr: |
+          rate(etech_cache_operations_total{result="hit"}[5m]) / 
+          rate(etech_cache_operations_total[5m]) < 0.5
+        for: 10m
+        labels:
+          severity: warning
+          component: cache
+        annotations:
+          summary: "Cache hit rate is below 50%"
+          description: "Current hit rate: {{ $value | humanizePercentage }}"
+
+  - name: infrastructure_alerts
+    interval: 30s
+    rules:
+      # High CPU usage
+      - alert: HighCPUUsage
+        expr: |
+          100 - (avg(rate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 80
+        for: 5m
+        labels:
+          severity: warning
+          component: infrastructure
+        annotations:
+          summary: "High CPU usage detected"
+          description: "CPU usage is {{ $value | humanize }}%"
+
+      # High memory usage
+      - alert: HighMemoryUsage
+        expr: |
+          (1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100 > 80
+        for: 5m
+        labels:
+          severity: warning
+          component: infrastructure
+        annotations:
+          summary: "High memory usage detected"
+          description: "Memory usage is {{ $value | humanize }}%"
+
+      # Disk space running low
+      - alert: LowDiskSpace
+        expr: |
+          (node_filesystem_avail_bytes{fstype!~"tmpfs"} / node_filesystem_size_bytes{fstype!~"tmpfs"}) * 100 < 10
+        for: 5m
+        labels:
+          severity: critical
+          component: infrastructure
+        annotations:
+          summary: "Low disk space on {{ $labels.device }}"
+          description: "Available space is {{ $value | humanize }}%"
+
+      # Prometheus scrape failure
+      - alert: PrometheusScrapeFailing
+        expr: |
+          up == 0
+        for: 5m
+        labels:
+          severity: critical
+          component: monitoring
+        annotations:
+          summary: "Prometheus scrape failing for {{ $labels.job }}"
+          description: "Target {{ $labels.instance }} is down"

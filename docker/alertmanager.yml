@@ -1,0 +1,65 @@
+# Alertmanager Configuration
+# Local deployment - simplified for E-Tech Market
+
+global:
+  resolve_timeout: 5m
+
+# Root routing
+route:
+  receiver: 'default'
+  group_by: ['alertname', 'cluster', 'service']
+  group_wait: 10s
+  group_interval: 10s
+  repeat_interval: 12h
+
+  # Sub-routes for different alert types
+  routes:
+    - match:
+        severity: critical
+      receiver: 'default'
+      group_wait: 0s
+      group_interval: 5m
+      repeat_interval: 1h
+
+    - match:
+        component: payments
+      receiver: 'default'
+      group_wait: 5s
+      group_interval: 5m
+      repeat_interval: 2h
+
+    - match:
+        component: sales
+      receiver: 'default'
+      group_wait: 5s
+      group_interval: 5m
+      repeat_interval: 2h
+
+    - match:
+        component: queue
+      receiver: 'default'
+      group_wait: 10s
+      group_interval: 10m
+      repeat_interval: 4h
+
+# Simple receivers - no external integration for local deployment
+receivers:
+  - name: 'default'
+    # Webhook to your backend for notification handling
+    webhook_configs: []
+
+# Inhibition rules
+inhibit_rules:
+  # Suppress warnings if critical alert exists
+  - source_match:
+      severity: 'critical'
+    target_match:
+      severity: 'warning'
+    equal: ['alertname', 'service']
+
+  # Suppress info if warning exists
+  - source_match:
+      severity: 'warning'
+    target_match:
+      severity: 'info'
+    equal: ['alertname', 'service']

@@ -1,5 +1,4 @@
-/// <reference types="vitest" />
-import { defineConfig } from 'vitest/config'
+import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import path from 'path'
 
@@ -14,7 +13,13 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
+      // Provide an ESM wrapper for the CommonJS `shallowequal` package so
+      // Vite/Rolldown can see a proper default export during optimization.
+      'shallowequal': path.resolve(__dirname, './src/compat/shallowequal-compat.js'),
     },
+  },
+  optimizeDeps: {
+    include: ['react-helmet-async', 'react-fast-compare', 'shallowequal'],
   },
   server: {
     watch: {
@@ -33,25 +38,6 @@ export default defineConfig({
         target: apiProxyTarget,
         changeOrigin: true,
       },
-    },
-  },
-  test: {
-    environment: 'jsdom',
-    globals: true,
-    setupFiles: './src/setupTests.ts',
-    include: ['src/**/*.{test,spec}.{ts,tsx}'],
-    exclude: [
-      '**/node_modules/**',
-      '**/dist/**',
-      '**/cypress/**',
-      '**/.{idea,git,cache,output,temp}/**',
-      'e2e/**',
-      '**/e2e/**',
-    ],
-    coverage: {
-      provider: 'v8',
-      reporter: ['text', 'json', 'html', 'lcov'],
-      exclude: ['node_modules/', 'src/setupTests.ts', 'dist/', 'e2e/'],
     },
   },
 })

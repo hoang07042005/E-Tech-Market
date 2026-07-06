@@ -118,7 +118,7 @@ class PaymentService
         ksort($inputData);
         $hashData = $this->buildVnpayHashData($inputData);
 
-        $verified = hash_hmac('sha512', $hashData, $hashSecret) === $secureHash;
+        $verified = hash_equals(hash_hmac('sha512', $hashData, $hashSecret), $secureHash);
 
         $orderCode = (string) ($inputData['vnp_TxnRef'] ?? '');
         $vnpTransactionNo = (string) ($inputData['vnp_TransactionNo'] ?? '');
