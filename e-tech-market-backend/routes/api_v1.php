@@ -257,7 +257,14 @@ Route::get('/coupons', [ClientCouponsController::class, 'index']);
 Route::post('/coupons/apply', [ClientCouponsController::class, 'apply'])->middleware('throttle:5,1');
 
 Route::middleware('auth:sanctum')->group(function () {
-    Route::post('/products/{product}/reviews', [ReviewsController::class, 'store']);
+    Route::post('/products/{product}/reviews', function (\Illuminate\Http\Request $request, $product) {
+        \Log::info('[DartDebug] Request hit', [
+            'headers' => $request->headers->all(),
+            'body' => $request->getContent(),
+            'all' => $request->all(),
+        ]);
+        return app(\App\Http\Controllers\Client\ReviewsController::class)->store(\App\Models\Product::findOrFail($product), $request);
+    });
     Route::get('/me/coupons', [ClientCouponsController::class, 'saved']);
     Route::post('/me/coupons/save', [ClientCouponsController::class, 'save']);
 

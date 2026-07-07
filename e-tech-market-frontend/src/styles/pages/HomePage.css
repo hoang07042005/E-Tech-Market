@@ -1869,3 +1869,157 @@
   font-size: 11px;
   font-weight: 600;
 }
+/* Review Media Styles for HomePage */
+.hpReviewMediaRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.hpReviewMediaItem {
+  display: inline-flex;
+  width: 50px;
+  height: 50px;
+  padding: 0;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid #e2e8f0;
+  background: #fff;
+  text-align: left;
+  flex: 0 0 auto;
+  cursor: pointer;
+}
+
+.hpReviewMediaImage,
+.hpReviewMediaVideoPreview {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.hpReviewMediaVideoWrap {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background: #000;
+}
+
+.hpReviewMediaVideoBadge {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: rgba(255, 255, 255, 0.92);
+  font-size: 15px;
+  text-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+  pointer-events: none;
+}
+
+.hpReviewMediaModalOverlay {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  width: 100dvw;
+  height: 100dvh;
+  background: rgba(0, 0, 0, 0.85);
+  z-index: 100000;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+}
+
+.hpReviewMediaModal {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background: transparent;
+  border-radius: 0;
+  overflow: visible;
+  box-shadow: none;
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) auto;
+  place-items: center;
+}
+
+.hpReviewMediaModalClose {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  z-index: 1;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  font-size: 24px;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+}
+
+.hpReviewMediaModalContent {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  place-items: center;
+  min-height: 0;
+}
+
+.hpReviewMediaModalContent img,
+.hpReviewMediaModalContent video {
+  max-width: min(100%, 1200px);
+  max-height: calc(100vh - 120px);
+  max-height: calc(100dvh - 120px);
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  border-radius: 12px;
+  box-shadow: 0 30px 90px rgba(0, 0, 0, 0.45);
+}
+
+.hpReviewMediaModalVideo {
+  width: auto;
+  height: auto;
+  max-height: calc(100vh - 120px);
+  max-height: calc(100dvh - 120px);
+}
+
+.hpReviewMediaModalNav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 16px 20px 0;
+  background: transparent;
+}
+
+.hpReviewMediaModalNavBtn {
+  border: none;
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 24px;
+  line-height: 0;
+  transition: background 0.2s ease;
+}
+
+.hpReviewMediaModalNavBtn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.16);
+}
+
+.hpReviewMediaModalNavBtn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.hpReviewMediaModalNavCounter {
+  color: #f8fafc;
+  font-size: 14px;
+}

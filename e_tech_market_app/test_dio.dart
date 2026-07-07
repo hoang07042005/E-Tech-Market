@@ -1,0 +1,1 @@
+import 'package:dio/dio.dart'; void main() async { final dio = Dio(BaseOptions(headers: {'Content-Type': 'application/json'})); final formData = FormData.fromMap({'test': '123'}); try { await dio.post('http://localhost:8000/api/v1/test', data: formData, options: Options(contentType: 'multipart/form-data')); print('SUCCESS'); } catch(e) { print('ERROR: ' + e.toString()); } }

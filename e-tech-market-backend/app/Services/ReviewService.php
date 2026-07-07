@@ -21,7 +21,7 @@ class ReviewService
             $query->where('status', $status);
         }
 
-        return $query->orderBy('created_at', 'desc')->paginate($limit);
+        return $query->orderBy('updated_at', 'desc')->paginate($limit);
     }
 
     /**
@@ -117,7 +117,7 @@ class ReviewService
                 $normalizedPath = str_replace('\\', '/', $path);
                 $mediaItems[] = [
                     'type' => $type,
-                    'url' => url('storage/' . ltrim($normalizedPath, '/')),
+                    'url' => \Illuminate\Support\Facades\Storage::disk('public')->url($normalizedPath),
                     'original_name' => $file->getClientOriginalName(),
                 ];
             }

@@ -1,6 +1,8 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import '../../services/auth_service.dart';
@@ -55,7 +57,8 @@ String _timeAgoVi(String value) {
   final date = DateTime.tryParse(value);
   if (date == null) return '';
   final diff = DateTime.now().difference(date);
-  if (diff.inDays >= 30) return '${(diff.inDays / 30).floor()} ${Trans.monthsAgo}';
+  if (diff.inDays >= 30)
+    return '${(diff.inDays / 30).floor()} ${Trans.monthsAgo}';
   if (diff.inDays >= 1) return '${diff.inDays} ${Trans.daysAgo}';
   if (diff.inHours >= 1) return '${diff.inHours} ${Trans.hoursAgo}';
   if (diff.inMinutes >= 1) return '${diff.inMinutes} ${Trans.minutesAgo}';
@@ -332,6 +335,20 @@ class ProductNews {
   }
 }
 
+class ReviewMediaItem {
+  final String type; // 'image' | 'video'
+  final String url;
+
+  const ReviewMediaItem({required this.type, required this.url});
+
+  factory ReviewMediaItem.fromJson(Map<String, dynamic> json) {
+    return ReviewMediaItem(
+      type: json['type']?.toString() ?? 'image',
+      url: NetworkUtils.fixDeviceUrl(json['url']?.toString() ?? ''),
+    );
+  }
+}
+
 class ProductReview {
   final int id;
   final int rating;
@@ -343,6 +360,7 @@ class ProductReview {
   final int? expCamera;
   final String? userName;
   final String? userAvatarUrl;
+  final List<ReviewMediaItem> media;
 
   ProductReview({
     required this.id,
@@ -355,10 +373,20 @@ class ProductReview {
     this.expCamera,
     this.userName,
     this.userAvatarUrl,
+    this.media = const [],
   });
 
   factory ProductReview.fromJson(Map<String, dynamic> json) {
     final user = json['user'] as Map<String, dynamic>?;
+    final mediaRaw = json['media'];
+    final mediaList = <ReviewMediaItem>[];
+    if (mediaRaw is List) {
+      for (final item in mediaRaw) {
+        if (item is Map<String, dynamic>) {
+          mediaList.add(ReviewMediaItem.fromJson(item));
+        }
+      }
+    }
     return ProductReview(
       id: _toInt(json['id']),
       rating: _toInt(json['rating']).clamp(1, 5),
@@ -375,6 +403,7 @@ class ProductReview {
       userAvatarUrl: _imageFrom(user?['avatar_url']).isEmpty
           ? null
           : _imageFrom(user?['avatar_url']),
+      media: mediaList,
     );
   }
 }
@@ -523,7 +552,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   }
 
   Future<void> _handleToggleFavorite() async {
-    final currentProduct = product; 
+    final currentProduct = product;
     if (currentProduct != null) {
       await WishlistService.toggleFavorite(currentProduct.id);
       if (mounted) setState(() {});
@@ -735,7 +764,8 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
         }
       });
       if (toggleError != null) {
-        AppSnackBar.showError(context, toggleError.toString().replaceFirst('Exception: ', ''));
+        AppSnackBar.showError(
+            context, toggleError.toString().replaceFirst('Exception: ', ''));
         return;
       }
       AppSnackBar.showError(context, 'Không thể cập nhật yêu thích.');
@@ -778,12 +808,15 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     if (current == null) return;
 
     if (selectedVariant == null && current.variants.isNotEmpty) {
-      AppSnackBar.showError(context, 'Vui lòng chọn đầy đủ Màu sắc & Dung lượng');
+      AppSnackBar.showError(
+          context, 'Vui lòng chọn đầy đủ Màu sắc & Dung lượng');
       return;
     }
 
     // Chỉ dùng flashSalePrice khi vào từ trang flashsale để thêm vào giỏ
-    final cartPrice = (widget.showFlashSale && widget.flashSalePrice != null && widget.flashSalePrice! > 0)
+    final cartPrice = (widget.showFlashSale &&
+            widget.flashSalePrice != null &&
+            widget.flashSalePrice! > 0)
         ? widget.flashSalePrice!
         : (selectedVariant?.effectivePrice ?? current.price);
 
@@ -795,15 +828,18 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     }
 
     try {
-      await CartService.addToCart(current.id, quantity, variantId: selectedVariant?.id, price: cartPrice);
+      await CartService.addToCart(current.id, quantity,
+          variantId: selectedVariant?.id, price: cartPrice);
 
       final variantName =
           selectedVariant != null ? ' (${selectedVariant!.name})' : '';
       if (!mounted) return;
-      AppSnackBar.showSuccess(context, Trans.productAddedWithQuantity(quantity, variantName));
+      AppSnackBar.showSuccess(
+          context, Trans.productAddedWithQuantity(quantity, variantName));
     } catch (e) {
       if (!mounted) return;
-      AppSnackBar.showError(context, 'Lỗi: ${e.toString().replaceFirst('Exception: ', '')}');
+      AppSnackBar.showError(
+          context, 'Lỗi: ${e.toString().replaceFirst('Exception: ', '')}');
     }
   }
 
@@ -811,7 +847,9 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     final current = product;
     if (current == null) return 0;
     // Chỉ dùng flashSalePrice khi vào từ trang flashsale
-    if (widget.showFlashSale && widget.flashSalePrice != null && widget.flashSalePrice! > 0) {
+    if (widget.showFlashSale &&
+        widget.flashSalePrice != null &&
+        widget.flashSalePrice! > 0) {
       return widget.flashSalePrice!;
     }
     if (widget.showFlashSale && current.flashSaleItems.isNotEmpty) {
@@ -837,7 +875,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
       case 'verified':
         return reviews.where((r) => r.orderId != null).toList();
       case 'with_images':
-        return reviews;
+        return reviews.where((r) => r.media.isNotEmpty).toList();
       case 'star_5':
       case 'star_4':
       case 'star_3':
@@ -968,7 +1006,8 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     final reviewStats = _getReviewStats();
     final filteredReviews = _getFilteredReviews();
     final displayPrice = _getDisplayPrice();
-    final hasFlashSale = widget.showFlashSale && current.flashSaleItems.isNotEmpty;
+    final hasFlashSale =
+        widget.showFlashSale && current.flashSaleItems.isNotEmpty;
     final mergedSpecs = _getMergedDisplaySpecs(current);
     final images = current.images.isEmpty
         ? [ProductImage(id: 0, imageUrl: current.mainImageUrl)]
@@ -990,7 +1029,9 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
               if (hasFlashSale && flashTimeLeft != null) _buildFlashSaleTimer(),
               _buildHeader(current, displayPrice, hasFlashSale),
               _buildVariantSelector(current),
-              Divider(thickness: 8, color: Theme.of(context).colorScheme.surfaceContainerLow),
+              Divider(
+                  thickness: 8,
+                  color: Theme.of(context).colorScheme.surfaceContainerLow),
               _buildSection(
                 title: Trans.productDescription,
                 child: Text(
@@ -1000,17 +1041,23 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                   style: TextStyle(height: 1.5),
                 ),
               ),
-              Divider(thickness: 8, color: Theme.of(context).colorScheme.surfaceContainerLow),
+              Divider(
+                  thickness: 8,
+                  color: Theme.of(context).colorScheme.surfaceContainerLow),
               _buildCommitmentSection(current),
               if (mergedSpecs.isNotEmpty) ...[
-                Divider(thickness: 8, color: Theme.of(context).colorScheme.surfaceContainerLow),
+                Divider(
+                    thickness: 8,
+                    color: Theme.of(context).colorScheme.surfaceContainerLow),
                 _buildSection(
                   title: Trans.specifications,
                   child: _buildGroupedSpecs(mergedSpecs),
                 ),
               ],
               if (visibleFaqs.isNotEmpty) ...[
-                Divider(thickness: 8, color: Theme.of(context).colorScheme.surfaceContainerLow),
+                Divider(
+                    thickness: 8,
+                    color: Theme.of(context).colorScheme.surfaceContainerLow),
                 _buildSection(
                   title: 'Câu hỏi thường gặp',
                   child: Column(
@@ -1019,7 +1066,9 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                 ),
               ],
               if (relatedProducts.isNotEmpty) ...[
-                Divider(thickness: 8, color: Theme.of(context).colorScheme.surfaceContainerLow),
+                Divider(
+                    thickness: 8,
+                    color: Theme.of(context).colorScheme.surfaceContainerLow),
                 _buildSection(
                   title: 'Sản phẩm liên quan',
                   child: SizedBox(
@@ -1033,14 +1082,20 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                   ),
                 ),
               ],
-              Divider(thickness: 8, color: Theme.of(context).colorScheme.surfaceContainerLow),
+              Divider(
+                  thickness: 8,
+                  color: Theme.of(context).colorScheme.surfaceContainerLow),
               _buildRichContentAndNews(current),
-              Divider(thickness: 8, color: Theme.of(context).colorScheme.surfaceContainerLow),
+              Divider(
+                  thickness: 8,
+                  color: Theme.of(context).colorScheme.surfaceContainerLow),
               _buildSection(
                 title: Trans.ratingTitle(current.name),
                 child: _buildVisualReviews(reviewStats, filteredReviews),
               ),
-              Divider(thickness: 8, color: Theme.of(context).colorScheme.surfaceContainerLow),
+              Divider(
+                  thickness: 8,
+                  color: Theme.of(context).colorScheme.surfaceContainerLow),
               _buildSection(
                   title: 'Hỏi và đáp', child: _buildQaSection(current)),
             ],
@@ -1049,92 +1104,107 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
       ),
     );
   }
-Widget _buildGallery(Product current, List<ProductImage> images) {
-  return Stack(
-    children: [
-      SizedBox(
-        height: 350,
-        child: PageView.builder(
-          controller: _pageController,
-          itemCount: images.length,
-          physics: const ClampingScrollPhysics(), // Giúp phản hồi vuốt mượt và dứt khoát hơn
-          onPageChanged: (index) {
-            // Chỉ cập nhật index cục bộ cho bộ đếm, không Rebuild cả màn hình
-            _currentImageIndex.value = index; 
-            
-            // Cập nhật selectedImg một cách an toàn để đồng bộ với danh sách ảnh nhỏ phía dưới
-            if (selectedImg != images[index].imageUrl) {
-              selectedImg = images[index].imageUrl;
-            }
-          },
-          itemBuilder: (context, index) {
-            final url = images[index].imageUrl;
-            if (url.isEmpty) {
-              return Center(
-                child: Icon(Icons.computer, size: 88, color: Theme.of(context).colorScheme.outline),
-              );
-            }
 
-            return InteractiveViewer(
-              // Khóa chức năng zoom/kéo trục ngang nếu không zoom, tránh tranh chấp với PageView
-              transformationController: TransformationController(),
-              minScale: 1.0,
-              maxScale: 2.5,
-              child: Image.network(
-                url,
-                fit: BoxFit.contain,
-                gaplessPlayback: true, // Giữ ảnh cũ, không bị nháy trắng khi lướt
-                filterQuality: FilterQuality.low, // Tăng hiệu năng render khi đang lướt animation
-                errorBuilder: (_, __, ___) => Center(
-                  child: Icon(Icons.computer, size: 88, color: Theme.of(context).colorScheme.outline),
-                ),
-              ),
-            );
-          },
-        ),
-      ),
-      
-      // Chỉ Rebuild duy nhất cục bộ cái Text hiển thị số trang (Ví dụ: 1/4)
-      if (images.length > 1)
-        Positioned(
-          bottom: 10,
-          right: 16,
-          child: ValueListenableBuilder<int>(
-            valueListenable: _currentImageIndex,
-            builder: (context, activeIndex, child) {
-              return Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                decoration: BoxDecoration(
-                  color: Colors.black.withValues(alpha: 0.5),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Text(
-                  '${activeIndex + 1}/${images.length}',
-                  style: TextStyle(color: Theme.of(context).colorScheme.surface, fontSize: 12),
+  Widget _buildGallery(Product current, List<ProductImage> images) {
+    return Stack(
+      children: [
+        SizedBox(
+          height: 350,
+          child: PageView.builder(
+            controller: _pageController,
+            itemCount: images.length,
+            physics:
+                const ClampingScrollPhysics(), // Giúp phản hồi vuốt mượt và dứt khoát hơn
+            onPageChanged: (index) {
+              // Chỉ cập nhật index cục bộ cho bộ đếm, không Rebuild cả màn hình
+              _currentImageIndex.value = index;
+
+              // Cập nhật selectedImg một cách an toàn để đồng bộ với danh sách ảnh nhỏ phía dưới
+              if (selectedImg != images[index].imageUrl) {
+                selectedImg = images[index].imageUrl;
+              }
+            },
+            itemBuilder: (context, index) {
+              final url = images[index].imageUrl;
+              if (url.isEmpty) {
+                return Center(
+                  child: Icon(Icons.computer,
+                      size: 88, color: Theme.of(context).colorScheme.outline),
+                );
+              }
+
+              return InteractiveViewer(
+                // Khóa chức năng zoom/kéo trục ngang nếu không zoom, tránh tranh chấp với PageView
+                transformationController: TransformationController(),
+                minScale: 1.0,
+                maxScale: 2.5,
+                child: Image.network(
+                  url,
+                  fit: BoxFit.contain,
+                  gaplessPlayback:
+                      true, // Giữ ảnh cũ, không bị nháy trắng khi lướt
+                  filterQuality: FilterQuality
+                      .low, // Tăng hiệu năng render khi đang lướt animation
+                  errorBuilder: (_, __, ___) => Center(
+                    child: Icon(Icons.computer,
+                        size: 88, color: Theme.of(context).colorScheme.outline),
+                  ),
                 ),
               );
             },
           ),
         ),
 
-      // Nút Wishlist giữ nguyên
-      Positioned(
-        top: 10,
-        right: 16,
-        child: IconButton(
-          onPressed: () => _toggleWishlist(current.id),
-          icon: CircleAvatar(
-            backgroundColor: Theme.of(context).colorScheme.surface.withValues(alpha: 0.85),
-            child: Icon(
-              wishSet.contains(current.id) ? Icons.favorite : Icons.favorite_border,
-              color: wishSet.contains(current.id) ? Colors.red : Theme.of(context).colorScheme.onSurfaceVariant,
+        // Chỉ Rebuild duy nhất cục bộ cái Text hiển thị số trang (Ví dụ: 1/4)
+        if (images.length > 1)
+          Positioned(
+            bottom: 10,
+            right: 16,
+            child: ValueListenableBuilder<int>(
+              valueListenable: _currentImageIndex,
+              builder: (context, activeIndex, child) {
+                return Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: Colors.black.withValues(alpha: 0.5),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Text(
+                    '${activeIndex + 1}/${images.length}',
+                    style: TextStyle(
+                        color: Theme.of(context).colorScheme.surface,
+                        fontSize: 12),
+                  ),
+                );
+              },
+            ),
+          ),
+
+        // Nút Wishlist giữ nguyên
+        Positioned(
+          top: 10,
+          right: 16,
+          child: IconButton(
+            onPressed: () => _toggleWishlist(current.id),
+            icon: CircleAvatar(
+              backgroundColor:
+                  Theme.of(context).colorScheme.surface.withValues(alpha: 0.85),
+              child: Icon(
+                wishSet.contains(current.id)
+                    ? Icons.favorite
+                    : Icons.favorite_border,
+                color: wishSet.contains(current.id)
+                    ? Colors.red
+                    : Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
             ),
           ),
         ),
-      ),
-    ],
-  );
-}
+      ],
+    );
+  }
+
   Widget _buildHeader(Product current, double displayPrice, bool hasFlashSale) {
     final oldPrice = selectedVariant?.price ?? current.price;
     return Padding(
@@ -1208,15 +1278,21 @@ Widget _buildGallery(Product current, List<ProductImage> images) {
                 Expanded(
                   child: RichText(
                     text: TextSpan(
-                      style: const TextStyle(fontSize: 13, color: Colors.black87, height: 1.4),
+                      style: const TextStyle(
+                          fontSize: 13, color: Colors.black87, height: 1.4),
                       children: [
-                        const TextSpan(text: '💡 Đặc quyền Hội viên: Mua ngay sản phẩm này và tích lũy thêm '),
+                        const TextSpan(
+                            text:
+                                '💡 Đặc quyền Hội viên: Mua ngay sản phẩm này và tích lũy thêm '),
                         TextSpan(
                           text: '+${(displayPrice / 100000).floor()} điểm',
-                          style: const TextStyle(color: Color(0xFFEA580C), fontWeight: FontWeight.bold),
+                          style: const TextStyle(
+                              color: Color(0xFFEA580C),
+                              fontWeight: FontWeight.bold),
                         ),
                         TextSpan(
-                          text: ' (tương đương tiết kiệm ${formatCurrency((displayPrice / 100000).floor() * 500)}đ cho các đơn sắm sửa phụ kiện lần sau).',
+                          text:
+                              ' (tương đương tiết kiệm ${formatCurrency((displayPrice / 100000).floor() * 500)}đ cho các đơn sắm sửa phụ kiện lần sau).',
                         ),
                       ],
                     ),
@@ -1230,25 +1306,31 @@ Widget _buildGallery(Product current, List<ProductImage> images) {
     );
   }
 
-
   Widget _buildFlashSaleTimer() {
     final current = product;
-    if (current == null || current.flashSaleItems.isEmpty) return const SizedBox.shrink();
+    if (current == null || current.flashSaleItems.isEmpty)
+      return const SizedBox.shrink();
 
     // Sử dụng hàm chuẩn của hệ thống để lấy giá bán hiện tại (giá đã giảm) và giá gốc ban đầu
     final salePrice = _getDisplayPrice();
     final oldPrice = _getOriginalPrice();
 
     // Tính toán phần trăm giảm giá chuẩn xác dựa trên giá thực tế đang hiển thị
-    final discountPercent = oldPrice > salePrice 
-        ? ((oldPrice - salePrice) / oldPrice * 100).round() 
+    final discountPercent = oldPrice > salePrice
+        ? ((oldPrice - salePrice) / oldPrice * 100).round()
         : 0;
 
     // Kiểm tra null trước khi sử dụng flashTimeLeft
     final timeLeft = flashTimeLeft;
-    final hours = timeLeft != null ? (timeLeft.inHours % 24).toString().padLeft(2, '0') : '00';
-    final minutes = timeLeft != null ? (timeLeft.inMinutes % 60).toString().padLeft(2, '0') : '00';
-    final seconds = timeLeft != null ? (timeLeft.inSeconds % 60).toString().padLeft(2, '0') : '00';
+    final hours = timeLeft != null
+        ? (timeLeft.inHours % 24).toString().padLeft(2, '0')
+        : '00';
+    final minutes = timeLeft != null
+        ? (timeLeft.inMinutes % 60).toString().padLeft(2, '0')
+        : '00';
+    final seconds = timeLeft != null
+        ? (timeLeft.inSeconds % 60).toString().padLeft(2, '0')
+        : '00';
 
     return Container(
       width: double.infinity,
@@ -1293,7 +1375,8 @@ Widget _buildGallery(Product current, List<ProductImage> images) {
                       // Hiển thị phần trăm giảm giá chỉ khi thực sự có giảm giá (> 0)
                       if (discountPercent > 0) ...[
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 6, vertical: 2),
                           decoration: BoxDecoration(
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(6),
@@ -1359,16 +1442,21 @@ Widget _buildGallery(Product current, List<ProductImage> images) {
                   Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const Text('Kết thúc sau ', style: TextStyle(color: Colors.white, fontSize: 12)),
+                      const Text('Kết thúc sau ',
+                          style: TextStyle(color: Colors.white, fontSize: 12)),
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 6, vertical: 2),
                         decoration: BoxDecoration(
                           color: Colors.white.withValues(alpha: 0.2),
                           borderRadius: BorderRadius.circular(4),
                         ),
                         child: Text(
                           '$hours:$minutes:$seconds',
-                          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13),
+                          style: const TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 13),
                         ),
                       ),
                     ],
@@ -1381,7 +1469,6 @@ Widget _buildGallery(Product current, List<ProductImage> images) {
       ),
     );
   }
-
 
   Widget _buildVariantSelector(Product current) {
     if (current.variants.isEmpty) return const SizedBox.shrink();
@@ -1419,7 +1506,7 @@ Widget _buildGallery(Product current, List<ProductImage> images) {
           return sValue.trim();
         })
         .where((s) => s.isNotEmpty)
-        .toSet() 
+        .toSet()
         .toList();
 
     if (selectedVariant == null && current.variants.isNotEmpty) {
@@ -1456,7 +1543,7 @@ Widget _buildGallery(Product current, List<ProductImage> images) {
                     (v.name.toLowerCase().contains(targetStorage ?? ''))),
           );
         } catch (_) {
-          match = current.variants.first; 
+          match = current.variants.first;
         }
       }
 
@@ -1472,7 +1559,7 @@ Widget _buildGallery(Product current, List<ProductImage> images) {
                 selectedImg!.trim(),
           );
           if (idx != -1) {
-            _pageController.jumpToPage(idx); 
+            _pageController.jumpToPage(idx);
           }
         }
       });
@@ -1513,8 +1600,9 @@ Widget _buildGallery(Product current, List<ProductImage> images) {
                     padding:
                         const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                     decoration: BoxDecoration(
-                      color:
-                          isSelected ? const Color(0xFFFFF7ED) : Theme.of(context).colorScheme.surface,
+                      color: isSelected
+                          ? const Color(0xFFFFF7ED)
+                          : Theme.of(context).colorScheme.surface,
                       border: Border.all(
                         color: isSelected
                             ? Colors.orange
@@ -1593,8 +1681,9 @@ Widget _buildGallery(Product current, List<ProductImage> images) {
                     padding:
                         const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                     decoration: BoxDecoration(
-                      color:
-                          isSelected ? const Color(0xFFFFF7ED) : Theme.of(context).colorScheme.surface,
+                      color: isSelected
+                          ? const Color(0xFFFFF7ED)
+                          : Theme.of(context).colorScheme.surface,
                       border: Border.all(
                         color: isSelected
                             ? Colors.orange
@@ -1622,7 +1711,9 @@ Widget _buildGallery(Product current, List<ProductImage> images) {
           ],
 
           // ================= HÀNG 3: THEO DÕI SỐ LƯỢNG KHO & BỘ TĂNG GIẢM =================
-          Divider(color: Theme.of(context).colorScheme.surfaceContainerLow, height: 1),
+          Divider(
+              color: Theme.of(context).colorScheme.surfaceContainerLow,
+              height: 1),
           const SizedBox(height: 16),
 
           Row(
@@ -1633,7 +1724,9 @@ Widget _buildGallery(Product current, List<ProductImage> images) {
                 children: [
                   Text(
                     Trans.availableQuantity,
-                    style: TextStyle(fontSize: 13, color: Theme.of(context).colorScheme.onSurfaceVariant),
+                    style: TextStyle(
+                        fontSize: 13,
+                        color: Theme.of(context).colorScheme.onSurfaceVariant),
                   ),
                   const SizedBox(height: 4),
                   Text(
@@ -1652,7 +1745,9 @@ Widget _buildGallery(Product current, List<ProductImage> images) {
                 Container(
                   decoration: BoxDecoration(
                     color: Theme.of(context).colorScheme.surface,
-                    border: Border.all(color: Theme.of(context).colorScheme.outline, width: 0.5),
+                    border: Border.all(
+                        color: Theme.of(context).colorScheme.outline,
+                        width: 0.5),
                     borderRadius: BorderRadius.circular(4),
                   ),
                   child: Row(
@@ -1674,12 +1769,16 @@ Widget _buildGallery(Product current, List<ProductImage> images) {
                             style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,
-                                color: Theme.of(context).colorScheme.onSurfaceVariant),
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .onSurfaceVariant),
                           ),
                         ),
                       ),
                       Container(
-                          width: 1, height: 32, color: Theme.of(context).colorScheme.outline),
+                          width: 1,
+                          height: 32,
+                          color: Theme.of(context).colorScheme.outline),
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 16),
                         alignment: Alignment.center,
@@ -1692,7 +1791,9 @@ Widget _buildGallery(Product current, List<ProductImage> images) {
                         ),
                       ),
                       Container(
-                          width: 1, height: 32, color: Theme.of(context).colorScheme.outline),
+                          width: 1,
+                          height: 32,
+                          color: Theme.of(context).colorScheme.outline),
                       GestureDetector(
                         onTap: () {
                           if (quantity < currentStock) {
@@ -1700,7 +1801,8 @@ Widget _buildGallery(Product current, List<ProductImage> images) {
                               quantity++;
                             });
                           } else {
-                            AppSnackBar.showError(context, 'Chỉ còn lại $currentStock sản phẩm trong kho!');
+                            AppSnackBar.showError(context,
+                                'Chỉ còn lại $currentStock sản phẩm trong kho!');
                           }
                         },
                         child: Container(
@@ -1712,7 +1814,9 @@ Widget _buildGallery(Product current, List<ProductImage> images) {
                             style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,
-                                color: Theme.of(context).colorScheme.onSurfaceVariant),
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .onSurfaceVariant),
                           ),
                         ),
                       ),
@@ -1728,7 +1832,9 @@ Widget _buildGallery(Product current, List<ProductImage> images) {
 
   Widget _buildBottomAction(double displayPrice) {
     // Chỉ dùng flashSalePrice khi vào từ trang flashsale
-    final finalPrice = (widget.showFlashSale && widget.flashSalePrice != null && widget.flashSalePrice! > 0)
+    final finalPrice = (widget.showFlashSale &&
+            widget.flashSalePrice != null &&
+            widget.flashSalePrice! > 0)
         ? widget.flashSalePrice!
         : (selectedVariant?.effectivePrice ?? displayPrice);
 
@@ -1745,7 +1851,7 @@ Widget _buildGallery(Product current, List<ProductImage> images) {
         child: Row(
           children: [
             Expanded(
-              flex: 4, 
+              flex: 4,
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -1761,7 +1867,9 @@ Widget _buildGallery(Product current, List<ProductImage> images) {
                   const SizedBox(height: 2),
                   Text(
                     'Tổng cộng',
-                    style: TextStyle(fontSize: 11, color: Theme.of(context).colorScheme.onSurfaceVariant),
+                    style: TextStyle(
+                        fontSize: 11,
+                        color: Theme.of(context).colorScheme.onSurfaceVariant),
                   ),
                   const SizedBox(height: 2),
                   Text(
@@ -1776,7 +1884,6 @@ Widget _buildGallery(Product current, List<ProductImage> images) {
               ),
             ),
             const SizedBox(width: 12),
-
             ElevatedButton.icon(
               onPressed: () async {
                 await _addToCart();
@@ -1784,8 +1891,9 @@ Widget _buildGallery(Product current, List<ProductImage> images) {
               icon: const Icon(Icons.add_shopping_cart, color: Colors.white),
               label: Text(Trans.addToCart),
               style: ElevatedButton.styleFrom(
-                backgroundColor:  Color(0xFFFF6A00), // Đổi thành màu cam tại đây
-                foregroundColor: Colors.white,  // Đổi chữ và icon thành màu trắng cho nổi bật
+                backgroundColor: Color(0xFFFF6A00), // Đổi thành màu cam tại đây
+                foregroundColor:
+                    Colors.white, // Đổi chữ và icon thành màu trắng cho nổi bật
               ),
             ),
           ],
@@ -1801,8 +1909,7 @@ Widget _buildGallery(Product current, List<ProductImage> images) {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(title,
-              style:
-                  TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
           const SizedBox(height: 16),
           child,
         ],
@@ -1851,7 +1958,8 @@ Widget _buildGallery(Product current, List<ProductImage> images) {
                 Icon(item.$1, color: Color(0xFF1D3557), size: 22),
                 const SizedBox(width: 12),
                 Expanded(
-                  child: Text(item.$2, style: TextStyle(height: 1.35, color: Color(0xFF1D3557))),
+                  child: Text(item.$2,
+                      style: TextStyle(height: 1.35, color: Color(0xFF1D3557))),
                 ),
               ],
             ),
@@ -1876,7 +1984,8 @@ Widget _buildGallery(Product current, List<ProductImage> images) {
           margin: const EdgeInsets.only(bottom: 10),
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            border: Border.all(color: Theme.of(context).colorScheme.outline, width: 0.15),
+            border: Border.all(
+                color: Theme.of(context).colorScheme.outline, width: 0.15),
             borderRadius: BorderRadius.circular(12),
           ),
           child: Row(
@@ -1910,8 +2019,7 @@ Widget _buildGallery(Product current, List<ProductImage> images) {
                           children: [
                             TextSpan(
                               text: '${spec.specKey ?? ''}: ',
-                              style:
-                                  TextStyle(fontWeight: FontWeight.bold),
+                              style: TextStyle(fontWeight: FontWeight.bold),
                             ),
                             TextSpan(
                               text:
@@ -1942,22 +2050,23 @@ Widget _buildGallery(Product current, List<ProductImage> images) {
             style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
           ),
           // Thay đổi phần Icon tại đây thành hình tam giác đặc
-          trailing: Icon(
-            isOpen ? Icons.arrow_drop_up : Icons.arrow_drop_down, 
-            size: 26, // Kích thước được tăng lên một chút để rõ ràng như ảnh mẫu
-            color: Theme.of(context).colorScheme.onSurface
-          ),
+          trailing: Icon(isOpen ? Icons.arrow_drop_up : Icons.arrow_drop_down,
+              size:
+                  26, // Kích thước được tăng lên một chút để rõ ràng như ảnh mẫu
+              color: Theme.of(context).colorScheme.onSurface),
           onTap: () => setState(() => openFaqId = isOpen ? null : faq.id),
         ),
         if (isOpen)
           Padding(
             padding: const EdgeInsets.only(bottom: 12),
             child: Text(
-              faq.answer, 
-              style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant, height: 1.4),
+              faq.answer,
+              style: TextStyle(
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  height: 1.4),
             ),
           ),
-        Divider( color: Theme.of(context).colorScheme.outline, height: 1),
+        Divider(color: Theme.of(context).colorScheme.outline, height: 1),
         const SizedBox(height: 10),
       ],
     );
@@ -1973,7 +2082,8 @@ Widget _buildGallery(Product current, List<ProductImage> images) {
         title: 'Nội dung chi tiết',
         child: Text(
           'Chưa có nội dung chi tiết.',
-          style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant),
+          style:
+              TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant),
         ),
       );
     }
@@ -2006,16 +2116,20 @@ Widget _buildGallery(Product current, List<ProductImage> images) {
                   ),
                   // Cấu hình riêng cho bảng biểu (table) nếu nội dung từ admin có chứa bảng
                   "table": Style(
-                    backgroundColor: Theme.of(context).colorScheme.surfaceContainerLow,
-                    border: Border.all(color: Theme.of(context).colorScheme.outline),
+                    backgroundColor:
+                        Theme.of(context).colorScheme.surfaceContainerLow,
+                    border: Border.all(
+                        color: Theme.of(context).colorScheme.outline),
                   ),
                   "th": Style(
                     padding: HtmlPaddings.all(6),
-                    backgroundColor: Theme.of(context).colorScheme.surfaceContainerLow,
+                    backgroundColor:
+                        Theme.of(context).colorScheme.surfaceContainerLow,
                   ),
                   "td": Style(
                     padding: HtmlPaddings.all(6),
-                    border: Border.all(color: Theme.of(context).colorScheme.outline),
+                    border: Border.all(
+                        color: Theme.of(context).colorScheme.outline),
                   ),
                 },
               ),
@@ -2032,7 +2146,8 @@ Widget _buildGallery(Product current, List<ProductImage> images) {
                 Text(
                   'XEM TẤT CẢ ',
                   style: TextStyle(
-                      color: const Color(0xFFFF2424), fontWeight: FontWeight.w600),
+                      color: const Color(0xFFFF2424),
+                      fontWeight: FontWeight.w600),
                 ),
               ],
             ),
@@ -2067,7 +2182,8 @@ Widget _buildGallery(Product current, List<ProductImage> images) {
         decoration: BoxDecoration(
           color: Theme.of(context).colorScheme.surfaceContainerLow,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: Theme.of(context).colorScheme.outline, width: 0.15),
+          border: Border.all(
+              color: Theme.of(context).colorScheme.outline, width: 0.15),
         ),
         child: Row(
           children: [
@@ -2078,13 +2194,15 @@ Widget _buildGallery(Product current, List<ProductImage> images) {
                 height: 70,
                 color: Theme.of(context).colorScheme.outline,
                 child: item.thumbnailUrl == null || item.thumbnailUrl!.isEmpty
-                    ? Icon(Icons.article_outlined, color: Theme.of(context).colorScheme.onSurfaceVariant)
+                    ? Icon(Icons.article_outlined,
+                        color: Theme.of(context).colorScheme.onSurfaceVariant)
                     : Image.network(
                         _resolveImageUrl(
                             item.thumbnailUrl), // Gọi hàm sạch lỗi hoàn toàn
                         fit: BoxFit.cover,
                         errorBuilder: (_, __, ___) => Icon(
-                          Icons.article_outlined, color: Theme.of(context).colorScheme.onSurfaceVariant,
+                          Icons.article_outlined,
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
                         ),
                       ),
               ),
@@ -2104,7 +2222,9 @@ Widget _buildGallery(Product current, List<ProductImage> images) {
               ),
             ),
             const SizedBox(width: 4),
-            Icon(Icons.chevron_right, color: Theme.of(context).colorScheme.onSurfaceVariant, size: 18),
+            Icon(Icons.chevron_right,
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+                size: 18),
           ],
         ),
       ),
@@ -2123,6 +2243,7 @@ Widget _buildGallery(Product current, List<ProductImage> images) {
 
     final TextEditingController localReviewController = TextEditingController();
     bool localIsSubmitting = false;
+    final List<XFile> localMediaFiles = []; // Danh sách ảnh/video đã chọn
 
     // Danh sách nhãn cho phần Đánh giá chung
     final List<String> generalLabels = [
@@ -2294,7 +2415,9 @@ Widget _buildGallery(Product current, List<ProductImage> images) {
                                     fontSize: 11,
                                     color: starValue == localRating
                                         ? Colors.orange
-                                        : Theme.of(context).colorScheme.onSurfaceVariant,
+                                        : Theme.of(context)
+                                            .colorScheme
+                                            .onSurfaceVariant,
                                     fontWeight: starValue == localRating
                                         ? FontWeight.bold
                                         : FontWeight.normal,
@@ -2306,7 +2429,10 @@ Widget _buildGallery(Product current, List<ProductImage> images) {
                         }),
                       ),
                       const SizedBox(height: 16),
-                      Divider(color: Theme.of(context).colorScheme.surfaceContainerLow, thickness: 1),
+                      Divider(
+                          color:
+                              Theme.of(context).colorScheme.surfaceContainerLow,
+                          thickness: 1),
 
                       // ================= KHỐI 2: THEO TRẢI NGHIỆM =================
                       const SizedBox(height: 8),
@@ -2334,7 +2460,10 @@ Widget _buildGallery(Product current, List<ProductImage> images) {
                           _getCameraLabel(localCamera),
                           (val) => setModalState(() => localCamera = val)),
                       const SizedBox(height: 16),
-                      Divider(color: Theme.of(context).colorScheme.surfaceContainerLow, thickness: 1),
+                      Divider(
+                          color:
+                              Theme.of(context).colorScheme.surfaceContainerLow,
+                          thickness: 1),
 
                       // ================= KHỐI 3: NHẬP NỘI DUNG ĐÁNH GIÁ =================
                       const SizedBox(height: 8),
@@ -2342,12 +2471,16 @@ Widget _buildGallery(Product current, List<ProductImage> images) {
                         controller: localReviewController,
                         maxLines: 5,
                         style: TextStyle(
-                            fontSize: 13, color: Theme.of(context).colorScheme.onSurface),
+                            fontSize: 13,
+                            color: Theme.of(context).colorScheme.onSurface),
                         decoration: InputDecoration(
                           hintText:
                               'Xin mời chia sẻ một số cảm nhận về sản phẩm (nhập tối thiểu 15 kí tự)',
-                          hintStyle:
-                              TextStyle(fontSize: 13, color: Theme.of(context).colorScheme.onSurfaceVariant),
+                          hintStyle: TextStyle(
+                              fontSize: 13,
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .onSurfaceVariant),
                           filled: true,
                           fillColor: Theme.of(context).colorScheme.surface,
                           contentPadding: const EdgeInsets.all(14),
@@ -2358,10 +2491,228 @@ Widget _buildGallery(Product current, List<ProductImage> images) {
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderSide: BorderSide(
-                                color: Theme.of(context).colorScheme.primary, width: 1.5),
+                                color: Theme.of(context).colorScheme.primary,
+                                width: 1.5),
                             borderRadius: BorderRadius.circular(12),
                           ),
                         ),
+                      ),
+                      const SizedBox(height: 14),
+
+                      // ================= KHỐI 4: ĐÍNH KÈM ẢNH/VIDEO =================
+                      Row(
+                        children: [
+                          Icon(Icons.perm_media_outlined,
+                              size: 18,
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .onSurfaceVariant),
+                          const SizedBox(width: 6),
+                          Text(
+                            'Thêm ảnh/video (tối đa 5)',
+                            style: TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w600,
+                              color: Theme.of(context).colorScheme.onSurface,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 10),
+                      Wrap(
+                        spacing: 8,
+                        runSpacing: 8,
+                        children: [
+                          // Các thumbnail file đã chọn
+                          ...localMediaFiles.asMap().entries.map((entry) {
+                            final idx = entry.key;
+                            final file = entry.value;
+                            final isVideo =
+                                file.name.toLowerCase().endsWith('.mp4') ||
+                                    file.name.toLowerCase().endsWith('.mov') ||
+                                    file.name.toLowerCase().endsWith('.webm');
+                            return Stack(
+                              clipBehavior: Clip.none,
+                              children: [
+                                ClipRRect(
+                                  borderRadius: BorderRadius.circular(8),
+                                  child: isVideo
+                                      ? Container(
+                                          width: 72,
+                                          height: 72,
+                                          color: Colors.black87,
+                                          child: const Center(
+                                            child: Icon(
+                                                Icons.play_circle_outline,
+                                                color: Colors.white,
+                                                size: 32),
+                                          ),
+                                        )
+                                      : Image.file(
+                                          File(file.path),
+                                          width: 72,
+                                          height: 72,
+                                          fit: BoxFit.cover,
+                                          errorBuilder: (_, __, ___) =>
+                                              Container(
+                                            width: 72,
+                                            height: 72,
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .surfaceContainerLow,
+                                            child: const Icon(Icons.image,
+                                                color: Colors.grey),
+                                          ),
+                                        ),
+                                ),
+                                Positioned(
+                                  top: -6,
+                                  right: -6,
+                                  child: GestureDetector(
+                                    onTap: () => setModalState(
+                                        () => localMediaFiles.removeAt(idx)),
+                                    child: Container(
+                                      width: 22,
+                                      height: 22,
+                                      decoration: const BoxDecoration(
+                                        color: Colors.red,
+                                        shape: BoxShape.circle,
+                                      ),
+                                      child: const Icon(Icons.close,
+                                          color: Colors.white, size: 14),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            );
+                          }),
+                          // Nút thêm ảnh/video (chỉ hiện khi chưa đủ 5 file)
+                          if (localMediaFiles.length < 5)
+                            GestureDetector(
+                              onTap: () async {
+                                // Hiện dialog chọn nguồn
+                                final picker = ImagePicker();
+                                final remaining = 5 - localMediaFiles.length;
+                                await showModalBottomSheet(
+                                  context: context,
+                                  backgroundColor:
+                                      Theme.of(context).colorScheme.surface,
+                                  shape: const RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.vertical(
+                                        top: Radius.circular(16)),
+                                  ),
+                                  builder: (ctx) => SafeArea(
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Container(
+                                          width: 40,
+                                          height: 4,
+                                          margin: const EdgeInsets.symmetric(
+                                              vertical: 10),
+                                          decoration: BoxDecoration(
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .outline,
+                                            borderRadius:
+                                                BorderRadius.circular(2),
+                                          ),
+                                        ),
+                                        ListTile(
+                                          leading: const Icon(
+                                              Icons.photo_library_outlined),
+                                          title: const Text(
+                                              'Chọn từ thư viện ảnh'),
+                                          onTap: () async {
+                                            Navigator.pop(ctx);
+                                            final picked =
+                                                await picker.pickMultiImage();
+                                            if (picked.isNotEmpty) {
+                                              setModalState(() {
+                                                localMediaFiles.addAll(
+                                                  picked.take(remaining),
+                                                );
+                                              });
+                                            }
+                                          },
+                                        ),
+                                        ListTile(
+                                          leading: const Icon(
+                                              Icons.videocam_outlined),
+                                          title: const Text(
+                                              'Chọn video từ thư viện'),
+                                          onTap: () async {
+                                            Navigator.pop(ctx);
+                                            final picked =
+                                                await picker.pickVideo(
+                                              source: ImageSource.gallery,
+                                            );
+                                            if (picked != null) {
+                                              setModalState(() =>
+                                                  localMediaFiles.add(picked));
+                                            }
+                                          },
+                                        ),
+                                        ListTile(
+                                          leading: const Icon(
+                                              Icons.camera_alt_outlined),
+                                          title: const Text(
+                                              'Chụp ảnh bằng camera'),
+                                          onTap: () async {
+                                            Navigator.pop(ctx);
+                                            final picked =
+                                                await picker.pickImage(
+                                              source: ImageSource.camera,
+                                            );
+                                            if (picked != null) {
+                                              setModalState(() =>
+                                                  localMediaFiles.add(picked));
+                                            }
+                                          },
+                                        ),
+                                        const SizedBox(height: 8),
+                                      ],
+                                    ),
+                                  ),
+                                );
+                              },
+                              child: Container(
+                                width: 72,
+                                height: 72,
+                                decoration: BoxDecoration(
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .surfaceContainerLow,
+                                  borderRadius: BorderRadius.circular(8),
+                                  border: Border.all(
+                                    color:
+                                        Theme.of(context).colorScheme.outline,
+                                    width: 1,
+                                  ),
+                                ),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(Icons.add_photo_alternate_outlined,
+                                        size: 28,
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .onSurfaceVariant),
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      'Thêm',
+                                      style: TextStyle(
+                                        fontSize: 11,
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .onSurfaceVariant,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                        ],
                       ),
                       const SizedBox(height: 20),
 
@@ -2375,7 +2726,8 @@ Widget _buildGallery(Product current, List<ProductImage> images) {
                                   final commentText =
                                       localReviewController.text.trim();
                                   if (commentText.length < 15) {
-                                    AppSnackBar.showError(context, Trans.reviewContentMinLength);
+                                    AppSnackBar.showError(
+                                        context, Trans.reviewContentMinLength);
                                     return;
                                   }
 
@@ -2383,8 +2735,13 @@ Widget _buildGallery(Product current, List<ProductImage> images) {
                                   if (!context.mounted) return;
                                   if (token == null || token.isEmpty) {
                                     Navigator.pop(context); // Close modal
-                                    Navigator.push(context, MaterialPageRoute(builder: (_) => const LoginScreen()));
-                                    AppSnackBar.showError(context, Trans.loginToWriteReview);
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (_) =>
+                                                const LoginScreen()));
+                                    AppSnackBar.showError(
+                                        context, Trans.loginToWriteReview);
                                     return;
                                   }
 
@@ -2402,26 +2759,35 @@ Widget _buildGallery(Product current, List<ProductImage> images) {
                                       expPerformance: localPerformance,
                                       expBattery: localBattery,
                                       expCamera: localCamera,
+                                      mediaFiles: localMediaFiles
+                                          .map((f) => f.path)
+                                          .toList(),
                                     );
                                   } catch (e) {
                                     setModalState(() {
                                       localIsSubmitting = false;
                                     });
                                     if (context.mounted) {
-                                      AppSnackBar.showError(context, e.toString().replaceFirst('Exception: ', ''));
+                                      AppSnackBar.showError(
+                                          context,
+                                          e
+                                              .toString()
+                                              .replaceFirst('Exception: ', ''));
                                     }
                                     return;
                                   }
 
                                   if (context.mounted) {
                                     Navigator.pop(context);
-                                    AppSnackBar.showSuccess(context, Trans.reviewSubmittedSuccess);
+                                    AppSnackBar.showSuccess(
+                                        context, Trans.reviewSubmittedSuccess);
                                     _loadProduct();
                                   }
                                 },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.orange,
-                            disabledBackgroundColor: Theme.of(context).colorScheme.outline,
+                            disabledBackgroundColor:
+                                Theme.of(context).colorScheme.outline,
                             padding: const EdgeInsets.symmetric(vertical: 14),
                             shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(12)),
@@ -2432,12 +2798,16 @@ Widget _buildGallery(Product current, List<ProductImage> images) {
                                   width: 18,
                                   height: 18,
                                   child: CircularProgressIndicator(
-                                      strokeWidth: 2, color: Theme.of(context).colorScheme.surface),
+                                      strokeWidth: 2,
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .surface),
                                 )
                               : Text(
                                   Trans.submitReviewButton,
                                   style: TextStyle(
-                                      color: Theme.of(context).colorScheme.surface,
+                                      color:
+                                          Theme.of(context).colorScheme.surface,
                                       fontWeight: FontWeight.bold,
                                       fontSize: 14),
                                 ),
@@ -2482,16 +2852,19 @@ Widget _buildGallery(Product current, List<ProductImage> images) {
                         Text(
                           avg.toStringAsFixed(1),
                           style: TextStyle(
-                            fontSize: 40,
-                            fontWeight: FontWeight.bold, color: Colors.black
-                          ),
+                              fontSize: 40,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black),
                         ),
-                        Text('/ 5', style: TextStyle(color: Theme.of(context).colorScheme.surface)),
+                        Text('/ 5',
+                            style: TextStyle(
+                                color: Theme.of(context).colorScheme.surface)),
                         const SizedBox(height: 4),
                         _buildStars(avg, size: 17),
                         const SizedBox(height: 8),
                         Text(Trans.totalReviews(total),
-                            style: TextStyle(fontSize: 12, color: Colors.black)),
+                            style:
+                                TextStyle(fontSize: 12, color: Colors.black)),
                         const SizedBox(height: 10),
                         // TÌM ĐOẠN NÚT BẤM CŨ TRONG _buildVisualReviews VÀ THAY BẰNG ĐOẠN NÀY:
                         OutlinedButton(
@@ -2499,9 +2872,9 @@ Widget _buildGallery(Product current, List<ProductImage> images) {
                               _showWriteReviewSheet, // KÍCH HOẠT HÀM BẬT BOTTOM SHEET NỔI TỪ DƯỚI LÊN
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.orange,
-                            side: BorderSide(
-                                color: Colors.orange, width: 1.5),
-                            foregroundColor: Theme.of(context).colorScheme.surface,
+                            side: BorderSide(color: Colors.orange, width: 1.5),
+                            foregroundColor:
+                                Theme.of(context).colorScheme.surface,
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 8, vertical: 8),
                             shape: RoundedRectangleBorder(
@@ -2514,7 +2887,9 @@ Widget _buildGallery(Product current, List<ProductImage> images) {
                             child: Text(
                               Trans.writeReview,
                               style: const TextStyle(
-                                  fontSize: 12, fontWeight: FontWeight.bold, color: Colors.black),
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black),
                             ),
                           ),
                         ),
@@ -2533,7 +2908,8 @@ Widget _buildGallery(Product current, List<ProductImage> images) {
                           child: Row(
                             children: [
                               Text('$star',
-                                  style: TextStyle(fontSize: 11, color: Colors.black)),
+                                  style: TextStyle(
+                                      fontSize: 11, color: Colors.black)),
                               const SizedBox(width: 3),
                               const Icon(Icons.star,
                                   color: Colors.orange, size: 12),
@@ -2544,7 +2920,8 @@ Widget _buildGallery(Product current, List<ProductImage> images) {
                                   child: LinearProgressIndicator(
                                     value: percent,
                                     minHeight: 7,
-                                    backgroundColor: Theme.of(context).colorScheme.surface,
+                                    backgroundColor:
+                                        Theme.of(context).colorScheme.surface,
                                     valueColor: const AlwaysStoppedAnimation(
                                         Colors.orange),
                                   ),
@@ -2552,7 +2929,8 @@ Widget _buildGallery(Product current, List<ProductImage> images) {
                               ),
                               const SizedBox(width: 6),
                               Text('$count',
-                                  style: TextStyle(fontSize: 11, color: Colors.black)),
+                                  style: TextStyle(
+                                      fontSize: 11, color: Colors.black)),
                             ],
                           ),
                         );
@@ -2577,6 +2955,7 @@ Widget _buildGallery(Product current, List<ProductImage> images) {
           runSpacing: 8,
           children: [
             _buildReviewFilterChip('all', 'Tất cả'),
+            _buildReviewFilterChip('with_images', 'Có ảnh/video'),
             _buildReviewFilterChip('verified', 'Đã mua hàng'),
             _buildReviewFilterChip('star_5', '5 sao'),
             _buildReviewFilterChip('star_4', '4 sao'),
@@ -2595,7 +2974,8 @@ Widget _buildGallery(Product current, List<ProductImage> images) {
               borderRadius: BorderRadius.circular(12),
             ),
             child: Text(Trans.noReviewsYet,
-                style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant)),
+                style: TextStyle(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant)),
           )
         else
           ...filtered.take(5).map(_buildReviewItem),
@@ -2623,12 +3003,14 @@ Widget _buildGallery(Product current, List<ProductImage> images) {
         children: [
           SizedBox(
             width: 108,
-            child: Text(label, style: TextStyle(fontSize: 12, color: Colors.black)),
+            child: Text(label,
+                style: TextStyle(fontSize: 12, color: Colors.black)),
           ),
           Expanded(child: _buildStars(avg, size: 14)),
           Text(
             '${count == 0 ? 0 : avg.toStringAsFixed(0)}/5',
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: Colors.black),
+            style: TextStyle(
+                fontWeight: FontWeight.bold, fontSize: 12, color: Colors.black),
           ),
           Text(' ($count)',
               style: TextStyle(fontSize: 11, color: Colors.black)),
@@ -2645,10 +3027,12 @@ Widget _buildGallery(Product current, List<ProductImage> images) {
       onSelected: (_) => setState(() => reviewFilter = value),
       selectedColor: const Color(0xFFFFEDD5),
       side: BorderSide(
-        color: selected ? Colors.orange : Theme.of(context).colorScheme.outline,width: 0.15
-      ),
+          color:
+              selected ? Colors.orange : Theme.of(context).colorScheme.outline,
+          width: 0.15),
       labelStyle: TextStyle(
-        color: selected ? Colors.orange : Theme.of(context).colorScheme.onSurface,
+        color:
+            selected ? Colors.orange : Theme.of(context).colorScheme.onSurface,
         fontWeight: FontWeight.w600,
       ),
     );
@@ -2661,7 +3045,9 @@ Widget _buildGallery(Product current, List<ProductImage> images) {
         5,
         (i) => Icon(
           Icons.star,
-          color: i < value.round() ? Colors.orange : Theme.of(context).colorScheme.outline,
+          color: i < value.round()
+              ? Colors.orange
+              : Theme.of(context).colorScheme.outline,
           size: size,
         ),
       ),
@@ -2675,6 +3061,9 @@ Widget _buildGallery(Product current, List<ProductImage> images) {
   }
 
   Widget _buildReviewPill(String text, {bool verified = false}) {
+    final displayText =
+        verified && text.contains('mua') ? '\u0110\u00e3 mua h\u00e0ng' : text;
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
@@ -2682,7 +3071,7 @@ Widget _buildGallery(Product current, List<ProductImage> images) {
         borderRadius: BorderRadius.circular(999),
       ),
       child: Text(
-        text,
+        displayText,
         style: TextStyle(
           color: verified ? const Color(0xFF15803D) : const Color(0xFF1D4ED8),
           fontSize: 11,
@@ -2692,19 +3081,83 @@ Widget _buildGallery(Product current, List<ProductImage> images) {
     );
   }
 
+  Widget _buildReviewExperienceMetric(String label, int value) {
+    final displayLabel = label == 'Camera'
+        ? 'Camera'
+        : label.startsWith('Hi')
+            ? 'Hi\u1ec7u n\u0103ng'
+            : 'Th\u1eddi l\u01b0\u1ee3ng';
+
+    return Expanded(
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.surfaceContainerLow,
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(
+            color: Theme.of(context).colorScheme.outline,
+            width: 0.15,
+          ),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              displayLabel,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+                fontSize: 11,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Row(
+              children: [
+                const Icon(Icons.star, color: Colors.orange, size: 14),
+                const SizedBox(width: 3),
+                Text(
+                  '$value/5',
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.onSurface,
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _buildReviewItem(ProductReview review) {
+    final experienceWidgets = <Widget>[
+      if (review.expPerformance != null)
+        _buildReviewExperienceMetric('Hiá»‡u nÄƒng', review.expPerformance!),
+      if (review.expBattery != null)
+        _buildReviewExperienceMetric('Thá»i lÆ°á»£ng', review.expBattery!),
+      if (review.expCamera != null)
+        _buildReviewExperienceMetric('Camera', review.expCamera!),
+    ];
+
     final userName = review.userName ?? 'Người dùng';
     return Container(
       margin: const EdgeInsets.only(bottom: 14),
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        border: Border.all(color: Theme.of(context).colorScheme.outline, width: 0.15),
+        border: Border.all(
+            color: Theme.of(context).colorScheme.outline, width: 0.15),
         borderRadius: BorderRadius.circular(12),
       ),
-      child: Row(
+      child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Column(
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               CircleAvatar(
                 radius: 22,
@@ -2722,75 +3175,301 @@ Widget _buildGallery(Product current, List<ProductImage> images) {
                       )
                     : null,
               ),
-              const SizedBox(height: 6),
-              SizedBox(
-                width: 58,
-                child: Text(
-                  userName,
-                  textAlign: TextAlign.center,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                      fontSize: 11, fontWeight: FontWeight.w600),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        _buildStars(review.rating, size: 15),
+                        const SizedBox(width: 8),
+                        Flexible(
+                          child: Text(
+                            _ratingLabel(review.rating),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Theme.of(context).colorScheme.primary,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 4),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            userName,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              color: Theme.of(context).colorScheme.onSurface,
+                              fontSize: 13,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ),
+                        if (review.orderId != null) ...[
+                          const SizedBox(width: 8),
+                          _buildReviewPill('Đã mua hàng', verified: true),
+                        ],
+                        if (review.orderId != null && review.id == -1) ...[
+                          const SizedBox(width: 8),
+                          _buildReviewPill('ÄÃ£ mua hÃ ng', verified: true),
+                        ],
+                      ],
+                    ),
+                  ],
                 ),
               ),
             ],
           ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+          const SizedBox(height: 10),
+          if (experienceWidgets.isNotEmpty) ...[
+            Row(
               children: [
-                Row(
-                  children: [
-                    _buildStars(review.rating, size: 15),
-                    const SizedBox(width: 8),
-                    Text(
-                      _ratingLabel(review.rating),
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: Theme.of(context).colorScheme.primary,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 8),
-                Wrap(
-                  spacing: 6,
-                  runSpacing: 6,
-                  children: [
-                    if (review.expPerformance != null)
-                      _buildReviewPill(
-                        'Hiệu năng ${review.expPerformance! >= 5 ? 'Siêu mạnh mẽ' : _ratingLabel(review.expPerformance!)}',
-                      ),
-                    if (review.expBattery != null)
-                      _buildReviewPill(
-                        'Thời lượng pin ${review.expBattery! >= 5 ? 'Cực khủng' : _ratingLabel(review.expBattery!)}',
-                      ),
-                    if (review.expCamera != null)
-                      _buildReviewPill(
-                        'Camera ${review.expCamera! >= 5 ? 'Chụp đẹp' : _ratingLabel(review.expCamera!)}',
-                      ),
-                    if (review.orderId != null)
-                      _buildReviewPill('Đã mua hàng', verified: true),
-                  ],
-                ),
-                if ((review.comment ?? '').isNotEmpty) ...[
-                  const SizedBox(height: 10),
-                  Text(review.comment!, style: TextStyle(height: 1.4)),
-                ],
-                if (review.createdAt.isNotEmpty) ...[
-                  const SizedBox(height: 8),
-                  Text(
-                    Trans.reviewPostedAt(_timeAgoVi(review.createdAt)),
-                    style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant, fontSize: 12),
-                  ),
+                for (var i = 0; i < experienceWidgets.length; i++) ...[
+                  if (i > 0) const SizedBox(width: 8),
+                  experienceWidgets[i],
                 ],
               ],
             ),
-          ),
+          ],
+          if (review.id == -1)
+            Wrap(
+              spacing: 6,
+              runSpacing: 6,
+              children: [
+                if (review.expPerformance != null)
+                  _buildReviewPill(
+                    'Hiệu năng ${review.expPerformance! >= 5 ? 'Siêu mạnh mẽ' : _ratingLabel(review.expPerformance!)}',
+                  ),
+                if (review.expBattery != null)
+                  _buildReviewPill(
+                    'Thời lượng pin ${review.expBattery! >= 5 ? 'Cực khủng' : _ratingLabel(review.expBattery!)}',
+                  ),
+                if (review.expCamera != null)
+                  _buildReviewPill(
+                    'Camera ${review.expCamera! >= 5 ? 'Chụp đẹp' : _ratingLabel(review.expCamera!)}',
+                  ),
+                if (review.orderId != null)
+                  _buildReviewPill('Đã mua hàng', verified: true),
+              ],
+            ),
+          if ((review.comment ?? '').isNotEmpty) ...[
+            const SizedBox(height: 10),
+            Text(review.comment!, style: TextStyle(height: 1.4)),
+          ],
+          // Hiển thị media (ảnh/video) đính kèm trong đánh giá
+          if (review.media.isNotEmpty) ...[
+            const SizedBox(height: 10),
+            SizedBox(
+              height: 80,
+              child: ListView.separated(
+                scrollDirection: Axis.horizontal,
+                itemCount: review.media.length,
+                separatorBuilder: (_, __) => const SizedBox(width: 6),
+                itemBuilder: (context, idx) {
+                  final item = review.media[idx];
+                  return GestureDetector(
+                    onTap: () => _showMediaViewer(context, review.media, idx),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(6),
+                      child: SizedBox(
+                        width: 80,
+                        height: 80,
+                        child: item.type == 'video'
+                            ? Stack(
+                                fit: StackFit.expand,
+                                children: [
+                                  Container(color: Colors.black87),
+                                  const Center(
+                                    child: Icon(
+                                      Icons.play_circle_fill,
+                                      color: Colors.white,
+                                      size: 34,
+                                    ),
+                                  ),
+                                ],
+                              )
+                            : Image.network(
+                                item.url,
+                                fit: BoxFit.cover,
+                                errorBuilder: (_, __, ___) => Container(
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .surfaceContainerLow,
+                                  child: const Icon(Icons.image,
+                                      color: Colors.grey),
+                                ),
+                              ),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+          ],
+          if (review.createdAt.isNotEmpty) ...[
+            const SizedBox(height: 8),
+            Text(
+              Trans.reviewPostedAt(_timeAgoVi(review.createdAt)),
+              style: TextStyle(
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  fontSize: 12),
+            ),
+          ],
         ],
       ),
+    );
+  }
+
+  /// Hiển thị ảnh hoặc video toàn màn hình khi người dùng nhấn vào media trong đánh giá
+  void _showMediaViewer(
+      BuildContext context, List<ReviewMediaItem> items, int initialIndex) {
+    showDialog(
+      context: context,
+      barrierColor: Colors.black87,
+      builder: (ctx) {
+        int currentIdx = initialIndex;
+        return StatefulBuilder(
+          builder: (ctx, setViewerState) {
+            final item = items[currentIdx];
+            return GestureDetector(
+              onTap: () => Navigator.pop(ctx),
+              child: Scaffold(
+                backgroundColor: Colors.transparent,
+                body: SafeArea(
+                  child: Stack(
+                    children: [
+                      Center(
+                        child: item.type == 'video'
+                            ? Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  const Icon(Icons.play_circle_fill,
+                                      color: Colors.white, size: 72),
+                                  const SizedBox(height: 16),
+                                  Text(
+                                    'Video không thể phát trực tiếp.',
+                                    textAlign: TextAlign.center,
+                                    style: const TextStyle(
+                                        color: Colors.white70, fontSize: 13),
+                                  ),
+                                ],
+                              )
+                            : InteractiveViewer(
+                                child: Image.network(
+                                  item.url,
+                                  fit: BoxFit.contain,
+                                  errorBuilder: (_, __, ___) => const Icon(
+                                      Icons.broken_image,
+                                      color: Colors.white,
+                                      size: 64),
+                                ),
+                              ),
+                      ),
+                      Positioned(
+                        top: 8,
+                        right: 8,
+                        child: IconButton(
+                          onPressed: () => Navigator.pop(ctx),
+                          icon: Container(
+                            padding: const EdgeInsets.all(4),
+                            decoration: const BoxDecoration(
+                                color: Colors.black54, shape: BoxShape.circle),
+                            child: const Icon(Icons.close,
+                                color: Colors.white, size: 22),
+                          ),
+                        ),
+                      ),
+                      if (items.length > 1) ...[
+                        Positioned(
+                          bottom: 16,
+                          left: 0,
+                          right: 0,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: List.generate(
+                                items.length,
+                                (i) => Container(
+                                      width: 8,
+                                      height: 8,
+                                      margin: const EdgeInsets.symmetric(
+                                          horizontal: 3),
+                                      decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        color: i == currentIdx
+                                            ? Colors.white
+                                            : Colors.white38,
+                                      ),
+                                    )),
+                          ),
+                        ),
+                        Positioned(
+                          left: 8,
+                          top: 0,
+                          bottom: 0,
+                          child: Center(
+                            child: IconButton(
+                              onPressed: currentIdx > 0
+                                  ? () => setViewerState(() => currentIdx--)
+                                  : null,
+                              icon: Container(
+                                padding: const EdgeInsets.all(4),
+                                decoration: BoxDecoration(
+                                  color: currentIdx > 0
+                                      ? Colors.black54
+                                      : Colors.transparent,
+                                  shape: BoxShape.circle,
+                                ),
+                                child: Icon(Icons.chevron_left,
+                                    color: currentIdx > 0
+                                        ? Colors.white
+                                        : Colors.transparent,
+                                    size: 28),
+                              ),
+                            ),
+                          ),
+                        ),
+                        Positioned(
+                          right: 8,
+                          top: 0,
+                          bottom: 0,
+                          child: Center(
+                            child: IconButton(
+                              onPressed: currentIdx < items.length - 1
+                                  ? () => setViewerState(() => currentIdx++)
+                                  : null,
+                              icon: Container(
+                                padding: const EdgeInsets.all(4),
+                                decoration: BoxDecoration(
+                                  color: currentIdx < items.length - 1
+                                      ? Colors.black54
+                                      : Colors.transparent,
+                                  shape: BoxShape.circle,
+                                ),
+                                child: Icon(Icons.chevron_right,
+                                    color: currentIdx < items.length - 1
+                                        ? Colors.white
+                                        : Colors.transparent,
+                                    size: 28),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
+              ),
+            );
+          },
+        );
+      },
     );
   }
 
@@ -2802,7 +3481,8 @@ Widget _buildGallery(Product current, List<ProductImage> images) {
           padding: const EdgeInsets.all(14),
           decoration: BoxDecoration(
             color: Theme.of(context).colorScheme.surface,
-            border: Border.all(color: Theme.of(context).colorScheme.outline, width: 0.15),
+            border: Border.all(
+                color: Theme.of(context).colorScheme.outline, width: 0.15),
             borderRadius: BorderRadius.circular(10),
           ),
           child: Column(
@@ -2816,9 +3496,10 @@ Widget _buildGallery(Product current, List<ProductImage> images) {
                     width: 54,
                     height: 54,
                     errorBuilder: (_, __, ___) => CircleAvatar(
-                      backgroundColor: Theme.of(context).colorScheme.tertiaryContainer,
-                      child: Icon(Icons.support_agent, color: Theme.of(context).colorScheme.primary),
-
+                      backgroundColor:
+                          Theme.of(context).colorScheme.tertiaryContainer,
+                      child: Icon(Icons.support_agent,
+                          color: Theme.of(context).colorScheme.primary),
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -2834,8 +3515,11 @@ Widget _buildGallery(Product current, List<ProductImage> images) {
                         const SizedBox(height: 4),
                         Text(
                           'Đội ngũ E-Tech Market sẽ phản hồi trong thời gian sớm nhất.',
-                          style:
-                              TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant, fontSize: 12),
+                          style: TextStyle(
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .onSurfaceVariant,
+                              fontSize: 12),
                         ),
                       ],
                     ),
@@ -2897,12 +3581,15 @@ Widget _buildGallery(Product current, List<ProductImage> images) {
                         4, // Tăng độ cao ô nhập lên để tạo không gian trống phía dưới cho nút
                     maxLines: 6,
                     maxLength: 2000,
-                    style:
-                        TextStyle(fontSize: 13, color: Theme.of(context).colorScheme.onSurface),
+                    style: TextStyle(
+                        fontSize: 13,
+                        color: Theme.of(context).colorScheme.onSurface),
                     decoration: InputDecoration(
                       hintText: 'Xin mời nhập câu hỏi của bạn tại đây...',
-                      hintStyle:
-                          TextStyle(fontSize: 13, color: Theme.of(context).colorScheme.onSurfaceVariant),
+                      hintStyle: TextStyle(
+                          fontSize: 13,
+                          color:
+                              Theme.of(context).colorScheme.onSurfaceVariant),
                       filled: true,
                       fillColor: Theme.of(context).colorScheme.surface,
                       counterText:
@@ -2922,7 +3609,8 @@ Widget _buildGallery(Product current, List<ProductImage> images) {
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                         borderSide: BorderSide(
-                            color: Theme.of(context).colorScheme.primary, width: 1.2),
+                            color: Theme.of(context).colorScheme.primary,
+                            width: 1.2),
                       ),
                     ),
                   ),
@@ -2960,10 +3648,12 @@ Widget _buildGallery(Product current, List<ProductImage> images) {
                               width: 12,
                               height: 12,
                               child: CircularProgressIndicator(
-                                  strokeWidth: 2, color: Theme.of(context).colorScheme.surface),
+                                  strokeWidth: 2,
+                                  color: Theme.of(context).colorScheme.surface),
                             )
                           else
-                            const Icon(Icons.send, size: 13, color: Colors.white),
+                            const Icon(Icons.send,
+                                size: 13, color: Colors.white),
                         ],
                       ),
                     ),
@@ -2980,8 +3670,7 @@ Widget _buildGallery(Product current, List<ProductImage> images) {
               if (qaFlash != null && qaError == null) ...[
                 const SizedBox(height: 8),
                 Text(qaFlash!,
-                    style: TextStyle(
-                        color: Color(0xFF16A34A), fontSize: 12)),
+                    style: TextStyle(color: Color(0xFF16A34A), fontSize: 12)),
               ],
             ],
           ),
@@ -2999,7 +3688,9 @@ Widget _buildGallery(Product current, List<ProductImage> images) {
             ),
             child: Text(
               'Chưa có câu hỏi nào. Hãy đặt câu hỏi đầu tiên ở ô phía trên.',
-              style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant, fontSize: 13),
+              style: TextStyle(
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  fontSize: 13),
             ),
           )
         else
@@ -3014,7 +3705,8 @@ Widget _buildGallery(Product current, List<ProductImage> images) {
       margin: const EdgeInsets.only(bottom: 14),
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        border: Border.all(color: Theme.of(context).colorScheme.outline, width:0.15),
+        border: Border.all(
+            color: Theme.of(context).colorScheme.outline, width: 0.15),
         borderRadius: BorderRadius.circular(10),
       ),
       child: Column(
@@ -3056,7 +3748,10 @@ Widget _buildGallery(Product current, List<ProductImage> images) {
                           Text(
                             _timeAgoVi(row.createdAt!),
                             style: TextStyle(
-                                color: Theme.of(context).colorScheme.onSurfaceVariant, fontSize: 12),
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .onSurfaceVariant,
+                                fontSize: 12),
                           ),
                       ],
                     ),
@@ -3102,7 +3797,8 @@ Widget _buildGallery(Product current, List<ProductImage> images) {
                     child: Text(
                       'QT',
                       style: TextStyle(
-                          color: Theme.of(context).colorScheme.surface, fontWeight: FontWeight.bold),
+                          color: Theme.of(context).colorScheme.surface,
+                          fontWeight: FontWeight.bold),
                     ),
                   ),
                   const SizedBox(width: 10),
@@ -3114,7 +3810,9 @@ Widget _buildGallery(Product current, List<ProductImage> images) {
                           children: [
                             Text(
                               'Quản trị viên',
-                              style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black),
                             ),
                             const SizedBox(width: 6),
                             Container(
@@ -3136,13 +3834,15 @@ Widget _buildGallery(Product current, List<ProductImage> images) {
                           ],
                         ),
                         const SizedBox(height: 6),
-                        Text(row.answer!, style: TextStyle(height: 1.45, color: Colors.black)),
+                        Text(row.answer!,
+                            style:
+                                TextStyle(height: 1.45, color: Colors.black)),
                         if ((row.answeredAt ?? '').isNotEmpty) ...[
                           const SizedBox(height: 6),
                           Text(
                             _timeAgoVi(row.answeredAt!),
-                            style: TextStyle(
-                                color: Colors.black45, fontSize: 12),
+                            style:
+                                TextStyle(color: Colors.black45, fontSize: 12),
                           ),
                         ],
                       ],
@@ -3174,7 +3874,8 @@ Widget _buildGallery(Product current, List<ProductImage> images) {
         decoration: BoxDecoration(
           color: Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: Theme.of(context).colorScheme.outline, width: 0.15),
+          border: Border.all(
+              color: Theme.of(context).colorScheme.outline, width: 0.15),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -3189,7 +3890,8 @@ Widget _buildGallery(Product current, List<ProductImage> images) {
                     width: 160,
                     child: p.mainImageUrl.isEmpty
                         ? Icon(Icons.computer,
-                            size: 50, color: Theme.of(context).colorScheme.outline)
+                            size: 50,
+                            color: Theme.of(context).colorScheme.outline)
                         : Image.network(
                             NetworkUtils.fixDeviceUrl(p.mainImageUrl),
                             fit: BoxFit.cover,
@@ -3206,13 +3908,18 @@ Widget _buildGallery(Product current, List<ProductImage> images) {
                     child: Container(
                       padding: const EdgeInsets.all(6),
                       decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.surface.withOpacity(0.9),
+                        color: Theme.of(context)
+                            .colorScheme
+                            .surface
+                            .withOpacity(0.9),
                         shape: BoxShape.circle,
                       ),
                       child: Icon(
                         isLiked ? Icons.favorite : Icons.favorite_border,
                         size: 18,
-                        color: isLiked ? Colors.red : Theme.of(context).colorScheme.onSurfaceVariant,
+                        color: isLiked
+                            ? Colors.red
+                            : Theme.of(context).colorScheme.onSurfaceVariant,
                       ),
                     ),
                   ),

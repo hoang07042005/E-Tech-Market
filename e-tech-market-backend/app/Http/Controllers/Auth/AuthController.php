@@ -73,6 +73,7 @@ class AuthController extends Controller
 
         if ($r->hasSession()) {
             $r->session()->regenerate();
+            \Illuminate\Support\Facades\Auth::guard('web')->login($u);
         }
 
         [$token, $cookie] = $this->createTokenResponse($u);
@@ -115,6 +116,11 @@ class AuthController extends Controller
         $customerRole = Role::firstOrCreate(['name' => 'customer', 'guard_name' => 'web']);
         $u->assignRole($customerRole);
 
+        if ($r->hasSession()) {
+            $r->session()->regenerate();
+            \Illuminate\Support\Facades\Auth::guard('web')->login($u);
+        }
+
         [$token, $cookie] = $this->createTokenResponse($u);
         $u->load(['roles', 'membershipRank']);
 
@@ -136,6 +142,12 @@ class AuthController extends Controller
             if($current instanceof PersonalAccessToken) {
                 $current->delete();
             }
+        }
+
+        if ($r->hasSession()) {
+            \Illuminate\Support\Facades\Auth::guard('web')->logout();
+            $r->session()->invalidate();
+            $r->session()->regenerateToken();
         }
 
         // Clear the cookie

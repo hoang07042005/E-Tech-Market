@@ -13,7 +13,7 @@ import {
 import { API_BASE_URL } from '@/configs/api.config'
 import { HeartIcon } from '@/components/icons/HeartIcon'
 import { addToCompare, getCompareList, removeFromCompare } from '@/features/services/compare.service'
-import { useWishlistQuery, useWishlistMutation, useCartMutation } from '@/features/services/mutations'
+import { useWishlistQuery, useWishlistMutation } from '@/features/services/mutations'
 import Skeleton from '@/components/Skeleton'
 import { useAuthStore } from '@/features/store/useAuthStore'
 
@@ -299,7 +299,7 @@ function ProductCard({
             {showDiscountBadge
               ? `${displayPrice.toLocaleString('vi-VN')} đ`
               : hasMultiplePrices
-                ? `Từ ${displayPrice.toLocaleString('vi-VN')} - ${displayPriceMax!.toLocaleString('vi-VN')} đ`
+                ? `${displayPrice.toLocaleString('vi-VN')} đ - ${displayPriceMax!.toLocaleString('vi-VN')} đ`
                 : `${displayPrice.toLocaleString('vi-VN')} đ`}
           </span>
           {displayOldPrice && displayOldPrice > displayPrice && showDiscountBadge && (

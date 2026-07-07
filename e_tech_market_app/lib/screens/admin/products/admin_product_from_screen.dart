@@ -16,7 +16,8 @@ class AdminProductFormScreen extends StatefulWidget {
   State<AdminProductFormScreen> createState() => _AdminProductFormScreenState();
 }
 
-class _AdminProductFormScreenState extends State<AdminProductFormScreen> with SingleTickerProviderStateMixin {
+class _AdminProductFormScreenState extends State<AdminProductFormScreen>
+    with SingleTickerProviderStateMixin {
   late TabController _tabController;
   final _formKey = GlobalKey<FormState>();
   bool _isLoading = false;
@@ -70,14 +71,16 @@ class _AdminProductFormScreenState extends State<AdminProductFormScreen> with Si
       _categories = cats;
 
       if (widget.productId != null) {
-        final product = await AdminProductsService.fetchAdminProductDetail(widget.productId!);
-        
+        final product = await AdminProductsService.fetchAdminProductDetail(
+            widget.productId!);
+
         _nameController.text = product['name'] ?? '';
         _brandController.text = product['brand'] ?? '';
         _descController.text = product['description'] ?? '';
         _selectedCategoryId = product['category_id']?.toString();
         _isActive = product['is_active'] == true || product['is_active'] == 1;
-        _isFeatured = product['is_featured'] == true || product['is_featured'] == 1;
+        _isFeatured =
+            product['is_featured'] == true || product['is_featured'] == 1;
         _mainImageUrlPreview = product['main_image_url'];
 
         if (product['images'] != null) {
@@ -109,9 +112,11 @@ class _AdminProductFormScreenState extends State<AdminProductFormScreen> with Si
           _specs = (product['specs'] as List<dynamic>).map((spec) {
             final Map<String, dynamic> s = Map<String, dynamic>.from(spec);
             // Convert backend product_variant_id/product_variant_index back to scope format
-            if (s['product_variant_id'] != null && s['product_variant_id'] != '') {
+            if (s['product_variant_id'] != null &&
+                s['product_variant_id'] != '') {
               s['scope'] = 'variant:${s['product_variant_id']}';
-            } else if (s['product_variant_index'] != null && s['product_variant_index'] != '') {
+            } else if (s['product_variant_index'] != null &&
+                s['product_variant_index'] != '') {
               s['scope'] = 'idx:${s['product_variant_index']}';
             } else {
               s['scope'] = 'common';
@@ -143,7 +148,7 @@ class _AdminProductFormScreenState extends State<AdminProductFormScreen> with Si
       for (var line in lines) {
         if (line.trim().isEmpty) continue;
         final parts = line.split('|');
-        
+
         String name = parts.isNotEmpty ? parts[0].trim() : '';
         String color = parts.length > 1 ? parts[1].trim() : '';
         String config = parts.length > 2 ? parts[2].trim() : '';
@@ -179,9 +184,11 @@ class _AdminProductFormScreenState extends State<AdminProductFormScreen> with Si
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.white,
-      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+      shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
       builder: (context) => Padding(
-        padding: EdgeInsets.fromLTRB(20, 16, 20, MediaQuery.of(context).viewInsets.bottom + 24),
+        padding: EdgeInsets.fromLTRB(
+            20, 16, 20, MediaQuery.of(context).viewInsets.bottom + 24),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -189,14 +196,21 @@ class _AdminProductFormScreenState extends State<AdminProductFormScreen> with Si
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(Trans.quickPasteVariants, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFF1E293B))),
-                IconButton(icon: const Icon(Icons.close), onPressed: () => Navigator.pop(context)),
+                Text(Trans.quickPasteVariants,
+                    style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFF1E293B))),
+                IconButton(
+                    icon: const Icon(Icons.close),
+                    onPressed: () => Navigator.pop(context)),
               ],
             ),
             const SizedBox(height: 4),
             Text(
               '${Trans.quickPasteFormat}\n${Trans.quickPasteExample}',
-              style: TextStyle(fontSize: 12, color: Colors.grey[600], height: 1.4),
+              style:
+                  TextStyle(fontSize: 12, color: Colors.grey[600], height: 1.4),
             ),
             const SizedBox(height: 16),
             TextField(
@@ -205,7 +219,8 @@ class _AdminProductFormScreenState extends State<AdminProductFormScreen> with Si
               style: const TextStyle(fontSize: 14),
               decoration: InputDecoration(
                 hintText: Trans.quickPasteHint,
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                border:
+                    OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                 filled: true,
                 fillColor: const Color(0xFFF8FAFC),
               ),
@@ -219,9 +234,12 @@ class _AdminProductFormScreenState extends State<AdminProductFormScreen> with Si
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF4F46E5),
                   padding: const EdgeInsets.symmetric(vertical: 14),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12)),
                 ),
-                label: Text(Trans.analyzeData, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                label: Text(Trans.analyzeData,
+                    style: const TextStyle(
+                        color: Colors.white, fontWeight: FontWeight.bold)),
               ),
             )
           ],
@@ -247,11 +265,22 @@ class _AdminProductFormScreenState extends State<AdminProductFormScreen> with Si
   }
 
   void _addBlankSpec() {
-    _specs.add({'spec_group': 'Chung', 'spec_key': '', 'spec_value': '', 'spec_unit': '', 'scope': 'common'});
+    _specs.add({
+      'spec_group': 'Chung',
+      'spec_key': '',
+      'spec_value': '',
+      'spec_unit': '',
+      'scope': 'common'
+    });
   }
 
   void _addBlankFaq() {
-    _faqs.add({'question': '', 'answer': '', 'sort_order': _faqs.length + 1, 'is_active': true});
+    _faqs.add({
+      'question': '',
+      'answer': '',
+      'sort_order': _faqs.length + 1,
+      'is_active': true
+    });
   }
 
   Future<void> _pickMainImage() async {
@@ -262,17 +291,22 @@ class _AdminProductFormScreenState extends State<AdminProductFormScreen> with Si
   Future<void> _pickAdditionalImages() async {
     final List<XFile> pickedList = await _picker.pickMultiImage();
     if (pickedList.isNotEmpty) {
-      setState(() => _additionalImageFiles.addAll(pickedList.map((e) => File(e.path))));
+      setState(() =>
+          _additionalImageFiles.addAll(pickedList.map((e) => File(e.path))));
     }
   }
 
   Future<void> _pickVariantImage(int index) async {
     final XFile? picked = await _picker.pickImage(source: ImageSource.gallery);
-    if (picked != null) setState(() => _variantImageFiles[index] = File(picked.path));
+    if (picked != null)
+      setState(() => _variantImageFiles[index] = File(picked.path));
   }
 
   void _showSnackBar(String text, Color bg) {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(text), backgroundColor: bg, behavior: SnackBarBehavior.floating));
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(text),
+        backgroundColor: bg,
+        behavior: SnackBarBehavior.floating));
   }
 
   Future<void> _submitForm() async {
@@ -286,12 +320,12 @@ class _AdminProductFormScreenState extends State<AdminProductFormScreen> with Si
       final transformedVariants = _variants.map((variant) {
         final Map<String, dynamic> transformed = {...variant};
         final discountType = transformed['discount_type']?.toString() ?? 'none';
-        
+
         if (discountType == 'none') {
           transformed['discount_type'] = null;
           transformed['discount_value'] = '';
         }
-        
+
         return transformed;
       }).toList();
 
@@ -299,7 +333,7 @@ class _AdminProductFormScreenState extends State<AdminProductFormScreen> with Si
       final transformedSpecs = _specs.map((spec) {
         final Map<String, dynamic> transformed = {...spec};
         final scope = spec['scope']?.toString() ?? 'common';
-        
+
         if (scope == 'common') {
           transformed.remove('product_variant_id');
           transformed.remove('product_variant_index');
@@ -312,7 +346,7 @@ class _AdminProductFormScreenState extends State<AdminProductFormScreen> with Si
           transformed['product_variant_index'] = idx;
           transformed.remove('product_variant_id');
         }
-        
+
         transformed.remove('scope');
         return transformed;
       }).toList();
@@ -338,7 +372,11 @@ class _AdminProductFormScreenState extends State<AdminProductFormScreen> with Si
       );
 
       if (mounted) {
-        _showSnackBar(widget.productId == null ? Trans.productAdded : Trans.productUpdated, Colors.green);
+        _showSnackBar(
+            widget.productId == null
+                ? Trans.productAdded
+                : Trans.productUpdated,
+            Colors.green);
         Navigator.pop(context, true);
       }
     } catch (e) {
@@ -356,7 +394,9 @@ class _AdminProductFormScreenState extends State<AdminProductFormScreen> with Si
         elevation: 1,
         backgroundColor: Theme.of(context).colorScheme.surface,
         foregroundColor: Theme.of(context).colorScheme.onSurface,
-        title: Text(widget.productId != null ? Trans.editProduct : Trans.addProductNew, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+        title: Text(
+            widget.productId != null ? Trans.editProduct : Trans.addProductNew,
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
         bottom: TabBar(
           controller: _tabController,
           labelColor: const Color(0xFF4F46E5),
@@ -371,7 +411,8 @@ class _AdminProductFormScreenState extends State<AdminProductFormScreen> with Si
         ),
       ),
       body: _isLoading
-          ? const Center(child: CircularProgressIndicator(color: Color(0xFF4F46E5)))
+          ? const Center(
+              child: CircularProgressIndicator(color: Color(0xFF4F46E5)))
           : Form(
               key: _formKey,
               child: TabBarView(
@@ -385,22 +426,42 @@ class _AdminProductFormScreenState extends State<AdminProductFormScreen> with Si
             ),
       bottomNavigationBar: Container(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-        decoration: BoxDecoration(color: Theme.of(context).colorScheme.surface, boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, -4))]),
+        decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.surface,
+            boxShadow: [
+              BoxShadow(
+                  color: Colors.black.withOpacity(0.05),
+                  blurRadius: 10,
+                  offset: const Offset(0, -4))
+            ]),
         child: Row(
           children: [
             Expanded(
               child: OutlinedButton(
                 onPressed: () => Navigator.pop(context),
-                style: OutlinedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 14), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)), side: const BorderSide(color: Color(0xFFCBD5E1))),
-                child: Text(Trans.cancel, style: const TextStyle(color: Color(0xFF475569), fontWeight: FontWeight.w600)),
+                style: OutlinedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10)),
+                    side: const BorderSide(color: Color(0xFFCBD5E1))),
+                child: Text(Trans.cancel,
+                    style: const TextStyle(
+                        color: Color(0xFF475569), fontWeight: FontWeight.w600)),
               ),
             ),
             const SizedBox(width: 12),
             Expanded(
               child: ElevatedButton(
                 onPressed: _submitForm,
-                style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF4F46E5), padding: const EdgeInsets.symmetric(vertical: 14), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)), elevation: 0),
-                child: Text(Trans.saveProduct, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF4F46E5),
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10)),
+                    elevation: 0),
+                child: Text(Trans.saveProduct,
+                    style: const TextStyle(
+                        color: Colors.white, fontWeight: FontWeight.bold)),
               ),
             ),
           ],
@@ -420,24 +481,45 @@ class _AdminProductFormScreenState extends State<AdminProductFormScreen> with Si
             icon: Icons.assignment_outlined,
             child: Column(
               children: [
-                _buildTextField(controller: _nameController, label: '${Trans.productName} *', hint: Trans.productNameHint, validator: (v) => v!.isEmpty ? Trans.fieldRequired : null),
+                _buildTextField(
+                    controller: _nameController,
+                    label: '${Trans.productName} *',
+                    hint: Trans.productNameHint,
+                    validator: (v) => v!.isEmpty ? Trans.fieldRequired : null),
                 const SizedBox(height: 16),
                 Column(children: [
                   DropdownButtonFormField<String>(
                     value: _selectedCategoryId,
-                    style: const TextStyle(color: Color(0xFF1E293B), fontSize: 14),
-                    decoration: _inputDecoration('${Trans.categoryRequired} *', Trans.selectCategory),
-                    items: _categories.map((c) => DropdownMenuItem<String>(value: c['id'].toString(), child: Text(c['name'] ?? ''))).toList(),
-                    onChanged: (val) => setState(() => _selectedCategoryId = val),
-                    validator: (v) => v == null ? Trans.categoryRequiredMsg : null,
+                    style:
+                        const TextStyle(color: Color(0xFF1E293B), fontSize: 14),
+                    decoration: _inputDecoration(
+                        '${Trans.categoryRequired} *', Trans.selectCategory),
+                    items: _categories
+                        .map((c) => DropdownMenuItem<String>(
+                            value: c['id'].toString(),
+                            child: Text(c['name'] ?? '')))
+                        .toList(),
+                    onChanged: (val) =>
+                        setState(() => _selectedCategoryId = val),
+                    validator: (v) =>
+                        v == null ? Trans.categoryRequiredMsg : null,
                   ),
                   const SizedBox(height: 12),
-                  _buildTextField(controller: _brandController, label: Trans.brand, hint: Trans.brandHint),
+                  _buildTextField(
+                      controller: _brandController,
+                      label: Trans.brand,
+                      hint: Trans.brandHint),
                 ]),
                 const SizedBox(height: 12),
                 SwitchListTile(
-                  title: Text(Trans.publicDisplayStatus, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Color(0xFF334155))),
-                  subtitle: Text(Trans.enableToDisplayOnMarketplace, style: const TextStyle(fontSize: 11, color: Color(0xFF64748B))),
+                  title: Text(Trans.publicDisplayStatus,
+                      style: const TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                          color: Color(0xFF334155))),
+                  subtitle: Text(Trans.enableToDisplayOnMarketplace,
+                      style: const TextStyle(
+                          fontSize: 11, color: Color(0xFF64748B))),
                   value: _isActive,
                   contentPadding: EdgeInsets.zero,
                   activeColor: Colors.white,
@@ -445,8 +527,14 @@ class _AdminProductFormScreenState extends State<AdminProductFormScreen> with Si
                   onChanged: (val) => setState(() => _isActive = val),
                 ),
                 SwitchListTile(
-                  title: Text('Sản phẩm nổi bật', style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Color(0xFF334155))),
-                  subtitle: Text('Hiển thị biểu tượng sao trên trang danh sách', style: const TextStyle(fontSize: 11, color: Color(0xFF64748B))),
+                  title: Text('Sản phẩm nổi bật',
+                      style: const TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                          color: Color(0xFF334155))),
+                  subtitle: Text('Hiển thị biểu tượng sao trên trang danh sách',
+                      style: const TextStyle(
+                          fontSize: 11, color: Color(0xFF64748B))),
                   value: _isFeatured,
                   contentPadding: EdgeInsets.zero,
                   activeColor: Colors.white,
@@ -460,7 +548,11 @@ class _AdminProductFormScreenState extends State<AdminProductFormScreen> with Si
           _buildFormCard(
             title: Trans.productSummary,
             icon: Icons.description_outlined,
-            child: _buildTextField(controller: _descController, label: Trans.productDescLabel, hint: Trans.productDescHint, maxLines: 4),
+            child: _buildTextField(
+                controller: _descController,
+                label: Trans.productDescLabel,
+                hint: Trans.productDescHint,
+                maxLines: 4),
           ),
           const SizedBox(height: 16),
           _buildFormCard(
@@ -469,7 +561,11 @@ class _AdminProductFormScreenState extends State<AdminProductFormScreen> with Si
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(Trans.mainImage, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(0xFF475569))),
+                Text(Trans.mainImage,
+                    style: const TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFF475569))),
                 const SizedBox(height: 8),
                 Row(
                   children: [
@@ -479,27 +575,50 @@ class _AdminProductFormScreenState extends State<AdminProductFormScreen> with Si
                       onPressed: _pickMainImage,
                       icon: const Icon(Icons.cloud_upload_outlined, size: 16),
                       label: Text(Trans.uploadImage),
-                      style: OutlinedButton.styleFrom(side: const BorderSide(color: Color(0xFF6366F1)), foregroundColor: const Color(0xFF6366F1)),
+                      style: OutlinedButton.styleFrom(
+                          side: const BorderSide(color: Color(0xFF6366F1)),
+                          foregroundColor: const Color(0xFF6366F1)),
                     ),
                   ],
                 ),
-                const Padding(padding: EdgeInsets.symmetric(vertical: 12), child: Divider(color: Color(0xFFE2E8F0))),
-                Text(Trans.detailImageAlbum, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(0xFF475569))),
+                const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 12),
+                    child: Divider(color: Color(0xFFE2E8F0))),
+                Text(Trans.detailImageAlbum,
+                    style: const TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFF475569))),
                 const SizedBox(height: 10),
                 Wrap(
                   spacing: 10,
                   runSpacing: 10,
                   children: [
-                    ..._existingAdditionalUrls.map((urlData) => _stackImageItem(urlData, true, () => setState(() => _existingAdditionalUrls.remove(urlData)))),
-                    ..._additionalImageFiles.map((file) => _stackImageItem(file.path, false, () => setState(() => _additionalImageFiles.remove(file)))),
-                    if (_existingAdditionalUrls.length + _additionalImageFiles.length < 12)
+                    ..._existingAdditionalUrls.map((urlData) => _stackImageItem(
+                        urlData,
+                        true,
+                        () => setState(
+                            () => _existingAdditionalUrls.remove(urlData)))),
+                    ..._additionalImageFiles.map((file) => _stackImageItem(
+                        file.path,
+                        false,
+                        () => setState(
+                            () => _additionalImageFiles.remove(file)))),
+                    if (_existingAdditionalUrls.length +
+                            _additionalImageFiles.length <
+                        12)
                       InkWell(
                         onTap: _pickAdditionalImages,
                         child: Container(
                           width: 72,
                           height: 72,
-                          decoration: BoxDecoration(color: const Color(0xFFEEF2F6), borderRadius: BorderRadius.circular(10), border: Border.all(color: const Color(0xFFC7D2FE), width: 0.15)),
-                          child: const Icon(Icons.add_photo_alternate_outlined, color: Color(0xFF4F46E5)),
+                          decoration: BoxDecoration(
+                              color: const Color(0xFFEEF2F6),
+                              borderRadius: BorderRadius.circular(10),
+                              border: Border.all(
+                                  color: const Color(0xFFC7D2FE), width: 0.15)),
+                          child: const Icon(Icons.add_photo_alternate_outlined,
+                              color: Color(0xFF4F46E5)),
                         ),
                       )
                   ],
@@ -526,18 +645,35 @@ class _AdminProductFormScreenState extends State<AdminProductFormScreen> with Si
                 Expanded(
                   child: OutlinedButton.icon(
                     onPressed: _openQuickPasteModal,
-                    style: OutlinedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 13), foregroundColor: const Color(0xFF6B21A8), side: const BorderSide(color: Color(0xFFA855F7), width: 0.15), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
+                    style: OutlinedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 13),
+                        foregroundColor: const Color(0xFF6B21A8),
+                        side: const BorderSide(
+                            color: Color(0xFFA855F7), width: 0.15),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10))),
                     icon: const Icon(Icons.flash_on_outlined, size: 16),
-                    label: Text(Trans.quickPasteWebClip, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold)),
+                    label: Text(Trans.quickPasteWebClip,
+                        style: const TextStyle(
+                            fontSize: 13, fontWeight: FontWeight.bold)),
                   ),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
                   child: ElevatedButton.icon(
                     onPressed: () => setState(_addBlankVariant),
-                    style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 13), backgroundColor: const Color(0xFF4F46E5), elevation: 0, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
+                    style: ElevatedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 13),
+                        backgroundColor: const Color(0xFF4F46E5),
+                        elevation: 0,
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10))),
                     icon: const Icon(Icons.add, size: 16, color: Colors.white),
-                    label: Text(Trans.addManually, style: const TextStyle(fontSize: 13, color: Colors.white, fontWeight: FontWeight.bold)),
+                    label: Text(Trans.addManually,
+                        style: const TextStyle(
+                            fontSize: 13,
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold)),
                   ),
                 ),
               ],
@@ -552,8 +688,14 @@ class _AdminProductFormScreenState extends State<AdminProductFormScreen> with Si
           decoration: BoxDecoration(
             color: Theme.of(context).colorScheme.surface,
             borderRadius: BorderRadius.circular(14),
-            boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 10, offset: const Offset(0, 2))],
-            border: Border.all(color: Theme.of(context).colorScheme.outline, width: 0.15),
+            boxShadow: [
+              BoxShadow(
+                  color: Colors.black.withOpacity(0.04),
+                  blurRadius: 10,
+                  offset: const Offset(0, 2))
+            ],
+            border: Border.all(
+                color: Theme.of(context).colorScheme.outline, width: 0.15),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -562,14 +704,22 @@ class _AdminProductFormScreenState extends State<AdminProductFormScreen> with Si
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                    decoration: BoxDecoration(color: const Color(0xFFEDE9FE), borderRadius: BorderRadius.circular(8)),
-                    child: Text('${Trans.variant} #${index + 1}', style: const TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF4338CA), fontSize: 12)),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                    decoration: BoxDecoration(
+                        color: const Color(0xFFEDE9FE),
+                        borderRadius: BorderRadius.circular(8)),
+                    child: Text('${Trans.variant} #${index + 1}',
+                        style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFF4338CA),
+                            fontSize: 12)),
                   ),
                   const Spacer(),
                   if (_variants.length > 1)
                     IconButton(
-                      icon: const Icon(Icons.delete_outline, color: Color(0xFFEF4444), size: 22),
+                      icon: const Icon(Icons.delete_outline,
+                          color: Color(0xFFEF4444), size: 22),
                       onPressed: () => setState(() {
                         _variants.removeAt(index);
                         _variantImageFiles.removeAt(index);
@@ -587,8 +737,14 @@ class _AdminProductFormScreenState extends State<AdminProductFormScreen> with Si
                         ? Container(
                             width: 88,
                             height: 88,
-                            decoration: BoxDecoration(borderRadius: BorderRadius.circular(12), border: Border.all(color: const Color(0xFFE2E8F0))),
-                            child: ClipRRect(borderRadius: BorderRadius.circular(12), child: Image.file(_variantImageFiles[index]!, fit: BoxFit.cover)),
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(12),
+                                border:
+                                    Border.all(color: const Color(0xFFE2E8F0))),
+                            child: ClipRRect(
+                                borderRadius: BorderRadius.circular(12),
+                                child: Image.file(_variantImageFiles[index]!,
+                                    fit: BoxFit.cover)),
                           )
                         : _imagePreviewBox(null, item['image_url']),
                   ),
@@ -598,7 +754,8 @@ class _AdminProductFormScreenState extends State<AdminProductFormScreen> with Si
                       label: 'Tên bản / Cấu hình *',
                       initVal: item['variant_name'],
                       onChanged: (v) => item['variant_name'] = v,
-                      validator: (v) => v!.isEmpty ? 'Vui lòng điền tên phiên bản' : null,
+                      validator: (v) =>
+                          v!.isEmpty ? 'Vui lòng điền tên phiên bản' : null,
                     ),
                   ),
                 ],
@@ -606,54 +763,115 @@ class _AdminProductFormScreenState extends State<AdminProductFormScreen> with Si
               const SizedBox(height: 14),
               Row(
                 children: [
-                  Expanded(child: _buildItemTextField(label: 'Màu sắc', initVal: item['color'], onChanged: (v) => item['color'] = v)),
+                  Expanded(
+                      child: _buildItemTextField(
+                          label: 'Màu sắc',
+                          initVal: item['color'],
+                          onChanged: (v) => item['color'] = v)),
                   const SizedBox(width: 12),
-                  Expanded(child: _buildItemTextField(label: 'Cấu hình', initVal: item['configuration'], onChanged: (v) => item['configuration'] = v)),
+                  Expanded(
+                      child: _buildItemTextField(
+                          label: 'Cấu hình',
+                          initVal: item['configuration'],
+                          onChanged: (v) => item['configuration'] = v)),
                 ],
               ),
               const SizedBox(height: 12),
               Row(
                 children: [
-                  Expanded(child: _buildItemTextField(label: 'Giá bán (đ) *', initVal: item['price'], isNum: true, onChanged: (v) => item['price'] = v, validator: (v) => v!.isEmpty ? 'Trống giá' : null)),
+                  Expanded(
+                      child: _buildItemTextField(
+                          label: 'Giá bán (đ) *',
+                          initVal: item['price'],
+                          isNum: true,
+                          onChanged: (v) => item['price'] = v,
+                          validator: (v) => v!.isEmpty ? 'Trống giá' : null)),
                   const SizedBox(width: 12),
-                  Expanded(child: _buildItemTextField(label: 'Kho hàng', initVal: item['stock_quantity'].toString(), isNum: true, onChanged: (v) => item['stock_quantity'] = int.tryParse(v) ?? 0)),
+                  Expanded(
+                      child: _buildItemTextField(
+                          label: 'Kho hàng',
+                          initVal: item['stock_quantity'].toString(),
+                          isNum: true,
+                          onChanged: (v) =>
+                              item['stock_quantity'] = int.tryParse(v) ?? 0)),
                 ],
               ),
               const SizedBox(height: 14),
               Container(
                 padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(color: Theme.of(context).colorScheme.surface, borderRadius: BorderRadius.circular(10), border: Border.all(color: Theme.of(context).colorScheme.outline, width: 0.15)),
+                decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.surface,
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(
+                        color: Theme.of(context).colorScheme.outline,
+                        width: 0.15)),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text('Ưu đãi', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Color(0xFF5B21B6))),
+                    const Text('Ưu đãi',
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 13,
+                            color: Color(0xFF5B21B6))),
                     const SizedBox(height: 10),
                     Row(
                       children: [
                         Expanded(
                           child: DropdownButtonFormField<String>(
                             value: item['discount_type'] ?? 'none',
-                            style: TextStyle(fontSize: 13, color: Theme.of(context).colorScheme.onSurface),
-                            decoration: const InputDecoration(labelText: 'Kiểu giảm', isDense: true, contentPadding: EdgeInsets.symmetric(vertical: 10, horizontal: 12), border: OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(8)))),
+                            style: TextStyle(
+                                fontSize: 13,
+                                color: Theme.of(context).colorScheme.onSurface),
+                            decoration: const InputDecoration(
+                                labelText: 'Kiểu giảm',
+                                isDense: true,
+                                contentPadding: EdgeInsets.symmetric(
+                                    vertical: 10, horizontal: 12),
+                                border: OutlineInputBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(8)))),
                             items: const [
-                              DropdownMenuItem(value: 'none', child: Text('Không ưu đãi')),
-                              DropdownMenuItem(value: 'percentage', child: Text('Phần trăm %')),
-                              DropdownMenuItem(value: 'fixed', child: Text('Cố định (đ)'),),
+                              DropdownMenuItem(
+                                  value: 'none', child: Text('Không ưu đãi')),
+                              DropdownMenuItem(
+                                  value: 'percentage',
+                                  child: Text('Phần trăm %')),
+                              DropdownMenuItem(
+                                value: 'fixed',
+                                child: Text('Cố định (đ)'),
+                              ),
                             ],
-                            onChanged: (v) => setState(() => item['discount_type'] = v),
+                            onChanged: (v) =>
+                                setState(() => item['discount_type'] = v),
                           ),
                         ),
                         const SizedBox(width: 12),
-                        Expanded(child: _buildItemTextField(label: 'Giá trị', initVal: item['discount_value'], isNum: true, onChanged: (v) => item['discount_value'] = v)),
+                        Expanded(
+                            child: _buildItemTextField(
+                                label: 'Giá trị',
+                                initVal: item['discount_value'],
+                                isNum: true,
+                                onChanged: (v) => item['discount_value'] = v)),
                       ],
                     ),
-                    if (item['discount_type'] != null && item['discount_type'] != 'none') ...[
+                    if (item['discount_type'] != null &&
+                        item['discount_type'] != 'none') ...[
                       const SizedBox(height: 12),
                       Row(
                         children: [
-                          Expanded(child: _buildDatePickerField(label: 'Từ ngày', value: item['discount_start_at'], onDateSelected: (v) => item['discount_start_at'] = v)),
+                          Expanded(
+                              child: _buildDatePickerField(
+                                  label: 'Từ ngày',
+                                  value: item['discount_start_at'],
+                                  onDateSelected: (v) =>
+                                      item['discount_start_at'] = v)),
                           const SizedBox(width: 12),
-                          Expanded(child: _buildDatePickerField(label: 'Đến ngày', value: item['discount_end_at'], onDateSelected: (v) => item['discount_end_at'] = v)),
+                          Expanded(
+                              child: _buildDatePickerField(
+                                  label: 'Đến ngày',
+                                  value: item['discount_end_at'],
+                                  onDateSelected: (v) =>
+                                      item['discount_end_at'] = v)),
                         ],
                       ),
                     ]
@@ -669,6 +887,8 @@ class _AdminProductFormScreenState extends State<AdminProductFormScreen> with Si
 
   // ================= TAB 3: THÔNG SỐ KỸ THUẬT & FAQ HỎI ĐÁP =================
   Widget _buildSpecsAndFaqTab() {
+    return _buildSpecsAndFaqTabV2();
+    // ignore: dead_code
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
       child: Column(
@@ -681,13 +901,20 @@ class _AdminProductFormScreenState extends State<AdminProductFormScreen> with Si
                 children: [
                   Icon(Icons.tune_outlined, size: 18, color: Color(0xFF475569)),
                   SizedBox(width: 6),
-                  Text('Bảng thông số kỹ thuật', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.onSurface)),
+                  Text('Bảng thông số kỹ thuật',
+                      style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                          color: Theme.of(context).colorScheme.onSurface)),
                 ],
               ),
               TextButton.icon(
                 onPressed: () => setState(_addBlankSpec),
-                icon: const Icon(Icons.add_circle, size: 16, color: Color(0xFF4F46E5)),
-                label: const Text('Thêm mục mới', style: TextStyle(color: Color(0xFF4F46E5), fontWeight: FontWeight.bold)),
+                icon: const Icon(Icons.add_circle,
+                    size: 16, color: Color(0xFF4F46E5)),
+                label: const Text('Thêm mục mới',
+                    style: TextStyle(
+                        color: Color(0xFF4F46E5), fontWeight: FontWeight.bold)),
               ),
             ],
           ),
@@ -696,8 +923,13 @@ class _AdminProductFormScreenState extends State<AdminProductFormScreen> with Si
             Container(
               width: double.infinity,
               padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(color: const Color(0xFFEEF2FF), borderRadius: BorderRadius.circular(12), border: Border.all(color: const Color(0xFFBFDBFE))),
-              child: const Text('Hiện chưa có thông số kỹ thuật. Nhấn Thêm mục mới để bắt đầu.', style: TextStyle(color: Color(0xFF1E40AF))),
+              decoration: BoxDecoration(
+                  color: const Color(0xFFEEF2FF),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: const Color(0xFFBFDBFE))),
+              child: const Text(
+                  'Hiện chưa có thông số kỹ thuật. Nhấn Thêm mục mới để bắt đầu.',
+                  style: TextStyle(color: Color(0xFF1E40AF))),
             ),
           const SizedBox(height: 10),
           ..._specs.asMap().entries.map((entry) {
@@ -706,7 +938,12 @@ class _AdminProductFormScreenState extends State<AdminProductFormScreen> with Si
             return Container(
               margin: const EdgeInsets.only(bottom: 14),
               padding: const EdgeInsets.all(14),
-              decoration: BoxDecoration(color: Theme.of(context).colorScheme.surface, borderRadius: BorderRadius.circular(14), border: Border.all(color: Theme.of(context).colorScheme.outline, width: 0.15)),
+              decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.surface,
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(
+                      color: Theme.of(context).colorScheme.outline,
+                      width: 0.15)),
               child: Column(
                 children: [
                   Row(
@@ -716,44 +953,80 @@ class _AdminProductFormScreenState extends State<AdminProductFormScreen> with Si
                         child: DropdownButtonFormField<String>(
                           value: spec['scope']?.toString() ?? 'common',
                           isExpanded: true,
-                          decoration: _inputDecoration('Áp dụng', 'Chung / Phiên bản'),
+                          decoration:
+                              _inputDecoration('Áp dụng', 'Chung / Phiên bản'),
                           items: [
-                            const DropdownMenuItem(value: 'common', child: Text('Chung (mọi phiên bản)')),
+                            const DropdownMenuItem(
+                                value: 'common',
+                                child: Text('Chung (mọi phiên bản)')),
                             ..._variants.asMap().entries.map((variantEntry) {
                               final variant = variantEntry.value;
-                              final label = (variant['variant_name']?.toString().trim().isNotEmpty == true)
+                              final label = (variant['variant_name']
+                                          ?.toString()
+                                          .trim()
+                                          .isNotEmpty ==
+                                      true)
                                   ? 'Chỉ: ${variant['variant_name']}'
                                   : 'Phiên bản ${variantEntry.key + 1}';
                               return DropdownMenuItem(
-                                value: variant['id'] != null ? 'variant:${variant['id']}' : 'idx:${variantEntry.key}',
+                                value: variant['id'] != null
+                                    ? 'variant:${variant['id']}'
+                                    : 'idx:${variantEntry.key}',
                                 child: Text(label),
                               );
                             }).toList(),
                           ],
-                          onChanged: (value) => setState(() => spec['scope'] = value ?? 'common'),
+                          onChanged: (value) =>
+                              setState(() => spec['scope'] = value ?? 'common'),
                         ),
                       ),
                       const SizedBox(width: 10),
-                      SizedBox(width: 140, child: _buildItemTextField(label: 'Nhóm', initVal: spec['spec_group'], onChanged: (v) => spec['spec_group'] = v)),
+                      SizedBox(
+                          width: 140,
+                          child: _buildItemTextField(
+                              label: 'Nhóm',
+                              initVal: spec['spec_group'],
+                              onChanged: (v) => spec['spec_group'] = v)),
                       const SizedBox(width: 8),
-                      IconButton(icon: const Icon(Icons.cancel, color: Color(0xFF94A3B8), size: 20), onPressed: () => setState(() => _specs.removeAt(idx))),
+                      IconButton(
+                          icon: const Icon(Icons.cancel,
+                              color: Color(0xFF94A3B8), size: 20),
+                          onPressed: () =>
+                              setState(() => _specs.removeAt(idx))),
                     ],
                   ),
                   const SizedBox(height: 12),
                   Row(
                     children: [
-                      Expanded(flex: 3, child: _buildItemTextField(label: 'Tên thông số', initVal: spec['spec_key'], onChanged: (v) => spec['spec_key'] = v)),
+                      Expanded(
+                          flex: 3,
+                          child: _buildItemTextField(
+                              label: 'Tên thông số',
+                              initVal: spec['spec_key'],
+                              onChanged: (v) => spec['spec_key'] = v)),
                       const SizedBox(width: 10),
-                      Expanded(flex: 2, child: _buildItemTextField(label: 'Giá trị', initVal: spec['spec_value'], onChanged: (v) => spec['spec_value'] = v)),
+                      Expanded(
+                          flex: 2,
+                          child: _buildItemTextField(
+                              label: 'Giá trị',
+                              initVal: spec['spec_value'],
+                              onChanged: (v) => spec['spec_value'] = v)),
                       const SizedBox(width: 10),
-                      Expanded(flex: 1, child: _buildItemTextField(label: 'Đơn vị', initVal: spec['spec_unit'], onChanged: (v) => spec['spec_unit'] = v)),
+                      Expanded(
+                          flex: 1,
+                          child: _buildItemTextField(
+                              label: 'Đơn vị',
+                              initVal: spec['spec_unit'],
+                              onChanged: (v) => spec['spec_unit'] = v)),
                     ],
                   ),
                 ],
               ),
             );
           }),
-          const Padding(padding: EdgeInsets.symmetric(vertical: 10), child: Divider(color: Color(0xFFCBD5E1))),
+          const Padding(
+              padding: EdgeInsets.symmetric(vertical: 10),
+              child: Divider(color: Color(0xFFCBD5E1))),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -761,13 +1034,20 @@ class _AdminProductFormScreenState extends State<AdminProductFormScreen> with Si
                 children: [
                   Icon(Icons.quiz_outlined, size: 18, color: Color(0xFF475569)),
                   SizedBox(width: 6),
-                  Text('Hỏi đáp tư vấn khách hàng', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.onSurface)),
+                  Text('Hỏi đáp tư vấn khách hàng',
+                      style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                          color: Theme.of(context).colorScheme.onSurface)),
                 ],
               ),
               TextButton.icon(
                 onPressed: () => setState(_addBlankFaq),
-                icon: const Icon(Icons.add_circle, size: 16, color: Color(0xFF4F46E5)),
-                label: const Text('Thêm câu hỏi', style: TextStyle(color: Color(0xFF4F46E5), fontWeight: FontWeight.bold)),
+                icon: const Icon(Icons.add_circle,
+                    size: 16, color: Color(0xFF4F46E5)),
+                label: const Text('Thêm câu hỏi',
+                    style: TextStyle(
+                        color: Color(0xFF4F46E5), fontWeight: FontWeight.bold)),
               ),
             ],
           ),
@@ -776,8 +1056,13 @@ class _AdminProductFormScreenState extends State<AdminProductFormScreen> with Si
             Container(
               width: double.infinity,
               padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(color: const Color(0xFFF6F6FF), borderRadius: BorderRadius.circular(12), border: Border.all(color: const Color(0xFFCBD5E1))),
-              child: const Text('Chưa có câu hỏi nào. Nhấn Thêm câu hỏi để tạo FAQ.', style: TextStyle(color: Color(0xFF334155))),
+              decoration: BoxDecoration(
+                  color: const Color(0xFFF6F6FF),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: const Color(0xFFCBD5E1))),
+              child: const Text(
+                  'Chưa có câu hỏi nào. Nhấn Thêm câu hỏi để tạo FAQ.',
+                  style: TextStyle(color: Color(0xFF334155))),
             ),
           const SizedBox(height: 10),
           ..._faqs.asMap().entries.map((entry) {
@@ -786,18 +1071,37 @@ class _AdminProductFormScreenState extends State<AdminProductFormScreen> with Si
             return Container(
               margin: const EdgeInsets.only(bottom: 14),
               padding: const EdgeInsets.all(14),
-              decoration: BoxDecoration(color: Theme.of(context).colorScheme.surface, borderRadius: BorderRadius.circular(14), border: Border.all(color: Theme.of(context).colorScheme.outline, width: 0.15)),
+              decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.surface,
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(
+                      color: Theme.of(context).colorScheme.outline,
+                      width: 0.15)),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Expanded(child: _buildItemTextField(label: 'Câu hỏi', initVal: faq['question'], onChanged: (v) => faq['question'] = v)),
+                      Expanded(
+                          child: _buildItemTextField(
+                              label: 'Câu hỏi',
+                              initVal: faq['question'],
+                              onChanged: (v) => faq['question'] = v)),
                       const SizedBox(width: 10),
-                      SizedBox(width: 90, child: _buildItemTextField(label: 'Thứ tự', initVal: faq['sort_order'].toString(), isNum: true, onChanged: (v) => faq['sort_order'] = int.tryParse(v) ?? 0)),
+                      SizedBox(
+                          width: 90,
+                          child: _buildItemTextField(
+                              label: 'Thứ tự',
+                              initVal: faq['sort_order'].toString(),
+                              isNum: true,
+                              onChanged: (v) =>
+                                  faq['sort_order'] = int.tryParse(v) ?? 0)),
                       const SizedBox(width: 8),
-                      IconButton(icon: const Icon(Icons.delete_outline, color: Color(0xFFEF4444), size: 20), onPressed: () => setState(() => _faqs.removeAt(idx))),
+                      IconButton(
+                          icon: const Icon(Icons.delete_outline,
+                              color: Color(0xFFEF4444), size: 20),
+                          onPressed: () => setState(() => _faqs.removeAt(idx))),
                     ],
                   ),
                   const SizedBox(height: 12),
@@ -809,7 +1113,8 @@ class _AdminProductFormScreenState extends State<AdminProductFormScreen> with Si
                       labelText: 'Trả lời / Giải thích',
                       isDense: true,
                       alignLabelWithHint: true,
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8)),
                       contentPadding: const EdgeInsets.all(12),
                     ),
                     onChanged: (v) => faq['answer'] = v,
@@ -825,16 +1130,386 @@ class _AdminProductFormScreenState extends State<AdminProductFormScreen> with Si
   }
 
   // ================= CÁC COMPONENT GIAO DIỆN HỖ TRỢ TÁI SỬ DỤNG =================
-  Widget _buildFormCard({required String title, required IconData icon, required Widget child}) {
+  Widget _buildSpecsAndFaqTabV2() {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildSpecsFaqPanel(
+            icon: Icons.tune_outlined,
+            title: 'B\u1ea3ng th\u00f4ng s\u1ed1 k\u1ef9 thu\u1eadt',
+            subtitle:
+                'Qu\u1ea3n l\u00fd th\u00f4ng s\u1ed1 chung ho\u1eb7c th\u00f4ng s\u1ed1 ri\u00eang cho t\u1eebng phi\u00ean b\u1ea3n.',
+            actionLabel: 'Th\u00eam th\u00f4ng s\u1ed1',
+            onAdd: () => setState(_addBlankSpec),
+            child: _specs.isEmpty
+                ? _buildFormEmptyState(
+                    icon: Icons.tune_outlined,
+                    text:
+                        'Ch\u01b0a c\u00f3 th\u00f4ng s\u1ed1 n\u00e0o. Nh\u1ea5n Th\u00eam th\u00f4ng s\u1ed1 \u0111\u1ec3 b\u1eaft \u0111\u1ea7u.',
+                  )
+                : Column(
+                    children: _specs.asMap().entries.map((entry) {
+                      return _buildSpecEditor(entry.key, entry.value);
+                    }).toList(),
+                  ),
+          ),
+          const SizedBox(height: 18),
+          _buildSpecsFaqPanel(
+            icon: Icons.quiz_outlined,
+            title: 'FAQ h\u1ecfi \u0111\u00e1p',
+            subtitle:
+                'Nh\u1eadp c\u00e2u h\u1ecfi th\u01b0\u1eddng g\u1eb7p v\u00e0 c\u00e2u tr\u1ea3 l\u1eddi \u0111\u1ec3 hi\u1ec3n th\u1ecb tr\u00ean trang s\u1ea3n ph\u1ea9m.',
+            actionLabel: 'Th\u00eam FAQ',
+            onAdd: () => setState(_addBlankFaq),
+            child: _faqs.isEmpty
+                ? _buildFormEmptyState(
+                    icon: Icons.quiz_outlined,
+                    text:
+                        'Ch\u01b0a c\u00f3 FAQ n\u00e0o. Nh\u1ea5n Th\u00eam FAQ \u0111\u1ec3 t\u1ea1o c\u00e2u h\u1ecfi m\u1edbi.',
+                  )
+                : Column(
+                    children: _faqs.asMap().entries.map((entry) {
+                      return _buildFaqEditor(entry.key, entry.value);
+                    }).toList(),
+                  ),
+          ),
+          const SizedBox(height: 28),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSpecsFaqPanel({
+    required IconData icon,
+    required String title,
+    required String subtitle,
+    required String actionLabel,
+    required VoidCallback onAdd,
+    required Widget child,
+  }) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface, 
-        borderRadius: BorderRadius.circular(12), 
-        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.02), blurRadius: 6, offset: const Offset(0, 2))],
-        border: Border.all(color: Theme.of(context).colorScheme.outline, width: 0.15)
+        color: Theme.of(context).colorScheme.surface,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+            color: Theme.of(context).colorScheme.outline, width: 0.15),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.02),
+            blurRadius: 8,
+            offset: const Offset(0, 3),
+          ),
+        ],
       ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                width: 38,
+                height: 38,
+                decoration: BoxDecoration(
+                  color: const Color(0xFFEEF2FF),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Icon(icon, color: const Color(0xFF4F46E5), size: 20),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).colorScheme.onSurface,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      subtitle,
+                      style: const TextStyle(
+                        fontSize: 12,
+                        height: 1.35,
+                        color: Color(0xFF64748B),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          SizedBox(
+            width: double.infinity,
+            child: FilledButton.icon(
+              onPressed: onAdd,
+              icon: const Icon(Icons.add, size: 18),
+              label: Text(actionLabel),
+              style: FilledButton.styleFrom(
+                backgroundColor: const Color(0xFF4F46E5),
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10)),
+                textStyle:
+                    const TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
+              ),
+            ),
+          ),
+          const SizedBox(height: 16),
+          child,
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFormEmptyState({required IconData icon, required String text}) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: const Color(0xFFF8FAFC),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: const Color(0xFFE2E8F0)),
+      ),
+      child: Row(
+        children: [
+          Icon(icon, color: const Color(0xFF64748B), size: 20),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              text,
+              style: const TextStyle(
+                  fontSize: 13, height: 1.35, color: Color(0xFF475569)),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSpecEditor(int idx, Map<String, dynamic> spec) {
+    return Container(
+      margin: EdgeInsets.only(bottom: idx == _specs.length - 1 ? 0 : 14),
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: const Color(0xFFFAFAFA),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: const Color(0xFFE2E8F0)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildEditorHeader(
+            title: 'Th\u00f4ng s\u1ed1 #${idx + 1}',
+            icon: Icons.drag_indicator,
+            onDelete: () => setState(() => _specs.removeAt(idx)),
+          ),
+          const SizedBox(height: 12),
+          DropdownButtonFormField<String>(
+            value: spec['scope']?.toString() ?? 'common',
+            isExpanded: true,
+            decoration: _inputDecoration(
+                '\u00c1p d\u1ee5ng', 'Chung / Phi\u00ean b\u1ea3n'),
+            items: [
+              const DropdownMenuItem(
+                  value: 'common',
+                  child: Text('Chung cho m\u1ecdi phi\u00ean b\u1ea3n')),
+              ..._variants.asMap().entries.map((variantEntry) {
+                final variant = variantEntry.value;
+                final variantName =
+                    variant['variant_name']?.toString().trim() ?? '';
+                final label = variantName.isNotEmpty
+                    ? 'Ch\u1ec9 phi\u00ean b\u1ea3n: $variantName'
+                    : 'Ch\u1ec9 phi\u00ean b\u1ea3n ${variantEntry.key + 1}';
+                return DropdownMenuItem(
+                  value: variant['id'] != null
+                      ? 'variant:${variant['id']}'
+                      : 'idx:${variantEntry.key}',
+                  child: Text(label, overflow: TextOverflow.ellipsis),
+                );
+              }),
+            ],
+            onChanged: (value) =>
+                setState(() => spec['scope'] = value ?? 'common'),
+          ),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              Expanded(
+                flex: 3,
+                child: _buildItemTextField(
+                  label: 'Nh\u00f3m',
+                  initVal: spec['spec_group']?.toString(),
+                  onChanged: (v) => spec['spec_group'] = v,
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                flex: 2,
+                child: _buildItemTextField(
+                  label: '\u0110\u01a1n v\u1ecb',
+                  initVal: spec['spec_unit']?.toString(),
+                  onChanged: (v) => spec['spec_unit'] = v,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          _buildItemTextField(
+            label: 'T\u00ean th\u00f4ng s\u1ed1',
+            initVal: spec['spec_key']?.toString(),
+            onChanged: (v) => spec['spec_key'] = v,
+          ),
+          const SizedBox(height: 12),
+          _buildItemTextField(
+            label: 'Gi\u00e1 tr\u1ecb',
+            initVal: spec['spec_value']?.toString(),
+            onChanged: (v) => spec['spec_value'] = v,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFaqEditor(int idx, Map<String, dynamic> faq) {
+    return Container(
+      margin: EdgeInsets.only(bottom: idx == _faqs.length - 1 ? 0 : 14),
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: const Color(0xFFFAFAFA),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: const Color(0xFFE2E8F0)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildEditorHeader(
+            title: 'FAQ #${idx + 1}',
+            icon: Icons.help_outline,
+            onDelete: () => setState(() => _faqs.removeAt(idx)),
+          ),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              Expanded(
+                child: _buildItemTextField(
+                  label: 'Th\u1ee9 t\u1ef1',
+                  initVal: (faq['sort_order'] ?? idx + 1).toString(),
+                  isNum: true,
+                  onChanged: (v) =>
+                      faq['sort_order'] = int.tryParse(v) ?? idx + 1,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: SwitchListTile(
+                  contentPadding: EdgeInsets.zero,
+                  dense: true,
+                  title: const Text(
+                    'Hi\u1ec3n th\u1ecb',
+                    style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
+                  ),
+                  value: faq['is_active'] != false,
+                  activeColor: const Color(0xFF4F46E5),
+                  onChanged: (value) =>
+                      setState(() => faq['is_active'] = value),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          _buildItemTextField(
+            label: 'C\u00e2u h\u1ecfi',
+            initVal: faq['question']?.toString(),
+            onChanged: (v) => faq['question'] = v,
+          ),
+          const SizedBox(height: 12),
+          TextFormField(
+            initialValue: faq['answer']?.toString(),
+            maxLines: 5,
+            minLines: 3,
+            style: const TextStyle(fontSize: 13),
+            decoration: InputDecoration(
+              labelText: 'C\u00e2u tr\u1ea3 l\u1eddi',
+              hintText:
+                  'Nh\u1eadp n\u1ed9i dung tr\u1ea3 l\u1eddi cho c\u00e2u h\u1ecfi n\u00e0y...',
+              alignLabelWithHint: true,
+              filled: true,
+              fillColor: Colors.white,
+              contentPadding: const EdgeInsets.all(12),
+              border:
+                  OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: const BorderSide(color: Color(0xFF4F46E5)),
+              ),
+            ),
+            onChanged: (v) => faq['answer'] = v,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildEditorHeader({
+    required String title,
+    required IconData icon,
+    required VoidCallback onDelete,
+  }) {
+    return Row(
+      children: [
+        Icon(icon, color: const Color(0xFF94A3B8), size: 18),
+        const SizedBox(width: 6),
+        Expanded(
+          child: Text(
+            title,
+            style: const TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF334155)),
+          ),
+        ),
+        IconButton(
+          tooltip: 'X\u00f3a',
+          visualDensity: VisualDensity.compact,
+          onPressed: onDelete,
+          icon: const Icon(Icons.delete_outline,
+              color: Color(0xFFEF4444), size: 20),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildFormCard(
+      {required String title, required IconData icon, required Widget child}) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.surface,
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: [
+            BoxShadow(
+                color: Colors.black.withOpacity(0.02),
+                blurRadius: 6,
+                offset: const Offset(0, 2))
+          ],
+          border: Border.all(
+              color: Theme.of(context).colorScheme.outline, width: 0.15)),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -842,45 +1517,71 @@ class _AdminProductFormScreenState extends State<AdminProductFormScreen> with Si
             children: [
               Icon(icon, size: 16, color: const Color(0xFF4F46E5)),
               const SizedBox(width: 6),
-              Text(title, style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.onSurface)),
+              Text(title,
+                  style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                      color: Theme.of(context).colorScheme.onSurface)),
             ],
           ),
-          const Padding(padding: EdgeInsets.symmetric(vertical: 8), child: Divider(height: 1, color: Color(0xFFF1F5F9))),
+          const Padding(
+              padding: EdgeInsets.symmetric(vertical: 8),
+              child: Divider(height: 1, color: Color(0xFFF1F5F9))),
           child,
         ],
       ),
     );
   }
 
-  Widget _buildTextField({required TextEditingController controller, required String label, required String hint, bool isNumber = false, int maxLines = 1, String? Function(String?)? validator}) {
+  Widget _buildTextField(
+      {required TextEditingController controller,
+      required String label,
+      required String hint,
+      bool isNumber = false,
+      int maxLines = 1,
+      String? Function(String?)? validator}) {
     return TextFormField(
       controller: controller,
       maxLines: maxLines,
       keyboardType: isNumber ? TextInputType.number : TextInputType.text,
-      style: TextStyle(fontSize: 14, color: Theme.of(context).colorScheme.onSurface),
+      style: TextStyle(
+          fontSize: 14, color: Theme.of(context).colorScheme.onSurface),
       decoration: _inputDecoration(label, hint),
       validator: validator,
     );
   }
 
-  Widget _buildItemTextField({required String label, required String? initVal, bool isNum = false, required Function(String) onChanged, String? Function(String?)? validator}) {
+  Widget _buildItemTextField(
+      {required String label,
+      required String? initVal,
+      bool isNum = false,
+      required Function(String) onChanged,
+      String? Function(String?)? validator}) {
     return TextFormField(
       initialValue: initVal,
-      style: TextStyle(fontSize: 13, color: Theme.of(context).colorScheme.onSurface),
+      style: TextStyle(
+          fontSize: 13, color: Theme.of(context).colorScheme.onSurface),
       keyboardType: isNum ? TextInputType.number : TextInputType.text,
       decoration: InputDecoration(
         labelText: label,
         isDense: true,
-        contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
+        contentPadding:
+            const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-        enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: BorderSide(color: Theme.of(context).colorScheme.outline, width: 0.15)),
+        enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8),
+            borderSide: BorderSide(
+                color: Theme.of(context).colorScheme.outline, width: 0.15)),
       ),
       onChanged: onChanged,
       validator: validator,
     );
   }
 
-  Widget _buildDatePickerField({required String label, required String? value, required ValueChanged<String> onDateSelected}) {
+  Widget _buildDatePickerField(
+      {required String label,
+      required String? value,
+      required ValueChanged<String> onDateSelected}) {
     final controller = TextEditingController(text: value);
     return InkWell(
       borderRadius: BorderRadius.circular(8),
@@ -893,7 +1594,10 @@ class _AdminProductFormScreenState extends State<AdminProductFormScreen> with Si
           lastDate: DateTime(2100),
           builder: (context, child) => Theme(
             data: Theme.of(context).copyWith(
-              colorScheme: const ColorScheme.light(primary: Color(0xFF4F46E5), onPrimary: Colors.white, onSurface: Colors.black),
+              colorScheme: const ColorScheme.light(
+                  primary: Color(0xFF4F46E5),
+                  onPrimary: Colors.white,
+                  onSurface: Colors.black),
             ),
             child: child!,
           ),
@@ -913,10 +1617,15 @@ class _AdminProductFormScreenState extends State<AdminProductFormScreen> with Si
           decoration: InputDecoration(
             labelText: label,
             isDense: true,
-            contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
+            contentPadding:
+                const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-            enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: BorderSide(color: Theme.of(context).colorScheme.outline, width: 0.5)),
-            suffixIcon: const Icon(Icons.calendar_today, size: 18, color: Color(0xFF64748B)),
+            enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: BorderSide(
+                    color: Theme.of(context).colorScheme.outline, width: 0.5)),
+            suffixIcon: const Icon(Icons.calendar_today,
+                size: 18, color: Color(0xFF64748B)),
           ),
         ),
       ),
@@ -927,12 +1636,22 @@ class _AdminProductFormScreenState extends State<AdminProductFormScreen> with Si
     return InputDecoration(
       labelText: label,
       hintText: hint,
-      labelStyle: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500, color: Color(0xFF475569)),
+      labelStyle: const TextStyle(
+          fontSize: 13, fontWeight: FontWeight.w500, color: Color(0xFF475569)),
       hintStyle: TextStyle(fontSize: 13, color: Colors.grey[400]),
       contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-      border: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: BorderSide(color: Theme.of(context).colorScheme.outline, width: 0.5)),
-      enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: BorderSide(color: Theme.of(context).colorScheme.outline, width: 0.5)),
-      focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: BorderSide(color: Theme.of(context).colorScheme.outline, width: 0.5)),
+      border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: BorderSide(
+              color: Theme.of(context).colorScheme.outline, width: 0.5)),
+      enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: BorderSide(
+              color: Theme.of(context).colorScheme.outline, width: 0.5)),
+      focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: BorderSide(
+              color: Theme.of(context).colorScheme.outline, width: 0.5)),
     );
   }
 
@@ -954,23 +1673,33 @@ class _AdminProductFormScreenState extends State<AdminProductFormScreen> with Si
     return Container(
       width: 72,
       height: 72,
-      decoration: BoxDecoration(color: const Color(0xFFF8FAFC), borderRadius: BorderRadius.circular(8), border: Border.all(color: const Color(0xFFE2E8F0))),
+      decoration: BoxDecoration(
+          color: const Color(0xFFF8FAFC),
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: const Color(0xFFE2E8F0))),
       child: file != null
-          ? ClipRRect(borderRadius: BorderRadius.circular(8), child: Image.file(file, fit: BoxFit.cover))
+          ? ClipRRect(
+              borderRadius: BorderRadius.circular(8),
+              child: Image.file(file, fit: BoxFit.cover))
           : (imageUrl != null && imageUrl.isNotEmpty
               ? ClipRRect(
                   borderRadius: BorderRadius.circular(8),
                   child: Image.network(
                     _resolveImageUrl(imageUrl),
                     fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) => const Icon(Icons.broken_image_outlined, color: Colors.red, size: 24),
+                    errorBuilder: (context, error, stackTrace) => const Icon(
+                        Icons.broken_image_outlined,
+                        color: Colors.red,
+                        size: 24),
                   ),
                 )
-              : const Icon(Icons.image_outlined, color: Color(0xFF94A3B8), size: 24)),
+              : const Icon(Icons.image_outlined,
+                  color: Color(0xFF94A3B8), size: 24)),
     );
   }
 
-  Widget _stackImageItem(dynamic urlSource, bool isNetwork, VoidCallback onDelete) {
+  Widget _stackImageItem(
+      dynamic urlSource, bool isNetwork, VoidCallback onDelete) {
     String displayPath = '';
     if (isNetwork && urlSource != null) {
       if (urlSource is String) {
@@ -988,14 +1717,19 @@ class _AdminProductFormScreenState extends State<AdminProductFormScreen> with Si
           width: 72,
           height: 72,
           margin: const EdgeInsets.only(top: 4, right: 4),
-          decoration: BoxDecoration(borderRadius: BorderRadius.circular(8), border: Border.all(color: const Color(0xFFE2E8F0))),
+          decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: const Color(0xFFE2E8F0))),
           child: ClipRRect(
             borderRadius: BorderRadius.circular(8),
             child: isNetwork
                 ? Image.network(
                     _resolveImageUrl(displayPath),
                     fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) => const Icon(Icons.broken_image_outlined, color: Colors.grey, size: 20),
+                    errorBuilder: (context, error, stackTrace) => const Icon(
+                        Icons.broken_image_outlined,
+                        color: Colors.grey,
+                        size: 20),
                   )
                 : Image.file(File(displayPath), fit: BoxFit.cover),
           ),
@@ -1007,7 +1741,8 @@ class _AdminProductFormScreenState extends State<AdminProductFormScreen> with Si
             onTap: onDelete,
             child: Container(
               padding: const EdgeInsets.all(3),
-              decoration: const BoxDecoration(color: Color(0xFFEF4444), shape: BoxShape.circle),
+              decoration: const BoxDecoration(
+                  color: Color(0xFFEF4444), shape: BoxShape.circle),
               child: const Icon(Icons.close, size: 10, color: Colors.white),
             ),
           ),

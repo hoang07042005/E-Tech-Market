@@ -36,7 +36,8 @@ class _AdminProductScreenState extends State<AdminProductScreen> {
   int _activeProducts = 0;
 
   // Phân trang
-  static const int _pageSize = 999; // Hiển thị hết tất cả sản phẩm (không giới hạn)
+  static const int _pageSize =
+      999; // Hiển thị hết tất cả sản phẩm (không giới hạn)
   int _currentPage = 1;
   int _totalPages = 1;
 
@@ -85,7 +86,9 @@ class _AdminProductScreenState extends State<AdminProductScreen> {
     final Set<String> brandSet = {};
 
     for (var p in _allProducts) {
-      if (p['category'] != null && p['category']['id'] != null && p['category']['name'] != null) {
+      if (p['category'] != null &&
+          p['category']['id'] != null &&
+          p['category']['name'] != null) {
         categoryMap[p['category']['id']] = p['category']['name'].toString();
       }
       final String brand = (p['brand'] ?? '').toString().trim();
@@ -94,7 +97,9 @@ class _AdminProductScreenState extends State<AdminProductScreen> {
       }
     }
 
-    _categories = categoryMap.entries.map((e) => {'id': e.key.toString(), 'name': e.value}).toList();
+    _categories = categoryMap.entries
+        .map((e) => {'id': e.key.toString(), 'name': e.value})
+        .toList();
     _categories.sort((a, b) => a['name'].compareTo(b['name']));
 
     _brands = brandSet.toList();
@@ -105,7 +110,8 @@ class _AdminProductScreenState extends State<AdminProductScreen> {
     final List<dynamic> variants = p['variants'] ?? [];
     int sum = 0;
     for (var v in variants) {
-      final int stock = int.tryParse(v['stock_quantity']?.toString() ?? '0') ?? 0;
+      final int stock =
+          int.tryParse(v['stock_quantity']?.toString() ?? '0') ?? 0;
       if (stock > 0) sum += stock;
     }
     return sum;
@@ -114,7 +120,7 @@ class _AdminProductScreenState extends State<AdminProductScreen> {
   void _calculateStats() {
     _totalProducts = _allProducts.length;
     _activeProducts = _allProducts.where((p) => p['is_active'] == true).length;
-    
+
     _outOfStock = 0;
     _lowStock = 0;
 
@@ -132,10 +138,12 @@ class _AdminProductScreenState extends State<AdminProductScreen> {
     final query = _searchController.text.trim().toLowerCase();
 
     _filteredProducts = _allProducts.where((p) {
-      if (_selectedCategory != 'all' && p['category_id']?.toString() != _selectedCategory) {
+      if (_selectedCategory != 'all' &&
+          p['category_id']?.toString() != _selectedCategory) {
         return false;
       }
-      if (_selectedBrand != 'all' && (p['brand'] ?? '').toString().trim() != _selectedBrand) {
+      if (_selectedBrand != 'all' &&
+          (p['brand'] ?? '').toString().trim() != _selectedBrand) {
         return false;
       }
       if (_selectedStatus != 'all') {
@@ -146,7 +154,8 @@ class _AdminProductScreenState extends State<AdminProductScreen> {
       if (query.isNotEmpty) {
         final String name = (p['name'] ?? '').toString().toLowerCase();
         final String brand = (p['brand'] ?? '').toString().toLowerCase();
-        final String catName = (p['category']?['name'] ?? '').toString().toLowerCase();
+        final String catName =
+            (p['category']?['name'] ?? '').toString().toLowerCase();
         final String haystack = '$name $brand $catName';
         if (!haystack.contains(query)) return false;
       }
@@ -190,7 +199,8 @@ class _AdminProductScreenState extends State<AdminProductScreen> {
           children: [
             const Icon(Icons.warning_amber_rounded, color: Colors.redAccent),
             const SizedBox(width: 8),
-            Text(Trans.confirmDelete, style: const TextStyle(fontWeight: FontWeight.bold)),
+            Text(Trans.confirmDelete,
+                style: const TextStyle(fontWeight: FontWeight.bold)),
           ],
         ),
         content: Column(
@@ -204,7 +214,8 @@ class _AdminProductScreenState extends State<AdminProductScreen> {
               decoration: BoxDecoration(
                 color: Theme.of(context).colorScheme.surface,
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: Theme.of(context).colorScheme.outline, width: 0.15),
+                border: Border.all(
+                    color: Theme.of(context).colorScheme.outline, width: 0.15),
               ),
               child: Row(
                 children: [
@@ -215,7 +226,9 @@ class _AdminProductScreenState extends State<AdminProductScreen> {
                       height: 48,
                       color: Theme.of(context).colorScheme.surface,
                       child: product['main_image_url'] != null
-                          ? Image.network(_resolveImageUrl(product['main_image_url']), fit: BoxFit.cover)
+                          ? Image.network(
+                              _resolveImageUrl(product['main_image_url']),
+                              fit: BoxFit.cover)
                           : const Icon(Icons.image, color: Colors.grey),
                     ),
                   ),
@@ -224,8 +237,16 @@ class _AdminProductScreenState extends State<AdminProductScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(product['name'] ?? '', maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.onSurface)),
-                        Text(product['brand'] ?? Trans.brandEmpty, style: TextStyle(color: Colors.grey[600], fontSize: 12)),
+                        Text(product['name'] ?? '',
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color:
+                                    Theme.of(context).colorScheme.onSurface)),
+                        Text(product['brand'] ?? Trans.brandEmpty,
+                            style: TextStyle(
+                                color: Colors.grey[600], fontSize: 12)),
                       ],
                     ),
                   )
@@ -235,7 +256,10 @@ class _AdminProductScreenState extends State<AdminProductScreen> {
           ],
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: Text(Trans.cancel, style: const TextStyle(color: Colors.grey))),
+          TextButton(
+              onPressed: () => Navigator.pop(ctx),
+              child: Text(Trans.cancel,
+                  style: const TextStyle(color: Colors.grey))),
           ElevatedButton(
             onPressed: () async {
               Navigator.pop(ctx);
@@ -243,20 +267,26 @@ class _AdminProductScreenState extends State<AdminProductScreen> {
                 await AdminProductsService.deleteAdminProduct(product['id']);
                 if (mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text(Trans.deletedSuccess), backgroundColor: Colors.green),
+                    SnackBar(
+                        content: Text(Trans.deletedSuccess),
+                        backgroundColor: Colors.green),
                   );
                 }
                 _fetchData();
               } catch (e) {
                 if (mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('${Trans.errorPrefix}$e'), backgroundColor: Colors.red),
+                    SnackBar(
+                        content: Text('${Trans.errorPrefix}$e'),
+                        backgroundColor: Colors.red),
                   );
                 }
               }
             },
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.redAccent, elevation: 0),
-            child: Text(Trans.delete, style: const TextStyle(color: Colors.white)),
+            style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.redAccent, elevation: 0),
+            child:
+                Text(Trans.delete, style: const TextStyle(color: Colors.white)),
           ),
         ],
       ),
@@ -271,7 +301,8 @@ class _AdminProductScreenState extends State<AdminProductScreen> {
         elevation: 0,
         backgroundColor: Theme.of(context).colorScheme.surface,
         foregroundColor: Theme.of(context).colorScheme.onSurface,
-        title: Text(Trans.productList, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+        title: Text(Trans.productList,
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh, color: Colors.blueAccent),
@@ -283,11 +314,14 @@ class _AdminProductScreenState extends State<AdminProductScreen> {
         onPressed: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => const AdminProductFormScreen()),
-          ).then((_) => _fetchData()); 
+            MaterialPageRoute(
+                builder: (context) => const AdminProductFormScreen()),
+          ).then((_) => _fetchData());
         },
         icon: const Icon(Icons.add, color: Colors.white),
-        label: Text(Trans.addNew, style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
+        label: Text(Trans.addNew,
+            style: const TextStyle(
+                fontWeight: FontWeight.bold, color: Colors.white)),
         backgroundColor: const Color(0xFFF26522),
         elevation: 2,
       ),
@@ -300,9 +334,12 @@ class _AdminProductScreenState extends State<AdminProductScreen> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const Icon(Icons.error_outline, size: 48, color: Colors.redAccent),
+                        const Icon(Icons.error_outline,
+                            size: 48, color: Colors.redAccent),
                         const SizedBox(height: 12),
-                        Text(_error!, style: const TextStyle(color: Colors.red), textAlign: TextAlign.center),
+                        Text(_error!,
+                            style: const TextStyle(color: Colors.red),
+                            textAlign: TextAlign.center),
                       ],
                     ),
                   )
@@ -316,7 +353,8 @@ class _AdminProductScreenState extends State<AdminProductScreen> {
                       ),
                       SliverToBoxAdapter(
                         child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 16, vertical: 8),
                           child: _buildFiltersCard(),
                         ),
                       ),
@@ -325,20 +363,28 @@ class _AdminProductScreenState extends State<AdminProductScreen> {
                           padding: const EdgeInsets.fromLTRB(20, 12, 16, 8),
                           child: Text(
                             '${Trans.searchResults} (${_filteredProducts.length})',
-                            style: TextStyle(color: Colors.grey[700], fontWeight: FontWeight.bold, fontSize: 14),
+                            style: TextStyle(
+                                color: Colors.grey[700],
+                                fontWeight: FontWeight.bold,
+                                fontSize: 14),
                           ),
                         ),
                       ),
                       _pagedProducts.isEmpty
                           ? SliverToBoxAdapter(
                               child: Padding(
-                                padding: const EdgeInsets.symmetric(vertical: 60),
-                                child: Center(child: Text(Trans.noMatchingProducts, style: const TextStyle(color: Colors.grey))),
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 60),
+                                child: Center(
+                                    child: Text(Trans.noMatchingProducts,
+                                        style: const TextStyle(
+                                            color: Colors.grey))),
                               ),
                             )
                           : SliverList(
                               delegate: SliverChildBuilderDelegate(
-                                (context, index) => _buildProductItem(_pagedProducts[index]),
+                                (context, index) =>
+                                    _buildProductItem(_pagedProducts[index]),
                                 childCount: _pagedProducts.length,
                               ),
                             ),
@@ -360,15 +406,24 @@ class _AdminProductScreenState extends State<AdminProductScreen> {
       mainAxisSpacing: 12,
       crossAxisSpacing: 12,
       children: [
-        _buildStatCard(Trans.totalProducts, _totalProducts.toString(), Icons.layers, const Color(0xFFE0F2FE), const Color(0xFF0369A1)),
-        _buildStatCard(Trans.outOfStock, _outOfStock.toString(), Icons.label_off, const Color(0xFFFFE4E6), const Color(0xFFB91C1C)),
-        _buildStatCard(Trans.lowStock, _lowStock.toString(), Icons.warning, const Color(0xFFFEF3C7), const Color(0xFFB45309)),
-        _buildStatCard(Trans.activeProducts, _activeProducts.toString(), Icons.check_circle, const Color(0xFFDCFCE7), const Color(0xFF15803D)),
+        _buildStatCard(Trans.totalProducts, _totalProducts.toString(),
+            Icons.layers, const Color(0xFFE0F2FE), const Color(0xFF0369A1)),
+        _buildStatCard(Trans.outOfStock, _outOfStock.toString(),
+            Icons.label_off, const Color(0xFFFFE4E6), const Color(0xFFB91C1C)),
+        _buildStatCard(Trans.lowStock, _lowStock.toString(), Icons.warning,
+            const Color(0xFFFEF3C7), const Color(0xFFB45309)),
+        _buildStatCard(
+            Trans.activeProducts,
+            _activeProducts.toString(),
+            Icons.check_circle,
+            const Color(0xFFDCFCE7),
+            const Color(0xFF15803D)),
       ],
     );
   }
 
-  Widget _buildStatCard(String label, String value, IconData icon, Color bgColor, Color textColor) {
+  Widget _buildStatCard(String label, String value, IconData icon,
+      Color bgColor, Color textColor) {
     return Container(
       decoration: BoxDecoration(
         color: bgColor,
@@ -383,23 +438,30 @@ class _AdminProductScreenState extends State<AdminProductScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(label, style: TextStyle(fontSize: 12, color: textColor.withOpacity(0.8), fontWeight: FontWeight.w600)),
+              Text(label,
+                  style: TextStyle(
+                      fontSize: 12,
+                      color: textColor.withOpacity(0.8),
+                      fontWeight: FontWeight.w600)),
               Icon(icon, color: textColor.withOpacity(0.7), size: 20),
             ],
           ),
-          Text(value, style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold, color: textColor)),
+          Text(value,
+              style: TextStyle(
+                  fontSize: 26, fontWeight: FontWeight.bold, color: textColor)),
         ],
       ),
     );
   }
 
-Widget _buildFiltersCard() {
+  Widget _buildFiltersCard() {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Theme.of(context).colorScheme.outline, width: 0.15),
+        border: Border.all(
+            color: Theme.of(context).colorScheme.outline, width: 0.15),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -414,17 +476,23 @@ Widget _buildFiltersCard() {
                     controller: _searchController,
                     decoration: InputDecoration(
                       hintText: 'Tên, Brand, Loại...',
-                      prefixIcon: Icon(Icons.search, size: 20, color: Theme.of(context).colorScheme.onSurface),
+                      prefixIcon: Icon(Icons.search,
+                          size: 20,
+                          color: Theme.of(context).colorScheme.onSurface),
                       filled: true,
                       fillColor: Theme.of(context).colorScheme.surface,
                       contentPadding: const EdgeInsets.symmetric(vertical: 0),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
-                        borderSide: BorderSide(color: Theme.of(context).colorScheme.outline, width: 0.15),
+                        borderSide: BorderSide(
+                            color: Theme.of(context).colorScheme.outline,
+                            width: 0.15),
                       ),
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
-                        borderSide: BorderSide(color: Theme.of(context).colorScheme.outline, width: 0.15),
+                        borderSide: BorderSide(
+                            color: Theme.of(context).colorScheme.outline,
+                            width: 0.15),
                       ),
                     ),
                     onChanged: (v) {
@@ -440,14 +508,17 @@ Widget _buildFiltersCard() {
               // Nút Đặt lại đã được chuyển thành Nút Icon Bo Góc màu xanh dương
               SizedBox(
                 height: 44,
-                width: 44, // Khóa cứng chiều rộng vuông bằng chiều cao để tạo khối đẹp
+                width:
+                    44, // Khóa cứng chiều rộng vuông bằng chiều cao để tạo khối đẹp
                 child: FilledButton(
                   onPressed: _clearFilters,
                   style: FilledButton.styleFrom(
                     backgroundColor: Colors.blue[700], // Màu xanh dương đồng bộ
-                    padding: EdgeInsets.zero, // Xóa padding mặc định để icon căn giữa
+                    padding: EdgeInsets
+                        .zero, // Xóa padding mặc định để icon căn giữa
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12), // Bo góc 12 khớp với TextField
+                      borderRadius: BorderRadius.circular(
+                          12), // Bo góc 12 khớp với TextField
                     ),
                   ),
                   child: const Icon(
@@ -485,11 +556,14 @@ Widget _buildFiltersCard() {
                     selectedColor: Colors.blue[700],
                     backgroundColor: Theme.of(context).colorScheme.surface,
                     labelStyle: TextStyle(
-                      color: _selectedCategory == 'all' ? Colors.white : Theme.of(context).colorScheme.onSurface,
+                      color: _selectedCategory == 'all'
+                          ? Colors.white
+                          : Theme.of(context).colorScheme.onSurface,
                       fontWeight: FontWeight.w600,
                       fontSize: 13,
                     ),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(18)),
                     showCheckmark: false,
                   ),
                 ),
@@ -511,11 +585,14 @@ Widget _buildFiltersCard() {
                       selectedColor: Colors.blue[700],
                       backgroundColor: Theme.of(context).colorScheme.surface,
                       labelStyle: TextStyle(
-                        color: isSelected ? Colors.white : Theme.of(context).colorScheme.onSurface,
+                        color: isSelected
+                            ? Colors.white
+                            : Theme.of(context).colorScheme.onSurface,
                         fontWeight: FontWeight.w600,
                         fontSize: 13,
                       ),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(18)),
                       showCheckmark: false,
                     ),
                   );
@@ -534,7 +611,8 @@ Widget _buildFiltersCard() {
                   children: [
                     const Padding(
                       padding: EdgeInsets.only(left: 4, bottom: 4),
-                      child: Text('Thương hiệu', style: TextStyle(fontSize: 11, color: Colors.grey)),
+                      child: Text('Thương hiệu',
+                          style: TextStyle(fontSize: 11, color: Colors.grey)),
                     ),
                     SizedBox(
                       height: 40,
@@ -545,15 +623,29 @@ Widget _buildFiltersCard() {
                         decoration: InputDecoration(
                           filled: true,
                           fillColor: Theme.of(context).colorScheme.surface,
-                          contentPadding: const EdgeInsets.symmetric(horizontal: 10),
-                          border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: Theme.of(context).colorScheme.outline, width: 0.15)),
-                          enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: Theme.of(context).colorScheme.outline, width: 0.15)),
+                          contentPadding:
+                              const EdgeInsets.symmetric(horizontal: 10),
+                          border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: BorderSide(
+                                  color: Theme.of(context).colorScheme.outline,
+                                  width: 0.15)),
+                          enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: BorderSide(
+                                  color: Theme.of(context).colorScheme.outline,
+                                  width: 0.15)),
                         ),
                         items: [
-                          const DropdownMenuItem(value: 'all', child: Text('Tất cả', style: TextStyle(fontSize: 13))),
+                          const DropdownMenuItem(
+                              value: 'all',
+                              child: Text('Tất cả',
+                                  style: TextStyle(fontSize: 13))),
                           ..._brands.map((b) => DropdownMenuItem(
                                 value: b,
-                                child: Text(b, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 13)),
+                                child: Text(b,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: const TextStyle(fontSize: 13)),
                               ))
                         ],
                         onChanged: (val) {
@@ -575,7 +667,8 @@ Widget _buildFiltersCard() {
                   children: [
                     const Padding(
                       padding: EdgeInsets.only(left: 4, bottom: 4),
-                      child: Text('Trạng thái', style: TextStyle(fontSize: 11, color: Colors.grey)),
+                      child: Text('Trạng thái',
+                          style: TextStyle(fontSize: 11, color: Colors.grey)),
                     ),
                     SizedBox(
                       height: 40,
@@ -585,14 +678,32 @@ Widget _buildFiltersCard() {
                         decoration: InputDecoration(
                           filled: true,
                           fillColor: Theme.of(context).colorScheme.surface,
-                          contentPadding: const EdgeInsets.symmetric(horizontal: 10),
-                          border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: Theme.of(context).colorScheme.outline, width: 0.15)),
-                          enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: Theme.of(context).colorScheme.outline, width: 0.15)),
+                          contentPadding:
+                              const EdgeInsets.symmetric(horizontal: 10),
+                          border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: BorderSide(
+                                  color: Theme.of(context).colorScheme.outline,
+                                  width: 0.15)),
+                          enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: BorderSide(
+                                  color: Theme.of(context).colorScheme.outline,
+                                  width: 0.15)),
                         ),
                         items: const [
-                          DropdownMenuItem(value: 'all', child: Text('Tất cả', style: TextStyle(fontSize: 13))),
-                          DropdownMenuItem(value: 'active', child: Text('Đang hiển thị', style: TextStyle(fontSize: 13))),
-                          DropdownMenuItem(value: 'inactive', child: Text('Tạm ẩn', style: TextStyle(fontSize: 13))),
+                          DropdownMenuItem(
+                              value: 'all',
+                              child: Text('Tất cả',
+                                  style: TextStyle(fontSize: 13))),
+                          DropdownMenuItem(
+                              value: 'active',
+                              child: Text('Đang hiển thị',
+                                  style: TextStyle(fontSize: 13))),
+                          DropdownMenuItem(
+                              value: 'inactive',
+                              child: Text('Tạm ẩn',
+                                  style: TextStyle(fontSize: 13))),
                         ],
                         onChanged: (val) {
                           setState(() {
@@ -616,17 +727,25 @@ Widget _buildFiltersCard() {
   Widget _buildProductItem(dynamic p) {
     final int totalStock = _getTotalStock(p);
     final double pct = (totalStock / 200).clamp(0.0, 1.0);
-    final Color progressColor = pct >= 0.6 ? Colors.green : pct >= 0.3 ? Colors.orange : Colors.red;
+    final Color progressColor = pct >= 0.6
+        ? Colors.green
+        : pct >= 0.3
+            ? Colors.orange
+            : Colors.red;
     final bool isActive = p['is_active'] == true;
-    final bool isFeatured = p['is_featured'] == true;
-    final String shortDescription = p['description'] ?? Trans.noShortDescription;
+    final bool isFeatured = p['is_featured'] == true ||
+        p['is_featured'] == 1 ||
+        p['is_featured']?.toString() == '1';
+    final String shortDescription =
+        p['description'] ?? Trans.noShortDescription;
 
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Theme.of(context).colorScheme.outline, width: 0.15),
+        border: Border.all(
+            color: Theme.of(context).colorScheme.outline, width: 0.15),
       ),
       child: Padding(
         padding: const EdgeInsets.all(12.0),
@@ -637,26 +756,64 @@ Widget _buildFiltersCard() {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // Ảnh sản phẩm
-                Container(
+                SizedBox(
                   width: 80,
                   height: 80,
-                  decoration: BoxDecoration(
-                    color: Colors.grey[50],
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: p['main_image_url'] != null
-                      ? ClipRRect(
-                          borderRadius: BorderRadius.circular(10),
-                          child: Image.network(
-                            _resolveImageUrl(p['main_image_url']),
-                            fit: BoxFit.cover,
-                            errorBuilder: (c, e, s) => const Icon(Icons.broken_image_outlined, color: Colors.grey, size: 28),
+                  child: Stack(
+                    clipBehavior: Clip.none,
+                    children: [
+                      Positioned.fill(
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Colors.grey[50],
+                            borderRadius: BorderRadius.circular(12),
                           ),
-                        )
-                      : const Icon(Icons.image_outlined, color: Colors.grey, size: 28),
+                          child: p['main_image_url'] != null
+                              ? ClipRRect(
+                                  borderRadius: BorderRadius.circular(10),
+                                  child: Image.network(
+                                    _resolveImageUrl(p['main_image_url']),
+                                    fit: BoxFit.cover,
+                                    errorBuilder: (c, e, s) => const Icon(
+                                      Icons.broken_image_outlined,
+                                      color: Colors.grey,
+                                      size: 28,
+                                    ),
+                                  ),
+                                )
+                              : const Icon(Icons.image_outlined,
+                                  color: Colors.grey, size: 28),
+                        ),
+                      ),
+                      if (isFeatured)
+                        Positioned(
+                          top: -4,
+                          left: -4,
+                          child: Container(
+                            padding: const EdgeInsets.all(3),
+                            decoration: BoxDecoration(
+                              color: Theme.of(context).colorScheme.surface,
+                              shape: BoxShape.circle,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withValues(alpha: 0.16),
+                                  blurRadius: 6,
+                                  offset: const Offset(0, 2),
+                                ),
+                              ],
+                            ),
+                            child: const Icon(
+                              Icons.star,
+                              color: Color(0xFFF59E0B),
+                              size: 15,
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
                 ),
                 const SizedBox(width: 12),
-                
+
                 // Sử dụng Stack để Tag Trạng Thái có thể hiển thị NỔI ĐÈ LÊN TRÊN
                 Expanded(
                   child: Stack(
@@ -664,24 +821,27 @@ Widget _buildFiltersCard() {
                     children: [
                       // Toàn bộ khối thông tin text thông thường bên dưới
                       Padding(
-                        padding: const EdgeInsets.only(top: 2), // Tạo một chút khoảng đệm phía trên
+                        padding: const EdgeInsets.only(
+                            top: 2), // Tạo một chút khoảng đệm phía trên
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             // Tên sản phẩm chiếm trọn chiều rộng dòng (nếu text dài, tag đè lên góc phải trên của text)
                             Padding(
-                              padding: const EdgeInsets.only(right: 65), // Tránh đè trực tiếp lên chữ đầu tiên của Tên
+                              padding: const EdgeInsets.only(
+                                  right:
+                                      65), // Tránh đè trực tiếp lên chữ đầu tiên của Tên
                               child: Row(
                                 children: [
-                                  if (isFeatured)
-                                    Padding(
-                                      padding: const EdgeInsets.only(right: 4),
-                                      child: Icon(Icons.star, color: Color(0xFFF59E0B), size: 18),
-                                    ),
                                   Expanded(
                                     child: Text(
                                       p['name'] ?? Trans.noName,
-                                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: Theme.of(context).colorScheme.onSurface),
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 14,
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .onSurface),
                                       maxLines: 2,
                                       overflow: TextOverflow.ellipsis,
                                     ),
@@ -690,31 +850,43 @@ Widget _buildFiltersCard() {
                               ),
                             ),
                             const SizedBox(height: 6),
-                            
+
                             // Mô tả ngắn nằm ngay dưới tên sản phẩm
                             Text(
                               shortDescription,
-                              style: TextStyle(fontSize: 12, color: Colors.grey[500], height: 1.3),
+                              style: TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.grey[500],
+                                  height: 1.3),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                             ),
                             const SizedBox(height: 6),
-                            
+
                             // Dòng thông tin thương hiệu và danh mục
                             Row(
                               children: [
                                 Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                                  decoration: BoxDecoration(color: Colors.blue.withOpacity(0.06), borderRadius: BorderRadius.circular(4)),
-                                  child: Text(p['brand'] ?? 'Generic', style: const TextStyle(fontSize: 11, color: Colors.blue, fontWeight: FontWeight.bold)),
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 6, vertical: 2),
+                                  decoration: BoxDecoration(
+                                      color: Colors.blue.withOpacity(0.06),
+                                      borderRadius: BorderRadius.circular(4)),
+                                  child: Text(p['brand'] ?? 'Generic',
+                                      style: const TextStyle(
+                                          fontSize: 11,
+                                          color: Colors.blue,
+                                          fontWeight: FontWeight.bold)),
                                 ),
                                 const SizedBox(width: 6),
                                 Flexible(
                                   child: Text(
-                                    p['category']?['name'] ?? Trans.uncategorized,
+                                    p['category']?['name'] ??
+                                        Trans.uncategorized,
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
-                                    style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                                    style: TextStyle(
+                                        fontSize: 12, color: Colors.grey[600]),
                                   ),
                                 ),
                               ],
@@ -722,15 +894,18 @@ Widget _buildFiltersCard() {
                           ],
                         ),
                       ),
-                      
+
                       // TAG ĐANG BÁN / TẠM ẨN: Hiển thị NỔI đè hoàn toàn lên trên góc phải
                       Positioned(
                         right: 0,
                         top: 0,
                         child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 6, vertical: 3),
                           decoration: BoxDecoration(
-                            color: isActive ? Colors.green.withOpacity(0.12) : Colors.grey.withOpacity(0.15),
+                            color: isActive
+                                ? Colors.green.withOpacity(0.12)
+                                : Colors.grey.withOpacity(0.15),
                             borderRadius: BorderRadius.circular(6),
                             boxShadow: [
                               BoxShadow(
@@ -743,8 +918,10 @@ Widget _buildFiltersCard() {
                           child: Text(
                             isActive ? Trans.selling : Trans.temporarilyHidden,
                             style: TextStyle(
-                              color: isActive ? Colors.green[700] : Colors.grey[700], 
-                              fontSize: 9, 
+                              color: isActive
+                                  ? Colors.green[700]
+                                  : Colors.grey[700],
+                              fontSize: 9,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
@@ -765,7 +942,12 @@ Widget _buildFiltersCard() {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text('${Trans.stock}: $totalStock ${Trans.productItemsCount}', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w500, color: Colors.grey[700])),
+                          Text(
+                              '${Trans.stock}: $totalStock ${Trans.productItemsCount}',
+                              style: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w500,
+                                  color: Colors.grey[700])),
                         ],
                       ),
                       const SizedBox(height: 4),
@@ -774,7 +956,8 @@ Widget _buildFiltersCard() {
                         child: LinearProgressIndicator(
                           value: pct,
                           backgroundColor: Colors.grey[100],
-                          valueColor: AlwaysStoppedAnimation<Color>(progressColor),
+                          valueColor:
+                              AlwaysStoppedAnimation<Color>(progressColor),
                           minHeight: 5,
                         ),
                       ),
@@ -785,27 +968,38 @@ Widget _buildFiltersCard() {
                 Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    _buildActionButton(Icons.remove_red_eye_outlined, Colors.blue, () {Navigator.push(context,MaterialPageRoute(builder: (context) => AdminProductVariantDetailScreen(productId: p['id']),),);}),                    const SizedBox(width: 4),
+                    _buildActionButton(
+                        Icons.remove_red_eye_outlined, Colors.blue, () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => AdminProductVariantDetailScreen(
+                              productId: p['id']),
+                        ),
+                      );
+                    }),
+                    const SizedBox(width: 4),
                     const SizedBox(width: 4),
                     _buildActionButton(
-                        Icons.edit_outlined,
-                        Colors.orange,
-                        () async {
-                            final bool? isUpdated = await Navigator.push<bool>(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => AdminProductFormScreen(
-                                productId: p['id'],
-                                ),
+                      Icons.edit_outlined,
+                      Colors.orange,
+                      () async {
+                        final bool? isUpdated = await Navigator.push<bool>(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => AdminProductFormScreen(
+                              productId: p['id'],
                             ),
-                            );
-                            if (isUpdated == true) {
-                            _fetchData();
-                            }
-                        },
+                          ),
+                        );
+                        if (isUpdated == true) {
+                          _fetchData();
+                        }
+                      },
                     ),
                     const SizedBox(width: 4),
-                    _buildActionButton(Icons.delete_outline_outlined, Colors.redAccent, () => _handleDeleteProduct(p)),
+                    _buildActionButton(Icons.delete_outline_outlined,
+                        Colors.redAccent, () => _handleDeleteProduct(p)),
                   ],
                 )
               ],
@@ -822,7 +1016,9 @@ Widget _buildFiltersCard() {
       borderRadius: BorderRadius.circular(8),
       child: Container(
         padding: const EdgeInsets.all(6),
-        decoration: BoxDecoration(color: color.withOpacity(0.08), borderRadius: BorderRadius.circular(8)),
+        decoration: BoxDecoration(
+            color: color.withOpacity(0.08),
+            borderRadius: BorderRadius.circular(8)),
         child: Icon(icon, color: color, size: 18),
       ),
     );
@@ -836,7 +1032,10 @@ Widget _buildFiltersCard() {
         children: [
           Text(
             '${Trans.page} $_currentPage / $_totalPages',
-            style: TextStyle(color: Colors.grey[600], fontSize: 13, fontWeight: FontWeight.w500),
+            style: TextStyle(
+                color: Colors.grey[600],
+                fontSize: 13,
+                fontWeight: FontWeight.w500),
           ),
           Row(
             children: [
@@ -849,7 +1048,9 @@ Widget _buildFiltersCard() {
                         });
                       }
                     : null,
-                style: OutlinedButton.styleFrom(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8))),
+                style: OutlinedButton.styleFrom(
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8))),
                 child: Text(Trans.previous),
               ),
               const SizedBox(width: 8),
@@ -862,7 +1063,9 @@ Widget _buildFiltersCard() {
                         });
                       }
                     : null,
-                style: OutlinedButton.styleFrom(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8))),
+                style: OutlinedButton.styleFrom(
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8))),
                 child: Text(Trans.next),
               ),
             ],

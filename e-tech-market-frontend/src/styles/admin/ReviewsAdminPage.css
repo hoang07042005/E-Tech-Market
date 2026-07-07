@@ -269,3 +269,233 @@
     color: var(--admin-text-s);
     font-weight: 600
 }
+
+.reviewDetailModalOverlay {
+    position: fixed;
+    inset: 0;
+    z-index: 10000;
+    display: grid;
+    place-items: center;
+    padding: 24px;
+    background: rgba(15, 23, 42, .56)
+}
+
+.reviewDetailModal {
+    width: min(920px, 100%);
+    max-height: min(90vh, 760px);
+    overflow: auto;
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 32px 80px rgba(15, 23, 42, .32);
+    padding: 24px;
+    scrollbar-width: thin
+}
+
+.reviewDetailHeader {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--admin-border)
+}
+
+.reviewDetailKicker {
+    color: var(--admin-accent);
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    margin-bottom: 6px
+}
+
+.reviewDetailHeader h3 {
+    margin: 0;
+    font-size: 24px
+}
+
+.reviewDetailClose {
+    width: 36px;
+    height: 36px;
+    border: 1px solid var(--admin-border);
+    border-radius: 50%;
+    background: #ffffff;
+    cursor: pointer;
+    font-size: 24px;
+    line-height: 1
+}
+
+.reviewDetailGrid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+    margin-top: 18px
+}
+
+.reviewDetailBlock,
+.reviewDetailCommentBox,
+.reviewDetailMedia {
+    border: 1px solid var(--admin-border);
+    border-radius: 10px;
+    padding: 16px;
+    background: #ffffff
+}
+
+.reviewDetailBlockTitle {
+    color: var(--admin-text-s);
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    margin-bottom: 12px
+}
+
+.reviewDetailUser,
+.reviewDetailProduct {
+    display: flex;
+    align-items: center;
+    gap: 12px
+}
+
+.reviewDetailUser img,
+.reviewDetailAvatarFallback,
+.reviewDetailProduct img,
+.reviewDetailProductImgFallback {
+    width: 52px;
+    height: 52px;
+    border-radius: 10px;
+    object-fit: cover;
+    background: #f8fafc
+}
+
+.reviewDetailAvatarFallback {
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: rgba(249, 115, 22, .12);
+    color: var(--admin-accent);
+    font-weight: 800
+}
+
+.reviewDetailUser strong,
+.reviewDetailProduct strong {
+    display: block;
+    margin-bottom: 4px
+}
+
+.reviewDetailUser span,
+.reviewDetailProduct span {
+    color: var(--admin-text-s);
+    font-size: 12px
+}
+
+.reviewDetailMetaGrid,
+.reviewDetailExperience {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 12px;
+    margin-top: 16px
+}
+
+.reviewDetailExperience {
+    grid-template-columns: repeat(3, minmax(0, 1fr))
+}
+
+.reviewDetailMetaGrid div,
+.reviewDetailExperience div {
+    border: 1px solid var(--admin-border);
+    border-radius: 10px;
+    padding: 12px;
+    background: #fafafa
+}
+
+.reviewDetailMetaGrid span,
+.reviewDetailExperience span {
+    display: block;
+    color: var(--admin-text-s);
+    font-size: 12px;
+    margin-bottom: 6px
+}
+
+.reviewDetailMetaGrid strong,
+.reviewDetailExperience strong {
+    font-size: 14px
+}
+
+.reviewDetailCommentBox,
+.reviewDetailMedia {
+    margin-top: 16px
+}
+
+.reviewDetailCommentBox p {
+    margin: 0;
+    line-height: 1.7;
+    color: var(--admin-text-p)
+}
+
+.reviewDetailMediaGrid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px
+}
+
+.reviewDetailMediaItem {
+    position: relative;
+    display: block;
+    width: 92px;
+    height: 92px;
+    overflow: hidden;
+    border-radius: 10px;
+    background: #0f172a
+}
+
+.reviewDetailMediaItem img,
+.reviewDetailMediaItem video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block
+}
+
+.reviewDetailMediaItem span {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    color: #ffffff;
+    background: rgba(0, 0, 0, .18);
+    font-size: 22px
+}
+
+.reviewDetailFooter {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 18px
+}
+
+.reviewDetailRejectBtn {
+    border: 1px solid rgba(239, 68, 68, .24);
+    color: #b91c1c;
+    background: #fff;
+    border-radius: 5px;
+    padding: 12px 22px;
+    cursor: pointer;
+    font-weight: 700
+}
+
+@media (max-width: 760px) {
+    .reviewDetailGrid,
+    .reviewDetailMetaGrid,
+    .reviewDetailExperience {
+        grid-template-columns: 1fr
+    }
+
+    .reviewDetailModalOverlay {
+        padding: 12px
+    }
+
+    .reviewDetailModal {
+        padding: 18px
+    }
+}

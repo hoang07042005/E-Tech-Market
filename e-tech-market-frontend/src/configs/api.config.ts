@@ -115,7 +115,12 @@ export async function apiFetch<T>(
   const data = await parseJsonSafe<ApiError & T>(res)
   if (!res.ok) {
     if (res.status === 401) {
-      clearAuthToken()
+      const currentToken = getAuthToken()
+      // Only clear if the token we sent is the one currently in memory, OR if we didn't send one but there's still none.
+      // This prevents a background fetch that was sent without a token from wiping out a newly logged-in token.
+      if (token === currentToken) {
+        clearAuthToken()
+      }
       if (!silent401) {
         performAuthSessionExpiry()
         const msg401 = (data && typeof data.message === 'string') ? data.message : `Request failed: ${res.status}`

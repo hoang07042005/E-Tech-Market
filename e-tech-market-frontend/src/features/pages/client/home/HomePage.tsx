@@ -5,6 +5,7 @@ import heroImg from '@/assets/banner.jpg'
 import cpuImg from '@/assets/unnamed.png'
 
 import { useEffect, useState, useMemo, type FormEvent } from 'react'
+import { createPortal } from 'react-dom'
 import { Link, useNavigate } from 'react-router-dom'
 import { fetchProducts, type Product as ApiProduct, fetchCategories, type Category, type ProductReview } from '@/features/services/products.service'
 import { API_BASE_URL, apiFetch } from '@/configs/api.config'
@@ -12,7 +13,7 @@ import { API_BASE_URL, apiFetch } from '@/configs/api.config'
 import { addToCompare, getCompareList, removeFromCompare } from '@/features/services/compare.service'
 import FlashSaleSection from './FlashSaleSection'
 import { fetchActiveBanners, type Banner } from '@/features/services/client/banners.client.service'
-import { useWishlistQuery, useWishlistMutation, useCartMutation } from '@/features/services/mutations'
+import { useWishlistQuery, useWishlistMutation } from '@/features/services/mutations'
 import Skeleton from '@/components/Skeleton'
 import { useAuthStore } from '@/features/store/useAuthStore'
 
@@ -262,7 +263,7 @@ function ProductCard({
             {showDiscountBadge
               ? `${displayPrice.toLocaleString('vi-VN')} đ`
               : hasMultiplePrices
-                ? `Từ ${displayPrice.toLocaleString('vi-VN')} - ${displayPriceMax!.toLocaleString('vi-VN')} đ`
+                ? `${displayPrice.toLocaleString('vi-VN')} đ - ${displayPriceMax!.toLocaleString('vi-VN')} đ`
                 : `${displayPrice.toLocaleString('vi-VN')} đ`}
           </span>
           {displayOldPrice && displayOldPrice > displayPrice && showDiscountBadge && (
@@ -379,6 +380,8 @@ export default function HomePage() {
   const [loading, setLoading] = useState(true)
   const [banners, setBanners] = useState<Banner[]>([])
   const [currentBannerIndex, setCurrentBannerIndex] = useState(0)
+  const [selectedReviewMediaList, setSelectedReviewMediaList] = useState<{ url: string; type: string }[]>([])
+  const [selectedReviewMediaIndex, setSelectedReviewMediaIndex] = useState(0)
 
   useEffect(() => {
     if (banners.length <= 1) return
@@ -529,6 +532,63 @@ export default function HomePage() {
       setNewsletterLoading(false)
     }
   }
+
+  const reviewMediaModal = selectedReviewMediaList.length > 0 ? createPortal(
+    <div className="hpReviewMediaModalOverlay" onClick={() => setSelectedReviewMediaList([])}>
+      <div
+        className="hpReviewMediaModal"
+        onClick={(event) => event.stopPropagation()}
+      >
+        <button
+          type="button"
+          className="hpReviewMediaModalClose"
+          onClick={() => setSelectedReviewMediaList([])}
+          aria-label="Đóng"
+        >
+          ×
+        </button>
+        <div className="hpReviewMediaModalContent">
+          {selectedReviewMediaList[selectedReviewMediaIndex]?.type === 'image' ? (
+            <img
+              src={resolveImageUrl(selectedReviewMediaList[selectedReviewMediaIndex]?.url)}
+              alt="Ảnh đánh giá"
+            />
+          ) : (
+            <video
+              src={resolveImageUrl(selectedReviewMediaList[selectedReviewMediaIndex]?.url)}
+              controls
+              autoPlay
+              className="hpReviewMediaModalVideo"
+            />
+          )}
+        </div>
+        {selectedReviewMediaList.length > 1 && (
+          <div className="hpReviewMediaModalNav">
+            <button
+              type="button"
+              className="hpReviewMediaModalNavBtn"
+              onClick={() => setSelectedReviewMediaIndex((current) => Math.max(0, current - 1))}
+              disabled={selectedReviewMediaIndex === 0}
+            >
+              ‹
+            </button>
+            <span className="hpReviewMediaModalNavCounter">
+              {selectedReviewMediaIndex + 1} / {selectedReviewMediaList.length}
+            </span>
+            <button
+              type="button"
+              className="hpReviewMediaModalNavBtn"
+              onClick={() => setSelectedReviewMediaIndex((current) => Math.min(selectedReviewMediaList.length - 1, current + 1))}
+              disabled={selectedReviewMediaIndex === selectedReviewMediaList.length - 1}
+            >
+              ›
+            </button>
+          </div>
+        )}
+      </div>
+    </div>,
+    document.body
+  ) : null
 
   return (
     <div className="hpPage">
@@ -1025,6 +1085,47 @@ export default function HomePage() {
                         {rev.comment || 'Khách hàng không để lại bình luận.'}
                       </div>
 
+                      {Array.isArray(rev.media) && rev.media.length > 0 && (
+                        <div className="hpReviewMediaRow" style={{ marginTop: '12px' }}>
+                          {rev.media.map((item, idx) => (
+                            <button
+                              key={`${item.url}-${idx}`}
+                              type="button"
+                              className="hpReviewMediaItem"
+                              onClick={() => {
+                                const mediaList = Array.isArray(rev.media) ? rev.media : []
+                                setSelectedReviewMediaList(mediaList.map((m) => ({ url: m.url, type: m.type })))
+                                setSelectedReviewMediaIndex(idx)
+                              }}
+                            >
+                              {item.type === 'image' ? (
+                                <img
+                                  className="hpReviewMediaImage"
+                                  src={resolveImageUrl(item.url)}
+                                  alt={`Ảnh đánh giá ${idx + 1}`}
+                                  loading="lazy"
+                                  decoding="async"
+                                />
+                              ) : (
+                                <div className="hpReviewMediaVideoWrap">
+                                  <video
+                                    className="hpReviewMediaVideoPreview"
+                                    src={resolveImageUrl(item.url)}
+                                    muted
+                                    playsInline
+                                    loop
+                                    preload="metadata"
+                                  />
+                                  <span className="hpReviewMediaVideoBadge" aria-hidden>
+                                    ▶
+                                  </span>
+                                </div>
+                              )}
+                            </button>
+                          ))}
+                        </div>
+                      )}
+
                       <div className="hpReviewBottom">
                         <div className="hpReviewTime">
                           <span className="hpReviewClock">🕒</span>
@@ -1073,6 +1174,7 @@ export default function HomePage() {
         </section>
       </main>
 
+      {reviewMediaModal}
     </div>
   )
 }

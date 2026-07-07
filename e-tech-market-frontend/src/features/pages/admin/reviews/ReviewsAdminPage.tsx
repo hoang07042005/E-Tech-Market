@@ -8,10 +8,20 @@ type Review = {
   id: number
   product_id: number
   user_id: number
+  order_id?: number | null
   rating: number
-  comment: string
+  exp_performance?: number | null
+  exp_battery?: number | null
+  exp_camera?: number | null
+  comment: string | null
   status: 'pending' | 'approved' | 'rejected'
   created_at: string
+  updated_at?: string
+  media?: Array<{
+    type: 'image' | 'video'
+    url: string
+    original_name?: string | null
+  }>
   user: {
     id: number
     name: string
@@ -57,6 +67,24 @@ function resolveReviewImageUrl(url: string | null | undefined) {
   return `${API_BASE_URL}${path}`
 }
 
+function formatDateTimeVi(value: string | null | undefined) {
+  if (!value) return '—'
+  const date = new Date(value)
+  if (Number.isNaN(date.getTime())) return value
+  return date.toLocaleString('vi-VN')
+}
+
+function reviewStatusText(status: Review['status']) {
+  if (status === 'pending') return 'Chờ duyệt'
+  if (status === 'approved') return 'Đã duyệt'
+  return 'Từ chối'
+}
+
+function experienceText(value: number | null | undefined) {
+  if (typeof value !== 'number') return 'Chưa có'
+  return `${value}/5`
+}
+
 export default function ReviewsAdminPage() {
   const [reviews, setReviews] = useState<Review[]>([])
   const [totalReviews, setTotalReviews] = useState(0)
@@ -67,6 +95,7 @@ export default function ReviewsAdminPage() {
   const [totalPages, setTotalPages] = useState(1)
   const [showDeleteModal, setShowDeleteModal] = useState(false)
   const [reviewToDelete, setReviewToDelete] = useState<Review | null>(null)
+  const [selectedReview, setSelectedReview] = useState<Review | null>(null)
   // 🔒 Token is sent via httpOnly cookie automatically
   const hasAuth = true  // Always authenticated — behind ProtectedRoute
 
@@ -322,6 +351,16 @@ export default function ReviewsAdminPage() {
                   <td>{new Date(r.created_at).toLocaleDateString('vi-VN')}</td>
                   <td>
                     <div className="reviewActionRow">
+                      <button className="reviewActionBtn" onClick={() => setSelectedReview(r)} title="Xem chi tiết">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+                          stroke="#2563eb"
+                          strokeWidth="2.2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round">
+                          <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z" />
+                          <circle cx="12" cy="12" r="3" />
+                        </svg>
+                      </button>
                       {r.status !== 'approved' && (
                         <button className="reviewActionBtn" onClick={() => updateStatus(r.id, 'approved')}><svg xmlns="http://www.w3.org/2000/svg"
                           width="20"
@@ -329,9 +368,9 @@ export default function ReviewsAdminPage() {
                           viewBox="0 0 24 24"
                           fill="none"
                           stroke="#22c55e"
-                          stroke-width="2.5"
-                          stroke-linecap="round"
-                          stroke-linejoin="round">
+                          strokeWidth="2.5"
+                          strokeLinecap="round"
+                          strokeLinejoin="round">
 
                           <circle cx="12" cy="12" r="10" />
                           <path d="M8 12L11 15L16 9" />
@@ -404,6 +443,149 @@ export default function ReviewsAdminPage() {
           setReviewToDelete(null)
         }}
       />
+
+      {selectedReview && (
+        <div className="reviewDetailModalOverlay" onClick={() => setSelectedReview(null)}>
+          <div className="reviewDetailModal" onClick={(event) => event.stopPropagation()}>
+            <div className="reviewDetailHeader">
+              <div>
+                <div className="reviewDetailKicker">Chi tiết đánh giá</div>
+                <h3>Đánh giá #{selectedReview.id}</h3>
+              </div>
+              <button
+                type="button"
+                className="reviewDetailClose"
+                onClick={() => setSelectedReview(null)}
+                aria-label="Đóng"
+              >
+                ×
+              </button>
+            </div>
+
+            <div className="reviewDetailGrid">
+              <div className="reviewDetailBlock">
+                <div className="reviewDetailBlockTitle">Khách hàng</div>
+                <div className="reviewDetailUser">
+                  {selectedReview.user?.avatar_url ? (
+                    <img src={resolveReviewImageUrl(selectedReview.user.avatar_url)} alt={selectedReview.user.name} />
+                  ) : (
+                    <div className="reviewDetailAvatarFallback">
+                      {(selectedReview.user?.name || 'U').charAt(0).toUpperCase()}
+                    </div>
+                  )}
+                  <div>
+                    <strong>{selectedReview.user?.name || '—'}</strong>
+                    <span>ID người dùng: {selectedReview.user_id || '—'}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="reviewDetailBlock">
+                <div className="reviewDetailBlockTitle">Sản phẩm</div>
+                <div className="reviewDetailProduct">
+                  {selectedReview.product?.main_image_url ? (
+                    <img src={resolveReviewImageUrl(selectedReview.product.main_image_url)} alt={selectedReview.product.name} />
+                  ) : (
+                    <div className="reviewDetailProductImgFallback" />
+                  )}
+                  <div>
+                    <strong>{selectedReview.product?.name || '—'}</strong>
+                    <span>ID sản phẩm: {selectedReview.product_id || '—'}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="reviewDetailMetaGrid">
+              <div>
+                <span>Rating</span>
+                <strong>{selectedReview.rating}/5 ★</strong>
+              </div>
+              <div>
+                <span>Trạng thái</span>
+                <strong>{reviewStatusText(selectedReview.status)}</strong>
+              </div>
+              <div>
+                <span>Mã đơn hàng</span>
+                <strong>{selectedReview.order_id || '—'}</strong>
+              </div>
+              <div>
+                <span>Ngày tạo</span>
+                <strong>{formatDateTimeVi(selectedReview.created_at)}</strong>
+              </div>
+            </div>
+
+            <div className="reviewDetailExperience">
+              <div>
+                <span>Hiệu năng</span>
+                <strong>{experienceText(selectedReview.exp_performance)}</strong>
+              </div>
+              <div>
+                <span>Thời lượng pin</span>
+                <strong>{experienceText(selectedReview.exp_battery)}</strong>
+              </div>
+              <div>
+                <span>Camera</span>
+                <strong>{experienceText(selectedReview.exp_camera)}</strong>
+              </div>
+            </div>
+
+            <div className="reviewDetailCommentBox">
+              <div className="reviewDetailBlockTitle">Nội dung đánh giá</div>
+              <p>{selectedReview.comment || 'Khách hàng không để lại bình luận.'}</p>
+            </div>
+
+            {Array.isArray(selectedReview.media) && selectedReview.media.length > 0 && (
+              <div className="reviewDetailMedia">
+                <div className="reviewDetailBlockTitle">Ảnh / video đính kèm</div>
+                <div className="reviewDetailMediaGrid">
+                  {selectedReview.media.map((item, index) => (
+                    <a
+                      key={`${item.url}-${index}`}
+                      className="reviewDetailMediaItem"
+                      href={resolveReviewImageUrl(item.url)}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      {item.type === 'video' ? (
+                        <video src={resolveReviewImageUrl(item.url)} muted playsInline preload="metadata" />
+                      ) : (
+                        <img src={resolveReviewImageUrl(item.url)} alt={`Media đánh giá ${index + 1}`} />
+                      )}
+                      {item.type === 'video' && <span>▶</span>}
+                    </a>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <div className="reviewDetailFooter">
+              {selectedReview.status !== 'approved' && (
+                <button
+                  className="adminPrimaryBtn"
+                  onClick={() => {
+                    updateStatus(selectedReview.id, 'approved')
+                    setSelectedReview((current) => current ? { ...current, status: 'approved' } : current)
+                  }}
+                >
+                  Duyệt đánh giá
+                </button>
+              )}
+              {selectedReview.status !== 'rejected' && (
+                <button
+                  className="reviewDetailRejectBtn"
+                  onClick={() => {
+                    updateStatus(selectedReview.id, 'rejected')
+                    setSelectedReview((current) => current ? { ...current, status: 'rejected' } : current)
+                  }}
+                >
+                  Từ chối
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="reviewSummaryGrid">
         <div className="reviewSummaryCard">

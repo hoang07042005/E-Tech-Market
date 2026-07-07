@@ -41,8 +41,10 @@ class ReviewsController extends Controller
         try {
             $data['media'] = $request->file('media') ?: [];
             $review = $this->reviewService->submitReview($request->user(), $product, $data);
+            \Log::info('[ReviewStore] Dart app request success', ['id' => $review->id]);
             return response()->json($review, 201);
         } catch (\Exception $e) {
+            \Log::error('[ReviewStore] Exception caught', ['message' => $e->getMessage()]);
             $status = (int) $e->getCode();
             if ($status < 100 || $status > 599) {
                 $status = 500;
