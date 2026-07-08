@@ -1,5 +1,6 @@
 ﻿import { useCallback, useEffect, useMemo, useState } from 'react'
 import { apiFetch } from '@/configs/api.config'
+import '@/styles/admin/NotificationsAdmin.css' // Đảm bảo import đúng file CSS mới này
 
 type Notif = {
   id: number
@@ -25,7 +26,7 @@ function fmtVi(iso?: string | null) {
 }
 
 export default function NotificationsAdminPage() {
-  const hasAuth = true  // Always authenticated — behind ProtectedRoute
+  const hasAuth = true
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [res, setRes] = useState<NotifRes | null>(null)
@@ -69,64 +70,111 @@ export default function NotificationsAdminPage() {
     }
   }
 
+  // Hàm tự động gán Icon dựa vào từ khóa tiêu đề hoặc loại thông báo
+  const getNotifIcon = (title: string = '') => {
+    const t = title.toLowerCase();
+    if (t.includes('đơn hàng') || t.includes('order')) return '📦';
+    if (t.includes('thành viên') || t.includes('user')) return '👤';
+    if (t.includes('doanh thu') || t.includes('tiền')) return '💰';
+    if (t.includes('mã') || t.includes('coupon')) return '🎫';
+    return '🔔';
+  }
+
   return (
-    <div className="admOrdersPage">
-      <div className="admOrdersTop">
+    <div className="notifPageContainer">
+      {/* Header phía trên */}
+      <div className="notifPageHeader">
         <div>
-          <h2 className="admOrdersTitle">Thông báo</h2>
+          <h2 className="notifPageTitle">Trung tâm Thông báo</h2>
+          <p className="notifPageSubtitle">Xem và cập nhật các thông tin vận hành từ hệ thống.</p>
         </div>
+        {res && res.unread > 0 && (
+          <span className="notifUnreadBadge">
+            {res.unread} thông báo mới
+          </span>
+        )}
       </div>
 
-      <section className="admOrdersTableCard">
+      {/* Vùng nội dung chính */}
+      <div className="notifFeedWrapper">
         {loading ? (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-            {Array.from({ length: 6 }).map((_, i) => (
-              <div key={i} style={{ padding: 12, border: '1px solid rgba(15,23,42,.08)', borderRadius: 5 }}>
-                <div className="admSkeletonBar" style={{ width: '40%', height: 16, marginBottom: 8 }} />
-                <div className="admSkeletonBar" style={{ width: '80%', height: 12, marginBottom: 6 }} />
-                <div className="admSkeletonBar" style={{ width: '30%', height: 10 }} />
+          <div className="notifLoadingList">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <div key={i} className="notifSkeletonItem">
+                <div className="skeletonIcon" />
+                <div className="skeletonContent">
+                  <div className="admSkeletonBar" style={{ width: '35%', height: 16, marginBottom: 8 }} />
+                  <div className="admSkeletonBar" style={{ width: '75%', height: 14, marginBottom: 8 }} />
+                  <div className="admSkeletonBar" style={{ width: '20%', height: 12 }} />
+                </div>
               </div>
             ))}
           </div>
         ) : error ? (
-          <div className="admOrdersEmpty">{error}</div>
+          <div className="notifErrorState">{error}</div>
         ) : !rows.length ? (
-          <div className="admOrdersEmpty">Chưa có thông báo.</div>
+          <div className="notifEmptyState">
+            <div className="emptyStateIcon">📭</div>
+            <p>Hộp thư của bạn đang trống.</p>
+          </div>
         ) : (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+          <div className="notifList">
             {rows.map((n) => (
               <button
                 key={n.id}
                 type="button"
+                className={`notifItemRow ${n.read_at ? 'isRead' : 'isUnread'}`}
                 onClick={() => void markRead(n.id)}
-                style={{
-                  textAlign: 'left',
-                  border: '1px solid var(--admin-border)',
-                  background: n.read_at ? 'var(--admin-card-bg)' : 'rgba(37,99,235,.12)',
-                  borderRadius: 5,
-                  padding: 12,
-                  cursor: 'pointer',
-                }}
               >
-                <div style={{ display: 'flex', justifyContent: 'space-between', gap: 10 }}>
-                  <div style={{ fontWeight: 900, fontSize: 13, color: 'var(--admin-text-p)' }}>{n.title || '—'}</div>
-                  <span className={`admOrdersStatus2 ${n.read_at ? 'tone-muted' : 'tone-info'}`}>{n.read_at ? 'Đã đọc' : 'Mới'}</span>
+                {/* Khối biểu tượng minh họa */}
+                <div className="notifIconBox">
+                  {getNotifIcon(n.title || '')}
                 </div>
-                <div style={{ marginTop: 6, fontWeight: 700, fontSize: 12, color: 'var(--admin-text-s)' }}>{n.body || ''}</div>
-                <div style={{ marginTop: 6, fontWeight: 800, fontSize: 12, color: 'var(--admin-text-s)' }}>{fmtVi(n.created_at)}</div>
+
+                {/* Khối nội dung chữ */}
+                <div className="notifContentBox">
+                  <div className="notifMetaTop">
+                    <h4 className="notifTitleText">{n.title || 'Thông báo hệ thống'}</h4>
+                    <span className={`notifStatusTag ${n.read_at ? 'read' : 'unread'}`}>
+                      {n.read_at ? 'Đã đọc' : 'Mới'}
+                    </span>
+                  </div>
+                  <p className="notifBodyText">{n.body || ''}</p>
+                  <span className="notifTimeText">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ marginRight: 4, verticalAlign: 'middle' }}><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                    {fmtVi(n.created_at)}
+                  </span>
+                </div>
               </button>
             ))}
           </div>
         )}
 
-        <div className="admOrdersPager">
-          <button className="admOrdersBtn" disabled={(pg?.current_page ?? 1) <= 1} onClick={() => setPage((p) => Math.max(1, p - 1))}>Trước</button>
-          <span className="admOrdersPagerInfo">
-            Trang {(pg?.current_page ?? 1)} / {(pg?.last_page ?? 1)}
+        {/* Bộ phân trang */}
+        <div className="notifPagination">
+          <button 
+            className="notifPagerBtn" 
+            disabled={(pg?.current_page ?? 1) <= 1} 
+            onClick={() => setPage((p) => Math.max(1, p - 1))}
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="15 18 9 12 15 6"></polyline></svg>
+            Trước
+          </button>
+          
+          <span className="notifPagerInfo">
+            Trang <b>{(pg?.current_page ?? 1)}</b> / {(pg?.last_page ?? 1)}
           </span>
-          <button className="admOrdersBtn" disabled={(pg?.current_page ?? 1) >= (pg?.last_page ?? 1)} onClick={() => setPage((p) => p + 1)}>Sau</button>
+          
+          <button 
+            className="notifPagerBtn" 
+            disabled={(pg?.current_page ?? 1) >= (pg?.last_page ?? 1)} 
+            onClick={() => setPage((p) => p + 1)}
+          >
+            Sau
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+          </button>
         </div>
-      </section>
+      </div>
     </div>
   )
 }

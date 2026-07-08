@@ -1,0 +1,272 @@
+/* ==========================================================================
+   MODERN TIMELINE NOTIFICATIONS ADMIN
+   ========================================================================== */
+
+.notifPageContainer {
+  padding: 32px;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  color: #334155;
+  background-color: #f8fafc;
+  min-height: 100vh;
+}
+
+/* Header */
+.notifPageHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 28px;
+}
+
+.notifPageTitle {
+  margin: 0 0 6px 0;
+  font-size: 1.65rem;
+  font-weight: 700;
+  color: #0f172a;
+  letter-spacing: -0.02em;
+}
+
+.notifPageSubtitle {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #64748b;
+}
+
+/* Badge số thông báo chưa đọc */
+.notifUnreadBadge {
+  background-color: #ffedd5;
+  color: #ea580c;
+  padding: 6px 14px;
+  border-radius: 99px;
+  font-size: 13px;
+  font-weight: 600;
+  border: 1px solid #fed7aa;
+}
+
+/* Khung bọc luồng thông báo */
+.notifFeedWrapper {
+  max-width: 850px; /* Định giới hạn chiều ngang để đọc nội dung không bị mỏi mắt */
+  margin: 0 auto;
+}
+
+.notifList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Thiết kế từng dòng thông báo thành dạng Thẻ (Card Row) */
+.notifItemRow {
+  display: flex;
+  gap: 16px;
+  width: 100%;
+  text-align: left;
+  padding: 16px 20px;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  cursor: pointer;
+  background-color: #ffffff;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+}
+
+/* Trạng thái CHƯA ĐỌC - Nổi bật nhẹ với viền cam và nền cam nhạt */
+.notifItemRow.isUnread {
+  background-color: #fffaf7;
+  border-color: #ffedd5;
+  box-shadow: 0 2px 8px rgba(234, 88, 12, 0.04);
+}
+
+.notifItemRow.isUnread:hover {
+  border-color: #fed7aa;
+  background-color: #fff5f0;
+}
+
+/* Trạng thái ĐÃ ĐỌC - Chìm nhẹ */
+.notifItemRow.isRead {
+  background-color: #ffffff;
+  opacity: 0.85;
+}
+
+.notifItemRow.isRead:hover {
+  background-color: #f8fafc;
+  border-color: #cbd5e1;
+  opacity: 1;
+}
+
+/* Khối Icon */
+.notifIconBox {
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  background-color: #f1f5f9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  flex-shrink: 0;
+  border: 1px solid #e2e8f0;
+}
+
+.notifItemRow.isUnread .notifIconBox {
+  background-color: #ffedd5;
+  border-color: #fed7aa;
+}
+
+/* Khối thông tin chi tiết */
+.notifContentBox {
+  flex: 1;
+}
+
+.notifMetaTop {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 4px;
+}
+
+.notifTitleText {
+  margin: 0;
+  font-size: 14.5px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.notifItemRow.isRead .notifTitleText {
+  font-weight: 600;
+  color: #334155;
+}
+
+/* Nhãn Mới / Đã đọc */
+.notifStatusTag {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.notifStatusTag.unread {
+  background-color: #ea580c;
+  color: #ffffff;
+}
+
+.notifStatusTag.read {
+  background-color: #f1f5f9;
+  color: #94a3b8;
+}
+
+/* Thân nội dung chữ thông báo */
+.notifBodyText {
+  margin: 0 0 8px 0;
+  font-size: 13.5px;
+  color: #475569;
+  line-height: 1.5;
+}
+
+.notifItemRow.isRead .notifBodyText {
+  color: #64748b;
+}
+
+/* Thời gian */
+.notifTimeText {
+  font-size: 12px;
+  color: #94a3b8;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+}
+
+/* Bộ Phân Trang (Pagination) */
+.notifPagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  margin-top: 32px;
+}
+
+.notifPagerBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border: 1px solid #e2e8f0;
+  background: white;
+  color: #475569;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.notifPagerBtn:not(:disabled):hover {
+  border-color: #cbd5e1;
+  background: #f8fafc;
+  color: #0f172a;
+}
+
+.notifPagerBtn:disabled {
+  opacity: .4;
+  cursor: not-allowed;
+  background: #f1f5f9;
+}
+
+.notifPagerInfo {
+  font-size: 14px;
+  color: #64748b;
+}
+
+/* Skeleton Loading */
+.notifSkeletonItem {
+  display: flex;
+  gap: 16px;
+  padding: 16px 20px;
+  border: 1px solid #f1f5f9;
+  background-color: white;
+  border-radius: 12px;
+}
+
+.skeletonIcon {
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  background-color: #f1f5f9;
+  flex-shrink: 0;
+}
+
+.skeletonContent {
+  flex: 1;
+}
+
+.admSkeletonBar {
+  background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+  background-size: 200% 100%;
+  animation: notifShimmer 1.5s infinite linear;
+  border-radius: 4px;
+}
+
+@keyframes notifShimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* Empty & Error State */
+.notifEmptyState,
+.notifErrorState {
+  padding: 80px 40px;
+  text-align: center;
+  background: white;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  color: #94a3b8;
+  font-weight: 500;
+}
+
+.emptyStateIcon {
+  font-size: 44px;
+  margin-bottom: 12px;
+}
