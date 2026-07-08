@@ -34,8 +34,8 @@ class Review extends Model
         'media' => 'array',
     ];
 
+    // Không ẩn created_at để Admin có thể render cột "Ngày tạo"
     protected $hidden = [
-        'created_at',
         'updated_at',
         'deleted_at',
     ];

@@ -1,292 +1,537 @@
-.contactsAdminPage {
-    padding: 0
+/* --- BIẾN SỐ MÀU SẮC ĐỒNG BỘ --- */
+:root {
+  --primary-blue: #2563eb;
+  --primary-blue-hover: #1d4ed8;
+  --bg-slate: #f8fafc;
+  --border-slate: #e2e8f0;
+  --text-dark: #1e293b;
+  --text-slate: #475569;
+  --text-light: #64748b;
+  --shadow-box: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -2px rgba(0,0,0,0.05);
+  --shadow-lg: 0 20px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.1);
 }
 
+.contactsAdminPage {
+  padding: 24px;
+  max-width: 1280px;
+  margin: 0 auto;
+  font-family: system-ui, -apple-system, sans-serif;
+  color: var(--text-dark);
+}
+
+/* HEADER STYLE */
+.contactsAdminHeader {
+  margin-bottom: 24px;
+}
+.adminPageTitle {
+  font-size: 24px;
+  font-weight: 700;
+  margin: 0;
+  color: var(--text-dark);
+}
+.adminPageSubtitle {
+  font-size: 14px;
+  color: var(--text-light);
+  margin: 6px 0 0 0;
+}
+
+/* TOOLBAR & FILTERS */
 .contactsAdminPage .contactsToolbar {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    align-items: center;
-    gap: 14px;
-    margin-bottom: 18px
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 20px;
 }
 
 .contactsAdminPage .contactsFilterTabs {
-    display: flex;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 8px
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .contactsAdminPage .contactsFilterTabs button {
-    border: 1px solid #f1dcc9;
-    background: #fff5ec;
-    color: #8a6d56;
-    border-radius: 12px;
-    padding: 10px 14px;
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer
+  border: 1px solid var(--border-slate);
+  background: #fff;
+  color: var(--text-slate);
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.contactsAdminPage .contactsFilterTabs button:hover {
+  background: var(--bg-slate);
+  border-color: #cbd5e1;
 }
 
 .contactsAdminPage .contactsFilterTabs button.isActive {
-    background: #ff9500;
-    border-color: #ff9500;
-    color: #fff
-}
-
-.contactsAdminPage .contactsToolbarActions {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    flex-wrap: wrap
+  background: var(--admin-accent);
+  border-color: var(--admin-accent);
+  color: #fff;
+  font-weight: 600;
+  box-shadow: 0 2px 4px rgba(37,99,235,0.2);
 }
 
 .contactsAdminPage .contactsSortSelect {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    border: 1px solid #f1dcc9;
-    background: #fffaf5;
-    border-radius: 12px;
-    padding: 8px 10px
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid var(--border-slate);
+  background: #fff;
+  border-radius: 8px;
+  padding: 8px 12px;
 }
 
 .contactsAdminPage .contactsSortSelect span {
-    font-size: 14px;
-    color: #8a6d56;
-    font-weight: 600
+  font-size: 13px;
+  color: var(--text-light);
 }
 
 .contactsAdminPage .contactsSortSelect select {
-    border: none;
-    background: transparent;
-    color: #5f4a37;
-    font-size: 14px;
-    font-weight: 600
+  border: none;
+  background: transparent;
+  color: var(--text-dark);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  outline: none;
 }
 
-.contactsAdminPage .contactsSortSelect select:focus {
-    outline: none
-}
-
+/* DATA TABLE CONTAINER */
 .contactsAdminPage .adminTableWrap {
-    border: 1px solid #f1dcc9;
-    border-radius: 5px;
-    background: #fffdfb;
-    padding: 0;
-    overflow: hidden
+  border: 1px solid var(--border-slate);
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: var(--shadow-box);
+  overflow: hidden;
 }
 
-.contactsAdminPage .adminLoading,
 .contactsAdminPage .adminEmpty {
-    min-height: 240px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #8a6d56;
-    font-size: 15px
+  min-height: 280px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-light);
+  font-size: 15px;
 }
 
 .contactsAdminPage .contactsTable {
-    width: 100%;
-    border-collapse: collapse
-}
-
-.contactsAdminPage .contactsTable th,
-.contactsAdminPage .contactsTable td {
-    padding: 14px 16px;
-    text-align: left;
-    vertical-align: middle
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
 }
 
 .contactsAdminPage .contactsTable th {
-    background: #fff7f0;
-    border-bottom: 1px solid #f1dcc9;
-    color: #6f4f37;
-    font-size: 13px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: .03em
+  background: var(--bg-slate);
+  border-bottom: 1px solid var(--border-slate);
+  color: var(--text-slate);
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  padding: 14px 20px;
+  text-align: left;
 }
 
-.contactsAdminPage .contactsTable tbody tr {
-    border-bottom: 1px solid #f5e6d8
+.contactsAdminPage .contactsTable td {
+  padding: 14px 20px;
+  vertical-align: middle;
+  border-bottom: 1px solid #f1f5f9;
 }
 
+.contactsAdminPage .contactsTable tbody tr.clickableRow {
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.contactsAdminPage .contactsTable tbody tr.clickableRow:hover td {
+  background: #f8fafc;
+}
+
+.text-right { text-align: right !important; }
+
+/* USER CARD PROFILE CELL */
 .contactsAdminPage .customerCell {
-    display: flex;
-    align-items: center;
-    gap: 10px
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
 .contactsAdminPage .customerAvatar {
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    background: #f6e3d0;
-    color: #8a5b2e;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 600;
-    font-size: 13px
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: #e0f2fe;
+  color: #0369a1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 13px;
 }
 
 .contactsAdminPage .customerInfo {
-    display: flex;
-    flex-direction: column;
-    gap: 4px
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
 }
 
 .contactsAdminPage .customerInfo strong {
-    color: #443224;
-    font-size: 16px
+  color: var(--text-dark);
+  font-size: 15px;
+  font-weight: 600;
 }
 
 .contactsAdminPage .customerInfo span {
-    color: #92745f;
-    font-size: 14px;
-    font-weight: 600
+  color: var(--text-light);
+  font-size: 12px;
 }
 
+/* CONTACT METHODS */
 .contactsAdminPage .contactInfoCell {
-    display: flex;
-    flex-direction: column;
-    gap: 4px
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
 }
 
 .contactsAdminPage .contactInfoLink {
-    color: #6f4f37;
-    text-decoration: none;
-    font-weight: 600;
-    font-size: 15px
+  color: var(--text-slate);
+  text-decoration: none;
+  font-size: 14px;
 }
 
 .contactsAdminPage .contactInfoLink:hover {
-    text-decoration: underline
+  color: var(--primary-blue);
+  text-decoration: underline;
 }
 
+/* MESSAGE CLIP PREVIEW */
 .contactsAdminPage .subjectText,
 .contactsAdminPage .messageText {
-    margin: 0;
-    max-width: 220px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    color: #554235;
-    font-size: 15px;
-    font-weight: 600
+  margin: 0;
+  max-width: 200px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--text-slate);
+  font-size: 14px;
+}
+.contactsAdminPage .subjectText {
+  font-weight: 500;
+  color: var(--text-dark);
 }
 
+/* STATUS BADGES */
 .contactsAdminPage .statusPill {
-    display: inline-block;
-    padding: 7px 12px;
-    border-radius: 999px;
-    font-size: 14px;
-    font-weight: 600
+  display: inline-flex;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+  border: 1px solid transparent;
 }
 
 .contactsAdminPage .statusPill.pending {
-    background: #ffe6e8;
-    color: #b42332
+  background: #fef2f2;
+  color: #991b1b;
+  border-color: #fecaca;
 }
 
 .contactsAdminPage .statusPill.done {
-    background: #dff4ff;
-    color: #0f5f9c
+  background: #f0fdf4;
+  color: #166534;
+  border-color: #bbf7d0;
 }
 
+/* SYSTEM ACTION ICONS */
 .contactsAdminPage .contactActions {
-    display: flex;
-    align-items: center;
-    gap: 8px
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  justify-content: flex-end;
 }
 
 .contactsAdminPage .iconBtn {
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
-    border: 1px solid #e8d4bf;
-    background: #fff;
-    color: #8a5b2e;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 14px;
-    text-decoration: none;
-    cursor: pointer;
-    transition: .2s ease
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  border: 1px solid var(--border-slate);
+  background: #fff;
+  color: var(--text-slate);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  text-decoration: none;
 }
 
 .contactsAdminPage .iconBtn:hover {
-    background: #fff2e5
+  background: var(--bg-slate);
+  color: var(--text-dark);
 }
 
-.contactsAdminPage .iconBtn.danger {
-    color: #c6202c;
-    border-color: #f5c6cc
-}
+.contactsAdminPage .iconBtn.success { color: #16a34a; border-color: #bbf7d0; }
+.contactsAdminPage .iconBtn.success:hover { background: #f0fdf4; }
 
-.contactsAdminPage .iconBtn.danger:hover {
-    background: #ffecef
-}
+.contactsAdminPage .iconBtn.info { color: var(--primary-blue); border-color: #bfdbfe; }
+.contactsAdminPage .iconBtn.info:hover { background: #eff6ff; }
 
+.contactsAdminPage .iconBtn.danger { color: #dc2626; border-color: #fecaca; }
+.contactsAdminPage .iconBtn.danger:hover { background: #fef2f2; }
+
+/* PAGINATION AREA */
 .contactsAdminPage .contactsPagination {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 12px;
-    margin-top: 14px;
-    flex-wrap: wrap
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-top: 20px;
+  flex-wrap: wrap;
 }
 
 .contactsAdminPage .contactsPagination p {
-    margin: 0;
-    color: #8a6d56;
-    font-size: 14px;
-    font-weight: 600
+  margin: 0;
+  color: var(--text-light);
+  font-size: 14px;
 }
 
 .contactsAdminPage .pageNumbers {
-    display: flex;
-    align-items: center;
-    gap: 6px
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .contactsAdminPage .pageNumbers button {
-    min-width: 34px;
-    height: 34px;
-    border-radius: 8px;
-    border: 1px solid #f1dcc9;
-    background: #fff;
-    color: #8a6d56;
-    font-weight: 600;
-    cursor: pointer;
-    padding: 0 10px
+  min-width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  border: 1px solid var(--border-slate);
+  background: #fff;
+  color: var(--text-slate);
+  font-weight: 500;
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  transition: all 0.2s;
+}
+
+.contactsAdminPage .pageNumbers button:hover:not(:disabled) {
+  background: var(--bg-slate);
+  border-color: #cbd5e1;
 }
 
 .contactsAdminPage .pageNumbers button.isCurrent {
-    background: #ff9500;
-    border-color: #ff9500;
-    color: #fff
+  background: var(--admin-accent);
+  border-color: var(--admin-accent);
+  color: #fff;
+  font-weight: 600;
 }
 
 .contactsAdminPage .pageNumbers button:disabled {
-    opacity: .55;
-    cursor: not-allowed
+  opacity: .4;
+  cursor: not-allowed;
 }
 
-@media (max-width:900px) {
-    .contactsAdminPage .adminTableWrap {
-        overflow-x: auto
-    }
+/* --- MODAL XEM CHI TIẾT --- */
+.contactDetailModalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.4);
+  backdrop-filter: blur(4px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
 
-    .contactsAdminPage .contactsTable {
-        min-width: 920px
-    }
+.contactDetailModalBox {
+  background: #fff;
+  width: 100%;
+  max-width: 850px;
+  border-radius: 16px;
+  box-shadow: var(--shadow-lg);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: modalScaleUp 0.2s ease-out;
+}
 
-    .contactsAdminPage .contactsToolbarActions {
-        justify-content: flex-start
-    }
+@keyframes modalScaleUp {
+  from { transform: scale(0.96); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+.contactDetailModalBox .modalHeader {
+  padding: 16px 24px;
+  background: var(--bg-slate);
+  border-bottom: 1px solid var(--border-slate);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.contactDetailModalBox .modalHeader h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-dark);
+}
+
+.closeModalBtn {
+  background: none;
+  border: none;
+  font-size: 24px;
+  color: var(--text-light);
+  cursor: pointer;
+}
+.closeModalBtn:hover { color: var(--text-dark); }
+
+/* BỐ CỤC NỘI DUNG 2 CỘT MODAL */
+.modalContentLayout {
+  padding: 24px;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+}
+
+@media (min-width: 768px) {
+  .modalContentLayout { grid-template-columns: 280px 1fr; }
+}
+
+.modalSidebarInfo {
+  background: var(--bg-slate);
+  padding: 20px;
+  border-radius: 12px;
+  border: 1px solid var(--border-slate);
+  text-align: center;
+}
+
+.modalAvatarLarge {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: #e0f2fe;
+  color: #0369a1;
+  font-size: 20px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 12px auto;
+}
+
+.modalSidebarInfo h4 { margin: 0 0 4px 0; font-size: 16px; font-weight: 700; }
+.modalMetaTime { font-size: 12px; color: var(--text-light); margin: 0; }
+.infoDivider { height: 1px; background: var(--border-slate); margin: 16px 0; }
+
+.infoDetailRow {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+  margin-bottom: 12px;
+  gap: 2px;
+}
+.infoLabel { font-size: 12px; color: var(--text-light); font-weight: 500; }
+.infoValue { font-size: 14px; font-weight: 500; color: var(--text-dark); word-break: break-all; }
+.infoValue.link { color: var(--primary-blue); text-decoration: none; }
+.infoValue.link:hover { text-decoration: underline; }
+
+.handledMetaBox {
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px dashed var(--border-slate);
+  text-align: left;
+  font-size: 12px;
+  color: #166534;
+  background: #f0fdf4;
+  padding: 8px;
+  border-radius: 6px;
+}
+.handledMetaBox p { margin: 2px 0; }
+
+/* PHẦN HIỂN THỊ TIN NHẮN CHÍNH */
+.modalMainMessage {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.messageGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.messageGroup label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-light);
+}
+
+.subjectDisplay {
+  padding: 10px 14px;
+  background: #f8fafc;
+  border-radius: 8px;
+  font-weight: 600;
+  border: 1px solid var(--border-slate);
+  font-size: 15px;
+}
+
+.messageContentDisplay {
+  padding: 14px;
+  background: #fff;
+  border-radius: 8px;
+  border: 1px solid var(--border-slate);
+  min-height: 160px;
+  max-height: 260px;
+  overflow-y: auto;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  font-size: 14px;
+  -ms-overflow-style: 'none';
+  scrollbar-width: 'none';
+}
+.messageContentDisplay::-webkit-scrollbar { display: none; }
+/* FOOTER BUTTONS MODAL */
+.modalFooterActions {
+  padding: 16px 24px;
+  border-top: 1px solid var(--border-slate);
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  background: var(--bg-slate);
+}
+
+.ab-btn {
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  border: 1px solid transparent;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+}
+.btn-primary { background: var(--admin-accent); color: #fff; }
+.btn-primary:hover { background: var(--admin-accent-hover); }
+.btn-outline { background: #fff; border-color: #cbd5e1; color: var(--text-slate); }
+.btn-outline:hover { background: var(--bg-slate); }
+.btn-info { background: #eff6ff; color: var(--primary-blue); border-color: #bfdbfe; }
+.btn-info:hover { background: #dbeafe; }
+
+/* MEDIA RESPONSIVE TABLE */
+@media (max-width: 900px) {
+  .contactsAdminPage .adminTableWrap { overflow-x: auto; }
+  .contactsAdminPage .contactsTable { min-width: 880px; }
 }

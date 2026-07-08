@@ -1,8 +1,7 @@
 ﻿import { useEffect, useState } from 'react'
 import { apiFetch, API_BASE_URL } from '@/configs/api.config'
 import ConfirmModal from '@/components/ConfirmModal'
-import '@/styles/admin/AdminPage.css' // Reuse styles
-import '@/styles/admin/AdminBlogPage.css'
+import '@/styles/admin/AdminBlogPage.css' // File CSS làm mới ở dưới
 
 type BlogCategory = {
   id: number
@@ -41,12 +40,14 @@ const resolveImageUrl = (url: string | null) => {
 }
 
 export default function AdminBlogPage() {
-  // 🔒 Token is sent via httpOnly cookie automatically
-  const hasAuth = true  // Always authenticated — behind ProtectedRoute
+  const hasAuth = true
   const [posts, setPosts] = useState<BlogPost[]>([])
   const [categories, setCategories] = useState<BlogCategory[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  
+  // Quản lý tab hiển thị: 'posts' hoặc 'categories'
+  const [activeTab, setActiveTab] = useState<'posts' | 'categories'>('posts')
 
   const [isFormOpen, setIsFormOpen] = useState(false)
   const [editingPost, setEditingPost] = useState<BlogPost | null>(null)
@@ -60,14 +61,13 @@ export default function AdminBlogPage() {
     meta_title: '',
     meta_description: ''
   })
+  
   const [submitting, setSubmitting] = useState(false)
   const [confirmOpen, setConfirmOpen] = useState(false)
   const [pendingDeletePost, setPendingDeletePost] = useState<BlogPost | null>(null)
   
-  // Category management
   const [categoryConfirmOpen, setCategoryConfirmOpen] = useState(false)
   const [pendingDeleteCategory, setPendingDeleteCategory] = useState<BlogCategory | null>(null)
-  const [dropdownOpen, setDropdownOpen] = useState(false)
 
   const loadData = async () => {
     if (!hasAuth) return
@@ -109,7 +109,7 @@ export default function AdminBlogPage() {
         content: post.content,
         thumbnail_url: post.thumbnail_url || '',
         is_published: post.is_published,
-        meta_title: '', // Not returned by default, would need to fetch full post if needed
+        meta_title: '',
         meta_description: ''
       })
     } else {
@@ -179,7 +179,20 @@ export default function AdminBlogPage() {
     }
   }
 
-  // Category management handlers
+  const handleAddCategory = async () => {
+    const name = window.prompt('Nhập tên danh mục mới:')
+    if (!name || !name.trim() || !hasAuth) return
+    try {
+      await apiFetch<BlogCategory>('/api/admin/blog-categories', {
+        method: 'POST',
+        body: JSON.stringify({ name: name.trim() })
+      })
+      await reloadCategories()
+    } catch (e: any) {
+      alert('Lỗi tạo danh mục: ' + e.message)
+    }
+  }
+
   const handleEditCategory = (category: BlogCategory) => {
     const newName = window.prompt('Nhập tên danh mục mới:', category.name)
     if (!newName || !newName.trim() || !hasAuth) return
@@ -221,301 +234,201 @@ export default function AdminBlogPage() {
 
   if (loading) {
     return (
-      <div  className="adminblogpage-style-1">
-        <div  className="adminblogpage-style-2">
-          <div className="admSkeletonBar adminblogpage-style-3"  />
-          <div className="admSkeletonBar adminblogpage-style-4"  />
+      <div className="ab-container">
+        <div className="ab-skeleton-header">
+          <div className="ab-skeleton-bar w-200"></div>
+          <div className="ab-skeleton-bar w-150"></div>
         </div>
-        <div className="adminTableWrap">
-          <table className="adminTable">
+        <div className="ab-table-card">
+          <div className="ab-skeleton-row"></div>
+          <div className="ab-skeleton-row"></div>
+          <div className="ab-skeleton-row"></div>
+        </div>
+      </div>
+    )
+  }
+
+  if (error) return <div className="ab-error-state">Lỗi hệ thống: {error}</div>
+
+  return (
+    <div className="ab-container">
+      {/* Top Header Panel */}
+      <div className="ab-header-panel">
+        <div>
+          <h2 className="ab-title">Quản trị nội dung Blog</h2>
+          <p className="ab-subtitle">Quản lý các bài viết tin tức và danh mục hiển thị trên hệ thống.</p>
+        </div>
+        <div className="ab-header-actions">
+          <button onClick={handleAddCategory} className="ab-btn ab-btn-outline">
+            + Danh mục mới
+          </button>
+          <button onClick={() => handleOpenForm()} className="ab-btn ab-btn-primary">
+            + Thêm bài viết
+          </button>
+        </div>
+      </div>
+
+      {/* Navigation Tabs */}
+      <div className="ab-tabs-container">
+        <button
+          onClick={() => setActiveTab('posts')}
+          className={`ab-tab-item ${activeTab === 'posts' ? 'active' : ''}`}
+        >
+          Bài viết ({posts.length})
+        </button>
+        <button
+          onClick={() => setActiveTab('categories')}
+          className={`ab-tab-item ${activeTab === 'categories' ? 'active' : ''}`}
+        >
+          Danh mục ({categories.length})
+        </button>
+      </div>
+
+      {/* TAB 1: BÀI VIẾT */}
+      {activeTab === 'posts' && (
+        <div className="ab-table-card">
+          <table className="ab-modern-table">
+            <thead>
+              <tr>
+                <th>Hình ảnh</th>
+                <th>Tiêu đề</th>
+                <th>Danh mục</th>
+                <th>Trạng thái</th>
+                <th>Ngày tạo</th>
+                <th className="text-right">Thao tác</th>
+              </tr>
+            </thead>
             <tbody>
-              {Array.from({ length: 6 }).map((_, i) => (
-                <tr key={i} className="admSkeletonRow">
-                  <td colSpan={7}>
-                    <div className="admSkeletonCell">
-                      <div className="admSkeletonBar" style={{ width: i % 2 === 0 ? '70%' : '90%' }} />
-                    </div>
+              {posts.map(p => (
+                <tr key={p.id}>
+                  <td>
+                    {p.thumbnail_url ? (
+                      <img src={resolveImageUrl(p.thumbnail_url)} alt="" className="ab-table-thumb" />
+                    ) : (
+                      <div className="ab-table-thumb-empty">N/A</div>
+                    )}
+                  </td>
+                  <td className="ab-cell-title" title={p.title}>{p.title}</td>
+                  <td>
+                    <span className="ab-badge-category">{p.category?.name || '—'}</span>
+                  </td>
+                  <td>
+                    {p.is_published ? (
+                      <span className="ab-badge-status published">Đã xuất bản</span>
+                    ) : (
+                      <span className="ab-badge-status draft">Bản nháp</span>
+                    )}
+                  </td>
+                  <td className="text-muted">
+                    {new Date(p.published_at || new Date()).toLocaleDateString('vi-VN')}
+                  </td>
+                  <td className="text-right actions-cell">
+                    <button onClick={() => handleOpenForm(p)} className="btn-link-edit">Sửa</button>
+                    <button onClick={() => handleDelete(p)} className="btn-link-delete">Xóa</button>
+                  </td>
+                </tr>
+              ))}
+              {posts.length === 0 && (
+                <tr>
+                  <td colSpan={6} className="ab-empty-text">Chưa có bài viết nào được tạo.</td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      {/* TAB 2: DANH MỤC */}
+      {activeTab === 'categories' && (
+        <div className="ab-table-card max-w-3xl">
+          <table className="ab-modern-table">
+            <thead>
+              <tr>
+                <th>Tên danh mục</th>
+                <th>Slug</th>
+                <th className="text-right">Thao tác</th>
+              </tr>
+            </thead>
+            <tbody>
+              {categories.map(c => (
+                <tr key={c.id}>
+                  <td className="font-semibold">{c.name}</td>
+                  <td className="text-muted">{c.slug || '—'}</td>
+                  <td className="text-right actions-cell">
+                    <button onClick={() => handleEditCategory(c)} className="btn-link-edit">Sửa tên</button>
+                    <button onClick={() => handleDeleteCategory(c)} className="btn-link-delete">Xóa</button>
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
-      </div>
-    )
-  }
-  if (error) return <div  className="adminblogpage-style-5">Lỗi: {error}</div>
+      )}
 
-  return (
-    <div  className="adminblogpage-style-6">
-      <div  className="adminblogpage-style-7">
-        <h2  className="adminblogpage-style-8">Quản lý Tin tức (Blog)</h2>
-        <button className="adminBtnPrimary" onClick={() => handleOpenForm()}>
-          + Thêm Bài Viết
-        </button>
-      </div>
-
-      <div className="adminTableWrap">
-        <table className="adminTable">
-          <thead>
-            <tr>
-              {/* <th>ID</th> */}
-              <th>Hình ảnh</th>
-              <th>Tiêu đề</th>
-              <th>Danh mục</th>
-              <th>Trạng thái</th>
-              <th>Ngày tạo</th>
-              <th>Thao tác</th>
-            </tr>
-          </thead>
-          <tbody>
-            {posts.map(p => (
-              <tr key={p.id}>
-                {/* <td>{p.id}</td> */}
-                <td>
-                  {p.thumbnail_url ? (
-                    <img src={resolveImageUrl(p.thumbnail_url)} alt=""   className="adminblogpage-style-9" />
-                  ) : '—'}
-                </td>
-                <td  className="adminblogpage-style-10">
-                  {p.title}
-                </td>
-                <td>{p.category?.name || '—'}</td>
-                <td>
-                  {p.is_published ? (
-                    <span  className="adminblogpage-style-11">Đã xuất bản</span>
-                  ) : (
-                    <span  className="adminblogpage-style-12">Bản nháp</span>
-                  )}
-                </td>
-                <td>{new Date(p.published_at || new Date()).toLocaleDateString('vi-VN')}</td>
-                <td>
-                  <button className="adminBtnSecondary adminblogpage-style-13"  onClick={() => handleOpenForm(p)}>Sửa</button>
-                  <button className="adminBtnDanger" onClick={() => handleDelete(p)}>Xóa</button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-
-      <ConfirmModal
-        open={confirmOpen}
-        title="Xác nhận xóa bài viết"
-        message={
-          pendingDeletePost ? (
-            <div style={{ display: 'grid', gap: 12 }}>
-              <p>Bạn có chắc chắn muốn xóa bài viết này không?</p>
-              <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
-                {pendingDeletePost.thumbnail_url ? (
-                  <img
-                    src={resolveImageUrl(pendingDeletePost.thumbnail_url)}
-                    alt={pendingDeletePost.title}
-                    style={{ width: 84, height: 56, objectFit: 'cover', borderRadius: 8, border: '1px solid #e5e7eb' }}
-                  />
-                ) : (
-                  <div style={{ width: 84, height: 56, borderRadius: 8, background: '#f3f4f6', display: 'grid', placeItems: 'center', color: '#6b7280', fontSize: 12 }}>
-                    Không có ảnh
-                  </div>
-                )}
-                <div>
-                  <strong>{pendingDeletePost.title}</strong>
-                  <div style={{ color: '#6b7280' }}>
-                    {pendingDeletePost.slug}
-                  </div>
-                  <div style={{ marginTop: 4, color: '#64748b' }}>
-                    {pendingDeletePost.category?.name || 'Không có danh mục'}
-                  </div>
-                </div>
-              </div>
-            </div>
-          ) : (
-            'Bạn có chắc chắn muốn xóa bài viết này?'
-          )
-        }
-        onConfirm={confirmDelete}
-        onCancel={() => {
-          setConfirmOpen(false)
-          setPendingDeletePost(null)
-        }}
-      />
-
-      <ConfirmModal
-        open={categoryConfirmOpen}
-        title="Xác nhận xóa danh mục"
-        message={
-          pendingDeleteCategory ? (
-            <div>
-              <p>Bạn có chắc chắn muốn xóa danh mục <strong>"{pendingDeleteCategory.name}"</strong> không?</p>
-              <p style={{ color: '#64748b', fontSize: '0.9rem', marginTop: '8px' }}>Lưu ý: Các bài viết trong danh mục này có thể bị ảnh hưởng.</p>
-            </div>
-          ) : (
-            'Bạn có chắc chắn muốn xóa danh mục này không?'
-          )
-        }
-        onConfirm={confirmDeleteCategory}
-        onCancel={() => {
-          setCategoryConfirmOpen(false)
-          setPendingDeleteCategory(null)
-        }}
-      />
-
+      {/* MODAL FORM (BỐ CỤC 2 CỘT HIỆN ĐẠI) */}
       {isFormOpen && (
-        <div  className="adminblogpage-style-14">
-          <div  className="adminblogpage-style-15">
-            <h2>{editingPost ? 'Sửa bài viết' : 'Thêm bài viết mới'}</h2>
-            <form onSubmit={handleSubmit}  className="adminblogpage-style-16">
-              <div>
-                <label  className="adminblogpage-style-17">Tiêu đề *</label>
-                <input 
-                  type="text" 
-                  value={formData.title} 
-                  onChange={e => setFormData({ ...formData, title: e.target.value })} 
-                  style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #ccc' }} 
-                  required 
-                />
+        <div className="ab-modal-overlay">
+          <div className="ab-modal-box">
+            <div className="ab-modal-header">
+              <h3>{editingPost ? 'Cập nhật bài viết' : 'Tạo bài viết mới'}</h3>
+              <button onClick={() => setIsFormOpen(false)} className="ab-modal-close">&times;</button>
+            </div>
+
+            <form onSubmit={handleSubmit} className="ab-modal-form-body">
+              {/* Cột trái: Nội dung chính (2 phần diện tích) */}
+              <div className="ab-form-main-col">
+                <div className="ab-form-group">
+                  <label>Tiêu đề bài viết *</label>
+                  <input 
+                    type="text" 
+                    value={formData.title} 
+                    onChange={e => setFormData({ ...formData, title: e.target.value })} 
+                    placeholder="Nhập tiêu đề hấp dẫn..."
+                    required 
+                  />
+                </div>
+
+                <div className="ab-form-group">
+                  <label>Mô tả ngắn (Excerpt)</label>
+                  <textarea 
+                    value={formData.excerpt} 
+                    onChange={e => setFormData({ ...formData, excerpt: e.target.value })} 
+                    className="h-80"
+                    placeholder="Tóm tắt ngắn gọn nội dung bài viết..."
+                  />
+                </div>
+
+                <div className="ab-form-group">
+                  <label>Nội dung (HTML) *</label>
+                  <textarea 
+                    value={formData.content} 
+                    onChange={e => setFormData({ ...formData, content: e.target.value })} 
+                    className="h-240 font-mono"
+                    placeholder="Hỗ trợ mã code HTML nội dung bài viết..."
+                    required 
+                  />
+                </div>
               </div>
 
-              <div  className="adminblogpage-style-18">
-                <div  className="adminblogpage-style-19">
-                  <div  className="adminblogpage-style-20">
-                    <label  className="adminblogpage-style-21">Danh mục</label>
-                    <button 
-                      type="button" 
-                      onClick={async () => {
-                        const name = window.prompt('Nhập tên danh mục mới:')
-                        if (!name || !name.trim() || !hasAuth) return
-                        try {
-                          const res = await apiFetch<BlogCategory>('/api/admin/blog-categories', {
-                            method: 'POST',
-                            body: JSON.stringify({ name: name.trim() })
-                          })
-                          await reloadCategories()
-                          setFormData({ ...formData, blog_category_id: res.id.toString() })
-                        } catch (e: any) {
-                          alert('Lỗi tạo danh mục: ' + e.message)
-                        }
-                      }}
-                      style={{ background: 'none', border: 'none', color: 'var(--et-primary)', cursor: 'pointer', fontSize: '0.9rem', fontWeight: 'bold', padding: 0 }}
-                    >
-                      + Thêm mới
-                    </button>
-                  </div>
-                  <div style={{ position: 'relative' }}>
-                    <button
-                      type="button"
-                      onClick={() => setDropdownOpen(!dropdownOpen)}
-                      style={{
-                        width: '100%',
-                        padding: '10px',
-                        borderRadius: '8px',
-                        border: '1px solid #ccc',
-                        textAlign: 'left',
-                        background: '#fff',
-                        cursor: 'pointer'
-                      }}
-                    >
-                      {formData.blog_category_id
-                        ? categories.find(c => c.id === Number(formData.blog_category_id))?.name
-                        : '-- Chọn danh mục --'}
-                    </button>
-                    {dropdownOpen && (
-                      <div
-                         className="dropdown"
-                        style={{
-                          position: 'absolute',
-                          top: '100%',
-                          left: 0,
-                          right: 0,
-                          background: '#fff',
-                          border: '1px solid #ccc',
-                          borderTop: 'none',
-                          borderRadius: '0 0 8px 8px',
-                          maxHeight: '300px',
-                          overflowY: 'auto',
-                          zIndex: 10,
-                          boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
-                          msOverflowStyle: 'none',
-                          scrollbarWidth: 'none',
-                        }}
-                      >
-                        <div
-                          onClick={() => {
-                            setFormData({ ...formData, blog_category_id: '' })
-                            setDropdownOpen(false)
-                          }}
-                          style={{
-                            padding: '10px',
-                            cursor: 'pointer',
-                            borderBottom: '1px solid #eee',
-                            color: '#666'
-                          }}
-                        >
-                          -- Chọn danh mục --
-                        </div>
-                        {categories.map(c => (
-                          <div
-                            key={c.id}
-                            style={{
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'space-between',
-                              padding: '10px',
-                              borderBottom: '1px solid #eee',
-                              background: formData.blog_category_id === c.id.toString() ? '#f0f0f0' : '#fff',
-                              cursor: 'pointer'
-                            }}
-                            onClick={() => {
-                              setFormData({ ...formData, blog_category_id: c.id.toString() })
-                              setDropdownOpen(false)
-                            }}
-                          >
-                            <span style={{ flex: 1 }}>{c.name}</span>
-                            <div style={{ display: 'flex', gap: '6px' }} onClick={(e: React.MouseEvent) => e.stopPropagation()}>
-                              <button
-                                type="button"
-                                onClick={(e: React.MouseEvent) => {
-                                  e.stopPropagation()
-                                  handleEditCategory(c)
-                                }}
-                                style={{
-                                  padding: '4px 8px',
-                                  fontSize: '12px',
-                                  color: '#3b82f6',
-                                  border: 'none',
-                                  borderRadius: '4px',
-                                  cursor: 'pointer'
-                                }}
-                              >
-                               Sửa
-                              </button>
-                              <button
-                                type="button"
-                                onClick={(e) => {
-                                  e.stopPropagation()
-                                  handleDeleteCategory(c)
-                                }}
-                                style={{
-                                  padding: '4px 8px',
-                                  fontSize: '12px',
-                                  color: '#ef4444',
-                                  border: 'none',
-                                  borderRadius: '4px',
-                                  cursor: 'pointer'
-                                }}
-                              >
-                                Xóa
-                              </button>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
+              {/* Cột phải: Metadata cấu hình (1 phần diện tích) */}
+              <div className="ab-form-sidebar-col">
+                <div className="ab-form-group">
+                  <label>Danh mục bài viết</label>
+                  <select
+                    value={formData.blog_category_id}
+                    onChange={e => setFormData({ ...formData, blog_category_id: e.target.value })}
+                  >
+                    <option value="">-- Chọn danh mục --</option>
+                    {categories.map(c => (
+                      <option key={c.id} value={c.id}>{c.name}</option>
+                    ))}
+                  </select>
                 </div>
-                <div  className="adminblogpage-style-22">
-                  <label  className="adminblogpage-style-23">Ảnh Thumbnail</label>
-                  <div  className="adminblogpage-style-24">
+
+                <div className="ab-form-group">
+                  <label>Ảnh đại diện (Thumbnail)</label>
+                  <label className="ab-upload-zone">
+                    <span>Click để chọn hoặc tải file ảnh</span>
                     <input 
                       type="file" 
                       accept="image/*"
@@ -534,51 +447,41 @@ export default function AdminBlogPage() {
                           alert('Lỗi tải ảnh: ' + err.message)
                         }
                       }}
-                      style={{ width: '100%', padding: '6px', borderRadius: '8px', border: '1px solid #ccc' }} 
                     />
-                  </div>
+                  </label>
                   {formData.thumbnail_url && (
-                    <div  className="adminblogpage-style-25">
-                      <img src={resolveImageUrl(formData.thumbnail_url)} alt="Thumbnail"   className="adminblogpage-style-26" />
+                    <div className="ab-thumb-preview-wrap">
+                      <img src={resolveImageUrl(formData.thumbnail_url)} alt="Preview" />
+                      <button 
+                        type="button" 
+                        onClick={() => setFormData({ ...formData, thumbnail_url: '' })}
+                        className="ab-btn-remove-thumb"
+                      >✕</button>
                     </div>
                   )}
                 </div>
+
+                <div className="ab-toggle-status-wrap">
+                  <label className="ab-checkbox-label">
+                    <input 
+                      type="checkbox" 
+                      checked={formData.is_published} 
+                      onChange={e => setFormData({ ...formData, is_published: e.target.checked })} 
+                    />
+                    <div>
+                      <strong>Xuất bản công khai</strong>
+                      <p>Người dùng có thể đọc bài viết này ngay lập tức.</p>
+                    </div>
+                  </label>
+                </div>
               </div>
 
-              <div>
-                <label  className="adminblogpage-style-27">Mô tả ngắn (Excerpt)</label>
-                <textarea 
-                  value={formData.excerpt} 
-                  onChange={e => setFormData({ ...formData, excerpt: e.target.value })} 
-                  style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #ccc', minHeight: '60px' }} 
-                />
-              </div>
-
-              <div>
-                <label  className="adminblogpage-style-28">Nội dung (HTML) *</label>
-                <textarea 
-                  value={formData.content} 
-                  onChange={e => setFormData({ ...formData, content: e.target.value })} 
-                  style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #ccc', minHeight: '200px', fontFamily: 'monospace' }} 
-                  required 
-                />
-              </div>
-
-              <div  className="adminblogpage-style-29">
-                <label  className="adminblogpage-style-30">
-                  <input 
-                    type="checkbox" 
-                    checked={formData.is_published} 
-                    onChange={e => setFormData({ ...formData, is_published: e.target.checked })} 
-                    style={{ width: '18px', height: '18px' }}
-                  />
-                  Xuất bản bài viết
-                </label>
-              </div>
-
-              <div  className="adminblogpage-style-31">
-                <button type="button" className="adminBtnSecondary" onClick={() => setIsFormOpen(false)} disabled={submitting}>Hủy</button>
-                <button type="submit" className="adminBtnPrimary" disabled={submitting}>
+              {/* Nút bấm ở chân Form */}
+              <div className="ab-form-footer">
+                <button type="button" onClick={() => setIsFormOpen(false)} className="ab-btn ab-btn-outline" disabled={submitting}>
+                  Hủy bỏ
+                </button>
+                <button type="submit" className="ab-btn ab-btn-primary" disabled={submitting}>
                   {submitting ? 'Đang lưu...' : 'Lưu bài viết'}
                 </button>
               </div>
@@ -586,6 +489,51 @@ export default function AdminBlogPage() {
           </div>
         </div>
       )}
+
+      {/* Các Modal xác nhận giữ nguyên logic */}
+      <ConfirmModal
+        open={confirmOpen}
+        title="Xác nhận xóa bài viết"
+        message={
+          pendingDeletePost && (
+            <div className="ab-confirm-msg">
+              <p>Hành động này không thể hoàn tác. Bạn chắc chắn muốn xóa bài viết sau?</p>
+              <div className="ab-confirm-item-info">
+                {pendingDeletePost.thumbnail_url && (
+                  <img src={resolveImageUrl(pendingDeletePost.thumbnail_url)} alt="" />
+                )}
+                <div>
+                  <h4>{pendingDeletePost.title}</h4>
+                  <span>Danh mục: {pendingDeletePost.category?.name || 'Không'}</span>
+                </div>
+              </div>
+            </div>
+          )
+        }
+        onConfirm={confirmDelete}
+        onCancel={() => {
+          setConfirmOpen(false)
+          setPendingDeletePost(null)
+        }}
+      />
+
+      <ConfirmModal
+        open={categoryConfirmOpen}
+        title="Xác nhận xóa danh mục"
+        message={
+          pendingDeleteCategory && (
+            <div className="ab-confirm-msg">
+              <p>Bạn có chắc chắn muốn xóa danh mục <strong>"{pendingDeleteCategory.name}"</strong> không?</p>
+              <p className="ab-warning-banner">⚠️ Lưu ý: Các bài viết thuộc danh mục này có thể bị ảnh hưởng.</p>
+            </div>
+          )
+        }
+        onConfirm={confirmDeleteCategory}
+        onCancel={() => {
+          setCategoryConfirmOpen(false)
+          setPendingDeleteCategory(null)
+        }}
+      />
     </div>
   )
 }

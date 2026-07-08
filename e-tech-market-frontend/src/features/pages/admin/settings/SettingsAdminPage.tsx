@@ -1033,7 +1033,6 @@ export default function SettingsAdminPage() {
               }
             >
               <option value="vi">Tiếng Việt</option>
-              <option value="en">English</option>
             </select>
           </label>
         </div>

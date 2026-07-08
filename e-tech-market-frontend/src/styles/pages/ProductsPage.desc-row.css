@@ -1,0 +1,43 @@
+.ppCardDescRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  position: relative;
+}
+
+.ppCardDescClamp {
+  color: #777;
+  font-size: 13px;
+  line-height: 1.6;
+  flex: 1 1 auto;
+  min-width: 0;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+}
+
+/* Nút đang dùng class ppCardAddBtn sẵn có trong ProductsPage.css */
+/* Ta chỉ override một ít để giống app: nút nhỏ và nằm trên hàng mô tả */
+.ppCardDescRow .ppCardAddBtn {
+  width: auto;
+  flex: 0 0 auto;
+  padding: 8px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  line-height: 1;
+  text-transform: none;
+  margin-top: 2px;
+}
+
+/* Mặt che để né nút khi mô tả dài (tương tự logic Flutter: chừa khoảng phải để tránh nút) */
+.ppCardDescSideCover {
+  position: absolute;
+  right: 0;
+  top: 0;
+  height: 100%;
+  width: 44px; /* khớp xấp xỉ vùng nút */
+  pointer-events: none;
+}

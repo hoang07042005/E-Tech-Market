@@ -1,8 +1,7 @@
 ﻿import { useState, useEffect, useCallback, useMemo } from 'react'
 import type { ChangeEvent } from 'react'
 import { apiFetch } from '@/configs/api.config'
-import {  } from '@/features/services/admin/api.admin.service'
-import '@/styles/admin/ContactsAdminPage.css'
+import '@/styles/admin/ContactsAdminPage.css' // Import CSS mới cập nhật
 
 type ContactMessage = {
   id: number
@@ -29,7 +28,8 @@ export default function ContactsAdminPage() {
   const [sortOrder, setSortOrder] = useState<'newest' | 'oldest'>('newest')
   const [page, setPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
-  const hasAuth = true  // Always authenticated — behind ProtectedRoute
+  const [selectedMessage, setSelectedMessage] = useState<ContactMessage | null>(null) // State quản lý xem chi tiết
+  const hasAuth = true 
 
   const fetchMessages = useCallback(
     async (currentPage: number, handledStatus: 'all' | 'yes' | 'no') => {
@@ -67,6 +67,10 @@ export default function ContactsAdminPage() {
         body: JSON.stringify({}),
       })
       setMessages((prev) => prev.map((m) => (m.id === id ? res : m)))
+      // Cập nhật lại thông tin hiển thị nếu đang mở modal chi tiết
+      if (selectedMessage && selectedMessage.id === id) {
+        setSelectedMessage(res)
+      }
     } catch {
       alert('Lỗi cập nhật.')
     }
@@ -78,6 +82,7 @@ export default function ContactsAdminPage() {
     try {
       await apiFetch(`/api/admin/contact-messages/${id}`, { method: 'DELETE' })
       setMessages((prev) => prev.filter((m) => m.id !== id))
+      if (selectedMessage?.id === id) setSelectedMessage(null)
     } catch {
       alert('Lỗi khi xoá.')
     }
@@ -118,11 +123,18 @@ export default function ContactsAdminPage() {
   }
 
   return (
-    <div className="contactsAdminPage adminPageContainer">
+    <div className="contactsAdminPage">
+      {/* Page Title */}
+      <div className="contactsAdminHeader">
+        <h2 className="adminPageTitle">Quản lý hộp thư liên hệ</h2>
+        <p className="adminPageSubtitle">Tiếp nhận, xử lý và phản hồi các yêu cầu từ khách hàng gửi về hệ thống.</p>
+      </div>
+
+      {/* Toolbar Filters & Sorting */}
       <div className="contactsToolbar">
         <div className="contactsFilterTabs">
           <button className={handledFilter === 'all' ? 'isActive' : ''} onClick={() => { setHandledFilter('all'); setPage(1) }}>
-            Tất cả
+            Tất cả ({messages.length})
           </button>
           <button className={handledFilter === 'no' ? 'isActive' : ''} onClick={() => { setHandledFilter('no'); setPage(1) }}>
             Chưa xử lý
@@ -143,6 +155,7 @@ export default function ContactsAdminPage() {
         </div>
       </div>
 
+      {/* Table Section */}
       <div className="adminTableWrap">
         {loading ? (
           <table className="contactsTable">
@@ -153,15 +166,15 @@ export default function ContactsAdminPage() {
                 <th>Chủ đề</th>
                 <th>Nội dung</th>
                 <th>Trạng thái</th>
-                <th>Hành động</th>
+                <th className="text-right">Hành động</th>
               </tr>
             </thead>
             <tbody>
-              {Array.from({ length: 8 }).map((_, i) => (
+              {Array.from({ length: 6 }).map((_, i) => (
                 <tr key={i} className="admSkeletonRow">
                   <td colSpan={6}>
                     <div className="admSkeletonCell">
-                      <div className="admSkeletonBar" style={{ width: i % 2 === 0 ? '70%' : '90%' }} />
+                      <div className="admSkeletonBar" style={{ width: i % 2 === 0 ? '75%' : '85%' }} />
                     </div>
                   </td>
                 </tr>
@@ -169,7 +182,7 @@ export default function ContactsAdminPage() {
             </tbody>
           </table>
         ) : messages.length === 0 ? (
-          <div className="adminEmpty">Không có tin nhắn nào.</div>
+          <div className="adminEmpty">Hộp thư trống. Không có tin nhắn nào khớp với bộ lọc.</div>
         ) : (
           <table className="contactsTable">
             <thead>
@@ -177,15 +190,15 @@ export default function ContactsAdminPage() {
                 <th>Khách hàng</th>
                 <th>Thông tin liên hệ</th>
                 <th>Chủ đề</th>
-                <th>Nội dung</th>
+                <th>Nội dung tóm tắt</th>
                 <th>Trạng thái</th>
-                <th>Hành động</th>
+                <th className="text-right">Hành động</th>
               </tr>
             </thead>
             <tbody>
               {displayedMessages.map((m) => (
-                <tr key={m.id}>
-                  <td>
+                <tr key={m.id} className="clickableRow" onClick={() => setSelectedMessage(m)}>
+                  <td onClick={(e) => e.stopPropagation()}>
                     <div className="customerCell">
                       <div className="customerAvatar">{getInitials(m.name)}</div>
                       <div className="customerInfo">
@@ -194,7 +207,7 @@ export default function ContactsAdminPage() {
                       </div>
                     </div>
                   </td>
-                  <td>
+                  <td onClick={(e) => e.stopPropagation()}>
                     <div className="contactInfoCell">
                       <a className="contactInfoLink" href={`mailto:${m.email}`}>{m.email}</a>
                       {m.phone && <a className="contactInfoLink" href={`tel:${m.phone}`}>{m.phone}</a>}
@@ -207,14 +220,20 @@ export default function ContactsAdminPage() {
                     <p className="messageText" title={m.message}>{m.message}</p>
                   </td>
                   <td>
-                    <span className={`statusPill ${m.handled_at ? 'done' : 'pending'}`} title={m.handled_at ? `Xử lý bởi: ${m.handled_by?.name || 'Admin'}` : undefined}>
-                      {m.handled_at ? 'Đã xử lý' : 'Cần chú ý'}
+                    <span 
+                      className={`statusPill ${m.handled_at ? 'done' : 'pending'}`} 
+                      title={m.handled_at ? `Xử lý bởi: ${m.handled_by?.name || 'Admin'}` : undefined}
+                    >
+                      {m.handled_at ? 'Đã xử lý' : 'Chưa xử lý'}
                     </span>
                   </td>
-                  <td>
+                  <td className="text-right" onClick={(e) => e.stopPropagation()}>
                     <div className="contactActions">
+                      <button className="iconBtn" onClick={() => setSelectedMessage(m)} title="Xem chi tiết">
+                        👁
+                      </button>
                       {!m.handled_at && (
-                        <button className="iconBtn" onClick={() => markHandled(m.id)} title="Đánh dấu đã xử lý" aria-label="Đánh dấu đã xử lý">
+                        <button className="iconBtn success" onClick={() => markHandled(m.id)} title="Đánh dấu đã xử lý">
                           ✓
                         </button>
                       )}
@@ -222,13 +241,12 @@ export default function ContactsAdminPage() {
                         href={getGmailComposeUrl(m)}
                         target="_blank"
                         rel="noreferrer"
-                        className="iconBtn"
-                        title="Trả lời email"
-                        aria-label="Trả lời email"
+                        className="iconBtn info"
+                        title="Phản hồi qua Gmail"
                       >
                         ↩
                       </a>
-                      <button className="iconBtn danger" onClick={() => deleteMessage(m.id)} title="Xóa liên hệ" aria-label="Xóa liên hệ">
+                      <button className="iconBtn danger" onClick={() => deleteMessage(m.id)} title="Xóa thư">
                         🗑
                       </button>
                     </div>
@@ -240,8 +258,9 @@ export default function ContactsAdminPage() {
         )}
       </div>
 
+      {/* Pagination Container */}
       <div className="contactsPagination">
-        <p>Hiển thị {startItem}-{endItem} trong số {totalPages * 10} liên hệ</p>
+        <p>Hiển thị <strong>{startItem} - {endItem}</strong> trong tổng số <strong>{totalPages * 10}</strong> yêu cầu liên hệ</p>
         <div className="pageNumbers">
           <button disabled={page <= 1} onClick={() => setPage((p) => p - 1)} aria-label="Trang trước">
             ‹
@@ -256,6 +275,88 @@ export default function ContactsAdminPage() {
           </button>
         </div>
       </div>
+
+      {/* MODAL XEM CHI TIẾT LIÊN HỆ */}
+      {selectedMessage && (
+        <div className="contactDetailModalOverlay" onClick={() => setSelectedMessage(null)}>
+          <div className="contactDetailModalBox" onClick={(e) => e.stopPropagation()}>
+            <div className="modalHeader">
+              <h3>Chi tiết yêu cầu liên hệ #{selectedMessage.id}</h3>
+              <button className="closeModalBtn" onClick={() => setSelectedMessage(null)}>&times;</button>
+            </div>
+            
+            <div className="modalContentLayout">
+              {/* Cột trái: Thông tin khách hàng */}
+              <div className="modalSidebarInfo">
+                <div className="modalAvatarLarge">{getInitials(selectedMessage.name)}</div>
+                <h4>{selectedMessage.name}</h4>
+                <p className="modalMetaTime">Gửi lúc: {new Date(selectedMessage.created_at).toLocaleString('vi-VN')}</p>
+                
+                <div className="infoDivider"></div>
+                
+                <div className="infoDetailRow">
+                  <span className="infoLabel">Email:</span>
+                  <a href={`mailto:${selectedMessage.email}`} className="infoValue link">{selectedMessage.email}</a>
+                </div>
+                <div className="infoDetailRow">
+                  <span className="infoLabel">Số điện thoại:</span>
+                  {selectedMessage.phone ? (
+                    <a href={`tel:${selectedMessage.phone}`} className="infoValue link">{selectedMessage.phone}</a>
+                  ) : (
+                    <span className="infoValue italic text-muted">Chưa cung cấp</span>
+                  )}
+                </div>
+                <div className="infoDetailRow">
+                  <span className="infoLabel">Trạng thái:</span>
+                  <span className={`statusPill ${selectedMessage.handled_at ? 'done' : 'pending'}`}>
+                    {selectedMessage.handled_at ? 'Đã xử lý' : 'Đang chờ giải quyết'}
+                  </span>
+                </div>
+
+                {selectedMessage.handled_at && (
+                  <div className="handledMetaBox">
+                    <p><strong>Người duyệt:</strong> {selectedMessage.handled_by?.name || 'Quản trị viên'}</p>
+                    <p><strong>Vào lúc:</strong> {new Date(selectedMessage.handled_at).toLocaleString('vi-VN')}</p>
+                  </div>
+                )}
+              </div>
+
+              {/* Cột phải: Nội dung chi tiết nhắn gửi */}
+              <div className="modalMainMessage">
+                <div className="messageGroup">
+                  <label>Chủ đề liên hệ</label>
+                  <div className="subjectDisplay">{selectedMessage.subject}</div>
+                </div>
+
+                <div className="messageGroup">
+                  <label>Nội dung tin nhắn</label>
+                  <div className="messageContentDisplay">{selectedMessage.message}</div>
+                </div>
+              </div>
+            </div>
+
+            <div className="modalFooterActions">
+              <button className="ab-btn btn-outline" onClick={() => setSelectedMessage(null)}>Đóng</button>
+              <a 
+                href={getGmailComposeUrl(selectedMessage)} 
+                target="_blank" 
+                rel="noreferrer" 
+                className="ab-btn btn-info"
+              >
+                ↩ Phản hồi Email
+              </a>
+              {!selectedMessage.handled_at && (
+                <button 
+                  className="ab-btn btn-primary" 
+                  onClick={() => markHandled(selectedMessage.id)}
+                >
+                  ✓ Xác nhận đã xử lý
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

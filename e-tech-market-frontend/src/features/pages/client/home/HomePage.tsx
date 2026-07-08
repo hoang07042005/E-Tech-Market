@@ -273,11 +273,12 @@ function ProductCard({
 
         <p className="hpProductExcerpt">{excerpt}</p>
 
-        <Link
+        {/* <Link
           to={`/products/${product.slug}`}
           className="hpAddToCartFullBtn"
         >
-          XEM CHI TIẾT →        </Link>
+          XEM CHI TIẾT →        
+        </Link> */}
       </div>
     </div>
   )
