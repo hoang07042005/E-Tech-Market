@@ -218,7 +218,7 @@ class _FlashSaleProductScreenState extends State<FlashSaleProductScreen> {
       backgroundColor: Color(0xFF121212),
       body: Center(
           child: Column(mainAxisSize: MainAxisSize.min, children: [
-        CircularProgressIndicator(color: Color(0xFFFF5722), strokeWidth: 3),
+        CircularProgressIndicator(color: const Color(0xFFF26522), strokeWidth: 3),
         SizedBox(height: 16),
         Text('\u0110ang t\u1EA3i Flash Sale...',
             style: TextStyle(color: Color(0xFFE4BEB4), fontSize: 14)),

@@ -212,7 +212,7 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
     if (_isLoading) {
       return Scaffold(
         appBar: AppBar(backgroundColor: Colors.white, foregroundColor: Colors.black, elevation: 1),
-        body: const Center(child: CircularProgressIndicator(color: Color(0xFFEF7A45))),
+        body: const Center(child: CircularProgressIndicator(color: const Color(0xFFF26522))),
       );
     }
 

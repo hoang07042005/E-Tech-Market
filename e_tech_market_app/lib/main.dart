@@ -54,10 +54,16 @@ class _MyAppState extends State<MyApp> {
               theme: ThemeData(
                 colorScheme: colorSchemeLight,
                 useMaterial3: true,
+                progressIndicatorTheme: const ProgressIndicatorThemeData(
+                  color: Color(0xFFF26522),
+                ),
               ),
               darkTheme: ThemeData(
                 colorScheme: colorSchemeDark,
                 useMaterial3: true,
+                progressIndicatorTheme: const ProgressIndicatorThemeData(
+                  color: Color(0xFFF26522),
+                ),
               ),
               themeMode: ThemeController.instance.themeMode,
               home: const EntryPoint(),

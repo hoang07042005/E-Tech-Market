@@ -98,7 +98,7 @@ class _BlogScreenState extends State<BlogScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              CircularProgressIndicator(color: Theme.of(context).colorScheme.primary),
+              CircularProgressIndicator(color: const Color(0xFFF26522)),
               const SizedBox(height: 16),
               Text(Trans.loadingNews),
             ],

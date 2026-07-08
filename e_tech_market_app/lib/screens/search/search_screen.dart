@@ -22,6 +22,7 @@ class _SearchScreenState extends State<SearchScreen> {
   List<dynamic> _searchResults = [];
   bool _isLoading = false;
   String _searchQuery = '';
+  bool _showSuggestions = false;
 
   @override
   void initState() {
@@ -41,11 +42,15 @@ class _SearchScreenState extends State<SearchScreen> {
   }
 
   // Hàm xử lý logic tìm kiếm
-  Future<void> _performSearch(String query) async {
+  Future<void> _performSearch(String query, {bool isTyping = false}) async {
+    if (!mounted) return;
     setState(() {
       _searchQuery = query;
+      _isLoading = true;
+      if (!isTyping) {
+        _showSuggestions = false;
+      }
     });
-
     if (query.trim().isEmpty) {
       setState(() {
         _searchResults = [];
@@ -147,176 +152,76 @@ class _SearchScreenState extends State<SearchScreen> {
         leading: BackButton(
           color: colorScheme.onSurface,
         ),
-        title: Container(
-          decoration: BoxDecoration(
-            color: colorScheme.surface,
-            borderRadius: BorderRadius.circular(10),
-            border: Border.all(
-              color: Theme.of(context).colorScheme.outline,
-              width: 0.15,
-            ),
-          ),
-          padding: const EdgeInsets.symmetric(horizontal: 10),
+        title: SizedBox(
+          height: 40,
           child: TextField(
             controller: _searchController,
             focusNode: _focusNode,
             textAlignVertical: TextAlignVertical.center,
+            style: const TextStyle(fontSize: 15),
             decoration: InputDecoration(
-              icon: Icon(
-                Icons.search_rounded,
-                color: Colors.grey.shade600,
-                size: 20,
-              ),
               hintText: 'Tìm kiếm .....',
               hintStyle: TextStyle(
-                color: Colors.grey.shade600,
-                fontSize: 16,
+                color: Colors.grey.shade500,
+                fontSize: 15,
               ),
-              
-              border: InputBorder.none,
-              contentPadding: const EdgeInsets.symmetric(vertical: 12),
-              isDense: true,
-              // Nút xóa nhanh nội dung tìm kiếm
-              suffixIcon: _searchController.text.isNotEmpty
-                  ? IconButton(
-                      icon: Icon(
-                        Icons.clear_rounded,
-                        color: Colors.grey.shade500,
-                        size: 20,
+              filled: true,
+              fillColor: Theme.of(context).brightness == Brightness.dark 
+                  ? Colors.grey.shade800 
+                  : Colors.grey.shade200,
+              contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide.none,
+              ),
+              suffixIcon: Padding(
+                padding: const EdgeInsets.only(right: 8.0),
+                child: _searchController.text.isNotEmpty
+                    ? IconButton(
+                        icon: Icon(
+                          Icons.clear_rounded,
+                          color: Theme.of(context).colorScheme.onSurface,
+                          size: 23,
+                        ),
+                        onPressed: () {
+                          _searchController.clear();
+                          _performSearch('');
+                        },
+                        padding: EdgeInsets.zero,
+                        constraints: const BoxConstraints(),
+                      )
+                    : Icon(
+                        Icons.search_rounded,
+                        color: Theme.of(context).colorScheme.onSurface,
+                        size: 23,
                       ),
-                      onPressed: () {
-                        _searchController.clear();
-                        _performSearch('');
-                      },
-                      padding: EdgeInsets.zero,
-                      constraints: const BoxConstraints(
-                        minWidth: 20,
-                        minHeight: 20,
-                      ),
-                    )
-                  : null,
+              ),
             ),
             textInputAction: TextInputAction.search,
             onSubmitted: _performSearch,
             onChanged: (val) {
-              setState(() {}); // Cập nhật để hiển thị/ẩn nút xóa
-              // Debounce search-as-you-type (300ms delay)
+              setState(() {
+                _showSuggestions = true;
+              }); // Cập nhật để hiển thị/ẩn nút xóa
               _debounceTimer?.cancel();
+              if (val.trim().isEmpty) {
+                setState(() {
+                  _searchResults = [];
+                  _isLoading = false;
+                });
+                return;
+              }
               _debounceTimer = Timer(const Duration(milliseconds: 300), () {
-                _performSearch(val);
+                _performSearch(val, isTyping: true);
               });
             },
           ),
         ),
       ),
-      body: Column(
-        children: [
-          Expanded(child: _buildBody()),
-          _buildSpecialOffer(context),
-        ],
-      ),
+      body: _buildBody(),
     );
   }
 
-  Widget _buildSpecialOffer(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    return Container(
-      decoration: BoxDecoration(
-        color: colorScheme.surface,
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: Theme.of(context).colorScheme.outline, width: 0.15),
-      ),
-      padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
-      margin: const EdgeInsets.all(16),
-      child: Stack(
-        alignment: Alignment.centerLeft,
-        children: [
-          Row(
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                     Text(
-                      'Bạn đang tìm linh kiện?',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 18,
-                        color: colorScheme.onSurface,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    RichText(
-                      text:  TextSpan(
-                        style: TextStyle(
-                          color: colorScheme.onSurface,
-                          fontSize: 14,
-                        ),
-                        children: [
-                          TextSpan(text: 'Giảm thêm '),
-                          TextSpan(
-                            text: '10%',
-                            style: TextStyle(
-                              color: Color(0xFFF26522),
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          TextSpan(text: ' khi mua combo'),
-                        ],
-                      ),
-                    ),
-                     Text(
-                      'Mainboard + CPU',
-                      style: TextStyle(
-                        color: colorScheme.onSurface,
-                        fontSize: 14,
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    ElevatedButton(
-                      onPressed: () {},
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xffBD0F0F),
-                        foregroundColor: Colors.white,
-                        elevation: 0,
-                        // SỬA ĐOẠN NÀY: Dùng RoundedRectangleBorder chuẩn của Flutter
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30), // Bo tròn mềm mại giống nút "XEM NGAY" trong ảnh
-                        ),
-                        minimumSize: const Size(120, 36),
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 24, vertical: 8),
-                      ),
-                      child: const Text(
-                        'XEM NGAY',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 14,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(width: 80),
-            ],
-          ),
-          Positioned(
-            right: 0,
-            bottom: -10,
-            child: Opacity(
-              opacity: 0.1,
-              child: Image.asset(
-                'assets/icons/logo_shadow.png',
-                width: 100,
-                color: Colors.black,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 
   Widget _buildBody() {
     // Trạng thái 1: Chưa nhập từ khóa tìm kiếm
@@ -339,7 +244,31 @@ class _SearchScreenState extends State<SearchScreen> {
       );
     }
 
-    // Trạng thái 2: Đang tải dữ liệu (Sử dụng hiệu ứng Skeleton)
+    if (_showSuggestions) {
+      final uniqueNames = _searchResults.map((p) => p['name']?.toString() ?? '').where((n) => n.isNotEmpty).toSet().toList();
+      
+      if (_isLoading && uniqueNames.isEmpty) {
+        return const Center(child: CircularProgressIndicator());
+      }
+      
+      return ListView.builder(
+        itemCount: uniqueNames.length,
+        itemBuilder: (context, index) {
+          final name = uniqueNames[index];
+          return ListTile(
+            leading: Icon(Icons.history, color: Colors.grey.shade500),
+            title: Text(name),
+            onTap: () {
+              _searchController.text = name;
+              FocusScope.of(context).unfocus();
+              _performSearch(name, isTyping: false);
+            },
+          );
+        },
+      );
+    }
+
+    // Trạng thái 2: Đang tải dữ liệu
     if (_isLoading) {
       return _buildSkeletonLoader();
     }
@@ -374,178 +303,103 @@ class _SearchScreenState extends State<SearchScreen> {
       );
     }
 
-    // Trạng thái 4: Hiển thị danh sách kết quả (Bố cục mới dạng Card)
-    return ListView.builder(
-      itemCount: _searchResults.length,
+    // Trạng thái 4: Hiển thị danh sách kết quả (Bố cục 2 cột giống products_screen)
+    return SingleChildScrollView(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-      itemBuilder: (context, index) {
-        final product = _searchResults[index];
-        final displayPrice = _getDisplayPrice(product);
-        final imageUrl = _resolveProductImageUrl(product);
+      child: Builder(
+        builder: (context) {
+          final flattenedResults = <Map<String, dynamic>>[];
+          for (var p in _searchResults) {
+            final variants = p['variants'] as List<dynamic>?;
+            if (variants != null && variants.isNotEmpty) {
+              for (var v in variants) {
+                final Map<String, dynamic> virtualProduct = Map<String, dynamic>.from(p);
+                final color = v['color'];
+                final config = v['configuration'];
+                
+                String colorName = '';
+                if (color is Map) {
+                  colorName = color['name']?.toString() ?? '';
+                } else if (color != null) {
+                  colorName = color.toString();
+                } else {
+                  colorName = v['color_name']?.toString() ?? '';
+                }
+                
+                String configName = '';
+                if (config is Map) {
+                  configName = config['name']?.toString() ?? '';
+                } else if (config != null) {
+                  configName = config.toString();
+                } else {
+                  configName = v['configuration_name']?.toString() ?? '';
+                }
+                
+                virtualProduct['name'] = p['name'] ?? '';
+                final parts = <String>[];
+                if (colorName != null && colorName.toString().isNotEmpty) {
+                  parts.add(colorName.toString());
+                }
+                if (configName != null && configName.toString().isNotEmpty) {
+                  parts.add(configName.toString());
+                }
+                if (parts.isNotEmpty) {
+                  virtualProduct['variant_label'] = parts.join(' - ');
+                }
+                
+                final imageUrl = v['image_url']?.toString();
+                if (imageUrl != null && imageUrl.isNotEmpty) {
+                  virtualProduct['main_image_url'] = imageUrl;
+                }
+                
+                virtualProduct['variants'] = [v];
+                flattenedResults.add(virtualProduct);
+              }
+            } else {
+              flattenedResults.add(p);
+            }
+          }
 
-        // Giả lập tính toán % giảm giá nếu API trả về giá gốc (price)
-        final double originalPrice =
-            double.tryParse(product['price']?.toString() ?? '0') ?? 0;
-        final int discountPercentage = (originalPrice > displayPrice)
-            ? (((originalPrice - displayPrice) / originalPrice) * 100).round()
-            : 0;
-
-        return Container(
-          margin: const EdgeInsets.only(bottom: 14),
-          decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.surface,
-            borderRadius: BorderRadius.circular(10),
-            border: Border.all(color: Theme.of(context).colorScheme.outline, width: 0.15),
-          ),
-          child: InkWell(
-            borderRadius: BorderRadius.circular(10),
-            onTap: () => _navigateToProduct(product),
-            child: Padding(
-              padding: const EdgeInsets.all(12.0),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // --- Khối ảnh sản phẩm ---
-                  Stack(
-                    children: [
-                      Container(
-                        width: 95,
-                        height: 95,
-                        decoration: BoxDecoration(
-                          color: Theme.of(context).colorScheme.surface,
-                          borderRadius: BorderRadius.circular(10),
-                          border: Border.all(color: Theme.of(context).colorScheme.outline, width: 0.15),
-                        ),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(10),
-                          child: imageUrl.isEmpty
-                              ? Icon(Icons.image_not_supported_rounded,
-                                  color: Colors.grey.shade300, size: 35)
-                              : Image.network(
-                                  imageUrl,
-                                  fit: BoxFit.cover,
-                                  // Xử lý lỗi khi không tải được ảnh
-                                  errorBuilder: (context, error, stackTrace) =>
-                                      Icon(Icons.image_not_supported_rounded,
-                                          color: Colors.grey.shade300),
-                                ),
-                        ),
-                      ),
-                      // Tag giảm giá (nếu có) nằm đè lên ảnh
-                      if (discountPercentage > 0)
-                        Positioned(
-                          top: 0,
-                          left: 0,
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 6, vertical: 2),
-                            decoration: const BoxDecoration(
-                              color: Colors.orange,
-                              borderRadius: BorderRadius.only(
-                                topLeft: Radius.circular(10),
-                                bottomRight: Radius.circular(8),
-                              ),
-                            ),
-                            child: Text(
-                              '-$discountPercentage%',
-                              style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 10,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                          ),
-                        ),
-                    ],
-                  ),
-                  const SizedBox(width: 14),
-
-                  // --- Khối thông tin văn bản ---
-                  Expanded(
-                    child: SizedBox(
-                      // Cố định chiều cao của khối văn bản bằng chiều cao ảnh
-                      height: 95,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        // Đẩy phần giá tiền xuống sát đáy
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              // Tên sản phẩm (tối đa 2 dòng)
-                              Text(
-                                product['name'] ?? '',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.normal,
-                                  fontSize: 13,
-                                  color: Theme.of(context).colorScheme.onSurface,
-                                  height: 1.4, // Điều chỉnh giãn dòng
-                                ),
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                              const SizedBox(height: 4),
-                              // Dòng nhãn phụ (VD: Mall, Đã bán)
-                              Row(
-                                children: [
-                                  Container(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 5, vertical: 1.5),
-                                    decoration: BoxDecoration(
-                                      color: const Color(0xFFFDE6DE),
-                                      borderRadius: BorderRadius.circular(4),
-                                    ),
-                                    child: const Text(
-                                      'Chính hãng',
-                                      style: TextStyle(
-                                          color: Color(0xFFF26522),
-                                          fontSize: 10,
-                                          fontWeight: FontWeight.w500),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-
-                          // Khối giá tiền (Giá bán hiện tại & Giá gốc)
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                '${_formatPrice(displayPrice)} đ',
-                                style: const TextStyle(
-                                  color: Color(0xFFFF4E02),
-                                  fontWeight: FontWeight.w700,
-                                  fontSize: 15,
-                                ),
-                              ),
-                              if (discountPercentage > 0)
-                                // Giá gốc màu xám mờ và gạch ngang
-                                Text(
-                                  '${_formatPrice(originalPrice)} đ',
-                                  style: TextStyle(
-                                    color: Colors.grey.shade500,
-                                    decoration: TextDecoration.lineThrough,
-                                    fontSize: 12,
-                                  ),
-                                ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
+          final leftItems = <dynamic>[];
+          final rightItems = <dynamic>[];
+          for (int i = 0; i < flattenedResults.length; i++) {
+            if (i % 2 == 0) {
+              leftItems.add(flattenedResults[i]);
+            } else {
+              rightItems.add(flattenedResults[i]);
+            }
+          }
+          return Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: Column(
+                  children: leftItems
+                      .map((p) => Padding(
+                            padding: const EdgeInsets.only(bottom: 12),
+                            child: _buildProductCard(p),
+                          ))
+                      .toList(),
+                ),
               ),
-            ),
-          ),
-        );
-      },
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  children: rightItems
+                      .map((p) => Padding(
+                            padding: const EdgeInsets.only(bottom: 12),
+                            child: _buildProductCard(p),
+                          ))
+                      .toList(),
+                ),
+              ),
+            ],
+          );
+        },
+      ),
     );
   }
 
-  // --- Khối tạo hiệu ứng Skeleton (Loading giả lập) ---
   Widget _buildSkeletonLoader() {
     return ListView.builder(
       itemCount: 5, // Hiển thị 5 khung xám mờ
@@ -593,5 +447,478 @@ class _SearchScreenState extends State<SearchScreen> {
         );
       },
     );
+  }
+
+
+
+  final Set<int> _wishSet = {};
+
+  void _toggleWishlist(int productId) async {
+    setState(() {
+      if (_wishSet.contains(productId)) {
+        _wishSet.remove(productId);
+      } else {
+        _wishSet.add(productId);
+      }
+    });
+  }
+
+
+Widget _buildProductCard(Map<String, dynamic> product) {
+    final displayPrice = _getDisplayPrice(product);
+    final displayPriceMax = _hasMultiplePrices(product) ? _getMaxDisplayPrice(product) : null;
+    final displayOldPrice = _hasMultiplePrices(product) ? null : _getDisplayOldPrice(product);
+    final showDiscountBadge = _showDiscountBadge(product);
+    final discountPercent = _getDiscountPercent(product);
+    final isNew = _isNewWithinTenDays(product['created_at']);
+    final isFeatured = product['is_featured'] == true;
+    final brand = product['brand'] ?? 'TECH';
+    final int productId = product['id'] ?? 0;
+    final bool isLiked = _wishSet.contains(productId);
+
+    double rating = 0;
+    if (product['avg_rating'] != null) {
+      rating = double.tryParse(product['avg_rating'].toString()) ?? 0;
+    }
+
+    final imageUrl = _resolveProductImageUrl(product);
+
+    return GestureDetector(
+      onTap: () => _navigateToProduct(product),
+      child: Container(
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.surface,
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
+          ],
+          border: Border.all(color: Theme.of(context).colorScheme.outline, width: 0.15),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            // Image and badges
+            Stack(
+              children: [
+                ClipRRect(
+                  borderRadius:
+                      const BorderRadius.vertical(top: Radius.circular(12)),
+                  child: Container(
+                    width: double.infinity,
+                    height: 180,
+                    color: Theme.of(context).colorScheme.surface,
+                    child: imageUrl.isEmpty
+                        ? Center(
+                            child: Icon(Icons.computer,
+                                size: 48, color: Theme.of(context).colorScheme.outline))
+                        : Image.network(
+                            imageUrl,
+                            width: double.infinity,
+                            height: 180,
+                            fit: BoxFit.contain,
+                            alignment: Alignment.center,
+                            loadingBuilder: (context, child, loadingProgress) {
+                              if (loadingProgress == null) return child;
+                              return Center(
+                                  child:
+                                      CircularProgressIndicator(strokeWidth: 2));
+                            },
+                            errorBuilder: (_, __, ___) => Center(
+                              child: Icon(Icons.computer,
+                                  size: 48, color: Theme.of(context).colorScheme.outline),
+                            ),
+                          ),
+                  ),
+                ),
+                // Wishlist button
+                Positioned(
+                  top: 6,
+                  left: 6,
+                  child: GestureDetector(
+                    onTap: () => _toggleWishlist(productId),
+                    child: CircleAvatar(
+                      backgroundColor: Theme.of(context).colorScheme.surface,
+                      radius: 14,
+                      child: Icon(
+                        isLiked ? Icons.favorite : Icons.favorite_border,
+                        size: 15,
+                        color: isLiked ? Colors.red : Theme.of(context).colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                  ),
+                ),
+                // Top-right badges
+                Positioned(
+                  top: 6,
+                  right: 6,
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      // Badge GIẢM GIÁ (first)
+                      if (showDiscountBadge && discountPercent > 0)
+                        Container(
+                          margin: const EdgeInsets.only(right: 3),
+                          padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+                          decoration: BoxDecoration(
+                            color: Colors.red,
+                            borderRadius: BorderRadius.circular(3),
+                          ),
+                          child: Text(
+                            '-$discountPercent%',
+                            style: TextStyle(
+                              color: Theme.of(context).colorScheme.surface,
+                              fontSize: 8,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+
+                      // Badge MỚI (second)
+                      if (isNew)
+                        Container(
+                          margin: const EdgeInsets.only(right: 3),
+                          padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+                          decoration: BoxDecoration(
+                            color: Colors.green,
+                            borderRadius: BorderRadius.circular(3),
+                          ),
+                          child: Text(
+                            'MỚI',
+                            style: TextStyle(
+                              color: Theme.of(context).colorScheme.surface,
+                              fontSize: 8,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+
+                      // Badge NỔI BẬT (last)
+                      if (isFeatured)
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+                          decoration: BoxDecoration(
+                            color: Colors.amber.shade700,
+                            borderRadius: BorderRadius.circular(3),
+                          ),
+                          child: Text(
+                            'NỔI BẬT',
+                            style: TextStyle(
+                              color: Theme.of(context).colorScheme.surface,
+                              fontSize: 8,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+
+            // Content
+            Padding(
+              padding: const EdgeInsets.all(6),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Brand + Rating on same row
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Flexible(
+                        child: Text(
+                          brand.toString().toUpperCase(),
+                          style: TextStyle(
+                              color: Theme.of(context).colorScheme.onSurfaceVariant,
+                              fontSize: 10,
+                              fontWeight: FontWeight.bold,
+                              letterSpacing: 0.5),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          ...List.generate(5, (index) {
+                            if (index < rating.floor()) {
+                              return const Icon(Icons.star,
+                                  size: 10, color: Colors.amber);
+                            } else if (index < rating) {
+                              return const Icon(Icons.star_half,
+                                  size: 10, color: Colors.amber);
+                            } else {
+                              return Icon(Icons.star,
+                                  size: 10, color: Theme.of(context).colorScheme.outline);
+                            }
+                          }),
+                          const SizedBox(width: 2),
+                          Text(
+                            '(${product['reviews_count'] ?? 0})',
+                            style: TextStyle(
+                              color: Theme.of(context).colorScheme.onSurfaceVariant,
+                              fontSize: 9,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 4),
+                  // Product name
+                  Text(
+                    product['name'] ?? '',
+                    style: TextStyle(
+                        fontSize: 13, fontWeight: FontWeight.bold, height: 1.3),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  if (product['variant_label'] != null) ...[
+                    const SizedBox(height: 4),
+                    Text(
+                      product['variant_label'],
+                      style: TextStyle(
+                        fontSize: 11,
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        height: 1.3,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                  const SizedBox(height: 6),
+                  // Price
+                  if (showDiscountBadge)
+                    Text(
+                      '${_formatPrice(displayPrice)}đ',
+                      style: TextStyle(
+                          color: Color(0xFFF26522),
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold),
+                    )
+                  else if (displayPriceMax != null)
+                    Text(
+                      '${_formatPrice(displayPrice)} - ${_formatPrice(displayPriceMax!)}đ',
+                      style: TextStyle(
+                          color: Color(0xFFF26522),
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold),
+                    )
+                  else
+                    Text(
+                      '${_formatPrice(displayPrice)}đ',
+                      style: TextStyle(
+                          color: Color(0xFFF26522),
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold),
+                    ),
+                  if (displayOldPrice != null &&
+                      displayOldPrice > displayPrice &&
+                      showDiscountBadge) ...[
+                    const SizedBox(height: 2),
+                    Text(
+                      '${_formatPrice(displayOldPrice)}đ',
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        fontSize: 11,
+                        decoration: TextDecoration.lineThrough,
+                      ),
+                    ),
+                  ],
+                  const SizedBox(height: 4),
+                  // Description (3 lines) with Add button at bottom right
+LayoutBuilder(
+  builder: (context, constraints) {
+    final fullText = product['short_description'] ?? product['description'] ?? '';
+    final textStyle = TextStyle(
+      color: Theme.of(context).colorScheme.onSurfaceVariant,
+      fontSize: 11,
+      height: 1.3,
+    );
+
+    // 1. Đo kích thước để kiểm tra xem chữ có dài quá 1 dòng không
+    final textPainter = TextPainter(
+      text: TextSpan(text: fullText, style: textStyle),
+      maxLines: 1,
+      textDirection: TextDirection.ltr,
+    )..layout(maxWidth: constraints.maxWidth);
+
+    // Kiểm tra trạng thái vượt quá 1 dòng
+    final isMultiLine = textPainter.didExceedMaxLines;
+
+    // Định nghĩa nhanh cấu trúc Nút Bấm Giỏ Hàng để dùng chung cho cả 2 trường hợp
+    final cartButton = GestureDetector(
+      onTap: () => _navigateToProduct(product),
+      child: Container(
+        width: 32,
+        height: 32,
+        decoration: BoxDecoration(
+          color: const Color(0xFFF26522),
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: const Icon(
+          Icons.arrow_forward_rounded,
+          size: 18,
+          color: Colors.white,
+        ),
+      ),
+    );
+
+    // TRƯỜNG HỢP A: Văn bản ngắn (Chỉ có 1 dòng)
+    if (!isMultiLine) {
+      return Row(
+        children: [
+          Expanded(
+            child: Text(
+              fullText,
+              style: textStyle,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+          const SizedBox(width: 8),
+          cartButton,
+        ],
+      );
+    }
+
+    // TRƯỜNG HỢP B: Văn bản dài nhiều dòng (Dòng 1 full width, dòng 2-3 né nút bấm)
+    final firstLineEndIndex = textPainter.getPositionForOffset(Offset(constraints.maxWidth, 0)).offset;
+    final firstLineText = fullText.substring(0, firstLineEndIndex);
+    final remainingText = fullText.substring(firstLineEndIndex);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Dòng 1: Luôn hiển thị Full Width tuyệt đối
+        Text(
+          firstLineText,
+          style: textStyle,
+          maxLines: 1,
+        ),
+        // Dòng 2 & 3: Tự động chừa 40px bên phải để né nút bấm giỏ hàng
+        Stack(
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(right: 40), // 32px nút + 8px khoảng cách an toàn
+              child: Text(
+                remainingText,
+                style: textStyle,
+                maxLines: 2, // Giới hạn đúng 3 dòng tổng cộng (1 dòng trên + 2 dòng dưới)
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+            Positioned(
+              right: 0,
+              bottom: 0,
+              child: cartButton,
+            ),
+          ],
+        ),
+      ],
+    );
+  },
+)
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+bool _hasMultiplePrices(Map<String, dynamic> product) {
+    final variants = product['variants'] as List<dynamic>?;
+    if (variants != null && variants.length > 1) {
+      final sortedVariants = List.from(variants);
+      sortedVariants.sort((a, b) {
+        final aPrice =
+            double.tryParse(a['effective_price']?.toString() ?? '0') ?? 0;
+        final bPrice =
+            double.tryParse(b['effective_price']?.toString() ?? '0') ?? 0;
+        return aPrice.compareTo(bPrice);
+      });
+      final lowest = double.tryParse(
+              sortedVariants[0]['effective_price']?.toString() ?? '0') ??
+          0.0;
+      final highest = double.tryParse(
+              sortedVariants[sortedVariants.length - 1]['effective_price']
+                  ?.toString() ??
+                  '0') ??
+          0.0;
+      return lowest != highest;
+    }
+    return false;
+  }
+
+double? _getMaxDisplayPrice(Map<String, dynamic> product) {
+    final variants = product['variants'] as List<dynamic>?;
+    if (variants != null && variants.isNotEmpty) {
+      final sortedVariants = List.from(variants);
+      sortedVariants.sort((a, b) {
+        final aPrice =
+            double.tryParse(a['effective_price']?.toString() ?? '0') ?? 0;
+        final bPrice =
+            double.tryParse(b['effective_price']?.toString() ?? '0') ?? 0;
+        return aPrice.compareTo(bPrice);
+      });
+      return double.tryParse(
+              sortedVariants[sortedVariants.length - 1]['effective_price']
+                  ?.toString() ??
+                  '0') ??
+          0.0;
+    }
+    return null;
+  }
+
+double? _getDisplayOldPrice(Map<String, dynamic> product) {
+    final variants = product['variants'] as List<dynamic>?;
+    if (variants != null && variants.isNotEmpty) {
+      final sortedVariants = List.from(variants);
+      sortedVariants.sort((a, b) {
+        final aPrice =
+            double.tryParse(a['effective_price']?.toString() ?? '0') ?? 0;
+        final bPrice =
+            double.tryParse(b['effective_price']?.toString() ?? '0') ?? 0;
+        return aPrice.compareTo(bPrice);
+      });
+      final originalPrice =
+          double.tryParse(sortedVariants[0]['price']?.toString() ?? '0') ?? 0.0;
+      final finalPrice = double.tryParse(
+              sortedVariants[0]['effective_price']?.toString() ?? '0') ??
+          0.0;
+      return originalPrice > finalPrice ? originalPrice : null;
+    }
+    return null;
+  }
+
+bool _showDiscountBadge(Map<String, dynamic> product) {
+    // Only show discount badge when there's exactly 1 variant
+    final variants = product['variants'] as List<dynamic>?;
+    if (variants == null || variants.length != 1) return false;
+
+    final originalPrice =
+        double.tryParse(variants[0]['price']?.toString() ?? '0') ?? 0.0;
+    final finalPrice =
+        double.tryParse(variants[0]['effective_price']?.toString() ?? '0') ?? 0.0;
+    return finalPrice < originalPrice;
+  }
+
+int _getDiscountPercent(Map<String, dynamic> product) {
+    final oldP = _getDisplayOldPrice(product);
+    if (oldP == null) return 0;
+    final newP = _getDisplayPrice(product);
+    return ((1 - newP / oldP) * 100).round();
+  }
+
+bool _isNewWithinTenDays(String? createdAtStr) {
+    if (createdAtStr == null) return false;
+    final createdAt = DateTime.tryParse(createdAtStr);
+    if (createdAt == null) return false;
+    return DateTime.now().difference(createdAt).inDays <= 10;
   }
 }

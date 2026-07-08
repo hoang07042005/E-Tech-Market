@@ -873,36 +873,42 @@ class _HomeScreenState extends State<HomeScreen> {
                 fit: BoxFit.contain,
               ),
               actions: [
-                IconButton(
-                  visualDensity: VisualDensity.compact,
-                  padding: EdgeInsets.zero,
-                  constraints:
-                      const BoxConstraints(minWidth: 36, minHeight: 36),
-                  icon: const Icon(Icons.search_outlined),
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (_) => const SearchScreen()),
-                    );
-                  },
-                  tooltip: Trans.search,
-                ),
+                if (_selectedIndex != 1)
+                  IconButton(
+                    visualDensity: VisualDensity.compact,
+                    padding: EdgeInsets.zero,
+                    constraints:
+                        const BoxConstraints(minWidth: 36, minHeight: 36),
+                    icon: const Icon(Icons.search_outlined),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => const SearchScreen()),
+                      );
+                    },
+                    tooltip: Trans.search,
+                  ),
                 const SizedBox(width: 4),
                 IconButton(
                   visualDensity: VisualDensity.compact,
                   padding: EdgeInsets.zero,
-                  constraints:
-                      const BoxConstraints(minWidth: 36, minHeight: 36),
+                  constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
                   icon: Badge(
                     isLabelVisible: _unreadNotifCount > 0,
-                    label: Text(_unreadNotifCount.toString()),
+                    label: Text(
+                      _unreadNotifCount.toString(),
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                     backgroundColor: const Color(0xFFFF2424),
                     child: const Icon(Icons.notifications_outlined),
                   ),
                   onPressed: () {
                     if (_user == null) {
-                      AppDialogs.showLoginRequiredDialog(context,
-                          onLoginSuccess: _loadUser);
+                      AppDialogs.showLoginRequiredDialog(context, onLoginSuccess: _loadUser);
                       return;
                     }
                     _scaffoldKey.currentState?.openEndDrawer();
@@ -913,24 +919,24 @@ class _HomeScreenState extends State<HomeScreen> {
                 IconButton(
                   visualDensity: VisualDensity.compact,
                   padding: EdgeInsets.zero,
-                  constraints:
-                      const BoxConstraints(minWidth: 36, minHeight: 36),
+                  constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
                   icon: Badge(
                     isLabelVisible: _cartItemCount > 0,
-                    label: Text(_cartItemCount.toString()),
+                    label: Text(
+                      _cartItemCount.toString(),
+                      style: const TextStyle(color: Colors.white), 
+                    ),
                     backgroundColor: const Color(0xFFFF2424),
                     child: const Icon(Icons.shopping_cart_outlined),
                   ),
                   onPressed: () {
                     if (_user == null) {
-                      AppDialogs.showLoginRequiredDialog(context,
-                          onLoginSuccess: _loadUser);
+                      AppDialogs.showLoginRequiredDialog(context, onLoginSuccess: _loadUser);
                       return;
                     }
                     Navigator.push(
                       context,
-                      MaterialPageRoute(
-                          builder: (context) => const CartScreen()),
+                      MaterialPageRoute(builder: (context) => const CartScreen()),
                     ).then((_) => _loadCartCount());
                   },
                   tooltip: Trans.cart,

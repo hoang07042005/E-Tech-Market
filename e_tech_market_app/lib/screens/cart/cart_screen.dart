@@ -139,7 +139,7 @@ class _CartScreenState extends State<CartScreen> {
         ],
       ),
       body: _loading
-          ? const Center(child: CircularProgressIndicator(color: accent))
+          ? const Center(child: CircularProgressIndicator(color: const Color(0xFFF26522)))
           : _error != null
               ? _buildError()
               : _cart.items.isEmpty

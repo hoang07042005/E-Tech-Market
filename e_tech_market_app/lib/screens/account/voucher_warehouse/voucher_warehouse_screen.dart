@@ -61,7 +61,7 @@ class _VoucherWarehouseScreenState extends State<VoucherWarehouseScreen> {
         iconTheme:  IconThemeData(color: Theme.of(context).colorScheme.onSurface),
       ),
       body: _loading
-          ? const Center(child: CircularProgressIndicator(color: Color(0xFFEF7A45)))
+          ? const Center(child: CircularProgressIndicator(color: const Color(0xFFF26522)))
           : _error != null
               ? Center(child: Text(_error!, style: const TextStyle(color: Colors.red)))
               : _vouchers.isEmpty

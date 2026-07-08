@@ -11,9 +11,7 @@ import '../../../utils/translation.dart';
 class OrderDetailScreen extends StatefulWidget {
   final int orderId;
 
-
   const OrderDetailScreen({super.key, required this.orderId});
-
 
   @override
   State<OrderDetailScreen> createState() => _OrderDetailScreenState();
@@ -42,7 +40,6 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
     });
 
     try {
-      // Load order and current user in parallel
       final results = await Future.wait([
         OrderService.fetchOrderDetail(widget.orderId),
         AuthService.getCurrentUser(),
@@ -77,24 +74,39 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
     return Colors.grey;
   }
 
-  String _statusLabel(String status) {
-    final s = status.toLowerCase();
-    if (s == 'pending') return Trans.statusPending;
-    if (s == 'processing') return Trans.statusProcessing;
-    if (s == 'paid') return Trans.statusPreparing;
-    if (s == 'shipped') return Trans.statusShipped;
-    if (s == 'delivered') return Trans.statusDelivered;
-    if (s == 'completed') return Trans.statusCompleted;
-    if (s == 'returned') return Trans.statusReturned;
-    if (s == 'cancelled') return Trans.statusCancelled;
+  // Hàm dịch trạng thái linh hoạt, phân biệt giữa trạng thái đơn hàng và trạng thái thanh toán
+  String _statusLabel(String status, {bool isPaymentStatus = false}) {
+    final s = status.toLowerCase().trim();
+    
+    // Xử lý riêng cho trạng thái thanh toán
+    if (isPaymentStatus) {
+      if (s == 'paid') return 'Đã thanh toán';
+      if (s == 'pending') return 'Chờ thanh toán';
+      if (s == 'cancelled') return 'Đã hủy';
+      if (s == 'refunded') return 'Đã hoàn tiền';
+    }
+
+    // Xử lý cho trạng thái đơn hàng chung
+    if (s == 'pending') return Trans.statusPending ?? 'Chờ xác nhận';
+    if (s == 'processing') return Trans.statusProcessing ?? 'Đã xác nhận';
+    if (s == 'paid') return Trans.statusPreparing ?? 'Chuẩn bị hàng';
+    if (s == 'shipped') return Trans.statusShipped ?? 'Đang giao hàng';
+    if (s == 'delivered') return Trans.statusDelivered ?? 'Đã giao hàng';
+    if (s == 'completed') return Trans.statusCompleted ?? 'Hoàn thành';
+    if (s == 'returned') return Trans.statusReturned ?? 'Hoàn trả';
+    if (s == 'cancelled') return Trans.statusCancelled ?? 'Đã hủy';
+    
+    if (s == 'approved') return 'Đã chấp thuận';
+    if (s == 'rejected') return 'Từ chối';
+    
     return status.isEmpty ? '—' : status;
   }
 
-String _formatMoney(dynamic value) {
-  final num number = num.tryParse(value.toString()) ?? 0;
-  final formatter = NumberFormat('#,###', 'vi_VN');
-  return formatter.format(number);
-}
+  String _formatMoney(dynamic value) {
+    final num number = num.tryParse(value.toString()) ?? 0;
+    final formatter = NumberFormat('#,###', 'vi_VN');
+    return formatter.format(number);
+  }
 
   String _resolveOrderItemImageUrl(dynamic item) {
     final product = item is Map<String, dynamic> ? item['product'] as Map<String, dynamic>? : null;
@@ -124,9 +136,9 @@ String _formatMoney(dynamic value) {
 
   String _payLabel(String method) {
     final s = method.toLowerCase();
-    if (s == 'cod') return Trans.paymentCOD;
-    if (s == 'momo') return Trans.paymentMoMo;
-    if (s == 'vnpay') return Trans.paymentVNPAY;
+    if (s == 'cod') return Trans.paymentCOD ?? 'Thanh toán COD';
+    if (s == 'momo') return Trans.paymentMoMo ?? 'Ví MoMo';
+    if (s == 'vnpay') return Trans.paymentVNPAY ?? 'Cổng VNPay';
     return method.isEmpty ? '—' : method;
   }
 
@@ -191,6 +203,8 @@ String _formatMoney(dynamic value) {
     if (_order == null) return;
     await _performAction(() => OrderService.confirmRefundReceived(_order!['id'] as int));
   }
+
+  @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     final order = _order;
@@ -208,11 +222,11 @@ String _formatMoney(dynamic value) {
       body: Container(
         color: colorScheme.surface,
         child: _loading
-            ? Center(child: CircularProgressIndicator(color: colorScheme.primary))
+            ? const Center(child: CircularProgressIndicator(color: Color(0xFFF26522)))
             : _error != null
                 ? Center(child: Text(_error!, style: TextStyle(color: colorScheme.error)))
                 : order == null
-                    ? Center(child: Text(Trans.orderNotFound, style: TextStyle(color: colorScheme.onSurface)))
+                    ? Center(child: Text(Trans.orderNotFound ?? 'Không tìm thấy đơn hàng', style: TextStyle(color: colorScheme.onSurface)))
                     : _buildContent(order),
       ),
     );
@@ -226,23 +240,14 @@ String _formatMoney(dynamic value) {
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
-        // Status Card
         _buildStatusCard(statusColor, statusLabel, order),
         const SizedBox(height: 16),
-
-        // Shipping Info Card
         _buildShippingCard(order),
         const SizedBox(height: 16),
-        
-        // Products Card
         _buildProductsCard(order),
         const SizedBox(height: 16),
-        
-        // Payment Info Card (includes amounts & payment details)
         _buildPaymentCard(order),
         const SizedBox(height: 16),
-
-        // Actions
         if (_actionError != null) ...[
           Container(
             padding: const EdgeInsets.all(12),
@@ -259,14 +264,10 @@ String _formatMoney(dynamic value) {
         ],
         _buildActions(order),
         const SizedBox(height: 16),
-        
-        // Return Request
         if (order['return_request'] != null) ...[
           _buildReturnRequestCard(order['return_request']),
           const SizedBox(height: 16),
         ],
-        
-        // Status History
         if (order['status_history'] != null) ...[
           _buildHistoryCard(order['status_history']),
         ],
@@ -278,7 +279,6 @@ String _formatMoney(dynamic value) {
     final colorScheme = Theme.of(context).colorScheme;
     final status = (order['status'] ?? '').toString().toLowerCase();
 
-    // Calculate step from status value (like TypeScript)
     int currentStep = 1;
     if (status == 'processing') currentStep = 2;
     else if (status == 'paid') currentStep = 3;
@@ -288,7 +288,6 @@ String _formatMoney(dynamic value) {
     else if (status == 'returned') currentStep = 7;
     else if (status == 'cancelled') currentStep = 0;
 
-    // Check if has return request
     final hasReturnRequest = order['return_request'] != null;
 
     return Container(
@@ -336,7 +335,6 @@ String _formatMoney(dynamic value) {
               ),
             ],
           ),
-          // Only show step tracker if NOT in final state (completed/returned)
           if (status != 'cancelled' && status != 'completed' && status != 'returned') ...[
             const SizedBox(height: 16),
             _buildOrderStepsTracker(currentStep: currentStep, hasReturnRequest: hasReturnRequest),
@@ -347,7 +345,6 @@ String _formatMoney(dynamic value) {
   }
 
   Widget _buildOrderStepsTracker({required int currentStep, bool hasReturnRequest = false}) {
-    // Build steps list - show Hoàn trả instead of Hoàn thành if has return request
     final List<Map<String, dynamic>> baseSteps = [
       {'value': 'pending', 'label': 'Chờ XN', 'step': 1},
       {'value': 'processing', 'label': 'Đã XN', 'step': 2},
@@ -356,18 +353,15 @@ String _formatMoney(dynamic value) {
       {'value': 'delivered', 'label': 'Đã giao', 'step': 5},
     ];
 
-    // Add final step: Hoàn thành or Hoàn trả (if has return request)
     final lastStep = hasReturnRequest
         ? {'value': 'returned', 'label': 'Hoàn trả', 'step': 7}
         : {'value': 'completed', 'label': 'Đã HT', 'step': 6};
 
     final stepsList = [...baseSteps, lastStep];
-
     const Color activeStepColor = Color(0xFF10B981);
 
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 4),
-      padding: const EdgeInsets.symmetric(vertical: 0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: List.generate(stepsList.length, (index) {
@@ -455,7 +449,7 @@ String _formatMoney(dynamic value) {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                Trans.productList,
+                Trans.productList ?? 'Danh sách sản phẩm',
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 14,
@@ -511,7 +505,6 @@ String _formatMoney(dynamic value) {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // 1. Hình ảnh sản phẩm - 56x56 như admin
           ClipRRect(
             borderRadius: BorderRadius.circular(8),
             child: Container(
@@ -533,8 +526,6 @@ String _formatMoney(dynamic value) {
             ),
           ),
           const SizedBox(width: 12),
-
-          // 2. Thông tin sản phẩm
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -576,33 +567,16 @@ String _formatMoney(dynamic value) {
     );
   }
 
-  Widget _buildImagePlaceholder() {
-    final colorScheme = Theme.of(context).colorScheme;
-    return Container(
-      width: 64,
-      height: 64,
-      decoration: BoxDecoration(
-        color: colorScheme.surface,
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: colorScheme.outline, width: 0.15),
-      ),
-      child: Icon(Icons.image_not_supported, color: colorScheme.onSurface.withValues(alpha: 0.4)),
-    );
-  }
-
   Widget _buildShippingCard(Map<String, dynamic> order) {
     final colorScheme = Theme.of(context).colorScheme;
-    // Try multiple paths for customer info (API may return different structures)
     String customerName = '—';
     String customerEmail = '—';
 
-    // Try order['customer']
     var customer = order['customer'];
     if (customer is Map) {
       customerName = customer['name']?.toString() ?? '—';
       customerEmail = customer['email']?.toString() ?? '—';
     }
-    // Fallback: try order['user']
     if (customerName == '—' || customerEmail == '—') {
       final user = order['user'];
       if (user is Map) {
@@ -610,14 +584,12 @@ String _formatMoney(dynamic value) {
         if (customerEmail == '—') customerEmail = user['email']?.toString() ?? '—';
       }
     }
-    // Fallback: try direct fields
     if (customerName == '—') {
       customerName = order['customer_name']?.toString() ?? order['user_name']?.toString() ?? '—';
     }
     if (customerEmail == '—') {
       customerEmail = order['customer_email']?.toString() ?? order['user_email']?.toString() ?? '—';
     }
-    // Final fallback: use current logged in user from local storage
     if (customerName == '—' && _currentUser != null) {
       customerName = _currentUser!['name']?.toString() ?? '—';
     }
@@ -625,7 +597,6 @@ String _formatMoney(dynamic value) {
       customerEmail = _currentUser!['email']?.toString() ?? '—';
     }
 
-    // Shipping info
     final name = order['shipping_name']?.toString() ?? '—';
     final phone = order['shipping_phone']?.toString() ?? '—';
     final parts = [
@@ -644,28 +615,25 @@ String _formatMoney(dynamic value) {
         border: Border.all(color: colorScheme.outline, width: 0.15),
       ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start, // Sửa lỗi cú pháp gõ nhầm tại đây
         children: [
-          // Customer info (người đặt)
           Text(
-                "Thông tin khách hàng",
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 14,
-                  color: colorScheme.onSurface,
-                ),
-              ),
-              
+            "Thông tin khách hàng",
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 14,
+              color: colorScheme.onSurface,
+            ),
+          ),
           const Divider(height: 16, color: Color(0xFFF1F5F9)),
-          _buildInfoRow(Trans.customerNameLabel, customerName),
-          _buildInfoRow(Trans.customerEmailLabel, customerEmail),
+          _buildInfoRow(Trans.customerNameLabel ?? 'Tên khách hàng', customerName),
+          _buildInfoRow(Trans.customerEmailLabel ?? 'Email', customerEmail),
           const Divider(height: 16, color: Color(0xFFF1F5F9)),
-          // Shipping info (người nhận)
-          _buildInfoRow(Trans.receiverNameLabel, name),
+          _buildInfoRow(Trans.receiverNameLabel ?? 'Người nhận', name),
           const SizedBox(height: 8),
-          _buildInfoRow(Trans.phone, phone),
+          _buildInfoRow(Trans.phone ?? 'Số điện thoại', phone),
           const SizedBox(height: 8),
-          _buildInfoRow(Trans.shippingAddressLabel, address),
+          _buildInfoRow(Trans.shippingAddressLabel ?? 'Địa chỉ giao hàng', address),
         ],
       ),
     );
@@ -692,14 +660,12 @@ String _formatMoney(dynamic value) {
   Widget _buildPaymentCard(Map<String, dynamic> order) {
     final colorScheme = Theme.of(context).colorScheme;
 
-    // Amounts
     final subtotal = _formatMoney(order['subtotal_amount']);
     final discount = _formatMoney(order['discount_amount']);
     final pointsDiscount = _formatMoney(order['points_discount']);
     final shipping = _formatMoney(order['shipping_fee']);
     final total = _formatMoney(order['total_amount']);
 
-    // Payment info
     final payment = order['payment'] as Map<String, dynamic>?;
     final method = payment?['method']?.toString() ?? '—';
     final status = payment?['status']?.toString() ?? '—';
@@ -717,7 +683,7 @@ String _formatMoney(dynamic value) {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            Trans.paymentCost,
+            Trans.paymentCost ?? 'Chi phí thanh toán',
             style: TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 14,
@@ -725,7 +691,6 @@ String _formatMoney(dynamic value) {
             ),
           ),
           const SizedBox(height: 12),
-          // Amount rows like admin
           _buildAmountRow('Tạm tính', '$subtotal₫'),
           const SizedBox(height: 6),
           _buildAmountRow('Phí vận chuyển', '$shipping₫'),
@@ -745,15 +710,14 @@ String _formatMoney(dynamic value) {
             ),
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 8),
-            child: Divider(height: 1, color: const Color(0xFFF1F5F9)),
+            child: const Divider(height: 1, color: Color(0xFFF1F5F9)),
           ),
           _buildAmountRow('Thành tiền', '$total₫', isTotal: true),
           const SizedBox(height: 8),
-          // Payment method
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(Trans.paymentMethod, style: TextStyle(color: colorScheme.onSurface, fontSize: 13)),
+              Text(Trans.paymentMethod ?? 'Phương thức thanh toán', style: TextStyle(color: colorScheme.onSurface, fontSize: 13)),
               Flexible(
                 child: Text(
                   _payLabel(method),
@@ -763,7 +727,6 @@ String _formatMoney(dynamic value) {
               ),
             ],
           ),
-          // Payment status (if available)
           if (status.isNotEmpty) ...[
             const SizedBox(height: 8),
             Row(
@@ -771,12 +734,16 @@ String _formatMoney(dynamic value) {
               children: [
                 Text('Trạng thái', style: TextStyle(color: colorScheme.onSurface, fontSize: 13)),
                 Flexible(
-                  child: Text(status, style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13, color: colorScheme.onSurface), textAlign: TextAlign.end),
+                  child: Text(
+                    // Gọi hàm xử lý riêng cho trạng thái thanh toán bằng cờ isPaymentStatus: true
+                    _statusLabel(status, isPaymentStatus: true), 
+                    style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13, color: colorScheme.onSurface), 
+                    textAlign: TextAlign.end,
+                  ),
                 ),
               ],
             ),
           ],
-          // Transaction code
           if (transactionCode != '—') ...[
             const SizedBox(height: 8),
             Row(
@@ -789,7 +756,6 @@ String _formatMoney(dynamic value) {
               ],
             ),
           ],
-          // Paid at
           if (paidAt != '—') ...[
             const SizedBox(height: 8),
             Row(
@@ -858,7 +824,7 @@ String _formatMoney(dynamic value) {
               children: [
                 Icon(Icons.cancel_outlined, color: colorScheme.onErrorContainer),
                 const SizedBox(width: 8),
-                Text(Trans.orderCancelled, style: TextStyle(color: colorScheme.onErrorContainer)),
+                Text(Trans.orderCancelled ?? 'Đơn hàng đã hủy', style: TextStyle(color: colorScheme.onErrorContainer)),
               ],
             ),
           ),
@@ -936,10 +902,10 @@ String _formatMoney(dynamic value) {
             children: [
               Row(
                 children: [
-                  Icon(Icons.undo_outlined, color: Colors.green, size: 22),
+                  const Icon(Icons.undo_outlined, color: Colors.green, size: 22),
                   const SizedBox(width: 8),
                   Text(
-                    Trans.returnRequest,
+                    Trans.returnRequest ?? 'Yêu cầu trả hàng',
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 16,
@@ -956,16 +922,14 @@ String _formatMoney(dynamic value) {
             ],
           ),
           const SizedBox(height: 16),
-          
           if (displayContent.trim().isNotEmpty) ...[
             Text('Lý do / Nội dung:', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: colorScheme.onSurface)),
             const SizedBox(height: 4),
             Text(displayContent, style: TextStyle(fontSize: 14, color: colorScheme.onSurface)),
             const SizedBox(height: 12),
           ],
-
           if (media.isNotEmpty) ...[
-            Text(Trans.images, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: colorScheme.onSurface)),
+            Text(Trans.images ?? 'Hình ảnh', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: colorScheme.onSurface)),
             const SizedBox(height: 8),
             Wrap(
               spacing: 8,
@@ -983,7 +947,6 @@ String _formatMoney(dynamic value) {
             ),
             const SizedBox(height: 12),
           ],
-
           if (adminNote.trim().isNotEmpty) ...[
             Text('Phản hồi từ Admin:', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Colors.red)),
             const SizedBox(height: 4),
@@ -1002,9 +965,8 @@ String _formatMoney(dynamic value) {
             ),
             const SizedBox(height: 12),
           ],
-
           if (refundProof.isNotEmpty) ...[
-            Text(Trans.refundProof, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: colorScheme.onSurface)),
+            Text(Trans.refundProof ?? 'Minh chứng hoàn tiền', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: colorScheme.onSurface)),
             const SizedBox(height: 8),
             Wrap(
               spacing: 8,
@@ -1042,7 +1004,7 @@ String _formatMoney(dynamic value) {
         children: [
           Row(
             children: [
-              Icon(Icons.history, color: Colors.blue, size: 22),
+              const Icon(Icons.history, color: Colors.blue, size: 22),
               const SizedBox(width: 8),
               Text(
                 'Lịch sử thay đổi',
@@ -1065,7 +1027,6 @@ String _formatMoney(dynamic value) {
           ),
           const SizedBox(height: 12),
           ...history.map<Widget>((entry) {
-            // Use from_label/to_label like admin (or fallback to from_status/to_status)
             final fromLabel = entry['from_label']?.toString() ?? entry['from_status']?.toString() ?? '—';
             final toLabel = entry['to_label']?.toString() ?? entry['to_status']?.toString() ?? '—';
             final changedAt = entry['changed_at']?.toString() ?? '';
@@ -1088,7 +1049,7 @@ String _formatMoney(dynamic value) {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          '$fromLabel  ➔  $toLabel',
+                          '${_statusLabel(fromLabel)}  ➔  ${_statusLabel(toLabel)}',
                           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: colorScheme.onSurface),
                         ),
                         const SizedBox(height: 4),
