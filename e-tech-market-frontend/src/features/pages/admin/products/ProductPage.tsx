@@ -494,7 +494,6 @@ export default function ProductPage({
                             title="Xem chi tiết phiên bản & thông số kĩ thuật"
                             aria-label="Xem chi tiết phiên bản & thông số kĩ thuật"
                             type="button"
-                            style={{ color: '#0ea5e9', borderColor: 'rgba(14, 165, 233, 0.15)' }}
                           >
                             <EyeIcon />
                           </button>

@@ -271,19 +271,15 @@
   text-decoration: none;
 }
 
+.contactsAdminPage .iconBtn.detail { color: #0b59ea; background: #c7cffea1; }
+.contactsAdminPage .iconBtn.info { color: #0babea; background: #c7f5fea1; }
+.contactsAdminPage .iconBtn.success { color: #16a34a; background: #c7f7d2a1; }
+.contactsAdminPage .iconBtn.danger { color: #dc2626; background: #fecaca; }
+
 .contactsAdminPage .iconBtn:hover {
-  background: var(--bg-slate);
-  color: var(--text-dark);
+ opacity: 0.7;
 }
 
-.contactsAdminPage .iconBtn.success { color: #16a34a; border-color: #bbf7d0; }
-.contactsAdminPage .iconBtn.success:hover { background: #f0fdf4; }
-
-.contactsAdminPage .iconBtn.info { color: var(--primary-blue); border-color: #bfdbfe; }
-.contactsAdminPage .iconBtn.info:hover { background: #eff6ff; }
-
-.contactsAdminPage .iconBtn.danger { color: #dc2626; border-color: #fecaca; }
-.contactsAdminPage .iconBtn.danger:hover { background: #fef2f2; }
 
 /* PAGINATION AREA */
 .contactsAdminPage .contactsPagination {

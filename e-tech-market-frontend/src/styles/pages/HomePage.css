@@ -52,7 +52,7 @@
   position: relative;
 }
 .hpHeroTitleNew {
-  font-size: 5rem;
+  font-size: 4.5rem;
   font-weight: 600;
   line-height: 1;
   margin-bottom: 0;
@@ -63,11 +63,16 @@
 }
 .hpHeroDescNew {
   font-size: 1.25rem;
-  color: var(--et-text-muted);
+  color: #313030;
   line-height: 1.8;
   margin-bottom: 15px;
   max-width: 750px;
 }
+
+html.dark .hpHeroDescNew {
+  color: var(--et-text);
+}
+
 .hpBtnShopNow {
   display: inline-flex;
   align-items: center;
@@ -572,7 +577,7 @@
 
 /* Info Box */
 .hpProductInfo {
-  padding: 16px;
+  padding: 5px;
   display: flex;
   flex-direction: column;
   flex: 1;
@@ -669,7 +674,6 @@
   line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
-  flex: 1;
 }
 
 /* Add to cart Full button */
@@ -1214,7 +1218,7 @@
 
 .hpReviewCard {
   background: none;
-  padding: 5px 110px;
+  padding: 8px 8px;
   border-bottom: 1px dashed rgb(215 128 27 / 32%);
   display: flex;
   gap: 40px;

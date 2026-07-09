@@ -197,17 +197,38 @@
 
 /* ACTIONS BUTTONS IN TABLE */
 .actions-cell button {
-  background: none;
   border: none;
   font-size: 14px;
   font-weight: 500;
   cursor: pointer;
   margin-left: 12px;
 }
-.btn-link-edit { color: var(--primary-color); }
-.btn-link-edit:hover { text-decoration: underline; }
-.btn-link-delete { color: #ef4444; }
-.btn-link-delete:hover { text-decoration: underline; }
+
+.btn-link-edit {   
+  color: #d97706;
+  background: #fef3c7;
+  width: 34px;
+  height: 34px;
+  border-radius: 6px;
+  border: none;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.btn-link-delete {   
+  color: #dc2626;
+  background: #fee2e2;
+  width: 34px;
+  height: 34px;
+  border-radius: 6px;
+  border: none;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+  
 .ab-empty-text {
   text-align: center;
   padding: 40px 0;

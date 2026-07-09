@@ -2261,10 +2261,12 @@
     width: 34px;
     height: 34px;
     border-radius: 10px;
-    border: 1px solid rgba(15, 23, 42, .08);
+    border: none;
     background: none;
     cursor: pointer;
     margin-left: 8px;
+    color: #0b59ea; 
+    background: #c7cffea1;
 }
 
 .admOrdersIconBtn:hover {

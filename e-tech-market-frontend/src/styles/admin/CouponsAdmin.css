@@ -206,27 +206,22 @@
   width: 34px;
   height: 34px;
   border-radius: 6px;
-  border: 1px solid #e2e8f0;
-  background: white;
-  color: #64748b;
+  border: none;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 0;
-  transition: all 0.2s ease;
 }
 
-.adminBtnSecondary:hover {
-  color: #ea580c;
-  border-color: #ffedd5;
-  background-color: #fff7ed;
+.adminBtnSecondary {
+  color: #d97706;
+  background: #fef3c7;
 }
 
-.adminBtnDanger:hover {
+.adminBtnDanger {
   color: #dc2626;
-  border-color: #fee2e2;
-  background-color: #fee2e2;
+  background: #fee2e2;
 }
 
 /* Phân trang */

@@ -270,18 +270,19 @@
   justify-content: flex-end;
 }
 .iconActionBtn {
-  width: 28px;  /* Thu nhỏ nút lại */
-  height: 28px;
-  border: none !important;      /* KHÔNG BORDER */
-  background: transparent !important; /* KHÔNG NỀN CHƯA HOVER */
+  width: 34px;  /* Thu nhỏ nút lại */
+  height: 34px;
+  border: none !important;   
   cursor: pointer;
   display: grid;
   place-items: center;
-  color: var(--admin-txt-muted);
-  font-size: 1rem;
   border-radius: 4px;
   transition: all 0.15s ease;
 }
+.iconActionBtn.detail  { color: #0b59ea; background: #c7cffea1; }
+.iconActionBtn.delete { color: #dc2626; background: #fee2e2; }
+.iconActionBtn.approve { color: #029702; background: #d2f7c19b; }
+.iconActionBtn.reject { color: #dc2626; background: #fee2e2; }
 /* Khi đưa chuột vào mới hiện màu đại diện nhẹ nhàng */
 .iconActionBtn:hover {
   background: #f1f5f9 !important;
