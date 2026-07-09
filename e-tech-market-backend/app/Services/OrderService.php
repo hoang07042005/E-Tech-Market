@@ -239,10 +239,12 @@ class OrderService
                 'notes' => $data['notes'] ?? null,
             ]);
 
-            // Deduct points from user if used
-            if ($user && $pointsUsed > 0) {
+            // Deduct points from user only when payment is not pending.
+            // For vnpay/momo flow (pending_payment), points must be deducted on payment SUCCESS,
+            // otherwise failed payment would wrongly consume loyalty points.
+            if ($user && $pointsUsed > 0 && $initialStatus !== 'pending_payment') {
                 $user->decrement('current_points', $pointsUsed);
-                
+
                 \App\Models\PointHistory::create([
                     'user_id' => $user->id,
                     'order_id' => $order->id,

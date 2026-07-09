@@ -158,6 +158,12 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::patch('/users/{user}', [AdminUsersController::class, 'update'])->name('users');
         Route::delete('/users/{user}', [AdminUsersController::class, 'destroy'])->name('users');
 
+        // Hard delete trashed product variants (Admin) - must be declared BEFORE '/products/{product}' to avoid
+        // 'deleted-variants' being treated as a product id.
+        Route::get('/products/deleted-variants', [\App\Http\Controllers\Admin\ProductsDeletedVariantsController::class, 'index'])->name('products.deleted-variants.index');
+        Route::post('/products/deleted-variants/hard-delete', [\App\Http\Controllers\Admin\ProductsDeletedVariantsController::class, 'hardDelete'])->name('products.deleted-variants.hard-delete');
+
+
         Route::get('/products', [AdminProductsController::class, 'index'])->name('products');
         Route::get('/products/{product}', [AdminProductsController::class, 'show'])->name('products');
         Route::post('/products', [AdminProductsController::class, 'store'])->name('products');
@@ -210,6 +216,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
         // Videos
         Route::apiResource('videos', App\Http\Controllers\Admin\VideoController::class);
+
     });
 });
 
@@ -258,7 +265,7 @@ Route::post('/coupons/apply', [ClientCouponsController::class, 'apply'])->middle
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/products/{product}/reviews', function (\Illuminate\Http\Request $request, $product) {
-        \Log::info('[DartDebug] Request hit', [
+        \Illuminate\Support\Facades\Log::info('[DartDebug] Request hit', [
             'headers' => $request->headers->all(),
             'body' => $request->getContent(),
             'all' => $request->all(),

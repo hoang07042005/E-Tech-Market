@@ -45,3 +45,26 @@ export const saveAdminProduct = async <T>(data: FormData, id: number | null | un
     body: data
   })
 }
+
+export interface AdminDeletedProductVariant {
+  id: number
+  product_id: number
+  variant_name: string | null
+  stock_quantity: number | null
+  image_url: string | null
+  deleted_at: string | null
+}
+
+export const fetchAdminDeletedProductVariants = async (perPage = 50) => {
+  const res = await apiFetch<any>(`/api/admin/products/deleted-variants?per_page=${perPage}`)
+  if (Array.isArray(res)) return res as AdminDeletedProductVariant[]
+  return (res?.data ?? res?.items ?? []) as AdminDeletedProductVariant[]
+}
+
+export const hardDeleteAdminDeletedProductVariants = (variantIds: number[]) => {
+  return apiFetch('/api/admin/products/deleted-variants/hard-delete', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ variant_ids: variantIds })
+  })
+}
