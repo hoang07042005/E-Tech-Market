@@ -204,6 +204,7 @@ class AdminDashboardService
     {
         $recentActivities = [];
 
+        // 1) Latest successful payment
         $latestPaid = Order::query()
             ->where('payment_status', 'paid')
             ->orderByDesc('updated_at')
@@ -217,6 +218,7 @@ class AdminDashboardService
             ];
         }
 
+        // 2) Latest product update
         $latestProduct = Product::query()
             ->orderByDesc('updated_at')
             ->first();
@@ -229,6 +231,7 @@ class AdminDashboardService
             ];
         }
 
+        // 3) Latest unanswered QnA
         $latestQna = ProductShopQna::query()
             ->whereNull('answer')
             ->orderByDesc('created_at')
@@ -242,6 +245,42 @@ class AdminDashboardService
             ];
         }
 
+        // 4) Low stock alert (to match what admin expects to see)
+        $lowStockThreshold = 10;
+
+        // Use ProductVariant because dashboard KPI already uses it.
+        $latestLowStockVariant = ProductVariant::query()
+            ->where('stock_quantity', '<=', $lowStockThreshold)
+            ->orderByDesc('updated_at')
+            ->first();
+
+        if ($latestLowStockVariant) {
+            $productName = (string) ($latestLowStockVariant->product?->name ?? '');
+            $variantName = (string) ($latestLowStockVariant->variant_name ?? '');
+            $sku = (string) ($latestLowStockVariant->sku ?? '');
+
+            if (trim($sku) !== '') {
+                $title = $sku;
+            } elseif (trim($variantName) !== '') {
+                $title = $variantName;
+            } elseif ($productName !== '') {
+                $title = $productName;
+            } else {
+                $title = 'Tồn kho thấp';
+            }
+
+            // Prefer updated_at if exists, fallback to created_at
+            $timeSource = $latestLowStockVariant->updated_at ?? $latestLowStockVariant->created_at;
+
+            $recentActivities[] = [
+                'dot' => 'warn',
+                'title' => $title,
+                'desc' => 'tồn kho đang thấp (≤ '.$lowStockThreshold.')',
+                'time' => $timeSource ? Carbon::parse($timeSource)->diffForHumans() : '',
+            ];
+        }
+
+        // Keep UI limit at 3 items
         return array_slice($recentActivities, 0, 3);
     }
 
@@ -408,6 +447,31 @@ class AdminDashboardService
                 $avatarUrl = $r->user?->avatar_url ? (string) $r->user->avatar_url : null;
                 $time = $r->created_at ? $r->created_at->diffForHumans() : '';
 
+                $media = $r->media;
+
+                // Normalize media to [{type:'image'|'video', url:string}]
+                if (! is_array($media)) {
+                    $media = [];
+                }
+
+                $normalized = [];
+                foreach ($media as $m) {
+                    if (! is_array($m)) continue;
+                    $type = (string) ($m['type'] ?? '');
+                    $url = $m['url'] ?? ($m['media_url'] ?? ($m['path'] ?? null));
+
+                    $url = is_string($url) ? trim($url) : '';
+                    if (! $url) continue;
+
+                    if ($type !== 'image' && $type !== 'video') {
+                        // best-effort: infer by extension if type missing
+                        $lower = strtolower($url);
+                        $type = str_ends_with($lower, '.mp4') || str_ends_with($lower, '.webm') || str_ends_with($lower, '.ogg') ? 'video' : 'image';
+                    }
+
+                    $normalized[] = ['type' => $type, 'url' => $url];
+                }
+
                 return [
                     'id' => (int) $r->id,
                     'user_name' => $name,
@@ -415,6 +479,7 @@ class AdminDashboardService
                     'rating' => (int) ($r->rating ?? 0),
                     'comment' => (string) ($r->comment ?? ''),
                     'time' => (string) $time,
+                    'media' => $normalized,
                 ];
             })
             ->values()
@@ -454,19 +519,50 @@ class AdminDashboardService
             ->limit(10)
             ->get();
 
-        return $users->map(static function ($row) use ($vipOf) {
-            $spent = (float) $row->spent;
-            [$vipLabel, $vipTone] = $vipOf($row->rank_name ?? 'Đồng');
+        $usersWithOrders = $users
+            ->map(static function ($row) use ($vipOf) {
+                $spent = (float) $row->spent;
+                [$vipLabel, $vipTone] = $vipOf($row->rank_name ?? 'Đồng');
 
-            return [
-                'user_id' => (int) $row->user_id,
-                'name' => (string) ($row->name ?? '—'),
-                'avatar_url' => $row->avatar_url ? (string) $row->avatar_url : null,
-                'spent' => $spent,
-                'orders_count' => 0,
-                'vip_label' => $vipLabel,
+                return [
+                    'user_id' => (int) $row->user_id,
+                    'name' => (string) ($row->name ?? '—'),
+                    'avatar_url' => $row->avatar_url ? (string) $row->avatar_url : null,
+                    'spent' => $spent,
+                    'vip_label' => $vipLabel,
                     'vip_tone' => $vipTone,
                 ];
+            })
+            ->values()
+            ->all();
+
+        // Compute orders_count for each top customer (paid OR completed/delivered not refunded)
+        $userIds = array_values(array_filter(array_map(static fn ($u) => $u['user_id'] ?? null, $usersWithOrders)));
+        if (count($userIds) === 0) {
+            return [];
+        }
+
+        $orderCounts = Order::query()
+            ->select('user_id', DB::raw('COUNT(id) as cnt'))
+            ->whereIn('user_id', $userIds)
+            ->where(function ($q) {
+                $q->where('payment_status', 'paid')
+                  ->orWhere(function ($q2) {
+                      $q2->whereIn('status', ['completed', 'delivered'])
+                         ->where('payment_status', '!=', 'refunded');
+                  });
+            })
+            ->groupBy('user_id')
+            ->get()
+            ->map(static fn ($r) => [(int) $r->user_id => (int) $r->cnt])
+            ->reduce(static function ($acc, $item) {
+                return $acc + $item;
+            }, []);
+
+        return collect($usersWithOrders)
+            ->map(static function (array $u) use ($orderCounts) {
+                $u['orders_count'] = (int) ($orderCounts[$u['user_id']] ?? 0);
+                return $u;
             })
             ->values()
             ->all();

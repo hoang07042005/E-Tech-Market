@@ -176,6 +176,8 @@ export default function DashboardPage({
     status_tone: "ok" | "wait" | "bad";
   }>(null);
 
+  type ReviewMediaItem = { type: "image" | "video"; url: string };
+
   type DashStats = {
     kpi: {
       revenue_30d: number;
@@ -238,6 +240,7 @@ export default function DashboardPage({
       rating: number;
       comment: string;
       time: string;
+      media?: ReviewMediaItem[];
     }>;
     top_customers?: Array<{
       user_id: number;
@@ -251,6 +254,10 @@ export default function DashboardPage({
   };
 
   const [dashLoading, setDashLoading] = useState(true);
+
+  const [selectedReviewMedia, setSelectedReviewMedia] =
+    useState<ReviewMediaItem | null>(null);
+  const [isReviewMediaModalOpen, setIsReviewMediaModalOpen] = useState(false);
   const [dashError, setDashError] = useState<string | null>(null);
   const [dash, setDash] = useState<DashStats | null>(null);
   const [prevDash, setPrevDash] = useState<DashStats | null>(null);
@@ -281,11 +288,15 @@ export default function DashboardPage({
       setDashError(null);
       try {
         const now = new Date();
-        const prevMonthStart = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+        const prevMonthStart = new Date(
+          now.getFullYear(),
+          now.getMonth() - 1,
+          1,
+        );
         const prevMonthEnd = new Date(now.getFullYear(), now.getMonth(), 0);
         const fmt = (d: Date) => {
-          const mm = String(d.getMonth() + 1).padStart(2, '0');
-          const dd = String(d.getDate()).padStart(2, '0');
+          const mm = String(d.getMonth() + 1).padStart(2, "0");
+          const dd = String(d.getDate()).padStart(2, "0");
           return `${d.getFullYear()}-${mm}-${dd}`;
         };
         const [res, productsRes, prevRes] = await Promise.all([
@@ -297,7 +308,12 @@ export default function DashboardPage({
             resolution,
           ),
           apiFetch<any>("/api/admin/products?per_page=100"),
-          fetchDashboardStats<DashStats>('custom', fmt(prevMonthStart), fmt(prevMonthEnd), resolution),
+          fetchDashboardStats<DashStats>(
+            "custom",
+            fmt(prevMonthStart),
+            fmt(prevMonthEnd),
+            resolution,
+          ),
         ]);
         if (cancelled) return;
         setDash(res);
@@ -489,8 +505,8 @@ export default function DashboardPage({
     return pct;
   };
   const fmtPct = (pct: number | null) => {
-    if (pct === null) return '';
-    const sign = pct >= 0 ? '+' : '';
+    if (pct === null) return "";
+    const sign = pct >= 0 ? "+" : "";
     return `${sign}${pct.toFixed(1)}%`;
   };
   const prevKpi = prevDash?.kpi;
@@ -500,8 +516,12 @@ export default function DashboardPage({
       key: "rev",
       label: "Tổng doanh thu",
       value: kpi ? `${fmtMoneyShort(kpi.revenue_30d)} đ` : "—",
-      sub: prevKpi ? `Tháng trước: ${fmtMoneyShort(prevKpi.revenue_30d)} đ` : "",
-      badge: fmtPct(pctChange(kpi?.revenue_30d ?? 0, prevKpi?.revenue_30d ?? 0)) || "+0%",
+      sub: prevKpi
+        ? `Tháng trước: ${fmtMoneyShort(prevKpi.revenue_30d)} đ`
+        : "",
+      badge:
+        fmtPct(pctChange(kpi?.revenue_30d ?? 0, prevKpi?.revenue_30d ?? 0)) ||
+        "+0%",
       icon: <RevenueIcon />,
       tone: "orange" as const,
     },
@@ -510,7 +530,10 @@ export default function DashboardPage({
       label: "Đơn hàng hiện tại",
       value: kpi ? String(kpi.current_orders) : "—",
       sub: prevKpi ? `Tháng trước: ${prevKpi.current_orders}` : "",
-      badge: fmtPct(pctChange(kpi?.current_orders ?? 0, prevKpi?.current_orders ?? 0)) || "0%",
+      badge:
+        fmtPct(
+          pctChange(kpi?.current_orders ?? 0, prevKpi?.current_orders ?? 0),
+        ) || "0%",
       icon: <CartIcon />,
       tone: "blue" as const,
     },
@@ -528,7 +551,10 @@ export default function DashboardPage({
       label: "Khách hàng mới",
       value: kpi ? `+${kpi.new_customers_7d}` : "—",
       sub: prevKpi ? `Tháng trước: +${prevKpi.new_customers_7d}` : "",
-      badge: fmtPct(pctChange(kpi?.new_customers_7d ?? 0, prevKpi?.new_customers_7d ?? 0)) || "+0%",
+      badge:
+        fmtPct(
+          pctChange(kpi?.new_customers_7d ?? 0, prevKpi?.new_customers_7d ?? 0),
+        ) || "+0%",
       icon: <UserGroupIcon />,
       tone: "purple" as const,
     },
@@ -536,8 +562,16 @@ export default function DashboardPage({
       key: "avg",
       label: "Giá trị đơn hàng TB",
       value: kpi ? `${fmtMoneyShort(kpi.avg_order_value_30d)} đ` : "—",
-      sub: prevKpi ? `Tháng trước: ${fmtMoneyShort(prevKpi.avg_order_value_30d)} đ` : "",
-      badge: fmtPct(pctChange(kpi?.avg_order_value_30d ?? 0, prevKpi?.avg_order_value_30d ?? 0)) || "+0%",
+      sub: prevKpi
+        ? `Tháng trước: ${fmtMoneyShort(prevKpi.avg_order_value_30d)} đ`
+        : "",
+      badge:
+        fmtPct(
+          pctChange(
+            kpi?.avg_order_value_30d ?? 0,
+            prevKpi?.avg_order_value_30d ?? 0,
+          ),
+        ) || "+0%",
       icon: <GridIcon />,
       tone: "cyan" as const,
     },
@@ -558,7 +592,8 @@ export default function DashboardPage({
       : Array.from({ length: 7 }).map((_, i) =>
           Math.max(0, Math.round(base * (0.7 + Math.sin(i) * 0.15))),
         );
-    let chartType: "area" | "bars" | "donut" | "line" | "thinArea" | "slope" = "line";
+    let chartType: "area" | "bars" | "donut" | "line" | "thinArea" | "slope" =
+      "line";
     if (kp.key === "rev") chartType = "line";
     else if (kp.key === "orders") chartType = "line";
     else if (kp.key === "products") chartType = "donut";
@@ -628,7 +663,16 @@ export default function DashboardPage({
   };
   const recentOrders = (dash?.recent_orders ?? []).slice(0, 10);
   const recentReviews = (dash?.recent_reviews ?? []).slice(0, 2);
-  const topCustomers = (dash?.top_customers ?? []);
+
+  const openReviewMediaModal = (m: ReviewMediaItem) => {
+    setSelectedReviewMedia(m);
+    setIsReviewMediaModalOpen(true);
+  };
+  const closeReviewMediaModal = () => {
+    setIsReviewMediaModalOpen(false);
+    setSelectedReviewMedia(null);
+  };
+  const topCustomers = dash?.top_customers ?? [];
   const resolveUserAvatar = (url?: string | null) => {
     if (!url) return null;
     const s = url.trim();
@@ -706,7 +750,9 @@ export default function DashboardPage({
       x: i * step,
       y: h - 8 - ((v - min) / range) * (h - 16),
     }));
-    const points = pts.map((p) => `${p.x.toFixed(2)},${p.y.toFixed(2)}`).join(" ");
+    const points = pts
+      .map((p) => `${p.x.toFixed(2)},${p.y.toFixed(2)}`)
+      .join(" ");
     return (
       <svg
         className="admKpiSparkline"
@@ -1004,7 +1050,12 @@ export default function DashboardPage({
     );
   };
 
-  const renderDonut = (pct = 0, color = "#10b981", size = 56, label?: string) => {
+  const renderDonut = (
+    pct = 0,
+    color = "#10b981",
+    size = 56,
+    label?: string,
+  ) => {
     const r = size / 2 - 6;
     const c = 2 * Math.PI * r;
     const offset = c * (1 - Math.max(0, Math.min(1, pct / 100)));
@@ -1044,7 +1095,9 @@ export default function DashboardPage({
           fontSize={label && label.length > 3 ? 9 : 11}
           fontWeight={700}
           fill="#111"
-        >{label ?? `${pct}%`}</text>
+        >
+          {label ?? `${pct}%`}
+        </text>
       </svg>
     );
   };
@@ -1098,10 +1151,14 @@ export default function DashboardPage({
 
         <div className="admKpiGrid">
           {kpisWithSpark.map((k) => {
-            const badgeStr = String(k.badge || '');
-            const isPositive = badgeStr.startsWith('+');
-            const isNegative = badgeStr.startsWith('-');
-            const badgeTone = isPositive ? 'admKpiBadge--up' : isNegative ? 'admKpiBadge--down' : '';
+            const badgeStr = String(k.badge || "");
+            const isPositive = badgeStr.startsWith("+");
+            const isNegative = badgeStr.startsWith("-");
+            const badgeTone = isPositive
+              ? "admKpiBadge--up"
+              : isNegative
+                ? "admKpiBadge--down"
+                : "";
             return (
               <div
                 key={k.key}
@@ -1117,9 +1174,7 @@ export default function DashboardPage({
                 </div>
                 <div className="admKpiLabel2">{k.label}</div>
                 <div className="admKpiValue2">{k.value}</div>
-                {k.sub && (
-                  <div className="admKpiSubPrev">{k.sub}</div>
-                )}
+                {k.sub && <div className="admKpiSubPrev">{k.sub}</div>}
                 <div className="admKpiSparkWrap">
                   {(() => {
                     const kt = (k as any).chartType as string;
@@ -1130,15 +1185,24 @@ export default function DashboardPage({
                       newCus: "#8b5cf6",
                       avg: "#3b82f6",
                     };
-                    const color = keyColorMap[(k as any).key] || colorOfTone((k as any).tone);
+                    const color =
+                      keyColorMap[(k as any).key] ||
+                      colorOfTone((k as any).tone);
                     if ((k as any).key === "rev")
-                      return renderRevenueArea((k as any).sparkline || [], color);
+                      return renderRevenueArea(
+                        (k as any).sparkline || [],
+                        color,
+                      );
                     if ((k as any).key === "orders")
                       return renderLine((k as any).sparkline || [], color);
                     if ((k as any).key === "avg")
                       return renderSlopeLine((k as any).sparkline || [], color);
                     if ((k as any).key === "newCus")
-                      return renderPurpleColumns((k as any).sparkline || [], "#d8c7ff", "#7c3aed");
+                      return renderPurpleColumns(
+                        (k as any).sparkline || [],
+                        "#d8c7ff",
+                        "#7c3aed",
+                      );
                     if (kt === "area")
                       return renderArea((k as any).sparkline || [], color);
                     if (kt === "thinArea")
@@ -1152,7 +1216,9 @@ export default function DashboardPage({
                         (k as any).donutPct || 0,
                         color,
                         56,
-                        (k as any).donutTotal ? String((k as any).donutTotal) : undefined,
+                        (k as any).donutTotal
+                          ? String((k as any).donutTotal)
+                          : undefined,
                       );
                     return renderLine((k as any).sparkline || [], color);
                   })()}
@@ -2225,8 +2291,55 @@ export default function DashboardPage({
                       </span>
                     </div>
                   </div>
+
                   <div className="admReviewQuote">“{r.comment}”</div>
                   <div className="admReviewTime2">{r.time}</div>
+
+                  {Array.isArray(r.media) && r.media.length > 0 && (
+                    <div className="admReviewMediaRow2">
+                      {r.media.slice(0, 3).map((m, idx) => (
+                        <button
+                          key={`${m.url}-${idx}`}
+                          type="button"
+                          className="admReviewMediaItem2"
+                          onClick={() => openReviewMediaModal(m)}
+                          aria-label="Xem media đánh giá"
+                        >
+                          {m.type === "image" ? (
+                            <img
+                              className="admReviewMediaImage2"
+                              src={resolveAdminImg(m.url)}
+                              alt=""
+                              loading="lazy"
+                              decoding="async"
+                            />
+                          ) : (
+                            <div className="admReviewMediaVideoWrap2">
+                              <video
+                                className="admReviewMediaVideoPreview2"
+                                src={resolveAdminImg(m.url)}
+                                muted
+                                playsInline
+                                loop
+                                preload="metadata"
+                              />
+                              <span
+                                className="admReviewMediaVideoBadge2"
+                                aria-hidden
+                              >
+                                ▶
+                              </span>
+                            </div>
+                          )}
+                        </button>
+                      ))}
+                      {r.media.length > 3 && (
+                        <span className="admReviewMediaMore2">
+                          +{r.media.length - 3}
+                        </span>
+                      )}
+                    </div>
+                  )}
                 </div>
               ))}
               {!recentReviews.length && (
@@ -2246,7 +2359,9 @@ export default function DashboardPage({
                 <MedalIcon />
               </button>
             </div>
-            <div className={`admLoyalList${topCustomers.length > 3 ? ' admLoyalList--scroll' : ''}`}>
+            <div
+              className={`admLoyalList${topCustomers.length > 3 ? " admLoyalList--scroll" : ""}`}
+            >
               {(topCustomers.length ? topCustomers : []).map((c) => (
                 <div key={c.user_id} className="admLoyalRow">
                   <div className="admLoyalLeft">
@@ -2293,6 +2408,47 @@ export default function DashboardPage({
               Xem tất cả khách hàng
             </button> */}
           </section>
+
+          {isReviewMediaModalOpen && selectedReviewMedia && (
+            <div
+              className="pdpReviewMediaModalOverlay admReviewMediaModalOverlay"
+              onMouseDown={(e) => {
+                if (e.target === e.currentTarget) closeReviewMediaModal();
+              }}
+              role="dialog"
+              aria-modal="true"
+            >
+              <div
+                className="pdpReviewMediaModal admReviewMediaModal"
+                onMouseDown={(e) => e.stopPropagation()}
+              >
+                <button
+                  type="button"
+                  className="pdpReviewMediaModalClose admReviewMediaModalClose"
+                  onClick={closeReviewMediaModal}
+                  aria-label="Đóng"
+                >
+                  ×
+                </button>
+                <div className="pdpReviewMediaModalContent admReviewMediaModalContent">
+                  {selectedReviewMedia.type === "image" ? (
+                    <img
+                      src={resolveAdminImg(selectedReviewMedia.url)}
+                      alt="Media đánh giá"
+                      className="admReviewMediaModalImg"
+                    />
+                  ) : (
+                    <video
+                      src={resolveAdminImg(selectedReviewMedia.url)}
+                      controls
+                      autoPlay
+                      className="admReviewMediaModalVideo"
+                    />
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>

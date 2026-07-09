@@ -1,6 +1,8 @@
 .flashSalePage {
   max-width: 1280px;
-  margin: 0 ;
+  width: 100%;
+  margin: 0 auto;
+  margin-top: 25px;
   padding: 0 16px;
   font-family: "Inter", sans-serif;
   color: #1a1c1e;
@@ -277,10 +279,7 @@ html.dark .flashSalePage {
   flex-direction: column;
 }
 
-
-
-
-html.dark .fspCard{
+html.dark .fspCard {
   background: var(--et-bg);
 }
 
@@ -309,7 +308,7 @@ html.dark .fspCard{
   top: 0;
   left: 0;
   z-index: 10;
-  background: #FF2424;
+  background: #ff2424;
   color: #fff;
   font-weight: 700;
   padding: 5px 5px;
@@ -358,16 +357,15 @@ html.dark .fspCard{
   color: #0f172a;
   margin: 0 0 10px 0;
   display: -webkit-box;
-    -webkit-line-clamp: 2;
+  -webkit-line-clamp: 2;
   line-clamp: 2;
-    -webkit-box-orient: vertical;
+  -webkit-box-orient: vertical;
   overflow: hidden;
 }
 
-html.dark .fspName{
+html.dark .fspName {
   color: var(--et-text);
 }
-
 
 .fspPricing {
   display: flex;
@@ -426,7 +424,7 @@ html.dark .fspName{
   background: #bc0000;
 }
 .fspCTA {
- width: 100%;
+  width: 100%;
   padding: 10px;
   background: #ff5722;
   color: #fff;
@@ -614,14 +612,13 @@ html.dark .fspName{
   margin: 0 auto;
 }
 
-html.dark .fspCurrentProgramInfo{
+html.dark .fspCurrentProgramInfo {
   background: var(--et-bg);
 }
 
-html.dark .fspCurrentProgramTitle{
+html.dark .fspCurrentProgramTitle {
   color: var(--et-text);
 }
-
 
 .fspCurrentProgramTitle {
   display: flex;
@@ -642,7 +639,7 @@ html.dark .fspCurrentProgramTitle{
   border-radius: 8px;
 }
 
-html.dark .fspCurrentProgramTime{
+html.dark .fspCurrentProgramTime {
   background: rgb(255, 57, 5);
   color: #e5e2e1;
 }
@@ -717,7 +714,8 @@ html.dark .fspCurrentProgramTime{
 
 /* Animation pulse */
 @keyframes pulse {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 1;
   }
   50% {
@@ -809,11 +807,11 @@ html.dark .fspCurrentProgramTime{
 .fspBoltIcon {
   font-size: 48px;
   color: #ff5722;
-  font-variation-settings: 'FILL' 1;
+  font-variation-settings: "FILL" 1;
 }
 
 .fspMultiTitleText {
-  font-family: 'Anton', sans-serif;
+  font-family: "Anton", sans-serif;
   font-size: 70px;
   color: #e5e2e1;
   text-transform: uppercase;
@@ -850,14 +848,14 @@ html.dark .fspCurrentProgramTime{
 }
 
 .fspMultiTimerNum {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: "JetBrains Mono", monospace;
   font-size: 48px;
   font-weight: 700;
   color: #ff5722;
 }
 
 .fspMultiTimerSep {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: "JetBrains Mono", monospace;
   font-size: 48px;
   color: rgba(255, 87, 34, 0.4);
   padding-bottom: 24px;

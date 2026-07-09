@@ -493,8 +493,8 @@
 }
 
 .ppProductGridNew {
-  grid-template-columns: repeat(3, 1fr);
-  gap: 30px;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 18px;
   display: grid
 }
 
@@ -527,13 +527,13 @@
   border-radius: 999px;
   justify-content: center;
   align-items: center;
-  width: 38px;
-  height: 38px;
+  width: 34px;
+  height: 34px;
   transition: transform .18s, background .18s, color .18s, border-color .18s;
   display: inline-flex;
   position: absolute;
-  top: 14px;
-  left: 14px
+  top: 5px;
+  left: 5px
 }
 
 .ppWishBtn:hover {
@@ -556,13 +556,13 @@
   border-radius: 999px;
   justify-content: center;
   align-items: center;
-  width: 38px;
-  height: 38px;
+  width: 34px;
+  height: 34px;
   transition: all .2s;
   display: inline-flex;
   position: absolute;
-  top: 14px;
-  left: 60px
+  top: 5px;
+  left: 45px
 }
 
 .ppCompareBtn:hover {
@@ -596,8 +596,8 @@
   background: var(--et-primary);
   color: #fff;
   letter-spacing: .1em;
-  padding: 4px 10px;
-  font-size: 10px;
+  padding: 4px;
+  font-size: 8px;
   font-weight: 600;
 }
 
@@ -630,7 +630,7 @@
 }
 
 .ppCardContent {
-  padding: 15px
+  padding: 10px
 }
 
 .ppCardTopRow {
