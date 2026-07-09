@@ -115,12 +115,136 @@
     border-radius: 3px 3px 0 0
 }
 
+.hfSearchWrap {
+    position: relative;
+    flex: 0 1 260px;
+    min-width: 180px
+}
+
 .hfSearch {
     position: relative;
     display: flex;
     align-items: center;
-    flex: 0 1 220px;
-    min-width: 180px
+    width: 100%
+}
+
+/* ── Search dropdown ── */
+.hfSearchDropdown {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    width: 500px;
+    background: var(--et-surface);
+    border: 1px solid var(--et-border);
+    border-radius: 5px;
+    box-shadow: 0 20px 48px rgba(15, 23, 42, .13);
+    z-index: 300;
+    overflow: hidden;
+    animation: hfDropFade .18s ease-out
+}
+
+@keyframes hfDropFade {
+    from { opacity: 0; transform: translateY(-6px) }
+    to   { opacity: 1; transform: translateY(0) }
+}
+
+.hfSearchItem {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 8px 12px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    text-align: left;
+    transition: background .14s ease
+}
+
+.hfSearchItem:hover,
+.hfSearchItemActive {
+    background: var(--et-primary-soft)
+}
+
+/* Icon search — bên trái */
+.hfSearchItemIcon {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+    color: var(--et-text-muted);
+    opacity: .55
+}
+
+/* Tên + giá — giữa, chiếm toàn bộ khoảng trống */
+.hfSearchItemInfo {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    flex: 1;
+    min-width: 0
+}
+
+.hfSearchItemName {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--et-text);
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+}
+
+.hfSearchItemPrice {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--et-primary)
+}
+
+/* Ảnh — bên phải */
+.hfSearchItemImg {
+    width: 55px;
+    height: 38px;
+    border-radius: 5px;
+    object-fit: cover;
+    flex-shrink: 0;
+    border: 1px solid var(--et-border)
+}
+
+.hfSearchItemImgPlaceholder {
+    width: 55px;
+    height: 38px;
+    border-radius: 5px;
+    flex-shrink: 0;
+    background: var(--et-bg);
+    border: 1px solid var(--et-border)
+}
+
+.hfSearchViewAll {
+    display: block;
+    width: 100%;
+    padding: 9px 12px;
+    border: none;
+    border-top: 1px solid var(--et-border);
+    background: transparent;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--et-primary);
+    text-align: center;
+    transition: background .14s ease
+}
+
+.hfSearchViewAll:hover {
+    background: var(--et-primary-soft)
+}
+
+/* Loading spinner */
+.hfSearchSpinner {
+    animation: hfSpin .8s linear infinite
+}
+
+@keyframes hfSpin {
+    to { transform: rotate(360deg) }
 }
 
 .hfSearchInput {

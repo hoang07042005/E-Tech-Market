@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef, useMemo, type FormEvent } from 'react'
+import { useState, useEffect, useRef, useMemo, type FormEvent, type KeyboardEvent } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import '@/styles/components/HeaderFooter.css'
 import { cartCount, getCart } from '@/features/services/cart.service'
@@ -164,6 +164,12 @@ export default function HeaderPage({ active = 'Home' }: { active?: NavKey }) {
   
   const [cartQty, setCartQty] = useState(() => cartCount(getCart()))
   const [searchQuery, setSearchQuery] = useState('')
+  const [searchOpen, setSearchOpen] = useState(false)
+  const [searchResults, setSearchResults] = useState<SearchHit[]>([])
+  const [searchLoading, setSearchLoading] = useState(false)
+  const [searchActiveIdx, setSearchActiveIdx] = useState(-1)
+  const searchWrapRef = useRef<HTMLDivElement | null>(null)
+  const searchDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const [darkMode, setDarkMode] = useState<boolean>(() => {
     return typeof window !== 'undefined' && localStorage.getItem('theme') === 'dark'
@@ -345,15 +351,82 @@ export default function HeaderPage({ active = 'Home' }: { active?: NavKey }) {
     }
   }
 
+  type SearchHit = {
+    id: number
+    name: string
+    slug: string
+    main_image_url?: string | null
+    price?: string | number | null
+    sale_price?: string | number | null
+  }
+
   const handleSearchSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     const term = searchQuery.trim()
+    setSearchOpen(false)
     if (!term) {
       navigate('/products')
       return
     }
     navigate(`/products?search=${encodeURIComponent(term)}`)
   }
+
+  const handleSearchChange = (val: string) => {
+    setSearchQuery(val)
+    setSearchActiveIdx(-1)
+    if (searchDebounceRef.current) clearTimeout(searchDebounceRef.current)
+    if (!val.trim()) {
+      setSearchResults([])
+      setSearchOpen(false)
+      return
+    }
+    searchDebounceRef.current = setTimeout(async () => {
+      setSearchLoading(true)
+      try {
+        const res = await apiFetch(`/products?search=${encodeURIComponent(val.trim())}&per_page=6`)
+        const json = res as { data?: SearchHit[] } | SearchHit[]
+        const hits: SearchHit[] = Array.isArray(json) ? json : (Array.isArray((json as { data?: SearchHit[] }).data) ? (json as { data: SearchHit[] }).data : [])
+        setSearchResults(hits.slice(0, 6))
+        setSearchOpen(hits.length > 0)
+      } catch {
+        setSearchResults([])
+        setSearchOpen(false)
+      } finally {
+        setSearchLoading(false)
+      }
+    }, 300)
+  }
+
+  const handleSearchKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+    if (!searchOpen || !searchResults.length) return
+    if (e.key === 'ArrowDown') {
+      e.preventDefault()
+      setSearchActiveIdx((i) => Math.min(i + 1, searchResults.length - 1))
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault()
+      setSearchActiveIdx((i) => Math.max(i - 1, -1))
+    } else if (e.key === 'Enter' && searchActiveIdx >= 0) {
+      e.preventDefault()
+      const hit = searchResults[searchActiveIdx]
+      if (hit) {
+        setSearchOpen(false)
+        navigate(`/products/${hit.slug}`)
+      }
+    } else if (e.key === 'Escape') {
+      setSearchOpen(false)
+    }
+  }
+
+  useEffect(() => {
+    const onDown = (e: MouseEvent) => {
+      const t = e.target as HTMLElement | null
+      if (!t) return
+      if (searchWrapRef.current && searchWrapRef.current.contains(t)) return
+      setSearchOpen(false)
+    }
+    document.addEventListener('mousedown', onDown)
+    return () => document.removeEventListener('mousedown', onDown)
+  }, [])
 
 
   return (
@@ -421,21 +494,75 @@ export default function HeaderPage({ active = 'Home' }: { active?: NavKey }) {
           </div>
         </nav>
 
-        <form className="hfSearch" role="search" onSubmit={handleSearchSubmit}>
-          <input
-            type="search"
-            className="hfSearchInput"
-            placeholder="Tìm kiếm..."
-            value={searchQuery}
-            onChange={(event) => setSearchQuery(event.target.value)}
-          />
-          <button type="submit" className="hfSearchButton" aria-label="Tìm kiếm">
-            <svg className="hfSearchIcon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-              <circle cx="11" cy="11" r="7" stroke="currentColor" strokeWidth="1.8" />
-              <path d="m16.5 16.5 4 4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-            </svg>
-          </button>
-        </form>
+        <div className="hfSearchWrap" ref={searchWrapRef}>
+          <form className="hfSearch" role="search" onSubmit={handleSearchSubmit}>
+            <input
+              type="search"
+              className="hfSearchInput"
+              placeholder="Tìm kiếm sản phẩm..."
+              value={searchQuery}
+              autoComplete="off"
+              onChange={(e) => handleSearchChange(e.target.value)}
+              onKeyDown={handleSearchKeyDown}
+              onFocus={() => { if (searchResults.length > 0) setSearchOpen(true) }}
+            />
+            <button type="submit" className="hfSearchButton" aria-label="Tìm kiếm">
+              {searchLoading ? (
+                <svg className="hfSearchIcon hfSearchSpinner" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="2" strokeDasharray="28" strokeLinecap="round" />
+                </svg>
+              ) : (
+                <svg className="hfSearchIcon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <circle cx="11" cy="11" r="7" stroke="currentColor" strokeWidth="1.8" />
+                  <path d="m16.5 16.5 4 4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+                </svg>
+              )}
+            </button>
+          </form>
+          {searchOpen && searchResults.length > 0 && (
+            <div className="hfSearchDropdown" role="listbox" aria-label="Gợi ý tìm kiếm">
+              {searchResults.map((hit, idx) => {
+                const price = Number(hit.sale_price ?? hit.price ?? 0)
+                return (
+                  <button
+                    key={hit.id}
+                    type="button"
+                    role="option"
+                    aria-selected={idx === searchActiveIdx}
+                    className={`hfSearchItem${idx === searchActiveIdx ? ' hfSearchItemActive' : ''}`}
+                    onMouseEnter={() => setSearchActiveIdx(idx)}
+                    onClick={() => { setSearchOpen(false); navigate(`/products/${hit.slug}`) }}
+                  >
+                    <svg className="hfSearchItemIcon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                      <circle cx="11" cy="11" r="7" stroke="currentColor" strokeWidth="1.8" />
+                      <path d="m16.5 16.5 4 4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+                    </svg>
+                    <div className="hfSearchItemInfo">
+                      <span className="hfSearchItemName">{hit.name}</span>
+                      {price > 0 && (
+                        <span className="hfSearchItemPrice">
+                          {price.toLocaleString('vi-VN')}₫
+                        </span>
+                      )}
+                    </div>
+                    {hit.main_image_url ? (
+                      <img className="hfSearchItemImg" src={resolveAvatarUrl(hit.main_image_url) ?? hit.main_image_url} alt="" decoding="async" />
+                    ) : (
+                      <div className="hfSearchItemImgPlaceholder" />
+                    )}
+                  </button>
+                )
+              })}
+              <button
+                type="button"
+                className="hfSearchViewAll"
+                onClick={() => { setSearchOpen(false); navigate(`/products?search=${encodeURIComponent(searchQuery.trim())}`) }}
+              >
+                Xem tất cả kết quả cho &ldquo;{searchQuery.trim()}&rdquo;
+              </button>
+            </div>
+          )}
+        </div>
 
         <div className="hfHeaderRight" aria-label="Thao tác trên header">
           <button

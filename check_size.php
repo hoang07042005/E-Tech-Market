@@ -1,1 +1,0 @@
-<?php require '/var/www/vendor/autoload.php'; $app = require '/var/www/bootstrap/app.php'; $app->make('Illuminate\Contracts\Console\Kernel')->bootstrap(); $r = App\Models\Review::find(10); echo strlen(json_encode($r));
