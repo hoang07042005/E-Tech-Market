@@ -6,12 +6,19 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * @property int $id
+ * @property int $flash_sale_id
+ * @property int $product_id
+ * @property int|null $variant_id
+ * @property float $flash_sale_price
+ * @property int|null $quantity_limit
+ * @property int $sold_quantity
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ */
 class FlashSaleItem extends Model
 {
-    /**
-     * @property int $id
-     * @property int $flash_sale_id
-     */
     use HasFactory;
 
     protected $fillable = [

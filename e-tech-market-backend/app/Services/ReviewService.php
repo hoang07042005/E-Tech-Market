@@ -104,7 +104,7 @@ class ReviewService
                 if (! $file instanceof \Illuminate\Http\UploadedFile) {
                     continue;
                 }
-                $mime = strtolower($file->getClientMimeType() ?? '');
+                $mime = strtolower($file->getClientMimeType());
                 $type = str_starts_with($mime, 'video/') ? 'video' : (str_starts_with($mime, 'image/') ? 'image' : null);
                 if (! $type) {
                     continue;

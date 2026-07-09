@@ -26,6 +26,14 @@ use Spatie\Permission\Traits\HasRoles;
  * @property string|null $avatar_url
  * @property bool $is_active
  * @property \Illuminate\Support\Carbon|null $email_verified_at
+ * @property int $current_points
+ * @property float $total_spent
+ * @property int|null $rank_id
+ * @property bool $google2fa_enabled
+ * @property string|null $google2fa_secret
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\MembershipRank|null $membershipRank
  */
 class User extends Authenticatable implements MustVerifyEmail
 {
@@ -90,7 +98,7 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->belongsToMany(Coupon::class, 'user_coupons', 'user_id', 'coupon_id')->withTimestamps();
     }
 
-    public function membershipRank()
+    public function membershipRank(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(MembershipRank::class, 'rank_id');
     }

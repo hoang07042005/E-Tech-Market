@@ -55,7 +55,7 @@ class Disable2FACommand extends Command
             return self::FAILURE;
         }
 
-        $count = User::update([
+        $count = User::query()->update([
             'google2fa_enabled' => false,
             'google2fa_secret' => null,
         ]);

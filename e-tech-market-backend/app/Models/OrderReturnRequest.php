@@ -5,6 +5,22 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * @property int $id
+ * @property int $order_id
+ * @property int $user_id
+ * @property string $status
+ * @property string|null $content
+ * @property array|null $media
+ * @property string|null $admin_note
+ * @property array|null $refund_proof
+ * @property int|null $approved_by_user_id
+ * @property \Illuminate\Support\Carbon|null $approved_at
+ * @property \Illuminate\Support\Carbon|null $refunded_at
+ * @property \Illuminate\Support\Carbon|null $customer_confirmed_at
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ */
 class OrderReturnRequest extends Model
 {
     protected $table = 'order_return_requests';

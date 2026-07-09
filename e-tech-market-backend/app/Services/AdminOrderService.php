@@ -117,8 +117,8 @@ class AdminOrderService
             $productIdsToSync = [];
             foreach ($order->items as $item) {
                 if ($item->variant_id) {
-                    $variant = ProductVariant::find($item->variant_id);
-                    if ($variant) {
+                    $variant = ProductVariant::find((int) $item->variant_id);
+                    if ($variant instanceof ProductVariant) {
                         $variant->stock_quantity = (int) ($variant->stock_quantity ?? 0) + (int) $item->quantity;
                         $variant->save();
                         $productIdsToSync[$variant->product_id] = true;

@@ -9,6 +9,21 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Laravel\Scout\Searchable;
 
+/**
+ * @property int $id
+ * @property int $category_id
+ * @property string $name
+ * @property string $slug
+ * @property string|null $brand
+ * @property string|null $description
+ * @property string|null $rich_html
+ * @property string|null $main_image_url
+ * @property bool $is_active
+ * @property bool $is_featured
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property \Illuminate\Support\Carbon|null $deleted_at
+ */
 class Product extends Model
 {
     use HasFactory, SoftDeletes, Searchable;

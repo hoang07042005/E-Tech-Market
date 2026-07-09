@@ -6,6 +6,20 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
 
+/**
+ * @property int $id
+ * @property string $code
+ * @property string $coupon_type
+ * @property float $value
+ * @property float|null $min_order_amount
+ * @property \Illuminate\Support\Carbon|null $start_at
+ * @property \Illuminate\Support\Carbon|null $end_at
+ * @property int|null $max_uses
+ * @property int|null $max_uses_per_user
+ * @property bool $is_active
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ */
 class Coupon extends Model
 {
     protected $fillable = [

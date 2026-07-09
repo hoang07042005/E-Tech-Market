@@ -238,7 +238,7 @@ class AuthController extends Controller
 
         // Revoke other tokens but keep current
         $current = $user->currentAccessToken();
-        $user->tokens()->where('id', '!=', $current?->id)->delete();
+        $user->tokens()->where('id', '!=', $current instanceof PersonalAccessToken ? $current->id : 0)->delete();
 
         return response()->json(["message"=>"Password changed"]);
     }

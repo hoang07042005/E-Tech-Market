@@ -5,6 +5,16 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * @property int $id
+ * @property int $order_id
+ * @property int $product_id
+ * @property int|null $variant_id
+ * @property string $product_name_snapshot
+ * @property int $quantity
+ * @property float $unit_price
+ * @property float $total_price
+ */
 class OrderItem extends Model
 {
     public $timestamps = false; // table doesn't have timestamps

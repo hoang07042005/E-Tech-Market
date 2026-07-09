@@ -386,7 +386,7 @@ PROMPT;
             $stopWords = ['gợi ý', 'tư vấn', 'cho tôi', 'tầm giá', 'khoảng', 'dưới', 'triệu', 'mua', 'tìm', 'giúp', 'có', 'nào', 'không', 'giá', 'tr', 'm', 'đến', 'mình', 'bạn', 'xem', 'thử', 'nhé', 'với', 'cho', 'một', 'cái', 'chiếc', 'điện thoại', 'laptop', 'máy tính', 'pc', 'chụp ảnh', 'pin trâu', 'đẹp', 'sản phẩm', 'hàng', 'đồ'];
             $cleanMessage = str_replace($stopWords, ' ', $message);
             preg_match_all('/[a-z0-9]{3,}/u', $cleanMessage, $matches);
-            $keywords = $matches[0] ?? [];
+            $keywords = $matches[0];
 
             if (!empty($keywords)) {
                 $searchPhrase = implode(' ', $keywords);

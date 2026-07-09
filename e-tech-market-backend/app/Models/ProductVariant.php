@@ -8,12 +8,28 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+/**
+ * @property int $id
+ * @property int $product_id
+ * @property string $variant_name
+ * @property string|null $color
+ * @property string|null $configuration
+ * @property string|null $sku
+ * @property float $price
+ * @property string|null $discount_type
+ * @property float|null $discount_value
+ * @property \Illuminate\Support\Carbon|null $discount_start_at
+ * @property \Illuminate\Support\Carbon|null $discount_end_at
+ * @property int $stock_quantity
+ * @property string|null $image_url
+ * @property bool $is_active
+ * @property bool $wasRecentlyCreated
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property float $effective_price
+ */
 class ProductVariant extends Model
 {
-    /**
-     * @property int $id
-     * @property bool $wasRecentlyCreated
-     */
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
