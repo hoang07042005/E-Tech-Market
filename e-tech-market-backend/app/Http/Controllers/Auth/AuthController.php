@@ -18,10 +18,13 @@ class AuthController extends Controller
 {
     /**
      * Create a new token for the user and set as httpOnly cookie.
-     * In production: only cookie (no token in body) to prevent XSS theft.
-     * In dev: token in body for Bearer auth convenience.
+     * In production (web): only cookie (no token in body) to prevent XSS theft.
+     * In dev (web): token in body for Bearer auth convenience.
+     * Mobile app (Flutter, no cookie jar): ALWAYS gets the token in body,
+     * regardless of environment — it has no way to read the httpOnly cookie,
+     * so hiding the token there would silently break login/refresh on prod.
      */
-    private function createTokenResponse(User $user, int $minutes = 60 * 24): array
+    private function createTokenResponse(Request $r, User $user, int $minutes = 60 * 24): array
     {
         $expiresAt = Carbon::now()->addMinutes($minutes);
         $token = $user->createToken('auth', ['*'], $expiresAt)->plainTextToken;
@@ -38,9 +41,12 @@ class AuthController extends Controller
 
         $cookie = Cookie::make('sanctum_token', $token, $minutes, '/', null, $secure, true, false, $sameSite);
 
-        // In production: only return token via httpOnly cookie (token not in body)
-        // In dev (typically localhost over http): return token in body for Bearer auth convenience
-        $tokenInBody = $secure ? null : $token;
+        // Mobile client (Flutter) can't use the cookie at all -> always give it the token.
+        $isMobileClient = $r->header('X-Client-Platform') === 'mobile';
+
+        // In production (web only): only return token via httpOnly cookie (token not in body)
+        // In dev (web) or mobile (any env): return token in body for Bearer auth
+        $tokenInBody = ($secure && !$isMobileClient) ? null : $token;
 
         return [$tokenInBody, $cookie];
     }
@@ -76,7 +82,7 @@ class AuthController extends Controller
             \Illuminate\Support\Facades\Auth::guard('web')->login($u);
         }
 
-        [$token, $cookie] = $this->createTokenResponse($u);
+        [$token, $cookie] = $this->createTokenResponse($r, $u);
         $u->load(['roles', 'membershipRank']);
 
         // In production: token ONLY in httpOnly cookie (not in body) - prevents XSS theft
@@ -121,7 +127,7 @@ class AuthController extends Controller
             \Illuminate\Support\Facades\Auth::guard('web')->login($u);
         }
 
-        [$token, $cookie] = $this->createTokenResponse($u);
+        [$token, $cookie] = $this->createTokenResponse($r, $u);
         $u->load(['roles', 'membershipRank']);
 
         // In production: token ONLY in httpOnly cookie (not in body) - prevents XSS theft
@@ -368,7 +374,7 @@ class AuthController extends Controller
             \Illuminate\Support\Facades\Auth::guard('web')->login($user);
         }
 
-        [$token, $cookie] = $this->createTokenResponse($user);
+        [$token, $cookie] = $this->createTokenResponse($r, $user);
 
         \Illuminate\Support\Facades\Log::debug('[googleLogin] token generated', [
             'email' => $email ?? null,

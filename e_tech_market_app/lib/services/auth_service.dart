@@ -323,6 +323,17 @@ class AuthService {
     final prefs = await SharedPreferences.getInstance();
     await _secureStorage.delete(key: _tokenKey);
     await prefs.remove(_userKey);
+
+    // Google SDK tự cache phiên đăng nhập ở ngoài phạm vi app (không nằm
+    // trong secure storage/prefs ở trên). Nếu không sign-out ở đây, lần
+    // đăng nhập Google kế tiếp sẽ tự động trả về tài khoản cũ mà không
+    // hiện màn hình chọn tài khoản.
+    try {
+      await GoogleSignIn(scopes: ['email', 'profile']).signOut();
+    } catch (_) {
+      // Bỏ qua nếu chưa từng đăng nhập Google / không có kết nối — không
+      // được để lỗi này chặn việc xoá session của app.
+    }
   }
 
   static Future<bool> hasSession() async {

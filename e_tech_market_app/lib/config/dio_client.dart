@@ -23,6 +23,9 @@ class DioClient {
       receiveTimeout: const Duration(seconds: 20),
       headers: {
         'Accept': 'application/json',
+        // Cho backend biết đây là app mobile (không dùng cookie được) —
+        // để backend luôn trả token trong body kể cả khi chạy production/https.
+        'X-Client-Platform': 'mobile',
       },
     ));
 
@@ -41,10 +44,28 @@ class DioClient {
         return handler.next(options);
       },
       onError: (DioException e, handler) async {
-        // Khi token hết hạn / không hợp lệ → chỉ xóa session ngầm, không điều hướng ép buộc
+        // Khi token hết hạn / không hợp lệ → chỉ xóa session ngầm, không điều hướng ép buộc.
+        //
+        // QUAN TRỌNG: chỉ xoá session nếu request bị 401 THỰC SỰ đã gửi kèm
+        // token hiện tại. Nếu request không có Authorization header (gọi API
+        // công khai, hoặc request cũ bắn ra trước khi đăng nhập xong) mà nhận
+        // 401, hoặc token trong request đã cũ hơn token hiện tại (do vừa
+        // đăng nhập lại) thì KHÔNG được xoá — tránh race condition xoá mất
+        // session vừa lưu (ví dụ: request nền bắn đi lúc chưa đăng nhập,
+        // response 401 về SAU khi đăng nhập Google vừa xong → tưởng nhầm là
+        // token mới cũng bị từ chối và tự động logout).
         if (e.response?.statusCode == 401) {
-          await AuthService.clearSession();
-          DioClient.reset(); // Tạo Dio mới cho lần đăng nhập kế tiếp
+          final sentAuthHeader = e.requestOptions.headers['Authorization'] as String?;
+          if (sentAuthHeader != null && sentAuthHeader.isNotEmpty) {
+            final currentToken = await AuthService.getToken();
+            final currentAuthHeader =
+                (currentToken != null && currentToken.isNotEmpty) ? 'Bearer $currentToken' : null;
+            final isStillSameToken = currentAuthHeader == null || sentAuthHeader == currentAuthHeader;
+            if (isStillSameToken) {
+              await AuthService.clearSession();
+              DioClient.reset(); // Tạo Dio mới cho lần đăng nhập kế tiếp
+            }
+          }
         }
         return handler.next(e);
       },
