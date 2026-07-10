@@ -3,6 +3,7 @@ import { useAuthStore } from '@/features/store/useAuthStore'
 
 import { apiFetch } from '@/configs/api.config'
 import { fetchRoles, fetchUsers, updateRole } from '@/features/services/admin/api.admin.service'
+import HardDeletePage from '../products/HardDeletePage' 
 import '@/styles/admin/ProductPage.css'
 import '@/styles/admin/UsersAdminPage.css'
 
@@ -52,7 +53,6 @@ function userHasAdminRole(row: AdminUserRow): boolean {
   return (row.roles ?? []).some(r => r.slug === 'admin')
 }
 
-// Read current user ID directly from Zustand store state (NOT a Hook call)
 function getCurrentUserIdFromStore(): number | null {
   const raw = useAuthStore.getState().userStr
   if (!raw) return null
@@ -68,6 +68,9 @@ type BusyKind = 'lock' | 'delete' | 'roles'
 
 export default function UsersAdminPage() {
   const currentUserId = useMemo(() => getCurrentUserIdFromStore(), [])
+  
+  const [viewMode, setViewMode] = useState<'main' | 'hard_delete'>('main')
+
   const [page, setPage] = useState(1)
   const [search, setSearch] = useState('')
   const [debouncedSearch, setDebouncedSearch] = useState('')
@@ -259,52 +262,80 @@ export default function UsersAdminPage() {
     setRoleEditor(null)
   }
 
+  if (viewMode === 'hard_delete') {
+    return <HardDeletePage onBack={() => setViewMode('main')} />
+  }
+
   return (
     <div className="prodAdminRoot">
-      <div className="prodHeader">
-        <div>
-          <h2 className="prodTitle">Quản lý người dùng</h2>
-          <p className="prodSub">
+      {/* KHU VỰC TIÊU ĐỀ: Đã khử flex lệch, ép luôn căn trái và xếp theo 1 hàng ngang lý tưởng */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', marginBottom: '24px', textAlign: 'left' }}>
+        
+        {/* Dòng chữ tiêu đề */}
+        <div style={{ textAlign: 'left' }}>
+          <h2 style={{ margin: 0, fontSize: '26px', fontWeight: '700', color: '#0f172a', textAlign: 'left' }}>
+            Quản lý người dùng
+          </h2>
+          <p style={{ margin: '6px 0 0 0', color: '#64748b', fontSize: '14px', textAlign: 'left' }}>
             Đổi vai trò (nhiều vai trò được phép), khóa / mở khóa đăng nhập hoặc xóa mềm — không áp dụng chính tài khoản bạn.
           </p>
         </div>
-        <div className="usersAdminToolbar">
-          <button 
-            type="button"
-            className="pAddBtn"
-            style={{ marginRight: '10px' }}
-            onClick={() => setRoleCatalogOpen(true)}
-          >
-            Cập nhật vai trò
-          </button>
-          <input
-            type="search"
-            className="usersAdminSearch"
-            placeholder="Tìm theo tên, email, SĐT…"
-            value={search}
-            onChange={e => setSearch(e.target.value)}
-            aria-label="Tìm người dùng"
-          />
-        </div>
-      </div>
+        
+        {/* Hàng công cụ: Gồm Tabs bên trái và các Nút + Search bên phải dồn lên cùng 1 hàng */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', gap: '16px' }}>
+          
+          {/* Nhóm Tabs chuyển mục đối tượng bên TRÁI */}
+          <div className="pDetailFilterBar usersadminpage-style-1" style={{ margin: 0, padding: 0 }}>
+            <div className="pVariantFilterTabs usersadminpage-style-2" style={{ padding: 0, margin: 0 }}>
+              <button 
+                type="button"
+                className={`pVariantTabBtn ${activeTab === 'customer' ? 'active' : ''}`}
+                onClick={() => setActiveTab('customer')}
+              >
+                Khách hàng
+              </button>
+              <button 
+                type="button"
+                className={`pVariantTabBtn ${activeTab === 'admin' ? 'active' : ''}`}
+                onClick={() => setActiveTab('admin')}
+              >
+                Quản trị & Nhân viên
+              </button>
+            </div>
+          </div>
 
-      {/* Tab Switcher */}
-      <div className="pDetailFilterBar usersadminpage-style-1" >
-        <div className="pVariantFilterTabs usersadminpage-style-2" >
-          <button 
-            type="button"
-            className={`pVariantTabBtn ${activeTab === 'customer' ? 'active' : ''}`}
-            onClick={() => setActiveTab('customer')}
-          >
-            Khách hàng
-          </button>
-          <button 
-            type="button"
-            className={`pVariantTabBtn ${activeTab === 'admin' ? 'active' : ''}`}
-            onClick={() => setActiveTab('admin')}
-          >
-            Quản trị & Nhân viên
-          </button>
+          {/* Nhóm Hành động & Ô tìm kiếm nằm hàng ngang bên PHẢI */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <button 
+              type="button"
+              className="pAddBtn"
+              style={{ padding: '0 16px', fontSize: '13px', height: '42px', borderRadius: '8px', whiteSpace: 'nowrap', cursor: 'pointer' }}
+              onClick={() => setRoleCatalogOpen(true)}
+            >
+              Cập nhật vai trò
+            </button>
+            
+            <button
+              type="button"
+              className="pAddBtn"
+              style={{ backgroundColor: '#ef4444', padding: '0 16px', fontSize: '13px', height: '42px', borderRadius: '8px', whiteSpace: 'nowrap', cursor: 'pointer' }}
+              onClick={() => setViewMode('hard_delete')}
+              title="Dữ liệu đã xóa (Hard delete)"
+            >
+              Dữ liệu đã xóa (Hard delete)
+            </button>
+
+            <input
+              type="search"
+              className="usersAdminSearch"
+              style={{ height: '42px', borderRadius: '8px', width: '320px', margin: 0 }}
+              placeholder="Tìm theo tên, email, SĐT…"
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              aria-label="Tìm người dùng"
+            />
+          </div>
+
         </div>
       </div>
 
@@ -483,76 +514,34 @@ export default function UsersAdminPage() {
         </div>
       )}
 
+      {/* MODAL: Đổi vai trò user */}
       {roleEditor && (
-        <div
-          className="usersRoleModalOverlay"
-          role="presentation"
-          onClick={() => {
-            closeRoleEditor()
-          }}
-        >
-          <div
-            className="usersRoleModal"
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="usersRoleModalTitle"
-            onClick={e => e.stopPropagation()}
-          >
+        <div className="usersRoleModalOverlay" role="presentation" onClick={() => closeRoleEditor()}>
+          <div className="usersRoleModal" role="dialog" aria-modal="true" aria-labelledby="usersRoleModalTitle" onClick={e => e.stopPropagation()}>
             <div className="usersRoleModalHead">
               <div>
-                <h3 id="usersRoleModalTitle" className="usersRoleModalTitle">
-                  Thay đổi vai trò
-                </h3>
-                <p className="usersRoleModalLead">
-                  {roleEditor.user.name} · {roleEditor.user.email}
-                </p>
+                <h3 id="usersRoleModalTitle" className="usersRoleModalTitle">Thay đổi vai trò</h3>
+                <p className="usersRoleModalLead">{roleEditor.user.name} · {roleEditor.user.email}</p>
               </div>
-              <button
-                type="button"
-                className="usersRoleModalClose"
-                aria-label="Đóng"
-                disabled={busy?.kind === 'roles'}
-                onClick={() => closeRoleEditor()}
-              >
-                ×
-              </button>
+              <button type="button" className="usersRoleModalClose" aria-label="Đóng" disabled={busy?.kind === 'roles'} onClick={() => closeRoleEditor()}>×</button>
             </div>
             <div className="usersRoleModalBody">
               {roleCatalog.map(r => {
                 const checked = roleEditor.selectedIds.includes(r.id)
                 return (
                   <label key={r.id} className="usersRoleCheckRow">
-                    <input
-                      type="checkbox"
-                      checked={checked}
-                      disabled={busy?.kind === 'roles'}
-                      onChange={() => toggleRoleInEditor(r.id)}
-                    />
+                    <input type="checkbox" checked={checked} disabled={busy?.kind === 'roles'} onChange={() => toggleRoleInEditor(r.id)} />
                     <div className="usersRoleCheckText">
                       <span className="usersRoleCheckLabel">{roleDisplayLabel(r)}</span>
-                      <span className="usersRoleCheckDesc">
-                        Mã vai trò: <code>{r.slug}</code>
-                      </span>
+                      <span className="usersRoleCheckDesc">Mã vai trò: <code>{r.slug}</code></span>
                     </div>
                   </label>
                 )
               })}
             </div>
             <div className="usersRoleModalFoot">
-              <button
-                type="button"
-                className="usersRoleModalBtnGhost"
-                disabled={busy?.kind === 'roles'}
-                onClick={() => closeRoleEditor()}
-              >
-                Hủy
-              </button>
-              <button
-                type="button"
-                className="usersRoleModalBtnSave"
-                disabled={busy?.kind === 'roles'}
-                onClick={() => void saveRoles()}
-              >
+              <button type="button" className="usersRoleModalBtnGhost" disabled={busy?.kind === 'roles'} onClick={() => closeRoleEditor()}>Hủy</button>
+              <button type="button" className="usersRoleModalBtnSave" disabled={busy?.kind === 'roles'} onClick={() => void saveRoles()}>
                 {busy?.kind === 'roles' ? 'Đang lưu…' : 'Lưu'}
               </button>
             </div>
@@ -560,7 +549,7 @@ export default function UsersAdminPage() {
         </div>
       )}
 
-      {/* Role Catalog Management Modal */}
+      {/* MODAL: Danh sách / Sửa vai trò hệ thống */}
       {roleCatalogOpen && (
         <div className="usersRoleModalOverlay" role="presentation" onClick={() => !roleSaving && setRoleCatalogOpen(false)}>
           <div className="usersRoleModal" role="dialog" onClick={e => e.stopPropagation()} style={{ maxWidth: '600px' }}>
@@ -633,23 +622,8 @@ export default function UsersAdminPage() {
 function IconSpinner() {
   return (
     <svg className="usersAdminIconSpinner" width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden>
-      <circle
-        cx="12"
-        cy="12"
-        r="9"
-        stroke="currentColor"
-        strokeWidth="2.5"
-        strokeLinecap="round"
-        strokeDasharray="40"
-        strokeDashoffset="12"
-        opacity="0.35"
-      />
-      <path
-        d="M12 3a9 9 0 0 1 9 9"
-        stroke="currentColor"
-        strokeWidth="2.5"
-        strokeLinecap="round"
-      />
+      <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeDasharray="40" strokeDashoffset="12" opacity="0.35" />
+      <path d="M12 3a9 9 0 0 1 9 9" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
     </svg>
   )
 }
@@ -692,7 +666,6 @@ function PencilIcon() {
   )
 }
 
-/** Bút bị gạch — tài khoản có vai trò admin không chỉnh được. */
 function PencilOffIcon() {
   return (
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden>

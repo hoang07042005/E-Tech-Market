@@ -163,6 +163,30 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/products/deleted-variants', [\App\Http\Controllers\Admin\ProductsDeletedVariantsController::class, 'index'])->name('products.deleted-variants.index');
         Route::post('/products/deleted-variants/hard-delete', [\App\Http\Controllers\Admin\ProductsDeletedVariantsController::class, 'hardDelete'])->name('products.deleted-variants.hard-delete');
 
+        // Hard delete trashed reviews, users, categories
+        Route::get('/deleted-data/reviews', [\App\Http\Controllers\Admin\DeletedDataController::class, 'indexDeletedReviews'])->name('deleted-data.reviews.index');
+        Route::post('/deleted-data/reviews/hard-delete', [\App\Http\Controllers\Admin\DeletedDataController::class, 'hardDeleteReviews'])->name('deleted-data.reviews.hard-delete');
+        Route::get('/deleted-data/users', [\App\Http\Controllers\Admin\DeletedDataController::class, 'indexDeletedUsers'])->name('deleted-data.users.index');
+        Route::post('/deleted-data/users/hard-delete', [\App\Http\Controllers\Admin\DeletedDataController::class, 'hardDeleteUsers'])->name('deleted-data.users.hard-delete');
+        Route::get('/deleted-data/categories', [\App\Http\Controllers\Admin\DeletedDataController::class, 'indexDeletedCategories'])->name('deleted-data.categories.index');
+        Route::post('/deleted-data/categories/hard-delete', [\App\Http\Controllers\Admin\DeletedDataController::class, 'hardDeleteCategories'])->name('deleted-data.categories.hard-delete');
+
+        // Hard delete trashed products, product_news, product_faqs
+        Route::get('/deleted-data/products', [\App\Http\Controllers\Admin\DeletedDataController::class, 'indexDeletedProducts'])->name('deleted-data.products.index');
+        Route::post('/deleted-data/products/hard-delete', [\App\Http\Controllers\Admin\DeletedDataController::class, 'hardDeleteProducts'])->name('deleted-data.products.hard-delete');
+        Route::get('/deleted-data/product-news', [\App\Http\Controllers\Admin\DeletedDataController::class, 'indexDeletedProductNews'])->name('deleted-data.product-news.index');
+        Route::post('/deleted-data/product-news/hard-delete', [\App\Http\Controllers\Admin\DeletedDataController::class, 'hardDeleteProductNews'])->name('deleted-data.product-news.hard-delete');
+        Route::get('/deleted-data/product-faqs', [\App\Http\Controllers\Admin\DeletedDataController::class, 'indexDeletedProductFaqs'])->name('deleted-data.product-faqs.index');
+        Route::post('/deleted-data/product-faqs/hard-delete', [\App\Http\Controllers\Admin\DeletedDataController::class, 'hardDeleteProductFaqs'])->name('deleted-data.product-faqs.hard-delete');
+        Route::get('/deleted-data/blog-posts', [\App\Http\Controllers\Admin\DeletedDataController::class, 'indexDeletedBlogPosts'])->name('deleted-data.blog-posts.index');
+        Route::post('/deleted-data/blog-posts/hard-delete', [\App\Http\Controllers\Admin\DeletedDataController::class, 'hardDeleteBlogPosts'])->name('deleted-data.blog-posts.hard-delete');
+        Route::get('/deleted-data/blog-comments', [\App\Http\Controllers\Admin\DeletedDataController::class, 'indexDeletedBlogComments'])->name('deleted-data.blog-comments.index');
+        Route::post('/deleted-data/blog-comments/hard-delete', [\App\Http\Controllers\Admin\DeletedDataController::class, 'hardDeleteBlogComments'])->name('deleted-data.blog-comments.hard-delete');
+        Route::get('/deleted-data/users', [\App\Http\Controllers\Admin\DeletedDataController::class, 'indexDeletedUsers'])->name('deleted-data.users.index');
+        Route::post('/deleted-data/users/hard-delete', [\App\Http\Controllers\Admin\DeletedDataController::class, 'hardDeleteUsers'])->name('deleted-data.users.hard-delete');
+        Route::get('/deleted-data/reviews', [\App\Http\Controllers\Admin\DeletedDataController::class, 'indexDeletedReviews'])->name('deleted-data.reviews.index');
+        Route::post('/deleted-data/reviews/hard-delete', [\App\Http\Controllers\Admin\DeletedDataController::class, 'hardDeleteReviews'])->name('deleted-data.reviews.hard-delete');
+
 
         Route::get('/products', [AdminProductsController::class, 'index'])->name('products');
         Route::get('/products/{product}', [AdminProductsController::class, 'show'])->name('products');

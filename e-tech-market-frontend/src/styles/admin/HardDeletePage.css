@@ -1,0 +1,178 @@
+/* ─────────────────────────────────────────────────────────────────────────────
+   HardDeletePage.css
+   Styles cho trang Hard Delete Admin (4 tabs: variants / products / news / faqs)
+───────────────────────────────────────────────────────────────────────────── */
+
+/* ── SelectHeader ─────────────────────────────────────────────────────────── */
+.hdp-select-header {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin: 20px 0 20px 25px;
+}
+
+.hdp-select-header label {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.hdp-select-count {
+  color: #64748b;
+  font-size: 13px;
+}
+
+/* ── Loading placeholder ──────────────────────────────────────────────────── */
+.hdp-loading {
+  padding: 24px;
+  color: #94a3b8;
+}
+
+/* ── Empty row ────────────────────────────────────────────────────────────── */
+.hdp-empty-cell {
+  text-align: center;
+  padding: 40px;
+  color: #94a3b8;
+}
+
+/* ── Thumbnail image ──────────────────────────────────────────────────────── */
+.hdp-thumb {
+  width: 44px;
+  height: 44px;
+  object-fit: cover;
+  border-radius: 6px;
+  border: 1px solid #e5e7eb;
+}
+
+.hdp-thumb-empty {
+  color: #94a3b8;
+}
+
+/* ── Cell: name + id grid ─────────────────────────────────────────────────── */
+.hdp-cell-grid {
+  display: grid;
+  gap: 4px;
+}
+
+.hdp-cell-grid-sm {
+  display: grid;
+  gap: 2px;
+}
+
+.hdp-cell-name {
+  font-weight: 600;
+}
+
+.hdp-cell-sub {
+  color: #64748b;
+  font-size: 12px;
+}
+
+.hdp-cell-muted {
+  color: #94a3b8;
+}
+
+.hdp-cell-dark {
+  color: #0f172a;
+}
+
+.hdp-cell-dark-sm {
+  color: #0f172a;
+  font-size: 12px;
+}
+
+/* ── Status badge (Active / Inactive) ─────────────────────────────────────── */
+.hdp-badge {
+  display: inline-block;
+  font-size: 12px;
+  padding: 2px 8px;
+  border-radius: 20px;
+  font-weight: 600;
+}
+
+.hdp-badge--active {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.hdp-badge--inactive {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+/* ── Answer cell (truncated) ─────────────────────────────────────────────── */
+.hdp-answer-cell {
+  color: #374151;
+  font-size: 13px;
+  max-width: 280px;
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ── Tab navigation (underline style) ────────────────────────────────────── */
+.hdp-tab-nav {
+  display: flex;
+  gap: 0;
+  margin-bottom: 25px;
+  flex-wrap: wrap;
+}
+
+.hdp-tab-btn {
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
+  padding: 10px 20px;
+  font-size: 14px;
+  font-weight: 400;
+  color: #64748b;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: color 0.15s, border-color 0.15s;
+}
+
+.hdp-tab-btn--active {
+  color: #f97316;
+  border-bottom-color: #f97316;
+  font-weight: 600;
+}
+
+.hdp-tab-count {
+  margin-left: 6px;
+  font-size: 13px;
+  color: #94a3b8;
+}
+
+.hdp-tab-count--active {
+  color: #f97316;
+}
+
+/* ── Delete button (red) ──────────────────────────────────────────────────── */
+.hdp-delete-btn {
+  background: #ef4444 !important;
+}
+
+/* ── Header action bar ────────────────────────────────────────────────────── */
+.hdp-header-actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+/* ── Confirm modal content ────────────────────────────────────────────────── */
+.hdp-confirm-grid {
+  display: grid;
+  gap: 10px;
+}
+
+.hdp-confirm-count {
+  margin: 0;
+  color: #6b7280;
+}
+
+.hdp-confirm-warning {
+  margin: 0;
+  color: #ef4444;
+}

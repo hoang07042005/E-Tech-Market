@@ -2,6 +2,7 @@
 import type { ChangeEvent } from "react";
 import { apiFetch, API_BASE_URL } from "@/configs/api.config";
 import ConfirmModal from "@/components/ConfirmModal";
+import HardDeletePage from "../products/HardDeletePage"; // Tích hợp component Hard delete
 import "@/styles/admin/ReviewsAdminPage.css";
 
 type Review = {
@@ -50,6 +51,9 @@ function resolveReviewImageUrl(url: string | null | undefined) {
 }
 
 export default function ReviewsAdminPage() {
+  // 1. Thêm trạng thái viewMode điều hướng cấu trúc giao diện
+  const [viewMode, setViewMode] = useState<'main' | 'hard_delete'>('main');
+
   const [reviews, setReviews] = useState<Review[]>([]);
   const [totalReviews, setTotalReviews] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -146,16 +150,43 @@ export default function ReviewsAdminPage() {
     rejected: reviews.filter((r) => r.status === "rejected").length,
   };
 
+  // 2. Chuyển sang trang Hard Delete nếu viewMode chuyển đổi cấu trúc
+  if (viewMode === 'hard_delete') {
+    return <HardDeletePage onBack={() => setViewMode('main')} />
+  }
+
   return (
     <div className="adminContainer">
       {/* Header Panel */}
-      <header className="pageHeader">
+      <header className="pageHeader" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <div className="pageHeaderLeft">
           <h2>Quản lý Đánh giá</h2>
           <p>
-            Hệ thống giám sát, phê duyệt và phân tích phản hồi từ khách hàng mua
-            sắm.
+            Hệ thống giám sát, phê duyệt và phân tích phản hồi từ khách hàng mua sắm.
           </p>
+        </div>
+        
+        {/* 3. Thêm nút bấm vào phần bên phải của thanh Header */}
+        <div className="pageHeaderRight">
+          <button
+            type="button"
+            className="iconActionBtn"
+            style={{ 
+              background: "#ef4444", 
+              color: "#fff", 
+              padding: "16px 20px", 
+              borderRadius: "6px",
+              border: "none",
+              cursor: "pointer",
+              fontWeight: "500",
+              height: "auto",
+              width: "auto"
+            }}
+            onClick={() => setViewMode('hard_delete')}
+            title="Dữ liệu đã xóa (Hard delete)"
+          >
+            Dữ liệu đã xóa (Hard delete)
+          </button>
         </div>
       </header>
 
@@ -312,26 +343,14 @@ export default function ReviewsAdminPage() {
                   </td>
                   <td>
                     {(() => {
-                      // Đọc cả 2 trường hợp đặt tên biến phổ biến để chống lỗi lệch tên biến với API
                       const rawDate = r.created_at || (r as any).createdAt;
-
                       if (!rawDate) return "—";
-
                       const s = String(rawDate).trim();
-
-                      // Chuẩn hóa để parse ISO-8601 ổn định:
-                      // Ví dụ DB: "2026-07-02 11:01:35+00"
-                      // -> "2026-07-02T11:01:35+00:00"
                       const normalized = s
-                        .replace(/\s+/, "T") // đổi khoảng trắng đầu giữa date/time thành T
-                        .replace(
-                          /([+-]\d{2})$/,
-                          "$1:00", // +00 -> +00:00 ; -05 -> -05:00
-                        );
-
+                        .replace(/\s+/, "T")
+                        .replace(/([+-]\d{2})$/, "$1:00");
                       const dt = new Date(normalized);
                       const timestamp = dt.getTime();
-
                       return !isNaN(timestamp)
                         ? dt.toLocaleDateString("vi-VN")
                         : "—";
@@ -614,8 +633,6 @@ export default function ReviewsAdminPage() {
     </div>
   );
 }
-
-
 
 
 function DetailIcon() {return (<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-eye" viewBox="0 0 16 16"><path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8M1.173 8a13 13 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5s3.879 1.168 5.168 2.457A13 13 0 0 1 14.828 8q-.086.13-.195.288c-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5s-3.879-1.168-5.168-2.457A13 13 0 0 1 1.172 8z"/><path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5M4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0"/></svg>)}

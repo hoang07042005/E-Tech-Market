@@ -7,7 +7,7 @@ import {
 import ProductForm from "./ProductForm";
 import ProductVariantsDetail from "./ProductVariantsDetail";
 import ConfirmModal from "@/components/ConfirmModal";
-import DeletedProductVariantsPage from "./DeletedProductVariantsPage";
+import HardDeletePage from "./HardDeletePage";
 import "@/styles/admin/ProductPage.css";
 
 interface ProductImage {
@@ -299,7 +299,7 @@ export default function ProductPage({
   }
 
   if (viewMode === "hard_delete_variants") {
-    return <DeletedProductVariantsPage onBack={() => setViewMode("list")} />;
+    return <HardDeletePage onBack={() => setViewMode("list")} />;
   }
 
   return (

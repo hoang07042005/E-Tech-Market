@@ -21,6 +21,7 @@ const resolveImageUrl = (url?: string | null) => {
 }
 
 import { fetchAdminCategories, deleteAdminCategory, saveAdminCategory, type Category } from '@/features/services/admin/categories.admin.service'
+import HardDeletePage from '../products/HardDeletePage'
 
 export default function CategoryPage() {
   const [categories, setCategories] = useState<Category[]>([])
@@ -32,6 +33,8 @@ export default function CategoryPage() {
   const [expandedIds, setExpandedIds] = useState<number[]>([])
   const [confirmOpen, setConfirmOpen] = useState(false)
   const [pendingDeleteCategory, setPendingDeleteCategory] = useState<Category | null>(null)
+
+  const [viewMode, setViewMode] = useState<"main" | "hard_delete">("main")
 
   const toggleExpand = (id: number) => {
     setExpandedIds(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id])
@@ -188,6 +191,10 @@ export default function CategoryPage() {
     )
   }
 
+  if (viewMode === "hard_delete") {
+    return <HardDeletePage onBack={() => setViewMode("main")} />
+  }
+
   return (
     <div className="catAdminRoot">
       <div className="catHeader">
@@ -195,10 +202,20 @@ export default function CategoryPage() {
           <h2 className="catAdminTitle">Quản lý danh mục sản phẩm</h2>
           <p className="catAdminSub">Tổ chức cấu trúc và phân loại cửa hàng</p>
         </div>
-        <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
-          <button className="catAddBtn" onClick={() => handleOpenModal()}>
+        <div style={{ display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}>
+          <button className="catAddBtn" onClick={() => handleOpenModal()} type="button">
             <PlusIcon />
             <span>Thêm danh mục</span>
+          </button>
+
+          <button
+            className="catAddBtn"
+            type="button"
+            onClick={() => setViewMode("hard_delete")}
+            style={{ background: "#ef4444", padding: "12px 20px" }}
+            title="Hard delete dữ liệu đã xóa"
+          >
+            Dữ liệu đã xóa (Hard delete)
           </button>
         </div>
       </div>

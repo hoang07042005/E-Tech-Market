@@ -1,6 +1,7 @@
 ﻿import { useEffect, useState } from 'react'
 import { apiFetch, API_BASE_URL } from '@/configs/api.config'
 import ConfirmModal from '@/components/ConfirmModal'
+import HardDeletePage from '../products/HardDeletePage'
 import '@/styles/admin/AdminBlogPage.css' // File CSS làm mới ở dưới
 
 type BlogCategory = {
@@ -46,6 +47,8 @@ export default function AdminBlogPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   
+  const [viewMode, setViewMode] = useState<'main' | 'hard_delete'>('main')
+
   // Quản lý tab hiển thị: 'posts' hoặc 'categories'
   const [activeTab, setActiveTab] = useState<'posts' | 'categories'>('posts')
 
@@ -250,6 +253,10 @@ export default function AdminBlogPage() {
 
   if (error) return <div className="ab-error-state">Lỗi hệ thống: {error}</div>
 
+  if (viewMode === 'hard_delete') {
+    return <HardDeletePage onBack={() => setViewMode('main')} />
+  }
+
   return (
     <div className="ab-container">
       {/* Top Header Panel */}
@@ -264,6 +271,16 @@ export default function AdminBlogPage() {
           </button>
           <button onClick={() => handleOpenForm()} className="ab-btn ab-btn-primary">
             + Thêm bài viết
+          </button>
+
+          <button
+            type="button"
+            className="ab-btn ab-btn-primary"
+            style={{ background: "#ef4444" }}
+            onClick={() => setViewMode('hard_delete')}
+            title="Dữ liệu đã xóa (Hard delete)"
+          >
+            Dữ liệu đã xóa (Hard delete)
           </button>
         </div>
       </div>

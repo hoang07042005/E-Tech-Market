@@ -68,3 +68,86 @@ export const hardDeleteAdminDeletedProductVariants = (variantIds: number[]) => {
     body: JSON.stringify({ variant_ids: variantIds })
   })
 }
+
+// ─── Products (soft-deleted) ────────────────────────────────────────────────
+
+export interface AdminDeletedProduct {
+  id: number
+  name: string
+  slug: string
+  brand: string | null
+  main_image_url: string | null
+  is_active: boolean
+  is_featured: boolean
+  category?: { id: number; name: string } | null
+  deleted_at: string | null
+}
+
+export const fetchAdminDeletedProducts = async (perPage = 50) => {
+  const res = await apiFetch<any>(`/api/admin/deleted-data/products?per_page=${perPage}`)
+  if (Array.isArray(res)) return res as AdminDeletedProduct[]
+  return (res?.data ?? res?.items ?? []) as AdminDeletedProduct[]
+}
+
+export const hardDeleteAdminDeletedProducts = (ids: number[]) => {
+  return apiFetch('/api/admin/deleted-data/products/hard-delete', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ ids })
+  })
+}
+
+// ─── Product News (soft-deleted) ────────────────────────────────────────────
+
+export interface AdminDeletedProductNews {
+  id: number
+  product_id: number
+  title: string
+  slug: string
+  thumbnail_url: string | null
+  is_active: boolean
+  published_at: string | null
+  deleted_at: string | null
+  product?: { id: number; name: string; slug: string } | null
+}
+
+export const fetchAdminDeletedProductNews = async (perPage = 50) => {
+  const res = await apiFetch<any>(`/api/admin/deleted-data/product-news?per_page=${perPage}`)
+  if (Array.isArray(res)) return res as AdminDeletedProductNews[]
+  return (res?.data ?? res?.items ?? []) as AdminDeletedProductNews[]
+}
+
+export const hardDeleteAdminDeletedProductNews = (ids: number[]) => {
+  return apiFetch('/api/admin/deleted-data/product-news/hard-delete', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ ids })
+  })
+}
+
+// ─── Product FAQs (soft-deleted) ────────────────────────────────────────────
+
+export interface AdminDeletedProductFaq {
+  id: number
+  product_id: number
+  question: string
+  answer: string | null
+  sort_order: number | null
+  is_active: boolean
+  deleted_at: string | null
+  product?: { id: number; name: string; slug: string } | null
+}
+
+export const fetchAdminDeletedProductFaqs = async (perPage = 50) => {
+  const res = await apiFetch<any>(`/api/admin/deleted-data/product-faqs?per_page=${perPage}`)
+  if (Array.isArray(res)) return res as AdminDeletedProductFaq[]
+  return (res?.data ?? res?.items ?? []) as AdminDeletedProductFaq[]
+}
+
+export const hardDeleteAdminDeletedProductFaqs = (ids: number[]) => {
+  return apiFetch('/api/admin/deleted-data/product-faqs/hard-delete', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ ids })
+  })
+}
