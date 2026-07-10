@@ -24,6 +24,7 @@ use Spatie\Permission\Traits\HasRoles;
  * @property string|null $district
  * @property string|null $ward
  * @property string|null $avatar_url
+ * @property string|null $google_id
  * @property bool $is_active
  * @property \Illuminate\Support\Carbon|null $email_verified_at
  * @property int $current_points
@@ -61,6 +62,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'current_points',
         'total_spent',
         'rank_id',
+        'google_id',
     ];
 
     /**

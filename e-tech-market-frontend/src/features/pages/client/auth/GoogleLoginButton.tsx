@@ -1,55 +1,66 @@
-import { useGoogleLogin } from '@react-oauth/google'
-import { useNavigate } from 'react-router-dom'
-import { apiFetch } from '@/configs/api.config'
-import { setAuthSessionExpiry } from '@/features/store/auth.store'
-import { useState } from 'react'
+import { useGoogleLogin } from "@react-oauth/google";
+import { useNavigate } from "react-router-dom";
+import { apiFetch } from "@/configs/api.config";
+import { setAuthSessionExpiry } from "@/features/store/auth.store";
+import { useState } from "react";
 
 interface GoogleAuthResponse {
   // 🔒 Token is no longer returned to frontend - it's stored in httpOnly cookie by backend
-  user: Record<string, unknown>
+  user: Record<string, unknown>;
 }
 
 export function GoogleLoginButton() {
-  const navigate = useNavigate()
-  const [isLoading, setIsLoading] = useState(false)
+  const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleGoogleLogin = useGoogleLogin({
     onSuccess: async (tokenResponse) => {
-      setIsLoading(true)
+      setIsLoading(true);
       try {
-        // useGoogleLogin provides an access_token by default. 
+        // useGoogleLogin provides an access_token by default.
         // We'll send this to our backend which will fetch the user info.
-        const res = await apiFetch<GoogleAuthResponse>('/api/auth/google-login', {
-          method: 'POST',
-          body: JSON.stringify({ access_token: tokenResponse.access_token }),
-        })
+        const res = await apiFetch<GoogleAuthResponse>(
+          "/api/auth/google-login",
+          {
+            method: "POST",
+            body: JSON.stringify({ access_token: tokenResponse.access_token }),
+          },
+        );
 
         // 🔒 Token is now stored in httpOnly cookie by backend, no need for localStorage
-        localStorage.setItem('user', JSON.stringify(res.user))
-        setAuthSessionExpiry()
-        window.dispatchEvent(new Event('auth-change'))
-        navigate('/')
+        localStorage.setItem("user", JSON.stringify(res.user));
+
+        // Với auth cookie (httpOnly) của backend: không có token để set Bearer.
+        // Đảm bảo state auth được coi là "đã đăng nhập" để tránh auto clearAuthToken + logout.
+        setAuthSessionExpiry();
+        window.dispatchEvent(new Event("auth-change"));
+        navigate("/");
       } catch (err: unknown) {
-        const msg = err instanceof Error ? err.message : 'Đăng nhập Google thất bại.'
-        alert(msg)
+        const msg =
+          err instanceof Error ? err.message : "Đăng nhập Google thất bại.";
+        alert(msg);
       } finally {
-        setIsLoading(false)
+        setIsLoading(false);
       }
     },
     onError: () => {
-      alert('Đăng nhập Google bị hủy hoặc thất bại.')
+      alert("Đăng nhập Google bị hủy hoặc thất bại.");
     },
-  })
+  });
 
   return (
     <button
       type="button"
-      className={`authGoogleBtn ${isLoading ? 'authGoogleBtn--loading' : ''}`}
+      className={`authGoogleBtn ${isLoading ? "authGoogleBtn--loading" : ""}`}
       onClick={() => handleGoogleLogin()}
       disabled={isLoading}
     >
       <div className="authGoogleBtnContent">
-        <svg className="authGoogleIcon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <svg
+          className="authGoogleIcon"
+          viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
           <path
             d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
             fill="#4285F4"
@@ -68,10 +79,10 @@ export function GoogleLoginButton() {
           />
         </svg>
         <span className="authGoogleText">
-          {isLoading ? 'Đang xử lý...' : 'Tiếp tục với Google'}
+          {isLoading ? "Đang xử lý..." : "Tiếp tục với Google"}
         </span>
       </div>
       <div className="authGoogleBtnGlow"></div>
     </button>
-  )
+  );
 }

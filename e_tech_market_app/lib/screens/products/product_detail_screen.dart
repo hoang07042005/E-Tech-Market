@@ -504,8 +504,6 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   bool isLoading = true;
   String? error;
 
-  final ValueNotifier<int> _currentImageIndex = ValueNotifier<int>(0);
-  final PageController _pageController = PageController();
   final TextEditingController _qaQuestionController = TextEditingController();
   final TextEditingController _qaGuestNameController = TextEditingController();
   Timer? _flashSaleTimer;
@@ -537,7 +535,6 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   @override
   void dispose() {
     _flashSaleTimer?.cancel();
-    _pageController.dispose();
     _qaQuestionController.dispose();
     _qaGuestNameController.dispose();
     super.dispose();
@@ -1106,64 +1103,86 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   }
 
   Widget _buildGallery(Product current, List<ProductImage> images) {
-    return Stack(
+    // Xây dựng danh sách URL ảnh đầy đủ: bao gồm ảnh từ variant nếu chưa có trong list
+    final allImageUrls = <String>[
+      ...images.map((img) => img.imageUrl).where((u) => u.isNotEmpty),
+    ];
+    // Thêm ảnh từ các variant vào cuối nếu chưa xuất hiện
+    for (final v in current.variants) {
+      final vUrl = v.imageUrl ?? '';
+      if (vUrl.isNotEmpty && !allImageUrls.contains(vUrl)) {
+        allImageUrls.add(vUrl);
+      }
+    }
+
+    final mainUrl = (selectedImg ?? '').isNotEmpty
+        ? selectedImg!
+        : (allImageUrls.isNotEmpty ? allImageUrls.first : '');
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        SizedBox(
-          height: 350,
-          child: PageView.builder(
-            controller: _pageController,
-            itemCount: images.length,
-            physics:
-                const ClampingScrollPhysics(), // Giúp phản hồi vuốt mượt và dứt khoát hơn
-            onPageChanged: (index) {
-              // Chỉ cập nhật index cục bộ cho bộ đếm, không Rebuild cả màn hình
-              _currentImageIndex.value = index;
+        // ── ẢNH LỚN CHÍNH: hiển thị trực tiếp từ selectedImg ──
+        Stack(
+          children: [
+            SizedBox(
+              height: 340,
+              width: double.infinity,
+              child: mainUrl.isEmpty
+                  ? Center(
+                      child: Icon(Icons.computer,
+                          size: 88,
+                          color: Theme.of(context).colorScheme.outline),
+                    )
+                  : InteractiveViewer(
+                      transformationController: TransformationController(),
+                      minScale: 1.0,
+                      maxScale: 3.0,
+                      child: Image.network(
+                        mainUrl,
+                        fit: BoxFit.contain,
+                        width: double.infinity,
+                        height: 340,
+                        gaplessPlayback: true,
+                        filterQuality: FilterQuality.medium,
+                        errorBuilder: (_, __, ___) => Center(
+                          child: Icon(Icons.computer,
+                              size: 88,
+                              color: Theme.of(context).colorScheme.outline),
+                        ),
+                      ),
+                    ),
+            ),
 
-              // Cập nhật selectedImg một cách an toàn để đồng bộ với danh sách ảnh nhỏ phía dưới
-              if (selectedImg != images[index].imageUrl) {
-                selectedImg = images[index].imageUrl;
-              }
-            },
-            itemBuilder: (context, index) {
-              final url = images[index].imageUrl;
-              if (url.isEmpty) {
-                return Center(
-                  child: Icon(Icons.computer,
-                      size: 88, color: Theme.of(context).colorScheme.outline),
-                );
-              }
-
-              return InteractiveViewer(
-                // Khóa chức năng zoom/kéo trục ngang nếu không zoom, tránh tranh chấp với PageView
-                transformationController: TransformationController(),
-                minScale: 1.0,
-                maxScale: 2.5,
-                child: Image.network(
-                  url,
-                  fit: BoxFit.contain,
-                  gaplessPlayback:
-                      true, // Giữ ảnh cũ, không bị nháy trắng khi lướt
-                  filterQuality: FilterQuality
-                      .low, // Tăng hiệu năng render khi đang lướt animation
-                  errorBuilder: (_, __, ___) => Center(
-                    child: Icon(Icons.computer,
-                        size: 88, color: Theme.of(context).colorScheme.outline),
+            // Nút Wishlist
+            Positioned(
+              top: 10,
+              right: 16,
+              child: IconButton(
+                onPressed: () => _toggleWishlist(current.id),
+                icon: CircleAvatar(
+                  backgroundColor: Theme.of(context)
+                      .colorScheme
+                      .surface
+                      .withValues(alpha: 0.85),
+                  child: Icon(
+                    wishSet.contains(current.id)
+                        ? Icons.favorite
+                        : Icons.favorite_border,
+                    color: wishSet.contains(current.id)
+                        ? Colors.red
+                        : Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
                 ),
-              );
-            },
-          ),
-        ),
+              ),
+            ),
 
-        // Chỉ Rebuild duy nhất cục bộ cái Text hiển thị số trang (Ví dụ: 1/4)
-        if (images.length > 1)
-          Positioned(
-            bottom: 10,
-            right: 16,
-            child: ValueListenableBuilder<int>(
-              valueListenable: _currentImageIndex,
-              builder: (context, activeIndex, child) {
-                return Container(
+            // Badge số ảnh
+            if (allImageUrls.length > 1)
+              Positioned(
+                bottom: 10,
+                right: 16,
+                child: Container(
                   padding:
                       const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
@@ -1171,36 +1190,68 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Text(
-                    '${activeIndex + 1}/${images.length}',
+                    '${(allImageUrls.indexOf(mainUrl) + 1).clamp(1, allImageUrls.length)}/${allImageUrls.length}',
                     style: TextStyle(
                         color: Theme.of(context).colorScheme.surface,
                         fontSize: 12),
+                  ),
+                ),
+              ),
+          ],
+        ),
+
+        // ── THUMBNAIL STRIP: ảnh nhỏ phía dưới ──
+        if (allImageUrls.length > 1)
+          Container(
+            height: 62,
+            margin: const EdgeInsets.only(top: 10, bottom: 4),
+            child: ListView.builder(
+              scrollDirection: Axis.horizontal,
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+              itemCount: allImageUrls.length,
+              itemBuilder: (context, index) {
+                final thumbUrl = allImageUrls[index];
+                final isActive = thumbUrl == mainUrl;
+                return GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      selectedImg = thumbUrl;
+                    });
+                  },
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 150),
+                    width: 62,
+                    height: 62,
+                    margin: const EdgeInsets.only(right: 8),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(6),
+                      border: Border.all(
+                        color: isActive
+                            ? Colors.orange
+                            : Theme.of(context)
+                                .colorScheme
+                                .outline
+                                .withValues(alpha: 0.5),
+                        width: isActive ? 2.0 : 1.0,
+                      ),
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(5),
+                      child: Image.network(
+                        thumbUrl,
+                        fit: BoxFit.cover,
+                        errorBuilder: (_, __, ___) => Icon(
+                          Icons.computer,
+                          size: 28,
+                          color: Theme.of(context).colorScheme.outline,
+                        ),
+                      ),
+                    ),
                   ),
                 );
               },
             ),
           ),
-
-        // Nút Wishlist giữ nguyên
-        Positioned(
-          top: 10,
-          right: 16,
-          child: IconButton(
-            onPressed: () => _toggleWishlist(current.id),
-            icon: CircleAvatar(
-              backgroundColor:
-                  Theme.of(context).colorScheme.surface.withValues(alpha: 0.85),
-              child: Icon(
-                wishSet.contains(current.id)
-                    ? Icons.favorite
-                    : Icons.favorite_border,
-                color: wishSet.contains(current.id)
-                    ? Colors.red
-                    : Theme.of(context).colorScheme.onSurfaceVariant,
-              ),
-            ),
-          ),
-        ),
       ],
     );
   }
@@ -1550,17 +1601,9 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
       setState(() {
         selectedVariant = match;
         quantity = 1;
+        // Cập nhật ảnh lớn trực tiếp theo variant được chọn (giống web)
         if (match != null && (match.imageUrl ?? '').isNotEmpty) {
           selectedImg = NetworkUtils.fixDeviceUrl(match.imageUrl!);
-
-          final idx = current.images.indexWhere(
-            (img) =>
-                NetworkUtils.fixDeviceUrl(img.imageUrl).trim() ==
-                selectedImg!.trim(),
-          );
-          if (idx != -1) {
-            _pageController.jumpToPage(idx);
-          }
         }
       });
     }
@@ -1636,7 +1679,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                                 ? FontWeight.w600
                                 : FontWeight.normal,
                             color: isSelected
-                                ? Theme.of(context).colorScheme.surface
+                                ? const Color(0xFFEA580C)
                                 : Theme.of(context).colorScheme.onSurface,
                           ),
                         ),
@@ -1699,7 +1742,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                         fontWeight:
                             isSelected ? FontWeight.w600 : FontWeight.normal,
                         color: isSelected
-                            ? Theme.of(context).colorScheme.surface
+                            ? const Color(0xFFEA580C)
                             : Theme.of(context).colorScheme.onSurface,
                       ),
                     ),

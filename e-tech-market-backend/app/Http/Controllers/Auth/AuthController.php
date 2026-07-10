@@ -39,8 +39,8 @@ class AuthController extends Controller
         $cookie = Cookie::make('sanctum_token', $token, $minutes, '/', null, $secure, true, false, $sameSite);
 
         // In production: only return token via httpOnly cookie (token not in body)
-        // In dev: return token in body for Bearer auth convenience
-        $tokenInBody = $isProduction ? null : $token;
+        // In dev (typically localhost over http): return token in body for Bearer auth convenience
+        $tokenInBody = $secure ? null : $token;
 
         return [$tokenInBody, $cookie];
     }
@@ -292,6 +292,100 @@ class AuthController extends Controller
         $user->tokens()->delete();
 
         return response()->json(["message"=>"Account deleted"]);
+    }
+
+    public function googleLogin(Request $r)
+    {
+        $r->validate([
+            'access_token' => 'required|string',
+        ]);
+
+        // Gọi Google API để lấy thông tin user từ access_token
+        try {
+            $googleResponse = \Illuminate\Support\Facades\Http::withToken($r->access_token)
+                ->get('https://www.googleapis.com/oauth2/v3/userinfo');
+
+            if (!$googleResponse->successful()) {
+                return response()->json([
+                    'message' => 'Google token không hợp lệ hoặc đã hết hạn.',
+                ], 401);
+            }
+
+            $googleUser = $googleResponse->json();
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('[googleLogin] Google API error: ' . $e->getMessage());
+            return response()->json(['message' => 'Không thể xác thực với Google.'], 500);
+        }
+
+        $email = $googleUser['email'] ?? null;
+        $name  = $googleUser['name'] ?? ($googleUser['given_name'] ?? 'Google User');
+        $googleId = $googleUser['sub'] ?? null;
+        $avatarUrl = $googleUser['picture'] ?? null;
+
+        if (!$email || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            return response()->json(['message' => 'Không lấy được email từ Google.'], 422);
+        }
+
+        // Tìm hoặc tạo user theo email
+        $user = User::where('email', $email)->first();
+
+        if ($user) {
+            // Cập nhật google_id và avatar nếu chưa có
+            if (!$user->is_active) {
+                return response()->json(['message' => 'Tài khoản đã bị vô hiệu hóa.'], 403);
+            }
+            $dirty = false;
+            if (!$user->google_id && $googleId) {
+                $user->google_id = $googleId;
+                $dirty = true;
+            }
+            if (!$user->avatar_url && $avatarUrl) {
+                $user->avatar_url = $avatarUrl;
+                $dirty = true;
+            }
+            if ($dirty) {
+                $user->save();
+            }
+        } else {
+            // Tạo user mới từ Google
+            $user = User::create([
+                'name'         => $name,
+                'email'        => $email,
+                'password'     => Hash::make(\Illuminate\Support\Str::random(32)),
+                'google_id'    => $googleId,
+                'avatar_url'   => $avatarUrl,
+                'is_active'    => true,
+                'rank_id'      => 1,
+                'total_spent'  => 0,
+            ]);
+
+            $customerRole = Role::firstOrCreate(['name' => 'customer', 'guard_name' => 'web']);
+            $user->assignRole($customerRole);
+        }
+
+        if ($r->hasSession()) {
+            $r->session()->regenerate();
+            \Illuminate\Support\Facades\Auth::guard('web')->login($user);
+        }
+
+        [$token, $cookie] = $this->createTokenResponse($user);
+
+        \Illuminate\Support\Facades\Log::debug('[googleLogin] token generated', [
+            'email' => $email ?? null,
+            'google_id' => $googleId ?? null,
+            'token_present' => $token !== null,
+            'cookie_name' => $cookie->getName(),
+            'cookie_secure' => $cookie->isSecure(),
+        ]);
+
+        $user->load(['roles', 'membershipRank']);
+
+        $data = ['user' => new UserResource($user)];
+        if ($token !== null) {
+            $data['token'] = $token;
+        }
+
+        return response()->json($data)->withCookie($cookie);
     }
 
     public function loyalty(Request $r)

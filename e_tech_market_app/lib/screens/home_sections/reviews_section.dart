@@ -221,8 +221,8 @@ class _ReviewCard extends StatelessWidget {
                 color: Theme.of(context).colorScheme.onSurfaceVariant,
                 height: 1.5,
               ),
-              maxLines: 4,
-              overflow: TextOverflow.ellipsis,
+              // maxLines: 4,
+              // overflow: TextOverflow.ellipsis,
             ),
             if (mediaItems.isNotEmpty) ...[
               const SizedBox(height: 10),
