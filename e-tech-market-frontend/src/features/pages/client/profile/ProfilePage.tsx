@@ -1304,7 +1304,7 @@ export default function ProfilePage() {
                                 className="pfBtn"
                                 onClick={closeEditModal}
                                 disabled={saving}
-                              >pfDashRight 
+                              > 
                                 Hủy
                               </button>
                             </div>

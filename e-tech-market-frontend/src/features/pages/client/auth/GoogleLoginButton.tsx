@@ -1,12 +1,16 @@
 import { useGoogleLogin } from "@react-oauth/google";
 import { useNavigate } from "react-router-dom";
-import { apiFetch } from "@/configs/api.config";
+import { apiFetch, setAuthToken } from "@/configs/api.config";
 import { setAuthSessionExpiry } from "@/features/store/auth.store";
 import { useState } from "react";
 
 interface GoogleAuthResponse {
-  // 🔒 Token is no longer returned to frontend - it's stored in httpOnly cookie by backend
+  // Trong prod/https, backend chỉ set httpOnly cookie (token = undefined).
+  // Trong dev/http, backend còn trả kèm token để dùng Bearer auth dự phòng
+  // (giống hệt luồng login thường ở auth.service.ts) — nếu bỏ qua field này,
+  // mọi request sau đó chỉ còn trông chờ vào cookie; hễ cookie lỗi là bị auto-logout.
   user: Record<string, unknown>;
+  token?: string;
 }
 
 export function GoogleLoginButton() {
@@ -27,11 +31,15 @@ export function GoogleLoginButton() {
           },
         );
 
-        // 🔒 Token is now stored in httpOnly cookie by backend, no need for localStorage
+        // Cookie httpOnly đã được backend set, nhưng vẫn lưu thêm Bearer token
+        // (nếu có, giống hệt luồng login thường) làm phương án dự phòng.
+        // Nếu thiếu bước này, mọi request sau đó chỉ còn trông chờ vào cookie —
+        // hễ cookie không được gửi kèm đúng cách (proxy/SameSite/domain) là auto-logout.
         localStorage.setItem("user", JSON.stringify(res.user));
+        if (res.token) {
+          setAuthToken(res.token);
+        }
 
-        // Với auth cookie (httpOnly) của backend: không có token để set Bearer.
-        // Đảm bảo state auth được coi là "đã đăng nhập" để tránh auto clearAuthToken + logout.
         setAuthSessionExpiry();
         window.dispatchEvent(new Event("auth-change"));
         navigate("/");
