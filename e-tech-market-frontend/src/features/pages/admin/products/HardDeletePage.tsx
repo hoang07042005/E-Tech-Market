@@ -1211,6 +1211,11 @@ export default function HardDeletePage({ onBack }: { onBack: () => void }) {
               Hành động này sẽ hard delete vĩnh viễn các{" "}
               <b>{confirmLabels[tab]}</b> bạn đã chọn.
             </p>
+            {tab === "users" && (
+              <p style={{ margin: "8px 0 0", color: "#ef4444", fontWeight: 500 }}>
+                Lưu ý: Xóa người dùng sẽ tự động xóa TOÀN BỘ ĐƠN HÀNG và dữ liệu liên quan của họ!
+              </p>
+            )}
             <p className="hdp-confirm-count">
               Số lượng: <b>{pendingIds.length}</b>
             </p>

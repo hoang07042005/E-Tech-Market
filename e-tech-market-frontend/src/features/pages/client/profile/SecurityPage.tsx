@@ -30,6 +30,11 @@ export default function SecurityPage() {
   const [pwNew, setPwNew] = useState('')
   const [pwConfirm, setPwConfirm] = useState('')
 
+  const [showDeleteModal, setShowDeleteModal] = useState(false)
+  const [deletePassword, setDeletePassword] = useState('')
+  const [deleteError, setDeleteError] = useState<string | null>(null)
+  const [deleteBusy, setDeleteBusy] = useState(false)
+
   const [backupCodes] = useState<string[]>(() => [
     'ABCD-1234-EFGH',
     'IJKL-5678-MNOP',
@@ -105,6 +110,27 @@ export default function SecurityPage() {
 
   const logoutAll = () => {
     setSessions([])
+  }
+
+  const handleDeleteAccount = async () => {
+    setDeleteError(null)
+    if (!deletePassword.trim()) {
+      setDeleteError('Vui lòng nhập mật khẩu.')
+      return
+    }
+    setDeleteBusy(true)
+    try {
+      await apiFetch('/me', {
+        method: 'DELETE',
+        body: JSON.stringify({ password: deletePassword }),
+      })
+      alert('Tài khoản đã được xóa thành công.')
+      window.location.href = '/'
+    } catch (e: unknown) {
+      setDeleteError(e instanceof Error ? e.message : 'Không thể xóa tài khoản. Sai mật khẩu?')
+    } finally {
+      setDeleteBusy(false)
+    }
   }
 
   return (
@@ -255,15 +281,52 @@ export default function SecurityPage() {
           <button
             type="button"
             className="secDangerOutlineBtn"
-            onClick={() => {
-              // UI only
-              alert('Chức năng sẽ được hoàn thiện ở bản sau.')
-            }}
+            onClick={() => setShowDeleteModal(true)}
           >
             Xóa khỏi tài khoản
           </button>
         </div>
       </section>
+
+      {showDeleteModal && (
+        <div className="secModalOverlay" onClick={() => !deleteBusy && setShowDeleteModal(false)}>
+          <div className="secModalContent" onClick={(e) => e.stopPropagation()}>
+            <div className="secModalTitle">Xác nhận xóa tài khoản</div>
+            <div className="secModalDesc">
+              Hành động này sẽ xóa vĩnh viễn tài khoản của bạn cùng <strong>TOÀN BỘ ĐƠN HÀNG</strong> và dữ liệu liên quan. Không thể hoàn tác!
+            </div>
+            <div className="secField" style={{ marginTop: '8px' }}>
+              <label>Mật khẩu của bạn</label>
+              <input 
+                type="password" 
+                value={deletePassword} 
+                onChange={(e) => setDeletePassword(e.target.value)} 
+                placeholder="Nhập mật khẩu để xác nhận"
+                autoFocus
+              />
+            </div>
+            {deleteError && <div className="secInlineError" style={{ marginTop: 0 }}>{deleteError}</div>}
+            <div className="secModalActions">
+              <button 
+                type="button" 
+                className="secModalBtnCancel" 
+                onClick={() => setShowDeleteModal(false)}
+                disabled={deleteBusy}
+              >
+                Hủy bỏ
+              </button>
+              <button 
+                type="button" 
+                className="secModalBtnDanger" 
+                onClick={handleDeleteAccount}
+                disabled={deleteBusy}
+              >
+                {deleteBusy ? 'Đang xử lý...' : 'Xác nhận xóa'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

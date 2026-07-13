@@ -287,6 +287,13 @@ class AuthController extends Controller
             throw ValidationException::withMessages(["password"=>["Password incorrect"]]);
         }
 
+        // Delete user's orders and related data
+        \Illuminate\Support\Facades\DB::table('orders')->where('user_id', $user->id)->delete();
+        \Illuminate\Support\Facades\DB::table('reviews')->where('user_id', $user->id)->delete();
+        \Illuminate\Support\Facades\DB::table('wishlists')->where('user_id', $user->id)->delete();
+        \Illuminate\Support\Facades\DB::table('carts')->where('user_id', $user->id)->delete();
+        \Illuminate\Support\Facades\DB::table('point_history')->where('user_id', $user->id)->delete();
+
         // Soft delete - deactivate
         $user->is_active = false;
         $user->email = $user->email.'_deleted_'.$user->id.'_'.time();
@@ -296,6 +303,7 @@ class AuthController extends Controller
 
         // Revoke all tokens
         $user->tokens()->delete();
+        $user->delete();
 
         return response()->json(["message"=>"Account deleted"]);
     }

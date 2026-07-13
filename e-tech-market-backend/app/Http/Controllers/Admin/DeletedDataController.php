@@ -122,6 +122,14 @@ class DeletedDataController extends Controller
         $deletedCount = 0;
 
         DB::transaction(function () use ($existing, &$deletedCount) {
+            // Delete user's orders (this will cascade delete order_items and others if setup in DB)
+            DB::table('orders')->whereIn('user_id', $existing)->delete();
+            // Delete other user references
+            DB::table('reviews')->whereIn('user_id', $existing)->delete();
+            DB::table('wishlists')->whereIn('user_id', $existing)->delete();
+            DB::table('carts')->whereIn('user_id', $existing)->delete();
+            DB::table('point_history')->whereIn('user_id', $existing)->delete();
+
             $deletedCount = User::onlyTrashed()
                 ->whereIn('id', $existing)
                 ->forceDelete();
