@@ -313,9 +313,32 @@ html.dark .fs-tab-btn.active {
 }
 
 .fs-txt-name {
-  color: #0f172a;
-  font-size: 0.95rem;
-  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 6px;
+  background: linear-gradient(135deg, #f72828 0%, #ff7d3a 100%);
+  color: #ffffff;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  box-shadow: 0 4px 10px rgba(220, 38, 38, 0.25);
+  position: relative;
+}
+
+.fs-txt-name::before {
+  content: '⚡';
+  font-size: 1.5rem;
+  animation: flash-shake 1.5s infinite;
+}
+
+@keyframes flash-shake {
+  0%, 100% { transform: rotate(0deg) scale(1); }
+  25% { transform: rotate(-10deg) scale(1.1); }
+  50% { transform: rotate(10deg) scale(1.1); filter: drop-shadow(0 0 5px #fbbf24); }
+  75% { transform: rotate(-5deg) scale(1.05); }
 }
 
 /* Khối hiển thị thời gian (Giờ trên - Ngày dưới) */

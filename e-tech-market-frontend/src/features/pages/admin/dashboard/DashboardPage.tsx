@@ -1286,7 +1286,7 @@ export default function DashboardPage({
                     <span className={`admActivityDot ${a.dot}`} aria-hidden />
                     <div className="admActivityRowBody">
                       <div className="admActivityRowText">
-                        <b>{a.title}</b> {a.desc}
+                        <b style={{ fontWeight: "700" }}>{a.title}</b> {a.desc}
                       </div>
                       {a.time && (
                         <div className="admActivityRowTime">{a.time}</div>

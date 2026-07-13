@@ -39,7 +39,7 @@ class AdminDashboardService
 
             $analyticsStart = $this->resolveAnalyticsStart($range, $startDateParam, $endDateParam, $now, $toEnd);
 
-            $kpi = $this->buildKpi($from30d, $from7d, $now);
+            $kpi = $this->buildKpi($analyticsStart, $toEnd);
             $quickTasks = $this->buildQuickTasks();
             $recentOrders = $this->buildRecentOrders();
             $recentActivities = $this->buildRecentActivities();
@@ -91,7 +91,7 @@ class AdminDashboardService
         };
     }
 
-    private function buildKpi(Carbon $from30d, Carbon $from7d, Carbon $now): array
+    private function buildKpi(Carbon $analyticsStart, Carbon $toEnd): array
     {
         // Count paid orders OR completed COD orders
         $revenueQuery = Order::query()
@@ -102,7 +102,7 @@ class AdminDashboardService
                          ->where('payment_status', '!=', 'refunded');
                   });
             })
-            ->where('created_at', '>=', $from30d);
+            ->whereBetween('created_at', [$analyticsStart, $toEnd]);
 
         $paidOrders30d = (clone $revenueQuery)->count();
 
@@ -110,17 +110,17 @@ class AdminDashboardService
 
         $currentOrders = Order::query()
             ->whereIn('status', ['pending', 'processing'])
-            ->where('created_at', '>=', $from30d)
+            ->whereBetween('created_at', [$analyticsStart, $toEnd])
             ->count();
 
         $ordersToday = Order::query()
-            ->whereDate('created_at', $now->toDateString())
+            ->whereDate('created_at', clone $toEnd)
             ->count();
 
         $totalProducts = Product::query()->count();
 
         $newCustomers7d = User::query()
-            ->where('created_at', '>=', $from7d)
+            ->whereBetween('created_at', [$analyticsStart, $toEnd])
             ->count();
 
         $avgOrderValue30d = $paidOrders30d > 0 ? ($revenue30d / $paidOrders30d) : 0.0;

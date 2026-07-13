@@ -1472,7 +1472,7 @@
   grid-template-columns: 1.6fr 0.8fr;
   gap: 14px;
   align-items: start;
-  margin-bottom: 12px;
+  margin-bottom: 14px;
 }
 
 .admShipCurrentCard {
@@ -1630,7 +1630,7 @@
 }
 
 .admShipPolicyCard.isShot {
-  padding: 14px;
+  padding: 56px;
 }
 
 .admShipCheck.isShot {
@@ -1652,7 +1652,7 @@
 .admShipTipCard {
   border: 1px solid rgba(59, 130, 246, 0.18);
   background: rgba(59, 130, 246, 0.08);
-  border-radius: 14px;
+  border-radius: 5px;
   padding: 12px;
   display: flex;
   gap: 10px;
@@ -1702,7 +1702,7 @@
 
 .admSecGrid {
   display: grid;
-  grid-template-columns: 1.4fr 0.8fr 1fr;
+  grid-template-columns: 1.4fr 0.8fr;
   gap: 12px;
   margin-bottom: 14px;
 }
@@ -1710,7 +1710,7 @@
 .admSecCard {
   background: #fff;
   border: 1px solid rgba(15, 23, 42, 0.08);
-  border-radius: 14px;
+  border-radius: 5px;
   padding: 12px;
 }
 
