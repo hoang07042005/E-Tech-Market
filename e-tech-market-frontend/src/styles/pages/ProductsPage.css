@@ -638,7 +638,6 @@
   align-items: center;
   gap: 12px;
   min-width: 0;
-  margin-bottom: 12px;
   display: flex
 }
 
@@ -706,8 +705,9 @@
 
 .ppCardTitle {
   color: #111;
-  margin-bottom: 15px;
-  font-size: 18px;
+  margin-bottom: 5px;
+  margin-top: 5px;
+  font-size: 16px;
   font-weight: 600;
   line-height: 1.3;
   display: -webkit-box;
@@ -877,7 +877,7 @@
   display: flex;
   align-items: baseline;
   gap: 10px;
-  margin-bottom: 15px;
+  margin-bottom: 5px;
 }
 
 .ppCardOldPrice {
@@ -1026,4 +1026,178 @@
   .ppCardContent {
     padding: 15px
   }
+}
+
+/* Flash Sale Banner Styles */
+.fsBannerWrapper {
+  width: 100%;
+  height: 40px;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  z-index: 2;
+}
+
+.fsBannerBg {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: linear-gradient(90deg, #ed1c24 0%, #fa4b2a 100%);
+  box-shadow: 0 -2px 4px rgba(0,0,0,0.15);
+  overflow: hidden;
+}
+
+.fsLabelBlock {
+  position: absolute;
+  left: -2px;
+  top: -5px;
+  bottom: 1px;
+  width: 36%;
+  z-index: 4;
+  /* Viền vàng 3D sát lề ôm trọn khối cắt chéo */
+  filter: drop-shadow(2px 2px 0px #ffeb3b); 
+}
+
+.fsLabelMain {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #ff1a1a 0%, #cc0000 100%);
+  clip-path: polygon(0 0, 100% 0, 85% 100%, 0 100%);
+  display: flex;
+  align-items: center;
+  padding-left: 4px;
+}
+
+.fsLabelText {
+  color: white;
+  font-weight: 900;
+  font-style: italic;
+  line-height: 1.05;
+  font-size: 12px;
+  margin-left: 2px;
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+}
+
+.fsTimerBlock {
+  position: absolute;
+  left: 36%;
+  right: 24%;
+  top: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 3;
+}
+
+.fsTimerTitle {
+  font-size: 9px;
+  color: white;
+  text-transform: uppercase;
+  margin-bottom: 3px;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+}
+
+.fsTimerDisplay {
+  display: flex;
+  gap: 3px;
+  align-items: center;
+}
+
+.fsTimerDigit {
+  background: white;
+  color: #cc0000;
+  padding: 1px 3px;
+  border-radius: 3px;
+  font-size: 11px;
+  font-weight: 900;
+  line-height: 1.1;
+}
+
+.fsTimerColon {
+  font-size: 10px;
+  color: white;
+  font-weight: bold;
+  line-height: 1;
+}
+
+.fsDiscountBlock {
+  position: absolute;
+  right: -3px;
+  top: -5px;
+  bottom: 1px;
+  width: 24%;
+  z-index: 3;
+  /* Viền vàng 3D cắt chéo trái và chìm xuống dưới */
+  filter: drop-shadow(-2px 2px 0px #ffeb3b); 
+}
+
+.fsDiscountMain {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, #ffb800 0%, #ff8800 100%);
+  color: white;
+  font-weight: 900;
+  font-size: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  clip-path: polygon(25% 0, 100% 0, 100% 100%, 0 100%);
+}
+
+/* Stock Bar (Flash Sale & Normal) */
+.ppStockBar {
+  margin-top: 8px;
+  margin-bottom: 4px;
+  width: 100%;
+  font-size: 12px;
+}
+
+.ppStockBarMeta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 5px;
+}
+
+.ppStockBarSold {
+  color: #ff4b2b;
+  font-weight: 600;
+}
+
+.ppStockBarSold--low {
+  color: #e53e3e;
+  font-weight: 700;
+}
+
+.ppStockBarPct {
+  color: #999;
+  font-size: 11px;
+}
+
+.ppStockBarTrack {
+  width: 100%;
+  height: 6px;
+  background: #f0f0f0;
+  border-radius: 99px;
+  overflow: hidden;
+}
+
+.ppStockBarFill {
+  height: 100%;
+  border-radius: 99px;
+  transition: width 0.4s ease;
+}
+
+.ppStockBarFill--flash {
+  background: linear-gradient(90deg, #ff4b2b 0%, #f21b24 100%);
+}
+
+.ppStockBarFill--normal {
+  background: linear-gradient(90deg, #34d399 0%, #059669 100%);
+}
+
+.ppStockBarFill--low {
+  background: linear-gradient(90deg, #f59e0b 0%, #e53e3e 100%);
 }

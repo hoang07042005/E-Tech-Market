@@ -352,7 +352,7 @@
 .drawerMiniCard span { font-size: 0.75rem; color: var(--admin-txt-muted); display: block; margin-bottom: 0.15rem; }
 .drawerMiniCard strong { font-size: 0.9rem; color: var(--admin-txt-title); }
 .drawerCommentBox { background: #f8fafc; padding: 0.85rem; border-radius: var(--admin-radius-sm); border-left: 3px solid var(--admin-brand); }
-.drawerCommentBox p { margin: 0; font-size: 0.85rem; line-height: 1.5; }
+.drawerCommentBox p { margin: 0; font-size: 0.85rem; line-height: 1.5; white-space: pre-wrap; word-break: break-word; }
 .drawerGallery { display: flex; gap: 0.5rem; flex-wrap: wrap; }
 .drawerMediaThumb { width: 64px; height: 64px; border-radius: var(--admin-radius-sm); object-fit: cover; border: 1px solid var(--admin-border); }
 .drawerFooter { padding: 1rem 1.25rem; background: #f8fafc; border-top: 1px solid var(--admin-border); display: flex; gap: 0.5rem; }

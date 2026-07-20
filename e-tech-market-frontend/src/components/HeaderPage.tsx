@@ -774,14 +774,14 @@ export default function HeaderPage({ active = "Home" }: { active?: NavKey }) {
         )}
 
         <div className="hfHeaderRight" aria-label="Thao tác trên header">
-          <button
+          {/* <button
             type="button"
             className="hfIconBtn hfThemeBtn"
             aria-label="Chuyển đổi giao diện sáng/tối"
             onClick={toggleTheme}
           >
             {darkMode ? <SunIcon /> : <MoonIcon />}
-          </button>
+          </button> */}
 
           <button
             type="button"

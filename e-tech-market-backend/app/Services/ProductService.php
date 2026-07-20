@@ -178,7 +178,15 @@ class ProductService
         });
 
         return $query
-            ->with(['category', 'variants'])
+            ->with([
+                'category',
+                'variants',
+                'flashSaleItems' => fn ($q) => $q->whereHas('flashSale', function ($query) {
+                    $query->where('status', \App\Models\FlashSale::STATUS_ACTIVE)
+                        ->where('start_at', '<=', now())
+                        ->where('end_at', '>=', now());
+                })->with('flashSale')
+            ])
             ->withCount([
                 'reviews as reviews_count' => fn ($q) => $q->where('status', 'approved'),
             ])

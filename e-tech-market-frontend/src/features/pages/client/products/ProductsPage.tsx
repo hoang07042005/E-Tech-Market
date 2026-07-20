@@ -183,6 +183,85 @@ function ProductDescWithDetailButton({ product }: { product: ApiProduct }) {
   );
 }
 
+// Ngưỡng tồn kho: <=5 là sắp hết hàng, max hiển thị là 100
+const STOCK_MAX = 100;
+
+function StockBar({ stock }: { stock: number }) {
+  const pct = Math.max(0, Math.min(100, (stock / STOCK_MAX) * 100));
+  const isLow = stock <= 10;
+  return (
+    <div className="ppStockBar">
+      <div className="ppStockBarMeta">
+        <span className={`ppStockBarSold${isLow ? " ppStockBarSold--low" : ""}`}>
+          {isLow ? `⚠️ Sắp hết hàng (còn ${stock})` : `Còn ${stock} sản phẩm`}
+        </span>
+        <span className="ppStockBarPct">{pct.toFixed(0)}%</span>
+      </div>
+      <div className="ppStockBarTrack">
+        <div
+          className={`ppStockBarFill${isLow ? " ppStockBarFill--low" : " ppStockBarFill--normal"}`}
+          style={{ width: `${pct}%` }}
+        />
+      </div>
+    </div>
+  );
+}
+
+function FlashSaleBanner({ endAt, discountPercent }: { endAt: string, discountPercent: number }) {
+  const [timeLeft, setTimeLeft] = useState({ hours: "00", minutes: "00", seconds: "00" });
+
+  useEffect(() => {
+    const compute = () => {
+      const distance = new Date(endAt).getTime() - new Date().getTime();
+      if (distance < 0) return { hours: "00", minutes: "00", seconds: "00" };
+      const h = Math.floor(distance / (1000 * 60 * 60)).toString().padStart(2, "0");
+      const m = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)).toString().padStart(2, "0");
+      const s = Math.floor((distance % (1000 * 60)) / 1000).toString().padStart(2, "0");
+      return { hours: h, minutes: m, seconds: s };
+    };
+    setTimeLeft(compute());
+    const timer = setInterval(() => setTimeLeft(compute()), 1000);
+    return () => clearInterval(timer);
+  }, [endAt]);
+
+  return (
+    <div className="fsBannerWrapper">
+      <div className="fsBannerBg" />
+
+      {/* Khối 1: Label */}
+      <div className="fsLabelBlock">
+        <div className="fsLabelMain">
+           <svg width="18" height="24" viewBox="0 0 24 24" fill="#ffeb3b" stroke="#ffaa00" strokeWidth="1">
+             <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
+           </svg>
+           <div className="fsLabelText">
+             FLASH<br/>SALE
+           </div>
+        </div>
+      </div>
+
+      {/* Khối 2: Countdown */}
+      <div className="fsTimerBlock">
+         <span className="fsTimerTitle">Kết thúc sau:</span>
+         <div className="fsTimerDisplay">
+           <span className="fsTimerDigit">{timeLeft.hours}</span>
+           <span className="fsTimerColon">:</span>
+           <span className="fsTimerDigit">{timeLeft.minutes}</span>
+           <span className="fsTimerColon">:</span>
+           <span className="fsTimerDigit">{timeLeft.seconds}</span>
+         </div>
+      </div>
+      
+      {/* Khối 3: Discount */}
+      <div className="fsDiscountBlock">
+        <div className="fsDiscountMain">
+          -{discountPercent}%
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function ProductCard({
   product,
   liked,
@@ -196,6 +275,14 @@ function ProductCard({
 
   // Handle image URL
   const imageUrl = resolveImageUrl(product.main_image_url);
+  const activeFlashSaleItem = useMemo(() => {
+    return product.flash_sale_items?.find((item) => {
+      // Backend filters active and date range already
+      return !!item.flash_sale;
+    });
+  }, [product.flash_sale_items]);
+  const isFlashSale = !!activeFlashSaleItem;
+
   // Calculate display price and old price based on variants (uses backend effective_price)
   const {
     displayPrice,
@@ -215,15 +302,18 @@ function ProductCard({
       );
       const lowest = sorted[0];
       const highest = sorted[sorted.length - 1];
-      const hasMultiplePrices =
-        lowest.effective_price !== highest.effective_price;
-
-      // Only show discount badge when there's exactly 1 variant
-      const showDiscountBadge = isSingleVariant;
-
-      // Calculate discount based on lowest price variant
+      
+      let hasMultiplePrices = lowest.effective_price !== highest.effective_price;
+      let showDiscountBadge = isSingleVariant;
+      let finalPrice = lowest.effective_price;
       const originalPrice = Number.parseFloat(lowest.price);
-      const finalPrice = lowest.effective_price;
+
+      if (isFlashSale && activeFlashSaleItem) {
+        finalPrice = Number(activeFlashSaleItem.flash_sale_price);
+        hasMultiplePrices = false;
+        showDiscountBadge = true;
+      }
+
       const hasDiscount = finalPrice < originalPrice && showDiscountBadge;
 
       return {
@@ -254,9 +344,10 @@ function ProductCard({
       variantId: null,
       variantLabel: null,
     };
-  }, [product.variants]);
+  }, [product.variants, isFlashSale, activeFlashSaleItem]);
 
   const isNew = isNewWithinTenDays(product.created_at);
+
   const { avgRating, ratingCount } = useMemo(() => {
     // Ưu tiên số liệu tổng hợp từ API list
     const count =
@@ -389,6 +480,9 @@ function ProductCard({
             )}
           </div>
         )}
+        {isFlashSale && activeFlashSaleItem?.flash_sale && (
+          <FlashSaleBanner endAt={activeFlashSaleItem.flash_sale.end_at} discountPercent={discountPercent} />
+        )}
       </Link>
       <div className="ppCardContent">
         <div className="ppCardTopRow">
@@ -431,6 +525,31 @@ function ProductCard({
               </span>
             )}
         </div>
+
+        {isFlashSale && activeFlashSaleItem && activeFlashSaleItem.quantity_limit && (
+          <div className="ppStockBar">
+            <div className="ppStockBarMeta">
+              <span className="ppStockBarSold">Đã bán {activeFlashSaleItem.sold_quantity}/{activeFlashSaleItem.quantity_limit}</span>
+              <span className="ppStockBarPct">
+                {Math.round((activeFlashSaleItem.sold_quantity / activeFlashSaleItem.quantity_limit) * 100)}%
+              </span>
+            </div>
+            <div className="ppStockBarTrack">
+              <div
+                className="ppStockBarFill ppStockBarFill--flash"
+                style={{ width: `${Math.min(100, (activeFlashSaleItem.sold_quantity / activeFlashSaleItem.quantity_limit) * 100)}%` }}
+              />
+            </div>
+          </div>
+        )}
+
+        {!isFlashSale && (() => {
+          // Tính tổng stock: ưu tiên từng variant, fallback sang product.stock_quantity
+          const totalStock = (product.variants && product.variants.length > 0)
+            ? product.variants.reduce((sum, v) => sum + (v.stock_quantity ?? 0), 0)
+            : (product.stock_quantity ?? null);
+          return totalStock != null ? <StockBar stock={totalStock} /> : null;
+        })()}
 
         <ProductDescWithDetailButton product={product} />
       </div>
