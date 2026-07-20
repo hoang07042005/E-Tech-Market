@@ -34,6 +34,7 @@ const ProductNewsDetailPage = lazy(() => import('@/features/pages/client/product
 const CartPage = lazy(() => import('@/features/pages/client/cart/CartPage'))
 const CheckoutPage = lazy(() => import('@/features/pages/client/checkout/CheckoutPage'))
 const TermsOfServicePage = lazy(() => import('@/features/pages/client/info/TermsOfServicePage'))
+const PurchaseTermsPage = lazy(() => import('@/features/pages/client/info/PurchaseTermsPage'))
 const PrivacyPolicyPage = lazy(() => import('@/features/pages/client/info/PrivacyPolicyPage'))
 const PaymentSecurityPolicyPage = lazy(() => import('@/features/pages/client/info/PaymentSecurityPolicyPage'))
 const RefundPolicyPage = lazy(() => import('@/features/pages/client/info/RefundPolicyPage'))
@@ -334,6 +335,7 @@ function AppFrame() {
           <Route path="/orders" element={<OrdersPage />} />
           <Route path="/orders/:id" element={<OrderDetailPage />} />
           <Route path="/dieu-khoan" element={<TermsOfServicePage />} />
+          <Route path="/dieu-khoan-mua-hang" element={<PurchaseTermsPage />} />
           <Route path="/chinh-sach-bao-mat" element={<PrivacyPolicyPage />} />
           <Route path="/chinh-sach-bao-mat-thanh-toan" element={<PaymentSecurityPolicyPage />} />
           <Route path="/chinh-sach-hoan-tien" element={<RefundPolicyPage />} />

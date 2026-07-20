@@ -9,6 +9,7 @@ import { API_BASE_URL, apiFetch } from "@/configs/api.config";
 import Skeleton from "@/components/Skeleton";
 import { clearAuthSessionExpiry } from "@/features/store/auth.store";
 import { useAuthStore } from "@/features/store/useAuthStore";
+import ConfirmModal from "@/components/ConfirmModal";
 
 type TabKey =
   | "profile"
@@ -119,6 +120,7 @@ export default function ProfilePage() {
 
   const [me, setMe] = useState<MeUser | null>(null);
   const [orders, setOrders] = useState<OrderRow[]>([]);
+  const [showNotAvailable, setShowNotAvailable] = useState(false);
   const [profileDraft, setProfileDraft] = useState({
     name: "",
     email: "",
@@ -1336,7 +1338,7 @@ export default function ProfilePage() {
                         <button
                           type="button"
                           className={twoFa ? "pfSwitch pfSwitchOn" : "pfSwitch"}
-                          onClick={() => setTwoFa((s) => !s)}
+                          onClick={() => setShowNotAvailable(true)}
                           aria-label="Bật tắt 2FA"
                         >
                           <span className="pfSwitchKnob" />
@@ -1408,6 +1410,16 @@ export default function ProfilePage() {
           </button>
         </section>
       </div>
+
+      <ConfirmModal
+        open={showNotAvailable}
+        title="Tính năng này hiện chưa được phát triển"
+        message="Chúng tôi đang trong quá trình triển khai nhằm tăng cường bảo mật cho tài khoản. Vui lòng quay lại trong các bản cập nhật sắp tới."
+        confirmLabel="Đã hiểu"
+        cancelLabel="Đóng"
+        onConfirm={() => setShowNotAvailable(false)}
+        onCancel={() => setShowNotAvailable(false)}
+      />
     </main>
   );
 }

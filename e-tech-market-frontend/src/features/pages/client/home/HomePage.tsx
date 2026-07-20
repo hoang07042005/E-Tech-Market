@@ -309,6 +309,11 @@ type CouponPublic = {
   min_order_amount: number | null
   start_at: string | null
   end_at: string | null
+  max_uses: number | null
+  max_uses_per_user: number | null
+  usages_count: number
+  user_usage_count: number
+  is_saved: boolean
 }
 
 type BlogPost = {
@@ -412,7 +417,7 @@ export default function HomePage() {
     Promise.all([
       fetchProducts({ limit: 10, is_featured: 1 }),
       // 🔒 Token is sent via httpOnly cookie automatically
-      apiFetch<CouponPublic[]>('/api/coupons?exclude_saved=true'),
+      apiFetch<CouponPublic[]>('/api/coupons'),
       fetchCategories('product'),
       apiFetch<ProductReview[]>('/api/reviews?min_rating=5&limit=6'),
       apiFetch<{ data: BlogPost[] }>('/api/blog/posts?per_page=5'),
@@ -424,7 +429,7 @@ export default function HomePage() {
         if (active) {
           setBanners(Array.isArray(bannerRes) ? bannerRes : [])
           setFeaturedProducts(prodRes.data)
-          if (Array.isArray(couponRes)) setActiveCoupons(couponRes.slice(0, 4))
+          if (Array.isArray(couponRes)) setActiveCoupons(couponRes)
           if (Array.isArray(videoRes)) setHomeVideos(videoRes.slice(0, 4))
           if (Array.isArray(catRes)) {
             const mainCats = catRes.filter(c => c.parent_id === null && c.is_active && c.image).slice(0, 5)
@@ -681,60 +686,103 @@ export default function HomePage() {
           </section>
         )}
 
-        {(loading || activeCoupons.length > 0) && (
-          <section className="hpCouponSection reveal">
-            <div className="hpContainer">
-              <div className="hpCouponHeader">
-                <div>
-                  <h2 className="hpCouponSectionTitle">Ưu đãi dành cho bạn</h2>
-                  <p className="hpCouponSectionSub">CHẠM VÀO MÃ ĐỂ SAO CHÉP NHANH</p>
+        {(loading || activeCoupons.length > 0) && (() => {
+          // Nếu đã đăng nhập: lọc ẩn các mã user đã hết lượt dùng (max_uses_per_user)
+          const visibleCoupons = hasAuth
+            ? activeCoupons.filter(c => {
+                if (c.max_uses_per_user && c.user_usage_count >= c.max_uses_per_user) return false
+                return true
+              })
+            : activeCoupons
+
+          if (!loading && visibleCoupons.length === 0) return null
+
+          return (
+            <section className="hpCouponSection reveal">
+              <div className="hpContainer">
+                <div className="hpCouponHeader">
+                  <div>
+                    <h2 className="hpCouponSectionTitle">Ưu đãi dành cho bạn</h2>
+                    <p className="hpCouponSectionSub">CHẠM VÀO MÃ ĐỂ SAO CHÉP NHANH</p>
+                  </div>
+                  <div className="hpCouponBadge">
+                    {visibleCoupons.length} ưu đãi
+                  </div>
                 </div>
-                <div className="hpCouponBadge">
-                  {activeCoupons.length} ưu đãi
+                <div className="hpCouponGridWrapper">
+                  <div className="hpCouponGrid">
+                    {loading
+                      ? Array.from({ length: 4 }).map((_, i) => <CouponSkeleton key={i} />)
+                      : [...visibleCoupons, ...visibleCoupons].map((c, index) => {
+                          // Tính lượt còn lại theo user (nếu có giới hạn per-user)
+                          const perUserLimit = c.max_uses_per_user
+                          const userUsed = c.user_usage_count ?? 0
+                          const userRemaining = perUserLimit ? perUserLimit - userUsed : null
+
+                          // Tính lượt còn lại tổng (nếu có giới hạn max_uses)
+                          const totalLimit = c.max_uses
+                          const totalUsed = c.usages_count ?? 0
+                          const totalRemaining = totalLimit ? totalLimit - totalUsed : null
+
+                          // Ưu tiên hiển thị: per-user nếu có, sau đó total
+                          const showRemaining = userRemaining !== null ? userRemaining : totalRemaining
+                          const showLimit = userRemaining !== null ? perUserLimit! : totalLimit
+
+                          return (
+                            <div key={`${c.id}-${index}`} className="hpCouponCard">
+                              <div className="hpCouponCardTop">
+                                <div className="hpCouponInfo">
+                                  <div className="hpCouponValue">
+                                    {c.coupon_type === 'percentage' ? `Giảm ${c.value}%` : `Giảm ${formatPriceVnd(c.value.toString())}`}
+                                  </div>
+                                  <div className="hpCouponMin">
+                                    {c.min_order_amount ? `Đơn từ ${formatPriceVnd(c.min_order_amount.toString())}` : 'Áp dụng mọi đơn hàng'}
+                                  </div>
+                                  {/* Hiển thị lượt còn lại nếu có giới hạn */}
+                                  {hasAuth && showRemaining !== null && showLimit !== null && (
+                                    <div className="hpCouponUsageWrap">
+                                      <div className="hpCouponUsageBar">
+                                        <div
+                                          className="hpCouponUsageFill"
+                                          style={{ width: `${Math.max(0, Math.min(100, ((showLimit - showRemaining) / showLimit) * 100))}%` }}
+                                        />
+                                      </div>
+                                      <span className="hpCouponUsageText">
+                                        Còn {showRemaining}/{showLimit} lượt
+                                      </span>
+                                    </div>
+                                  )}
+                                </div>
+                                <button
+                                  className={`hpCouponSaveBtn${c.is_saved ? ' hpCouponSavedBtn' : ''}`}
+                                  onClick={() => !c.is_saved && saveCoupon(c.code)}
+                                  disabled={c.is_saved}
+                                >
+                                  {c.is_saved ? '✓ Đã lưu' : 'Lưu'}
+                                </button>
+                              </div>
+
+                              <div className="hpCouponDivider"></div>
+
+                              <div className="hpCouponCardBottom" onClick={() => { navigator.clipboard.writeText(c.code); alert('Đã sao chép mã!'); }}>
+                                <div className="hpCouponCode">{c.code}</div>
+                                <div className="hpCouponCopyAction">
+                                  <span>Sao chép</span>
+                                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                                  </svg>
+                                </div>
+                              </div>
+                            </div>
+                          )
+                        })}
+                  </div>
                 </div>
               </div>
-              <div className="hpCouponGridWrapper">
-                <div className="hpCouponGrid">
-                  {loading
-                    ? Array.from({ length: 3 }).map((_, i) => <CouponSkeleton key={i} />)
-                    : activeCoupons.map((c) => (
-                      <div key={c.id} className="hpCouponCard">
-                        <div className="hpCouponCardTop">
-                          <div className="hpCouponInfo">
-                            <div className="hpCouponValue">
-                              {c.coupon_type === 'percentage' ? `Giảm ${c.value}%` : `Giảm ${formatPriceVnd(c.value.toString())}`}
-                            </div>
-                            <div className="hpCouponMin">
-                              {c.min_order_amount ? `Đơn từ ${formatPriceVnd(c.min_order_amount.toString())}` : 'Áp dụng mọi đơn hàng'}
-                            </div>
-                          </div>
-                          <button
-                            className="hpCouponSaveBtn"
-                            onClick={() => saveCoupon(c.code)}
-                          >
-                            Lưu
-                          </button>
-                        </div>
-                        
-                        <div className="hpCouponDivider"></div>
-                        
-                        <div className="hpCouponCardBottom" onClick={() => { navigator.clipboard.writeText(c.code); alert('Đã sao chép mã!'); }}>
-                          <div className="hpCouponCode">{c.code}</div>
-                          <div className="hpCouponCopyAction">
-                            <span>Sao chép</span>
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                              <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                            </svg>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                </div>
-              </div>
-            </div>
-          </section>
-        )}
+            </section>
+          )
+        })()}
 
         <div className="reveal">
           <FlashSaleSection />
@@ -1013,28 +1061,28 @@ export default function HomePage() {
                   <ShippingIcon />
                 </div>
                 <h3>Miễn phí vận chuyển</h3>
-                <p>Áp dụng đơn từ 5 triệu đồng</p>
+                <p>Miễn phí giao hàng toàn quốc cho đơn từ 5 triệu đồng, giao nhanh và đảm bảo sản phẩm nguyên vẹn.</p>
               </div>
               <div className="hpWhyUsItem">
                 <div className="hpWhyIcon">
                   <WarrantyIcon />
                 </div>
                 <h3>Bảo hành 24 tháng</h3>
-                <p>Bảo vệ trọn vẹn thiết bị của bạn</p>
+                <p>Bảo hành chính hãng lên đến 24 tháng, hỗ trợ đổi trả theo chính sách và xử lý nhanh khi phát sinh lỗi.</p>
               </div>
               <div className="hpWhyUsItem">
                 <div className="hpWhyIcon">
                   <SupportIcon />
                 </div>
                 <h3>Hỗ trợ chuyên gia</h3>
-                <p>Đội ngũ kỹ thuật đồng hành 24/7</p>
+                <p>Chuyên viên kỹ thuật tư vấn cấu hình, nâng cấp và lắp đặt PC, luôn đồng hành cùng bạn trước và sau khi mua hàng.</p>
               </div>
               <div className="hpWhyUsItem">
                 <div className="hpWhyIcon">
                   <PaymentIcon />
                 </div>
                 <h3>Thanh toán an toàn</h3>
-                <p>Giao dịch được mã hóa 100%</p>
+                <p>Thanh toán linh hoạt qua thẻ, chuyển khoản hoặc COD với hệ thống bảo mật hiện đại, đảm bảo an toàn cho mọi giao dịch.</p>
               </div>
             </div>
           </div>

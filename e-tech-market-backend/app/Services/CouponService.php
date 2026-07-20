@@ -62,9 +62,7 @@ class CouponService
             ->get();
 
         return $coupons->filter(function ($coupon) use ($userId, $excludeSaved) {
-            if ($userId && $excludeSaved && $coupon->savedByUsers->where('id', $userId)->isNotEmpty()) {
-                return false;
-            }
+            // Only exclude if per-user usage limit is reached
             if ($userId && $coupon->max_uses_per_user) {
                 if ($coupon->usages->where('user_id', $userId)->count() >= $coupon->max_uses_per_user) {
                     return false;
@@ -74,6 +72,16 @@ class CouponService
                 return false;
             }
             return true;
+        })->map(function ($coupon) use ($userId) {
+            // Append user_usage_count so frontend can show remaining uses per user
+            $coupon->user_usage_count = $userId
+                ? $coupon->usages->where('user_id', $userId)->count()
+                : 0;
+            // Append is_saved so frontend can render correct button state
+            $coupon->is_saved = $userId
+                ? $coupon->savedByUsers->where('id', $userId)->isNotEmpty()
+                : false;
+            return $coupon;
         })->values();
     }
 

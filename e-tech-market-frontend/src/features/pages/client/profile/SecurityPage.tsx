@@ -1,144 +1,121 @@
-import { useEffect, useMemo, useState } from 'react'
-import { apiFetch } from '@/configs/api.config'
-import '@/styles/pages/SecurityPage.css'
-import { useAuthStore } from '@/features/store/useAuthStore'
+import { useEffect, useMemo, useState } from "react";
+import { apiFetch } from "@/configs/api.config";
+import "@/styles/pages/SecurityPage.css";
+import { useAuthStore } from "@/features/store/useAuthStore";
+import ConfirmModal from "@/components/ConfirmModal";
 
 type SessionRow = {
-  id: string
-  name?: string | null
-  created_at?: string | null
-  last_used_at?: string | null
-  is_current?: boolean
-}
+  id: string;
+  name?: string | null;
+  created_at?: string | null;
+  last_used_at?: string | null;
+  is_current?: boolean;
+};
 
 function fmtDateTimeVi(iso?: string | null) {
-  if (!iso) return '—'
-  const t = Date.parse(iso)
-  if (!Number.isFinite(t)) return '—'
-  return new Date(t).toLocaleString('vi-VN')
+  if (!iso) return "—";
+  const t = Date.parse(iso);
+  if (!Number.isFinite(t)) return "—";
+  return new Date(t).toLocaleString("vi-VN");
 }
 
 export default function SecurityPage() {
-  const [twoFaEnabled, setTwoFaEnabled] = useState(true)
-  const [busy, setBusy] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const [success, setSuccess] = useState<string | null>(null)
-  const userStr = useAuthStore((state) => state.userStr)
-  const hasAuth = !!userStr
+  const [twoFaEnabled, setTwoFaEnabled] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
+  const [showNotAvailable, setShowNotAvailable] = useState(false);
+  const userStr = useAuthStore((state) => state.userStr);
+  const hasAuth = !!userStr;
 
-  const [pwCur, setPwCur] = useState('')
-  const [pwNew, setPwNew] = useState('')
-  const [pwConfirm, setPwConfirm] = useState('')
-
-  const [showDeleteModal, setShowDeleteModal] = useState(false)
-  const [deletePassword, setDeletePassword] = useState('')
-  const [deleteError, setDeleteError] = useState<string | null>(null)
-  const [deleteBusy, setDeleteBusy] = useState(false)
+  const [pwCur, setPwCur] = useState("");
+  const [pwNew, setPwNew] = useState("");
+  const [pwConfirm, setPwConfirm] = useState("");
 
   const [backupCodes] = useState<string[]>(() => [
-    'ABCD-1234-EFGH',
-    'IJKL-5678-MNOP',
-    'QRST-9012-UVWX',
-    'YZAB-3456-CDEF',
-    'GHIJ-7890-KLMN',
-  ])
+    "ABCD-1234-EFGH",
+    "IJKL-5678-MNOP",
+    "QRST-9012-UVWX",
+    "YZAB-3456-CDEF",
+    "GHIJ-7890-KLMN",
+  ]);
 
-  const [sessions, setSessions] = useState<SessionRow[]>([])
+  const [sessions, setSessions] = useState<SessionRow[]>([]);
 
-  const currentSessionCount = useMemo(() => sessions.length, [sessions])
+  const currentSessionCount = useMemo(() => sessions.length, [sessions]);
 
   useEffect(() => {
-    if (!hasAuth) return
-    let cancelled = false
-    apiFetch<{ data: SessionRow[] }>('/me/sessions')
+    if (!hasAuth) return;
+    let cancelled = false;
+    apiFetch<{ data: SessionRow[] }>("/me/sessions")
       .then((res) => {
-        if (cancelled) return
-        setSessions(Array.isArray(res.data) ? res.data : [])
+        if (cancelled) return;
+        setSessions(Array.isArray(res.data) ? res.data : []);
       })
       .catch(() => {
-        if (cancelled) return
-        setSessions([])
-      })
+        if (cancelled) return;
+        setSessions([]);
+      });
     return () => {
-      cancelled = true
-    }
-  }, [hasAuth])
+      cancelled = true;
+    };
+  }, [hasAuth]);
 
   const onChangePassword = async () => {
-    setError(null)
-    setSuccess(null)
+    setError(null);
+    setSuccess(null);
     if (!hasAuth) {
-      setError('Vui lòng đăng nhập lại để đổi mật khẩu.')
-      return
+      setError("Vui lòng đăng nhập lại để đổi mật khẩu.");
+      return;
     }
     if (!pwCur.trim() || !pwNew.trim() || !pwConfirm.trim()) {
-      setError('Vui lòng điền đủ các trường mật khẩu.')
-      return
+      setError("Vui lòng điền đủ các trường mật khẩu.");
+      return;
     }
     if (pwNew.length < 8) {
-      setError('Mật khẩu mới cần tối thiểu 8 ký tự.')
-      return
+      setError("Mật khẩu mới cần tối thiểu 8 ký tự.");
+      return;
     }
     if (pwNew !== pwConfirm) {
-      setError('Xác nhận mật khẩu mới không khớp.')
-      return
+      setError("Xác nhận mật khẩu mới không khớp.");
+      return;
     }
 
-    setBusy(true)
+    setBusy(true);
     try {
-      await apiFetch('/me/password', {
-        method: 'PATCH',
+      await apiFetch("/me/password", {
+        method: "PATCH",
         body: JSON.stringify({
           current_password: pwCur,
           new_password: pwNew,
         }),
-      })
-      setPwCur('')
-      setPwNew('')
-      setPwConfirm('')
-      setSuccess('Đổi mật khẩu thành công.')
+      });
+      setPwCur("");
+      setPwNew("");
+      setPwConfirm("");
+      setSuccess("Đổi mật khẩu thành công.");
     } catch (e: unknown) {
-      setError(e instanceof Error ? e.message : 'Không thể đổi mật khẩu.')
+      setError(e instanceof Error ? e.message : "Không thể đổi mật khẩu.");
     } finally {
-      setBusy(false)
+      setBusy(false);
     }
-  }
+  };
 
   const revokeSession = (id: string) => {
-    setSessions((p) => p.filter((s) => s.id !== id))
-  }
+    setSessions((p) => p.filter((s) => s.id !== id));
+  };
 
   const logoutAll = () => {
-    setSessions([])
-  }
-
-  const handleDeleteAccount = async () => {
-    setDeleteError(null)
-    if (!deletePassword.trim()) {
-      setDeleteError('Vui lòng nhập mật khẩu.')
-      return
-    }
-    setDeleteBusy(true)
-    try {
-      await apiFetch('/me', {
-        method: 'DELETE',
-        body: JSON.stringify({ password: deletePassword }),
-      })
-      alert('Tài khoản đã được xóa thành công.')
-      window.location.href = '/'
-    } catch (e: unknown) {
-      setDeleteError(e instanceof Error ? e.message : 'Không thể xóa tài khoản. Sai mật khẩu?')
-    } finally {
-      setDeleteBusy(false)
-    }
-  }
+    setSessions([]);
+  };
 
   return (
     <div className="secRoot">
       <section className="secTopCard" aria-label="Bảo mật tài khoản">
         <div className="secTopTitle">Bảo mật tài khoản</div>
         <div className="secTopDesc">
-          Quản lý mật khẩu, xác thực và các phiên đăng nhập để bảo vệ an toàn cho tài khoản của bạn.
+          Quản lý mật khẩu, xác thực và các phiên đăng nhập để bảo vệ an toàn
+          cho tài khoản của bạn.
         </div>
       </section>
 
@@ -150,7 +127,9 @@ export default function SecurityPage() {
             </span>
             <div>
               <div className="secSectionTitle">Thay đổi mật khẩu</div>
-              <div className="secSectionSub">Cập nhật mật khẩu để an toàn hơn.</div>
+              <div className="secSectionSub">
+                Cập nhật mật khẩu để an toàn hơn.
+              </div>
             </div>
           </div>
         </div>
@@ -158,15 +137,30 @@ export default function SecurityPage() {
         <div className="secFormGrid">
           <div className="secField">
             <label>Mật khẩu hiện tại</label>
-            <input type="password" value={pwCur} onChange={(e) => setPwCur(e.target.value)} placeholder="••••••••" />
+            <input
+              type="password"
+              value={pwCur}
+              onChange={(e) => setPwCur(e.target.value)}
+              placeholder="••••••••"
+            />
           </div>
           <div className="secField">
             <label>Mật khẩu mới</label>
-            <input type="password" value={pwNew} onChange={(e) => setPwNew(e.target.value)} placeholder="Tối thiểu 8 ký tự" />
+            <input
+              type="password"
+              value={pwNew}
+              onChange={(e) => setPwNew(e.target.value)}
+              placeholder="Tối thiểu 8 ký tự"
+            />
           </div>
-          <div className="secField" style={{ gridColumn: '1 / -1' }}>
+          <div className="secField" style={{ gridColumn: "1 / -1" }}>
             <label>Xác nhận mật khẩu mới</label>
-            <input type="password" value={pwConfirm} onChange={(e) => setPwConfirm(e.target.value)} placeholder="Nhập lại mật khẩu mới" />
+            <input
+              type="password"
+              value={pwConfirm}
+              onChange={(e) => setPwConfirm(e.target.value)}
+              placeholder="Nhập lại mật khẩu mới"
+            />
           </div>
         </div>
 
@@ -174,8 +168,13 @@ export default function SecurityPage() {
         {error && <div className="secInlineError">{error}</div>}
 
         <div className="secBtnRow">
-          <button type="button" className="secPrimaryBtn" onClick={onChangePassword} disabled={busy}>
-            {busy ? 'Đang xử lý…' : 'Cập nhật mật khẩu'}
+          <button
+            type="button"
+            className="secPrimaryBtn"
+            onClick={onChangePassword}
+            disabled={busy}
+          >
+            {busy ? "Đang xử lý…" : "Cập nhật mật khẩu"}
           </button>
         </div>
       </section>
@@ -188,13 +187,15 @@ export default function SecurityPage() {
             </span>
             <div>
               <div className="secSectionTitle">Xác thực 2 lớp (2FA)</div>
-              <div className="secSectionSub">Hiện tại {twoFaEnabled ? 'đang bật' : 'đang tắt'} bảo vệ 2FA.</div>
+              <div className="secSectionSub">
+                Hiện tại {twoFaEnabled ? "đang bật" : "đang tắt"} bảo vệ 2FA.
+              </div>
             </div>
           </div>
           <button
             type="button"
-            className={twoFaEnabled ? 'pfSwitch pfSwitchOn' : 'pfSwitch'}
-            onClick={() => setTwoFaEnabled((s) => !s)}
+            className={twoFaEnabled ? "pfSwitch pfSwitchOn" : "pfSwitch"}
+            onClick={() => setShowNotAvailable(true)}
             aria-label="Bật tắt 2FA"
           >
             <span className="pfSwitchKnob" />
@@ -223,7 +224,9 @@ export default function SecurityPage() {
           ) : (
             <div className="sec2faText">
               <div className="sec2faBadge sec2faBadgeOff">2FA đang tắt</div>
-              <div className="sec2faHint">Bật 2FA để tăng cường bảo mật cho tài khoản của bạn.</div>
+              <div className="sec2faHint">
+                Bật 2FA để tăng cường bảo mật cho tài khoản của bạn.
+              </div>
             </div>
           )}
         </div>
@@ -233,9 +236,16 @@ export default function SecurityPage() {
         <div className="secSessionHead">
           <div>
             <div className="secSectionTitle">Quản lý phiên đăng nhập</div>
-            <div className="secSectionSub">Có {currentSessionCount} phiên đăng nhập đang hoạt động.</div>
+            <div className="secSectionSub">
+              Có {currentSessionCount} phiên đăng nhập đang hoạt động.
+            </div>
           </div>
-          <button type="button" className="secDangerOutlineBtn" onClick={logoutAll} disabled={sessions.length === 0}>
+          <button
+            type="button"
+            className="secDangerOutlineBtn"
+            onClick={logoutAll}
+            disabled={sessions.length === 0}
+          >
             Đăng xuất khỏi tất cả thiết bị
           </button>
         </div>
@@ -245,12 +255,21 @@ export default function SecurityPage() {
             <div className="secEmpty">Không có phiên đăng nhập nào.</div>
           ) : (
             sessions.map((s) => (
-              <div key={s.id} className={`secSessionCard ${s.is_current ? 'current' : ''}`}>
+              <div
+                key={s.id}
+                className={`secSessionCard ${s.is_current ? "current" : ""}`}
+              >
                 <div className="secSessionTop">
                   <div>
-                    <div className="secSessionDevice">{s.name || 'Thiết bị'}</div>
-                    <div className="secSessionMeta">Đăng nhập: {fmtDateTimeVi(s.created_at)}</div>
-                    <div className="secSessionLoc">Hoạt động gần nhất: {fmtDateTimeVi(s.last_used_at)}</div>
+                    <div className="secSessionDevice">
+                      {s.name || "Thiết bị"}
+                    </div>
+                    <div className="secSessionMeta">
+                      Đăng nhập: {fmtDateTimeVi(s.created_at)}
+                    </div>
+                    <div className="secSessionLoc">
+                      Hoạt động gần nhất: {fmtDateTimeVi(s.last_used_at)}
+                    </div>
                   </div>
                   <button
                     type="button"
@@ -262,7 +281,9 @@ export default function SecurityPage() {
                   </button>
                 </div>
                 <div className="secSessionBottom">
-                  {s.is_current && <span className="secChip secChipOn">Đang hoạt động</span>}
+                  {s.is_current && (
+                    <span className="secChip secChipOn">Đang hoạt động</span>
+                  )}
                 </div>
               </div>
             ))
@@ -281,56 +302,104 @@ export default function SecurityPage() {
           <button
             type="button"
             className="secDangerOutlineBtn"
-            onClick={() => setShowDeleteModal(true)}
+            onClick={() => {
+              // UI only
+              alert("Chức năng sẽ được hoàn thiện ở bản sau.");
+            }}
           >
             Xóa khỏi tài khoản
           </button>
         </div>
       </section>
 
-      {showDeleteModal && (
-        <div className="secModalOverlay" onClick={() => !deleteBusy && setShowDeleteModal(false)}>
-          <div className="secModalContent" onClick={(e) => e.stopPropagation()}>
-            <div className="secModalTitle">Xác nhận xóa tài khoản</div>
-            <div className="secModalDesc">
-              Hành động này sẽ xóa vĩnh viễn tài khoản của bạn cùng <strong>TOÀN BỘ ĐƠN HÀNG</strong> và dữ liệu liên quan. Không thể hoàn tác!
-            </div>
-            <div className="secField" style={{ marginTop: '8px' }}>
-              <label>Mật khẩu của bạn</label>
-              <input 
-                type="password" 
-                value={deletePassword} 
-                onChange={(e) => setDeletePassword(e.target.value)} 
-                placeholder="Nhập mật khẩu để xác nhận"
-                autoFocus
-              />
-            </div>
-            {deleteError && <div className="secInlineError" style={{ marginTop: 0 }}>{deleteError}</div>}
-            <div className="secModalActions">
-              <button 
-                type="button" 
-                className="secModalBtnCancel" 
-                onClick={() => setShowDeleteModal(false)}
-                disabled={deleteBusy}
-              >
-                Hủy bỏ
-              </button>
-              <button 
-                type="button" 
-                className="secModalBtnDanger" 
-                onClick={handleDeleteAccount}
-                disabled={deleteBusy}
-              >
-                {deleteBusy ? 'Đang xử lý...' : 'Xác nhận xóa'}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <ConfirmModal
+        open={showNotAvailable}
+        title="Tính năng này hiện chưa được phát triển"
+        message="Chúng tôi đang trong quá trình triển khai nhằm tăng cường bảo mật cho tài khoản. Vui lòng quay lại trong các bản cập nhật sắp tới."
+        confirmLabel="Đã hiểu"
+        cancelLabel="Đóng"
+        onConfirm={() => setShowNotAvailable(false)}
+        onCancel={() => setShowNotAvailable(false)}
+      />
     </div>
-  )
+  );
 }
 
-function WarningIcon() {return (<svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path  d="M12 9v4"  stroke="currentColor"  strokeWidth="1.8"  strokeLinecap="round"/><path d="M12 17h.01" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round"/><path  d="M10.3 4.2 2.8 18a2 2 0 0 0 1.8 3h14.8a2 2 0 0 0 1.8-3L13.7 4.2a2 2 0 0 0-3.4 0Z"  stroke="currentColor"  strokeWidth="1.8"  strokeLinejoin="round"/></svg>)}
-function ShieldIcon() {return (<svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path  d="M12 2l8 4v6c0 5-3.4 9.4-8 10-4.6-.6-8-5-8-10V6l8-4Z"  stroke="currentColor"  strokeWidth="1.8"  strokeLinejoin="round"/><path  d="M9.5 12.2l1.6 1.6 3.6-3.8"  stroke="currentColor"  strokeWidth="1.8"  strokeLinecap="round"/></svg>)}
-function CloseIcon() {return (<svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M18 6 6 18" stroke="currentColor"  strokeWidth="2"  strokeLinecap="round"/><path d="M6 6l12 12"  stroke="currentColor" strokeWidth="2"  strokeLinecap="round"/></svg>)}
+function WarningIcon() {
+  return (
+    <svg
+      width="18"
+      height="18"
+      viewBox="0 0 24 24"
+      fill="none"
+      aria-hidden="true"
+    >
+      <path
+        d="M12 9v4"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+      />
+      <path
+        d="M12 17h.01"
+        stroke="currentColor"
+        strokeWidth="2.6"
+        strokeLinecap="round"
+      />
+      <path
+        d="M10.3 4.2 2.8 18a2 2 0 0 0 1.8 3h14.8a2 2 0 0 0 1.8-3L13.7 4.2a2 2 0 0 0-3.4 0Z"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+function ShieldIcon() {
+  return (
+    <svg
+      width="18"
+      height="18"
+      viewBox="0 0 24 24"
+      fill="none"
+      aria-hidden="true"
+    >
+      <path
+        d="M12 2l8 4v6c0 5-3.4 9.4-8 10-4.6-.6-8-5-8-10V6l8-4Z"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M9.5 12.2l1.6 1.6 3.6-3.8"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+function CloseIcon() {
+  return (
+    <svg
+      width="14"
+      height="14"
+      viewBox="0 0 24 24"
+      fill="none"
+      aria-hidden="true"
+    >
+      <path
+        d="M18 6 6 18"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+      />
+      <path
+        d="M6 6l12 12"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}

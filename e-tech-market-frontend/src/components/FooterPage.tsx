@@ -145,6 +145,7 @@ export default function FooterPage() {
             <div className="hfFooterLinks">
               <Link className="hfFooterLink" to="/chinh-sach-bao-mat">Chính sách bảo mật</Link>
               <Link className="hfFooterLink" to="/dieu-khoan">Điều khoản dịch vụ</Link>
+              <Link className="hfFooterLink" to="/dieu-khoan-mua-hang">Điều khoản mua hàng</Link>
               <Link className="hfFooterLink" to="/chinh-sach-bao-mat-thanh-toan">Chính sách bảo mật thanh toán</Link>
               <Link className="hfFooterLink" to="/giai-quyet-khieu-nai">Giải quyết khiếu nại</Link>
             </div>

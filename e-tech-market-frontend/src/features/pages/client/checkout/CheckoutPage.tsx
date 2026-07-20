@@ -117,6 +117,7 @@ export default function CheckoutPage() {
     free_shipping_min: 0,
     apply_global: true,
   })
+  const [agreedToTerms, setAgreedToTerms] = useState(false)
 
   // --- Cart mutations ---
   const { clearCart: clearBackendCart, removeFromCart: removeBackendItem } = useCartMutation()
@@ -964,13 +965,14 @@ export default function CheckoutPage() {
                 <button
                   type="button"
                   className="coConfirmBtn"
-                  disabled={submitting || cart.items.length === 0}
+                  disabled={submitting || cart.items.length === 0 || !agreedToTerms}
                   onClick={() => void submit()}
                 >
                   XÁC NHẬN ĐẶT HÀNG
                 </button>
-                <div className="coFinePrint">
-                  Bằng cách nhấn nút, bạn đồng ý với điều khoản mua hàng.
+                <div className="coFinePrint" style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', textAlign: 'left' }} onClick={() => setAgreedToTerms(!agreedToTerms)}>
+                  <input type="checkbox" checked={agreedToTerms} onChange={() => {}} style={{ cursor: 'pointer' }} />
+                  <span>Tôi đã đọc và đồng ý với <Link to="/dieu-khoan-mua-hang" target="_blank" onClick={(e) => e.stopPropagation()} style={{ textDecoration: 'none', color: '#1629f9ff', fontWeight: 'bold' }}>điều khoản mua hàng</Link>.</span>
                 </div>
               </div>
             </aside>

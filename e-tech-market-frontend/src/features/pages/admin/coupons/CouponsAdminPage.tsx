@@ -206,10 +206,27 @@ export default function CouponsAdminPage() {
 
                   {/* Trạng thái hoạt động dạng Pill chấm tròn */}
                   <td>
-                    <span className={`adminStatusBadge ${c.is_active ? 'ok' : 'bad'}`}>
-                      <span className="statusDot"></span>
-                      {c.is_active ? 'Đang hoạt động' : 'Tạm dừng'}
-                    </span>
+                    {(() => {
+                      const now = new Date()
+                      const isExpired = c.end_at ? new Date(c.end_at) < now : false
+                      let statusText = 'Đang hoạt động'
+                      let statusClass = 'ok'
+                      
+                      if (!c.is_active) {
+                        statusText = 'Tạm dừng'
+                        statusClass = 'bad'
+                      } else if (isExpired) {
+                        statusText = 'Đã hết hạn'
+                        statusClass = 'bad'
+                      }
+
+                      return (
+                        <span className={`adminStatusBadge ${statusClass}`}>
+                          <span className="statusDot"></span>
+                          {statusText}
+                        </span>
+                      )
+                    })()}
                   </td>
 
                   {/* Nhóm thao tác icon vuông đồng bộ */}

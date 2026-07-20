@@ -1134,13 +1134,31 @@ html.dark .hpHeroDescNew {
   margin: 0;
 }
 
+.hpCouponGridWrapper {
+  overflow: hidden;
+  width: 100%;
+  position: relative;
+}
+
 .hpCouponGrid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  display: flex;
   gap: 20px;
+  width: max-content;
+  animation: coupon-marquee 40s linear infinite;
+}
+
+.hpCouponGrid:hover {
+  animation-play-state: paused;
+}
+
+@keyframes coupon-marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(calc(-50% - 10px)); }
 }
 
 .hpCouponCard {
+  width: 320px;
+  flex-shrink: 0;
   display: flex;
   background: #fffaf5;
   border: 1px dashed var(--et-primary);
@@ -1167,7 +1185,37 @@ html.dark .hpHeroDescNew {
 .hpCouponMin {
   font-size: 0.85rem;
   color: var(--et-text-muted);
-  margin-bottom: 8px;
+  margin-bottom: 6px;
+}
+
+/* Usage progress bar */
+.hpCouponUsageWrap {
+  margin-top: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.hpCouponUsageBar {
+  flex: 1;
+  height: 5px;
+  background: rgba(249, 115, 22, 0.15);
+  border-radius: 99px;
+  overflow: hidden;
+}
+
+.hpCouponUsageFill {
+  height: 100%;
+  background: linear-gradient(90deg, #f97316, #fb923c);
+  border-radius: 99px;
+  transition: width 0.4s ease;
+}
+
+.hpCouponUsageText {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--et-primary);
+  white-space: nowrap;
 }
 
 .hpCouponCodeBox {
@@ -1835,11 +1883,18 @@ html.dark .hpHeroDescNew {
   color: #ffffff;
 }
 
+.hpCouponSavedBtn,
+.hpCouponSavedBtn:hover {
+  background: #f1f5f9;
+  color: #94a3b8;
+  cursor: default;
+}
+
 /* Đường cắt đứt đoạn ở giữa */
 .hpCouponDivider {
   height: 1px;
   border-top: 1.5px dashed #a1a8b3; 
-  margin: 20px 0;
+  margin: 10px 0;
   position: relative;
 }
 /* Phần copy phía dưới */
