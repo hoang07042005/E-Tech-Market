@@ -681,7 +681,7 @@ class Trans {
   static String get errorLabel => isVietnamese ? 'Lỗi: ' : 'Error: ';
   static String get couponExpired => isVietnamese ? 'Hết hạn' : 'Expired';
   static String get closePaymentTitle => isVietnamese ? 'Xác nhận thanh toán' : 'Payment Confirmation';
-  static String get closePaymentMessage => isVietnamese ? 'Bạn đ�� đóng trang thanh toán.\n\nNếu bạn chưa thanh toán hoặc gặp lỗi, vui lòng chọn "Hủy đơn hàng".' : 'You closed the payment page.\n\nIf you have not paid or encountered an error, please select "Cancel Order".';
+  static String get closePaymentMessage => isVietnamese ? 'Bạn đang đóng trang thanh toán.\n\nNếu bạn chưa thanh toán hoặc gặp lỗi, vui lòng chọn "Hủy đơn hàng".' : 'You closed the payment page.\n\nIf you have not paid or encountered an error, please select "Cancel Order".';
   static String get cancelOrderButton => isVietnamese ? 'Hủy đơn hàng' : 'Cancel Order';
   static String get paidButton => isVietnamese ? 'Đã thanh toán' : 'Paid';
   static String get codLabel => isVietnamese ? 'THANH TOÁN KHI\nNHẬN' : 'PAY ON\nDELIVERY';

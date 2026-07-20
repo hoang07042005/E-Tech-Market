@@ -192,4 +192,25 @@ class OrdersController extends Controller
             'stats' => $stats,
         ]);
     }
+
+    public function destroy(Order $order): JsonResponse
+    {
+        if (strtolower((string) $order->status) !== 'cancelled') {
+            abort(422, 'Chỉ có thể xóa đơn hàng đã hủy.');
+        }
+
+        \Illuminate\Support\Facades\DB::transaction(function () use ($order) {
+            \App\Models\OrderItem::where('order_id', $order->id)->delete();
+            \App\Models\Payment::where('order_id', $order->id)->delete();
+            \App\Models\OrderStatusHistory::where('order_id', $order->id)->delete();
+            \App\Models\CouponUsage::where('order_id', $order->id)->delete();
+            \App\Models\OrderReturnRequest::where('order_id', $order->id)->delete();
+
+            $order->delete();
+        });
+
+        \App\Jobs\InvalidateAdminDashboardCache::dispatch();
+
+        return response()->json(['message' => 'Đơn hàng đã được xóa thành công.']);
+    }
 }

@@ -26,9 +26,6 @@ class CouponSection extends StatefulWidget {
 
 class _CouponSectionState extends State<CouponSection> {
   static const _brandColor = Color(0xFFEF7A45);
-  static const _brandDark = Color(0xFFDB5E12);
-  static const _softBgColor = Color(0xFFF9F9FA);
-  static const _borderColor = Color(0xFFEAEAEA);
 
   final ScrollController _scrollController = ScrollController();
   Timer? _autoScrollTimer;
@@ -74,37 +71,26 @@ class _CouponSectionState extends State<CouponSection> {
     });
   }
 
-  String _formatPrice(String price) {
-    try {
-      String cleanPrice = price;
-      if (price.contains('.')) {
-        cleanPrice = price.split('.').first;
+  /// Lọc ẩn mã user đã hết lượt (giống web frontend)
+  List<Map<String, dynamic>> _getVisibleCoupons() {
+    return widget.coupons.cast<Map<String, dynamic>>().where((c) {
+      final maxPerUser = c['max_uses_per_user'];
+      final userUsed = c['user_usage_count'] ?? 0;
+      if (maxPerUser != null && maxPerUser is num && userUsed is num) {
+        if (userUsed >= maxPerUser) return false;
       }
-      final num = int.parse(cleanPrice);
-      return num.toString()
-          .replaceAllMapped(RegExp(r'\B(?=(\d{3})+(?!\d))'), (match) => '.');
-    } catch (_) {
-      return price;
-    }
-  }
-
-  String _formatPercentage(String value) {
-    try {
-      if (value.contains('.')) {
-        final doubleValue = double.parse(value);
-        if (doubleValue == doubleValue.toInt()) {
-          return doubleValue.toInt().toString();
-        }
-        return doubleValue.toString();
-      }
-      return value;
-    } catch (_) {
-      return value;
-    }
+      return true;
+    }).toList();
   }
 
   @override
   Widget build(BuildContext context) {
+    final visibleCoupons = _getVisibleCoupons();
+
+    if (!widget.isLoading && visibleCoupons.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
@@ -155,7 +141,7 @@ class _CouponSectionState extends State<CouponSection> {
                   borderRadius: BorderRadius.circular(6),
                 ),
                 child: Text(
-                  '${widget.coupons.length} ưu đãi',
+                  '${visibleCoupons.length} ưu đãi',
                   style: const TextStyle(
                     fontSize: 11,
                     fontWeight: FontWeight.w600,
@@ -180,18 +166,8 @@ class _CouponSectionState extends State<CouponSection> {
             ),
           if (widget.isLoading)
             _buildLoadingCoupons()
-          else if (widget.coupons.isEmpty)
-            Padding(
-              padding: EdgeInsets.symmetric(vertical: 24),
-              child: Center(
-                child: Text(
-                  'Hiện tại không có ưu đãi nào phù hợp.',
-                    style: TextStyle(fontSize: 13, color: Theme.of(context).colorScheme.onSurfaceVariant),
-                ),
-              ),
-            )
           else
-            _buildCouponList(),
+            _buildCouponList(visibleCoupons),
         ],
       ),
     );
@@ -199,7 +175,7 @@ class _CouponSectionState extends State<CouponSection> {
 
   Widget _buildLoadingCoupons() {
     return SizedBox(
-      height: 135,
+      height: 155,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         physics: const NeverScrollableScrollPhysics(),
@@ -208,7 +184,7 @@ class _CouponSectionState extends State<CouponSection> {
         itemBuilder: (context, index) => Container(
           width: 260,
           decoration: BoxDecoration(
-            color: _softBgColor,
+            color: const Color(0xFFF9F9FA),
             borderRadius: BorderRadius.circular(10),
           ),
         ),
@@ -216,21 +192,41 @@ class _CouponSectionState extends State<CouponSection> {
     );
   }
 
-  Widget _buildCouponList() {
+  Widget _buildCouponList(List<Map<String, dynamic>> visibleCoupons) {
+    // Nhân đôi danh sách để auto-scroll liền mạch (giống web)
+    final items = [...visibleCoupons, ...visibleCoupons];
+
     return SizedBox(
-      height: 140, // Điều chỉnh chiều cao cân đối gọn gàng
+      height: 155,
       child: ListView.separated(
         controller: _scrollController,
         scrollDirection: Axis.horizontal,
         physics: const BouncingScrollPhysics(),
-        itemCount: widget.coupons.length,
+        itemCount: items.length,
         separatorBuilder: (_, __) => const SizedBox(width: 12),
         itemBuilder: (context, index) {
-          final coupon = widget.coupons[index] as Map<String, dynamic>;
+          final coupon = items[index];
           final code = coupon['code'] as String? ?? '';
           final couponType = coupon['coupon_type'] as String? ?? 'fixed';
           final value = coupon['value']?.toString() ?? '0';
           final minAmount = coupon['min_order_amount'];
+          final isSaved = coupon['is_saved'] == true;
+
+          // Tính lượt còn lại
+          final maxPerUser = coupon['max_uses_per_user'];
+          final userUsed = coupon['user_usage_count'] ?? 0;
+          final maxUses = coupon['max_uses'];
+          final usagesCount = coupon['usages_count'] ?? 0;
+
+          int? showRemaining;
+          int? showLimit;
+          if (maxPerUser != null && maxPerUser is num) {
+            showRemaining = (maxPerUser - (userUsed as num)).toInt();
+            showLimit = maxPerUser.toInt();
+          } else if (maxUses != null && maxUses is num) {
+            showRemaining = (maxUses - (usagesCount as num)).toInt();
+            showLimit = maxUses.toInt();
+          }
 
           final valueText = couponType == 'percentage'
               ? Trans.discountPercentValue((double.tryParse(value) ?? 0).toInt())
@@ -244,6 +240,9 @@ class _CouponSectionState extends State<CouponSection> {
             code: code,
             valueText: valueText,
             subtitle: subtitle,
+            isSaved: isSaved,
+            showRemaining: showRemaining,
+            showLimit: showLimit,
             onCopy: () => widget.onCopyCoupon(code),
             onSave: () => widget.onSaveCoupon(code),
           );
@@ -257,6 +256,9 @@ class _CouponCard extends StatelessWidget {
   final String code;
   final String valueText;
   final String subtitle;
+  final bool isSaved;
+  final int? showRemaining;
+  final int? showLimit;
   final VoidCallback onCopy;
   final VoidCallback onSave;
 
@@ -264,6 +266,9 @@ class _CouponCard extends StatelessWidget {
     required this.code,
     required this.valueText,
     required this.subtitle,
+    required this.isSaved,
+    this.showRemaining,
+    this.showLimit,
     required this.onCopy,
     required this.onSave,
   });
@@ -289,10 +294,10 @@ class _CouponCard extends StatelessWidget {
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: Icon(
+                  child: const Icon(
                     Icons.local_offer_rounded,
                     size: 25,
-                    color: const Color(0xFFEF7A45),
+                    color: Color(0xFFEF7A45),
                   ),
                 ),
                 const SizedBox(width: 10),
@@ -320,12 +325,17 @@ class _CouponCard extends StatelessWidget {
                     ],
                   ),
                 ),
-                // Nút Lưu mã thiết kế thanh lịch (Nền nhạt chữ đậm)
+                // Nút Lưu mã — đổi style nếu đã lưu
                 TextButton(
-                  onPressed: onSave,
+                  onPressed: isSaved ? null : onSave,
                   style: TextButton.styleFrom(
-                    backgroundColor: const Color(0xFFFFF2EC),
-                    foregroundColor: const Color(0xFFEF7A45),
+                    backgroundColor: isSaved
+                        ? const Color(0xFFE8F5E9)
+                        : const Color(0xFFFFF2EC),
+                    foregroundColor: isSaved
+                        ? const Color(0xFF4CAF50)
+                        : const Color(0xFFEF7A45),
+                    disabledForegroundColor: const Color(0xFF4CAF50),
                     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                     minimumSize: Size.zero,
                     tapTargetSize: MaterialTapTargetSize.shrinkWrap,
@@ -334,14 +344,53 @@ class _CouponCard extends StatelessWidget {
                     ),
                   ),
                   child: Text(
-                    Trans.save,
-                    style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700),
+                    isSaved ? '✓ Đã lưu' : Trans.save,
+                    style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w700),
                   ),
                 ),
               ],
             ),
+            // Thanh tiến trình + lượt còn lại (nằm ngang, giống web)
+            if (showRemaining != null && showLimit != null && showLimit! > 0) ...[
+              const SizedBox(height: 8),
+              Row(
+                children: [
+                  // Thanh progress ngang
+                  SizedBox(
+                    width: 50,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(3),
+                      child: SizedBox(
+                        height: 5,
+                        child: LinearProgressIndicator(
+                          value: ((showLimit! - showRemaining!) / showLimit!).clamp(0.0, 1.0),
+                          backgroundColor: const Color(0xFFEEEEEE),
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                            ((showLimit! - showRemaining!) / showLimit!) >= 0.8
+                                ? const Color(0xFFEF4444)
+                                : const Color(0xFFEF7A45),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  // Text lượt còn lại
+                  Text(
+                    'Còn $showRemaining/$showLimit lượt',
+                    style: TextStyle(
+                      fontSize: 10,
+                      fontWeight: FontWeight.w600,
+                      color: ((showLimit! - showRemaining!) / showLimit!) >= 0.8
+                          ? const Color(0xFFEF4444)
+                          : const Color(0xFFEF7A45),
+                    ),
+                  ),
+                ],
+              ),
+            ],
             const Spacer(),
-            // Đường phân cách đứt đoạn nhẹ nhàng thanh lịch
+            // Đường phân cách đứt đoạn
             Row(
               children: List.generate(
                 20,
@@ -354,7 +403,7 @@ class _CouponCard extends StatelessWidget {
               ),
             ),
             const Spacer(),
-            // Dòng dưới: Ô hiển thị mã Code tối giản, tinh tế
+            // Dòng dưới: Ô hiển thị mã Code
             GestureDetector(
               onTap: onCopy,
               child: Container(
@@ -404,6 +453,7 @@ class _CouponCard extends StatelessWidget {
     );
   }
 }
+
 
 /// Custom Painter vẽ hình dáng voucher có khoét lỗ và border chính xác
 class _VoucherPainter extends CustomPainter {

@@ -14,7 +14,7 @@ class SecurityScreen extends StatefulWidget {
 }
 
 class _SecurityScreenState extends State<SecurityScreen> {
-  bool _twoFaEnabled = true;
+  bool _twoFaEnabled = false;
   bool _busy = false;
   bool _loadingSessions = true;
   String? _error;
@@ -339,6 +339,31 @@ class _SecurityScreenState extends State<SecurityScreen> {
     );
   }
 
+  void _show2FaNotAvailableDialog() {
+    showDialog<void>(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        title: const Text('Tính năng này hiện chưa được phát triển'),
+        content: const Text('Chúng tôi đang trong quá trình triển khai nhằm tăng cường bảo mật cho tài khoản. Vui lòng quay lại trong các bản cập nhật sắp tới.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Đóng'),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.of(context).pop(),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: primaryColor,
+              foregroundColor: Colors.white,
+            ),
+            child: const Text('Đã hiểu'),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildTwoFaSection() {
     return _buildSectionWrapper(
       title: Trans.twoFactorAuth,
@@ -370,7 +395,7 @@ class _SecurityScreenState extends State<SecurityScreen> {
               Switch.adaptive(
                 activeColor: primaryColor,
                 value: _twoFaEnabled,
-                onChanged: (value) => setState(() => _twoFaEnabled = value),
+                onChanged: (value) => _show2FaNotAvailableDialog(),
               ),
             ],
           ),

@@ -207,6 +207,100 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
     setState(() {});
   }
 
+  String _formatPrice(String? price) {
+    if (price == null || price.isEmpty) return 'Liên hệ';
+    try {
+      String cleanPrice = price;
+      if (price.contains('.')) {
+        cleanPrice = price.split('.').first;
+      }
+      final parsed = int.parse(cleanPrice);
+      return '${parsed.toString().replaceAllMapped(RegExp(r'\B(?=(\d{3})+(?!\d))'), (match) => '.')} đ';
+    } catch (_) {
+      return '$price đ';
+    }
+  }
+
+  Widget _buildProductCard(Map<String, dynamic> prod) {
+    final name = prod['name']?.toString() ?? '';
+    final slug = prod['slug']?.toString() ?? '';
+    final imageUrl = NetworkUtils.fixDeviceUrl(prod['main_image_url']?.toString() ?? '');
+    
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surface,
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: Theme.of(context).colorScheme.outlineVariant.withValues(alpha: 0.4)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.02),
+            blurRadius: 6,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: InkWell(
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => ProductDetailScreen(slug: slug, variantId: null),
+            ),
+          );
+        },
+        borderRadius: BorderRadius.circular(8),
+        child: Padding(
+          padding: const EdgeInsets.all(10),
+          child: Row(
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(6),
+                child: Image.network(
+                  imageUrl,
+                  width: 64,
+                  height: 64,
+                  fit: BoxFit.contain,
+                  errorBuilder: (_, __, ___) => Container(
+                    width: 64,
+                    height: 64,
+                    color: const Color(0xFFF1F5F9),
+                    child: const Icon(Icons.image, color: Colors.grey, size: 24),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      name,
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
+                        color: Theme.of(context).colorScheme.onSurface,
+                      ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    
+                  ],
+                ),
+              ),
+              const SizedBox(width: 8),
+              Icon(
+                Icons.arrow_forward_ios,
+                size: 14,
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     if (_isLoading) {
@@ -239,6 +333,7 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
 
     final title = _video!['title']?.toString() ?? Trans.videoIntroProduct;
     final product = _video!['product'] as Map<String, dynamic>?;
+    final products = _video!['products'] as List<dynamic>?;
     String? desc = _video!['description']?.toString();
     if (desc == null || desc.isEmpty) {
       desc = product?['short_description']?.toString() ?? Trans.videoDescriptionDefault;
@@ -325,75 +420,26 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
             
             const SizedBox(height: 12),
 
-            // Linked Product
-            if (product != null)
+            // Linked Product(s)
+            if ((products != null && products.isNotEmpty) || product != null)
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(Trans.productsInVideo, style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.onSurface)),
-                    const SizedBox(height: 12),
-                    InkWell(
-                      onTap: () {
-                        Navigator.push(context, MaterialPageRoute(builder: (_) => ProductDetailScreen(slug: product['slug'] ?? '', variantId: null)));
-                      },
-                      borderRadius: BorderRadius.circular(12),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: Theme.of(context).colorScheme.surface,
-                          borderRadius: BorderRadius.circular(5),
-                          border: Border.all(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5)),
-                          boxShadow: [
-                            BoxShadow(color: Colors.black.withValues(alpha: 0.03), blurRadius: 10, offset: const Offset(0, 4)),
-                          ],
-                        ),
-                        child: IntrinsicHeight(
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: [
-                              ClipRRect(
-                                borderRadius: const BorderRadius.only(topLeft: Radius.circular(5), bottomLeft: Radius.circular(5)),
-                                child: Image.network(
-                                  NetworkUtils.fixDeviceUrl(product['main_image_url']?.toString() ?? ''),
-                                  width: 110,
-                                  fit: BoxFit.cover,
-                                  errorBuilder: (_, __, ___) => Container(width: 110, color: const Color(0xFFF1F5F9), child: const Icon(Icons.image, color: Colors.grey)),
-                                ),
-                              ),
-                              Expanded(
-                                child: Padding(
-                                  padding: const EdgeInsets.all(12),
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Text(
-                                        product['name']?.toString() ?? '',
-                                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: Theme.of(context).colorScheme.onSurface),
-                                        maxLines: 2,
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                      const SizedBox(height: 6),
-                                      Text(
-                                        (product['short_description']?.toString() ?? product['description']?.toString() ?? Trans.updatingDescription).replaceAll(RegExp(r'<[^>]*>|&[^;]+;'), ''),
-                                        style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 12, height: 1.4),
-                                        maxLines: 4,
-                                        overflow: TextOverflow.ellipsis,
-                                      )
-                                    ],
-                                  ),
-                                ),
-                              ),
-                               Padding(
-                                padding: EdgeInsets.only(right: 12),
-                                child: Icon(Icons.arrow_forward_ios, size: 14, color: Theme.of(context).colorScheme.onSurface),
-                              ),
-                            ],
-                          ),
-                        ),
+                    Text(
+                      Trans.productsInVideo,
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).colorScheme.onSurface,
                       ),
                     ),
+                    const SizedBox(height: 12),
+                    if (products != null && products.isNotEmpty)
+                      ...products.map((p) => _buildProductCard(Map<String, dynamic>.from(p)))
+                    else if (product != null)
+                      _buildProductCard(product),
                   ],
                 ),
               )
@@ -403,15 +449,28 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
                   color: Theme.of(context).colorScheme.surface,
-                  borderRadius: BorderRadius.circular(5),
-                  border: Border.all(color: const Color(0xFFE2E8F0)),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: Theme.of(context).colorScheme.outlineVariant.withValues(alpha: 0.4)),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(Trans.productLabel, style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.onSurface)),
+                    Text(
+                      Trans.productLabel,
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).colorScheme.onSurface,
+                      ),
+                    ),
                     const SizedBox(height: 8),
-                    Text(Trans.videoOverview, style: TextStyle(fontSize: 13, color: Theme.of(context).colorScheme.onSurface)),
+                    Text(
+                      Trans.videoOverview,
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: Theme.of(context).colorScheme.onSurface,
+                      ),
+                    ),
                   ],
                 ),
               ),

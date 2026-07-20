@@ -2276,6 +2276,15 @@
   border-color: rgba(249, 115, 22, 0.18);
 }
 
+.admOrdersIconBtn.delete {
+  color: #ef4444;
+  background: rgba(239, 68, 68, 0.12);
+}
+
+.admOrdersIconBtn.delete:hover {
+  background: rgba(239, 68, 68, 0.22);
+}
+
 .admOrdersPager {
   display: flex;
   align-items: center;

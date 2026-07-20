@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:flutter/cupertino.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
@@ -16,7 +15,7 @@ import '../../utils/network_utils.dart';
 import '../../utils/app_snackbar.dart';
 import '../../utils/translation.dart';
 import 'product_new_detail_screen.dart';
-import '../../../config/api_config.dart';
+
 
 String formatCurrency(double value) {
   return value.toStringAsFixed(0).replaceAllMapped(
@@ -40,18 +39,6 @@ String _imageFrom(dynamic value) {
   return raw.isEmpty ? '' : NetworkUtils.fixDeviceUrl(raw);
 }
 
-String _plainTextFromHtml(String value) {
-  return value
-      .replaceAll(RegExp(r'<br\s*/?>', caseSensitive: false), '\n')
-      .replaceAll(RegExp(r'</p\s*>', caseSensitive: false), '\n\n')
-      .replaceAll(RegExp(r'<[^>]*>'), '')
-      .replaceAll('&nbsp;', ' ')
-      .replaceAll('&amp;', '&')
-      .replaceAll('&lt;', '<')
-      .replaceAll('&gt;', '>')
-      .replaceAll('&quot;', '"')
-      .trim();
-}
 
 String _timeAgoVi(String value) {
   final date = DateTime.tryParse(value);
@@ -447,12 +434,18 @@ class ProductShopQna {
 
 class FlashSaleItem {
   final int id;
+  final int? variantId;
   final double flashSalePrice;
+  final int soldQuantity;
+  final int? quantityLimit;
   final FlashSale flashSale;
 
   FlashSaleItem({
     required this.id,
+    this.variantId,
     required this.flashSalePrice,
+    this.soldQuantity = 0,
+    this.quantityLimit,
     required this.flashSale,
   });
 
@@ -460,7 +453,10 @@ class FlashSaleItem {
     final saleJson = json['flash_sale'] as Map<String, dynamic>? ?? {};
     return FlashSaleItem(
       id: _toInt(json['id']),
+      variantId: json['variant_id'] == null ? null : _toInt(json['variant_id']),
       flashSalePrice: _toDouble(json['flash_sale_price']),
+      soldQuantity: _toInt(json['sold_quantity']),
+      quantityLimit: json['quantity_limit'] == null ? null : _toInt(json['quantity_limit']),
       flashSale: FlashSale.fromJson(saleJson),
     );
   }
@@ -468,15 +464,20 @@ class FlashSaleItem {
 
 class FlashSale {
   final int id;
+  final DateTime startAt;
   final DateTime endAt;
 
-  FlashSale({required this.id, required this.endAt});
+  FlashSale({required this.id, required this.startAt, required this.endAt});
 
   factory FlashSale.fromJson(Map<String, dynamic> json) {
     return FlashSale(
       id: _toInt(json['id']),
-      endAt:
-          DateTime.tryParse(json['end_at']?.toString() ?? '') ?? DateTime.now(),
+      startAt: DateTime.tryParse(
+              (json['start_at']?.toString() ?? '').replaceAll(' ', 'T')) ??
+          DateTime.now(),
+      endAt: DateTime.tryParse(
+              (json['end_at']?.toString() ?? '').replaceAll(' ', 'T')) ??
+          DateTime.now(),
     );
   }
 }
@@ -548,13 +549,6 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     });
   }
 
-  Future<void> _handleToggleFavorite() async {
-    final currentProduct = product;
-    if (currentProduct != null) {
-      await WishlistService.toggleFavorite(currentProduct.id);
-      if (mounted) setState(() {});
-    }
-  }
 
   Future<void> _loadProduct() async {
     setState(() {
@@ -789,12 +783,13 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   }
 
   void _updateFlashSaleTime() {
-    final current = product;
-    if (current == null || current.flashSaleItems.isEmpty) return;
-
-    final diff =
-        current.flashSaleItems.first.flashSale.endAt.difference(DateTime.now());
+    final activeFs = _getActiveFlashSaleItem();
     if (!mounted) return;
+    if (activeFs == null) {
+      setState(() => flashTimeLeft = null);
+      return;
+    }
+    final diff = activeFs.flashSale.endAt.difference(DateTime.now());
     setState(() {
       flashTimeLeft = diff.isNegative ? null : diff;
     });
@@ -810,12 +805,11 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
       return;
     }
 
-    // Chỉ dùng flashSalePrice khi vào từ trang flashsale để thêm vào giỏ
-    final cartPrice = (widget.showFlashSale &&
-            widget.flashSalePrice != null &&
-            widget.flashSalePrice! > 0)
-        ? widget.flashSalePrice!
-        : (selectedVariant?.effectivePrice ?? current.price);
+    // Dùng flash sale price nếu có flash sale đang hoạt động
+    final activeFs = _getActiveFlashSaleItem();
+    final cartPrice = activeFs?.flashSalePrice ??
+        selectedVariant?.effectivePrice ??
+        current.price;
 
     final hasSession = await AuthService.hasSession();
     if (!hasSession) {
@@ -840,28 +834,34 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     }
   }
 
-  double _getDisplayPrice() {
+  /// Lấy flash sale item đang hoạt động (kiểm tra ngày giờ + variant) - giống web
+  FlashSaleItem? _getActiveFlashSaleItem() {
     final current = product;
-    if (current == null) return 0;
-    // Chỉ dùng flashSalePrice khi vào từ trang flashsale
-    if (widget.showFlashSale &&
-        widget.flashSalePrice != null &&
-        widget.flashSalePrice! > 0) {
-      return widget.flashSalePrice!;
+    if (current == null || current.flashSaleItems.isEmpty) return null;
+    final now = DateTime.now();
+    for (final item in current.flashSaleItems) {
+      final start = item.flashSale.startAt;
+      final end = item.flashSale.endAt;
+      if (now.isAfter(start) && now.isBefore(end)) {
+        // Nếu variant_id null → áp dụng cho tất cả variant; nếu có → chỉ đúng variant
+        if (item.variantId == null || item.variantId == selectedVariant?.id) {
+          return item;
+        }
+      }
     }
-    if (widget.showFlashSale && current.flashSaleItems.isNotEmpty) {
-      return current.flashSaleItems.first.flashSalePrice;
-    }
+    return null;
+  }
+
+  double _getDisplayPrice() {
+    final activeFs = _getActiveFlashSaleItem();
+    if (activeFs != null) return activeFs.flashSalePrice;
     if (selectedVariant != null) return selectedVariant!.effectivePrice;
-    return current.price;
+    return product?.price ?? 0;
   }
 
   double _getOriginalPrice() {
-    final current = product;
-    if (current == null) return 0;
-    // Khi có flash sale price truyền vào, lấy giá gốc từ variant hoặc product
     if (selectedVariant != null) return selectedVariant!.price;
-    return current.price;
+    return product?.price ?? 0;
   }
 
   List<ProductReview> _getFilteredReviews() {
@@ -1002,9 +1002,9 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
 
     final reviewStats = _getReviewStats();
     final filteredReviews = _getFilteredReviews();
+    final activeFlashSaleItem = _getActiveFlashSaleItem();
     final displayPrice = _getDisplayPrice();
-    final hasFlashSale =
-        widget.showFlashSale && current.flashSaleItems.isNotEmpty;
+    final hasFlashSale = activeFlashSaleItem != null;
     final mergedSpecs = _getMergedDisplaySpecs(current);
     final images = current.images.isEmpty
         ? [ProductImage(id: 0, imageUrl: current.mainImageUrl)]
@@ -1358,12 +1358,10 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   }
 
   Widget _buildFlashSaleTimer() {
-    final current = product;
-    if (current == null || current.flashSaleItems.isEmpty)
-      return const SizedBox.shrink();
+    final activeFs = _getActiveFlashSaleItem();
+    if (activeFs == null) return const SizedBox.shrink();
 
-    // Sử dụng hàm chuẩn của hệ thống để lấy giá bán hiện tại (giá đã giảm) và giá gốc ban đầu
-    final salePrice = _getDisplayPrice();
+    final salePrice = activeFs.flashSalePrice;
     final oldPrice = _getOriginalPrice();
 
     // Tính toán phần trăm giảm giá chuẩn xác dựa trên giá thực tế đang hiển thị
@@ -1415,56 +1413,58 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.baseline,
-                    textBaseline: TextBaseline.alphabetic,
-                    children: [
-                      // Hiển thị phần trăm giảm giá chỉ khi thực sự có giảm giá (> 0)
-                      if (discountPercent > 0) ...[
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 6, vertical: 2),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(6),
-                          ),
-                          child: Text(
-                            '-$discountPercent%',
-                            style: const TextStyle(
-                              color: Color(0xFFFF2453),
-                              fontWeight: FontWeight.bold,
-                              fontSize: 12,
+              Flexible(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Wrap(
+                      crossAxisAlignment: WrapCrossAlignment.center,
+                      children: [
+                        // Hiển thị phần trăm giảm giá chỉ khi thực sự có giảm giá (> 0)
+                        if (discountPercent > 0) ...[
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 6, vertical: 2),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                            child: Text(
+                              '-$discountPercent%',
+                              style: const TextStyle(
+                                color: Color(0xFFFF2453),
+                                fontWeight: FontWeight.bold,
+                                fontSize: 12,
+                              ),
                             ),
                           ),
+                          const SizedBox(width: 8),
+                        ],
+                        Text(
+                          '${formatCurrency(salePrice)}đ',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 20,
+                          ),
                         ),
-                        const SizedBox(width: 8),
+                        if (oldPrice > salePrice)
+                          Padding(
+                            padding: const EdgeInsets.only(left: 8),
+                            child: Text(
+                              '${formatCurrency(oldPrice)}đ',
+                              style: const TextStyle(
+                                color: Colors.white70,
+                                decoration: TextDecoration.lineThrough,
+                                fontSize: 13,
+                              ),
+                            ),
+                          ),
                       ],
-                      Text(
-                        '${formatCurrency(salePrice)}đ',
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 20,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 2),
-                  // Chỉ hiện giá gốc gạch ngang nếu giá gốc lớn hơn giá khuyến mãi
-                  if (oldPrice > salePrice)
-                    Text(
-                      '${formatCurrency(oldPrice)}đ',
-                      style: const TextStyle(
-                        color: Colors.white70,
-                        decoration: TextDecoration.lineThrough,
-                        fontSize: 13,
-                      ),
                     ),
-                ],
+                  ],
+                ),
               ),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
@@ -1874,12 +1874,11 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   }
 
   Widget _buildBottomAction(double displayPrice) {
-    // Chỉ dùng flashSalePrice khi vào từ trang flashsale
-    final finalPrice = (widget.showFlashSale &&
-            widget.flashSalePrice != null &&
-            widget.flashSalePrice! > 0)
-        ? widget.flashSalePrice!
-        : (selectedVariant?.effectivePrice ?? displayPrice);
+    // Dùng flash sale price nếu có flash sale đang hoạt động (giống web)
+    final activeFs = _getActiveFlashSaleItem();
+    final finalPrice = activeFs?.flashSalePrice ??
+        selectedVariant?.effectivePrice ??
+        displayPrice;
 
     return Container(
       padding: const EdgeInsets.all(16),
@@ -2147,7 +2146,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
               // ),
               // Thay thế widget Text cũ bằng widget Html
               child: Html(
-                data: rich ?? 'Không có mô tả cho sản phẩm này.',
+                data: rich.isNotEmpty ? rich : 'Không có mô tả cho sản phẩm này.',
                 style: {
                   // Cấu hình định dạng chung cho toàn bộ văn bản
                   "body": Style(
@@ -4007,21 +4006,4 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     );
   }
 
-  Widget _buildCompactTimeUnit(int value) {
-    return Container(
-      padding: const EdgeInsets.all(4),
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface,
-        borderRadius: BorderRadius.circular(4),
-      ),
-      child: Text(
-        value.toString().padLeft(2, '0'),
-        style: TextStyle(
-          color: Colors.red,
-          fontWeight: FontWeight.bold,
-          fontSize: 12,
-        ),
-      ),
-    );
-  }
 }

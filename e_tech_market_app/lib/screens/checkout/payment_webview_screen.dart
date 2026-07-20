@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
+import 'package:webview_flutter_android/webview_flutter_android.dart';
 
 class PaymentWebViewScreen extends StatefulWidget {
   final String url;
-  
+
   const PaymentWebViewScreen({Key? key, required this.url}) : super(key: key);
 
   @override
@@ -17,36 +18,53 @@ class _PaymentWebViewScreenState extends State<PaymentWebViewScreen> {
   @override
   void initState() {
     super.initState();
+
     _controller = WebViewController()
-      ..setJavaScriptMode(JavaScriptMode.unrestricted)
-      ..setNavigationDelegate(
-        NavigationDelegate(
-          onPageStarted: (String url) {
-            setState(() => _isLoading = true);
-          },
-          onPageFinished: (String url) {
-            setState(() => _isLoading = false);
-          },
-          onNavigationRequest: (NavigationRequest request) {
-            // Check if VNPAY or Momo redirects back to our localhost backend
-            if (request.url.contains('/payments/vnpay/return') || 
-                request.url.contains('/payments/momo/return')) {
-              // Intercept before it tries to load localhost on the device
-              Navigator.pop(context, request.url);
-              return NavigationDecision.prevent;
-            }
-            return NavigationDecision.navigate;
-          },
-        ),
-      )
-      ..loadRequest(Uri.parse(widget.url));
+      ..setJavaScriptMode(JavaScriptMode.unrestricted);
+
+    if (_controller.platform is AndroidWebViewController) {
+      final androidCtrl = _controller.platform as AndroidWebViewController;
+      androidCtrl.setMediaPlaybackRequiresUserGesture(false);
+    }
+
+    _controller.setNavigationDelegate(
+      NavigationDelegate(
+        onPageStarted: (_) {
+          if (mounted) setState(() => _isLoading = true);
+        },
+        onPageFinished: (_) {
+          if (mounted) setState(() => _isLoading = false);
+        },
+        onNavigationRequest: (request) {
+          final uri = Uri.tryParse(request.url);
+          if (uri != null &&
+              (uri.path.contains('/payments/vnpay/return') ||
+               uri.path.contains('/payments/momo/return'))) {
+            Navigator.pop(context, request.url);
+            return NavigationDecision.prevent;
+          }
+          return NavigationDecision.navigate;
+        },
+        onWebResourceError: (error) {
+          if (mounted) setState(() => _isLoading = false);
+        },
+        // Chấp nhận SSL cert sandbox VNPAY (Android WebView không tin CA này)
+        // ⚠️ Production cần dùng cert hợp lệ và bỏ callback này.
+        onSslAuthError: (SslAuthError error) {
+          error.proceed();
+        },
+      ),
+    );
+
+    _controller.loadRequest(Uri.parse(widget.url));
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Thanh toán', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+        title: const Text('Thanh toán',
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
         backgroundColor: Colors.white,
         foregroundColor: Colors.black,
         elevation: 1,

@@ -174,6 +174,8 @@ class AdminOrderService
 
     public function getAdminOrders(array $filters, int $perPage = 10, int $page = 1): array
     {
+        app(\App\Services\OrderService::class)->pruneExpiredUnpaidOrders();
+
         $qCode = trim((string) ($filters['order_code'] ?? ''));
         $qCustomer = trim((string) ($filters['customer'] ?? ''));
         $status = trim((string) ($filters['status'] ?? ''));

@@ -14,6 +14,7 @@ export const deleteUser = <T>(id: number) => apiFetch<T>(`/api/admin/users/${id}
 export const fetchOrders = <T>(query: string) => apiFetch<T>(`/api/admin/orders?${query}`)
 export const fetchOrderDetail = <T>(id: number) => apiFetch<T>(`/api/admin/orders/${id}`)
 export const updateOrder = <T>(id: number, body: any) => apiFetch<T>(`/api/admin/orders/${id}`, { method: 'PATCH', body: JSON.stringify(body) })
+export const deleteOrder = <T>(id: number) => apiFetch<T>(`/api/admin/orders/${id}`, { method: 'DELETE' })
 export const processOrderReturn = <T>(id: number, action: 'approve' | 'reject' | 'refunded', body: any) => {
   const isFormData = body instanceof FormData
   return apiFetch<T>(`/api/admin/orders/${id}/return-request/${action}`, {

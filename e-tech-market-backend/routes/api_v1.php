@@ -125,6 +125,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/orders', [AdminOrdersController::class, 'index'])->name('orders');
         Route::get('/orders/{order}', [AdminOrdersController::class, 'show'])->name('orders');
         Route::patch('/orders/{order}', [AdminOrdersController::class, 'update'])->name('orders');
+        Route::delete('/orders/{order}', [AdminOrdersController::class, 'destroy'])->name('orders.destroy');
         Route::post('/orders/{order}/return-request/approve', [AdminOrdersController::class, 'approveReturnRequest'])->name('orders.return-request.approve');
         Route::post('/orders/{order}/return-request/reject', [AdminOrdersController::class, 'rejectReturnRequest'])->name('orders.return-request.reject');
         Route::post('/orders/{order}/return-request/refunded', [AdminOrdersController::class, 'markReturnRefunded'])->name('orders.return-request.refunded');

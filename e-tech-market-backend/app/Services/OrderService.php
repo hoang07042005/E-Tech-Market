@@ -324,8 +324,62 @@ class OrderService
         });
     }
 
+    public function pruneExpiredUnpaidOrders(): void
+    {
+        $expiredTime = now()->subMinutes(30);
+
+        $orders = Order::where('created_at', '<', $expiredTime)
+            ->where('payment_status', '!=', 'paid')
+            ->whereHas('payment', function ($q) {
+                $q->where('method', '!=', 'cod');
+            })
+            ->with(['items'])
+            ->get();
+
+        if ($orders->isEmpty()) {
+            return;
+        }
+
+        DB::transaction(function () use ($orders) {
+            foreach ($orders as $order) {
+                // Restore stock
+                $productIdsToSync = [];
+                foreach ($order->items as $item) {
+                    if ($item->variant_id) {
+                        $variant = ProductVariant::find((int) $item->variant_id);
+                        if ($variant instanceof ProductVariant) {
+                            $variant->stock_quantity = (int) ($variant->stock_quantity ?? 0) + (int) $item->quantity;
+                            $variant->save();
+                            $productIdsToSync[$variant->product_id] = true;
+                        }
+                    }
+                }
+                foreach (array_keys($productIdsToSync) as $pid) {
+                    $p = Product::find($pid);
+                    if ($p) {
+                        ProductInventorySync::syncFromVariants($p, 'order_cancelled');
+                    }
+                }
+
+                // Delete related records manually
+                OrderItem::where('order_id', $order->id)->delete();
+                Payment::where('order_id', $order->id)->delete();
+                OrderStatusHistory::where('order_id', $order->id)->delete();
+                CouponUsage::where('order_id', $order->id)->delete();
+                OrderReturnRequest::where('order_id', $order->id)->delete();
+
+                // Delete order itself
+                $order->delete();
+            }
+        });
+
+        \App\Jobs\InvalidateAdminDashboardCache::dispatch();
+    }
+
     public function getClientOrders(User $user, int $perPage = 12)
     {
+        $this->pruneExpiredUnpaidOrders();
+
         return Order::query()
             ->where('user_id', $user->id)
             ->where('status', '!=', 'pending_payment') // Exclude orders waiting for payment
