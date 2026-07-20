@@ -46,6 +46,11 @@ class Video extends Model
         return $this->belongsTo(Product::class, 'product_id');
     }
 
+    public function products()
+    {
+        return $this->belongsToMany(Product::class, 'product_video');
+    }
+
     public function videoCategory(): BelongsTo
     {
         return $this->belongsTo(VideoCategory::class, 'video_category_id');

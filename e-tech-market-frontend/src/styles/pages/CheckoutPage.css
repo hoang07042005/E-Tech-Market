@@ -387,7 +387,7 @@
 }
 .coSumItem {
   display: grid;
-  grid-template-columns: 46px 1fr auto;
+  grid-template-columns: 66px 1fr auto;
   gap: 10px;
   align-items: start;
   background: #fff;
@@ -395,8 +395,8 @@
   padding: 10px;
 }
 .coSumThumb {
-  width: 56px;
-  height: 56px;
+  width: 66px;
+  height: 66px;
   background: #fffaf5;
   overflow: hidden;
   display: flex;
@@ -502,7 +502,7 @@
 .coConfirmBtn {
   width: 100%;
   border: none;
-  background-color: rgb(255 140 0 / var(--tw-bg-opacity, 1));
+  background-color: #039f34;
   color: #fff;
   border-radius: 5px;
   padding: 14px 16px;
@@ -513,7 +513,7 @@
   margin-top: 10px;
 }
 .coConfirmBtn:hover:enabled {
-  background-color: rgb(255 140 0 / var(--tw-bg-opacity, 1));
+  background-color: #039f34;
 }
 .coConfirmBtn:disabled {
   opacity: 0.55;

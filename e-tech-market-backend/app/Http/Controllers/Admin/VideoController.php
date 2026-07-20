@@ -15,7 +15,7 @@ class VideoController extends Controller
 {
     public function index(Request $request): JsonResponse
     {
-        $query = Video::with(['product', 'videoCategory']);
+        $query = Video::with(['product', 'products', 'videoCategory']);
 
         if ($request->has('product_id')) {
             $query->where('product_id', $request->product_id);
@@ -34,7 +34,11 @@ class VideoController extends Controller
         $data['is_active'] = $request->has('is_active') ? filter_var($request->is_active, FILTER_VALIDATE_BOOLEAN) : true;
         $data['sort_order'] = $request->has('sort_order') ? (int) $request->sort_order : 0;
 
-        if ($request->exists('product_id') && $request->product_id) {
+        if ($request->exists('product_ids') && is_array($request->product_ids) && count($request->product_ids) > 0) {
+            // Backward compatibility
+            $data['product_id'] = (int) $request->product_ids[0];
+            $data['video_category_id'] = null;
+        } else if ($request->exists('product_id') && $request->product_id) {
             $data['product_id'] = (int) $request->product_id;
             $data['video_category_id'] = null;
         } else {
@@ -57,14 +61,20 @@ class VideoController extends Controller
         }
 
         $video = Video::create($data);
-        $video->load(['product', 'videoCategory']);
+        if ($request->exists('product_ids') && is_array($request->product_ids)) {
+            $video->products()->sync($request->product_ids);
+        } elseif ($data['product_id']) {
+            $video->products()->sync([$data['product_id']]);
+        }
+
+        $video->load(['product', 'products', 'videoCategory']);
 
         return response()->json((new VideoResource($video))->resolve(), 201);
     }
 
     public function show(string $id): JsonResponse
     {
-        $video = Video::with(['product', 'videoCategory'])->findOrFail($id);
+        $video = Video::with(['product', 'products', 'videoCategory'])->findOrFail($id);
 
         return response()->json((new VideoResource($video))->resolve());
     }
@@ -82,7 +92,17 @@ class VideoController extends Controller
             $data['sort_order'] = (int) $request->sort_order;
         }
 
-        if ($request->exists('product_id')) {
+        if ($request->exists('product_ids') && is_array($request->product_ids)) {
+            if (count($request->product_ids) > 0) {
+                $data['product_id'] = (int) $request->product_ids[0];
+                $data['video_category_id'] = null;
+            } else {
+                $data['product_id'] = null;
+                if ($request->exists('video_category_id')) {
+                    $data['video_category_id'] = $request->video_category_id ? (int) $request->video_category_id : null;
+                }
+            }
+        } else if ($request->exists('product_id')) {
             if ($request->product_id) {
                 $data['product_id'] = (int) $request->product_id;
                 $data['video_category_id'] = null;
@@ -115,7 +135,16 @@ class VideoController extends Controller
         }
 
         $video->update($data);
-        $video->load(['product', 'videoCategory']);
+
+        if ($request->exists('product_ids') && is_array($request->product_ids)) {
+            $video->products()->sync($request->product_ids);
+        } elseif ($request->exists('product_id') && $request->product_id) {
+            $video->products()->sync([$request->product_id]);
+        } elseif ($request->exists('product_id') && empty($request->product_id)) {
+            $video->products()->sync([]);
+        }
+
+        $video->load(['product', 'products', 'videoCategory']);
 
         return response()->json((new VideoResource($video))->resolve());
     }

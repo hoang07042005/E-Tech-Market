@@ -318,7 +318,7 @@ export default function FlashSalePage() {
                 <path d="m16.5 16.5 4 4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
               </svg>
             </span>
-            <input type="text" className="fspSearchInput" placeholder="Tim san pham flash sale..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)} />
+            <input type="text" className="fspSearchInput" placeholder="Tìm sản phẩm flash sale..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)} />
           </div>
           <div className="fspSortOptions">
             <button type="button" className={`fspSortBtn ${sortBy === 'popular' ? 'active' : ''}`} onClick={() => setSortBy('popular')}>Bán chạy</button>

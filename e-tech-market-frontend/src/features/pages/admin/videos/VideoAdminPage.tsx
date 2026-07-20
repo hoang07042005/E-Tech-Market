@@ -50,7 +50,7 @@ export default function VideoAdminPage() {
   // Form State
   const [formData, setFormData] = useState({
     linked_type: 'product' as 'product' | 'general', // 'product' = liên kết SP, 'general' = video chung
-    product_id: '',
+    product_ids: [] as string[],
     category_id: '',
     title: '',
     description: '',
@@ -91,8 +91,8 @@ export default function VideoAdminPage() {
     if (video) {
       setEditingVideo(video)
       setFormData({
-        linked_type: video.product_id ? 'product' : 'general',
-        product_id: video.product_id ? video.product_id.toString() : '',
+        linked_type: (video.products && video.products.length > 0) || video.product_id ? 'product' : 'general',
+        product_ids: video.products && video.products.length > 0 ? video.products.map(p => p.id.toString()) : (video.product_id ? [video.product_id.toString()] : []),
         category_id: (video.video_category_id ?? video.category_id ?? video.category?.id ?? video.video_category?.id ?? video.videoCategory?.id ?? null)?.toString() || '',
         title: video.title || '',
         description: video.description || '',
@@ -105,7 +105,7 @@ export default function VideoAdminPage() {
       setEditingVideo(null)
       setFormData({
         linked_type: 'product',
-        product_id: '',
+        product_ids: [],
         category_id: '',
         title: '',
         description: '',
@@ -261,7 +261,15 @@ export default function VideoAdminPage() {
                         </span>
                       </td>
                       <td>
-                        {video.product ? (
+                        {video.products && video.products.length > 0 ? (
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                            {video.products.map(p => (
+                              <span key={p.id} className="videoadminpage-style-6">
+                                📦 {p.name}
+                              </span>
+                            ))}
+                          </div>
+                        ) : video.product ? (
                           <span  className="videoadminpage-style-6">
                             📦 {video.product.name}
                           </span>
@@ -308,7 +316,7 @@ export default function VideoAdminPage() {
               <button className="catCloseModal" onClick={() => setIsModalOpen(false)}>×</button>
             </div>
             <form onSubmit={handleSubmit} className="catForm">
-
+              <div style={{ maxHeight: 'calc(100vh - 200px)', overflowY: 'auto', paddingRight: '4px', scrollbarWidth: 'none', msOverflowStyle: 'none', WebkitOverflowScrolling: 'touch' }}>
               {/* Loại video: liên kết sản phẩm hay video chung */}
               <div className="catFormField videoadminpage-style-11" >
                 <label>LOẠI VIDEO</label>
@@ -330,7 +338,7 @@ export default function VideoAdminPage() {
                       name="linked_type"
                       value="general"
                       checked={!isLinkedToProduct}
-                      onChange={() => setFormData({ ...formData, linked_type: 'general', product_id: '' })}
+                      onChange={() => setFormData({ ...formData, linked_type: 'general', product_ids: [] })}
                       style={{ accentColor: '#60a5fa' }}
                     />
                     🏷️ Video theo danh mục (không gắn SP)
@@ -338,7 +346,6 @@ export default function VideoAdminPage() {
                 </div>
               </div>
 
-              <div className="catFormRow">
                 <div className="catFormField">
                   <label>TIÊU ĐỀ VIDEO</label>
                   <input 
@@ -352,17 +359,57 @@ export default function VideoAdminPage() {
                 {/* Chỉ hiện chọn SẢN PHẨM khi linked_type = product */}
                 {isLinkedToProduct ? (
                   <div className="catFormField">
-                    <label>SẢN PHẨM LIÊN KẾT</label>
-                    <select
-                      value={formData.product_id}
-                      onChange={e => setFormData({...formData, product_id: e.target.value})}
-                      style={{ padding: '10px', border: '1px solid var(--admin-border)', borderRadius: '6px', background: 'var(--admin-card-bg)', color: 'var(--admin-text-p)', width: '100%', height: '42px' }}
-                    >
-                      <option value="">-- Chọn sản phẩm --</option>
+                    <label>SẢN PHẨM LIÊN KẾT (CÓ THỂ CHỌN NHIỀU)</label>
+                    <div style={{
+                      maxHeight: '220px',
+                      overflowY: 'auto',
+                      border: '1px solid var(--admin-border)',
+                      borderRadius: '8px',
+                      background: 'var(--admin-card-bg)',
+                      padding: '6px',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: '2px'
+                    }}>
                       {products.map(p => (
-                        <option key={p.id} value={p.id}>{p.name}</option>
+                        <label key={p.id} style={{ 
+                          display: 'flex', 
+                          alignItems: 'flex-start', 
+                          gap: '12px', 
+                          padding: '8px 10px', 
+                          cursor: 'pointer',
+                          borderRadius: '6px',
+                          textTransform: 'none',
+                          fontWeight: 400,
+                          letterSpacing: 'normal',
+                          margin: 0,
+                          transition: 'background-color 0.15s ease'
+                        }}
+                        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--admin-bg)'}
+                        onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+                        >
+                          <input
+                            type="checkbox"
+                            checked={formData.product_ids.includes(p.id.toString())}
+                            onChange={(e) => {
+                              const checked = e.target.checked;
+                              const pId = p.id.toString();
+                              setFormData(prev => ({
+                                ...prev,
+                                product_ids: checked 
+                                  ? [...prev.product_ids, pId] 
+                                  : prev.product_ids.filter(id => id !== pId)
+                              }));
+                            }}
+                            style={{ accentColor: '#f97316', width: '18px', height: '18px', marginTop: '2px', cursor: 'pointer' }}
+                          />
+                          <span style={{ fontSize: '14px', color: 'var(--admin-text-h)', lineHeight: '1.4', flex: 1 }}>{p.name}</span>
+                        </label>
                       ))}
-                    </select>
+                      {products.length === 0 && (
+                        <div style={{ fontSize: '13px', color: '#64748b', textAlign: 'center', padding: '16px 8px' }}>Không có sản phẩm nào</div>
+                      )}
+                    </div>
                   </div>
                 ) : (
                   /* Chỉ hiện chọn DANH MỤC khi linked_type = general */
@@ -383,7 +430,6 @@ export default function VideoAdminPage() {
                     </div> */}
                   </div>
                 )}
-              </div>
 
               <div className="catFormField videoadminpage-style-15" >
                 <label>NỘI DUNG / MÔ TẢ NGẮN</label>
@@ -484,10 +530,12 @@ export default function VideoAdminPage() {
                   </div>
                 </div>
               </div>
+              
+              </div> {/* End scrollable div */}
 
               {error && <div className="catErrorBanner videoadminpage-style-20" >{error}</div>}
 
-              <div className="catModalFooter">
+              <div className="catModalFooter" style={{ marginTop: '16px', paddingTop: '16px', borderTop: '1px solid var(--admin-border)' }}>
                 <button type="button" className="catCancelBtn" onClick={() => setIsModalOpen(false)}>Hủy</button>
                 <button type="submit" className="catSubmitBtn">{editingVideo ? 'Cập nhật' : 'Thêm'}</button>
               </div>

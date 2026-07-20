@@ -24,6 +24,7 @@ interface Video {
   sort_order?: number
   is_active: boolean
   product?: Product | null
+  products?: Product[] | null
 }
 
 const resolveImageUrl = (url: string | null) => {
@@ -204,36 +205,98 @@ export default function VideoDetailPage() {
             {/* Right Sidebar Section: Product Card & Recommended Videos */}
             <aside className="vdpSidebar">
               {/* Linked Product Card */}
-              {video.product ? (
-                <div className="vdpProductCard">
-                  <h3 className="vdpSidebarTitle">Sản phẩm trong video</h3>
-                  <div className="vdpProductInner">
+              {video.products && video.products.length > 0 ? (
+                <div className="vdpProductCard" style={{ padding: '20px' }}>
+                  <h3 className="vdpSidebarTitle" style={{ marginBottom: '10px' }}>Sản phẩm trong video</h3>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                    {video.products.map(p => (
+                      <div 
+                        key={p.id} 
+                        onClick={() => navigate(`/products/${p.slug}`)}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '10px',
+                          padding: '5px',
+                          borderRadius: '5px',
+                          border: '1px solid #f1f5f9',
+                          backgroundColor: '#ffffff',
+                          cursor: 'pointer',
+                          transition: 'all 0.2s ease',
+                          boxShadow: '0 1px 2px rgba(0,0,0,0.02)'
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.borderColor = '#fdba74'
+                          e.currentTarget.style.boxShadow = '0 4px 6px -1px rgba(249, 115, 22, 0.1), 0 2px 4px -1px rgba(249, 115, 22, 0.06)'
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.borderColor = '#f1f5f9'
+                          e.currentTarget.style.boxShadow = '0 1px 2px rgba(0,0,0,0.02)'
+                        }}
+                      >
+                        <img
+                          src={resolveImageUrl(p.main_image_url)}
+                          alt={p.name}
+                          style={{ width: '64px', height: '64px', objectFit: 'contain', borderRadius: '4px', backgroundColor: '#f8fafc' }}
+                        />
+                        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                          <h4 style={{ margin: 0, fontSize: '14px', fontWeight: 600, color: '#1e293b', lineHeight: '1.4', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                            {p.name}
+                          </h4>
+                        </div>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <polyline points="9 18 15 12 9 6"></polyline>
+                        </svg>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ) : video.product ? (
+                <div className="vdpProductCard" style={{ padding: '20px' }}>
+                  <h3 className="vdpSidebarTitle" style={{ marginBottom: '16px' }}>Sản phẩm trong video</h3>
+                  <div 
+                    onClick={() => navigate(`/products/${video.product!.slug}`)}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '12px',
+                      padding: '12px',
+                      borderRadius: '8px',
+                      border: '1px solid #f1f5f9',
+                      backgroundColor: '#ffffff',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s ease',
+                      boxShadow: '0 1px 2px rgba(0,0,0,0.02)'
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.borderColor = '#fdba74'
+                      e.currentTarget.style.boxShadow = '0 4px 6px -1px rgba(249, 115, 22, 0.1), 0 2px 4px -1px rgba(249, 115, 22, 0.06)'
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.borderColor = '#f1f5f9'
+                      e.currentTarget.style.boxShadow = '0 1px 2px rgba(0,0,0,0.02)'
+                    }}
+                  >
                     <img
                       src={resolveImageUrl(video.product.main_image_url)}
                       alt={video.product.name}
-                      className="vdpProductImg"
+                      style={{ width: '64px', height: '64px', objectFit: 'contain', borderRadius: '4px', backgroundColor: '#f8fafc' }}
                     />
-                    <div className="vdpProductInfo">
-                      <h4 className="vdpProductName">{video.product.name}</h4>
-                      <div className="vdpProductPrice">
+                    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                      <h4 style={{ margin: 0, fontSize: '14px', fontWeight: 600, color: '#1e293b', lineHeight: '1.4', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                        {video.product.name}
+                      </h4>
+                      <div style={{ fontSize: '14px', fontWeight: 700, color: '#f97316' }}>
                         {video.product.price ? parseFloat(video.product.price.toString()).toLocaleString('vi-VN') + ' đ' : 'Liên hệ'}
                       </div>
                     </div>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <polyline points="9 18 15 12 9 6"></polyline>
+                    </svg>
                   </div>
                   {video.product.short_description && (
-                    <p className="vdpProductDesc">{video.product.short_description}</p>
+                    <p className="vdpProductDesc" style={{ marginTop: '16px' }}>{video.product.short_description}</p>
                   )}
-                  <button
-                    type="button"
-                    className="vdpProductBtn"
-                    onClick={() => navigate(`/products/${video.product!.slug}`)}
-                  >
-                    Xem chi tiết sản phẩm
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ marginLeft: '8px' }}>
-                      <line x1="5" y1="12" x2="19" y2="12"></line>
-                      <polyline points="12 5 19 12 12 19"></polyline>
-                    </svg>
-                  </button>
                 </div>
               ) : (
                 <div className="vdpProductCard vdpNoProduct">

@@ -845,7 +845,7 @@ export default function CheckoutPage() {
                           <span>{formatVnd(it.price)}</span>
                         </div>
                       </div>
-                      <div className="coSumLine">{formatVnd(it.price * it.quantity)}</div>
+                      {/* <div className="coSumLine">{formatVnd(it.price * it.quantity)}</div> */}
                     </div>
                   ))}
                 </div>

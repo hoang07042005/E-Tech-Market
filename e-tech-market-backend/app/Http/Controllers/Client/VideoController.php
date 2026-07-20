@@ -12,7 +12,7 @@ class VideoController extends Controller
 {
     public function index(Request $request): JsonResponse
     {
-        $query = Video::where('is_active', true)->with(['product', 'videoCategory']);
+        $query = Video::where('is_active', true)->with(['product', 'products', 'videoCategory']);
 
         if ($request->has('product_id')) {
             $query->where('product_id', $request->product_id);
@@ -34,7 +34,7 @@ class VideoController extends Controller
         if (! $video->is_active) {
             abort(404, 'Video không hoạt động');
         }
-        $video->load(['product', 'videoCategory']);
+        $video->load(['product', 'products', 'videoCategory']);
 
         return response()->json($video);
     }

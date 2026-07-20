@@ -899,7 +899,7 @@ export default function HomePage() {
           </div>
         </section>
 
-        <section className="hpTabbedSection reveal">
+        {/* <section className="hpTabbedSection reveal">
           <div className="hpContainer">
             <div className="hpTabHeader">
               <div className="hpTabButtons">
@@ -965,7 +965,7 @@ export default function HomePage() {
               )}
             </div>
           </div>
-        </section>
+        </section> */}
 
         {latestNews.length > 0 && (
           <section className="hpNewsSection reveal">
@@ -1002,7 +1002,6 @@ export default function HomePage() {
             <div className="hpContainer">
               <div className="hpCuratedHeader" style={{ marginBottom: '24px' }}>
                 <div className="hpCuratedTitleBox">
-                  <span className="hpCuratedKicker">REVIEW THỰC TẾ &amp; TRỰC QUAN</span>
                   <h2 className="hpCuratedTitle">Video nổi bật</h2>
                 </div>
                 <Link to="/videos" className="hpCuratedLink">

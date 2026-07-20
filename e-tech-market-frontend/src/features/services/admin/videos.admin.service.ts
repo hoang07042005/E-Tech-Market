@@ -27,6 +27,11 @@ export interface Video {
     name: string
     main_image_url?: string | null
   } | null
+  products?: {
+    id: number
+    name: string
+    main_image_url?: string | null
+  }[] | null
   category?: VideoCategory | null
   videoCategory?: VideoCategory | null
   video_category?: VideoCategory | null
@@ -51,7 +56,7 @@ export const deleteAdminVideo = (id: number) => {
 
 export interface VideoFormPayload {
   linked_type: 'product' | 'general'
-  product_id: string
+  product_ids: string[]
   category_id: string
   title: string
   description: string
@@ -65,15 +70,19 @@ export const buildVideoPayload = (formData: VideoFormPayload) => {
   const payload = new FormData()
 
   if (formData.linked_type === 'product') {
-    if (formData.product_id?.trim()) {
-      payload.append('product_id', formData.product_id.trim())
+    if (formData.product_ids && formData.product_ids.length > 0) {
+      formData.product_ids.forEach((id, index) => {
+        if (id.trim()) {
+          payload.append(`product_ids[${index}]`, id.trim())
+        }
+      })
     }
     payload.append('video_category_id', '')
   } else {
     if (formData.category_id?.trim()) {
       payload.append('video_category_id', formData.category_id.trim())
     }
-    payload.append('product_id', '')
+    // No product_ids
   }
 
   if (formData.title?.trim()) payload.append('title', formData.title.trim())
