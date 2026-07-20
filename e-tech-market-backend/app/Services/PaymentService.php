@@ -122,6 +122,9 @@ class PaymentService
 
         $orderCode = (string) ($inputData['vnp_TxnRef'] ?? '');
         $vnpTransactionNo = (string) ($inputData['vnp_TransactionNo'] ?? '');
+        if ($vnpTransactionNo === '0') {
+            $vnpTransactionNo = '';
+        }
         $amount = isset($inputData['vnp_Amount']) ? ((float) $inputData['vnp_Amount'] / 100) : null;
         $respCode = (string) ($inputData['vnp_ResponseCode'] ?? '');
         $tranStatus = (string) ($inputData['vnp_TransactionStatus'] ?? '');

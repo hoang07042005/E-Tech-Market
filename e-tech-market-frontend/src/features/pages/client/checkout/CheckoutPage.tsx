@@ -103,6 +103,78 @@ export default function CheckoutPage() {
       } catch (e) { void 0 }
     }
   }, [])
+
+  // Refresh prices from server to avoid stale localStorage prices
+  const [priceRefreshDone, setPriceRefreshDone] = useState(false)
+  const [priceChangedItems, setPriceChangedItems] = useState<{ name: string; oldPrice: number; newPrice: number }[]>([])
+
+  useEffect(() => {
+    // Run after the cart selection effect has settled
+    const timer = setTimeout(async () => {
+      try {
+        const current = getCart()
+        const itemsToCheck = checkoutKeys
+          ? current.items.filter((it) => checkoutKeys.includes(it.key))
+          : current.items
+
+        if (itemsToCheck.length === 0) { setPriceRefreshDone(true); return }
+
+        const updates: { name: string; oldPrice: number; newPrice: number }[] = []
+        const refreshed = await Promise.all(
+          itemsToCheck.map(async (it) => {
+            try {
+              if (!it.slug) return it // can't refresh without slug
+              const res = await apiFetch<any>(`/api/products/${it.slug}`)
+              const variant = it.variant_id
+                ? res.variants?.find((v: any) => v.id === it.variant_id)
+                : res.variants?.[0]
+              let freshPrice = Number(variant?.effective_price ?? res.price ?? it.price)
+
+              // Respect active flash sale if any
+              if (res.flash_sale_items?.length) {
+                const now = new Date().getTime()
+                for (const fsItem of res.flash_sale_items) {
+                  if (fsItem.flash_sale) {
+                    const startStr = fsItem.flash_sale.start_at.replace(' ', 'T')
+                    const endStr = fsItem.flash_sale.end_at.replace(' ', 'T')
+                    const start = new Date(startStr).getTime()
+                    const end = new Date(endStr).getTime()
+                    if (now >= start && now <= end) {
+                      if (fsItem.variant_id == null || fsItem.variant_id === it.variant_id) {
+                        freshPrice = Number(fsItem.flash_sale_price ?? freshPrice)
+                        break
+                      }
+                    }
+                  }
+                }
+              }
+              if (freshPrice && Math.abs(freshPrice - it.price) > 1) {
+                updates.push({ name: it.name + (it.variant_label ? ` (${it.variant_label})` : ''), oldPrice: it.price, newPrice: freshPrice })
+                return { ...it, price: freshPrice }
+              }
+              return it
+            } catch {
+              return it
+            }
+          })
+        )
+
+        if (updates.length > 0) {
+          setPriceChangedItems(updates)
+          // Merge refreshed prices back into full cart state
+          const all = getCart()
+          const keyToPrice = Object.fromEntries(refreshed.map(it => [it.key, it.price]))
+          const merged = { items: all.items.map(it => keyToPrice[it.key] !== undefined ? { ...it, price: keyToPrice[it.key] } : it) }
+          setCartStorage(merged)
+          setCart(checkoutKeys ? { items: merged.items.filter(it => checkoutKeys.includes(it.key)) } : merged)
+        }
+      } catch { void 0 } finally {
+        setPriceRefreshDone(true)
+      }
+    }, 150)
+    return () => clearTimeout(timer)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [checkoutKeys])
   const [submitting, setSubmitting] = useState(false)
   const [orderCode, setOrderCode] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
@@ -554,10 +626,12 @@ export default function CheckoutPage() {
         poll();
 
       } else {
-        setError('Thanh toán thất bại. Bạn có thể bấm “Xác nhận đặt hàng” để thử thanh toán lại (không tạo đơn mới).')
+        localStorage.removeItem(pendingPaymentKey)
+        setError('Thanh toán thất bại hoặc đã bị hủy. Bạn có thể kiểm tra lại giỏ hàng và tiến hành đặt lại.')
+        navigate('/checkout', { replace: true })
       }
     })
-  }, [paymentReturn])
+  }, [paymentReturn, navigate])
 
   useEffect(() => {
     const onPaymentStatus = (e: any) => {
@@ -664,6 +738,32 @@ export default function CheckoutPage() {
           </div>
         ) : (
           <div className="coGrid">
+            {priceChangedItems.length > 0 && (
+              <div style={{
+                gridColumn: '1 / -1',
+                background: '#fff7ed',
+                border: '1px solid #fdba74',
+                borderRadius: '8px',
+                padding: '12px 16px',
+                marginBottom: '4px',
+                display: 'flex',
+                gap: '10px',
+                alignItems: 'flex-start'
+              }}>
+                <span style={{ fontSize: '18px', lineHeight: 1 }}>⚠️</span>
+                <div>
+                  <div style={{ fontWeight: 600, color: '#92400e', marginBottom: '4px', fontSize: '14px' }}>
+                    Giá một số sản phẩm đã thay đổi
+                  </div>
+                  {priceChangedItems.map((item, i) => (
+                    <div key={i} style={{ fontSize: '13px', color: '#78350f' }}>
+                      <b>{item.name}</b>: {Math.round(item.oldPrice).toLocaleString('vi-VN')} đ → <b style={{ color: '#b45309' }}>{Math.round(item.newPrice).toLocaleString('vi-VN')} đ</b>
+                    </div>
+                  ))}
+                  <div style={{ fontSize: '12px', color: '#92400e', marginTop: '6px' }}>Giá đã được cập nhật theo thông tin mới nhất từ hệ thống.</div>
+                </div>
+              </div>
+            )}
             <div className="coLeft">
               <form className="coCard" onSubmit={submit}>
                 <div className="coCardTitleRow">

@@ -58,7 +58,7 @@ export default function ProductDetailPage() {
   const wishlistMutation = useWishlistMutation()
   const { addToCart } = useCartMutation()
 
-  const { data: product, isLoading: loading, error } = useQuery<Product, Error>({
+  const { data: rawProduct, isLoading: loading, error } = useQuery<Product, Error>({
     queryKey: ['productBySlug', slug, variantIdParam],
     queryFn: async () => {
       if (!slug) throw new Error('Sản phẩm không hợp lệ.')
@@ -69,6 +69,31 @@ export default function ProductDetailPage() {
     staleTime: 1000 * 60 * 2,
     refetchOnWindowFocus: true,
   })
+
+  const product = useMemo(() => {
+    if (!rawProduct) return rawProduct
+    const now = new Date().getTime()
+    const variants = rawProduct.variants?.map((v: ProductVariant) => {
+      let finalPrice = Number(v.effective_price ?? 0)
+      if (rawProduct.flash_sale_items?.length) {
+        for (const fsItem of rawProduct.flash_sale_items) {
+          if (fsItem.flash_sale) {
+            const startStr = fsItem.flash_sale.start_at.replace(' ', 'T')
+            const endStr = fsItem.flash_sale.end_at.replace(' ', 'T')
+            const start = new Date(startStr).getTime()
+            const end = new Date(endStr).getTime()
+            if (now >= start && now <= end) {
+              if (fsItem.variant_id == null || fsItem.variant_id === v.id) {
+                finalPrice = Number(fsItem.flash_sale_price ?? finalPrice)
+              }
+            }
+          }
+        }
+      }
+      return { ...v, effective_price: finalPrice }
+    })
+    return { ...rawProduct, variants }
+  }, [rawProduct])
 
   const relatedProductsQuery = useQuery<Product[]>({
     queryKey: ['relatedProducts', product?.category_id, product?.id],
@@ -286,7 +311,6 @@ export default function ProductDetailPage() {
   const isFlashSaleMode = searchParams.get('flashSale') === 'true'
 
   const activeFlashSale = useMemo(() => {
-    if (!isFlashSaleMode) return null
     if (!product?.flash_sale_items?.length) return null
     const now = new Date().getTime()
     for (const item of product.flash_sale_items) {
@@ -307,7 +331,18 @@ export default function ProductDetailPage() {
     return null
   }, [product, selectedVariant])
 
-  const [flashTimeLeft, setFlashTimeLeft] = useState<{ h: number; m: number; s: number } | null>(null)
+  const [flashTimeLeft, setFlashTimeLeft] = useState<{ h: number; m: number; s: number } | null>(() => {
+    if (!activeFlashSale) return null;
+    const now = new Date().getTime();
+    const endStr = activeFlashSale.flash_sale.end_at.replace(' ', 'T');
+    const diff = new Date(endStr).getTime() - now;
+    if (diff <= 0) return null;
+    return {
+      h: Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
+      m: Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60)),
+      s: Math.floor((diff % (1000 * 60)) / 1000)
+    };
+  });
 
   useEffect(() => {
     if (!activeFlashSale) {
@@ -626,7 +661,7 @@ export default function ProductDetailPage() {
                         variant_id: v?.id ?? null,
                         variant_label: v ? [variantColorLabel(v), variantStorageLabel(v)].filter(Boolean).join(' · ') : null,
                         quantity: 1,
-                        from_flash_sale: isFlashSaleMode,
+                        from_flash_sale: !!activeFlashSale,
                       },
                       qty
                     })

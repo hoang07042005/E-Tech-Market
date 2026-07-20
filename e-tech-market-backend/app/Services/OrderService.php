@@ -50,7 +50,7 @@ class OrderService
             // 1. Calculate subtotal and resolve variants
             foreach ($itemsInput as $it) {
                 $productId = (int) $it['product_id'];
-                $variantId = isset($it['variant_id']) ? (int) $it['variant_id'] : null;
+                $variantId = isset($it['variant_id']) && $it['variant_id'] !== null ? (int) $it['variant_id'] : null;
                 $qty = (int) $it['quantity'];
 
                 $product = Product::query()->where('id', $productId)->where('is_active', true)->first();
@@ -61,6 +61,17 @@ class OrderService
                 $variant = $this->findPurchasableVariant($product, $variantId);
                 // ALWAYS get price from DB - NEVER trust client price to prevent price manipulation attacks
                 $originalPrice = (float) $variant->effective_price;
+
+                \Illuminate\Support\Facades\Log::info('[OrderService] variant resolved', [
+                    'product_id'      => $productId,
+                    'requested_vid'   => $variantId,
+                    'resolved_vid'    => $variant->id,
+                    'variant_price'   => $variant->price,
+                    'discount_type'   => $variant->discount_type,
+                    'discount_value'  => $variant->discount_value,
+                    'effective_price' => $originalPrice,
+                ]);
+
                 $subtotal += ($originalPrice * $qty);
 
                 $processedItems[] = [
