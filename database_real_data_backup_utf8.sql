@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
-\restrict d4svAqUDa98eUQwgRLmveg9701nCN4a5pYDePUdWB4dfBhbuCv7b4x600cWhngY
+\restrict JyQ8kp1fbYVCLqNO6DQBrUvdnqWCatHRqZXrOZ9z0vdX9Y6D8j8UxTHdjWWZ13P
 
 -- Dumped from database version 15.18
 -- Dumped by pg_dump version 15.18
@@ -18,6 +18,344 @@ SET xmloption = content;
 SET client_min_messages = warning;
 SET row_security = off;
 
+ALTER TABLE ONLY public.wishlists DROP CONSTRAINT wishlists_user_id_fkey;
+ALTER TABLE ONLY public.wishlists DROP CONSTRAINT wishlists_product_id_fkey;
+ALTER TABLE ONLY public.videos DROP CONSTRAINT videos_video_category_id_forei;
+ALTER TABLE ONLY public.videos DROP CONSTRAINT videos_product_id_forei;
+ALTER TABLE ONLY public.users DROP CONSTRAINT users_rank_id_forei;
+ALTER TABLE ONLY public.user_coupons DROP CONSTRAINT user_coupons_user_id_forei;
+ALTER TABLE ONLY public.user_coupons DROP CONSTRAINT user_coupons_coupon_id_forei;
+ALTER TABLE ONLY public.transactions DROP CONSTRAINT transactions_payment_id_fkey;
+ALTER TABLE ONLY public.role_has_permissions DROP CONSTRAINT role_has_permissions_role_id_forei;
+ALTER TABLE ONLY public.role_has_permissions DROP CONSTRAINT role_has_permissions_permission_id_forei;
+ALTER TABLE ONLY public.reviews DROP CONSTRAINT reviews_user_id_fkey;
+ALTER TABLE ONLY public.reviews DROP CONSTRAINT reviews_product_id_fkey;
+ALTER TABLE ONLY public.reviews DROP CONSTRAINT reviews_order_id_fkey;
+ALTER TABLE ONLY public.products DROP CONSTRAINT products_category_id_fkey;
+ALTER TABLE ONLY public.product_video DROP CONSTRAINT product_video_video_id_fkey;
+ALTER TABLE ONLY public.product_video DROP CONSTRAINT product_video_product_id_fkey;
+ALTER TABLE ONLY public.product_variants DROP CONSTRAINT product_variants_product_id_forei;
+ALTER TABLE ONLY public.product_specs DROP CONSTRAINT product_specs_product_variant_id_forei;
+ALTER TABLE ONLY public.product_specs DROP CONSTRAINT product_specs_product_id_fkey;
+ALTER TABLE ONLY public.product_shop_qnas DROP CONSTRAINT product_shop_qnas_user_id_forei;
+ALTER TABLE ONLY public.product_shop_qnas DROP CONSTRAINT product_shop_qnas_product_id_forei;
+ALTER TABLE ONLY public.product_news DROP CONSTRAINT product_news_product_id_forei;
+ALTER TABLE ONLY public.product_images DROP CONSTRAINT product_images_product_id_fkey;
+ALTER TABLE ONLY public.product_faqs DROP CONSTRAINT product_faqs_product_id_forei;
+ALTER TABLE ONLY public.point_history DROP CONSTRAINT point_history_user_id_fkey;
+ALTER TABLE ONLY public.payments DROP CONSTRAINT payments_order_id_fkey;
+ALTER TABLE ONLY public.orders DROP CONSTRAINT orders_user_id_fkey;
+ALTER TABLE ONLY public.orders DROP CONSTRAINT orders_shipping_method_id_fkey;
+ALTER TABLE ONLY public.orders DROP CONSTRAINT orders_coupon_id_fkey;
+ALTER TABLE ONLY public.orders DROP CONSTRAINT orders_cart_id_fkey;
+ALTER TABLE ONLY public.order_status_histories DROP CONSTRAINT order_status_histories_order_id_forei;
+ALTER TABLE ONLY public.order_status_histories DROP CONSTRAINT order_status_histories_changed_by_user_id_forei;
+ALTER TABLE ONLY public.order_return_requests DROP CONSTRAINT order_return_requests_user_id_forei;
+ALTER TABLE ONLY public.order_return_requests DROP CONSTRAINT order_return_requests_order_id_forei;
+ALTER TABLE ONLY public.order_return_requests DROP CONSTRAINT order_return_requests_approved_by_user_id_forei;
+ALTER TABLE ONLY public.order_items DROP CONSTRAINT order_items_variant_id_forei;
+ALTER TABLE ONLY public.order_items DROP CONSTRAINT order_items_product_id_fkey;
+ALTER TABLE ONLY public.order_items DROP CONSTRAINT order_items_order_id_fkey;
+ALTER TABLE ONLY public.notifications DROP CONSTRAINT notifications_user_id_fkey;
+ALTER TABLE ONLY public.model_has_roles DROP CONSTRAINT model_has_roles_role_id_forei;
+ALTER TABLE ONLY public.model_has_permissions DROP CONSTRAINT model_has_permissions_permission_id_forei;
+ALTER TABLE ONLY public.inventory_transactions DROP CONSTRAINT inventory_transactions_product_id_forei;
+ALTER TABLE ONLY public.inventory_transactions DROP CONSTRAINT inventory_transactions_inventory_id_forei;
+ALTER TABLE ONLY public.inventory DROP CONSTRAINT inventory_product_id_fkey;
+ALTER TABLE ONLY public.flash_sale_items DROP CONSTRAINT flash_sale_items_variant_id_forei;
+ALTER TABLE ONLY public.flash_sale_items DROP CONSTRAINT flash_sale_items_product_id_forei;
+ALTER TABLE ONLY public.flash_sale_items DROP CONSTRAINT flash_sale_items_flash_sale_id_forei;
+ALTER TABLE ONLY public.coupon_usage DROP CONSTRAINT coupon_usage_user_id_fkey;
+ALTER TABLE ONLY public.coupon_usage DROP CONSTRAINT coupon_usage_order_id_fkey;
+ALTER TABLE ONLY public.coupon_usage DROP CONSTRAINT coupon_usage_coupon_id_fkey;
+ALTER TABLE ONLY public.contact_messages DROP CONSTRAINT contact_messages_handled_by_user_id_forei;
+ALTER TABLE ONLY public.categories DROP CONSTRAINT categories_parent_id_fkey;
+ALTER TABLE ONLY public.carts DROP CONSTRAINT carts_user_id_fkey;
+ALTER TABLE ONLY public.cart_items DROP CONSTRAINT cart_items_variant_id_forei;
+ALTER TABLE ONLY public.cart_items DROP CONSTRAINT cart_items_product_id_fkey;
+ALTER TABLE ONLY public.cart_items DROP CONSTRAINT cart_items_cart_id_fkey;
+ALTER TABLE ONLY public.blog_posts DROP CONSTRAINT blog_posts_blog_category_id_forei;
+ALTER TABLE ONLY public.blog_posts DROP CONSTRAINT blog_posts_author_id_forei;
+ALTER TABLE ONLY public.blog_comments DROP CONSTRAINT blog_comments_user_id_forei;
+ALTER TABLE ONLY public.blog_comments DROP CONSTRAINT blog_comments_blog_post_id_forei;
+DROP INDEX public.uq_reviews_user_product;
+DROP INDEX public.uq_product_specs_variant_scope;
+DROP INDEX public.uq_product_images_product_primary;
+DROP INDEX public.reviews_status_index;
+DROP INDEX public.reviews_product_id_index;
+DROP INDEX public.products_is_active_is_featured_index;
+DROP INDEX public.products_is_active_index;
+DROP INDEX public.products_is_active_created_at_index;
+DROP INDEX public.products_is_active_category_id_index;
+DROP INDEX public.product_variants_product_id_price_is_active_index;
+DROP INDEX public.product_variants_product_id_is_active_price_index;
+DROP INDEX public.product_shop_qnas_product_id_answered_at_index;
+DROP INDEX public.product_news_product_id_is_active_sort_order_index;
+DROP INDEX public.product_faqs_product_id_sort_order_index;
+DROP INDEX public.personal_access_tokens_tokenable_type_tokenable_id_index;
+DROP INDEX public.orders_user_id_index;
+DROP INDEX public.orders_status_index;
+DROP INDEX public.orders_shipping_zone_id_index;
+DROP INDEX public.order_status_histories_order_created_idx;
+DROP INDEX public.order_status_histories_changed_by_idx;
+DROP INDEX public.order_return_requests_user_idx;
+DROP INDEX public.order_return_requests_status_created_idx;
+DROP INDEX public.order_return_requests_approved_by_idx;
+DROP INDEX public.model_has_roles_model_id_model_type_index;
+DROP INDEX public.model_has_permissions_model_id_model_type_index;
+DROP INDEX public.jobs_queue_index;
+DROP INDEX public.idx_wishlists_user_id;
+DROP INDEX public.idx_users_phone;
+DROP INDEX public.idx_transactions_payment_id;
+DROP INDEX public.idx_reviews_product_id;
+DROP INDEX public.idx_products_is_active;
+DROP INDEX public.idx_products_category_id;
+DROP INDEX public.idx_product_specs_product_id;
+DROP INDEX public.idx_product_images_product_id;
+DROP INDEX public.idx_orders_user_created;
+DROP INDEX public.idx_orders_status;
+DROP INDEX public.idx_order_items_product_id;
+DROP INDEX public.idx_order_items_order_id;
+DROP INDEX public.idx_notifications_user_id;
+DROP INDEX public.idx_notifications_read_at;
+DROP INDEX public.idx_inventory_product_id;
+DROP INDEX public.idx_coupon_usage_user_id;
+DROP INDEX public.idx_coupon_usage_coupon_id;
+DROP INDEX public.idx_categories_parent_id;
+DROP INDEX public.idx_categories_is_active;
+DROP INDEX public.idx_cart_items_product_id;
+DROP INDEX public.flash_sale_items_product_id_index;
+DROP INDEX public.coupons_code_index;
+DROP INDEX public.contact_messages_handled_idx;
+DROP INDEX public.contact_messages_handled_by_idx;
+DROP INDEX public.contact_messages_created_idx;
+DROP INDEX public.cart_items_cart_id_index;
+DROP INDEX public.admin_settings_updated_by_index;
+ALTER TABLE ONLY public.wishlists DROP CONSTRAINT wishlists_pkey;
+ALTER TABLE ONLY public.videos DROP CONSTRAINT videos_pkey;
+ALTER TABLE ONLY public.video_categories DROP CONSTRAINT video_categories_slug_unique;
+ALTER TABLE ONLY public.video_categories DROP CONSTRAINT video_categories_pkey;
+ALTER TABLE ONLY public.users DROP CONSTRAINT users_pkey;
+ALTER TABLE ONLY public.users DROP CONSTRAINT users_google_id_unique;
+ALTER TABLE ONLY public.users DROP CONSTRAINT users_email_key;
+ALTER TABLE ONLY public.user_coupons DROP CONSTRAINT user_coupons_user_id_coupon_id_unique;
+ALTER TABLE ONLY public.user_coupons DROP CONSTRAINT user_coupons_pkey;
+ALTER TABLE ONLY public.wishlists DROP CONSTRAINT uq_wishlists_user_product;
+ALTER TABLE ONLY public.inventory DROP CONSTRAINT uq_inventory_product_location;
+ALTER TABLE ONLY public.coupon_usage DROP CONSTRAINT uq_coupon_usage_order;
+ALTER TABLE ONLY public.transactions DROP CONSTRAINT transactions_provider_transaction_id_key;
+ALTER TABLE ONLY public.transactions DROP CONSTRAINT transactions_pkey;
+ALTER TABLE ONLY public.shipping_zones DROP CONSTRAINT shipping_zones_pkey;
+ALTER TABLE ONLY public.shipping_methods DROP CONSTRAINT shipping_methods_pkey;
+ALTER TABLE ONLY public.shipping_methods DROP CONSTRAINT shipping_methods_name_unique;
+ALTER TABLE ONLY public.shipping_methods DROP CONSTRAINT shipping_methods_name_key;
+ALTER TABLE ONLY public.roles DROP CONSTRAINT roles_pkey;
+ALTER TABLE ONLY public.roles DROP CONSTRAINT roles_name_guard_name_unique;
+ALTER TABLE ONLY public.role_has_permissions DROP CONSTRAINT role_has_permissions_pkey;
+ALTER TABLE ONLY public.reviews DROP CONSTRAINT reviews_pkey;
+ALTER TABLE ONLY public.products DROP CONSTRAINT products_slug_key;
+ALTER TABLE ONLY public.products DROP CONSTRAINT products_pkey;
+ALTER TABLE ONLY public.product_video DROP CONSTRAINT product_video_pkey;
+ALTER TABLE ONLY public.product_variants DROP CONSTRAINT product_variants_sku_unique;
+ALTER TABLE ONLY public.product_variants DROP CONSTRAINT product_variants_pkey;
+ALTER TABLE ONLY public.product_specs DROP CONSTRAINT product_specs_pkey;
+ALTER TABLE ONLY public.product_shop_qnas DROP CONSTRAINT product_shop_qnas_pkey;
+ALTER TABLE ONLY public.product_news DROP CONSTRAINT product_news_slug_unique;
+ALTER TABLE ONLY public.product_news DROP CONSTRAINT product_news_pkey;
+ALTER TABLE ONLY public.product_images DROP CONSTRAINT product_images_pkey;
+ALTER TABLE ONLY public.product_faqs DROP CONSTRAINT product_faqs_pkey;
+ALTER TABLE ONLY public.point_history DROP CONSTRAINT point_history_pkey;
+ALTER TABLE ONLY public.personal_access_tokens DROP CONSTRAINT personal_access_tokens_token_unique;
+ALTER TABLE ONLY public.personal_access_tokens DROP CONSTRAINT personal_access_tokens_pkey;
+ALTER TABLE ONLY public.permissions DROP CONSTRAINT permissions_pkey;
+ALTER TABLE ONLY public.permissions DROP CONSTRAINT permissions_name_guard_name_unique;
+ALTER TABLE ONLY public.payments DROP CONSTRAINT payments_transaction_code_key;
+ALTER TABLE ONLY public.payments DROP CONSTRAINT payments_pkey;
+ALTER TABLE ONLY public.payments DROP CONSTRAINT payments_order_id_key;
+ALTER TABLE ONLY public.password_reset_tokens DROP CONSTRAINT password_reset_tokens_pkey;
+ALTER TABLE ONLY public.orders DROP CONSTRAINT orders_pkey;
+ALTER TABLE ONLY public.orders DROP CONSTRAINT orders_order_code_key;
+ALTER TABLE ONLY public.order_status_histories DROP CONSTRAINT order_status_histories_pkey;
+ALTER TABLE ONLY public.order_return_requests DROP CONSTRAINT order_return_requests_pkey;
+ALTER TABLE ONLY public.order_return_requests DROP CONSTRAINT order_return_requests_order_unique;
+ALTER TABLE ONLY public.order_items DROP CONSTRAINT order_items_pkey;
+ALTER TABLE ONLY public.notifications DROP CONSTRAINT notifications_pkey;
+ALTER TABLE ONLY public.newsletter_subscriptions DROP CONSTRAINT newsletter_subscriptions_pkey;
+ALTER TABLE ONLY public.newsletter_subscriptions DROP CONSTRAINT newsletter_subscriptions_email_unique;
+ALTER TABLE ONLY public.model_has_roles DROP CONSTRAINT model_has_roles_pkey;
+ALTER TABLE ONLY public.model_has_permissions DROP CONSTRAINT model_has_permissions_pkey;
+ALTER TABLE ONLY public.migrations DROP CONSTRAINT migrations_pkey;
+ALTER TABLE ONLY public.membership_ranks DROP CONSTRAINT membership_ranks_pkey;
+ALTER TABLE ONLY public.jobs DROP CONSTRAINT jobs_pkey;
+ALTER TABLE ONLY public.inventory_transactions DROP CONSTRAINT inventory_transactions_pkey;
+ALTER TABLE ONLY public.inventory DROP CONSTRAINT inventory_pkey;
+ALTER TABLE ONLY public.flash_sales DROP CONSTRAINT flash_sales_pkey;
+ALTER TABLE ONLY public.flash_sale_items DROP CONSTRAINT flash_sale_items_pkey;
+ALTER TABLE ONLY public.failed_jobs DROP CONSTRAINT failed_jobs_uuid_unique;
+ALTER TABLE ONLY public.failed_jobs DROP CONSTRAINT failed_jobs_pkey;
+ALTER TABLE ONLY public.coupons DROP CONSTRAINT coupons_pkey;
+ALTER TABLE ONLY public.coupons DROP CONSTRAINT coupons_code_key;
+ALTER TABLE ONLY public.coupon_usage DROP CONSTRAINT coupon_usage_pkey;
+ALTER TABLE ONLY public.contact_messages DROP CONSTRAINT contact_messages_pkey;
+ALTER TABLE ONLY public.categories DROP CONSTRAINT categories_slug_key;
+ALTER TABLE ONLY public.categories DROP CONSTRAINT categories_pkey;
+ALTER TABLE ONLY public.carts DROP CONSTRAINT carts_user_id_key;
+ALTER TABLE ONLY public.carts DROP CONSTRAINT carts_pkey;
+ALTER TABLE ONLY public.cart_items DROP CONSTRAINT cart_items_pkey;
+ALTER TABLE ONLY public.blog_posts DROP CONSTRAINT blog_posts_slug_unique;
+ALTER TABLE ONLY public.blog_posts DROP CONSTRAINT blog_posts_pkey;
+ALTER TABLE ONLY public.blog_comments DROP CONSTRAINT blog_comments_pkey;
+ALTER TABLE ONLY public.blog_categories DROP CONSTRAINT blog_categories_slug_unique;
+ALTER TABLE ONLY public.blog_categories DROP CONSTRAINT blog_categories_pkey;
+ALTER TABLE ONLY public.banners DROP CONSTRAINT banners_pkey;
+ALTER TABLE ONLY public.admin_settings DROP CONSTRAINT admin_settings_pkey;
+ALTER TABLE ONLY public.admin_settings DROP CONSTRAINT admin_settings_key_unique;
+ALTER TABLE public.wishlists ALTER COLUMN id DROP DEFAULT;
+ALTER TABLE public.videos ALTER COLUMN id DROP DEFAULT;
+ALTER TABLE public.video_categories ALTER COLUMN id DROP DEFAULT;
+ALTER TABLE public.users ALTER COLUMN id DROP DEFAULT;
+ALTER TABLE public.user_coupons ALTER COLUMN id DROP DEFAULT;
+ALTER TABLE public.transactions ALTER COLUMN id DROP DEFAULT;
+ALTER TABLE public.shipping_zones ALTER COLUMN id DROP DEFAULT;
+ALTER TABLE public.shipping_methods ALTER COLUMN id DROP DEFAULT;
+ALTER TABLE public.roles ALTER COLUMN id DROP DEFAULT;
+ALTER TABLE public.reviews ALTER COLUMN id DROP DEFAULT;
+ALTER TABLE public.products ALTER COLUMN id DROP DEFAULT;
+ALTER TABLE public.product_video ALTER COLUMN id DROP DEFAULT;
+ALTER TABLE public.product_variants ALTER COLUMN id DROP DEFAULT;
+ALTER TABLE public.product_specs ALTER COLUMN id DROP DEFAULT;
+ALTER TABLE public.product_shop_qnas ALTER COLUMN id DROP DEFAULT;
+ALTER TABLE public.product_news ALTER COLUMN id DROP DEFAULT;
+ALTER TABLE public.product_images ALTER COLUMN id DROP DEFAULT;
+ALTER TABLE public.product_faqs ALTER COLUMN id DROP DEFAULT;
+ALTER TABLE public.point_history ALTER COLUMN id DROP DEFAULT;
+ALTER TABLE public.personal_access_tokens ALTER COLUMN id DROP DEFAULT;
+ALTER TABLE public.permissions ALTER COLUMN id DROP DEFAULT;
+ALTER TABLE public.payments ALTER COLUMN id DROP DEFAULT;
+ALTER TABLE public.orders ALTER COLUMN id DROP DEFAULT;
+ALTER TABLE public.order_status_histories ALTER COLUMN id DROP DEFAULT;
+ALTER TABLE public.order_return_requests ALTER COLUMN id DROP DEFAULT;
+ALTER TABLE public.order_items ALTER COLUMN id DROP DEFAULT;
+ALTER TABLE public.notifications ALTER COLUMN id DROP DEFAULT;
+ALTER TABLE public.newsletter_subscriptions ALTER COLUMN id DROP DEFAULT;
+ALTER TABLE public.migrations ALTER COLUMN id DROP DEFAULT;
+ALTER TABLE public.membership_ranks ALTER COLUMN id DROP DEFAULT;
+ALTER TABLE public.jobs ALTER COLUMN id DROP DEFAULT;
+ALTER TABLE public.inventory_transactions ALTER COLUMN id DROP DEFAULT;
+ALTER TABLE public.inventory ALTER COLUMN id DROP DEFAULT;
+ALTER TABLE public.flash_sales ALTER COLUMN id DROP DEFAULT;
+ALTER TABLE public.flash_sale_items ALTER COLUMN id DROP DEFAULT;
+ALTER TABLE public.failed_jobs ALTER COLUMN id DROP DEFAULT;
+ALTER TABLE public.coupons ALTER COLUMN id DROP DEFAULT;
+ALTER TABLE public.coupon_usage ALTER COLUMN id DROP DEFAULT;
+ALTER TABLE public.contact_messages ALTER COLUMN id DROP DEFAULT;
+ALTER TABLE public.categories ALTER COLUMN id DROP DEFAULT;
+ALTER TABLE public.carts ALTER COLUMN id DROP DEFAULT;
+ALTER TABLE public.cart_items ALTER COLUMN id DROP DEFAULT;
+ALTER TABLE public.blog_posts ALTER COLUMN id DROP DEFAULT;
+ALTER TABLE public.blog_comments ALTER COLUMN id DROP DEFAULT;
+ALTER TABLE public.blog_categories ALTER COLUMN id DROP DEFAULT;
+ALTER TABLE public.banners ALTER COLUMN id DROP DEFAULT;
+ALTER TABLE public.admin_settings ALTER COLUMN id DROP DEFAULT;
+DROP SEQUENCE public.wishlists_id_seq;
+DROP TABLE public.wishlists;
+DROP SEQUENCE public.videos_id_seq;
+DROP TABLE public.videos;
+DROP SEQUENCE public.video_categories_id_seq;
+DROP TABLE public.video_categories;
+DROP SEQUENCE public.users_id_seq;
+DROP TABLE public.users;
+DROP SEQUENCE public.user_coupons_id_seq;
+DROP TABLE public.user_coupons;
+DROP SEQUENCE public.transactions_id_seq;
+DROP TABLE public.transactions;
+DROP SEQUENCE public.shipping_zones_id_seq;
+DROP TABLE public.shipping_zones;
+DROP SEQUENCE public.shipping_methods_id_seq;
+DROP TABLE public.shipping_methods;
+DROP SEQUENCE public.roles_id_seq;
+DROP TABLE public.roles;
+DROP TABLE public.role_has_permissions;
+DROP SEQUENCE public.reviews_id_seq;
+DROP TABLE public.reviews;
+DROP SEQUENCE public.products_id_seq;
+DROP TABLE public.products;
+DROP SEQUENCE public.product_video_id_seq;
+DROP TABLE public.product_video;
+DROP SEQUENCE public.product_variants_id_seq;
+DROP TABLE public.product_variants;
+DROP SEQUENCE public.product_specs_id_seq;
+DROP TABLE public.product_specs;
+DROP SEQUENCE public.product_shop_qnas_id_seq;
+DROP TABLE public.product_shop_qnas;
+DROP SEQUENCE public.product_news_id_seq;
+DROP TABLE public.product_news;
+DROP SEQUENCE public.product_images_id_seq;
+DROP TABLE public.product_images;
+DROP SEQUENCE public.product_faqs_id_seq;
+DROP TABLE public.product_faqs;
+DROP SEQUENCE public.point_history_id_seq;
+DROP TABLE public.point_history;
+DROP SEQUENCE public.personal_access_tokens_id_seq;
+DROP TABLE public.personal_access_tokens;
+DROP SEQUENCE public.permissions_id_seq;
+DROP TABLE public.permissions;
+DROP SEQUENCE public.payments_id_seq;
+DROP TABLE public.payments;
+DROP TABLE public.password_reset_tokens;
+DROP SEQUENCE public.orders_id_seq;
+DROP TABLE public.orders;
+DROP SEQUENCE public.order_status_histories_id_seq;
+DROP TABLE public.order_status_histories;
+DROP SEQUENCE public.order_return_requests_id_seq;
+DROP TABLE public.order_return_requests;
+DROP SEQUENCE public.order_items_id_seq;
+DROP TABLE public.order_items;
+DROP SEQUENCE public.notifications_id_seq;
+DROP TABLE public.notifications;
+DROP SEQUENCE public.newsletter_subscriptions_id_seq;
+DROP TABLE public.newsletter_subscriptions;
+DROP TABLE public.model_has_roles;
+DROP TABLE public.model_has_permissions;
+DROP SEQUENCE public.migrations_id_seq;
+DROP TABLE public.migrations;
+DROP SEQUENCE public.membership_ranks_id_seq;
+DROP TABLE public.membership_ranks;
+DROP SEQUENCE public.jobs_id_seq;
+DROP TABLE public.jobs;
+DROP SEQUENCE public.inventory_transactions_id_seq;
+DROP TABLE public.inventory_transactions;
+DROP SEQUENCE public.inventory_id_seq;
+DROP TABLE public.inventory;
+DROP SEQUENCE public.flash_sales_id_seq;
+DROP TABLE public.flash_sales;
+DROP SEQUENCE public.flash_sale_items_id_seq;
+DROP TABLE public.flash_sale_items;
+DROP SEQUENCE public.failed_jobs_id_seq;
+DROP TABLE public.failed_jobs;
+DROP SEQUENCE public.coupons_id_seq;
+DROP TABLE public.coupons;
+DROP SEQUENCE public.coupon_usage_id_seq;
+DROP TABLE public.coupon_usage;
+DROP SEQUENCE public.contact_messages_id_seq;
+DROP TABLE public.contact_messages;
+DROP SEQUENCE public.categories_id_seq;
+DROP TABLE public.categories;
+DROP SEQUENCE public.carts_id_seq;
+DROP TABLE public.carts;
+DROP SEQUENCE public.cart_items_id_seq;
+DROP TABLE public.cart_items;
+DROP SEQUENCE public.blog_posts_id_seq;
+DROP TABLE public.blog_posts;
+DROP SEQUENCE public.blog_comments_id_seq;
+DROP TABLE public.blog_comments;
+DROP SEQUENCE public.blog_categories_id_seq;
+DROP TABLE public.blog_categories;
+DROP SEQUENCE public.banners_id_seq;
+DROP TABLE public.banners;
+DROP SEQUENCE public.admin_settings_id_seq;
+DROP TABLE public.admin_settings;
+-- *not* dropping schema, since initdb creates it
 --
 -- Name: public; Type: SCHEMA; Schema: -; Owner: postgres
 --
@@ -1542,6 +1880,42 @@ ALTER SEQUENCE public.product_variants_id_seq OWNED BY public.product_variants.i
 
 
 --
+-- Name: product_video; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.product_video (
+    id bigint NOT NULL,
+    video_id bigint NOT NULL,
+    product_id bigint NOT NULL,
+    created_at timestamp without time zone,
+    updated_at timestamp without time zone
+);
+
+
+ALTER TABLE public.product_video OWNER TO postgres;
+
+--
+-- Name: product_video_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.product_video_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.product_video_id_seq OWNER TO postgres;
+
+--
+-- Name: product_video_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.product_video_id_seq OWNED BY public.product_video.id;
+
+
+--
 -- Name: products; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -2256,6 +2630,13 @@ ALTER TABLE ONLY public.product_variants ALTER COLUMN id SET DEFAULT nextval('pu
 
 
 --
+-- Name: product_video id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.product_video ALTER COLUMN id SET DEFAULT nextval('public.product_video_id_seq'::regclass);
+
+
+--
 -- Name: products id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -2341,7 +2722,7 @@ COPY public.admin_settings (id, key, value, updated_by, created_at, updated_at) 
 5	chat	{"service":"zalo","facebook_page_id":null,"zalo_oa_id":"doviethoang@gmail.com","tawkto_property_id":null,"tawkto_widget_id":null}	11	2026-05-11 14:53:30	2026-07-01 16:01:44
 1	store_profile	{"store_name":"E-Tech Market Official","contact_email":"e_tech_marketsupport@gmail.com","contact_phone":"1234567890","warehouse_address":"S\\u1ed1 123 \\u0110\\u01b0\\u1eddng C\\u00f4ng Ngh\\u1ec7, Ph\\u01b0\\u1eddng B\\u1ebfn Ngh\\u00e9, Qu\\u1eadn 1, TP. H\\u1ed3 Ch\\u00ed Minh","currency":"VND","language":"vi","maintenance_mode":false,"products_per_page":24}	11	2026-05-07 01:10:19	2026-07-08 16:51:20
 2	payment_gateways	{"momo":{"enabled":true,"partner_id":null},"vnpay":{"enabled":true,"tmn_code":null},"cod":{"enabled":true}}	11	2026-05-07 01:10:19	2026-07-10 13:50:34
-4	security	{"security_2fa_enabled_user_10":false,"security_2fa_enabled_user_11":false}	11	2026-05-07 01:10:19	2026-07-13 13:15:39
+4	security	{"security_2fa_enabled_user_10":false,"security_2fa_enabled_user_11":true}	11	2026-05-07 01:10:19	2026-07-20 09:45:31
 \.
 
 
@@ -2402,11 +2783,11 @@ COPY public.blog_posts (id, blog_category_id, author_id, title, slug, excerpt, c
 
 COPY public.cart_items (cart_id, product_id, quantity, unit_price, added_at, variant_id, id) FROM stdin;
 10	201	1	890000.00	2026-07-03 02:05:36.442366+00	501	153
-11	9	1	33990000.00	2026-07-06 02:43:47.640148+00	26	155
 14	211	1	36590000.00	2026-07-13 06:21:09.756327+00	543	167
 14	209	1	2690000.00	2026-07-13 06:21:24.953017+00	521	168
 14	200	1	3990000.00	2026-07-13 06:21:39.933067+00	498	169
 14	196	1	49990000.00	2026-07-13 06:21:44.343035+00	483	170
+2	209	1	2690000.00	2026-07-20 04:15:13.960632+00	521	179
 \.
 
 
@@ -2419,14 +2800,11 @@ COPY public.carts (id, user_id, status, created_at, updated_at) FROM stdin;
 3	347	active	2026-06-04 08:47:50+00	2026-06-04 08:47:50+00
 4	346	active	2026-06-04 15:55:19+00	2026-06-04 15:55:19+00
 5	17	active	2026-06-04 16:35:18+00	2026-06-04 16:35:18+00
-8	350	active	2026-06-18 11:09:23+00	2026-06-18 11:09:23+00
 9	352	active	2026-06-18 14:31:26+00	2026-06-18 14:31:26+00
 10	353	active	2026-06-18 15:12:33+00	2026-06-18 15:12:33+00
-11	354	active	2026-06-30 08:34:36+00	2026-06-30 08:34:36+00
 12	341	active	2026-07-06 10:02:47+00	2026-07-06 10:02:47+00
 13	12	active	2026-07-06 10:06:55+00	2026-07-06 10:06:55+00
 14	10	active	2026-07-07 09:15:52+00	2026-07-07 09:15:52+00
-15	357	active	2026-07-10 16:24:45+00	2026-07-10 16:24:45+00
 \.
 
 
@@ -2520,14 +2898,14 @@ COPY public.coupon_usage (id, coupon_id, user_id, order_id, used_at, discount_am
 --
 
 COPY public.coupons (id, code, coupon_type, value, min_order_amount, start_at, end_at, max_uses, max_uses_per_user, is_active, created_at, updated_at) FROM stdin;
-116	SALE10	percentage	10.00	500000.00	2026-06-01 10:48:00+00	2026-06-30 10:48:00+00	100	2	t	2026-06-01 10:48:10+00	2026-06-11 16:40:08+00
-2	ETECHTEST20	percentage	20.00	3000000.00	2026-05-31 06:38:00+00	2026-08-30 06:38:00+00	50	2	t	2026-05-07 23:38:11+00	2026-06-11 16:40:13+00
 1	TECH10	percentage	10.00	500000.00	\N	\N	1000	2	t	2026-04-29 08:03:10.923461+00	2026-06-11 16:40:19+00
-117	SUMMER15	percentage	15.00	1300000.00	2026-06-11 16:50:00+00	2026-06-30 16:50:00+00	50	1	t	2026-06-11 16:50:22+00	2026-06-11 16:50:22+00
-118	NEWUSER20	percentage	20.00	2000000.00	2026-06-11 16:50:00+00	2026-06-30 16:51:00+00	50	1	t	2026-06-11 16:51:05+00	2026-06-11 16:51:05+00
-119	SAVE50K	fixed	50000.00	500000.00	2026-06-11 16:52:00+00	2026-06-30 16:52:00+00	50	1	t	2026-06-11 16:52:19+00	2026-06-11 16:52:19+00
-120	WELCOME100K	fixed	100000.00	1500000.00	2026-06-11 16:52:00+00	2026-06-30 16:52:00+00	100	1	t	2026-06-11 16:52:54+00	2026-06-11 16:52:54+00
-121	SDFS1	percentage	10.00	1000000.00	2026-06-12 08:19:00+00	2026-06-30 08:19:00+00	12	1	t	2026-06-12 08:19:32+00	2026-06-12 08:19:52+00
+121	SDFS1	percentage	10.00	1000000.00	\N	\N	12	3	t	2026-06-12 08:19:32+00	2026-07-20 09:46:57+00
+120	WELCOME100K	fixed	100000.00	1500000.00	\N	\N	100	3	t	2026-06-11 16:52:54+00	2026-07-20 09:47:07+00
+119	SAVE50K	fixed	50000.00	500000.00	\N	\N	50	3	t	2026-06-11 16:52:19+00	2026-07-20 09:47:20+00
+118	NEWUSER20	percentage	20.00	2000000.00	\N	\N	50	3	t	2026-06-11 16:51:05+00	2026-07-20 09:47:29+00
+117	SUMMER15	percentage	15.00	1300000.00	\N	\N	50	3	t	2026-06-11 16:50:22+00	2026-07-20 09:47:37+00
+116	SALE10	percentage	10.00	500000.00	\N	\N	100	3	t	2026-06-01 10:48:10+00	2026-07-20 09:47:46+00
+2	ETECHTEST20	percentage	20.00	3000000.00	\N	\N	50	3	t	2026-05-07 23:38:11+00	2026-07-20 09:47:54+00
 \.
 
 
@@ -2580,11 +2958,11 @@ COPY public.flash_sale_items (id, flash_sale_id, product_id, flash_sale_price, q
 313	3	199	12000000.00	5	1	2026-06-22 14:57:10	2026-06-30 09:20:55	496
 311	3	29	600000.00	5	0	2026-06-22 10:09:03	2026-06-22 10:09:03	301
 310	3	26	2800000.00	5	1	2026-06-22 10:08:24	2026-06-24 14:07:22	233
-314	4	197	9000000.00	5	0	2026-06-25 10:23:30	2026-06-25 10:23:30	491
 315	4	204	800000.00	5	0	2026-06-25 10:23:49	2026-06-25 10:23:49	510
 316	5	200	4000000.00	5	0	2026-06-25 10:59:52	2026-06-25 10:59:52	500
 312	3	198	13000000.00	4	3	2026-06-22 14:56:27	2026-07-06 13:58:38	493
-319	4	211	33990000.00	10	5	2026-07-09 15:35:11	2026-07-13 13:22:13	543
+314	4	197	9000000.00	5	1	2026-06-25 10:23:30	2026-07-20 10:44:50	491
+320	4	211	33990000.00	20	1	2026-07-20 11:10:03	2026-07-20 11:10:24	543
 \.
 
 
@@ -2641,7 +3019,6 @@ COPY public.inventory (id, product_id, location_code, quantity_on_hand, reorder_
 6	13	main	160	10	2026-07-01 14:15:57+00	2026-05-04 23:29:06+00	2026-07-01 14:15:57+00
 21	7	main	250	10	2026-07-01 14:47:46+00	2026-05-11 08:30:17+00	2026-07-01 14:47:46+00
 120	199	main	83	10	2026-06-22 14:28:21+00	2026-06-22 14:28:21+00	2026-07-06 13:58:38+00
-118	197	main	88	10	2026-06-22 14:03:33+00	2026-06-22 14:03:33+00	2026-07-02 08:51:25+00
 3	3	main	67	10	2026-07-01 14:59:24+00	2026-04-29 08:03:10.923461+00	2026-07-08 14:49:49+00
 123	202	main	51	10	2026-06-22 14:43:44+00	2026-06-22 14:43:44+00	2026-07-02 08:51:25+00
 122	201	main	78	10	2026-07-02 09:36:27+00	2026-06-22 14:39:15+00	2026-07-02 09:36:27+00
@@ -2654,8 +3031,9 @@ COPY public.inventory (id, product_id, location_code, quantity_on_hand, reorder_
 20	26	main	55	10	2026-06-30 08:48:21+00	2026-05-08 01:59:27+00	2026-07-10 15:56:36+00
 116	196	main	58	10	2026-06-22 11:35:14+00	2026-06-22 11:35:14+00	2026-07-13 13:22:13+00
 121	200	main	85	10	2026-06-22 14:34:56+00	2026-06-22 14:34:56+00	2026-07-13 13:22:13+00
-130	209	main	44	10	2026-06-23 15:47:00+00	2026-06-23 15:47:00+00	2026-07-13 13:22:13+00
-132	211	main	46	10	2026-07-09 15:51:20+00	2026-07-09 15:32:16+00	2026-07-13 13:22:13+00
+118	197	main	86	10	2026-06-22 14:03:33+00	2026-06-22 14:03:33+00	2026-07-20 10:45:40+00
+132	211	main	40	10	2026-07-09 15:51:20+00	2026-07-09 15:32:16+00	2026-07-20 11:10:24+00
+130	209	main	44	10	2026-07-20 11:15:32+00	2026-06-23 15:47:00+00	2026-07-20 11:15:32+00
 \.
 
 
@@ -2906,6 +3284,16 @@ COPY public.inventory_transactions (id, product_id, inventory_id, location_code,
 317	200	121	main	-1	85	order_checkout	\N	2026-07-13 13:22:13	2026-07-13 13:22:13
 318	209	130	main	-1	44	order_checkout	\N	2026-07-13 13:22:13	2026-07-13 13:22:13
 319	211	132	main	-1	46	order_checkout	\N	2026-07-13 13:22:13	2026-07-13 13:22:13
+320	211	132	main	-1	45	order_checkout	\N	2026-07-20 10:35:16	2026-07-20 10:35:16
+321	211	132	main	-1	44	order_checkout	\N	2026-07-20 10:37:39	2026-07-20 10:37:39
+322	211	132	main	-1	43	order_checkout	\N	2026-07-20 10:38:51	2026-07-20 10:38:51
+323	197	118	main	-1	87	order_checkout	\N	2026-07-20 10:44:50	2026-07-20 10:44:50
+324	197	118	main	-1	86	order_checkout	\N	2026-07-20 10:45:40	2026-07-20 10:45:40
+325	211	132	main	-1	42	order_checkout	\N	2026-07-20 10:46:39	2026-07-20 10:46:39
+326	211	132	main	-1	41	order_checkout	\N	2026-07-20 10:56:35	2026-07-20 10:56:35
+327	211	132	main	-1	40	order_checkout	\N	2026-07-20 11:10:24	2026-07-20 11:10:24
+328	209	130	main	-1	43	order_checkout	\N	2026-07-20 11:15:25	2026-07-20 11:15:25
+329	209	130	main	1	44	order_cancelled	\N	2026-07-20 11:15:32	2026-07-20 11:15:32
 \.
 
 
@@ -2921,6 +3309,19 @@ COPY public.jobs (id, queue, payload, attempts, reserved_at, available_at, creat
 499	default	{"uuid":"32fd485f-6acb-49f9-acd8-253f4fb9d11a","displayName":"App\\\\Jobs\\\\InvalidateAdminDashboardCache","job":"Illuminate\\\\Queue\\\\CallQueuedHandler@call","maxTries":null,"maxExceptions":null,"failOnTimeout":false,"backoff":null,"timeout":null,"retryUntil":null,"data":{"commandName":"App\\\\Jobs\\\\InvalidateAdminDashboardCache","command":"O:38:\\"App\\\\Jobs\\\\InvalidateAdminDashboardCache\\":0:{}"}}	0	\N	1783923733	1783923733
 500	default	{"uuid":"6f480d86-2515-44d3-aecb-197d8ae13397","displayName":"App\\\\Jobs\\\\InvalidateAdminDashboardCache","job":"Illuminate\\\\Queue\\\\CallQueuedHandler@call","maxTries":null,"maxExceptions":null,"failOnTimeout":false,"backoff":null,"timeout":null,"retryUntil":null,"data":{"commandName":"App\\\\Jobs\\\\InvalidateAdminDashboardCache","command":"O:38:\\"App\\\\Jobs\\\\InvalidateAdminDashboardCache\\":0:{}"}}	0	\N	1783923768	1783923768
 501	default	{"uuid":"1f4a3294-519d-43c8-98fe-87429f62ef4a","displayName":"App\\\\Jobs\\\\InvalidateAdminDashboardCache","job":"Illuminate\\\\Queue\\\\CallQueuedHandler@call","maxTries":null,"maxExceptions":null,"failOnTimeout":false,"backoff":null,"timeout":null,"retryUntil":null,"data":{"commandName":"App\\\\Jobs\\\\InvalidateAdminDashboardCache","command":"O:38:\\"App\\\\Jobs\\\\InvalidateAdminDashboardCache\\":0:{}"}}	0	\N	1783923770	1783923770
+502	default	{"uuid":"bfc9390e-3a23-4325-9b65-a46fd5e15b76","displayName":"App\\\\Jobs\\\\InvalidateAdminDashboardCache","job":"Illuminate\\\\Queue\\\\CallQueuedHandler@call","maxTries":null,"maxExceptions":null,"failOnTimeout":false,"backoff":null,"timeout":null,"retryUntil":null,"data":{"commandName":"App\\\\Jobs\\\\InvalidateAdminDashboardCache","command":"O:38:\\"App\\\\Jobs\\\\InvalidateAdminDashboardCache\\":0:{}"}}	0	\N	1784518516	1784518516
+503	default	{"uuid":"c01764c7-c1d8-43fe-b280-9d037e2a276e","displayName":"App\\\\Jobs\\\\InvalidateAdminDashboardCache","job":"Illuminate\\\\Queue\\\\CallQueuedHandler@call","maxTries":null,"maxExceptions":null,"failOnTimeout":false,"backoff":null,"timeout":null,"retryUntil":null,"data":{"commandName":"App\\\\Jobs\\\\InvalidateAdminDashboardCache","command":"O:38:\\"App\\\\Jobs\\\\InvalidateAdminDashboardCache\\":0:{}"}}	0	\N	1784518659	1784518659
+504	default	{"uuid":"3c96dc44-0e09-4250-949a-a66a1f310dc6","displayName":"App\\\\Jobs\\\\InvalidateAdminDashboardCache","job":"Illuminate\\\\Queue\\\\CallQueuedHandler@call","maxTries":null,"maxExceptions":null,"failOnTimeout":false,"backoff":null,"timeout":null,"retryUntil":null,"data":{"commandName":"App\\\\Jobs\\\\InvalidateAdminDashboardCache","command":"O:38:\\"App\\\\Jobs\\\\InvalidateAdminDashboardCache\\":0:{}"}}	0	\N	1784518731	1784518731
+505	default	{"uuid":"a0512d1c-6b54-4e16-b80c-2abf49361f9b","displayName":"App\\\\Notifications\\\\OrderConfirmationNotification","job":"Illuminate\\\\Queue\\\\CallQueuedHandler@call","maxTries":3,"maxExceptions":null,"failOnTimeout":false,"backoff":"10,30,60","timeout":null,"retryUntil":null,"data":{"commandName":"Illuminate\\\\Notifications\\\\SendQueuedNotifications","command":"O:48:\\"Illuminate\\\\Notifications\\\\SendQueuedNotifications\\":4:{s:11:\\"notifiables\\";O:29:\\"Illuminate\\\\Support\\\\Collection\\":2:{s:8:\\"\\u0000*\\u0000items\\";a:1:{i:0;O:44:\\"Illuminate\\\\Notifications\\\\AnonymousNotifiable\\":1:{s:6:\\"routes\\";a:1:{s:4:\\"mail\\";s:21:\\"doviethoang@gmail.com\\";}}}s:28:\\"\\u0000*\\u0000escapeWhenCastingToString\\";b:0;}s:12:\\"notification\\";O:47:\\"App\\\\Notifications\\\\OrderConfirmationNotification\\":2:{s:5:\\"order\\";O:45:\\"Illuminate\\\\Contracts\\\\Database\\\\ModelIdentifier\\":5:{s:5:\\"class\\";s:16:\\"App\\\\Models\\\\Order\\";s:2:\\"id\\";i:302;s:9:\\"relations\\";a:4:{i:0;s:5:\\"items\\";i:1;s:13:\\"items.product\\";i:2;s:13:\\"items.variant\\";i:3;s:7:\\"payment\\";}s:10:\\"connection\\";s:5:\\"pgsql\\";s:15:\\"collectionClass\\";N;}s:2:\\"id\\";s:36:\\"061f6eb3-4c91-4193-ba75-c1fe7c2e64a7\\";}s:8:\\"channels\\";a:1:{i:0;s:4:\\"mail\\";}s:5:\\"tries\\";i:3;}"}}	0	\N	1784519090	1784519090
+506	default	{"uuid":"cd2b6373-b843-4cad-88c7-024f2924e9cc","displayName":"App\\\\Jobs\\\\InvalidateAdminDashboardCache","job":"Illuminate\\\\Queue\\\\CallQueuedHandler@call","maxTries":null,"maxExceptions":null,"failOnTimeout":false,"backoff":null,"timeout":null,"retryUntil":null,"data":{"commandName":"App\\\\Jobs\\\\InvalidateAdminDashboardCache","command":"O:38:\\"App\\\\Jobs\\\\InvalidateAdminDashboardCache\\":0:{}"}}	0	\N	1784519090	1784519090
+507	default	{"uuid":"f14694dc-1a9d-41a3-b9f9-5365da73918f","displayName":"App\\\\Jobs\\\\InvalidateAdminDashboardCache","job":"Illuminate\\\\Queue\\\\CallQueuedHandler@call","maxTries":null,"maxExceptions":null,"failOnTimeout":false,"backoff":null,"timeout":null,"retryUntil":null,"data":{"commandName":"App\\\\Jobs\\\\InvalidateAdminDashboardCache","command":"O:38:\\"App\\\\Jobs\\\\InvalidateAdminDashboardCache\\":0:{}"}}	0	\N	1784519140	1784519140
+508	default	{"uuid":"2b5e0462-34fe-462d-957e-5181311e9dbb","displayName":"App\\\\Notifications\\\\OrderConfirmationNotification","job":"Illuminate\\\\Queue\\\\CallQueuedHandler@call","maxTries":3,"maxExceptions":null,"failOnTimeout":false,"backoff":"10,30,60","timeout":null,"retryUntil":null,"data":{"commandName":"Illuminate\\\\Notifications\\\\SendQueuedNotifications","command":"O:48:\\"Illuminate\\\\Notifications\\\\SendQueuedNotifications\\":4:{s:11:\\"notifiables\\";O:29:\\"Illuminate\\\\Support\\\\Collection\\":2:{s:8:\\"\\u0000*\\u0000items\\";a:1:{i:0;O:44:\\"Illuminate\\\\Notifications\\\\AnonymousNotifiable\\":1:{s:6:\\"routes\\";a:1:{s:4:\\"mail\\";s:21:\\"doviethoang@gmail.com\\";}}}s:28:\\"\\u0000*\\u0000escapeWhenCastingToString\\";b:0;}s:12:\\"notification\\";O:47:\\"App\\\\Notifications\\\\OrderConfirmationNotification\\":2:{s:5:\\"order\\";O:45:\\"Illuminate\\\\Contracts\\\\Database\\\\ModelIdentifier\\":5:{s:5:\\"class\\";s:16:\\"App\\\\Models\\\\Order\\";s:2:\\"id\\";i:303;s:9:\\"relations\\";a:2:{i:0;s:5:\\"items\\";i:1;s:4:\\"user\\";}s:10:\\"connection\\";s:5:\\"pgsql\\";s:15:\\"collectionClass\\";N;}s:2:\\"id\\";s:36:\\"86834863-b00b-4136-9500-693193a1f00e\\";}s:8:\\"channels\\";a:1:{i:0;s:4:\\"mail\\";}s:5:\\"tries\\";i:3;}"}}	0	\N	1784519177	1784519177
+509	default	{"uuid":"de7a8c1b-9397-4ff2-9c4b-38fe03ee8edb","displayName":"App\\\\Jobs\\\\InvalidateAdminDashboardCache","job":"Illuminate\\\\Queue\\\\CallQueuedHandler@call","maxTries":null,"maxExceptions":null,"failOnTimeout":false,"backoff":null,"timeout":null,"retryUntil":null,"data":{"commandName":"App\\\\Jobs\\\\InvalidateAdminDashboardCache","command":"O:38:\\"App\\\\Jobs\\\\InvalidateAdminDashboardCache\\":0:{}"}}	0	\N	1784519199	1784519199
+510	default	{"uuid":"71ee1a94-2e33-4f57-bb14-2b33cd60818e","displayName":"App\\\\Jobs\\\\InvalidateAdminDashboardCache","job":"Illuminate\\\\Queue\\\\CallQueuedHandler@call","maxTries":null,"maxExceptions":null,"failOnTimeout":false,"backoff":null,"timeout":null,"retryUntil":null,"data":{"commandName":"App\\\\Jobs\\\\InvalidateAdminDashboardCache","command":"O:38:\\"App\\\\Jobs\\\\InvalidateAdminDashboardCache\\":0:{}"}}	0	\N	1784519795	1784519795
+511	default	{"uuid":"b1a92344-ff86-4735-9816-49b764d757c9","displayName":"App\\\\Jobs\\\\InvalidateAdminDashboardCache","job":"Illuminate\\\\Queue\\\\CallQueuedHandler@call","maxTries":null,"maxExceptions":null,"failOnTimeout":false,"backoff":null,"timeout":null,"retryUntil":null,"data":{"commandName":"App\\\\Jobs\\\\InvalidateAdminDashboardCache","command":"O:38:\\"App\\\\Jobs\\\\InvalidateAdminDashboardCache\\":0:{}"}}	0	\N	1784520624	1784520624
+512	default	{"uuid":"2f435856-24ee-4d32-92de-84a27e28a036","displayName":"App\\\\Notifications\\\\OrderConfirmationNotification","job":"Illuminate\\\\Queue\\\\CallQueuedHandler@call","maxTries":3,"maxExceptions":null,"failOnTimeout":false,"backoff":"10,30,60","timeout":null,"retryUntil":null,"data":{"commandName":"Illuminate\\\\Notifications\\\\SendQueuedNotifications","command":"O:48:\\"Illuminate\\\\Notifications\\\\SendQueuedNotifications\\":4:{s:11:\\"notifiables\\";O:29:\\"Illuminate\\\\Support\\\\Collection\\":2:{s:8:\\"\\u0000*\\u0000items\\";a:1:{i:0;O:44:\\"Illuminate\\\\Notifications\\\\AnonymousNotifiable\\":1:{s:6:\\"routes\\";a:1:{s:4:\\"mail\\";s:21:\\"doviethoang@gmail.com\\";}}}s:28:\\"\\u0000*\\u0000escapeWhenCastingToString\\";b:0;}s:12:\\"notification\\";O:47:\\"App\\\\Notifications\\\\OrderConfirmationNotification\\":2:{s:5:\\"order\\";O:45:\\"Illuminate\\\\Contracts\\\\Database\\\\ModelIdentifier\\":5:{s:5:\\"class\\";s:16:\\"App\\\\Models\\\\Order\\";s:2:\\"id\\";i:306;s:9:\\"relations\\";a:2:{i:0;s:5:\\"items\\";i:1;s:4:\\"user\\";}s:10:\\"connection\\";s:5:\\"pgsql\\";s:15:\\"collectionClass\\";N;}s:2:\\"id\\";s:36:\\"6bcf2bee-48ab-4f30-a144-353907a7545b\\";}s:8:\\"channels\\";a:1:{i:0;s:4:\\"mail\\";}s:5:\\"tries\\";i:3;}"}}	0	\N	1784520655	1784520655
+513	default	{"uuid":"9949d152-0cfa-4322-87c7-e4a2b3937889","displayName":"App\\\\Jobs\\\\InvalidateAdminDashboardCache","job":"Illuminate\\\\Queue\\\\CallQueuedHandler@call","maxTries":null,"maxExceptions":null,"failOnTimeout":false,"backoff":null,"timeout":null,"retryUntil":null,"data":{"commandName":"App\\\\Jobs\\\\InvalidateAdminDashboardCache","command":"O:38:\\"App\\\\Jobs\\\\InvalidateAdminDashboardCache\\":0:{}"}}	0	\N	1784520925	1784520925
+514	default	{"uuid":"7f065bd7-0a1b-42a1-9788-a0f4f7f1f68f","displayName":"App\\\\Jobs\\\\InvalidateAdminDashboardCache","job":"Illuminate\\\\Queue\\\\CallQueuedHandler@call","maxTries":null,"maxExceptions":null,"failOnTimeout":false,"backoff":null,"timeout":null,"retryUntil":null,"data":{"commandName":"App\\\\Jobs\\\\InvalidateAdminDashboardCache","command":"O:38:\\"App\\\\Jobs\\\\InvalidateAdminDashboardCache\\":0:{}"}}	0	\N	1784520932	1784520932
 \.
 
 
@@ -3091,7 +3492,6 @@ COPY public.order_items (id, order_id, product_id, product_name_snapshot, quanti
 232	289	208	Mic Karaoke khg dây Acnos MiCar 3 Live	1	1990000.00	1990000.00	520
 233	289	209	Máy in Laser Brother HL-L2321D	1	2990000.00	2990000.00	521
 234	290	198	Case máy tính Asus ROG Hyperion GR701	1	14990000.00	14990000.00	494
-235	291	9	iPhone 14 Pro Max	1	33990000.00	33990000.00	26
 236	292	46	Robot hút bụi lau nhà và máy hút bụi cầm tay Ecovacs Deebot T30S Combo	1	14990000.00	14990000.00	329
 237	292	198	Case máy tính Asus ROG Hyperion GR701	1	13000000.00	13000000.00	493
 238	292	199	Mainboard ASUS ROG Strix Z890 - Gaming WiFi	1	11490000.00	11490000.00	495
@@ -3106,6 +3506,15 @@ COPY public.order_items (id, order_id, product_id, product_name_snapshot, quanti
 247	298	200	Tản nhiệt nước ASUS ROG Strix LC III 240 ARGB	1	3990000.00	3990000.00	498
 248	298	209	Máy in Laser Brother HL-L2321D	1	2690000.00	2690000.00	521
 249	298	211	PC CPS X MSI Gaming Intel i7 Gen 14 Kèm màn hình	1	33990000.00	33990000.00	543
+250	299	211	PC CPS X MSI Gaming Intel i7 Gen 14 Kèm màn hình	1	33990000.00	33990000.00	543
+251	300	211	PC CPS X MSI Gaming Intel i7 Gen 14 Kèm màn hình	1	33990000.00	33990000.00	543
+252	301	211	PC CPS X MSI Gaming Intel i7 Gen 14 Kèm màn hình	1	33990000.00	33990000.00	543
+253	302	197	Nguồn ASUS ROG THOR 1200W Platinum II	1	9000000.00	9000000.00	491
+254	303	197	Nguồn ASUS ROG THOR 1200W Platinum II	1	7990000.00	7990000.00	490
+255	304	211	PC CPS X MSI Gaming Intel i7 Gen 14 Kèm màn hình	1	33990000.00	33990000.00	543
+256	305	211	PC CPS X MSI Gaming Intel i7 Gen 14 Kèm màn hình	1	33990000.00	33990000.00	543
+257	306	211	PC CPS X MSI Gaming Intel i7 Gen 14 Kèm màn hình	1	33990000.00	33990000.00	543
+258	307	209	Máy in Laser Brother HL-L2321D	1	2690000.00	2690000.00	521
 \.
 
 
@@ -3159,12 +3568,6 @@ COPY public.order_status_histories (id, order_id, from_status, to_status, change
 244	290	paid	shipped	11	\N	2026-07-03 09:12:43+00	2026-07-03 09:12:43+00
 245	290	shipped	delivered	11	\N	2026-07-03 09:12:46+00	2026-07-03 09:12:46+00
 246	290	delivered	completed	353	\N	2026-07-03 09:13:08+00	2026-07-03 09:13:08+00
-247	291	pending	processing	11	\N	2026-07-06 09:44:18+00	2026-07-06 09:44:18+00
-248	291	processing	paid	11	\N	2026-07-06 09:44:21+00	2026-07-06 09:44:21+00
-249	291	paid	shipped	11	\N	2026-07-06 09:44:23+00	2026-07-06 09:44:23+00
-250	291	shipped	delivered	11	\N	2026-07-06 09:44:28+00	2026-07-06 09:44:28+00
-251	291	delivered	completed	354	\N	2026-07-06 09:44:48+00	2026-07-06 09:44:48+00
-252	291	delivered	completed	354	\N	2026-07-06 09:44:48+00	2026-07-06 09:44:48+00
 253	292	pending	processing	11	\N	2026-07-06 14:00:31+00	2026-07-06 14:00:31+00
 254	292	processing	paid	11	\N	2026-07-06 14:00:35+00	2026-07-06 14:00:35+00
 255	292	paid	shipped	11	\N	2026-07-06 14:00:38+00	2026-07-06 14:00:38+00
@@ -3197,6 +3600,7 @@ COPY public.order_status_histories (id, order_id, from_status, to_status, change
 282	298	paid	shipped	10	\N	2026-07-13 13:22:29+00	2026-07-13 13:22:29+00
 283	298	shipped	delivered	10	\N	2026-07-13 13:22:31+00	2026-07-13 13:22:31+00
 284	298	delivered	completed	10	\N	2026-07-13 13:22:50+00	2026-07-13 13:22:50+00
+285	307	pending_payment	cancelled	11	\N	2026-07-20 11:15:32+00	2026-07-20 11:15:32+00
 \.
 
 
@@ -3218,9 +3622,17 @@ COPY public.orders (id, order_code, user_id, cart_id, coupon_id, shipping_method
 285	ET-B0511390260702	346	\N	\N	\N	pending	pending	VND	1990000.00	0.00	0.00	1990000.00	Nguyễn Văn An	1234567890	123, 124, 125, 126	\N	\N	\N	\N	2026-07-02 10:57:49+00	2026-07-02 10:57:49+00	\N	0	0	0.00
 290	ET-7DFDD49B260703	353	\N	\N	4	completed	paid	VND	14990000.00	0.00	0.00	14990000.00	Tiến Nguyễn	1234567890	123, 123, 123, 123	\N	\N	\N	\N	2026-07-03 09:12:20+00	2026-07-03 09:13:08+00	118	149	0	0.00
 288	ET-423435A4260702	11	\N	\N	4	completed	paid	VND	13980000.00	0.00	0.00	13980000.00	Đỗ Việt Hoàng	1234567890	Số 5, Ngõ 2, Kiều Mai, Phường Xuân Phương, Quận Nam Từ LIêm, Thành Phố Hà Nội	\N	\N	\N	\N	2026-07-02 17:24:01+00	2026-07-02 17:24:45+00	\N	279	0	0.00
+306	ET-4966EFD6260720	11	\N	\N	4	pending	paid	VND	33990000.00	0.00	0.00	33990000.00	Đỗ Việt Hoàng	1234567890	Số 5, Ngõ 2, Kiều Mai, Phường Xuân Phương, Quận Nam Từ LIêm, Thành Phố Hà Nội	\N	\N	\N	\N	2026-07-20 11:10:24+00	2026-07-20 11:10:55+00	\N	0	0	0.00
 298	ET-2B5BE745260713	10	\N	2	\N	completed	paid	VND	90660000.00	18132000.00	0.00	72482500.00	E-TECH MARKET	1234567890	123, 123, 123, 123	\N	\N	\N	\N	2026-07-13 13:22:13+00	2026-07-13 13:22:50+00	\N	725	91	45500.00
+299	ET-EB07946D260720	11	\N	\N	4	pending_payment	pending_payment	VND	33990000.00	0.00	0.00	33990000.00	Đỗ Việt Hoàng	1234567890	Số 5, Ngõ 2, Kiều Mai, Phường Xuân Phương, Quận Nam Từ LIêm, Thành Phố Hà Nội	\N	\N	\N	\N	2026-07-20 10:35:16+00	2026-07-20 10:35:16+00	\N	0	0	0.00
+300	ET-AACB4D0D260720	11	\N	\N	4	pending_payment	pending_payment	VND	33990000.00	0.00	0.00	33990000.00	Đỗ Việt Hoàng	1234567890	Số 5, Ngõ 2, Kiều Mai, Phường Xuân Phương, Quận Nam Từ LIêm, Thành Phố Hà Nội	\N	\N	\N	\N	2026-07-20 10:37:39+00	2026-07-20 10:37:39+00	\N	0	0	0.00
+301	ET-A8DE0FC6260720	11	\N	\N	4	pending_payment	pending_payment	VND	33990000.00	0.00	0.00	33990000.00	Đỗ Việt Hoàng	1234567890	Số 5, Ngõ 2, Kiều Mai, Phường Xuân Phương, Quận Nam Từ LIêm, Thành Phố Hà Nội	\N	\N	\N	\N	2026-07-20 10:38:51+00	2026-07-20 10:38:51+00	\N	0	0	0.00
+302	ET-15626938260720	11	\N	\N	4	pending	pending	VND	9000000.00	0.00	0.00	9000000.00	Đỗ Việt Hoàng	1234567890	Số 5, Ngõ 2, Kiều Mai, Phường Xuân Phương, Quận Nam Từ LIêm, Thành Phố Hà Nội	\N	\N	\N	\N	2026-07-20 10:44:50+00	2026-07-20 10:44:50+00	\N	0	0	0.00
 289	ET-D30F26E1260702	11	\N	\N	4	completed	paid	VND	4980000.00	0.00	0.00	4980000.00	Đỗ Việt Hoàng	1234567890	Số 5, Ngõ 2, Kiều Mai, Phường Xuân Phương, Quận Nam Từ LIêm, Thành Phố Hà Nội	\N	\N	\N	\N	2026-07-02 17:33:04+00	2026-07-02 17:33:42+00	\N	99	0	0.00
-291	ET-C043EB94260706	354	\N	\N	\N	completed	paid	VND	33990000.00	0.00	0.00	33990000.00	Nguyễn Văn B	0987654321	123, 124, 125, 126	\N	\N	\N	\N	2026-07-06 09:44:06+00	2026-07-06 09:44:48+00	\N	339	0	0.00
+303	ET-86AE21C6260720	11	\N	\N	4	pending	paid	VND	7990000.00	0.00	0.00	7990000.00	Đỗ Việt Hoàng	1234567890	Số 5, Ngõ 2, Kiều Mai, Phường Xuân Phương, Quận Nam Từ LIêm, Thành Phố Hà Nội	\N	\N	\N	\N	2026-07-20 10:45:40+00	2026-07-20 10:46:17+00	\N	0	0	0.00
+304	ET-C61B769E260720	11	\N	\N	4	pending_payment	pending_payment	VND	33990000.00	0.00	0.00	33990000.00	Đỗ Việt Hoàng	1234567890	Số 5, Ngõ 2, Kiều Mai, Phường Xuân Phương, Quận Nam Từ LIêm, Thành Phố Hà Nội	\N	\N	\N	\N	2026-07-20 10:46:39+00	2026-07-20 10:46:39+00	\N	0	0	0.00
+305	ET-CB5D0FDA260720	11	\N	\N	4	pending_payment	pending_payment	VND	33990000.00	0.00	0.00	33990000.00	Đỗ Việt Hoàng	1234567890	Số 5, Ngõ 2, Kiều Mai, Phường Xuân Phương, Quận Nam Từ LIêm, Thành Phố Hà Nội	\N	\N	\N	\N	2026-07-20 10:56:35+00	2026-07-20 10:56:35+00	\N	0	0	0.00
+307	ET-0243CF5D260720	11	\N	\N	4	cancelled	pending_payment	VND	2690000.00	0.00	0.00	2690000.00	Đỗ Việt Hoàng	1234567890	Số 5, Ngõ 2, Kiều Mai, Phường Xuân Phương, Quận Nam Từ LIêm, Thành Phố Hà Nội	\N	\N	\N	\N	2026-07-20 11:15:25+00	2026-07-20 11:15:32+00	\N	0	0	0.00
 292	ET-DF2FC504260706	11	\N	\N	4	completed	paid	VND	39480000.00	0.00	0.00	38980000.00	Đỗ Việt Hoàng	1234567890	Số 5, Ngõ 2, Kiều Mai, Phường Xuân Phương, Quận Nam Từ LIêm, Thành Phố Hà Nội	\N	\N	\N	\N	2026-07-06 13:58:38+00	2026-07-06 14:02:07+00	\N	789	1000	500000.00
 293	ET-2B6E1591260708	10	\N	\N	\N	completed	paid	VND	9100000.00	0.00	0.00	9100000.00	E-TECH MARKET	1234567890	123, 123, 123, 123	\N	\N	\N	\N	2026-07-08 14:49:49+00	2026-07-08 14:50:31+00	\N	91	0	0.00
 \.
@@ -3249,7 +3661,6 @@ COPY public.payments (id, order_id, method, amount, currency, transaction_code, 
 193	288	cod	13980000.00	VND	\N	paid	2026-07-02 17:24:43+00	2026-07-02 17:24:01+00	2026-07-02 17:24:43+00
 194	289	cod	4980000.00	VND	\N	paid	2026-07-02 17:33:40+00	2026-07-02 17:33:04+00	2026-07-02 17:33:40+00
 195	290	cod	14990000.00	VND	\N	paid	2026-07-03 09:13:01+00	2026-07-03 09:12:20+00	2026-07-03 09:13:01+00
-196	291	cod	33990000.00	VND	\N	paid	2026-07-06 09:44:44+00	2026-07-06 09:44:06+00	2026-07-06 09:44:44+00
 197	292	vnpay	38980000.00	VND	15611263	paid	2026-07-06 13:59:56+00	2026-07-06 13:58:38+00	2026-07-06 13:59:56+00
 198	293	cod	9100000.00	VND	\N	paid	2026-07-08 14:50:26+00	2026-07-08 14:49:49+00	2026-07-08 14:50:26+00
 191	286	cod	3020000.00	VND	\N	paid	2026-07-09 14:27:13+00	2026-07-02 11:24:56+00	2026-07-09 14:27:13+00
@@ -3258,6 +3669,15 @@ COPY public.payments (id, order_id, method, amount, currency, transaction_code, 
 201	296	vnpay	33958000.00	VND	15615481	paid	2026-07-09 15:52:16+00	2026-07-09 15:51:41+00	2026-07-09 15:52:16+00
 202	297	vnpay	37570000.00	VND	15616549	paid	2026-07-10 15:57:21+00	2026-07-10 15:56:36+00	2026-07-10 15:57:21+00
 203	298	cod	72482500.00	VND	\N	paid	2026-07-13 13:22:48+00	2026-07-13 13:22:13+00	2026-07-13 13:22:48+00
+204	299	momo	33990000.00	VND	\N	pending	\N	2026-07-20 10:35:16+00	2026-07-20 10:35:16+00
+205	300	vnpay	33990000.00	VND	\N	pending	\N	2026-07-20 10:37:39+00	2026-07-20 10:37:39+00
+206	301	vnpay	33990000.00	VND	\N	pending	\N	2026-07-20 10:38:51+00	2026-07-20 10:38:51+00
+207	302	cod	9000000.00	VND	\N	pending	\N	2026-07-20 10:44:50+00	2026-07-20 10:44:50+00
+208	303	vnpay	7990000.00	VND	15627535	paid	2026-07-20 10:46:17+00	2026-07-20 10:45:40+00	2026-07-20 10:46:17+00
+209	304	vnpay	33990000.00	VND	\N	pending	\N	2026-07-20 10:46:39+00	2026-07-20 10:46:39+00
+210	305	vnpay	33990000.00	VND	\N	pending	\N	2026-07-20 10:56:35+00	2026-07-20 10:56:35+00
+211	306	vnpay	33990000.00	VND	15627555	paid	2026-07-20 11:10:55+00	2026-07-20 11:10:24+00	2026-07-20 11:10:55+00
+212	307	vnpay	2690000.00	VND		failed	\N	2026-07-20 11:15:25+00	2026-07-20 11:15:32+00
 \.
 
 
@@ -3464,14 +3884,15 @@ COPY public.personal_access_tokens (id, tokenable_type, tokenable_id, name, toke
 323	App\\Models\\User	18	auth	6da980f4dc1a8641be2e5adfc1968e371865c5482dfcf39dfd20dc59193d6172	["*"]	\N	2026-07-11 14:43:06	2026-07-10 14:43:06	2026-07-10 14:43:06
 324	App\\Models\\User	17	auth	e090a446f5c3d56ba3dc39055b4304e1a93312ce8fc514d0692543dae615dc23	["*"]	\N	2026-07-11 15:03:14	2026-07-10 15:03:14	2026-07-10 15:03:14
 327	App\\Models\\User	17	auth	37aa1074a9a0661d608d5bea35b34241357a796632c888995c923e369639526e	["*"]	2026-07-10 16:15:41	2026-07-11 15:52:43	2026-07-10 15:52:43	2026-07-10 16:15:41
-338	App\\Models\\User	11	auth	b51fb515ea92c6a255525da96da52dac46c33f5ede9d919d79de3136f066cbe0	["*"]	2026-07-13 14:37:12	2026-07-14 13:19:45	2026-07-13 13:19:45	2026-07-13 14:37:12
 332	App\\Models\\User	357	auth	6cfc9fc27285972b107c8e8e6d6a104988ba8537d1c1c091036e565e8d52aa95	["*"]	2026-07-10 16:31:24	2026-07-11 16:27:16	2026-07-10 16:27:16	2026-07-10 16:31:24
 328	App\\Models\\User	357	auth	a127909921fa45c5664c9b0ea3e47b7a03ca5bc361e47598f4d3d16a01b071e9	["*"]	2026-07-10 16:24:51	2026-07-11 16:24:44	2026-07-10 16:24:44	2026-07-10 16:24:51
 329	App\\Models\\User	357	auth	e187eb22db9e1813bd8256a9dcdc4a110bc476e36a85be6b36c4d04ef4ecc052	["*"]	2026-07-10 16:25:01	2026-07-11 16:24:55	2026-07-10 16:24:55	2026-07-10 16:25:01
 333	App\\Models\\User	350	auth	ad33509445deb03d6eb1d619714479b93e2faf3e43e4084218cbbd67f914d040	["*"]	2026-07-10 16:31:52	2026-07-11 16:31:44	2026-07-10 16:31:44	2026-07-10 16:31:52
 326	App\\Models\\User	11	auth	6dd472af5aba99bf457e0aa601bef442b0be3e0a1fc88bb166b488980a680b8d	["*"]	2026-07-10 16:51:42	2026-07-11 15:17:16	2026-07-10 15:17:16	2026-07-10 16:51:42
 330	App\\Models\\User	357	auth	6553521c53472f7fdb966c63f10bebf8acd628baf637cfc171d1607e95d28e56	["*"]	2026-07-10 16:26:38	2026-07-11 16:25:23	2026-07-10 16:25:23	2026-07-10 16:26:38
-340	App\\Models\\User	10	auth	e77c3790c81fdb37d16ba2cadf6ff6264479c182c35b09a9bbdf49940d2a46b5	["*"]	2026-07-13 14:23:14	2026-07-14 13:20:23	2026-07-13 13:20:23	2026-07-13 14:23:14
+341	App\\Models\\User	11	auth	fa780fcb4c98c53b2ef9d79c37a5154ad4b60f6a8fbbe642b6b1d36145ef6442	["*"]	2026-07-20 11:19:22	2026-07-21 09:44:36	2026-07-20 09:44:36	2026-07-20 11:19:22
+340	App\\Models\\User	10	auth	e77c3790c81fdb37d16ba2cadf6ff6264479c182c35b09a9bbdf49940d2a46b5	["*"]	2026-07-13 15:52:51	2026-07-14 13:20:23	2026-07-13 13:20:23	2026-07-13 15:52:51
+338	App\\Models\\User	11	auth	b51fb515ea92c6a255525da96da52dac46c33f5ede9d919d79de3136f066cbe0	["*"]	2026-07-13 16:00:00	2026-07-14 13:19:45	2026-07-13 13:19:45	2026-07-13 16:00:00
 \.
 
 
@@ -3487,8 +3908,6 @@ COPY public.point_history (id, user_id, order_id, points_changed, action_type, d
 5	11	288	279	EARN	Tích điểm từ đơn hàng #ET-423435A4260702	2026-07-02 17:24:45	2026-07-02 17:24:45
 6	11	289	99	EARN	Tích điểm từ đơn hàng #ET-D30F26E1260702	2026-07-02 17:33:42	2026-07-02 17:33:42
 7	353	290	149	EARN	Tích điểm từ đơn hàng #ET-7DFDD49B260703	2026-07-03 09:13:08	2026-07-03 09:13:08
-8	354	291	339	EARN	Tích điểm từ đơn hàng #ET-C043EB94260706	2026-07-06 09:44:48	2026-07-06 09:44:48
-9	354	291	339	EARN	Tích điểm từ đơn hàng #ET-C043EB94260706	2026-07-06 09:44:48	2026-07-06 09:44:48
 10	11	292	-1000	SPEND	Đổi điểm mua hàng cho đơn #ET-DF2FC504260706	2026-07-06 13:58:38	2026-07-06 13:58:38
 11	11	292	789	EARN	Tích điểm từ đơn hàng #ET-DF2FC504260706	2026-07-06 14:02:07	2026-07-06 14:02:07
 12	11	292	789	EARN	Tích điểm từ đơn hàng #ET-DF2FC504260706	2026-07-06 14:02:07	2026-07-06 14:02:07
@@ -5475,10 +5894,11 @@ COPY public.product_variants (id, product_id, variant_name, color, configuration
 35	9	Tím 128GB	Tím	128GB	IPH-9-69F95471-13	21990000.00	48	/storage/variants/RY6URi3M4Pj7eEZ79fpZPrZr92hw7knEbZUoxCt8.webp	t	2026-05-05 02:22:41	2026-07-01 14:34:50	\N	\N	\N	\N	\N
 331	48	Xiaomi Water Flosser 2	Trñng	200ml-2200mAh	M?�Y-48-6A02EBBE-1	780000.00	17	\N	t	2026-05-12 15:58:38	2026-06-01 10:26:34	\N	\N	\N	\N	\N
 483	196	RTX 4090 Founders Edition	Đen - Bạc	24GB GDDR6X, 384-bit, Boost 2.52 GHz, 16384 CUDA cores	NVI-196-6A38BB82-1	49990000.00	19	http://localhost:8000/storage/variants/N2ZIB4AL6tfMjc44JU3D7mUtC8dzhOr2mQW2B2TY.png	t	2026-06-22 11:35:14	2026-07-13 13:22:13	\N	\N	\N	\N	\N
+491	197	ROG THOR 1200W Platinum II	Đen - Bạc	Chuẩn 80 Plus Platinum, quạt ROG, dây bọc lưới, OLED hiển thị	NGU-197-6A38DE45-3	9990000.00	29	http://localhost:8000/storage/variants/nxg9iCZHKfTh8eOnWF13zwdYhqyYxKaNMTm1mwIx.png	t	2026-06-22 14:03:33	2026-07-20 10:44:50	\N	\N	\N	\N	\N
+490	197	ROG THOR 1000W Platinum II	Đen	Chuẩn 80 Plus Platinum, quạt 135mm, màn hình OLED hiển thị công suất	NGU-197-6A38DE45-2	7990000.00	28	http://localhost:8000/storage/variants/fNHzmeACR8DiFZv6okV0lcGPPY12TZpSTtOfJXF8.png	t	2026-06-22 14:03:33	2026-07-20 10:45:40	\N	\N	\N	\N	\N
 509	204	ROG Strix UltraSpeed RGB White	Trắng - RGB	HDMI 2.1, hí trí 8K@60Hz, d?y bchh l?íchi 2m	Cơ�P-204-6A3A3E65-2	720000.00	30	http://localhost:8000/storage/variants/6R0Zzja5soPsBEiCFW2gD4EtpXHRVTQWC50P1hj2.png	t	2026-06-23 15:05:57	2026-07-01 10:25:14	\N	\N	\N	\N	\N
 507	203	ROG USB-C Hub Premium	Đen - RGB-Pre	6 cñng USB-A, 2 HDMI, 1 Ethernet, 1 SD, 1 microSD	HUB-203-6A3A3B3C-3	2490000.00	30	http://localhost:8000/storage/variants/gISyiwiDXpcVC9MpQNGTceOR0ZeilTUo7xUufVOO.png	t	2026-06-23 14:52:28	2026-07-01 10:28:07	\N	\N	\N	\N	\N
 329	46	Ecovacs Deebot T30S Combo	Đen	11.000Pa	ROB-46-6A02DF3C-2	14990000.00	18	http://localhost:8000/storage/variants/b3vhbJa4Y74GozJFoPP0Hu0wtHTyVdeUgVlGAnBE.webp	t	2026-05-12 15:05:16	2026-07-06 13:58:38	\N	\N	\N	\N	\N
-491	197	ROG THOR 1200W Platinum II	Đen - Bạc	Chuẩn 80 Plus Platinum, quạt ROG, dây bọc lưới, OLED hiển thị	NGU-197-6A38DE45-3	9990000.00	30	http://localhost:8000/storage/variants/nxg9iCZHKfTh8eOnWF13zwdYhqyYxKaNMTm1mwIx.png	t	2026-06-22 14:03:33	2026-07-01 10:54:26	\N	\N	\N	\N	\N
 493	198	ROG Hyperion GR701 White Edition	Trăng	Full-tower, hỗ trợ main E-ATX, 4 quạt ARGB, kính cường lực	Ví -198-6A38E1C9-2	13490000.00	26	http://localhost:8000/storage/variants/o4xOMeVpvJvhmc7qjh3riYhgORx3Xa5cnzJw94b9.png	t	2026-06-22 14:18:33	2026-07-06 13:58:38	\N	\N	\N	\N	\N
 476	192	ROG Moonlight White Edition	Trắng 	Ultra 9 285K / Z890 Code / 64GB RAM / 2TB Gen5 / RTX 5090 White / Loki 1000W	C S-192-6A101C12-2	120000000.00	48	http://localhost:8000/storage/variants/NpgYCH1hvhLbfrqpMJAazjZgSz92YOp9GVE8Mg6x.png	t	2026-05-22 16:04:18	2026-07-01 11:05:27	\N	percentage	5.00	2026-06-11 11:42:00	2026-06-29 11:42:00
 475	192	ROG Ultimate Black Edition	Đen 	Ultra 9 285K / Z890 Hero / 64GB RAM / 2TB Gen5 / RTX 5090 / Thor 1200W	C S-192-6A101C11-1	120000000.00	17	http://localhost:8000/storage/variants/fHVweMnHr7wnMWC335sSPPWhCJ7rExfmMETghrtt.png	t	2026-05-22 16:04:17	2026-07-01 11:05:27	\N	\N	5.00	2026-06-03 13:50:00	2026-06-28 13:50:00
@@ -5497,10 +5917,8 @@ COPY public.product_variants (id, product_id, variant_name, color, configuration
 479	193	ASUS ROG Strix RTX 5090 Gaming	Đen	GDDR7 32GB OC	NVI-193-6A26449F-2	132000000.00	19	http://localhost:8000/storage/variants/5NgOuHe6UeC1MtG6p5AKZ8G3QnQMh3KK1a23Y55a.png	t	2026-06-08 11:27:11	2026-07-01 15:07:17	\N	\N	\N	\N	\N
 480	193	MSI RTX 5090 SUPRIM X	Đen	GDDR7 32GB OC	NVI-193-6A26449F-3	91999000.00	16	http://localhost:8000/storage/variants/aQfntU7UnrrMfeArycnXzFRcbjtrtYoOI2qFiuJ5.png	t	2026-06-08 11:27:11	2026-07-01 15:07:17	\N	\N	\N	\N	\N
 478	193	RTX 5090 Founders Edition	Đen	DDR7 32GB Reference	NVI-193-6A26449F-1	83000000.00	7	http://localhost:8000/storage/variants/rvUyCAqFdmqX1nAOKkbhifPPWuv4jqEPuxvxBJiT.png	t	2026-06-08 11:27:11	2026-07-01 15:07:17	\N	fixed	3000000.00	2026-06-13 16:03:00	2026-06-27 16:03:00
-490	197	ROG THOR 1000W Platinum II	Đen	Chuẩn 80 Plus Platinum, quạt 135mm, màn hình OLED hiển thị công suất	NGU-197-6A38DE45-2	7990000.00	29	http://localhost:8000/storage/variants/fNHzmeACR8DiFZv6okV0lcGPPY12TZpSTtOfJXF8.png	t	2026-06-22 14:03:33	2026-07-02 08:51:25	\N	\N	\N	\N	\N
 485	196	RTX 4090 MSI Suprim Liquid X	Đen - Bạc	24GB GDDR6X, 384-bit, Boost 2.625 GHz (Extreme 2.64 GHz), 16384 CUDA cores	NVI-196-6A38BB82-3	57990000.00	19	http://localhost:8000/storage/variants/voEC55JHx6PoeRGHHKA669c0E24JJ1U5OgQBWcKy.png	t	2026-06-22 11:35:14	2026-07-09 15:07:27	\N	\N	\N	\N	\N
 498	200	ROG Strix LC III 240 ARGB Black	Đen - RGB	Radiator 240mm, 2 qu�?t ARGB 120mm, socket Intel/AMD	ASU-200-6A38E5A0-1	3990000.00	27	http://localhost:8000/storage/variants/nqOkggz6Vh96VYRDH8NMsiDcbEKXEUnYQgLMXzCv.png	t	2026-06-22 14:34:56	2026-07-13 13:22:13	\N	\N	\N	\N	\N
-521	209	Brother HL-L2321D	Xám	In laser trắng đen, A4, 30 trang/phút, Duplex tự động, USB 2.0, khay giấy 250 tờ	M?�Y-209-6A3A4804-1	2990000.00	44	http://localhost:8000/storage/variants/JTMXKC7aaMULFRhlsa9tasv0jMJH5EQCg5JSalCu.jpg	t	2026-06-23 15:47:00	2026-07-13 13:22:13	\N	fixed	300000.00	2026-07-08 22:11:00	2026-07-31 10:12:00
 482	193	ASUS ROG Strix RTX 5090 EVA Edition	Tím	GDDR7 32GB OC (Limited EVA)	NVI-193-6A26449F-5	134990000.00	18	http://localhost:8000/storage/variants/xnkgv0BtEZaQ7FwQX1ceSUzWtGp5p1fOHlz5z4dG.png	t	2026-06-08 11:27:11	2026-07-01 15:07:17	\N	\N	\N	\N	\N
 518	207	Shure MV6 Silver	Bạc	USB/XLR, DSP tchh h�?p, ?m tha 24-bit	MIC-207-6A3A4479-2	5090000.00	30	http://localhost:8000/storage/variants/kSZ75UmTB9lyJyQwD4C0qK2uxrxjs6bpQhRoVGCD.png	t	2026-06-23 15:31:53	2026-07-01 10:15:41	\N	\N	\N	\N	\N
 519	207	Shure MV6 Premium	Đen - RGB - Pre	USB/XLR, DSP nñng cao, ?m tha Hi?��Res, RGB vi�?n mic	MIC-207-6A3A4479-3	5490000.00	30	http://localhost:8000/storage/variants/vtCcUJQ1yx9K1F3u32ZZloQxZJrybMyQ3EpghbJ4.png	t	2026-06-23 15:31:53	2026-07-01 10:15:41	\N	\N	\N	\N	\N
@@ -5519,6 +5937,7 @@ COPY public.product_variants (id, product_id, variant_name, color, configuration
 504	202	Infinity 120mm White	Trắng - RGB	Quạt 120mm, LED RGB cí ?��?�, vg sñng Infinity Mirror	QU�?�-202-6A38E7B0-2	210000.00	24	http://localhost:8000/storage/variants/aoAt0r0wqkkeaZXS9os44NicTIn39C2PDTz2vcOf.webp	t	2026-06-22 14:43:44	2026-07-01 10:30:51	\N	\N	\N	\N	\N
 502	201	Xigmatek EPIX II White	Trắng - RGB	6 ống đồng, quạt ARGB 120mm, hỗ trợ LGA1700/AM5	T�?�N-201-6A38E6A3-2	920000.00	39	http://localhost:8000/storage/variants/9xjPbtzclQ2CTIotaV2zZeFfd0E8Xlvn4CQXy0ke.png	t	2026-06-22 14:39:15	2026-07-02 09:36:27	\N	\N	\N	\N	\N
 495	199	ROG Strix Z890-E Gaming WiFi	Đen - RGB	ATX, 4 khe RAM DDR5, PCIe 5.0, WiFi 7, thôim cñng M.2	ASU-199-6A38E415-1	11490000.00	26	http://localhost:8000/storage/variants/b6Ttqa1TN20iEHYamwO10UoRT1DbLcXn7RAYSHxE.png	t	2026-06-22 14:28:21	2026-07-06 13:58:38	\N	\N	\N	\N	\N
+521	209	Brother HL-L2321D	Xám	In laser trắng đen, A4, 30 trang/phút, Duplex tự động, USB 2.0, khay giấy 250 tờ	M?�Y-209-6A3A4804-1	2990000.00	44	http://localhost:8000/storage/variants/JTMXKC7aaMULFRhlsa9tasv0jMJH5EQCg5JSalCu.jpg	t	2026-06-23 15:47:00	2026-07-20 11:15:32	\N	fixed	300000.00	2026-07-08 22:11:00	2026-07-31 10:12:00
 520	208	Acnos MiCar 3 Live	Đen	Micro karaoke không dây + vang sác DSP + Bluetooth 5.0	MIC-208-6A3A4697-1	1990000.00	47	http://localhost:8000/storage/variants/QpDjTJAnzBMToIPb9IBduZRG8ksmxNeRhPuD0PBR.png	t	2026-06-23 15:40:55	2026-07-09 14:58:00	\N	\N	\N	\N	\N
 489	197	ROG THOR 850W Platinum II	Đen	Chuẩn 80 Plus Platinum, quạt 135mm, OLED, hiệu suất 92%	NGU-197-6A38DE45-1	6990000.00	29	http://localhost:8000/storage/variants/IumDVGXxwL3rxfkDJoX9HOIYhCvCsUlHcWdFyKVR.png	t	2026-06-22 14:03:33	2026-07-01 10:54:26	\N	\N	\N	\N	\N
 501	201	Xigmatek EPIX II Black	Đen - RGB	6 ống đồng, quạt ARGB 120mm, hỗ trợ LGA1700/AM5	T�?�N-201-6A38E6A3-1	890000.00	39	http://localhost:8000/storage/variants/ee6SxiIdXXTNqTlkC6OFm3uVM3zMxYVOCEESvF5Z.webp	t	2026-06-22 14:39:15	2026-07-02 08:51:25	\N	\N	\N	\N	\N
@@ -5571,13 +5990,26 @@ COPY public.product_variants (id, product_id, variant_name, color, configuration
 536	7	ASUS TUF F15 FX507ZC	Đen	i5-12500H / RTX 3050	ASU-7-6A44C621-3	24990000.00	50	http://localhost:8000/storage/variants/ZAzd4zmCzUOMSEmy4SJ30IQs1cifnG0WiulljhLc.png	t	2026-07-01 14:47:45	2026-07-01 14:47:45	\N	\N	\N	\N	\N
 537	7	ASUS TUF F15 FX507VU	Đen	i7-13620H / RTX 4050	ASU-7-6A44C621-4	31990000.00	50	http://localhost:8000/storage/variants/tpl46vP6CCs3PaKyqiixPHjmfSfmjqN9QXb33F9B.png	t	2026-07-01 14:47:45	2026-07-01 14:47:45	\N	\N	\N	\N	\N
 538	7	ASUS TUF F15 FX507VV	Đen	i9-13900H / RTX 4060	ASU-7-6A44C621-5	39990000.00	50	http://localhost:8000/storage/variants/7FQSVwxN7g4tU4SCAZ1jxprn7X7lpmx55YUAjaIg.png	t	2026-07-01 14:47:45	2026-07-01 14:47:45	\N	\N	\N	\N	\N
-543	211	PC CPS X MSI Gaming i7 14700F / 16GB RAM / 500GB SSD / RTX 5060 / Màn hình 24 inch	Đen - Đèn LED RGB	Intel Core i7 14700F, RAM 16GB DDR5 6000Mhz, SSD 500GB PCIe Gen4, VGA MSI RTX 5060 8GB, Màn hình MSI MAG 245PF X24 24"	PC -211-6A4F5C90-1	36990000.00	46	http://localhost:8000/storage/variants/0WkgE6nm8ZrAVUTPC7HLZsvv67hPlnzskHCOiCk6.webp	t	2026-07-09 15:32:16	2026-07-13 13:22:13	\N	fixed	400000.00	2026-07-09 01:32:00	2026-07-31 01:32:00
+543	211	PC CPS X MSI Gaming i7 14700F / 16GB RAM / 500GB SSD / RTX 5060 / Màn hình 24 inch	Đen - Đèn LED RGB	Intel Core i7 14700F, RAM 16GB DDR5 6000Mhz, SSD 500GB PCIe Gen4, VGA MSI RTX 5060 8GB, Màn hình MSI MAG 245PF X24 24"	PC -211-6A4F5C90-1	36990000.00	40	http://localhost:8000/storage/variants/0WkgE6nm8ZrAVUTPC7HLZsvv67hPlnzskHCOiCk6.webp	t	2026-07-09 15:32:16	2026-07-20 11:10:24	\N	fixed	400000.00	2026-07-09 01:32:00	2026-07-31 01:32:00
 540	3	UAG Plyo iPhone 15 Pro Ash	Xám khói (Ash)	TPU + PC chống sốc	ỐP -3-6A44C8DC-2	700000.00	20	http://localhost:8000/storage/variants/7tmlNOWa9h0p6KmfzcH5oSV4Hc3ZytRiXaIU2SN8.png	t	2026-07-01 14:59:24	2026-07-01 14:59:24	\N	\N	\N	\N	\N
 541	3	UAG Plyo MagSafe iPhone 15 Pro Ice	Trong suốt + MagSafe	TPU + PC + nam châm	ỐP -3-6A44C8DC-3	850000.00	20	http://localhost:8000/storage/variants/UX39Kq8nIRHyaRm6NCJLXPATPtnpzUj1bYXXg6xo.jpg	t	2026-07-01 14:59:24	2026-07-01 14:59:24	\N	\N	\N	\N	\N
 542	3	UAG Plyo MagSafe iPhone 15 Pro Ash	Xám khói + MagSafe	TPU + PC + nam châm	ỐP -3-6A44C8DC-4	850000.00	20	http://localhost:8000/storage/variants/LVt9HZEAqnZpvNkAFoMJCXFWC7VSTkiMp28hpb4Z.png	t	2026-07-01 14:59:24	2026-07-01 14:59:24	\N	\N	\N	\N	\N
 500	200	ROG Strix LC III 240 ARGB Premium	Đen - RGB-Pre	Radiator 240mm, 2 qu�?t ARGB, bym c�?i ti�?, logo ROG ph?t sñng	ASU-200-6A38E5A0-3	4490000.00	29	http://localhost:8000/storage/variants/6Kz9adlYWrAS91MFBizy4JHWSt9QmSLC51qHxdJm.png	t	2026-06-22 14:34:56	2026-07-02 08:51:25	\N	\N	\N	\N	\N
 26	9	Đen 1TB	Đen	1TB	IPH-9-69F95471-4	33990000.00	49	/storage/variants/RU3xgbuxG7oye8FGakU18xyhk4n025EVCtcumMgy.webp	t	2026-05-05 02:22:41	2026-07-06 09:44:06	\N	\N	\N	\N	\N
 539	3	UAG Plyo iPhone 15 Pro Ice	Trong suốt (Ice)	TPU + PC chống sốc	ỐP -3-6A44C8DC-1	700000.00	7	http://localhost:8000/storage/variants/0PcK9Z1rdwP4UjyGYpEeNPBM62IJW9JbhLBiBo4n.jpg	t	2026-07-01 14:59:24	2026-07-08 14:49:49	\N	\N	\N	\N	\N
+\.
+
+
+--
+-- Data for Name: product_video; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.product_video (id, video_id, product_id, created_at, updated_at) FROM stdin;
+1	4	200	2026-07-20 03:00:10.383657	2026-07-20 03:00:10.383657
+2	5	199	2026-07-20 03:00:10.383657	2026-07-20 03:00:10.383657
+3	1	23	2026-07-20 03:00:10.383657	2026-07-20 03:00:10.383657
+4	6	196	\N	\N
+5	6	193	\N	\N
 \.
 
 
@@ -5732,6 +6164,9 @@ COPY public.transactions (id, payment_id, provider, provider_transaction_id, amo
 71	200	vnpay	0	33958000.00	VND	failed	{"vnp_Amount": "3395800000", "vnp_TxnRef": "ET-1971144D260709", "vnp_PayDate": "20260709155140", "vnp_TmnCode": "MCLYG8VX", "vnp_BankCode": "VNPAY", "vnp_CardType": "QRCODE", "vnp_OrderInfo": "Thanh toan don ET-1971144D260709", "vnp_ResponseCode": "24", "vnp_TransactionNo": "0", "vnp_TransactionStatus": "02"}	2026-07-09 08:51:19.978649+00
 72	201	vnpay	15615481	33958000.00	VND	success	{"vnp_Amount": "3395800000", "vnp_TxnRef": "ET-E3F0C98F260709", "vnp_PayDate": "20260709155230", "vnp_TmnCode": "MCLYG8VX", "vnp_BankCode": "NCB", "vnp_CardType": "ATM", "vnp_OrderInfo": "Thanh toan don ET-E3F0C98F260709", "vnp_BankTranNo": "VNP15615481", "vnp_ResponseCode": "00", "vnp_TransactionNo": "15615481", "vnp_TransactionStatus": "00"}	2026-07-09 08:52:16.287681+00
 73	202	vnpay	15616549	37570000.00	VND	success	{"vnp_Amount": "3757000000", "vnp_TxnRef": "ET-1F9D3A18260710", "vnp_PayDate": "20260710155741", "vnp_TmnCode": "MCLYG8VX", "vnp_BankCode": "NCB", "vnp_CardType": "ATM", "vnp_OrderInfo": "Thanh toan don ET-1F9D3A18260710", "vnp_BankTranNo": "VNP15616549", "vnp_ResponseCode": "00", "vnp_TransactionNo": "15616549", "vnp_TransactionStatus": "00"}	2026-07-10 08:57:21.706323+00
+74	208	vnpay	15627535	7990000.00	VND	success	{"vnp_Amount": "799000000", "vnp_TxnRef": "ET-86AE21C6260720", "vnp_PayDate": "20260720104636", "vnp_TmnCode": "MCLYG8VX", "vnp_BankCode": "NCB", "vnp_CardType": "ATM", "vnp_OrderInfo": "Thanh toan don ET-86AE21C6260720", "vnp_BankTranNo": "VNP15627535", "vnp_ResponseCode": "00", "vnp_TransactionNo": "15627535", "vnp_TransactionStatus": "00"}	2026-07-20 03:46:17.175929+00
+75	211	vnpay	15627555	33990000.00	VND	success	{"vnp_Amount": "3399000000", "vnp_TxnRef": "ET-4966EFD6260720", "vnp_PayDate": "20260720111115", "vnp_TmnCode": "MCLYG8VX", "vnp_BankCode": "NCB", "vnp_CardType": "ATM", "vnp_OrderInfo": "Thanh toan don ET-4966EFD6260720", "vnp_BankTranNo": "VNP15627555", "vnp_ResponseCode": "00", "vnp_TransactionNo": "15627555", "vnp_TransactionStatus": "00"}	2026-07-20 04:10:55.848986+00
+76	212	vnpay	\N	2690000.00	VND	failed	{"vnp_Amount": "269000000", "vnp_TxnRef": "ET-0243CF5D260720", "vnp_PayDate": "20260720111555", "vnp_TmnCode": "MCLYG8VX", "vnp_BankCode": "VNPAY", "vnp_CardType": "QRCODE", "vnp_OrderInfo": "Thanh toan don ET-0243CF5D260720", "vnp_ResponseCode": "24", "vnp_TransactionNo": "0", "vnp_TransactionStatus": "02"}	2026-07-20 04:15:32.830078+00
 \.
 
 
@@ -5753,23 +6188,16 @@ COPY public.user_coupons (id, user_id, coupon_id, created_at, updated_at) FROM s
 
 COPY public.users (id, name, email, password, phone, address_line, province, district, ward, is_active, email_verified_at, remember_token, created_at, updated_at, deleted_at, avatar_url, current_points, total_spent, rank_id, google2fa_secret, google2fa_enabled, google_id) FROM stdin;
 73	?�í Vi�?t Hoñng	doviethoang07042005@gmail.com	$2y$12$b24R0tVlcJVHgpt77jNd4.EObcQACoG6.fH6845Mxdma03/KhOHYy	\N	\N	\N	\N	\N	t	2026-05-21 16:30:37+00	\N	2026-05-21 16:30:37+00	2026-06-29 16:15:42+00	\N	https://lh3.googleusercontent.com/a/ACg8ocLbwb5cfjn47mo39bVnxEq_tUoO2gHj4xtct3dMfjsWPfCg6T_O=s96-c	0	0.00	\N	\N	f	\N
-342	test user	testuser@gmail.com	$2y$12$UcKTkMoBfKlOe9P3c3Vf3eO8wrVZyQzd5Re36yfP5BNa5V2e3Me2K	0987654321	\N	\N	\N	\N	t	\N	\N	2026-05-19 11:28:24+00	2026-06-29 16:15:42+00	\N	\N	0	0.00	\N	\N	f	\N
-343	test user	testuser@etechcom	$2y$12$ZLL/5QxMPlua/Yj0NQAuMk4basZYWQpLA7McpOSwXWw8hvy7Wly	0987654321	\N	\N	\N	\N	t	\N	\N	2026-05-19 11:35:22+00	2026-06-29 16:15:42+00	\N	\N	0	0.00	\N	\N	f	\N
 352	Nguy�?n Ti�? Ph?t	tienphat@gmail.com	$2y$12$W/1qS9yG8SLy8r7ZCrJRrO/E58kYy9Gnw2XJS01ldouIoOpuzqTpi	\N	\N	\N	\N	\N	t	\N	\N	2026-06-18 14:28:54+00	2026-06-29 16:15:42+00	\N	\N	0	0.00	\N	\N	f	\N
 346	Nguyễn Văn An	annguyen@etech.com	$2y$12$KxPzihkh5WsGLppd9nWGxeUZ9pbsd5FmKUG.4mDWrrn6QVPtFtK7.	1234567890	123	126	125	124	t	\N	Erj06Qdfod6U2PKO9fFyugz8tAcc7li3DLsJxNSquaruj4DoPQfYaNtHwsNT	2026-06-01 10:18:54+00	2026-07-02 10:30:42+00	\N	http://nginx:8000/storage/avatars/FBHOSctwyzE2c6uEvdjHKSo0gphQ4fWcuiMGCMsy.png	29	2990000.00	1	\N	f	\N
-350	Hoang Vietdo	hvietdo458@gmail.com	$2y$12$aaaQUYpvrK/O9ZCjUS6s0.32S.DJMCvI7FrAbK1wldgusNC/zunoS	\N	\N	\N	\N	\N	t	2026-06-18 08:25:30+00	\N	2026-06-18 08:25:30+00	2026-07-10 14:18:50+00	\N	https://lh3.googleusercontent.com/a/ACg8ocI2PB9__unY6935B8YjkDdyNnw9V0bcmB6xrSuxHNdkLjNSBA=s96-c	0	0.00	\N	\N	f	102359581752481429190
-354	Nguyễn Văn B	vanb@gmail.com	$2y$12$fVHkJyIbgVx.zcW21fWZku1e0j7pla99Q2XkcRDczhyBf8UwpGEji	0987654321	123	126	125	124	t	\N	\N	2026-06-30 08:34:35+00	2026-07-06 09:44:48+00	\N	http://nginx:8000/storage/avatars/oQmGzDDefHbNXFgZg9uWaAt7hgoNTnYzmgZCAkPJ.png	678	67980000.00	2	\N	f	\N
+11	Đỗ Việt Hoàng	doviethoang@gmail.com	$2y$12$HLzWuy3aXGq2XiZYhHu6WeYygw0NhpswnCjFHkrzNojtBa88gJjri	1234567890	Số 5, Ngõ 2, Kiều Mai	Thành Phố Hà Nội	Quận Nam Từ LIêm	Phường Xuân Phương	t	\N	wfvcetBndAWs4QKjPuFAs0N0XOeh02bILKHEf6lJhFzdEBi3mKW6IXnuvrLw	2026-05-04 23:18:01+00	2026-07-20 09:45:31+00	\N	http://localhost:8000/storage/avatars/hEe0GJE5XwMY09by9Vbwr5HrXez9gxWpdwIgBbWL.png	1743	234959000.00	4	MYDSHLE6KAJHN37V	t	\N
 12	Trần Văn Tuấn	tuantran5448@gmail.com	$2y$12$Y6kLOAm0qT7OeaFpKuti3ux4Ny.2oKNYNSjpPbKlL8aWTw/5yR8eK	0973124568	\N	\N	\N	\N	t	\N	pFnPQGgYGnZFPM3lglqtYCRzJaQJPGOrbmtUtiOxKltOymHHToWsbY2k79qC	2026-05-07 01:54:44+00	2026-07-06 10:07:36+00	\N	\N	0	0.00	\N	\N	f	\N
 353	Tiến Nguyễn	tiennguyen@gmail.com	$2y$12$oMcl.duPJaHbHgk4BxXJreZlMp1Z9gWo247kRbMMhFB5KpIovlPv6	1234567890	123	123	123	123	t	\N	\N	2026-06-18 15:10:43+00	2026-07-03 09:13:08+00	\N	http://nginx:8000/storage/avatars/YNZ0RGbd7p9Jg30qktatLLMEjV0CAoNZis6q51V7.png	149	14990000.00	2	\N	f	\N
-345	Dohoang Viet	vietdohoang61@gmail.com	$2y$12$V9/vlC11JneevqLBCocGbuKz9qAxxZ4PDGk3WF7s7agwJtR2e4TGC	\N	\N	\N	\N	\N	t	2026-05-29 15:58:41+00	\N	2026-05-29 15:58:41+00	2026-07-10 14:23:26+00	\N	https://lh3.googleusercontent.com/a/ACg8ocKN4LizL-YlHUo4gsiFjd_IklKlOvkMvAXPJumrsbJZWs-rTw=s96-c	0	0.00	\N	\N	f	106238838883345994353
 341	Nguyễn Tiến Thành	thanhnguyen@tech.com	$2y$12$lJv8zUr2wHjLmafzVWPdx.L0wfqukFX62CozAenFjKKLU/RurGIuu	0987654321	123	126	125	124	t	\N	\N	2026-05-19 11:19:55+00	2026-07-06 10:04:53+00	\N	\N	0	0.00	\N	\N	f	\N
 347	Phạm Văn Kiên	kienpham@gmail.com	$2y$12$d01EFeH2SPS/OpTT4RkvRecuBx6LD./xmxFez1/VKXA/e2GAf2nxy	1234567890	123	123	123	123	t	\N	\N	2026-06-01 14:05:34+00	2026-07-06 10:06:04+00	\N	http://localhost:8000/storage/avatars/deYycJN7c4wq3zepPI6XFEYv6ruEIbQHN6oyQy6l.jpg	0	0.00	\N	\N	f	\N
-357	Viet Hoangdo	hoangdoviet347@gmail.com	$2y$12$aBnNEDNTWnkl4PoK/p.6Ju9zwoYp4UXmIdDvPU12fsOn4wW9/oxHa	\N	\N	\N	\N	\N	t	\N	\N	2026-07-10 14:37:31+00	2026-07-10 14:37:31+00	\N	https://lh3.googleusercontent.com/a/ACg8ocKNXTxhcIAqV7qw6by4NUHlmynW5-S6ou_fr5cLykq9PtnR2w=s96-c	0	0.00	1	\N	f	103167164374152767778
-344	hoangviet do	hoangvietdo790@gmail.com	$2y$12$IdA/0cXvuZdWy9YGz2HIH.wL01bIBDWmh5jQ4g7FAP4j7QjIYrXeG	0987654321	\N	\N	\N	\N	t	2026-05-20 08:38:10+00	\N	2026-05-20 08:38:10+00	2026-07-10 14:41:26+00	\N	http://localhost:8000/storage/avatars/IYJIRzoBxlJmxHB4Q9NRUiDwSxZ84ScIebnq0I8b.webp	0	0.00	\N	\N	f	108118588351481238193
 18	do hoang	do7509243@gmail.com	$2y$12$l5M5N.l19xW2f8NRs/xmM.SrBjY31hyg4YH3h5cxa823PAvs1Vmxy	\N	\N	\N	\N	\N	t	2026-05-12 09:41:10+00	\N	2026-05-12 09:41:10+00	2026-07-10 14:43:06+00	\N	https://lh3.googleusercontent.com/a/ACg8ocKZ_4Rs0Br3-LHDQxKD_716cNGreG2ZwMZSsDRJFKY64_Q6KA=s96-c	0	0.00	\N	\N	f	107066343840035406585
 10	E-TECH MARKET	e_tech_market@gmail.com	$2y$12$xu3zUMi.Ul4Vziv3N2L6NudnRVKlYhH2eNudWEF/FYuOEv6CDhR4y	1234567890	123	123	123	123	t	\N	yDSPat4wA9brCEiLYm4KFOBX82dDXPNm6HwozyFJIibJdcNQKiwgyjbbPb1a	2026-05-03 20:47:01+00	2026-07-13 13:22:50+00	\N	http://nginx:8000/storage/avatars/mDUg5foUH0qYWvG9PCnujm2Q0d5qWA57IrIkQDLN.png	725	81628000.00	3	\N	f	\N
 17	viet hoang	viethoang7425@gmail.com	$2y$12$uPgIB4MMEkLjmr08DWcs6u8kLeA.bX5UAu0QgVyGewJDQeTyQHInC	0945612378	123	126	125	124	t	2026-05-12 09:40:23+00	\N	2026-05-12 09:40:23+00	2026-07-10 15:58:55+00	\N	http://localhost:8000/storage/avatars/lloZDVwg8cmuymdOfKd4o4ZqwPP96lzLyV7lOgq5.webp	375	37570000.00	2	\N	f	114585305248866029315
-11	Đỗ Việt Hoàng	doviethoang@gmail.com	$2y$12$HLzWuy3aXGq2XiZYhHu6WeYygw0NhpswnCjFHkrzNojtBa88gJjri	1234567890	Số 5, Ngõ 2, Kiều Mai	Thành Phố Hà Nội	Quận Nam Từ LIêm	Phường Xuân Phương	t	\N	wfvcetBndAWs4QKjPuFAs0N0XOeh02bILKHEf6lJhFzdEBi3mKW6IXnuvrLw	2026-05-04 23:18:01+00	2026-07-13 13:15:39+00	\N	http://localhost:8000/storage/avatars/hEe0GJE5XwMY09by9Vbwr5HrXez9gxWpdwIgBbWL.png	1743	234959000.00	4	\N	f	\N
 \.
 
 
@@ -5790,8 +6218,11 @@ COPY public.video_categories (id, name, slug, description, is_active, sort_order
 --
 
 COPY public.videos (id, product_id, title, video_url, thumbnail_url, sort_order, is_active, created_at, updated_at, video_category_id, description) FROM stdin;
+4	200	ĐÓNG HỘP KIỂM TRA LẮP ĐẶT TẢN NHIỆT CPU DẠNG LỎNG ASUS ROG STRIX LC 240 PHIÊN BẢN TRẮNG	ĐÓNG HỘP KIỂM TRA LẮP ĐẶT TẢN NHIỆT CPU DẠNG LỎNG ASUS ROG STRIX LC 240 PHIÊN BẢN TRẮNG	/storage/videos/thumbnails/WFvZGdTj1q8nnZ2ipd3d4FYaBlrRxUHk1aagHMOb.jpg	2	t	2026-07-20 09:51:54	2026-07-20 09:51:54	\N	Khám phá quá trình mở hộp, kiểm tra và lắp đặt **tản nhiệt nước ASUS ROG STRIX LC 240 White Edition** với thiết kế trắng sang trọng, đèn ARGB đồng bộ Aura Sync và hiệu năng làm mát mạnh mẽ. Video mang đến cái nhìn chi tiết về phụ kiện đi kèm, chất lượng hoàn thiện, các bước lắp đặt thực tế cùng đánh giá ban đầu về khả năng tương thích và tính thẩm mỹ, giúp bạn dễ dàng quyết định trước khi nâng cấp dàn PC của mình.
+5	199	Sờ mó Z890 mới nhất tại Việt Nam! ASUS ROG STRIX Z890-A GAMING WIFI, ASUS ROG MAXIMUS Z890 EXTREME	https://www.youtube.com/watch?v=JgU0ICG0loA	https://i.ytimg.com/vi/JgU0ICG0loA/hq720.jpg?sqp=-oaymwErCNAFEJQDSFryq4qpAx0IARUAAIhCGAHYAQHiAQoIGBACGAY4AUABuAL3GA==&rs=AOn4CLCIPTsE09ZDiS_A5Yep4O5IEKzvjA	3	t	2026-07-20 09:52:38	2026-07-20 09:52:38	\N	Trải nghiệm cận cảnh **ASUS ROG STRIX Z890-A GAMING WIFI** và **ROG MAXIMUS Z890 EXTREME** – hai bo mạch chủ cao cấp mới nhất dành cho nền tảng Intel Core Ultra. Video giới thiệu thiết kế nổi bật, hệ thống tản nhiệt, khả năng ép xung, kết nối WiFi 7, PCIe 5.0 cùng những công nghệ tiên tiến giúp tối ưu hiệu năng cho game thủ và người dùng chuyên nghiệp. Khám phá những điểm nổi bật của dòng mainboard ROG Z890 ngay trong video này!
 2	\N	Review iPhone 17 Pro Max ví iPhone 17 Pro	https://www.youtube.com/watch?v=hD3DbxrtMyI	https://i.ytimg.com/vi/hD3DbxrtMyI/hq720.jpg?sqp=-oaymwEnCNAFEJQDSFryq4qpAxkIARUAAIhCGAHYAQHiAQoIGBACGAY4AUAB&rs=AOn4CLCOfcYoiclU9cqD5hBBG4I89lFZMQ	1	t	2026-05-25 10:55:02	2026-07-02 16:07:56	4	Trong video này, chúng ta sẽ cùng so sánh chi tiết iPhone 17 Pro Max và iPhone 17 Pro để tìm ra đâu là lựa chọn phù hợp nhất với nhu cầu của bạn. Video sẽ đánh giá từ thiết kế, kích thước màn hình, hiệu năng, hệ thống camera, thời lượng pin, khả năng sạc cho đến trải nghiệm sử dụng thực tế hằng ngày.\r\n\r\nBên cạnh đó, video cũng phân tích những điểm giống và khác nhau giữa hai phiên bản Pro mới nhất của Apple, giúp bạn dễ dàng quyết định liệu có nên chi thêm để nâng cấp lên Pro Max hay iPhone 17 Pro đã đủ đáp ứng mọi nhu cầu.\r\n\r\n📌 Nội dung chính:\r\n\r\nSo sánh thiết kế và kích thước\r\nChất lượng màn hình\r\nHiệu năng và khả năng tản nhiệt\r\nCamera chụp ảnh, quay video\r\nThời lượng pin và tốc độ sạc\r\nTrải nghiệm chơi game, giải trí và làm việc\r\nƯu, nhược điểm của từng phiên bản\r\nTư vấn nên mua iPhone 17 Pro hay iPhone 17 Pro Max
 1	23	Introducing iPhone 17 Pro | Apple	https://www.youtube.com/watch?v=_-AS5DtDeqs	https://i.ytimg.com/vi/_-AS5DtDeqs/hq720.jpg?sqp=-oaymwEnCNAFEJQDSFryq4qpAxkIARUAAIhCGAHYAQHiAQoIGBACGAY4AUAB&rs=AOn4CLCiW9JuNSOTB80kduACda1LEjkyZg	0	t	2026-05-25 08:10:02	2026-07-02 16:49:09	\N	Khám phá iPhone 17 Pro – mẫu iPhone Pro mạnh mẽ và tiên tiến nhất từ trước đến nay của Apple. Trong video giới thiệu chính thức, Apple mang đến cái nhìn toàn diện về thiết kế hoàn toàn mới với khung nhôm nguyên khối, chip A19 Pro mạnh mẽ, hệ thống tản nhiệt cải tiến, thời lượng pin vượt trội và những nâng cấp đáng giá dành cho người dùng chuyên nghiệp.\r\n\r\nBên cạnh hiệu năng ấn tượng, iPhone 17 Pro còn sở hữu hệ thống camera 48MP thế hệ mới với khả năng zoom quang học chất lượng lên đến 8x, quay video ProRes RAW, hỗ trợ Apple Log 2 và Genlock – những công nghệ giúp việc quay phim chuyên nghiệp trở nên dễ dàng hơn ngay trên điện thoại. Màn hình được bảo vệ bởi Ceramic Shield 2 với khả năng chống trầy xước tốt hơn, mang lại độ bền và trải nghiệm sử dụng cao cấp.\r\n\r\nNội dung nổi bật:\r\n\r\nThiết kế nhôm nguyên khối hoàn toàn mới.\r\nChip A19 Pro với hiệu năng vượt trội.\r\nHệ thống tản nhiệt buồng hơi (Vapor Chamber).\r\nThời lượng pin dài nhất từng có trên iPhone Pro.\r\nCamera 48MP nâng cấp với zoom quang học chất lượng 8x.\r\nQuay video ProRes RAW, Apple Log 2 và Genlock.\r\nCeramic Shield 2 bảo vệ cả mặt trước và mặt sau.\r\nTrải nghiệm Apple Intelligence và các tính năng Pro mới nhất.
+6	196	RTX 5090 vs 4090 for AI inference | Testing DeepSeek R1 Performance	https://www.youtube.com/watch?v=7CAimsP5LOI	https://i.ytimg.com/vi/7CAimsP5LOI/hq720.jpg?sqp=-oaymwErCNAFEJQDSFryq4qpAx0IARUAAIhCGAHYAQHiAQoIGBACGAY4AUABuAL3GA==&rs=AOn4CLCKXAl7IgNzCRo7xpiNdsrp_57nWQ	4	t	2026-07-20 10:13:04	2026-07-20 10:15:18	\N	RTX 5090 vs RTX 4090 cho AI Inference – DeepSeek R1 mạnh đến đâu? 🚀\r\n\r\nLiệu NVIDIA GeForce RTX 5090 có thực sự vượt trội so với RTX 4090 trong các tác vụ AI? Trong video này, chúng ta sẽ trực tiếp so sánh hiệu năng của hai GPU khi chạy mô hình DeepSeek R1, đánh giá tốc độ suy luận (inference), thời gian phản hồi, mức sử dụng VRAM và khả năng xử lý các tác vụ AI cục bộ.\r\n\r\nNếu bạn đang tìm kiếm GPU tốt nhất để chạy các mô hình ngôn ngữ lớn (LLM), lập trình AI, nghiên cứu Machine Learning hoặc triển khai chatbot AI ngay trên máy tính cá nhân, video này sẽ giúp bạn có cái nhìn rõ ràng trước khi quyết định nâng cấp.\r\n\r\nNội dung nổi bật:\r\n\r\n+, So sánh RTX 5090 và RTX 4090 trong AI Inference.\r\n+, Kiểm tra hiệu năng với mô hình DeepSeek R1.\r\n+, Đánh giá tốc độ sinh phản hồi (Tokens/s).\r\n+, So sánh mức sử dụng VRAM và điện năng tiêu thụ.\r\n+, Phân tích hiệu năng trên các kích thước mô hình khác nhau.\r\n+, Kết luận: RTX 5090 có đáng để nâng cấp cho AI hay không?
 \.
 
 
@@ -5858,7 +6289,7 @@ SELECT pg_catalog.setval('public.blog_posts_id_seq', 47, true);
 -- Name: cart_items_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.cart_items_id_seq', 170, true);
+SELECT pg_catalog.setval('public.cart_items_id_seq', 179, true);
 
 
 --
@@ -5907,7 +6338,7 @@ SELECT pg_catalog.setval('public.failed_jobs_id_seq', 31, true);
 -- Name: flash_sale_items_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.flash_sale_items_id_seq', 319, true);
+SELECT pg_catalog.setval('public.flash_sale_items_id_seq', 320, true);
 
 
 --
@@ -5928,14 +6359,14 @@ SELECT pg_catalog.setval('public.inventory_id_seq', 132, true);
 -- Name: inventory_transactions_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.inventory_transactions_id_seq', 319, true);
+SELECT pg_catalog.setval('public.inventory_transactions_id_seq', 329, true);
 
 
 --
 -- Name: jobs_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.jobs_id_seq', 501, true);
+SELECT pg_catalog.setval('public.jobs_id_seq', 514, true);
 
 
 --
@@ -5970,7 +6401,7 @@ SELECT pg_catalog.setval('public.notifications_id_seq', 2, true);
 -- Name: order_items_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.order_items_id_seq', 249, true);
+SELECT pg_catalog.setval('public.order_items_id_seq', 258, true);
 
 
 --
@@ -5984,21 +6415,21 @@ SELECT pg_catalog.setval('public.order_return_requests_id_seq', 5, true);
 -- Name: order_status_histories_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.order_status_histories_id_seq', 284, true);
+SELECT pg_catalog.setval('public.order_status_histories_id_seq', 285, true);
 
 
 --
 -- Name: orders_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.orders_id_seq', 298, true);
+SELECT pg_catalog.setval('public.orders_id_seq', 307, true);
 
 
 --
 -- Name: payments_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.payments_id_seq', 203, true);
+SELECT pg_catalog.setval('public.payments_id_seq', 212, true);
 
 
 --
@@ -6012,7 +6443,7 @@ SELECT pg_catalog.setval('public.permissions_id_seq', 18, true);
 -- Name: personal_access_tokens_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.personal_access_tokens_id_seq', 340, true);
+SELECT pg_catalog.setval('public.personal_access_tokens_id_seq', 341, true);
 
 
 --
@@ -6065,6 +6496,13 @@ SELECT pg_catalog.setval('public.product_variants_id_seq', 543, true);
 
 
 --
+-- Name: product_video_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.product_video_id_seq', 5, true);
+
+
+--
 -- Name: products_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
@@ -6103,7 +6541,7 @@ SELECT pg_catalog.setval('public.shipping_zones_id_seq', 133, true);
 -- Name: transactions_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.transactions_id_seq', 73, true);
+SELECT pg_catalog.setval('public.transactions_id_seq', 76, true);
 
 
 --
@@ -6131,7 +6569,7 @@ SELECT pg_catalog.setval('public.video_categories_id_seq', 5, true);
 -- Name: videos_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.videos_id_seq', 3, true);
+SELECT pg_catalog.setval('public.videos_id_seq', 6, true);
 
 
 --
@@ -6571,6 +7009,14 @@ ALTER TABLE ONLY public.product_variants
 
 ALTER TABLE ONLY public.product_variants
     ADD CONSTRAINT product_variants_sku_unique UNIQUE (sku);
+
+
+--
+-- Name: product_video product_video_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.product_video
+    ADD CONSTRAINT product_video_pkey PRIMARY KEY (id);
 
 
 --
@@ -7489,6 +7935,22 @@ ALTER TABLE ONLY public.product_variants
 
 
 --
+-- Name: product_video product_video_product_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.product_video
+    ADD CONSTRAINT product_video_product_id_fkey FOREIGN KEY (product_id) REFERENCES public.products(id) ON DELETE CASCADE;
+
+
+--
+-- Name: product_video product_video_video_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.product_video
+    ADD CONSTRAINT product_video_video_id_fkey FOREIGN KEY (video_id) REFERENCES public.videos(id) ON DELETE CASCADE;
+
+
+--
 -- Name: products products_category_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -7611,5 +8073,5 @@ REVOKE USAGE ON SCHEMA public FROM PUBLIC;
 -- PostgreSQL database dump complete
 --
 
-\unrestrict d4svAqUDa98eUQwgRLmveg9701nCN4a5pYDePUdWB4dfBhbuCv7b4x600cWhngY
+\unrestrict JyQ8kp1fbYVCLqNO6DQBrUvdnqWCatHRqZXrOZ9z0vdX9Y6D8j8UxTHdjWWZ13P
 
