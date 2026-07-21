@@ -131,9 +131,9 @@ html.dark .hpHeroDescNew {
   inset: 0;
   background: linear-gradient(
     to right,
-    rgba(255, 255, 255, 0.60) 0%,
+    rgba(255, 255, 255, 0.6) 0%,
     rgba(255, 250, 245, 0.28) 42%,
-    rgba(255, 237, 213, 0.10) 100%
+    rgba(255, 237, 213, 0.1) 100%
   );
   z-index: 2;
 }
@@ -338,54 +338,65 @@ html.dark .hpHeroDescNew {
 
 @media (max-width: 1024px) {
   .hpCuratedGrid {
-    grid-template-columns: repeat(2, 1fr);
-    grid-template-rows: auto;
-    height: auto;
-    gap: 20px;
+    grid-template-columns: repeat(5, 1fr);
+    height: 500px;
+    gap: 8px;
   }
 
   .hpCuratedCard--1 {
-    grid-column: span 2;
-    grid-row: auto;
-    height: 300px;
+    grid-column: span 3;
   }
-
-  .hpCuratedCard--2,
+  .hpCuratedCard--2 {
+    grid-column: span 1;
+  }
   .hpCuratedCard--3 {
     grid-column: span 1;
-    grid-row: auto;
-    height: 250px;
   }
-
   .hpCuratedCard--4 {
     grid-column: span 2;
-    grid-row: auto;
-    height: 300px;
   }
-
   .hpCuratedCard--5 {
-    grid-column: span 2;
-    grid-row: auto;
-    height: 300px;
+    grid-column: span 3;
   }
 }
 
 @media (max-width: 768px) {
   .hpCuratedGrid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(5, 1fr);
+    height: 380px;
+    gap: 6px;
   }
 
-  .hpCuratedCard--1,
-  .hpCuratedCard--2,
-  .hpCuratedCard--3,
-  .hpCuratedCard--4,
-  .hpCuratedCard--5 {
+  .hpCuratedCard--1 {
+    grid-column: span 3;
+  }
+  .hpCuratedCard--2 {
     grid-column: span 1;
-    height: 250px;
+  }
+  .hpCuratedCard--3 {
+    grid-column: span 1;
+  }
+  .hpCuratedCard--4 {
+    grid-column: span 2;
+  }
+  .hpCuratedCard--5 {
+    grid-column: span 3;
   }
 
   .hpCuratedTitle {
     font-size: 2rem;
+  }
+
+  .hpCuratedOverlay {
+    padding: 14px;
+  }
+
+  .hpCuratedName {
+    font-size: 1rem;
+  }
+
+  .hpCuratedDesc {
+    font-size: 0.7rem;
   }
 }
 
@@ -689,7 +700,10 @@ html.dark .hpHeroDescNew {
   letter-spacing: 0.08em;
   border-radius: 8px;
   cursor: pointer;
-  transition: background 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
+  transition:
+    background 0.2s ease,
+    transform 0.15s ease,
+    box-shadow 0.2s ease;
   text-transform: uppercase;
   text-align: center;
   text-decoration: none;
@@ -822,18 +836,25 @@ html.dark .hpHeroDescNew {
 
 @media (max-width: 1024px) {
   .hpCuratedGrid {
-    grid-template-columns: repeat(2, 1fr);
-    grid-auto-rows: 300px;
-    height: auto;
-    gap: 15px;
+    grid-template-columns: repeat(5, 1fr);
+    height: 480px;
+    gap: 8px;
   }
 
-  .hpCuratedCard--1,
-  .hpCuratedCard--2,
-  .hpCuratedCard--3,
-  .hpCuratedCard--4,
-  .hpCuratedCard--5 {
+  .hpCuratedCard--1 {
+    grid-column: span 3;
+  }
+  .hpCuratedCard--2 {
     grid-column: span 1;
+  }
+  .hpCuratedCard--3 {
+    grid-column: span 1;
+  }
+  .hpCuratedCard--4 {
+    grid-column: span 2;
+  }
+  .hpCuratedCard--5 {
+    grid-column: span 3;
   }
 
   .hpFutureGrid {
@@ -898,8 +919,39 @@ html.dark .hpHeroDescNew {
 
 @media (max-width: 480px) {
   .hpCuratedGrid {
-    grid-template-columns: 1fr;
-    grid-auto-rows: 240px;
+    grid-template-columns: repeat(5, 1fr);
+    height: 220px;
+    gap: 2px;
+  }
+
+  .hpCuratedCard--1 {
+    grid-column: span 3;
+  }
+  .hpCuratedCard--2 {
+    grid-column: span 1;
+  }
+  .hpCuratedCard--3 {
+    grid-column: span 1;
+  }
+  .hpCuratedCard--4 {
+    grid-column: span 2;
+  }
+  .hpCuratedCard--5 {
+    grid-column: span 3;
+  }
+
+  .hpCuratedOverlay {
+    padding: 10px;
+  }
+
+  .hpCuratedName {
+    font-size: 0.8rem;
+    margin-bottom: 2px;
+  }
+
+  .hpCuratedDesc {
+    font-size: 0.6rem;
+    display: none;
   }
 
   .hpFutureGrid {
@@ -1152,8 +1204,12 @@ html.dark .hpHeroDescNew {
 }
 
 @keyframes coupon-marquee {
-  0% { transform: translateX(0); }
-  100% { transform: translateX(calc(-50% - 10px)); }
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(calc(-50% - 10px));
+  }
 }
 
 .hpCouponCard {
@@ -1783,7 +1839,6 @@ html.dark .hpHeroDescNew {
   width: max-content;
 }
 
-
 .hpCouponCard {
   width: 270px;
   background: #fbf9f4; /* Nền kem như ảnh */
@@ -1795,7 +1850,7 @@ html.dark .hpHeroDescNew {
   box-sizing: border-box;
 
   /* 1. Dùng border dashed truyền thống - Chắc chắn hiển thị */
-  border: 1.5px dashed #ef7a45; 
+  border: 1.5px dashed #ef7a45;
   border-radius: 16px;
 
   /* 2. Đặt vị trí lỗ khuyết (50% là chính giữa theo chiều dọc) */
@@ -1803,13 +1858,29 @@ html.dark .hpHeroDescNew {
   --cut-radius: 8px; /* Bán kính lỗ khuyết */
 
   /* 3. MA THUẬT MASK ĐÁP ỨNG: Vừa đục lỗ nền, vừa bắt viền dashed phải uốn vào trong */
-  -webkit-mask-image: 
-    radial-gradient(circle at 0px var(--cut-pos-y), transparent var(--cut-radius), black calc(var(--cut-radius) + 0.5px)),
-    radial-gradient(circle at 100% var(--cut-pos-y), transparent var(--cut-radius), black calc(var(--cut-radius) + 0.5px));
-  mask-image: 
-    radial-gradient(circle at 0px var(--cut-pos-y), transparent var(--cut-radius), black calc(var(--cut-radius) + 0.5px)),
-    radial-gradient(circle at 100% var(--cut-pos-y), transparent var(--cut-radius), black calc(var(--cut-radius) + 0.5px));
-  
+  -webkit-mask-image:
+    radial-gradient(
+      circle at 0px var(--cut-pos-y),
+      transparent var(--cut-radius),
+      black calc(var(--cut-radius) + 0.5px)
+    ),
+    radial-gradient(
+      circle at 100% var(--cut-pos-y),
+      transparent var(--cut-radius),
+      black calc(var(--cut-radius) + 0.5px)
+    );
+  mask-image:
+    radial-gradient(
+      circle at 0px var(--cut-pos-y),
+      transparent var(--cut-radius),
+      black calc(var(--cut-radius) + 0.5px)
+    ),
+    radial-gradient(
+      circle at 100% var(--cut-pos-y),
+      transparent var(--cut-radius),
+      black calc(var(--cut-radius) + 0.5px)
+    );
+
   -webkit-mask-composite: source-in;
   mask-composite: intersect;
 }
@@ -1817,7 +1888,7 @@ html.dark .hpHeroDescNew {
 /* Vẽ thêm đường viền nửa vòng tròn ôm vào trong lỗ khuyết */
 .hpCouponCard::before,
 .hpCouponCard::after {
-  content: '';
+  content: "";
   position: absolute;
   top: var(--cut-pos-y);
   width: calc(var(--cut-radius) * 2);
@@ -1839,8 +1910,6 @@ html.dark .hpHeroDescNew {
 .hpCouponCard::after {
   right: calc(var(--cut-radius) * -1);
 }
-
-
 
 /* Phần thông tin phía trên */
 .hpCouponCardTop {
@@ -1895,7 +1964,7 @@ html.dark .hpHeroDescNew {
 /* Đường cắt đứt đoạn ở giữa */
 .hpCouponDivider {
   height: 1px;
-  border-top: 1.5px dashed #a1a8b3; 
+  border-top: 1.5px dashed #a1a8b3;
   margin: 10px 0;
   position: relative;
 }

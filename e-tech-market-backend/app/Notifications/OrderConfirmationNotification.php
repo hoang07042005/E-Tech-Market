@@ -28,30 +28,20 @@ class OrderConfirmationNotification extends Notification implements ShouldQueue
         return ['mail'];
     }
 
-    public function toMail(object $notifiable): MailMessage
+    public function toMail(object $notifiable)
     {
         $orderCode = $this->order->order_code ?: ('ET-'.$this->order->id);
-        $totalAmount = number_format((float) $this->order->total_amount, 0, ',', '.').' VND';
+        $subject = 'Xác nhận đơn hàng #'.$orderCode.' - E-Tech Market';
 
-        $mailMessage = (new MailMessage)
-            ->subject('Xác nhận đơn hàng #'.$orderCode.' từ E-Tech Market!')
-            ->greeting('Xin chào '.($this->order->shipping_name ?: 'quý khách').'!')
-            ->line('Cảm ơn bạn đã mua sắm tại E-Tech Market. Đơn hàng của bạn đã được xác nhận thanh toán thành công!')
-            ->line('Mã đơn hàng: #'.$orderCode)
-            ->line('Tổng giá trị đơn hàng: '.$totalAmount)
-            ->line('Địa chỉ giao hàng: '.$this->order->shipping_address_line);
+        $mailable = new \App\Mail\OrderEmail(
+            $this->order,
+            'Xác nhận đơn hàng',
+            'Cảm ơn bạn đã mua sắm tại E-Tech Market. Đơn hàng của bạn đã được xác nhận thanh toán thành công!',
+            $subject
+        );
 
-        $this->order->loadMissing('items');
-        foreach ($this->order->items as $item) {
-            $mailMessage->line('- '.$item->product_name_snapshot.' (x'.$item->quantity.'): '.number_format((float) $item->total_price, 0, ',', '.').' VND');
-        }
-
-        $frontendUrl = rtrim((string) config('app.frontend_url'), '/');
-        $orderUrl = $frontendUrl.'/profile/orders';
-
-        return $mailMessage
-            ->action('Xem chi tiết đơn hàng', $orderUrl)
-            ->line('Chúng tôi sẽ xử lý giao hàng sớm nhất cho bạn!')
-            ->line('Cảm ơn bạn đã tin tưởng lựa chọn E-Tech Market!');
+        // If notifiable has an email, the framework sets the 'to' address automatically,
+        // but we can be explicit if we want: $mailable->to($notifiable->routeNotificationFor('mail'));
+        return $mailable;
     }
 }

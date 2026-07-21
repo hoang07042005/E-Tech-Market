@@ -134,6 +134,30 @@ function avatarToneOf(s: string) {
   return (['beige', 'blue', 'peach', 'sand', 'gray'] as const)[x]
 }
 
+function resolveStatusTone(status: string, fallback: string) {
+  switch (status) {
+    case 'pending': return 'wait'
+    case 'processing': return 'purple'
+    case 'paid': return 'info'
+    case 'shipped': return 'teal'
+    case 'delivered': return 'ok'
+    case 'completed': return 'ok'
+    case 'cancelled': return 'bad'
+    case 'returned': return 'return'
+    default: return fallback
+  }
+}
+
+function resolveReturnStatusLabel(status: string) {
+  switch (status) {
+    case 'pending': return 'Đang chờ xử lý'
+    case 'approved': return 'Đã chấp nhận'
+    case 'refunded': return 'Đã hoàn tiền'
+    case 'rejected': return 'Bị từ chối'
+    default: return status
+  }
+}
+
 function resolveAvatar(url?: string | null) {
   if (!url) return null
   const s = url.trim()
@@ -216,6 +240,16 @@ export default function OrdersAdminPage() {
   const [rrRefundFiles, setRrRefundFiles] = useState<File[]>([])
   const [deleteModalOpen, setDeleteModalOpen] = useState(false)
   const [orderToDelete, setOrderToDelete] = useState<{ id: number; code: string } | null>(null)
+  
+  const [lightboxOpen, setLightboxOpen] = useState(false)
+  const [lightboxUrl, setLightboxUrl] = useState('')
+  const [lightboxType, setLightboxType] = useState<'image' | 'video'>('image')
+
+  const openLightbox = (url: string, type: 'image' | 'video') => {
+    setLightboxUrl(url)
+    setLightboxType(type)
+    setLightboxOpen(true)
+  }
 
   const [filters, setFilters] = useState({
     order_code: '',
@@ -227,6 +261,7 @@ export default function OrdersAdminPage() {
     payment_status: 'all',
   })
   const [page, setPage] = useState(1)
+  const [showAdvancedFilters, setShowAdvancedFilters] = useState(false)
   const switchListTab = (tab: 'all' | 'returns') => {
     setListTab(tab)
     setPage(1)
@@ -493,7 +528,7 @@ export default function OrdersAdminPage() {
               <div className="admOrderHeaderLeft">
                 <div className="admOrderTitleRow">
                   <h2 className="admOrderTitle">Đơn hàng #{detail.order_code}</h2>
-                  <span className={`admOrdersStatus2 tone-${detail.status_tone}`}>{detail.status_label}</span>
+                  <span className={`admOrdersStatus2 tone-${resolveStatusTone(detail.status, detail.status_tone)}`}>{detail.status_label}</span>
                 </div>
                 <div className="admOrderSub">
                   Đặt vào {detail.created_date}, {detail.created_time}
@@ -506,7 +541,7 @@ export default function OrdersAdminPage() {
                 <div className="admOrderCardTitle">Quản lý trạng thái</div>
                 <div className="admOrderStatusPick">
                   <span className="admOrderStatusPickLabel">Trạng thái hiện tại:</span>
-                  <span className={`admOrdersStatus2 tone-${detail.status_tone}`}>{detail.status_label}</span>
+                  <span className={`admOrdersStatus2 tone-${resolveStatusTone(detail.status, detail.status_tone)}`}>{detail.status_label}</span>
                 </div>
               </div>
               <div className="admOrderStatusForm">
@@ -744,7 +779,7 @@ export default function OrdersAdminPage() {
                                 : ''
                       }`}
                     >
-                      {detail.return_request.status}
+                      {resolveReturnStatusLabel(detail.return_request.status)}
                     </span>
                   ) : null}
                 </div>
@@ -754,67 +789,84 @@ export default function OrdersAdminPage() {
                   </div>
                 ) : (
                   <>
-                    <div className="admOrderSupportGrid">
-                      <div className="admOrderSupportBox">
-                        <div className="admOrderSupportLabel">Nội dung yêu cầu</div>
-                        <div className="admOrderSupportValue" style={{ whiteSpace: 'pre-wrap' }}>
-                          {detail.return_request.content || '—'}
+                    <div className="admOrderReturnGrid">
+                      {/* Left: Customer Side */}
+                      <div className="admOrderReturnBox customer-side">
+                        <div className="admOrderReturnBoxHeader">
+                          <div className="admOrderReturnLabel">Nội dung yêu cầu</div>
                         </div>
-                        {Array.isArray(detail.return_request.media) && detail.return_request.media.length ? (
-                          <div style={{ marginTop: 10, display: 'grid', gridTemplateColumns: 'repeat(4, minmax(0, 1fr))', gap: 8 }}>
+                        <div className="admOrderReturnContent">
+                          {detail.return_request.content || 'Không có ghi chú.'}
+                        </div>
+                        {Array.isArray(detail.return_request.media) && detail.return_request.media.length > 0 && (
+                          <div className="admOrderReturnMedia">
                             {detail.return_request.media.slice(0, 8).map((m, i) => {
                               const u = resolveImage(m?.url || null)
                               if (!u) return null
                               const isVideo = (m?.type || '').toString().toLowerCase() === 'video'
                               return isVideo ? (
-                                <video key={i} src={u} controls style={{ width: '100%', height: 88, objectFit: 'cover', borderRadius: 10, background: '#111827' }} />
+                                <div key={i} style={{ position: 'relative', cursor: 'pointer' }} onClick={() => openLightbox(u, 'video')}>
+                                  <video src={u} style={{ width: '100%', aspectRatio: '1', objectFit: 'cover', borderRadius: '8px' }} />
+                                  <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', background: 'rgba(0,0,0,0.5)', color: 'white', borderRadius: '50%', width: '28px', height: '28px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>▶</div>
+                                </div>
                               ) : (
-                                <img key={i} src={u} alt="" style={{ width: '100%', height: 88, objectFit: 'cover', borderRadius: 10, background: '#f3f4f6' }} />
+                                <img key={i} src={u} alt="" style={{ cursor: 'pointer' }} onClick={() => openLightbox(u, 'image')} />
                               )
                             })}
                           </div>
-                        ) : null}
+                        )}
                       </div>
 
-                      <div className="admOrderSupportBox">
-                        <div className="admOrderSupportLabel">Ghi chú admin</div>
-                        <textarea
-                          className="admOrderTextarea"
-                          placeholder="Nhập ghi chú (lý do từ chối / nội dung hoàn tiền...)"
-                          value={rrNote}
-                          onChange={(e) => setRrNote(e.target.value)}
-                        />
+                      {/* Right: Admin Side */}
+                      <div className="admOrderReturnBox admin-side">
+                        <div className="admOrderReturnBoxHeader">
+                          <div className="admOrderReturnLabel">Xử lý của Admin</div>
+                        </div>
+                        
+                        {detail.return_request.status !== 'refunded' && detail.return_request.status !== 'rejected' && (
+                          <textarea
+                            className="admOrderTextarea"
+                            placeholder="Nhập ghi chú (lý do từ chối / nội dung hoàn tiền...)"
+                            value={rrNote}
+                            onChange={(e) => setRrNote(e.target.value)}
+                            style={{ minHeight: 80 }}
+                          />
+                        )}
+
+                        {detail.return_request.admin_note ? (
+                          <div className="admOrderReturnNoteSaved">
+                            <span style={{ fontWeight: 700 }}>Ghi chú đã lưu:</span> {detail.return_request.admin_note}
+                          </div>
+                        ) : null}
+
                         {detail.return_request.status === 'approved' ? (
-                          <div style={{ marginTop: 10 }}>
-                            <div style={{ fontWeight: 900, fontSize: 12, color: 'var(--admin-text-p)' }}>Chứng từ hoàn tiền</div>
+                          <div className="admOrderReturnUpload">
+                            <div className="admOrderReturnUploadTitle">Tải lên chứng từ hoàn tiền</div>
                             <input
                               type="file"
                               multiple
                               accept="image/*,video/*"
                               onChange={(e) => setRrRefundFiles(Array.from(e.target.files || []))}
+                              className="admOrderReturnFileInput"
                             />
-                            <div style={{ marginTop: 6, fontSize: 12, color: 'var(--admin-text-s)' }}>Upload ảnh/video chứng từ hoàn tiền (tối đa 8 file).</div>
                           </div>
                         ) : null}
 
-                        {detail.return_request.admin_note ? (
-                          <div style={{ marginTop: 10, fontSize: 12, color: 'var(--admin-text-s)' }}>
-                            <span style={{ fontWeight: 900 }}>Đã lưu:</span> {detail.return_request.admin_note}
-                          </div>
-                        ) : null}
-
-                        {Array.isArray(detail.return_request.refund_proof) && detail.return_request.refund_proof.length ? (
+                        {Array.isArray(detail.return_request.refund_proof) && detail.return_request.refund_proof.length > 0 ? (
                           <div style={{ marginTop: 10 }}>
-                            <div style={{ fontWeight: 900, fontSize: 12, color: 'var(--admin-text-p)' }}>Chứng từ đã lưu</div>
-                            <div style={{ marginTop: 8, display: 'grid', gridTemplateColumns: 'repeat(4, minmax(0, 1fr))', gap: 8 }}>
+                            <div className="admOrderReturnUploadTitle">Chứng từ đã lưu</div>
+                            <div className="admOrderReturnMedia" style={{ marginTop: 8 }}>
                               {detail.return_request.refund_proof.slice(0, 8).map((m, i) => {
                                 const u = resolveImage(m?.url || null)
                                 if (!u) return null
                                 const isVideo = (m?.type || '').toString().toLowerCase() === 'video'
                                 return isVideo ? (
-                                  <video key={i} src={u} controls style={{ width: '100%', height: 88, objectFit: 'cover', borderRadius: 10, background: '#111827' }} />
+                                  <div key={i} style={{ position: 'relative', cursor: 'pointer' }} onClick={() => openLightbox(u, 'video')}>
+                                    <video src={u} style={{ width: '100%', aspectRatio: '1', objectFit: 'cover', borderRadius: '8px' }} />
+                                    <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', background: 'rgba(0,0,0,0.5)', color: 'white', borderRadius: '50%', width: '28px', height: '28px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>▶</div>
+                                  </div>
                                 ) : (
-                                  <img key={i} src={u} alt="" style={{ width: '100%', height: 88, objectFit: 'cover', borderRadius: 10, background: '#f3f4f6' }} />
+                                  <img key={i} src={u} alt="" style={{ cursor: 'pointer' }} onClick={() => openLightbox(u, 'image')} />
                                 )
                               })}
                             </div>
@@ -823,7 +875,7 @@ export default function OrdersAdminPage() {
                       </div>
                     </div>
 
-                    <div className="admOrderSupportActions">
+                    <div className="admOrderSupportActions" style={{ marginTop: 16 }}>
                       {detail.return_request.status === 'pending' ? (
                         <>
                           <button type="button" className="admOrderDangerBtn" disabled={rrBusy} onClick={() => void rejectReturnRequest()}>
@@ -839,7 +891,7 @@ export default function OrdersAdminPage() {
                         </button>
                       ) : null}
                       {rrError ? (
-                        <div style={{ marginLeft: 'auto', color: '#b91c1c', fontWeight: 900, fontSize: 12 }}>
+                        <div style={{ marginLeft: 'auto', color: '#ef4444', fontWeight: 600, fontSize: 13 }}>
                           {rrError}
                         </div>
                       ) : null}
@@ -854,32 +906,87 @@ export default function OrdersAdminPage() {
                 <div className="admOrderCardTitle">Lịch sử chuyển trạng thái</div>
                 <span className="admOrderChip">{(detail.status_history?.length ?? 0).toLocaleString('vi-VN')} lần</span>
               </div>
-              {!detail.status_history?.length ? (
-                <div className="admOrdersEmpty" style={{ padding: 8 }}>
-                  Chưa có lịch sử.
-                </div>
-              ) : (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                  {detail.status_history.map((h) => (
-                    <div key={h.id} className="admOrderSupportBox" style={{ display: 'flex', justifyContent: 'space-between', gap: 10 }}>
-                      <div style={{ minWidth: 0 }}>
-                        <div style={{ fontWeight: 900, fontSize: 12, color: 'var(--admin-text-p)' }}>
-                          {(h.from_label || '—') + ' → ' + (h.to_label || h.to_status)}
-                        </div>
-                        <div style={{ marginTop: 4, fontWeight: 700, fontSize: 12, color: 'var(--admin-text-s)' }}>
-                          {fmtViTime(h.changed_at)} {h.changed_by?.name ? `• ${h.changed_by.name}` : ''}
-                        </div>
-                        {h.note ? (
-                          <div style={{ marginTop: 6, fontWeight: 600, fontSize: 12, color: 'var(--admin-text-s)' }}>{h.note}</div>
-                        ) : null}
-                      </div>
-                      <span className="admOrderChip">{h.to_label || h.to_status}</span>
+              {(() => {
+                const history = [...(detail.status_history || [])]
+                
+                if (detail.return_request?.status === 'refunded') {
+                  history.unshift({
+                    id: 999999,
+                    from_status: 'returned',
+                    from_label: 'Hoàn trả',
+                    to_status: 'completed',
+                    to_label: 'Hoàn thành (hoàn trả)',
+                    changed_at: detail.return_request.refunded_at || detail.return_request.updated_at || null,
+                    changed_by: null,
+                    note: 'Hoàn tiền thành công'
+                  })
+                }
+
+                if (!history.length) {
+                  return (
+                    <div className="admOrdersEmpty" style={{ padding: 8 }}>
+                      Chưa có lịch sử.
                     </div>
-                  ))}
-                </div>
-              )}
+                  )
+                }
+
+                return (
+                  <div className="admOrderTimeline">
+                    {history.map((h, i) => {
+                      const isLast = i === history.length - 1
+                      return (
+                        <div key={h.id} className="admOrderTimelineItem">
+                          <div className="admOrderTimelineTrack">
+                            <div className="admOrderTimelineDot" />
+                            {!isLast && <div className="admOrderTimelineLine" />}
+                          </div>
+                          <div className="admOrderTimelineContent">
+                            <div className="admOrderTimelineHeader">
+                              <div className="admOrderTimelineTitle">
+                                {h.from_label ? (
+                                  <>
+                                    <span style={{ color: '#94a3b8' }}>{h.from_label}</span>
+                                    <span style={{ margin: '0 8px', color: '#cbd5e1' }}>→</span>
+                                    <span className={`admOrdersStatus2 tone-${resolveStatusTone(h.to_status, 'info')}`} style={{ padding: '2px 8px' }}>
+                                      {h.to_label || h.to_status}
+                                    </span>
+                                  </>
+                                ) : (
+                                  <span className={`admOrdersStatus2 tone-${resolveStatusTone(h.to_status, 'info')}`} style={{ padding: '2px 8px' }}>
+                                    {h.to_label || h.to_status}
+                                  </span>
+                                )}
+                              </div>
+                              <div className="admOrderTimelineTime">{fmtViTime(h.changed_at)}</div>
+                            </div>
+                            {h.changed_by?.name && (
+                              <div className="admOrderTimelineActor">Bởi: {h.changed_by.name}</div>
+                            )}
+                            {h.note && (
+                              <div className="admOrderTimelineNote">{h.note}</div>
+                            )}
+                          </div>
+                        </div>
+                      )
+                    })}
+                  </div>
+                )
+              })()}
             </section>
           </>
+        )}
+
+        {lightboxOpen && (
+          <div className="admOrderLightbox" onClick={() => setLightboxOpen(false)}>
+            <div className="admOrderLightboxContent" onClick={(e) => e.stopPropagation()}>
+              <button className="admOrderLightboxClose" onClick={() => setLightboxOpen(false)}>✕</button>
+              {lightboxType === 'video' ? (
+                <video src={lightboxUrl} controls autoPlay style={{ maxWidth: '100%', maxHeight: '80vh', borderRadius: 8, outline: 'none' }} />
+              ) : (
+                <img src={lightboxUrl} alt="" style={{ maxWidth: '100%', maxHeight: '80vh', borderRadius: 8, objectFit: 'contain' }} />
+              )}
+            </div>
+          </div>
         )}
       </div>
     )
@@ -896,126 +1003,31 @@ export default function OrdersAdminPage() {
 
       <div className="admOrdersKpis">
         <div className="admOrdersKpi">
-          <div className="admOrdersKpiLabel">Tổng đơn hàng</div>
+          <div className="admOrdersKpiLabel"><span>Tổng đơn hàng</span> <span>📦</span></div>
           <div className="admOrdersKpiValue">{stats.total.toLocaleString('vi-VN')}</div>
-          <div className="admOrdersKpiSub ok">+12%</div>
+          <div className="admOrdersKpiSub ok">↑ +12%</div>
         </div>
         <div className="admOrdersKpi">
-          <div className="admOrdersKpiLabel">Chờ xác nhận</div>
+          <div className="admOrdersKpiLabel"><span>Chờ xác nhận</span> <span>⏳</span></div>
           <div className="admOrdersKpiValue warn">{stats.pending.toLocaleString('vi-VN')}</div>
           <div className="admOrdersKpiSub">Yêu cầu xử lý</div>
         </div>
         <div className="admOrdersKpi">
-          <div className="admOrdersKpiLabel">Đang xử lý</div>
+          <div className="admOrdersKpiLabel"><span>Đang xử lý</span> <span>⚙️</span></div>
           <div className="admOrdersKpiValue info">{stats.processing.toLocaleString('vi-VN')}</div>
           <div className="admOrdersKpiSub">Trong kho</div>
         </div>
         <div className="admOrdersKpi">
-          <div className="admOrdersKpiLabel">Hoàn thành</div>
+          <div className="admOrdersKpiLabel"><span>Hoàn thành</span> <span>✅</span></div>
           <div className="admOrdersKpiValue ok">{stats.completed.toLocaleString('vi-VN')}</div>
           <div className="admOrdersKpiSub ok">Giao hàng thành công</div>
         </div>
         <div className="admOrdersKpi">
-          <div className="admOrdersKpiLabel">Đã hủy</div>
+          <div className="admOrdersKpiLabel"><span>Đã hủy</span> <span>❌</span></div>
           <div className="admOrdersKpiValue bad">{stats.canceled.toLocaleString('vi-VN')}</div>
-          <div className="admOrdersKpiSub bad">Thất bại</div>
+          <div className="admOrdersKpiSub bad" style={{ color: '#fca5a5' }}>Thất bại</div>
         </div>
       </div>
-
-      <section className="admOrdersFilterCard">
-        <div className="admOrdersFilterTitle">Bộ lọc nâng cao</div>
-        <div className="admOrdersFilters">
-          <div className="admOrdersField">
-            <div className="admOrdersFieldLabel">Mã đơn hàng</div>
-            <input
-              className="admOrdersInput"
-              placeholder="#ET-XXXX"
-              value={filters.order_code}
-              onChange={(e) => setFilters((p) => ({ ...p, order_code: e.target.value }))}
-            />
-          </div>
-          <div className="admOrdersField">
-            <div className="admOrdersFieldLabel">Tên khách hàng</div>
-            <input
-              className="admOrdersInput"
-              placeholder="Nhập tên…"
-              value={filters.customer}
-              onChange={(e) => setFilters((p) => ({ ...p, customer: e.target.value }))}
-            />
-          </div>
-          <div className="admOrdersField">
-            <div className="admOrdersFieldLabel">Khoảng ngày</div>
-            <div className="admOrdersDateRow">
-              <input
-                className="admOrdersInput"
-                placeholder="dd/mm/yyyy"
-                value={filters.date_from}
-                onChange={(e) => setFilters((p) => ({ ...p, date_from: e.target.value }))}
-              />
-              <span className="admOrdersDateSep">–</span>
-              <input
-                className="admOrdersInput"
-                placeholder="dd/mm/yyyy"
-                value={filters.date_to}
-                onChange={(e) => setFilters((p) => ({ ...p, date_to: e.target.value }))}
-              />
-            </div>
-          </div>
-          <div className="admOrdersField">
-            <div className="admOrdersFieldLabel">Trạng thái</div>
-            <select className="admOrdersSelect" value={filters.status} onChange={(e) => setFilters((p) => ({ ...p, status: e.target.value }))}>
-              <option value="all">Tất cả</option>
-              <option value="pending">Chờ xác nhận</option>
-              <option value="processing">Đã xác nhận</option>
-              <option value="paid">Chuyển bị hàng</option>
-              <option value="shipped">Đang giao</option>
-              <option value="delivered">Đã giao</option>
-              <option value="completed">Hoàn thành</option>
-              <option value="returned">Hoàn trả</option>
-              <option value="cancelled">Hủy</option>
-            </select>
-          </div>
-          <div className="admOrdersField">
-            <div className="admOrdersFieldLabel">Thanh toán</div>
-            <select className="admOrdersSelect" value={filters.payment_method} onChange={(e) => setFilters((p) => ({ ...p, payment_method: e.target.value }))}>
-              <option value="all">Tất cả</option>
-              <option value="cod">COD</option>
-              <option value="vnpay">VNPAY</option>
-              <option value="momo">MoMo</option>
-            </select>
-          </div>
-        </div>
-
-        <div className="admOrdersFilterActions">
-          <button
-            type="button"
-            className="admOrdersLinkBtn"
-            onClick={() => {
-              setFilters({
-                order_code: '',
-                customer: '',
-                date_from: '',
-                date_to: '',
-                status: 'all',
-                payment_method: 'all',
-                payment_status: 'all',
-              })
-              setPage(1)
-            }}
-          >
-            Xóa bộ lọc
-          </button>
-          <button
-            type="button"
-            className="admOrdersBtn primary"
-            onClick={() => {
-              setPage(1)
-            }}
-          >
-            Áp dụng
-          </button>
-        </div>
-      </section>
 
       <div className="admOrdersTop">
         <div>
@@ -1037,6 +1049,111 @@ export default function OrdersAdminPage() {
           </div>
         </div>
       </div>
+
+      <section className="admOrdersFilterToolbar">
+        <div className="admOrdersFiltersRow">
+          <div className="admOrdersInputGroup">
+            <SearchIcon />
+            <input
+              className="admOrdersInput flat"
+              placeholder="Mã đơn hàng (#ET-...)"
+              value={filters.order_code}
+              onChange={(e) => setFilters((p) => ({ ...p, order_code: e.target.value }))}
+            />
+          </div>
+          <div className="admOrdersFilterDivider" />
+          <div className="admOrdersInputGroup">
+            <UserIcon />
+            <input
+              className="admOrdersInput flat"
+              placeholder="Tên khách hàng..."
+              value={filters.customer}
+              onChange={(e) => setFilters((p) => ({ ...p, customer: e.target.value }))}
+            />
+          </div>
+          <div className="admOrdersFilterDivider" />
+          <div className="admOrdersInputGroup dateGroup">
+            <CalendarIcon />
+            <input
+              type="date"
+              className="admOrdersInput flat"
+              title="Từ ngày"
+              value={filters.date_from}
+              onChange={(e) => setFilters((p) => ({ ...p, date_from: e.target.value }))}
+            />
+            <span className="admOrdersDateSep">→</span>
+            <input
+              type="date"
+              className="admOrdersInput flat"
+              title="Đến ngày"
+              value={filters.date_to}
+              onChange={(e) => setFilters((p) => ({ ...p, date_to: e.target.value }))}
+            />
+          </div>
+
+          <button type="button" className="admOrdersFilterToggle" onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}>
+            <FilterIcon /> Lọc thêm
+          </button>
+          
+          <div className="admOrdersFilterActions">
+            <button
+              type="button"
+              className="admOrdersLinkBtn"
+              onClick={() => {
+                setFilters({
+                  order_code: '',
+                  customer: '',
+                  date_from: '',
+                  date_to: '',
+                  status: 'all',
+                  payment_method: 'all',
+                  payment_status: 'all',
+                })
+                setPage(1)
+              }}
+            >
+              Thiết lập lại
+            </button>
+            <button
+              type="button"
+              className="admOrdersBtn primary"
+              onClick={() => {
+                setPage(1)
+              }}
+            >
+              Tìm kiếm
+            </button>
+          </div>
+        </div>
+
+        {showAdvancedFilters && (
+          <div className="admOrdersFiltersAdvanced">
+            <div className="admOrdersField">
+              <div className="admOrdersFieldLabel">Trạng thái</div>
+              <select className="admOrdersSelect" value={filters.status} onChange={(e) => setFilters((p) => ({ ...p, status: e.target.value }))}>
+                <option value="all">Tất cả</option>
+                <option value="pending">Chờ xác nhận</option>
+                <option value="processing">Đã xác nhận</option>
+                <option value="paid">Chuyển bị hàng</option>
+                <option value="shipped">Đang giao</option>
+                <option value="delivered">Đã giao</option>
+                <option value="completed">Hoàn thành</option>
+                <option value="returned">Hoàn trả</option>
+                <option value="cancelled">Hủy</option>
+              </select>
+            </div>
+            <div className="admOrdersField">
+              <div className="admOrdersFieldLabel">Thanh toán</div>
+              <select className="admOrdersSelect" value={filters.payment_method} onChange={(e) => setFilters((p) => ({ ...p, payment_method: e.target.value }))}>
+                <option value="all">Tất cả</option>
+                <option value="cod">COD</option>
+                <option value="vnpay">VNPAY</option>
+                <option value="momo">MoMo</option>
+              </select>
+            </div>
+          </div>
+        )}
+      </section>
 
       <section className="admOrdersTableCard">
        {loading ? (
@@ -1073,9 +1190,20 @@ export default function OrdersAdminPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {rows.map((o) => (
+                  {rows.map((o) => {
+                    const shortCode = o.order_code.length > 8 ? o.order_code.substring(0, 8) + '...' : o.order_code
+                    return (
                     <tr key={o.id}>
-                      <td className="admOrdersCode2">#{o.order_code}</td>
+                      <td className="admOrdersCode2">
+                        <span style={{ color: '#334155', fontWeight: 600 }}>#{shortCode}</span>
+                        <button 
+                          className="admOrdersCopyBtn" 
+                          title="Sao chép mã"
+                          onClick={() => navigator.clipboard.writeText(o.order_code)}
+                        >
+                          <CopyIcon />
+                        </button>
+                      </td>
                       <td>
                         <div className="admOrdersCust2">
                           {o.customer_avatar_url ? (
@@ -1093,7 +1221,7 @@ export default function OrdersAdminPage() {
                       <td className="admOrdersTotal2">{fmtVnd(o.total_amount)}đ</td>
                       <td className="admOrdersPay2">{o.payment_method}</td>
                       <td>
-                        <span className={`admOrdersStatus2 tone-${o.status_tone}`}>{o.status_label}</span>
+                        <span className={`admOrdersStatus2 tone-${resolveStatusTone(o.status, o.status_tone)}`}>{o.status_label}</span>
                       </td>
                       <td className="admOrdersActions2">
                         <button
@@ -1107,6 +1235,9 @@ export default function OrdersAdminPage() {
                           }}
                         >
                           <DetailIcon />
+                        </button>
+                        <button className="admOrdersIconBtn" type="button" aria-label="Thêm">
+                          <MoreIcon />
                         </button>
                         {o.status === 'cancelled' && (
                           <button
@@ -1123,7 +1254,7 @@ export default function OrdersAdminPage() {
                         )}
                       </td>
                     </tr>
-                  ))}
+                  )})}
                   {!rows.length && (
                     <tr>
                       <td colSpan={7} style={{ padding: 16, color: 'var(--admin-text-s)', fontWeight: 700 }}>
@@ -1200,6 +1331,49 @@ function TrashIcon() {
     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-trash" viewBox="0 0 16 16">
       <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z"/>
       <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z"/>
+    </svg>
+  )
+}
+function CopyIcon() {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16">
+      <path d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1v-1z"/>
+      <path d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5h3zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3z"/>
+    </svg>
+  )
+}
+function MoreIcon() {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+      <path d="M9.5 13a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z"/>
+    </svg>
+  )
+}
+function SearchIcon() {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+      <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+    </svg>
+  )
+}
+function UserIcon() {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
+    </svg>
+  )
+}
+function CalendarIcon() {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" />
+    </svg>
+  )
+}
+function FilterIcon() {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" style={{width: 16, height: 16}}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 6h9.75M10.5 6a1.5 1.5 0 1 1-3 0m3 0a1.5 1.5 0 1 0-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-9.75 0h9.75" />
     </svg>
   )
 }

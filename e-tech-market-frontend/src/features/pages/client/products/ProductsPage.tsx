@@ -188,19 +188,24 @@ const STOCK_MAX = 100;
 
 function StockBar({ stock }: { stock: number }) {
   const pct = Math.max(0, Math.min(100, (stock / STOCK_MAX) * 100));
-  const isLow = stock <= 10;
+  const isOut = stock <= 0;
+  const isLow = stock > 0 && stock <= 10;
   return (
     <div className="ppStockBar">
       <div className="ppStockBarMeta">
-        <span className={`ppStockBarSold${isLow ? " ppStockBarSold--low" : ""}`}>
-          {isLow ? `⚠️ Sắp hết hàng (còn ${stock})` : `Còn ${stock} sản phẩm`}
+        <span className={`ppStockBarSold${isLow || isOut ? " ppStockBarSold--low" : ""}`} style={isOut ? { color: '#9e9e9e' } : {}}>
+          {isOut 
+              ? "❌ Hết hàng" 
+              : isLow 
+                  ? `⚠️ Sắp hết hàng (còn ${stock})` 
+                  : `Còn ${stock} sản phẩm`}
         </span>
         <span className="ppStockBarPct">{pct.toFixed(0)}%</span>
       </div>
       <div className="ppStockBarTrack">
         <div
-          className={`ppStockBarFill${isLow ? " ppStockBarFill--low" : " ppStockBarFill--normal"}`}
-          style={{ width: `${pct}%` }}
+          className={`ppStockBarFill${isLow ? " ppStockBarFill--low" : isOut ? "" : " ppStockBarFill--normal"}`}
+          style={{ width: `${pct}%`, background: isOut ? '#e0e0e0' : undefined }}
         />
       </div>
     </div>
@@ -632,6 +637,7 @@ export default function ProductsPage() {
 
   const sortRef = useRef<HTMLDivElement>(null);
   const [sortOpen, setSortOpen] = useState(false);
+  const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
 
   // Pagination computation (matches admin ProductPage pattern)
   const safePage = Math.min(Math.max(1, page), lastPage);
@@ -955,7 +961,7 @@ export default function ProductsPage() {
                 </p>
               </div>
               <div className="ppHeaderRight">
-                <div className="ppSearchWrap">
+                <div className={`ppSearchWrap ${mobileSearchOpen ? "ppSearchWrap--mobile-open" : ""}`}>
                   <input
                     type="text"
                     className="ppSearchInput"
@@ -1032,32 +1038,60 @@ export default function ProductsPage() {
                       )}
                     </div>
                   </div>
-                  <button
-                    className="ppMobileFilterBtn"
-                    onClick={() => setShowMobileFilters(true)}
-                  >
-                    <svg
-                      width="16"
-                      height="16"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
+                  
+                  <div className="ppMobileActionIcons">
+                    <button
+                      className="ppMobileFilterBtn hfMobileOnly"
+                      onClick={() => setShowMobileFilters(true)}
+                      aria-label="Bộ lọc"
                     >
-                      <line x1="4" y1="21" x2="4" y2="14"></line>
-                      <line x1="4" y1="10" x2="4" y2="3"></line>
-                      <line x1="12" y1="21" x2="12" y2="12"></line>
-                      <line x1="12" y1="8" x2="12" y2="3"></line>
-                      <line x1="20" y1="21" x2="20" y2="16"></line>
-                      <line x1="20" y1="12" x2="20" y2="3"></line>
-                      <line x1="1" y1="14" x2="7" y2="14"></line>
-                      <line x1="9" y1="8" x2="15" y2="8"></line>
-                      <line x1="17" y1="16" x2="23" y2="16"></line>
-                    </svg>
-                    BỘ LỌC
-                  </button>
+                      <svg
+                        width="14"
+                        height="14"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <line x1="4" y1="21" x2="4" y2="14"></line>
+                        <line x1="4" y1="10" x2="4" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="12"></line>
+                        <line x1="12" y1="8" x2="12" y2="3"></line>
+                        <line x1="20" y1="21" x2="20" y2="16"></line>
+                        <line x1="20" y1="12" x2="20" y2="3"></line>
+                        <line x1="1" y1="14" x2="7" y2="14"></line>
+                        <line x1="9" y1="8" x2="15" y2="8"></line>
+                        <line x1="17" y1="16" x2="23" y2="16"></line>
+                      </svg>
+                      <span>BỘ LỌC</span>
+                    </button>
+                    <button
+                      type="button"
+                      className="ppMobileIconBtn hfMobileOnly"
+                      onClick={() => setMobileSearchOpen(!mobileSearchOpen)}
+                      aria-label="Mở tìm kiếm"
+                    >
+                      <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        {mobileSearchOpen ? (
+                          <path d="M18 6L6 18M6 6l12 12" />
+                        ) : (
+                          <>
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                          </>
+                        )}
+                      </svg>
+                    </button>
+                  </div>
                 </div>
               </div>
             </header>

@@ -498,6 +498,11 @@ class OrderService
             'note' => null,
         ]);
 
+        $email = $user->email ?? null;
+        if ($email) {
+            \Illuminate\Support\Facades\Notification::route('mail', $email)->notify(new \App\Notifications\OrderStatusUpdatedNotification($order));
+        }
+
         \App\Jobs\InvalidateAdminDashboardCache::dispatch();
 
         return $order;

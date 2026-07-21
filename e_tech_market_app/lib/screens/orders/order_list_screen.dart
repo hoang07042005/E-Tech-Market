@@ -3,6 +3,9 @@ import 'package:flutter/material.dart';
 import '../../../services/order_service.dart';
 import '../../../utils/network_utils.dart';
 import '../../../utils/translation.dart';
+import '../../../services/products_service.dart';
+import '../products/product_detail_screen.dart';
+import '../home_sections/product_section.dart';
 import 'order_detail_screen.dart';
 
 class OrderListScreen extends StatefulWidget {
@@ -15,9 +18,9 @@ class OrderListScreen extends StatefulWidget {
 class _OrderListScreenState extends State<OrderListScreen> {
   bool _loading = true;
   String? _error;
-  int _page = 1;
-  int _lastPage = 1;
   List<dynamic> _orders = [];
+  List<dynamic> _suggestedProducts = [];
+  bool _suggestedLoading = true;
   String _search = '';
   String _statusFilter = 'all';
   bool _isSearching = false;
@@ -36,12 +39,16 @@ class _OrderListScreenState extends State<OrderListScreen> {
     });
 
     try {
-      final response = await OrderService.fetchOrders(page: page);
+      final response = await OrderService.fetchOrders(page: 1); // Only fetch page 1
       final data = response['data'];
+      
+      // Fetch suggested products
+      final productsRes = await ProductsService.fetchProducts(limit: 10, sort: 'newest');
+      final prods = productsRes['data'] as List<dynamic>? ?? [];
+
       setState(() {
-        _page = response['current_page'] is int ? response['current_page'] as int : page;
-        _lastPage = response['last_page'] is int ? response['last_page'] as int : 1;
         _orders = data is List ? data : [];
+        _suggestedProducts = prods;
       });
     } catch (e) {
       setState(() {
@@ -51,6 +58,7 @@ class _OrderListScreenState extends State<OrderListScreen> {
       if (mounted) {
         setState(() {
           _loading = false;
+          _suggestedLoading = false;
         });
       }
     }
@@ -169,7 +177,7 @@ class _OrderListScreenState extends State<OrderListScreen> {
       body: Container(
         color: Theme.of(context).colorScheme.surface,
         child: RefreshIndicator(
-          onRefresh: () => _loadOrders(page: _page),
+          onRefresh: () => _loadOrders(page: 1),
           child: _loading
               ? const Center(child: CircularProgressIndicator())
               : _error != null
@@ -202,11 +210,125 @@ class _OrderListScreenState extends State<OrderListScreen> {
                             const SizedBox(height: 8),
                             ..._filteredOrders.map((order) => _buildOrderCard(context, order)).toList(),
                             const SizedBox(height: 16),
-                            _buildPagination(),
+                            _buildSuggestedProductsSection(),
                           ],
                         ),
         ),
       ),
+    );
+  }
+
+  Widget _buildSuggestedProductsSection() {
+    if (_suggestedLoading) {
+      return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 32),
+        child: Center(
+          child: CircularProgressIndicator(color: Theme.of(context).colorScheme.primary),
+        ),
+      );
+    }
+    if (_suggestedProducts.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 24),
+          child: Row(
+            children: [
+              Expanded(
+                child: Divider(
+                  color: Theme.of(context).colorScheme.outline.withOpacity(0.4),
+                  thickness: 1,
+                  endIndent: 16,
+                ),
+              ),
+              Text(
+                'Có thể bạn sẽ thích',
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                  color: Theme.of(context).colorScheme.onSurface,
+                  letterSpacing: 0.5,
+                ),
+              ),
+              Expanded(
+                child: Divider(
+                  color: Theme.of(context).colorScheme.outline.withOpacity(0.4),
+                  thickness: 1,
+                  indent: 16,
+                ),
+              ),
+            ],
+          ),
+        ),
+        Builder(
+          builder: (context) {
+            final leftItems = <dynamic>[];
+            final rightItems = <dynamic>[];
+            for (int i = 0; i < _suggestedProducts.length; i++) {
+              if (i % 2 == 0) {
+                leftItems.add(_suggestedProducts[i]);
+              } else {
+                rightItems.add(_suggestedProducts[i]);
+              }
+            }
+
+            Widget buildCard(dynamic product) {
+              return ProductCardWidget(
+                product: product,
+                isWished: false, // Stub wish logic for suggested products
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ProductDetailScreen(slug: product['slug']),
+                    ),
+                  );
+                },
+                onToggleWishlist: () {},
+                onAddToCart: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ProductDetailScreen(slug: product['slug']),
+                    ),
+                  );
+                },
+              );
+            }
+
+            return Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: Column(
+                    children: leftItems
+                        .map((p) => Padding(
+                              padding: const EdgeInsets.only(bottom: 12),
+                              child: buildCard(p),
+                            ))
+                        .toList(),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    children: rightItems
+                        .map((p) => Padding(
+                              padding: const EdgeInsets.only(bottom: 12),
+                              child: buildCard(p),
+                            ))
+                        .toList(),
+                  ),
+                ),
+              ],
+            );
+          },
+        ),
+      ],
     );
   }
 
@@ -239,7 +361,6 @@ class _OrderListScreenState extends State<OrderListScreen> {
               onTap: () {
                 setState(() {
                   _statusFilter = tab['value'] as String;
-                  _page = 1; // Reset to page 1 when changing filter
                 });
                 _loadOrders(page: 1);
               },
@@ -455,7 +576,7 @@ class _OrderListScreenState extends State<OrderListScreen> {
                         onPressed: () {
                           if (id is int) {
                             Navigator.push(context, MaterialPageRoute(builder: (_) => OrderDetailScreen(orderId: id))).then((_) {
-                              _loadOrders(page: _page);
+                              _loadOrders(page: 1);
                             });
                           }
                         },
@@ -479,22 +600,7 @@ class _OrderListScreenState extends State<OrderListScreen> {
     );
   }
 
-  Widget _buildPagination() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        IconButton(
-          onPressed: _page > 1 ? () => _loadOrders(page: _page - 1) : null,
-          icon: const Icon(Icons.chevron_left),
-        ),
-        Text(Trans.pageOf(_page, _lastPage)),
-        IconButton(
-          onPressed: _page < _lastPage ? () => _loadOrders(page: _page + 1) : null,
-          icon: const Icon(Icons.chevron_right),
-        ),
-      ],
-    );
-  }
+
 
   @override
   void dispose() {

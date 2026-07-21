@@ -16,3 +16,22 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
+
+// Workaround for PHP built-in server (php artisan serve) on Windows
+// which fails to serve files from symlinks/junctions.
+if (app()->environment('local')) {
+    Route::get('/storage/{path}', function ($path) {
+        $filePath = storage_path('app/public/' . $path);
+        
+        if (!file_exists($filePath)) {
+            abort(404);
+        }
+        
+        $mimeType = \Illuminate\Support\Facades\File::mimeType($filePath);
+        
+        return response()->file($filePath, [
+            'Content-Type' => $mimeType,
+            'Cache-Control' => 'public, max-age=31536000',
+        ]);
+    })->where('path', '.*');
+}

@@ -160,7 +160,7 @@ export default function DashboardPage({
     month: "Tháng này",
     "7d": "7 ngày",
     "30d": "30 ngày",
-    custom: "Tùy chọn ngày",
+    custom: "Tùy chỉnh",
   };
 
   const [openOrderMenuId, setOpenOrderMenuId] = useState<number | null>(null);
@@ -249,14 +249,14 @@ export default function DashboardPage({
       spent: number;
       orders_count: number;
       vip_label: string;
-      vip_tone: "gold" | "silver" | "bronze";
+      vip_tone: "gold" | "silver" | "bronze" | "diamond" | "platinum" | string;
     }>;
   };
 
   const [dashLoading, setDashLoading] = useState(true);
 
-  const [selectedReviewMedia, setSelectedReviewMedia] =
-    useState<ReviewMediaItem | null>(null);
+  const [reviewMediaGallery, setReviewMediaGallery] =
+    useState<{ list: ReviewMediaItem[]; index: number } | null>(null);
   const [isReviewMediaModalOpen, setIsReviewMediaModalOpen] = useState(false);
   const [dashError, setDashError] = useState<string | null>(null);
   const [dash, setDash] = useState<DashStats | null>(null);
@@ -664,13 +664,33 @@ export default function DashboardPage({
   const recentOrders = (dash?.recent_orders ?? []).slice(0, 10);
   const recentReviews = (dash?.recent_reviews ?? []).slice(0, 2);
 
-  const openReviewMediaModal = (m: ReviewMediaItem) => {
-    setSelectedReviewMedia(m);
+  const openReviewMediaModal = (list: ReviewMediaItem[], index: number) => {
+    setReviewMediaGallery({ list, index });
     setIsReviewMediaModalOpen(true);
   };
   const closeReviewMediaModal = () => {
     setIsReviewMediaModalOpen(false);
-    setSelectedReviewMedia(null);
+    setReviewMediaGallery(null);
+  };
+  const handlePrevMedia = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (reviewMediaGallery) {
+      const { list, index } = reviewMediaGallery;
+      setReviewMediaGallery({
+        list,
+        index: index === 0 ? list.length - 1 : index - 1,
+      });
+    }
+  };
+  const handleNextMedia = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (reviewMediaGallery) {
+      const { list, index } = reviewMediaGallery;
+      setReviewMediaGallery({
+        list,
+        index: index === list.length - 1 ? 0 : index + 1,
+      });
+    }
   };
   const topCustomers = dash?.top_customers ?? [];
   const resolveUserAvatar = (url?: string | null) => {
@@ -1960,7 +1980,6 @@ export default function DashboardPage({
                   <th>Số tiền</th>
                   <th>Ngày đặt</th>
                   <th>Trạng thái</th>
-                  <th>Thao tác</th>
                 </tr>
               </thead>
               <tbody>
@@ -2005,7 +2024,7 @@ export default function DashboardPage({
                         {o.status_label}
                       </span>
                     </td>
-                    <td className="admOrdersActions">
+                    {/* <td className="admOrdersActions">
                       <div className="admOrdersMenuWrap">
                         <button
                           type="button"
@@ -2046,7 +2065,7 @@ export default function DashboardPage({
                           </div>
                         )}
                       </div>
-                    </td>
+                    </td> */}
                   </tr>
                 ))}
               </tbody>
@@ -2292,7 +2311,7 @@ export default function DashboardPage({
                     </div>
                   </div>
 
-                  <div className="admReviewQuote">“{r.comment}”</div>
+                  <div className="admReviewQuote" style={{ whiteSpace: 'pre-wrap' }}>“{r.comment}”</div>
                   <div className="admReviewTime2">{r.time}</div>
 
                   {Array.isArray(r.media) && r.media.length > 0 && (
@@ -2302,7 +2321,7 @@ export default function DashboardPage({
                           key={`${m.url}-${idx}`}
                           type="button"
                           className="admReviewMediaItem2"
-                          onClick={() => openReviewMediaModal(m)}
+                          onClick={() => openReviewMediaModal(r.media!, idx)}
                           aria-label="Xem media đánh giá"
                         >
                           {m.type === "image" ? (
@@ -2409,40 +2428,57 @@ export default function DashboardPage({
             </button> */}
           </section>
 
-          {isReviewMediaModalOpen && selectedReviewMedia && (
+          {isReviewMediaModalOpen && reviewMediaGallery && (
             <div
-              className="pdpReviewMediaModalOverlay admReviewMediaModalOverlay"
+              className="admReviewLightboxOverlay"
               onMouseDown={(e) => {
                 if (e.target === e.currentTarget) closeReviewMediaModal();
               }}
               role="dialog"
               aria-modal="true"
             >
-              <div
-                className="pdpReviewMediaModal admReviewMediaModal"
-                onMouseDown={(e) => e.stopPropagation()}
-              >
+              <div className="admReviewLightbox">
                 <button
                   type="button"
-                  className="pdpReviewMediaModalClose admReviewMediaModalClose"
+                  className="admReviewLightboxClose"
                   onClick={closeReviewMediaModal}
                   aria-label="Đóng"
                 >
                   ×
                 </button>
-                <div className="pdpReviewMediaModalContent admReviewMediaModalContent">
-                  {selectedReviewMedia.type === "image" ? (
+                {reviewMediaGallery.list.length > 1 && (
+                  <>
+                    <button
+                      type="button"
+                      className="admReviewLightboxNavBtn admReviewLightboxNavLeft"
+                      onClick={handlePrevMedia}
+                      aria-label="Ảnh trước"
+                    >
+                      {"<"}
+                    </button>
+                    <button
+                      type="button"
+                      className="admReviewLightboxNavBtn admReviewLightboxNavRight"
+                      onClick={handleNextMedia}
+                      aria-label="Ảnh tiếp theo"
+                    >
+                      {">"}
+                    </button>
+                  </>
+                )}
+                <div className="admReviewLightboxContent">
+                  {reviewMediaGallery.list[reviewMediaGallery.index].type === "image" ? (
                     <img
-                      src={resolveAdminImg(selectedReviewMedia.url)}
+                      src={resolveAdminImg(reviewMediaGallery.list[reviewMediaGallery.index].url)}
                       alt="Media đánh giá"
-                      className="admReviewMediaModalImg"
+                      className="admReviewLightboxMedia"
                     />
                   ) : (
                     <video
-                      src={resolveAdminImg(selectedReviewMedia.url)}
+                      src={resolveAdminImg(reviewMediaGallery.list[reviewMediaGallery.index].url)}
                       controls
                       autoPlay
-                      className="admReviewMediaModalVideo"
+                      className="admReviewLightboxMedia"
                     />
                   )}
                 </div>

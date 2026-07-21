@@ -41,9 +41,9 @@ dev_dependencies:
 
 flutter_native_splash:
   color: "#ffffff"
-  image: "assets/images/logoEtech.png"
+  image: "assets/images/logoEtech_splash.png"
   android_12:
-    image: "assets/images/logoEtech.png"
+    image: "assets/images/logoEtech_splash.png"
     color: "#ffffff"
   ios: true
   android: true

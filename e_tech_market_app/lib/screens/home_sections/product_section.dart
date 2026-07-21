@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../utils/network_utils.dart';
 import '../../utils/translation.dart';
+import '../../widgets/product_badges.dart';
 
 class ProductSection extends StatelessWidget {
   final List<dynamic> products;
@@ -74,25 +75,54 @@ class ProductSection extends StatelessWidget {
               ),
             )
           else
-            GridView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: visibleProducts.length,
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                crossAxisSpacing: 12,
-                mainAxisSpacing: 12,
-                childAspectRatio: 0.52,
-              ),
-              itemBuilder: (context, index) {
-                final product = visibleProducts[index];
-                final productId = (product['id'] as num?)?.toInt() ?? 0;
-                return _ProductCard(
-                  product: product,
-                  isWished: wishedProductIds.contains(productId),
-                  onTap: () => onProductSelected(product),
-                  onToggleWishlist: () => onToggleWishlist(productId),
-                  onAddToCart: () => onAddToCart(product),
+            Builder(
+              builder: (context) {
+                final leftItems = <dynamic>[];
+                final rightItems = <dynamic>[];
+                for (int i = 0; i < visibleProducts.length; i++) {
+                  if (i % 2 == 0) {
+                    leftItems.add(visibleProducts[i]);
+                  } else {
+                    rightItems.add(visibleProducts[i]);
+                  }
+                }
+
+                Widget buildCard(dynamic product) {
+                  final productId = (product['id'] as num?)?.toInt() ?? 0;
+                  return ProductCardWidget(
+                    product: product,
+                    isWished: wishedProductIds.contains(productId),
+                    onTap: () => onProductSelected(product),
+                    onToggleWishlist: () => onToggleWishlist(productId),
+                    onAddToCart: () => onAddToCart(product),
+                  );
+                }
+
+                return Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: Column(
+                        children: leftItems
+                            .map((p) => Padding(
+                                  padding: const EdgeInsets.only(bottom: 12),
+                                  child: buildCard(p),
+                                ))
+                            .toList(),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        children: rightItems
+                            .map((p) => Padding(
+                                  padding: const EdgeInsets.only(bottom: 12),
+                                  child: buildCard(p),
+                                ))
+                            .toList(),
+                      ),
+                    ),
+                  ],
                 );
               },
             ),
@@ -112,19 +142,19 @@ class ProductSection extends StatelessWidget {
         mainAxisSpacing: 12,
         childAspectRatio: 0.52,
       ),
-      itemBuilder: (_, __) => const _ProductSkeleton(),
+      itemBuilder: (_, __) => const ProductSkeletonWidget(),
     );
   }
 }
 
-class _ProductCard extends StatelessWidget {
+class ProductCardWidget extends StatelessWidget {
   final Map<String, dynamic> product;
   final bool isWished;
   final VoidCallback onTap;
   final VoidCallback onToggleWishlist;
   final VoidCallback onAddToCart;
 
-  const _ProductCard({
+  const ProductCardWidget({
     required this.product,
     required this.isWished,
     required this.onTap,
@@ -147,15 +177,72 @@ class _ProductCard extends StatelessWidget {
                 ? shortDescription
                 : Trans.defaultProductExcerpt;
     final imageUrl = _resolveProductImageUrl(product);
-    final displayPrice = _getDisplayPrice(product);
-    final displayPriceMax = _hasMultiplePrices(product) ? _getMaxDisplayPrice(product) : null;
-    final displayOldPrice = _hasMultiplePrices(product) ? null : _getDisplayOldPrice(product);
-    final showDiscountBadge = _showDiscountBadge(product);
-    final discountPercent = _getDiscountPercent(displayPrice, displayOldPrice);
+
     final rating =
         double.tryParse(product['avg_rating']?.toString() ?? '0') ?? 0;
     final ratingCount = (product['reviews_count'] as num?)?.toInt() ?? 0;
     final isNew = product['is_new'] == true;
+
+    Map<String, dynamic>? flashSaleItem;
+    final flashSaleItems = product['flash_sale_items'] as List<dynamic>?;
+    if (flashSaleItems != null && flashSaleItems.isNotEmpty) {
+      for (var item in flashSaleItems) {
+        if (item['flash_sale'] != null) {
+          flashSaleItem = item as Map<String, dynamic>?;
+          break;
+        }
+      }
+    }
+    final isFlashSale = flashSaleItem != null;
+
+    double displayPrice = 0;
+    double? displayPriceMax;
+    double? displayOldPrice;
+    bool showDiscountBadge = false;
+    int discountPercent = 0;
+
+    final variants = product['variants'] as List<dynamic>? ?? [];
+    final activeVariants = variants.where((v) => v['is_active'] != false).toList();
+    final isSingleVariant = activeVariants.length == 1;
+
+    if (activeVariants.isNotEmpty) {
+      final sorted = List.from(activeVariants);
+      sorted.sort((a, b) {
+        final aPrice = double.tryParse(a['effective_price']?.toString() ?? '0') ?? 0;
+        final bPrice = double.tryParse(b['effective_price']?.toString() ?? '0') ?? 0;
+        return aPrice.compareTo(bPrice);
+      });
+
+      final lowest = sorted.first;
+      final highest = sorted.last;
+
+      displayPrice = double.tryParse(lowest['effective_price']?.toString() ?? '0') ?? 0;
+      final priceMax = double.tryParse(highest['effective_price']?.toString() ?? '0') ?? 0;
+      final originalPrice = double.tryParse(lowest['price']?.toString() ?? '0') ?? 0;
+
+      bool hasMultiplePrices = displayPrice != priceMax;
+      showDiscountBadge = isSingleVariant;
+
+      if (isFlashSale) {
+        displayPrice = double.tryParse(flashSaleItem!['flash_sale_price']?.toString() ?? '0') ?? 0;
+        hasMultiplePrices = false;
+        showDiscountBadge = true;
+      }
+
+      final hasDiscount = displayPrice < originalPrice && showDiscountBadge;
+      displayPriceMax = hasMultiplePrices ? priceMax : null;
+      displayOldPrice = hasDiscount ? originalPrice : null;
+      discountPercent = hasDiscount ? ((1 - displayPrice / originalPrice) * 100).round() : 0;
+    } else {
+      displayPrice = double.tryParse(product['price']?.toString() ?? '0') ?? 0;
+    }
+
+    int? totalStock;
+    if (variants.isNotEmpty) {
+      totalStock = variants.fold<int>(0, (sum, v) => sum + ((v['stock_quantity'] as num?)?.toInt() ?? 0));
+    } else {
+      totalStock = (product['stock_quantity'] as num?)?.toInt();
+    }
 
     return Material(
       color: Theme.of(context).colorScheme.surface,
@@ -218,6 +305,16 @@ class _ProductCard extends StatelessWidget {
                                 fontSize: 10,
                                 fontWeight: FontWeight.w800),
                           ),
+                        ),
+                      ),
+                    if (flashSaleItem != null && flashSaleItem['flash_sale'] != null)
+                      Positioned(
+                        bottom: 0,
+                        left: 0,
+                        right: 0,
+                        child: FlashSaleBanner(
+                          endAt: flashSaleItem['flash_sale']['end_at'] ?? '',
+                          discountPercent: discountPercent,
                         ),
                       ),
                   ],
@@ -285,25 +382,45 @@ class _ProductCard extends StatelessWidget {
                                 fontWeight: FontWeight.w800),
                           )
                         else
-                          Text(
-                            '${_formatPrice(displayPrice)} đ',
-                            style: const TextStyle(
-                                color: _brandColor,
-                                fontSize: 12,
-                                fontWeight: FontWeight.w800),
-                          ),
+                        Text(
+                          '${_formatPrice(displayPrice)}đ',
+                          style: const TextStyle(
+                              color: _brandColor,
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold),
+                        ),
                         if (displayOldPrice != null && displayOldPrice > displayPrice && showDiscountBadge)
-                          Text(
-                            '${_formatPrice(displayOldPrice)} đ',
-                            style: TextStyle(
-                              color: Theme.of(context).colorScheme.onSurfaceVariant,
-                              fontSize: 10,
-                              decoration: TextDecoration.lineThrough,
+                          Padding(
+                            padding: const EdgeInsets.only(left: 4, bottom: 1),
+                            child: Text(
+                              '${_formatPrice(displayOldPrice)}đ',
+                              style: TextStyle(
+                                color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                fontSize: 10,
+                                decoration: TextDecoration.lineThrough,
+                              ),
                             ),
                           ),
                       ],
                     ),
-                    const SizedBox(height: 2),
+                    const SizedBox(height: 6),
+                    if (flashSaleItem != null && flashSaleItem['flash_sale'] != null)
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 4),
+                        child: StockBar(
+                          isFlashSale: true,
+                          flashSaleSold: (flashSaleItem['sold_quantity'] as num?)?.toInt(),
+                          flashSaleLimit: (flashSaleItem['quantity_limit'] as num?)?.toInt(),
+                        ),
+                      )
+                    else if (totalStock != null)
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 4),
+                        child: StockBar(
+                          isFlashSale: false,
+                          normalStock: totalStock,
+                        ),
+                      ),
                     
                     // Phần mô tả ngắn và Nút giỏ hàng tự động co giãn ngang hàng
                     Row(
@@ -373,87 +490,6 @@ class _ProductCard extends StatelessWidget {
     }
 
     return '';
-  }
-
-  double _getDisplayPrice(Map<String, dynamic> product) {
-    final variants = product['variants'] as List<dynamic>?;
-    if (variants != null && variants.isNotEmpty) {
-      final sortedVariants = List<dynamic>.from(variants);
-      sortedVariants.sort((a, b) {
-        final aPrice =
-            double.tryParse(a['effective_price']?.toString() ?? '0') ?? 0;
-        final bPrice =
-            double.tryParse(b['effective_price']?.toString() ?? '0') ?? 0;
-        return aPrice.compareTo(bPrice);
-      });
-      return double.tryParse(
-              sortedVariants.first['effective_price']?.toString() ?? '0') ??
-          0;
-    }
-
-    return double.tryParse(product['price']?.toString() ?? '0') ?? 0;
-  }
-
-  bool _hasMultiplePrices(Map<String, dynamic> product) {
-    final variants = product['variants'] as List<dynamic>?;
-    if (variants != null && variants.length > 1) {
-      final sortedVariants = List.from(variants);
-      sortedVariants.sort((a, b) {
-        final aPrice = double.tryParse(a['effective_price']?.toString() ?? '0') ?? 0;
-        final bPrice = double.tryParse(b['effective_price']?.toString() ?? '0') ?? 0;
-        return aPrice.compareTo(bPrice);
-      });
-      final lowest = double.tryParse(sortedVariants.first['effective_price']?.toString() ?? '0') ?? 0.0;
-      final highest = double.tryParse(sortedVariants.last['effective_price']?.toString() ?? '0') ?? 0.0;
-      return lowest != highest;
-    }
-    return false;
-  }
-
-  double? _getMaxDisplayPrice(Map<String, dynamic> product) {
-    final variants = product['variants'] as List<dynamic>?;
-    if (variants != null && variants.isNotEmpty) {
-      final sortedVariants = List.from(variants);
-      sortedVariants.sort((a, b) {
-        final aPrice = double.tryParse(a['effective_price']?.toString() ?? '0') ?? 0;
-        final bPrice = double.tryParse(b['effective_price']?.toString() ?? '0') ?? 0;
-        return aPrice.compareTo(bPrice);
-      });
-      return double.tryParse(sortedVariants.last['effective_price']?.toString() ?? '0') ?? 0.0;
-    }
-    return null;
-  }
-
-  bool _showDiscountBadge(Map<String, dynamic> product) {
-    final variants = product['variants'] as List<dynamic>?;
-    if (variants == null || variants.length != 1) return false;
-    final originalPrice = double.tryParse(variants[0]['price']?.toString() ?? '0') ?? 0.0;
-    final finalPrice = double.tryParse(variants[0]['effective_price']?.toString() ?? '0') ?? 0.0;
-    return finalPrice < originalPrice;
-  }
-
-  double? _getDisplayOldPrice(Map<String, dynamic> product) {
-    final variants = product['variants'] as List<dynamic>?;
-    if (variants != null && variants.isNotEmpty) {
-      final sortedVariants = List<dynamic>.from(variants);
-      sortedVariants.sort((a, b) {
-        final aPrice =
-            double.tryParse(a['effective_price']?.toString() ?? '0') ?? 0;
-        final bPrice =
-            double.tryParse(b['effective_price']?.toString() ?? '0') ?? 0;
-        return aPrice.compareTo(bPrice);
-      });
-
-      final originalPrice =
-          double.tryParse(sortedVariants.first['price']?.toString() ?? '0') ??
-              0;
-      final finalPrice = double.tryParse(
-              sortedVariants.first['effective_price']?.toString() ?? '0') ??
-          0;
-      return originalPrice > finalPrice ? originalPrice : null;
-    }
-
-    return null;
   }
 
   int _getDiscountPercent(double price, double? oldPrice) {
@@ -542,8 +578,8 @@ class _RatingStars extends StatelessWidget {
   }
 }
 
-class _ProductSkeleton extends StatelessWidget {
-  const _ProductSkeleton();
+class ProductSkeletonWidget extends StatelessWidget {
+  const ProductSkeletonWidget();
 
   @override
   Widget build(BuildContext context) {

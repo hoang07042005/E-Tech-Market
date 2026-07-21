@@ -650,6 +650,8 @@ export default function ProductDetailPage() {
                 <button
                   type="button"
                   className="pdpFloatingAddBtn"
+                  disabled={v?.stock_quantity === 0}
+                  style={v?.stock_quantity === 0 ? { background: '#94a3b8', cursor: 'not-allowed' } : {}}
                   onClick={() => {
                     addToCart({
                       item: {
@@ -667,7 +669,7 @@ export default function ProductDetailPage() {
                     })
                   }}
                 >
-                  THÊM VÀO GIỎ - {fmt(totalPrice)}
+                  {v?.stock_quantity === 0 ? 'HẾT HÀNG' : `THÊM VÀO GIỎ - ${fmt(totalPrice)}`}
                 </button>
               </div>
             </div>

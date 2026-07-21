@@ -372,8 +372,8 @@
 .pnModalOverlay {
     position: fixed;
     inset: 0;
-    background: rgba(15, 23, 42, .45);
-    backdrop-filter: blur(10px);
+    background: rgba(15, 23, 42, .6);
+    backdrop-filter: blur(4px);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -383,72 +383,187 @@
 
 .pnModal {
     width: 100%;
-    max-width: 860px;
-    background: #ffffff;
-    border: 1px solid var(--admin-border);
-    border-radius: 18px;
-    box-shadow: 0 30px 80px rgba(15, 23, 42, .12);
+    max-width: 900px;
+    max-height: 90vh;
+    background: var(--admin-bg, #ffffff);
+    border-radius: 16px;
+    box-shadow: 0 25px 50px -12px rgba(15, 23, 42, .25);
     overflow: hidden;
+    display: flex;
+    flex-direction: column;
 }
 
 .pnModalHead {
-    padding: 14px 16px;
-    border-bottom: 1px solid var(--admin-border);
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--admin-border, #f1f5f9);
     display: flex;
     align-items: center;
     justify-content: space-between;
+    background: var(--admin-bg-s, #f8fafc);
 }
 
 .pnModalTitle {
-    font-weight: 600;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--admin-text-p, #0f172a);
 }
 
 .pnModalClose {
     border: none;
-    background: transparent;
-    color: var(--admin-text-s);
-    font-size: 26px;
+    background: var(--admin-border, #e2e8f0);
+    color: var(--admin-text-s, #475569);
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     cursor: pointer;
+    transition: all 0.2s;
+}
+
+.pnModalClose:hover {
+    background: rgba(239, 68, 68, 0.15);
+    color: #ef4444;
 }
 
 .pnModalBody {
-    padding: 14px 16px;
+    padding: 24px;
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 20px;
+    overflow-y: auto;
+}
+
+.pnModalBody.split-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    padding: 24px;
+    overflow: hidden; /* So children can scroll */
+}
+
+.pnModalForm {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    overflow-y: auto;
+    padding-right: 12px;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.pnModalForm::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+}
+
+.pnModalPreview {
+    background: var(--admin-bg-s, #f8fafc);
+    border: 1px solid var(--admin-border, #e2e8f0);
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+html.dark .pnModalPreview {
+    background: #0f172a;
+    border-color: #334155;
+}
+
+.pnModalPreviewHead {
+    padding: 12px 16px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--admin-text-p, #334155);
+    border-bottom: 1px solid var(--admin-border, #e2e8f0);
+    background: var(--admin-bg, #ffffff);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+html.dark .pnModalPreviewHead {
+    background: #1e293b;
+    border-color: #334155;
+    color: #cbd5e1;
+}
+
+.pnModalPreviewContent {
+    padding: 16px;
+    overflow-y: auto;
+    flex: 1;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: var(--admin-text-p);
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.pnModalPreviewContent::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+}
+
+.pnModalPreviewContent img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+}
+
+/* Adjust modal width for split layout */
+.pnModal {
+    width: 100%;
+    max-width: 1100px;
+    max-height: 90vh;
+    background: var(--admin-bg, #ffffff);
+    border-radius: 16px;
+    box-shadow: 0 25px 50px -12px rgba(15, 23, 42, .25);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
 }
 
 .pnField label {
     display: block;
-    font-size: 11px;
-    font-weight: 600;
-    color: var(--admin-text-s);
-    letter-spacing: .12em;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--admin-text-p, #334155);
+    margin-bottom: 8px;
     text-transform: uppercase;
-    margin-bottom: 6px;
+    letter-spacing: 0.05em;
 }
 
 .pnField input,
 .pnField textarea {
     width: 100%;
-    border-radius: 12px;
-    border: 1px solid var(--admin-border);
-    background: #ffffff;
-    color: var(--admin-text-p);
-    padding: 10px 12px;
-    font-size: 13px;
+    border-radius: 10px;
+    border: 1px solid var(--admin-border, #cbd5e1);
+    background: var(--admin-bg, #ffffff);
+    color: var(--admin-text-p, #0f172a);
+    padding: 12px 14px;
+    font-size: 0.95rem;
     outline: none;
     box-sizing: border-box;
+    transition: all 0.2s;
+}
+
+.pnField input:focus,
+.pnField textarea:focus {
+    border-color: var(--admin-accent, #ea580c);
+    box-shadow: 0 0 0 3px rgba(234, 88, 12, 0.15);
 }
 
 .pnField textarea {
+    min-height: 200px;
     resize: vertical;
 }
 
 .pnRow {
     display: grid;
     grid-template-columns: 1fr;
-    gap: 12px;
+    gap: 20px;
 }
 
 .pnUploadRow {
@@ -457,35 +572,57 @@
     gap: 12px;
 }
 
+.pnUploadRow input[type="file"] {
+    padding: 8px;
+    border: 2px dashed var(--admin-border, #cbd5e1);
+    background: var(--admin-bg-s, #f8fafc);
+    border-radius: 8px;
+    cursor: pointer;
+    color: var(--admin-text-p);
+}
+
 .pnThumbPreview {
-    margin-top: 10px;
+    margin-top: 12px;
     display: flex;
-    align-items: center;
-    gap: 12px;
+    align-items: flex-end;
+    gap: 16px;
 }
 
 .pnThumbPreview img {
-    width: 88px;
-    height: 64px;
+    width: 140px;
+    height: 90px;
     object-fit: cover;
-    border-radius: 12px;
-    border: 1px solid var(--admin-border);
+    border-radius: 8px;
+    border: 1px solid var(--admin-border, #e2e8f0);
 }
 
 .pnCheck {
-    display: flex;
+    display: inline-flex;
     align-items: center;
     gap: 10px;
-    color: var(--admin-text-p);
-    font-weight: 600;
+    color: var(--admin-text-p, #334155);
+    font-weight: 700;
+    background: var(--admin-bg-s, #f8fafc);
+    padding: 12px 16px;
+    border-radius: 10px;
+    border: 1px solid var(--admin-border, #e2e8f0);
+    cursor: pointer;
+}
+
+.pnCheck input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    accent-color: var(--admin-accent, #ea580c);
+    cursor: pointer;
 }
 
 .pnModalFoot {
-    padding: 14px 16px;
-    border-top: 1px solid var(--admin-border);
+    padding: 20px 24px;
+    border-top: 1px solid var(--admin-border, #f1f5f9);
     display: flex;
     justify-content: flex-end;
-    gap: 10px;
+    gap: 12px;
+    background: var(--admin-bg-s, #f8fafc);
 }
 
 @media (max-width:1100px) {

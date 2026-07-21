@@ -178,7 +178,7 @@ function MenuIcon() {
       aria-hidden="true"
     >
       <path
-        d="M4 8h16M4 16h16"
+        d="M4 12h16M4 6h16M4 18h16"
         stroke="currentColor"
         strokeWidth="2"
         strokeLinecap="round"
@@ -548,6 +548,15 @@ export default function HeaderPage({ active = "Home" }: { active?: NavKey }) {
       <div className="hfHeaderInner">
         <button
           type="button"
+          className="hfIconBtn hfMenuBtn"
+          aria-label="Menu"
+          onClick={() => setMenuOpen(!menuOpen)}
+        >
+          {menuOpen ? <CloseIcon /> : <MenuIcon />}
+        </button>
+
+        <button
+          type="button"
           className="hfLogo hfLogoBrand"
           aria-label="E-TECH MARKET — Trang chủ"
           onClick={() => navigate("/")}
@@ -568,61 +577,90 @@ export default function HeaderPage({ active = "Home" }: { active?: NavKey }) {
           className={`hfNav ${menuOpen ? "hfNavMobileOpen" : ""}`}
           aria-label="Điều hướng chính"
         >
-          {NAV.map((item) => (
-            <div
-              key={item}
-              role="button"
-              tabIndex={0}
-              className={`hfNavItem ${item === active ? "hfNavItemActive" : ""}`}
-              onClick={() => handleNav(item)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" || e.key === " ") {
-                  e.preventDefault();
-                  handleNav(item);
-                }
-              }}
-            >
-              {NAV_LABEL[item]}
-            </div>
-          ))}
-          {user && isAdminUser(user) && (
-            <div
-              role="button"
-              tabIndex={0}
-              className={`hfNavItem ${location.pathname.startsWith("/admin") ? "hfNavItemActive" : ""}`}
-              onClick={() => navigate("/admin")}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" || e.key === " ") {
-                  e.preventDefault();
-                  navigate("/admin");
-                }
-              }}
-            >
-              Quản trị
-            </div>
-          )}
-
-          <div className="hfNavDivider hfMobileOnly" />
-
-          <div
-            className="hfNavItem hfMobileOnly"
-            onClick={() => navigate("/wishlist")}
-          >
-            <WishlistIcon />
-            <span>Yêu thích</span>
+          <div className="hfNavMobileHeader hfMobileOnly">
+            <span className="hfNavMobileTitle">Menu</span>
+            <button className="hfNavMobileClose" onClick={() => setMenuOpen(false)}>
+              <CloseIcon />
+            </button>
           </div>
+          
+          <div className="hfNavContent">
+            {NAV.map((item) => {
+              let Icon = null;
+              if (item === "Home") Icon = <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>;
+              if (item === "Product") Icon = <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg>;
+              if (item === "Accessory") Icon = <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>;
+              if (item === "Blog") Icon = <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>;
+              if (item === "Contact") Icon = <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>;
+              if (item === "About") Icon = <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>;
 
-          <div
-            className="hfNavItem hfMobileOnly"
-            onClick={() => navigate("/notifications")}
-          >
-            <BellIcon />
-            <span>Thông báo</span>
-            {notifUnread > 0 && (
-              <span className="hfNavBadgeMobile">
-                {notifUnread > 99 ? "99+" : notifUnread}
-              </span>
+              return (
+                <div
+                  key={item}
+                  role="button"
+                  tabIndex={0}
+                  className={`hfNavItem ${item === active ? "hfNavItemActive" : ""}`}
+                  onClick={() => handleNav(item)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                      handleNav(item);
+                    }
+                  }}
+                >
+                  {Icon && <span className="hfNavIcon hfMobileOnly">{Icon}</span>}
+                  {NAV_LABEL[item]}
+                </div>
+              );
+            })}
+            
+            {user && isAdminUser(user) && (
+              <div
+                role="button"
+                tabIndex={0}
+                className={`hfNavItem ${location.pathname.startsWith("/admin") ? "hfNavItemActive" : ""}`}
+                onClick={() => navigate("/admin")}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    navigate("/admin");
+                  }
+                }}
+              >
+                <span className="hfNavIcon hfMobileOnly">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                </span>
+                Quản trị
+              </div>
             )}
+            <div className="hfNavDivider hfMobileOnly" />
+
+            <div
+              className="hfNavItem hfMobileOnly"
+              onClick={() => {
+                setMenuOpen(false);
+                navigate("/wishlist");
+              }}
+            >
+              <span className="hfNavIcon hfMobileOnly"><WishlistIcon /></span>
+              <span>Yêu thích</span>
+            </div>
+
+            <div
+              className="hfNavItem hfMobileOnly"
+              onClick={() => {
+                setMenuOpen(false);
+                navigate("/notifications");
+              }}
+            >
+              <span className="hfNavIcon hfMobileOnly"><BellIcon /></span>
+              <span>Thông báo</span>
+              {notifUnread > 0 && (
+                <span className="hfNavBadgeMobile">
+                  {notifUnread > 99 ? "99+" : notifUnread}
+                </span>
+              )}
+            </div>
           </div>
         </nav>
 
@@ -774,14 +812,14 @@ export default function HeaderPage({ active = "Home" }: { active?: NavKey }) {
         )}
 
         <div className="hfHeaderRight" aria-label="Thao tác trên header">
-          {/* <button
+          <button
             type="button"
             className="hfIconBtn hfThemeBtn"
             aria-label="Chuyển đổi giao diện sáng/tối"
             onClick={toggleTheme}
           >
             {darkMode ? <SunIcon /> : <MoonIcon />}
-          </button> */}
+          </button>
 
           <button
             type="button"
@@ -897,15 +935,6 @@ export default function HeaderPage({ active = "Home" }: { active?: NavKey }) {
               )}
             </button>
           </div>
-
-          <button
-            type="button"
-            className="hfIconBtn hfMenuBtn"
-            aria-label="Menu"
-            onClick={() => setMenuOpen(!menuOpen)}
-          >
-            {menuOpen ? <CloseIcon /> : <MenuIcon />}
-          </button>
         </div>
       </div>
     </header>

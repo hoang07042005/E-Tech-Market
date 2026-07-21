@@ -65,18 +65,6 @@ export default function ProductNewsDetailPage() {
           >
             {news.title}
           </h1>
-          {news.thumbnail_url && (
-            <img
-              src={resolveImageUrl(news.thumbnail_url)}
-              alt={news.title}
-              style={{
-                width: "100%",
-                borderRadius: 14,
-                margin: "8px 0 18px",
-                objectFit: "cover",
-              }}
-            />
-          )}
           <div
             className="pdpRichContent"
             dangerouslySetInnerHTML={{ __html: sanitizedContent }}

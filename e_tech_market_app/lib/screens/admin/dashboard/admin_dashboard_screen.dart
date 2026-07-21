@@ -413,12 +413,12 @@ class _AdminDashboardView extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('SUMMARY',
-                    style: TextStyle(
-                        fontSize: 10,
-                        fontWeight: FontWeight.bold,
-                        color: Theme.of(context).colorScheme.onSurface,
-                        letterSpacing: 1)),
+                // Text('SUMMARY',
+                //     style: TextStyle(
+                //         fontSize: 10,
+                //         fontWeight: FontWeight.bold,
+                //         color: Theme.of(context).colorScheme.onSurface,
+                //         letterSpacing: 1)),
                 const SizedBox(height: 10),
                 Row(
                   children: [

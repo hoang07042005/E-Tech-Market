@@ -270,6 +270,7 @@
 
 .adm-dash-style-37 {
   position: relative;
+  width: 100px;
 }
 
 .adm-dash-style-38 {
@@ -612,6 +613,7 @@
   user-select: none;
   box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
   transition: all 0.15s ease;
+  width: 100%;
 }
 
 .admRangeDropdownItem {
@@ -646,8 +648,8 @@
 }
 
 .admResolutionSelect {
-  padding: 8px 14px;
-  border-radius: 5px;
+  padding: 8px 8px;
+  border-radius: 12px;
   border: 1px solid #e2e8f0;
   font-size: 13px;
   font-weight: 600;
@@ -911,4 +913,298 @@ html.dark .admKpiBlock.filled {
 
 .admKpiSparkline.admKpiRevenue circle {
   filter: drop-shadow(0 2px 6px rgba(16,185,129,0.12));
+}
+
+/* Review Lightbox */
+.admReviewLightboxOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.85);
+  backdrop-filter: blur(8px);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: admFadeInDown 0.2s ease-out;
+}
+
+.admReviewLightbox {
+  position: relative;
+  width: 90%;
+  max-width: 1000px;
+}
+
+html.dark .adm-dash-style-23,
+html.dark .adm-dash-style-26,
+html.dark .adm-dash-style-29 {
+  border-color: var(--admin-card-bg) !important;
+}
+
+html.dark .adm-dash-style-64 {
+  gap: 20px;
+}
+
+html.dark .admRangeDropdownItem {
+  color: var(--admin-text-p) !important;
+}
+
+html.dark .admRangeDropdownItem.active {
+  color: var(--admin-accent) !important;
+  background-color: rgba(249, 115, 22, 0.14) !important;
+}
+
+html.dark .admRangeDateInput {
+  color: var(--admin-text-p) !important;
+}
+
+html.dark .admDashWrap :is(.admCard,
+  .admCardTight,
+  .admKpiCard,
+  .admKpiCard2,
+  .admAnalyticsCard,
+  .admAnalyticsCatsWrap,
+  .admOrdersCard,
+  .admReviewCard,
+  .admLoyalCard,
+  .admQuickRow,
+  .admTopRatedRow,
+  .admPieCategoryItem) {
+  background: var(--admin-card-bg) !important;
+  border-color: var(--admin-border) !important;
+  color: var(--admin-text-p) !important;
+}
+
+html.dark .admPieCategoryItem {
+  border-left-color: var(--category-color, #3b82f6) !important;
+}
+
+html.dark .admDashWrap :is(.admQuickRowText,
+  .admQuickRowChevron,
+  .admTopRatedName,
+  .admTopRatedScore,
+  .admTopRatedCount,
+  .admTopRatedMeta) {
+  color: var(--admin-text-p) !important;
+}
+
+html.dark .admDashWrap :is(.admQuickRowIcon,
+  .admTopRatedThumb) {
+  background: #0f172a !important;
+  border-color: var(--admin-border) !important;
+}
+
+html.dark .admDashWrap .admQuickRow:nth-child(2),
+html.dark .admDashWrap .admQuickRow:nth-child(3) {
+  background: rgba(255, 255, 255, .04) !important;
+}
+
+/* KPI sparkline styles */
+.admKpiSparkWrap {
+  position: absolute;
+  right: 18px;
+  bottom: 16px;
+  width: 140px;
+  height: 56px;
+  display: flex;
+  align-items: end;
+  justify-content: center;
+  pointer-events: none;
+}
+
+/* Center chart only for cards tagged with modifier */
+.admKpiCard2--chartCenter .admKpiSparkWrap {
+  left: 50%;
+  right: auto;
+  transform: translateX(-50%);
+}
+.admKpiSparkline {
+  width: 100%;
+  max-width: 140px;
+  height: 56px;
+  display: flex ;
+  opacity: 1;
+  justify-content: center;
+  align-items: center;
+}
+.admKpiSparkline.admKpiThinArea {
+  height: 44px;
+}
+.admKpiSparkline.admKpiThinArea path {
+  shape-rendering: geometricPrecision;
+
+}
+
+.admKpiCard2 {
+  padding: 30px 18px 64px 18px;
+  min-height: 140px;
+  border-radius: 10px;
+}
+.admKpiLabel2 {
+  font-size: 13px;
+  color: #374151;
+}
+.admKpiValue2 {
+  font-size: 28px;
+  font-weight: 600;
+  margin-top: 6px;
+}
+.admKpiSub2 {
+  font-size: 12px;
+  color: #6b7280;
+  margin-top: 6px;
+}
+html.dark .admKpiSparkline polyline {
+  stroke-opacity: 0.9;
+}
+
+.admKpiBarChart rect {
+  transition: opacity 0.12s ease, transform 0.12s ease;
+  rx: 3;
+}
+.admKpiBarChart line {
+  mix-blend-mode: normal;
+}
+.admKpiBarChart rect {
+  shape-rendering: geometricPrecision;
+}
+.admKpiBarChart rect:hover {
+  opacity: 0.95;
+}
+.admKpiPurpleBars rect {
+  transition: transform 0.12s ease, opacity 0.12s ease;
+}
+.admKpiPurpleBars rect:last-child {
+  filter: drop-shadow(0 6px 10px rgba(124,58,237,0.12));
+}
+.admKpiDonut {
+  display: block;
+  width: 72px;
+  height: 72px;
+}
+.admKpiBlocks {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.admKpiBlock {
+  width: 18px;
+  height: 18px;
+  border-radius: 4px;
+  background: transparent;
+  border: 2px solid #f3f4f6;
+}
+.admKpiBlock.filled {
+  background: #ef4444;
+  border-color: #ef4444;
+}
+html.dark .admKpiBlock {
+  background: rgba(255,255,255,0.02);
+  border-color: rgba(255,255,255,0.06);
+}
+html.dark .admKpiBlock.filled {
+  background: #ef4444;
+  border-color: #ef4444;
+}
+
+.admKpiSparkline.admKpiRevenue circle {
+  filter: drop-shadow(0 2px 6px rgba(16,185,129,0.12));
+}
+
+/* Review Lightbox */
+.admReviewLightboxOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.85);
+  backdrop-filter: blur(8px);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: admFadeInDown 0.2s ease-out;
+}
+
+.admReviewLightbox {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+}
+
+.admReviewLightboxClose {
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+  border: none;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  font-size: 28px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  z-index: 100;
+  backdrop-filter: blur(4px);
+}
+
+.admReviewLightboxClose:hover {
+  background: rgba(239, 68, 68, 0.9);
+  transform: scale(1.1);
+}
+
+.admReviewLightboxNavBtn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #fff;
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  font-size: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  z-index: 100;
+  backdrop-filter: blur(4px);
+}
+
+.admReviewLightboxNavBtn:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: translateY(-50%) scale(1.1);
+}
+
+.admReviewLightboxNavLeft {
+  left: 30px;
+}
+
+.admReviewLightboxNavRight {
+  right: 30px;
+}
+
+.admReviewLightboxContent {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  max-width: 100%;
+  max-height: 100%;
+  pointer-events: none; /* Let clicks pass through to close modal */
+}
+
+.admReviewLightboxMedia {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  border-radius: 12px;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  pointer-events: auto; /* Prevent clicks on image from closing */
 }

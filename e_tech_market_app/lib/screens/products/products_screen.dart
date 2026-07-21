@@ -2045,7 +2045,8 @@ class _StockBar extends StatelessWidget {
       if (normalStock == null) return const SizedBox();
       final stock = normalStock!;
       final pct = (stock / 100 * 100).clamp(0, 100).toDouble(); // STOCK_MAX = 100
-      final isLow = stock <= 10;
+      final isOut = stock <= 0;
+      final isLow = stock > 0 && stock <= 10;
 
       return Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -2054,10 +2055,14 @@ class _StockBar extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                isLow ? "⚠️ Sắp hết hàng (còn $stock)" : "Còn $stock sản phẩm",
+                isOut 
+                    ? "❌ Hết hàng" 
+                    : isLow 
+                        ? "⚠️ Sắp hết hàng (còn $stock)" 
+                        : "Còn $stock sản phẩm",
                 style: TextStyle(
-                  color: isLow ? const Color(0xFFE53E3E) : const Color(0xFFFF4B2B),
-                  fontWeight: isLow ? FontWeight.w700 : FontWeight.w600,
+                  color: isOut ? const Color(0xFF9E9E9E) : isLow ? const Color(0xFFE53E3E) : const Color(0xFFFF4B2B),
+                  fontWeight: (isLow || isOut) ? FontWeight.w700 : FontWeight.w600,
                   fontSize: 10,
                 ),
               ),
@@ -2084,13 +2089,17 @@ class _StockBar extends StatelessWidget {
                   width: constraints.maxWidth * (pct / 100),
                   height: 4,
                   decoration: BoxDecoration(
-                    gradient: isLow
+                    gradient: isOut
                         ? const LinearGradient(
-                            colors: [Color(0xFFF59E0B), Color(0xFFE53E3E)],
+                            colors: [Color(0xFFE0E0E0), Color(0xFFBDBDBD)],
                           )
-                        : const LinearGradient(
-                            colors: [Color(0xFF34D399), Color(0xFF059669)],
-                          ),
+                        : isLow
+                            ? const LinearGradient(
+                                colors: [Color(0xFFF59E0B), Color(0xFFE53E3E)],
+                              )
+                            : const LinearGradient(
+                                colors: [Color(0xFF34D399), Color(0xFF059669)],
+                              ),
                     borderRadius: BorderRadius.circular(99),
                   ),
                 );

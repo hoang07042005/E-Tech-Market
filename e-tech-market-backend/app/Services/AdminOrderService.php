@@ -167,6 +167,13 @@ class AdminOrderService
                 'changed_by_user_id' => $adminId,
                 'note' => isset($data['status_note']) && $data['status_note'] !== null ? (string) $data['status_note'] : null,
             ]);
+
+            if (in_array($newStatus, ['delivered', 'completed'], true)) {
+                $email = $order->user?->email ?? null;
+                if ($email) {
+                    \Illuminate\Support\Facades\Notification::route('mail', $email)->notify(new \App\Notifications\OrderStatusUpdatedNotification($order));
+                }
+            }
         }
 
         return $order;

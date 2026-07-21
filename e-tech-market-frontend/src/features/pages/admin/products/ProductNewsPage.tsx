@@ -1,4 +1,4 @@
-﻿import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { apiFetch, API_BASE_URL } from "@/configs/api.config";
 import ConfirmModal from "@/components/ConfirmModal";
 import "@/styles/admin/ProductNewsPage.css";
@@ -388,88 +388,101 @@ export default function ProductNewsPage() {
               </button>
             </div>
 
-            <div className="pnModalBody">
-              <div className="pnField">
-                <label>Tiêu đề</label>
-                <input
-                  value={form.title}
-                  onChange={(e) => setForm({ ...form, title: e.target.value })}
-                />
-              </div>
-              <div className="pnField">
-                <label>Ảnh thumbnail (tải lên)</label>
-                <div className="pnUploadRow">
+            <div className="pnModalBody split-layout">
+              <div className="pnModalForm">
+                <div className="pnField">
+                  <label>Tiêu đề</label>
                   <input
-                    type="file"
-                    accept="image/*"
-                    onChange={async (e) => {
-                      const f = e.target.files?.[0] || null;
-                      if (f) {
-                        try {
-                          await uploadThumbnail(f);
-                        } catch (err: unknown) {
-                          alert(
-                            err instanceof Error
-                              ? err.message
-                              : "Upload thất bại",
-                          );
-                        }
-                      }
-                    }}
+                    value={form.title}
+                    onChange={(e) => setForm({ ...form, title: e.target.value })}
                   />
-                  {thumbnailUploading && (
-                    <span className="pnTiny">Đang upload...</span>
+                </div>
+                <div className="pnField">
+                  <label>Ảnh thumbnail (tải lên)</label>
+                  <div className="pnUploadRow">
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={async (e) => {
+                        const f = e.target.files?.[0] || null;
+                        if (f) {
+                          try {
+                            await uploadThumbnail(f);
+                          } catch (err: unknown) {
+                            alert(
+                              err instanceof Error
+                                ? err.message
+                                : "Upload thất bại",
+                            );
+                          }
+                        }
+                      }}
+                    />
+                    {thumbnailUploading && (
+                      <span className="pnTiny">Đang upload...</span>
+                    )}
+                  </div>
+                  {form.thumbnail_url && (
+                    <div className="pnThumbPreview">
+                      <img src={resolveImageUrl(form.thumbnail_url)} alt="" />
+                      <button
+                        type="button"
+                        className="pnBtn danger"
+                        onClick={() => setForm({ ...form, thumbnail_url: "" })}
+                      >
+                        Xóa ảnh
+                      </button>
+                    </div>
                   )}
                 </div>
-                {form.thumbnail_url && (
-                  <div className="pnThumbPreview">
-                    <img src={resolveImageUrl(form.thumbnail_url)} alt="" />
-                    <button
-                      type="button"
-                      className="pnBtn danger"
-                      onClick={() => setForm({ ...form, thumbnail_url: "" })}
-                    >
-                      Xóa ảnh
-                    </button>
+                <div className="pnRow">
+                  <div className="pnField">
+                    <label>Thứ tự sắp xếp</label>
+                    <input
+                      type="number"
+                      value={form.sort_order}
+                      onChange={(e) =>
+                        setForm({
+                          ...form,
+                          sort_order: parseInt(e.target.value || "0", 10),
+                        })
+                      }
+                    />
                   </div>
-                )}
-              </div>
-              <div className="pnRow">
-                <div className="pnField">
-                  <label>Thứ tự sắp xếp</label>
+                </div>
+                <div className="pnCheck">
                   <input
-                    type="number"
-                    value={form.sort_order}
+                    type="checkbox"
+                    checked={form.is_active}
                     onChange={(e) =>
-                      setForm({
-                        ...form,
-                        sort_order: parseInt(e.target.value || "0", 10),
-                      })
+                      setForm({ ...form, is_active: e.target.checked })
                     }
                   />
+                  <span>Đang bật</span>
+                </div>
+                <div className="pnField">
+                  <label>Nội dung HTML (dán từ website)</label>
+                  <textarea
+                    rows={10}
+                    value={form.content_html}
+                    onChange={(e) =>
+                      setForm({ ...form, content_html: e.target.value })
+                    }
+                  />
+                  <div className="pnTiny">
+                    Hệ thống sẽ tự lọc thẻ nguy hiểm (script, onclick...).
+                  </div>
                 </div>
               </div>
-              <div className="pnCheck">
-                <input
-                  type="checkbox"
-                  checked={form.is_active}
-                  onChange={(e) =>
-                    setForm({ ...form, is_active: e.target.checked })
-                  }
-                />
-                <span>Đang bật</span>
-              </div>
-              <div className="pnField">
-                <label>Nội dung HTML (dán từ website)</label>
-                <textarea
-                  rows={10}
-                  value={form.content_html}
-                  onChange={(e) =>
-                    setForm({ ...form, content_html: e.target.value })
-                  }
-                />
-                <div className="pnTiny">
-                  Hệ thống sẽ tự lọc thẻ nguy hiểm (script, onclick...).
+
+              <div className="pnModalPreview">
+                <div className="pnModalPreviewHead">Bản xem trước nội dung</div>
+                <div className="pnModalPreviewContent pdpRichContent">
+                  <div
+                    dangerouslySetInnerHTML={{
+                      __html: sanitizeHtml(form.content_html),
+                    }}
+                  />
                 </div>
               </div>
             </div>

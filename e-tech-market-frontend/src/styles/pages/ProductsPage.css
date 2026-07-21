@@ -939,35 +939,106 @@
     flex-direction: column;
     align-items: stretch;
     width: 100%;
-    gap: 15px
+    gap: 0;
   }
 
   .ppSearchWrap {
-    width: 100%
+    display: none;
+    width: 100%;
+    margin-bottom: 12px;
+  }
+
+  .ppSearchWrap--mobile-open {
+    display: block !important;
   }
 
   .ppControlsRow {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    width: 100%
+    width: 100%;
   }
 
-  .ppCardContent {
-    padding: 20px
+  .ppSortWrap {
+    flex: 1;
+    min-width: 0;
+    gap: 8px;
   }
 
+  .ppSortDropdownNew {
+    min-width: 0;
+    flex: 1;
+  }
+
+  .ppSortTriggerNew {
+    height: 40px;
+    border-radius: 8px;
+    background: #f8fafc;
+    border-color: #e2e8f0;
+    width: 100%;
+    min-width: 0;
+    padding: 0 10px;
+    gap: 8px;
+  }
+  
+  .ppSortTriggerNew span {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .ppMobileActionIcons {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+  }
+
+  .ppMobileIconBtn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    color: #475569;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+  }
+  
   .ppMobileFilterBtn {
     display: inline-flex;
     align-items: center;
-    gap: 8px;
-    background: #fff;
-    border: 1px solid #ddd;
-    padding: 8px 12px;
-    font-size: 11px;
+    justify-content: center;
+    height: 40px;
+    padding: 0 12px;
+    gap: 6px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    color: #475569;
+    font-size: 12px;
     font-weight: 600;
-    border-radius: 4px;
-    cursor: pointer
+    cursor: pointer;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+
+  .ppMobileIconBtn:hover, .ppMobileFilterBtn:hover {
+    background: #fff;
+    color: var(--et-primary);
+    border-color: var(--et-primary);
+    box-shadow: 0 4px 12px rgba(249, 115, 22, 0.12);
+  }
+  .ppMobileIconBtn svg, .ppMobileFilterBtn svg {
+    width: 18px;
+    height: 18px;
+    stroke-width: 2;
   }
 
   .ppSidebarNew {
@@ -1015,16 +1086,76 @@
 
 @media (width<=600px) {
   .ppContainer {
-    padding: 0 15px
+    padding: 0 10px
   }
 
   .ppProductGridNew {
-    grid-template-columns: 1fr;
-    gap: 20px
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .ppCardNew {
+    min-width: 0;
   }
 
   .ppCardContent {
-    padding: 15px
+    padding: 8px;
+  }
+
+  .ppCardTitle {
+    font-size: 13px;
+    margin-top: 4px;
+    margin-bottom: 4px;
+  }
+
+  .ppCardPriceRow {
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-bottom: 4px;
+  }
+
+  .ppCardPrice {
+    font-size: 13px;
+    white-space: normal;
+    word-break: break-word;
+  }
+
+  .ppCardOldPrice {
+    font-size: 11px;
+  }
+
+  .ppCardBrand {
+    font-size: 10px;
+    max-width: 45%;
+  }
+
+  .ppStar {
+    font-size: 12px;
+  }
+
+  .ppCardRatingText {
+    display: none;
+  }
+
+  .ppCardTopRow {
+    gap: 4px;
+  }
+
+  .ppCardAddBtn {
+    padding: 10px 4px;
+    font-size: 0.75rem;
+  }
+
+  .ppCompareBtn, .ppWishBtn {
+    width: 28px;
+    height: 28px;
+  }
+  .ppCompareBtn {
+    left: 36px;
+  }
+  
+  .fsDiscountMain {
+    font-size: 12px;
   }
 }
 

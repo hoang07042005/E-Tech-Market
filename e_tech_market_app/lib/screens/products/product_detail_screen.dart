@@ -1879,6 +1879,8 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     final finalPrice = activeFs?.flashSalePrice ??
         selectedVariant?.effectivePrice ??
         displayPrice;
+    final int currentStock = selectedVariant?.stockQuantity ?? 0;
+    final bool isOutOfStock = currentStock <= 0;
 
     return Container(
       padding: const EdgeInsets.all(16),
@@ -1925,17 +1927,19 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                 ],
               ),
             ),
-            const SizedBox(width: 12),
             ElevatedButton.icon(
-              onPressed: () async {
-                await _addToCart();
-              },
-              icon: const Icon(Icons.add_shopping_cart, color: Colors.white),
-              label: Text(Trans.addToCart),
+              onPressed: isOutOfStock
+                  ? null
+                  : () async {
+                      await _addToCart();
+                    },
+              icon: Icon(
+                  isOutOfStock ? Icons.remove_shopping_cart : Icons.add_shopping_cart,
+                  color: isOutOfStock ? Colors.grey[400] : Colors.white),
+              label: Text(isOutOfStock ? Trans.outOfStock : Trans.addToCart),
               style: ElevatedButton.styleFrom(
-                backgroundColor: Color(0xFFFF6A00), // Đổi thành màu cam tại đây
-                foregroundColor:
-                    Colors.white, // Đổi chữ và icon thành màu trắng cho nổi bật
+                backgroundColor: isOutOfStock ? Colors.grey[300] : Color(0xFFFF6A00),
+                foregroundColor: isOutOfStock ? Colors.grey[600] : Colors.white,
               ),
             ),
           ],

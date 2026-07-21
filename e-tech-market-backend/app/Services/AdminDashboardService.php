@@ -490,16 +490,19 @@ class AdminDashboardService
     {
         // Get top customers with rank >= 3 (Vàng)
         $vipOf = static function (string $rankName): array {
-            if ($rankName === 'Kim Cương') {
+            $lower = mb_strtolower($rankName, 'UTF-8');
+            if (str_contains($lower, 'kim cương') || str_contains($lower, 'diamond')) {
                 return ['VIP KIM CƯƠNG', 'diamond'];
             }
-            if ($rankName === 'Vàng') {
+            if (str_contains($lower, 'bạch kim') || str_contains($lower, 'platinum')) {
+                return ['VIP BẠCH KIM', 'platinum'];
+            }
+            if (str_contains($lower, 'vàng') || str_contains($lower, 'gold')) {
                 return ['VIP VÀNG', 'gold'];
             }
-            if ($rankName === 'Bạc') {
+            if (str_contains($lower, 'bạc') || str_contains($lower, 'silver')) {
                 return ['VIP BẠC', 'silver'];
             }
-
             return ['VIP ĐỒNG', 'bronze'];
         };
 
