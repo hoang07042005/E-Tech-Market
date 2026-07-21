@@ -215,7 +215,7 @@ export default function VideoAdminPage() {
               <tr>
                 <th>HÌNH THU NHỎ</th>
                 <th>TIÊU ĐỀ</th>
-                <th>MÔ TẢ</th>
+                {/* <th>MÔ TẢ</th> */}
                 <th>LIÊN KẾT</th>
                 <th>VIDEO URL / SOURCE</th>
                 <th>THỨ TỰ</th>
@@ -255,11 +255,11 @@ export default function VideoAdminPage() {
                           {video.description || '—'}
                         </span>
                       </td> */}
-                      <td>
+                      {/* <td>
                         <span className="videoadminpage-style-5" style={{ whiteSpace: 'pre-wrap' }}>
                           {video.description || '—'}
                         </span>
-                      </td>
+                      </td> */}
                       <td>
                         {video.products && video.products.length > 0 ? (
                           <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
