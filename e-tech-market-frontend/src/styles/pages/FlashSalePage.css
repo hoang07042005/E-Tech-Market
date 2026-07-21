@@ -252,17 +252,19 @@ html.dark .flashSalePage {
 }
 .fspGrid {
   display: grid;
-  grid-template-columns: 1fr;
-  gap: 24px;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
 }
 @media (min-width: 640px) {
   .fspGrid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
   }
 }
 @media (min-width: 1024px) {
   .fspGrid {
     grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
   }
 }
 .fspCard {
@@ -646,21 +648,72 @@ html.dark .fspCurrentProgramTime {
 
 @media (max-width: 768px) {
   .fspFilterSection {
-    padding: 24px 16px;
+    padding: 16px 0 0 0;
+    gap: 16px;
+    background: #fff;
+    border-bottom: 1px solid #f1f5f9;
+  }
+  .fspSearchBox {
+    margin: 0 16px;
+    width: calc(100% - 32px);
+    max-width: 100%;
+  }
+  .fspSortOptions {
+    display: flex;
+    width: 100%;
+    border-top: 1px solid #f1f5f9;
+    gap: 0;
+    padding-bottom: 0;
+  }
+  .fspSortBtn {
+    flex: 1;
+    border-radius: 0;
+    border: none;
+    border-bottom: 2px solid transparent;
+    background: transparent;
+    padding: 12px 4px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #64748b;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .fspSortBtn.active {
+    background: transparent;
+    color: #ff5722;
+    border-bottom: 2px solid #ff5722;
   }
   .fspProductsSection {
-    padding: 0 16px 48px;
+    padding: 16px 12px 48px;
   }
   .fspGrid {
-    gap: 16px;
+    gap: 12px;
   }
   .fspProgramItem {
     min-width: 140px;
     padding: 12px 16px;
   }
   .fspCurrentProgramInfo {
-    flex-direction: column;
-    align-items: flex-start;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    gap: 8px;
+  }
+  .fspCurrentProgramTitle {
+    font-size: 16px;
+    gap: 6px;
+  }
+  .fspCurrentProgramTitle svg {
+    width: 18px;
+    height: 18px;
+  }
+  .fspCurrentProgramTime {
+    font-size: 12px;
+    padding: 4px 10px;
   }
 }
 
@@ -947,7 +1000,7 @@ html.dark .fspCurrentProgramTime {
 
   .fspMultiBannerTitle {
     gap: 10px;
-    margin-bottom: 12px;
+    margin-bottom: 4px;
   }
 
   .fspMultiBannerTitle .flashIcon {
@@ -962,7 +1015,7 @@ html.dark .fspCurrentProgramTime {
   .fspMultiText {
     font-size: 13px;
     max-width: 100%;
-    margin-bottom: 18px;
+    margin-bottom: 4px;
     line-height: 1.5;
     padding: 0 8px;
   }
@@ -1079,7 +1132,7 @@ html.dark .fspCurrentProgramTime {
 
   .fspMultiTimerWrap {
     gap: 6px;
-    margin-bottom: 24px;
+    margin-bottom: 10px;
   }
 
   .fspMultiTimerBox {

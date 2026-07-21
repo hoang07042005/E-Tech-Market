@@ -1338,16 +1338,18 @@
 
 @media (max-width: 640px) {
   .pfModal {
-    width: calc(100% - 24px);
-    max-width: calc(100% - 24px);
-    padding: 12px;
-    border-radius: 10px;
-    max-height: 92vh;
-    overflow: auto;
+    width: calc(100% - 32px);
+    max-width: calc(100% - 32px);
+    padding: 16px;
+    border-radius: 12px;
+    max-height: 80vh;
+    overflow-y: auto;
+    margin: auto;
   }
   .pfModalOverlay {
-    padding: 8px;
-    align-items: flex-start;
+    padding: 16px;
+    align-items: center;
+    justify-content: center;
   }
   .pfModalBody {
     grid-template-columns: 1fr;
@@ -1355,12 +1357,13 @@
   }
   .pfModal .pfFormGrid {
     grid-template-columns: 1fr;
+    gap: 10px;
   }
   .pfModalSidebar { justify-content: center }
   .pfModalAvatarWrap .pfAvatar { width: 72px; height: 72px }
   .pfFileBtn { width: 100%; text-align: center }
-  .pfModalActions { flex-direction: column; gap: 8px }
-  .pfBtn { width: 100% }
+  .pfModalActions { flex-direction: row; gap: 12px; margin-top: 12px; }
+  .pfBtn { width: 50%; padding: 12px; }
 
   /* Ensure profile two-column blocks collapse */
   .pfTwoCol { grid-template-columns: 1fr }
@@ -1371,6 +1374,26 @@
   .pfThumbLayout-two { grid-template-columns: repeat(2, 56px); grid-auto-rows: 56px }
   .pfThumbLayout-three { grid-template-columns: 80px 42px; grid-template-rows: 42px 42px }
   .pfThumbLayout-four { grid-template-columns: repeat(2, 42px); grid-template-rows: repeat(2, 42px) }
+
+  /* Override inline styles for member card on mobile */
+  .pfCard[aria-label="Thẻ thành viên"] {
+    padding: 18px !important;
+    aspect-ratio: auto !important;
+    min-height: 200px !important;
+  }
+  .pfCard[aria-label="Thẻ thành viên"] h2 {
+    font-size: 17px !important;
+  }
+  .pfCard[aria-label="Thẻ thành viên"] h1.metallic-text {
+    font-size: 22px !important;
+  }
+  .pfCard[aria-label="Thẻ thành viên"] .metallic-text {
+    font-size: 20px !important;
+  }
+  /* Points block */
+  .pfCard[aria-label="Thẻ thành viên"] > div > div > div:nth-child(1) > div:nth-child(2) {
+    padding: 6px 12px !important;
+  }
 }
 
 /* Recent orders responsive fixes */

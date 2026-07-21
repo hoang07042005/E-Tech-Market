@@ -14,7 +14,7 @@
 
 .ppMainGrid {
   display: grid;
-  grid-template-columns: 260px 1fr;
+  grid-template-columns: 220px 1fr;
   gap: 40px;
   align-items: start
 }
@@ -161,7 +161,7 @@
   color: #444;
   cursor: pointer;
   align-items: center;
-  gap: 12px;
+  gap: 5px;
   font-size: 13px;
   font-weight: 500;
   transition: color .2s;
@@ -890,7 +890,7 @@
 .ppCatParentName {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 5px;
   cursor: pointer;
   font-size: 13px;
   font-weight: 500;
@@ -1154,8 +1154,38 @@
     left: 36px;
   }
   
+  .fsLabelText {
+    font-size: 9px;
+    margin-left: 1px;
+  }
+  .fsLabelMain svg {
+    width: 12px;
+    height: 16px;
+  }
+  .fsTimerTitle {
+    font-size: 7px;
+    margin-bottom: 1px;
+    letter-spacing: 0;
+  }
+  .fsTimerDigit {
+    font-size: 8px;
+    padding: 1px 2px;
+  }
+  .fsTimerColon {
+    font-size: 8px;
+  }
   .fsDiscountMain {
-    font-size: 12px;
+    font-size: 11px;
+  }
+  .fsLabelBlock {
+    width: 30%;
+  }
+  .fsTimerBlock {
+    left: 30%;
+    right: 22%;
+  }
+  .fsDiscountBlock {
+    width: 22%;
   }
 }
 

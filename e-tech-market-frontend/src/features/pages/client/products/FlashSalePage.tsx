@@ -2,6 +2,7 @@ import { useEffect, useState, useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { apiFetch, API_BASE_URL } from '@/configs/api.config'
 import '@/styles/pages/FlashSalePage.css'
+import '@/styles/pages/ProductsPage.css'
 
 type FlashSaleItem = {
   id: number
@@ -98,12 +99,74 @@ function getTimeLeftObject(sale: FlashSale): { h: number; m: number; s: number }
 }
 
 function formatDateTimeVN(dateStr: string): string {
-  const date = new Date(dateStr.replace(' ', 'T'))
-  const day = date.getDate()
-  const month = date.getMonth() + 1
-  const hours = date.getHours()
-  const minutes = date.getMinutes().toString().padStart(2, '0')
-  return `${day}/${month} lúc ${hours}:${minutes}`
+  if (!dateStr) return ''
+  const d = new Date(dateStr.replace(' ', 'T'))
+  if (isNaN(d.getTime())) return dateStr
+  return d.toLocaleString('vi-VN', {
+    hour: '2-digit', minute: '2-digit',
+    day: '2-digit', month: '2-digit', year: 'numeric'
+  })
+}
+
+function FlashSaleProductCard({ item, status }: { item: FlashSaleItem, status: 'passed' | 'active' | 'upcoming' }) {
+  const productUrl = `/products/${item.product.slug}?flashSale=true${item.variant_id ? `&variant=${item.variant_id}` : ''}`
+  const displayImage = resolveImageUrl(item.variant?.image_url || item.product.main_image_url)
+  const displayName = item.variant ? `${item.product.name} - ${item.variant.variant_name}` : item.product.name
+  const originalPrice = item.variant ? item.variant.price : item.product.price
+  const progressPercent = Math.min(100, (item.sold_quantity / (item.quantity_limit || 100)) * 100)
+  const isScarcity = progressPercent >= 95
+  const discountPercent = Math.round((1 - item.flash_sale_price / originalPrice) * 100)
+  const brand = (item.product as any).brand || "TECH"
+
+  return (
+    <div className={`ppCardNew ${isScarcity ? 'scarcity' : ''}`}>
+      <Link to={productUrl} className="ppCardImageWrap">
+        <img src={displayImage} alt={displayName} className="ppCardImg" />
+        <div className="ppCardBadges">
+          <span className="ppCardBadge ppCardBadge--discount">-{discountPercent}%</span>
+        </div>
+        <div className="fsBannerWrapper">
+          <div className="fsBannerBg" />
+          <div className="fsLabelBlock" style={{ width: '65%' }}>
+            <div className="fsLabelMain">
+              <svg width="18" height="24" viewBox="0 0 24 24" fill="#ffeb3b" stroke="#ffaa00" strokeWidth="1">
+                <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
+              </svg>
+              <div className="fsLabelText" style={{ fontSize: '11px', paddingRight: '8px' }}>FLASH SALE</div>
+            </div>
+          </div>
+          <div className="fsDiscountBlock" style={{ width: '35%' }}>
+            <div className="fsDiscountMain" style={{ fontSize: '14px' }}>-{discountPercent}%</div>
+          </div>
+        </div>
+      </Link>
+      <div className="ppCardContent">
+        <div className="ppCardTopRow">
+          <span className="ppCardBrand">{brand.toUpperCase()}</span>
+        </div>
+        <Link to={productUrl} className="ppCardTitleLink">
+          <h3 className="ppCardTitle">{displayName}</h3>
+        </Link>
+        <div className="ppCardPriceRow">
+          <span className="ppCardPrice">{Number(item.flash_sale_price).toLocaleString("vi-VN")} đ</span>
+          {item.flash_sale_price < originalPrice && (
+            <span className="ppCardOldPrice">{Number(originalPrice).toLocaleString("vi-VN")} đ</span>
+          )}
+        </div>
+        <div className="ppStockBar">
+          <div className="ppStockBarMeta">
+            <span className="ppStockBarSold">
+              {status === 'upcoming' ? 'Chưa mở bán' : item.sold_quantity === 0 ? 'Vừa mở bán' : `Đã bán ${item.sold_quantity}/${item.quantity_limit || 100}`}
+            </span>
+            <span className="ppStockBarPct">{Math.round(progressPercent)}%</span>
+          </div>
+          <div className="ppStockBarTrack">
+            <div className="ppStockBarFill ppStockBarFill--flash" style={{ width: `${progressPercent}%` }} />
+          </div>
+        </div>
+      </div>
+    </div>
+  )
 }
 
 export default function FlashSalePage() {
@@ -323,56 +386,16 @@ export default function FlashSalePage() {
           <div className="fspSortOptions">
             <button type="button" className={`fspSortBtn ${sortBy === 'popular' ? 'active' : ''}`} onClick={() => setSortBy('popular')}>Bán chạy</button>
             <button type="button" className={`fspSortBtn ${sortBy === 'priceAsc' ? 'active' : ''}`} onClick={() => setSortBy('priceAsc')}>Giá tăng dần</button>
-            <button type="button" className={`fspSortBtn ${sortBy === 'discount' ? 'active' : ''}`} onClick={() => setSortBy('discount')}>Giảm nhiều nhất</button>
+            <button type="button" className={`fspSortBtn ${sortBy === 'discount' ? 'active' : ''}`} onClick={() => setSortBy('discount')}>Giảm nhiều</button>
             <button type="button" className={`fspSortBtn ${sortBy === 'priceDesc' ? 'active' : ''}`} onClick={() => setSortBy('priceDesc')}>Mới nhất</button>
           </div>
         </section>
 
         <section className="fspProductsSection">
           <div className="fspGrid">
-            {filteredAndSortedItems.map(item => {
-              const productUrl = `/products/${item.product.slug}?flashSale=true${item.variant_id ? `&variant=${item.variant_id}` : ''}`
-              const displayImage = resolveImageUrl(item.variant?.image_url || item.product.main_image_url)
-              const displayName = item.variant ? `${item.product.name} - ${item.variant.variant_name}` : item.product.name
-              const originalPrice = item.variant ? item.variant.price : item.product.price
-              const progressPercent = Math.min(100, (item.sold_quantity / (item.quantity_limit || 100)) * 100)
-              const isHot = progressPercent >= 80
-              const isScarcity = progressPercent >= 95
-
-              return (
-                <Link key={item.id} to={productUrl} className={`fspCard ${isScarcity ? 'scarcity' : ''}`}>
-                  <div className="fspBadge">
-                    <span className="fspBadgePercent">-{Math.round((1 - item.flash_sale_price / originalPrice) * 100)}%</span>
-                  </div>
-                  <div className="fspThumb">
-                    <img src={displayImage} alt={displayName} />
-                  </div>
-                  <div className="fspInfo">
-                    <h3 className="fspName">{displayName}</h3>
-                    <div className="fspPricing">
-                      <span className="fspSalePrice">{Number(item.flash_sale_price).toLocaleString()}đ</span>
-                      <span className="fspOldPrice">{Number(originalPrice).toLocaleString()}đ</span>
-                    </div>
-                    <div className="fspProgress">
-                      <div className="fspProgressRow">
-                        <span className={`fspProgressLabel ${isHot ? 'hot' : ''}`}>
-                          {status === 'upcoming' ? 'Chưa mở bán' : item.sold_quantity === 0 ? 'Vừa mở bán' : `Đã bán ${item.sold_quantity}`}
-                        </span>
-                        <span className="fspStockLabel">
-                          {status === 'upcoming' ? 'Sắp diễn ra' : item.quantity_limit && (item.quantity_limit - item.sold_quantity) <= 3 ? `Chỉ còn ${item.quantity_limit - item.sold_quantity} chiếc` : isHot ? 'ĐANG CHÁY HÀNG!' : 'Còn hàng'}
-                        </span>
-                      </div>
-                      <div className="fspProgressBar">
-                        <div className={`fspProgressFill ${isHot ? 'hot' : ''}`} style={{ width: `${progressPercent}%` }}></div>
-                      </div>
-                    </div>
-                    <div className="fspCTA">
-                      XEM CHI TIẾT →
-                    </div>
-                  </div>
-                </Link>
-              )
-            })}
+            {filteredAndSortedItems.map(item => (
+              <FlashSaleProductCard key={item.id} item={item} status={status} />
+            ))}
           </div>
         </section>
       </div>
@@ -434,49 +457,9 @@ export default function FlashSalePage() {
 
       <section className="fspProductsSection">
         <div className="fspGrid">
-          {filteredAndSortedItems.map(item => {
-            const productUrl = `/products/${item.product.slug}?flashSale=true${item.variant_id ? `&variant=${item.variant_id}` : ''}`
-            const displayImage = resolveImageUrl(item.variant?.image_url || item.product.main_image_url)
-            const displayName = item.variant ? `${item.product.name} - ${item.variant.variant_name}` : item.product.name
-            const originalPrice = item.variant ? item.variant.price : item.product.price
-            const progressPercent = Math.min(100, (item.sold_quantity / (item.quantity_limit || 100)) * 100)
-            const isHot = progressPercent >= 80
-            const isScarcity = progressPercent >= 95
-
-            return (
-              <Link key={item.id} to={productUrl} className={`fspCard ${isScarcity ? 'scarcity' : ''}`}>
-                <div className="fspBadge">
-                  <span className="fspBadgePercent">-{Math.round((1 - item.flash_sale_price / originalPrice) * 100)}%</span>
-                </div>
-                <div className="fspThumb">
-                  <img src={displayImage} alt={displayName} />
-                </div>
-                <div className="fspInfo">
-                  <h3 className="fspName">{displayName}</h3>
-                  <div className="fspPricing">
-                    <span className="fspSalePrice">{Number(item.flash_sale_price).toLocaleString()}đ</span>
-                    <span className="fspOldPrice">{Number(originalPrice).toLocaleString()}đ</span>
-                  </div>
-                  <div className="fspProgress">
-                    <div className="fspProgressRow">
-                      <span className={`fspProgressLabel ${isHot ? 'hot' : ''}`}>
-                        {status === 'upcoming' ? 'Chưa mở bán' : item.sold_quantity === 0 ? 'Vừa mở bán' : `Đã bán ${item.sold_quantity}`}
-                      </span>
-                      <span className="fspStockLabel">
-                        {status === 'upcoming' ? 'Sắp diễn ra' : item.quantity_limit && (item.quantity_limit - item.sold_quantity) <= 3 ? `Chỉ còn ${item.quantity_limit - item.sold_quantity} chiếc` : isHot ? 'ĐANG CHÁY HÀNG!' : 'Còn hàng'}
-                      </span>
-                    </div>
-                    <div className="fspProgressBar">
-                      <div className={`fspProgressFill ${isHot ? 'hot' : ''}`} style={{ width: `${progressPercent}%` }}></div>
-                    </div>
-                  </div>
-                   <div className="fspCTA">
-                      XEM CHI TIẾT →
-                    </div>
-                </div>
-              </Link>
-            )
-          })}
+          {filteredAndSortedItems.map(item => (
+            <FlashSaleProductCard key={item.id} item={item} status={status} />
+          ))}
         </div>
       </section>
     </div>

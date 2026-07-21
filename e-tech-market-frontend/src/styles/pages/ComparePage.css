@@ -196,7 +196,7 @@
     padding: 30px 0 80px;
   }
   .compareContainer {
-    padding: 0 12px;
+    padding: 0 8px; /* Giảm padding container để tăng diện tích hiển thị */
   }
   .compareHeader h1 {
     font-size: 1.6rem;
@@ -205,21 +205,61 @@
     margin-bottom: 24px;
   }
   .compareTableWrapper {
-    border-radius: 16px;
+    border-radius: 12px;
+    /* Loại bỏ border-radius quá to trên mobile */
+  }
+  .compareTable {
+    min-width: auto;
+    border-collapse: separate; /* Tốt hơn cho position sticky */
+    border-spacing: 0;
   }
   .compareTable th,
   .compareTable td {
-    padding: 14px 12px;
+    padding: 12px 10px;
+    font-size: 13px; /* Thu nhỏ chữ ở bảng trên mobile */
+    border-bottom: 1px solid #f1f5f9;
+  }
+  .specLabelCol, .specLabel {
+    position: sticky;
+    left: 0;
+    z-index: 10;
+    box-shadow: 2px 0 5px -2px rgba(0,0,0,0.05); /* Tạo hiệu ứng bóng nổi bật cột */
   }
   .specLabelCol {
-    min-width: 120px;
-    width: 120px;
+    min-width: 100px;
+    width: 100px;
+    background: #f8fafc;
+    z-index: 20; /* Header sticky cao hơn */
+  }
+  .specLabel {
+    background: #fdfdfd;
   }
   .productCol {
-    min-width: 180px;
+    min-width: 150px;
+    width: 150px;
   }
   .compareProductCard img {
-    width: 80px;
-    height: 80px;
+    width: 70px;
+    height: 70px;
+  }
+  .compareProductCard h3 {
+    font-size: 13px;
+    min-height: 36px;
+  }
+  .comparePrice {
+    font-size: 14px;
+    margin-bottom: 10px;
+  }
+  .compareViewBtn {
+    padding: 6px 10px;
+    font-size: 11px;
+  }
+  .groupRow td {
+    position: sticky;
+    left: 0;
+    z-index: 5;
+    background: #f1f5f9;
+    padding: 10px 12px;
+    font-size: 13px;
   }
 }

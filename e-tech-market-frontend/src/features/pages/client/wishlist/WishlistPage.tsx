@@ -81,6 +81,7 @@ function WishlistCard({
 export default function WishlistPage() {
   const navigate = useNavigate()
   const [selectedCatId, setSelectedCatId] = useState<string>('all')
+  const [showMobileFilters, setShowMobileFilters] = useState(false)
   const userStr = useAuthStore((state) => state.userStr)
   const hasAuth = !!userStr
 
@@ -149,6 +150,12 @@ export default function WishlistPage() {
 
   return (
     <main className="wlPage">
+      {showMobileFilters && (
+        <div
+          className="ppSidebarOverlay"
+          onClick={() => setShowMobileFilters(false)}
+        />
+      )}
       <div className="wlInner">
         <div className="wlBreadcrumb">Trang chủ &rsaquo; Sản phẩm yêu thích</div>
 
@@ -159,7 +166,7 @@ export default function WishlistPage() {
               Bạn có <b>{products.length}</b> sản phẩm được lưu trong danh sách.
             </p>
           </div>
-          <button type="button" className="wlClearBtn" onClick={clearAll} disabled={products.length === 0}>
+          <button type="button" className="wlClearBtn wlClearBtn--desktop" onClick={clearAll} disabled={products.length === 0}>
             <TrashIcon />
             Xóa tất cả
           </button>
@@ -191,8 +198,22 @@ export default function WishlistPage() {
           </div>
         ) : (
           <>
+            <div className="wlMobileFilterWrap hfMobileOnly">
+              <button
+                className="ppMobileFilterBtn"
+                onClick={() => setShowMobileFilters(true)}
+                aria-label="Danh mục"
+              >
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                  <path d="M1 2.33333C1 1.96514 1.29848 1.66666 1.66667 1.66666H12.3333C12.7015 1.66666 13 1.96514 13 2.33333V3.53526C13 3.86475 12.822 4.16858 12.5298 4.3411L8.66667 6.62313V10.3333C8.66667 10.5516 8.56381 10.7566 8.39052 10.8866L6.39052 12.3866C5.97544 12.6979 5.33333 12.4018 5.33333 11.8333V6.62313L1.47017 4.3411C1.17804 4.16858 1 3.86475 1 3.53526V2.33333Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+                Bộ lọc danh mục
+              </button>
+            </div>
+            
             <div className="wlGrid">
-              <aside className="wlSidebar">
+              <aside className={`wlSidebar ${showMobileFilters ? 'wlSidebar--open' : ''}`}>
+                <div className="wlSidebarClose" onClick={() => setShowMobileFilters(false)}>✕</div>
                 <div className="wlSideCard">
                   <div className="wlSideTitle">PHÂN LOẠI</div>
                   {categoryFacets.map((f) => (
@@ -200,7 +221,10 @@ export default function WishlistPage() {
                       key={f.id}
                       type="button"
                       className={selectedCatId === f.id ? 'wlCatBtn wlCatBtn--active' : 'wlCatBtn'}
-                      onClick={() => setSelectedCatId(f.id)}
+                      onClick={() => {
+                        setSelectedCatId(f.id)
+                        setShowMobileFilters(false)
+                      }}
                     >
                       <span>{f.name}</span>
                       <span className="wlCatCount">{f.count}</span>
@@ -232,6 +256,10 @@ export default function WishlistPage() {
                 <div className="wlBottomSub">Các sản phẩm trong danh sách này được cập nhật giá tự động khi có chương trình giảm giá.</div>
               </div>
               <div className="wlBottomActions">
+                <button type="button" className="wlClearBtn wlClearBtn--mobile" onClick={clearAll} disabled={products.length === 0}>
+                  <TrashIcon />
+                  Xóa tất cả
+                </button>
                 <button type="button" className="wlShareBtn">Chia sẻ danh sách</button>
                 <Link to="/products" className="wlContinueBtn">Tiếp tục mua sắm</Link>
               </div>

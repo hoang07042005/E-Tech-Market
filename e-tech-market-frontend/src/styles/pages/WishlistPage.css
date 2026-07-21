@@ -9,7 +9,7 @@
 .wlInner {
   max-width: 1400px;
   margin: 0 auto;
-  padding: 0 24px;
+  padding: 0 10px;
 }
 
 .wlBreadcrumb {
@@ -133,8 +133,14 @@
 
 .wlCardsGrid{
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  grid-template-columns: repeat(4, 1fr);
   gap: 24px;
+}
+
+@media (max-width: 1024px) {
+  .wlCardsGrid {
+    grid-template-columns: repeat(3, 1fr);
+  }
 }
 
 .wlCard {
@@ -193,7 +199,7 @@
 }
 
 .wlCardBody {
-  padding: 20px;
+  padding: 10px;
   display: flex;
   flex-direction: column;
   flex: 1;
@@ -341,8 +347,130 @@
   }
 }
 
+.wlClearBtn--mobile {
+  display: none;
+}
+.wlSidebarClose {
+  display: none;
+}
+.wlMobileFilterWrap {
+  display: none;
+}
+
+@media (max-width: 980px) {
+  .wlGrid {
+    grid-template-columns: 1fr;
+  }
+  .wlHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+}
+
+@media (max-width: 768px) {
+  .wlClearBtn--desktop {
+    display: none;
+  }
+  .wlClearBtn--mobile {
+    display: flex;
+    width: 100%;
+    justify-content: center;
+    margin-bottom: 16px;
+  }
+  .wlBottomActions {
+    flex-direction: column;
+    width: 100%;
+  }
+  .wlBottomActions button, .wlBottomActions a {
+    width: 100%;
+    text-align: center;
+    justify-content: center;
+  }
+
+  .wlMobileFilterWrap {
+    display: flex;
+    margin-bottom: 20px;
+  }
+
+  .wlSidebar {
+    position: fixed;
+    top: 0;
+    left: -100%;
+    width: 280px;
+    height: 100vh;
+    background: #fff;
+    z-index: 1000;
+    transition: left 0.3s ease;
+    padding: 24px 20px;
+    overflow-y: auto;
+    box-shadow: 2px 0 12px rgba(0,0,0,0.1);
+  }
+  
+  html.dark .wlSidebar {
+    background: #1e293b;
+  }
+
+  .wlSidebar--open {
+    left: 0;
+  }
+
+  .wlSidebarClose {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    font-size: 20px;
+    cursor: pointer;
+    color: #64748b;
+    background: #f1f5f9;
+    border-radius: 50%;
+  }
+
+  .wlSideCard {
+    border: none;
+    padding: 0;
+    margin-top: 16px;
+  }
+}
+
 @media (max-width:480px) {
   .wlCardsGrid {
-    grid-template-columns: 1fr
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+  
+  .wlCardBody {
+    padding: 10px;
+  }
+  
+  .wlCardTitle {
+    font-size: 13px;
+    margin-bottom: 4px;
+  }
+  
+  .wlCardDesc {
+    font-size: 11px;
+    margin-bottom: 12px;
+  }
+  
+  .wlCardAddBtn {
+    padding: 8px;
+    font-size: 12px;
+  }
+  
+  .wlCardRemove {
+    width: 28px;
+    height: 28px;
+    top: 8px;
+    right: 8px;
+  }
+  .wlCardRemove svg {
+    width: 14px;
+    height: 14px;
   }
 }
