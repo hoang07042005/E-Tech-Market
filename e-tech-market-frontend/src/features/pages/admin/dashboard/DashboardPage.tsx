@@ -2013,7 +2013,9 @@ export default function DashboardPage({
                         </span>
                       </div>
                     </td>
-                    <td className="admOrdersProduct">{o.product}</td>
+                    <td className="admOrdersProduct">
+                      <div className="admOrdersProductText">{o.product}</div>
+                    </td>
                     <td className="admOrdersAmount">
                       {fmtVnd(o.total_amount)}
                       <span className="admOrdersCurrency">đ</span>
