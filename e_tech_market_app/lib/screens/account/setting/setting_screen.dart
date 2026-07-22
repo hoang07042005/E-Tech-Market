@@ -202,21 +202,21 @@ class _SettingScreenState extends State<SettingScreen> {
                 Navigator.pop(context);
               },
             ),
-            ListTile(
-              title: Text(l10n.english),
-              leading: Radio<String>(
-                value: 'en',
-                groupValue: LocaleController.instance.locale.languageCode,
-                onChanged: (value) {
-                  LocaleController.instance.setLocale(Locale(value!));
-                  Navigator.pop(context);
-                },
-              ),
-              onTap: () {
-                LocaleController.instance.setLocale(const Locale('en'));
-                Navigator.pop(context);
-              },
-            ),
+            // ListTile(
+            //   title: Text(l10n.english),
+            //   leading: Radio<String>(
+            //     value: 'en',
+            //     groupValue: LocaleController.instance.locale.languageCode,
+            //     onChanged: (value) {
+            //       LocaleController.instance.setLocale(Locale(value!));
+            //       Navigator.pop(context);
+            //     },
+            //   ),
+            //   onTap: () {
+            //     LocaleController.instance.setLocale(const Locale('en'));
+            //     Navigator.pop(context);
+            //   },
+            // ),
           ],
         ),
       ),
