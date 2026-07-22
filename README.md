@@ -74,6 +74,104 @@ Hệ thống phân quyền thông minh cho phép các vai trò khác nhau như *
 
 ---
 
+## 🚀 Hướng Dẫn Cài Đặt Dự Án Trên Máy Mới (Step-by-Step Setup Guide)
+
+Phần này hướng dẫn bạn cách khởi chạy dự án từ con số không trên một máy tính mới hoàn toàn.
+
+### 📋 Yêu Cầu Môi Trường (Prerequisites)
+Đảm bảo máy tính của bạn đã cài đặt sẵn các phần mềm sau:
+- **PHP 8.1+** & **Composer**
+- **Node.js 18+** & **npm**
+- **PostgreSQL 15+**
+- **Docker Desktop** (Tùy chọn, rất khuyến khích dùng để khởi chạy DB, Redis nhanh)
+- **Flutter SDK** (Chỉ cần thiết nếu bạn muốn chạy ứng dụng Mobile)
+
+### Bước 1: Clone Mã Nguồn Dự Án
+```bash
+git clone <repository_url>
+cd E-Tech-Market
+```
+
+### Bước 2: Khởi Tạo Cơ Sở Dữ Liệu & Dữ Liệu Mẫu
+Dự án đi kèm với dữ liệu thực tế cực kỳ đầy đủ. Bạn có thể thiết lập DB bằng **1 trong 2 cách**:
+
+**Cách A: Sử dụng Docker (Khuyến khích)**
+1. Mở terminal tại thư mục gốc `E-Tech-Market`.
+2. Khởi chạy toàn bộ hệ thống container:
+   ```bash
+   docker-compose up -d
+   ```
+3. Nhấp đúp vào file `import_database.bat` để tự động đẩy dữ liệu thực tế vào database trong Docker.
+
+**Cách B: Sử dụng PostgreSQL cài đặt cục bộ (Local)**
+1. Mở công cụ quản lý DB (như pgAdmin hoặc DBeaver).
+2. Tạo một database mới (ví dụ: `etech_market`).
+3. Khôi phục dữ liệu bằng file `database_real_data_backup_utf8.sql` ở thư mục gốc của dự án.
+
+### Bước 3: Cài Đặt & Cấu Hình Backend (Laravel)
+1. Di chuyển vào thư mục backend:
+   ```bash
+   cd e-tech-market-backend
+   ```
+2. Cài đặt các thư viện PHP:
+   ```bash
+   composer install
+   ```
+3. Tạo file cấu hình môi trường (Mở file `.env` vừa tạo và điền thông tin DB của bạn vào mục `DB_*`):
+   ```bash
+   cp .env.example .env
+   ```
+4. Tạo khóa mã hóa ứng dụng:
+   ```bash
+   php artisan key:generate
+   ```
+5. Liên kết thư mục hình ảnh (bắt buộc để web hiện ảnh):
+   ```bash
+   php artisan storage:link
+   ```
+
+### Bước 4: Cài Đặt & Cấu Hình Frontend (React + Vite)
+1. Mở một terminal khác và di chuyển vào thư mục frontend:
+   ```bash
+   cd e-tech-market-frontend
+   ```
+2. Cài đặt các thư viện JavaScript:
+   ```bash
+   npm install
+   ```
+3. Tạo file cấu hình và trỏ API về phía Backend (mặc định là `http://127.0.0.1:8000/api`):
+   ```bash
+   cp .env.example .env
+   ```
+
+### Bước 5: Khởi Chạy Hệ Thống
+1. **Khởi chạy Web Backend**: Tại terminal thư mục `e-tech-market-backend`:
+   ```bash
+   php artisan serve
+   ```
+2. **Khởi chạy Web Frontend**: Tại terminal thư mục `e-tech-market-frontend`:
+   ```bash
+   npm run dev
+   ```
+3. **Mở trình duyệt** và truy cập: `http://localhost:5173` để trải nghiệm web app.
+*(Lưu ý: Nếu bạn muốn gửi email xác nhận đặt hàng, hãy mở một terminal mới tại backend và chạy thêm `php artisan queue:work`)*
+
+### Bước 6 (Tùy chọn): Cài Đặt & Khởi Chạy Mobile App (Flutter)
+1. Di chuyển vào thư mục ứng dụng di động:
+   ```bash
+   cd e_tech_market_app
+   ```
+2. Lấy các gói thư viện:
+   ```bash
+   flutter pub get
+   ```
+3. Khởi chạy ứng dụng (thay đổi địa chỉ IP bên dưới thành IP mạng LAN máy tính của bạn, ví dụ: `192.168.1.x`):
+   ```bash
+   flutter run --dart-define=API_BASE_URL=http://<IP_MAY_TINH_CUA_BAN>:8000/api
+   ```
+
+---
+
 ## ⚙️ Cẩm Nang Lệnh Dành Cho Backend (Laravel 10)
 
 Thư mục làm việc: `e-tech-market-backend/`
