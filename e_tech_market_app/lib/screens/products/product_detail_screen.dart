@@ -843,8 +843,9 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
       final start = item.flashSale.startAt;
       final end = item.flashSale.endAt;
       if (now.isAfter(start) && now.isBefore(end)) {
+        final isSoldOut = item.quantityLimit != null && item.quantityLimit! > 0 && item.soldQuantity >= item.quantityLimit!;
         // Nếu variant_id null → áp dụng cho tất cả variant; nếu có → chỉ đúng variant
-        if (item.variantId == null || item.variantId == selectedVariant?.id) {
+        if (!isSoldOut && (item.variantId == null || item.variantId == selectedVariant?.id)) {
           return item;
         }
       }
@@ -1608,7 +1609,11 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
       });
     }
 
-    final int currentStock = selectedVariant?.stockQuantity ?? 0;
+    final activeFs = _getActiveFlashSaleItem();
+    int currentStock = selectedVariant?.stockQuantity ?? 0;
+    if (activeFs != null && activeFs.quantityLimit != null && activeFs.quantityLimit! > 0) {
+      currentStock = activeFs.quantityLimit! - activeFs.soldQuantity;
+    }
     final bool isAvailable = currentStock > 0;
 
     return Padding(

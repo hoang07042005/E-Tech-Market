@@ -42,9 +42,11 @@ class _OrderListScreenState extends State<OrderListScreen> {
       final response = await OrderService.fetchOrders(page: 1); // Only fetch page 1
       final data = response['data'];
       
-      // Fetch suggested products
-      final productsRes = await ProductsService.fetchProducts(limit: 10, sort: 'newest');
-      final prods = productsRes['data'] as List<dynamic>? ?? [];
+      // Fetch suggested products (lấy nhiều hơn rồi shuffle để hiển thị 10 sản phẩm ngẫu nhiên)
+      final productsRes = await ProductsService.fetchProducts(limit: 50, sort: 'newest');
+      var prods = productsRes['data'] as List<dynamic>? ?? [];
+      prods.shuffle();
+      if (prods.length > 10) prods = prods.sublist(0, 10);
 
       setState(() {
         _orders = data is List ? data : [];
@@ -124,6 +126,20 @@ class _OrderListScreenState extends State<OrderListScreen> {
       }
     }
     return '';
+  }
+
+  String? _getVariantLabel(Map<String, dynamic>? variant) {
+    if (variant == null) return null;
+    final direct = (variant['variant_name'] ?? variant['name'])?.toString();
+    if (direct != null && direct.trim().isNotEmpty) return direct.trim();
+    
+    final parts = [
+      variant['color']?.toString(),
+      (variant['configuration'] ?? variant['storage'] ?? variant['ram'])?.toString(),
+    ].where((part) => part != null && part.trim().isNotEmpty).toList();
+    
+    if (parts.isNotEmpty) return parts.join(' - ');
+    return null;
   }
 
   String _formatDate(String? iso) {
@@ -280,11 +296,14 @@ class _OrderListScreenState extends State<OrderListScreen> {
               return ProductCardWidget(
                 product: product,
                 isWished: false, // Stub wish logic for suggested products
-                onTap: () {
+                onTap: (variantId) {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => ProductDetailScreen(slug: product['slug']),
+                      builder: (context) => ProductDetailScreen(
+                        slug: product['slug'],
+                        variantId: variantId,
+                      ),
                     ),
                   );
                 },
@@ -415,9 +434,9 @@ class _OrderListScreenState extends State<OrderListScreen> {
       final product = firstItem['product'] as Map<String, dynamic>?;
       prodName = (product?['name'] ?? firstItem['product_name_snapshot'] ?? 'Sản phẩm').toString();
       final variant = firstItem['variant'] as Map<String, dynamic>?;
-      final color = variant?['color']?.toString();
-      if (color != null && color.isNotEmpty) {
-        prodName = '$prodName ($color)';
+      final variantLabel = _getVariantLabel(variant);
+      if (variantLabel != null) {
+        prodName = '$prodName ($variantLabel)';
       }
       // Đã sửa đổi: Sửa lỗi NetworkUtils.buildImage thành Image.network cục bộ dựa trên URL xử lý bằng hàm nội bộ
       prodImg = _resolveOrderImageUrl(firstItem);
@@ -504,9 +523,9 @@ class _OrderListScreenState extends State<OrderListScreen> {
                       final product = item is Map<String, dynamic> ? item['product'] as Map<String, dynamic>? : null;
                       String name = (product?['name'] ?? item['product_name_snapshot'] ?? 'Sản phẩm').toString();
                       final variant = item is Map<String, dynamic> ? item['variant'] as Map<String, dynamic>? : null;
-                      final color = variant?['color']?.toString();
-                      if (color != null && color.isNotEmpty) {
-                        name = '$name ($color)';
+                      final variantLabel = _getVariantLabel(variant);
+                      if (variantLabel != null) {
+                        name = '$name ($variantLabel)';
                       }
                       return Padding(
                         padding: const EdgeInsets.only(bottom: 2.0),

@@ -278,12 +278,11 @@ function ProductCard({
 }) {
   const brand = product.brand || "TECH";
 
-  // Handle image URL
-  const imageUrl = resolveImageUrl(product.main_image_url);
   const activeFlashSaleItem = useMemo(() => {
     return product.flash_sale_items?.find((item) => {
       // Backend filters active and date range already
-      return !!item.flash_sale;
+      const isSoldOut = item.quantity_limit !== null && item.quantity_limit > 0 && item.sold_quantity >= item.quantity_limit;
+      return !!item.flash_sale && !isSoldOut;
     });
   }, [product.flash_sale_items]);
   const isFlashSale = !!activeFlashSaleItem;
@@ -296,30 +295,42 @@ function ProductCard({
     discountPercent,
     hasMultiplePrices,
     showDiscountBadge,
+    variantId,
+    variantLabel,
+    imageUrl,
   } = useMemo(() => {
     const activeVariants = (product.variants || []).filter((v) => v.is_active);
     const isSingleVariant = activeVariants.length === 1;
+    let selectedVariant = null;
 
     if (activeVariants.length > 0) {
       // Sort by effective_price (already computed by backend with discount logic)
       const sorted = [...activeVariants].sort(
         (a, b) => a.effective_price - b.effective_price,
       );
-      const lowest = sorted[0];
+      selectedVariant = sorted[0];
       const highest = sorted[sorted.length - 1];
       
-      let hasMultiplePrices = lowest.effective_price !== highest.effective_price;
+      let hasMultiplePrices = selectedVariant.effective_price !== highest.effective_price;
       let showDiscountBadge = isSingleVariant;
-      let finalPrice = lowest.effective_price;
-      const originalPrice = Number.parseFloat(lowest.price);
+      let finalPrice = selectedVariant.effective_price;
+      let originalPrice = Number.parseFloat(selectedVariant.price);
 
       if (isFlashSale && activeFlashSaleItem) {
+        if (activeFlashSaleItem.variant_id) {
+          const flashVariant = activeVariants.find((v) => v.id === activeFlashSaleItem.variant_id);
+          if (flashVariant) {
+            selectedVariant = flashVariant;
+            originalPrice = Number.parseFloat(flashVariant.price);
+          }
+        }
         finalPrice = Number(activeFlashSaleItem.flash_sale_price);
         hasMultiplePrices = false;
         showDiscountBadge = true;
       }
 
       const hasDiscount = finalPrice < originalPrice && showDiscountBadge;
+      const vImgUrl = selectedVariant.image_url ? resolveImageUrl(selectedVariant.image_url) : resolveImageUrl(product.main_image_url);
 
       return {
         displayPrice: finalPrice,
@@ -330,11 +341,12 @@ function ProductCard({
         discountPercent: hasDiscount
           ? Math.round((1 - finalPrice / originalPrice) * 100)
           : 0,
-        variantId: lowest.id,
+        variantId: selectedVariant.id,
         variantLabel:
-          [variantColorLabel(lowest), variantStorageLabel(lowest)]
+          [variantColorLabel(selectedVariant), variantStorageLabel(selectedVariant)]
             .filter(Boolean)
-            .join(" · ") || lowest.variant_name,
+            .join(" · ") || selectedVariant.variant_name,
+        imageUrl: vImgUrl,
       };
     }
     // Fallback: no variants → 0
@@ -348,8 +360,9 @@ function ProductCard({
       discountPercent: 0,
       variantId: null,
       variantLabel: null,
+      imageUrl: resolveImageUrl(product.main_image_url),
     };
-  }, [product.variants, isFlashSale, activeFlashSaleItem]);
+  }, [product.variants, isFlashSale, activeFlashSaleItem, product.main_image_url]);
 
   const isNew = isNewWithinTenDays(product.created_at);
 
@@ -437,7 +450,7 @@ function ProductCard({
   return (
     <div className="ppCardNew">
       <Link
-        to={`/products/${product.slug}${showDiscountBadge ? `?variant=${(product.variants || []).find((v) => v.effective_price === displayPrice)?.id}` : ""}`}
+        to={`/products/${product.slug}${variantId ? `?variant=${variantId}` : ""}`}
         className="ppCardImageWrap"
       >
         <img src={imageUrl} alt={product.name} className="ppCardImg" />
@@ -511,7 +524,7 @@ function ProductCard({
             )}
           </span>
         </div>
-        <Link to={`/products/${product.slug}`} className="ppCardTitleLink">
+        <Link to={`/products/${product.slug}${variantId ? `?variant=${variantId}` : ""}`} className="ppCardTitleLink">
           <h3 className="ppCardTitle">{product.name}</h3>
         </Link>
         <div className="ppCardPriceRow">

@@ -82,8 +82,10 @@ export default function ProductDetailPage() {
             const endStr = fsItem.flash_sale.end_at.replace(' ', 'T')
             const start = new Date(startStr).getTime()
             const end = new Date(endStr).getTime()
+            
             if (now >= start && now <= end) {
-              if (fsItem.variant_id == null || fsItem.variant_id === v.id) {
+              const isSoldOut = fsItem.quantity_limit !== null && fsItem.quantity_limit > 0 && fsItem.sold_quantity >= fsItem.quantity_limit;
+              if (!isSoldOut && (fsItem.variant_id == null || fsItem.variant_id === v.id)) {
                 finalPrice = Number(fsItem.flash_sale_price ?? finalPrice)
               }
             }
@@ -322,7 +324,8 @@ export default function ProductDetailPage() {
         const end = new Date(endStr).getTime()
         
         if (now >= start && now <= end) {
-          if (item.variant_id == null || item.variant_id === selectedVariant?.id) {
+          const isSoldOut = item.quantity_limit !== null && item.quantity_limit > 0 && item.sold_quantity >= item.quantity_limit;
+          if (!isSoldOut && (item.variant_id == null || item.variant_id === selectedVariant?.id)) {
             return item
           }
         }
@@ -819,10 +822,21 @@ export default function ProductDetailPage() {
                 </div>
                 <div className="pdpMetaItem">
                   <span className="label">AVAILABILITY</span>
-                  <span className={`value stock ${selectedVariant && selectedVariant.stock_quantity === 0 ? 'out' : ''}`}>
-                    {selectedVariant
-                      ? (selectedVariant.stock_quantity > 0 ? `Còn hàng (${selectedVariant.stock_quantity})` : 'Hết hàng')
-                      : 'Còn hàng'}
+                  <span className={`value stock ${
+                    activeFlashSale && activeFlashSale.quantity_limit !== null && activeFlashSale.quantity_limit > 0
+                      ? ((activeFlashSale.quantity_limit - activeFlashSale.sold_quantity) <= 0 ? 'out' : '')
+                      : (selectedVariant && selectedVariant.stock_quantity === 0 ? 'out' : '')
+                  }`}>
+                    {(() => {
+                      if (activeFlashSale && activeFlashSale.quantity_limit !== null && activeFlashSale.quantity_limit > 0) {
+                        const fsLeft = activeFlashSale.quantity_limit - activeFlashSale.sold_quantity;
+                        return fsLeft > 0 ? `Còn hàng (${fsLeft})` : 'Hết hàng';
+                      }
+                      if (selectedVariant) {
+                        return selectedVariant.stock_quantity > 0 ? `Còn hàng (${selectedVariant.stock_quantity})` : 'Hết hàng';
+                      }
+                      return 'Còn hàng';
+                    })()}
                   </span>
                 </div>
                 <div className="pdpMetaItem pdpMetaItem--compare" style={{ alignItems: 'center' }}>

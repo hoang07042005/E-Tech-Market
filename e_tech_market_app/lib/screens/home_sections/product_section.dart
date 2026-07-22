@@ -92,7 +92,15 @@ class ProductSection extends StatelessWidget {
                   return ProductCardWidget(
                     product: product,
                     isWished: wishedProductIds.contains(productId),
-                    onTap: () => onProductSelected(product),
+                    onTap: (variantId) {
+                      if (variantId != null) {
+                        final modifiedProduct = Map<String, dynamic>.from(product);
+                        modifiedProduct['_selected_variant_id'] = variantId;
+                        onProductSelected(modifiedProduct);
+                      } else {
+                        onProductSelected(product);
+                      }
+                    },
                     onToggleWishlist: () => onToggleWishlist(productId),
                     onAddToCart: () => onAddToCart(product),
                   );
@@ -150,7 +158,7 @@ class ProductSection extends StatelessWidget {
 class ProductCardWidget extends StatelessWidget {
   final Map<String, dynamic> product;
   final bool isWished;
-  final VoidCallback onTap;
+  final void Function(String? variantId) onTap;
   final VoidCallback onToggleWishlist;
   final VoidCallback onAddToCart;
 
@@ -176,8 +184,6 @@ class ProductCardWidget extends StatelessWidget {
             : shortDescription != null && shortDescription.isNotEmpty
                 ? shortDescription
                 : Trans.defaultProductExcerpt;
-    final imageUrl = _resolveProductImageUrl(product);
-
     final rating =
         double.tryParse(product['avg_rating']?.toString() ?? '0') ?? 0;
     final ratingCount = (product['reviews_count'] as num?)?.toInt() ?? 0;
@@ -186,10 +192,20 @@ class ProductCardWidget extends StatelessWidget {
     Map<String, dynamic>? flashSaleItem;
     final flashSaleItems = product['flash_sale_items'] as List<dynamic>?;
     if (flashSaleItems != null && flashSaleItems.isNotEmpty) {
+      final now = DateTime.now();
       for (var item in flashSaleItems) {
         if (item['flash_sale'] != null) {
-          flashSaleItem = item as Map<String, dynamic>?;
-          break;
+          final start = DateTime.tryParse(item['flash_sale']['start_at']?.toString().replaceAll(' ', 'T') ?? '');
+          final end = DateTime.tryParse(item['flash_sale']['end_at']?.toString().replaceAll(' ', 'T') ?? '');
+          if (start != null && end != null && now.isAfter(start) && now.isBefore(end)) {
+            final quantityLimit = (item['quantity_limit'] as num?)?.toInt();
+            final soldQuantity = (item['sold_quantity'] as num?)?.toInt() ?? 0;
+            final isSoldOut = quantityLimit != null && quantityLimit > 0 && soldQuantity >= quantityLimit;
+            if (!isSoldOut) {
+              flashSaleItem = item as Map<String, dynamic>?;
+              break;
+            }
+          }
         }
       }
     }
@@ -205,6 +221,8 @@ class ProductCardWidget extends StatelessWidget {
     final activeVariants = variants.where((v) => v['is_active'] != false).toList();
     final isSingleVariant = activeVariants.length == 1;
 
+    Map<String, dynamic>? selectedVariant;
+
     if (activeVariants.isNotEmpty) {
       final sorted = List.from(activeVariants);
       sorted.sort((a, b) {
@@ -215,6 +233,7 @@ class ProductCardWidget extends StatelessWidget {
 
       final lowest = sorted.first;
       final highest = sorted.last;
+      selectedVariant = lowest;
 
       displayPrice = double.tryParse(lowest['effective_price']?.toString() ?? '0') ?? 0;
       final priceMax = double.tryParse(highest['effective_price']?.toString() ?? '0') ?? 0;
@@ -224,7 +243,16 @@ class ProductCardWidget extends StatelessWidget {
       showDiscountBadge = isSingleVariant;
 
       if (isFlashSale) {
-        displayPrice = double.tryParse(flashSaleItem!['flash_sale_price']?.toString() ?? '0') ?? 0;
+        if (flashSaleItem!['variant_id'] != null) {
+          final int flashVariantId = int.tryParse(flashSaleItem!['variant_id'].toString()) ?? 0;
+          if (flashVariantId > 0) {
+             final flashVariant = activeVariants.firstWhere((v) => v['id'] == flashVariantId, orElse: () => lowest);
+             if (flashVariant != lowest) {
+               selectedVariant = flashVariant;
+             }
+          }
+        }
+        displayPrice = double.tryParse(flashSaleItem['flash_sale_price']?.toString() ?? '0') ?? 0;
         hasMultiplePrices = false;
         showDiscountBadge = true;
       }
@@ -237,6 +265,9 @@ class ProductCardWidget extends StatelessWidget {
       displayPrice = double.tryParse(product['price']?.toString() ?? '0') ?? 0;
     }
 
+    final imageUrl = _resolveProductImageUrl(product, selectedVariant: selectedVariant);
+    final selectedVariantId = selectedVariant?['id']?.toString();
+
     int? totalStock;
     if (variants.isNotEmpty) {
       totalStock = variants.fold<int>(0, (sum, v) => sum + ((v['stock_quantity'] as num?)?.toInt() ?? 0));
@@ -248,8 +279,8 @@ class ProductCardWidget extends StatelessWidget {
       color: Theme.of(context).colorScheme.surface,
       borderRadius: BorderRadius.circular(12),
       clipBehavior: Clip.antiAlias,
-      child: InkWell(
-        onTap: onTap,
+      child: GestureDetector(
+        onTap: () => onTap(selectedVariantId),
         child: Container(
           decoration: BoxDecoration(
             border: Border.all(color: Theme.of(context).colorScheme.outline, width: 0.15),
@@ -442,7 +473,7 @@ class ProductCardWidget extends StatelessWidget {
                           icon: Icons.arrow_forward_rounded,
                           color: Colors.white,
                           backgroundColor: _brandColor,
-                          onTap: onTap,
+                          onTap: () => onTap(selectedVariantId),
                         ),
                       ],
                     ),
@@ -466,7 +497,14 @@ class ProductCardWidget extends StatelessWidget {
             size: 48, color: Colors.grey.shade300));
   }
 
-  String _resolveProductImageUrl(Map<String, dynamic> product) {
+  String _resolveProductImageUrl(Map<String, dynamic> product, {Map<String, dynamic>? selectedVariant}) {
+    if (selectedVariant != null) {
+      final variantImageUrl = selectedVariant['image_url']?.toString().trim();
+      if (variantImageUrl != null && variantImageUrl.isNotEmpty) {
+        return NetworkUtils.fixDeviceUrl(variantImageUrl);
+      }
+    }
+
     final mainImage = product['main_image_url']?.toString().trim();
     if (mainImage != null && mainImage.isNotEmpty) {
       return NetworkUtils.fixDeviceUrl(mainImage);

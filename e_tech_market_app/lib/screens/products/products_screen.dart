@@ -24,6 +24,7 @@ class _PriceInfo {
   final bool showDiscountBadge;
   final int discountPercent;
   final Map<String, dynamic>? flashSaleItem;
+  final Map<String, dynamic>? selectedVariant;
 
   _PriceInfo({
     required this.displayPrice,
@@ -33,6 +34,7 @@ class _PriceInfo {
     required this.showDiscountBadge,
     required this.discountPercent,
     this.flashSaleItem,
+    this.selectedVariant,
   });
 }
 
@@ -819,7 +821,14 @@ class _ProductsScreenState extends State<ProductsScreen> {
     return btns;
   }
 
-  String _resolveProductImageUrl(Map<String, dynamic> product) {
+  String _resolveProductImageUrl(Map<String, dynamic> product, {Map<String, dynamic>? selectedVariant}) {
+    if (selectedVariant != null) {
+      final vImg = selectedVariant['image_url']?.toString().trim();
+      if (vImg != null && vImg.isNotEmpty) {
+        return NetworkUtils.fixDeviceUrl(vImg);
+      }
+    }
+
     final rawMainImage = product['main_image_url']?.toString().trim();
     if (rawMainImage != null && rawMainImage.isNotEmpty) {
       return NetworkUtils.fixDeviceUrl(rawMainImage);
@@ -854,7 +863,13 @@ class _ProductsScreenState extends State<ProductsScreen> {
     Map<String, dynamic>? activeFlashSaleItem;
     if (flashSaleItems != null && flashSaleItems.isNotEmpty) {
       for (var item in flashSaleItems) {
-        if (item['flash_sale'] != null) {
+        final qLimitRaw = item['quantity_limit'];
+        final sQtyRaw = item['sold_quantity'];
+        final qLimit = qLimitRaw is num ? qLimitRaw.toInt() : int.tryParse(qLimitRaw?.toString() ?? '');
+        final sQty = sQtyRaw is num ? sQtyRaw.toInt() : (int.tryParse(sQtyRaw?.toString() ?? '') ?? 0);
+        final isSoldOut = qLimit != null && qLimit > 0 && sQty >= qLimit;
+
+        if (item['flash_sale'] != null && !isSoldOut) {
           activeFlashSaleItem = item as Map<String, dynamic>?;
           break;
         }
@@ -879,18 +894,31 @@ class _ProductsScreenState extends State<ProductsScreen> {
 
       final lowest = sorted.first;
       final highest = sorted.last;
+      
+      Map<String, dynamic> selectedVariant = lowest;
 
       double finalPrice =
-          double.tryParse(lowest['effective_price']?.toString() ?? '0') ?? 0;
+          double.tryParse(selectedVariant['effective_price']?.toString() ?? '0') ?? 0;
       double? priceMax =
           double.tryParse(highest['effective_price']?.toString() ?? '0') ?? 0;
       double originalPrice =
-          double.tryParse(lowest['price']?.toString() ?? '0') ?? 0;
+          double.tryParse(selectedVariant['price']?.toString() ?? '0') ?? 0;
 
       bool hasMultiplePrices = finalPrice != priceMax;
       bool showDiscountBadge = isSingleVariant;
 
-      if (isFlashSale) {
+      if (isFlashSale && activeFlashSaleItem != null) {
+        if (activeFlashSaleItem['variant_id'] != null) {
+          final int flashVariantId = int.tryParse(activeFlashSaleItem['variant_id'].toString()) ?? 0;
+          if (flashVariantId > 0) {
+             final flashVariant = activeVariants.firstWhere((v) => v['id'] == flashVariantId, orElse: () => lowest);
+             if (flashVariant != lowest) {
+               selectedVariant = flashVariant;
+               originalPrice = double.tryParse(flashVariant['price']?.toString() ?? '0') ?? 0;
+             }
+          }
+        }
+
         finalPrice = double.tryParse(
                 activeFlashSaleItem['flash_sale_price']?.toString() ?? '0') ??
             0;
@@ -909,6 +937,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
         discountPercent:
             hasDiscount ? ((1 - finalPrice / originalPrice) * 100).round() : 0,
         flashSaleItem: activeFlashSaleItem,
+        selectedVariant: selectedVariant,
       );
     }
 
@@ -929,7 +958,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
     return DateTime.now().difference(createdAt).inDays <= 10;
   }
 
-  void _navigateToProductDetail(Map<String, dynamic> product) {
+  void _navigateToProductDetail(Map<String, dynamic> product, {String? variantId}) {
     final slug = product['slug']?.toString() ?? '';
     if (slug.isEmpty) return;
     Navigator.push(
@@ -937,7 +966,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
       MaterialPageRoute(
         builder: (context) => ProductDetailScreen(
           slug: slug,
-          variantId: null,
+          variantId: variantId,
         ),
       ),
     );
@@ -951,6 +980,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
     final showDiscountBadge = info.showDiscountBadge;
     final discountPercent = info.discountPercent;
     final flashSaleItem = info.flashSaleItem;
+    final selectedVariant = info.selectedVariant;
     final isNew = _isNewWithinTenDays(product['created_at']);
     final isFeatured = product['is_featured'] == true;
     final brand = product['brand'] ?? 'TECH';
@@ -962,10 +992,11 @@ class _ProductsScreenState extends State<ProductsScreen> {
       rating = double.tryParse(product['avg_rating'].toString()) ?? 0;
     }
 
-    final imageUrl = _resolveProductImageUrl(product);
+    final imageUrl = _resolveProductImageUrl(product, selectedVariant: selectedVariant);
+    final selectedVariantId = selectedVariant?['id']?.toString();
 
     return GestureDetector(
-      onTap: () => _navigateToProductDetail(product),
+      onTap: () => _navigateToProductDetail(product, variantId: selectedVariantId),
       child: Container(
         decoration: BoxDecoration(
           color: Theme.of(context).colorScheme.surface,
@@ -1818,7 +1849,7 @@ class _FlashSaleBannerState extends State<_FlashSaleBanner> {
 
               // Left Block (Flash Sale) - 38% width, slanted right
               Positioned(
-                left: -2,
+                left: 0,
                 top: -3,
                 bottom: 1,
                 width: width * 0.38,

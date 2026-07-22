@@ -113,15 +113,24 @@ function FlashSaleProductCard({ item, status }: { item: FlashSaleItem, status: '
   const displayImage = resolveImageUrl(item.variant?.image_url || item.product.main_image_url)
   const displayName = item.variant ? `${item.product.name} - ${item.variant.variant_name}` : item.product.name
   const originalPrice = item.variant ? item.variant.price : item.product.price
+  const isSoldOut = item.quantity_limit !== null && item.quantity_limit > 0 && item.sold_quantity >= item.quantity_limit
   const progressPercent = Math.min(100, (item.sold_quantity / (item.quantity_limit || 100)) * 100)
   const isScarcity = progressPercent >= 95
   const discountPercent = Math.round((1 - item.flash_sale_price / originalPrice) * 100)
   const brand = (item.product as any).brand || "TECH"
 
+  const CardWrapper = (isSoldOut ? 'div' : Link) as any
+  const wrapperProps = isSoldOut ? {} : { to: productUrl }
+
   return (
-    <div className={`ppCardNew ${isScarcity ? 'scarcity' : ''}`}>
-      <Link to={productUrl} className="ppCardImageWrap">
+    <div className={`ppCardNew ${isScarcity ? 'scarcity' : ''} ${isSoldOut ? 'sold-out' : ''}`} style={isSoldOut ? { opacity: 0.6, cursor: 'not-allowed' } : {}}>
+      <CardWrapper {...wrapperProps} className="ppCardImageWrap">
         <img src={displayImage} alt={displayName} className="ppCardImg" />
+        {isSoldOut && (
+          <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.5)', zIndex: 2, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <span style={{ color: 'white', fontWeight: 'bold', fontSize: '18px', padding: '8px 16px', background: 'rgba(0,0,0,0.7)', borderRadius: '4px' }}>ĐÃ BÁN HẾT</span>
+          </div>
+        )}
         <div className="ppCardBadges">
           <span className="ppCardBadge ppCardBadge--discount">-{discountPercent}%</span>
         </div>
@@ -139,14 +148,14 @@ function FlashSaleProductCard({ item, status }: { item: FlashSaleItem, status: '
             <div className="fsDiscountMain" style={{ fontSize: '14px' }}>-{discountPercent}%</div>
           </div>
         </div>
-      </Link>
+      </CardWrapper>
       <div className="ppCardContent">
         <div className="ppCardTopRow">
           <span className="ppCardBrand">{brand.toUpperCase()}</span>
         </div>
-        <Link to={productUrl} className="ppCardTitleLink">
+        <CardWrapper {...wrapperProps} className="ppCardTitleLink" style={isSoldOut ? { pointerEvents: 'none' } : {}}>
           <h3 className="ppCardTitle">{displayName}</h3>
-        </Link>
+        </CardWrapper>
         <div className="ppCardPriceRow">
           <span className="ppCardPrice">{Number(item.flash_sale_price).toLocaleString("vi-VN")} đ</span>
           {item.flash_sale_price < originalPrice && (
@@ -156,7 +165,7 @@ function FlashSaleProductCard({ item, status }: { item: FlashSaleItem, status: '
         <div className="ppStockBar">
           <div className="ppStockBarMeta">
             <span className="ppStockBarSold">
-              {status === 'upcoming' ? 'Chưa mở bán' : item.sold_quantity === 0 ? 'Vừa mở bán' : `Đã bán ${item.sold_quantity}/${item.quantity_limit || 100}`}
+              {status === 'upcoming' ? 'Chưa mở bán' : (isSoldOut ? 'Đã hết hàng' : item.sold_quantity === 0 ? 'Vừa mở bán' : `Đã bán ${item.sold_quantity}/${item.quantity_limit || 100}`)}
             </span>
             <span className="ppStockBarPct">{Math.round(progressPercent)}%</span>
           </div>

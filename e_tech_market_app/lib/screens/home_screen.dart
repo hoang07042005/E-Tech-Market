@@ -589,13 +589,14 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void _navigateToProductDetail(Map<String, dynamic> product) {
     final slug = product['slug']?.toString() ?? '';
+    final variantId = product['_selected_variant_id']?.toString();
     if (slug.isEmpty) return;
     Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => ProductDetailScreen(
           slug: slug,
-          variantId: null,
+          variantId: variantId,
         ),
       ),
     );
