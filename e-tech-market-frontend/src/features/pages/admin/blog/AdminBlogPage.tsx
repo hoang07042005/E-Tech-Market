@@ -1,4 +1,4 @@
-﻿import { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { apiFetch, API_BASE_URL } from '@/configs/api.config'
 import ConfirmModal from '@/components/ConfirmModal'
 import HardDeletePage from '../products/HardDeletePage'
@@ -275,8 +275,7 @@ export default function AdminBlogPage() {
 
           <button
             type="button"
-            className="ab-btn ab-btn-primary"
-            style={{ background: "#ef4444" }}
+            className="ab-btn ab-btn-danger"
             onClick={() => setViewMode('hard_delete')}
             title="Dữ liệu đã xóa (Hard delete)"
           >

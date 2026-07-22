@@ -1,0 +1,457 @@
+/* ==========================================================================
+   MOBILE-FIRST HIGH-DENSITY SETTINGS ADMIN RESPONSIVE (MINIATURE DESKTOP PATTERN)
+   ========================================================================== */
+
+/* ── Mobile & Tablet Viewports (< 1100px) ────────────────────────────────── */
+@media (max-width: 1100px) {
+  /* CONTAINER PADDING */
+  .admSettingsPage {
+    padding: 6px !important;
+  }
+
+  /* KEEP DESKTOP GRID LAYOUTS (PREVENT COLLAPSING TO 1 COLUMN) */
+  .admSettingsGridTop {
+    display: grid !important;
+    grid-template-columns: 1.7fr 1fr !important;
+    gap: 8px !important;
+    margin-bottom: 8px !important;
+    align-items: start !important;
+  }
+
+  .admSet2Col {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 6px !important;
+  }
+
+  .admPayGrid {
+    display: grid !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 6px !important;
+    margin-bottom: 8px !important;
+  }
+
+  .admShipShotLayout {
+    display: grid !important;
+    grid-template-columns: 1.6fr 0.8fr !important;
+    gap: 8px !important;
+    align-items: start !important;
+    margin-bottom: 8px !important;
+  }
+
+  .admShipCurrentGrid {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 6px !important;
+  }
+
+  .admSecGrid {
+    display: grid !important;
+    grid-template-columns: 1.7fr 1fr !important;
+    gap: 8px !important;
+  }
+
+  /* HEADERS */
+  .admSettingsTop {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 8px !important;
+    margin-bottom: 8px !important;
+  }
+
+  .admSettingsTitle {
+    font-size: 13px !important;
+    line-height: 1.2 !important;
+  }
+
+  .admSettingsSub {
+    font-size: 9px !important;
+    margin-top: 1px !important;
+  }
+
+  .admSettingsSaveBtn {
+    padding: 4px 8px !important;
+    font-size: 10px !important;
+    border-radius: 4px !important;
+    height: 26px !important;
+    box-shadow: none !important;
+  }
+
+  .admSetSectionHead {
+    margin: 8px 0 4px !important;
+  }
+
+  .admSetSectionHead h3 {
+    font-size: 11.5px !important;
+  }
+
+  .admSetSectionSub {
+    font-size: 9px !important;
+    margin-top: 1px !important;
+  }
+
+  /* CARDS & PADDING */
+  .admSetCard,
+  .admPayCard,
+  .admShipCurrentCard,
+  .admShipPolicyCard,
+  .admSecCard {
+    padding: 6px 8px !important;
+    border-radius: 4px !important;
+  }
+
+  .admSetCardHead,
+  .admShipCurrentHead {
+    margin-bottom: 6px !important;
+    gap: 6px !important;
+  }
+
+  .admSetCardTitle,
+  .admSecTitle,
+  .admShipCurrentTitle,
+  .admShipPolicyTitle {
+    font-size: 11px !important;
+    gap: 4px !important;
+  }
+
+  .admSetIcon {
+    width: 16px !important;
+    height: 16px !important;
+    border-radius: 3px !important;
+    font-size: 9px !important;
+  }
+
+  .admSetLinkBtn,
+  .admShipManageLink {
+    font-size: 9.5px !important;
+  }
+
+  /* FORMS & INPUTS */
+  .admSetForm {
+    gap: 6px !important;
+  }
+
+  .admSetField {
+    gap: 3px !important;
+  }
+
+  .admSetField span {
+    font-size: 9px !important;
+  }
+
+  .admSetField input,
+  .admSetField textarea,
+  .admSetField select {
+    padding: 4px 6px !important;
+    font-size: 10px !important;
+    height: 24px !important;
+    border-radius: 3px !important;
+  }
+
+  .admSetField textarea {
+    height: 40px !important;
+    min-height: 40px !important;
+  }
+
+  .admSetMainCol {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 8px !important;
+  }
+
+  .admSetSide {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 8px !important;
+  }
+
+  /* SWITCH TOGGLE */
+  .admSwitch {
+    width: 28px !important;
+    height: 15px !important;
+  }
+
+  .admSwitch span::after {
+    width: 11px !important;
+    height: 11px !important;
+    top: 2px !important;
+    left: 2px !important;
+  }
+
+  .admSwitch input:checked + span::after {
+    transform: translateX(13px) !important;
+  }
+
+  /* MAINTENANCE */
+  .admMaintenanceRow {
+    gap: 6px !important;
+  }
+
+  .admMaintenanceTitle {
+    font-size: 10.5px !important;
+  }
+
+  .admMaintenanceNote {
+    font-size: 9px !important;
+    max-width: 100% !important;
+  }
+
+  /* LOG & ASIDE INFO */
+  .admSecLogTitle {
+    font-size: 10px !important;
+    margin-top: 4px !important;
+  }
+
+  .admSecLogSub {
+    font-size: 9px !important;
+    margin-top: 2px !important;
+  }
+
+  .admSetMiniCard {
+    padding: 6px !important;
+    gap: 4px !important;
+    border-radius: 4px !important;
+    margin-top: 6px !important;
+  }
+
+  .admMiniRow {
+    gap: 4px !important;
+  }
+
+  .admMiniDot {
+    width: 18px !important;
+    height: 18px !important;
+    border-radius: 3px !important;
+    font-size: 9px !important;
+  }
+
+  .admMiniTitle {
+    font-size: 9.5px !important;
+  }
+
+  .admMiniSub {
+    font-size: 8.5px !important;
+  }
+
+  /* PAYMENTS SECTION */
+  .admPayIcon--logo {
+    width: 28px !important;
+    height: 28px !important;
+    padding: 3px !important;
+  }
+
+  .admPayIconImg {
+    max-height: 100% !important;
+  }
+
+  .admPayName {
+    font-size: 10.5px !important;
+    margin-top: 4px !important;
+  }
+
+  .admPayDesc {
+    font-size: 9px !important;
+    margin-bottom: 4px !important;
+    line-height: 1.3 !important;
+  }
+
+  .admPayCodNote {
+    font-size: 8.5px !important;
+  }
+
+  /* MEMBERSHIP RANKS */
+  .admShipMethodTile {
+    padding: 6px !important;
+  }
+
+  .admShipMethodName {
+    font-size: 10.5px !important;
+    margin-top: 2px !important;
+  }
+
+  .admShipMethodMeta {
+    font-size: 9px !important;
+    margin-top: 1px !important;
+  }
+
+  /* SHIPPING */
+  .admShipMethodTop {
+    gap: 4px !important;
+  }
+
+  .admShipMethodIcon {
+    width: 20px !important;
+    height: 20px !important;
+    border-radius: 4px !important;
+    font-size: 10px !important;
+  }
+
+  .admShipMethodSub {
+    font-size: 8.5px !important;
+  }
+
+  .admShipMethodDesc {
+    font-size: 9px !important;
+    margin-top: 2px !important;
+    line-height: 1.3 !important;
+  }
+
+  .admShipMethodCfg {
+    margin-top: 4px !important;
+    padding: 2px 6px !important;
+    font-size: 9px !important;
+    border-radius: 3px !important;
+  }
+
+  .admShipMethodAddTile {
+    padding: 6px !important;
+    border-radius: 4px !important;
+  }
+
+  .admShipMethodAddIcon {
+    font-size: 10px !important;
+  }
+
+  .admShipMethodAddText {
+    font-size: 9.5px !important;
+    margin-top: 4px !important;
+  }
+
+  .admShipMethodAddSub {
+    font-size: 8px !important;
+    margin-top: 2px !important;
+  }
+
+  /* SHIPPING POLICY */
+  .admShipCheck {
+    font-size: 9px !important;
+    gap: 4px !important;
+  }
+
+  .admShipCheck input {
+    width: 10px !important;
+    height: 10px !important;
+  }
+
+  .admShipPolicyBtn {
+    padding: 4px 8px !important;
+    font-size: 9.5px !important;
+    border-radius: 3px !important;
+  }
+
+  .admShipTipCard {
+    padding: 4px 6px !important;
+    font-size: 8.5px !important;
+    margin-top: 6px !important;
+  }
+
+  /* TABLES (TRANSACTIONS & ZONES) */
+  .admTxnTable {
+    min-width: 100% !important;
+  }
+
+  .admTxnTable thead th {
+    padding: 5px 6px !important;
+    font-size: 8.5px !important;
+  }
+
+  .admTxnTable tbody td {
+    padding: 5px 6px !important;
+    font-size: 9px !important;
+  }
+
+  .admTxnBadge {
+    padding: 2px 6px !important;
+    font-size: 8.5px !important;
+  }
+
+  .admShipZoneTools {
+    display: flex !important;
+    flex-direction: row !important;
+    gap: 6px !important;
+    align-items: center !important;
+  }
+
+  .admShipZoneSearch {
+    flex: 1 !important;
+    height: 24px !important;
+    padding: 4px 6px !important;
+    font-size: 10px !important;
+  }
+
+  .admShipToolbarBtn,
+  .admShipAddZoneBtn {
+    padding: 4px 6px !important;
+    font-size: 9.5px !important;
+    height: 24px !important;
+    border-radius: 3px !important;
+  }
+
+  /* MODALS FOR MINIATURE */
+  .admModalOverlay {
+    padding: 6px !important;
+  }
+
+  .admModal {
+    width: 100% !important;
+    max-height: 95vh !important;
+    display: flex !important;
+    flex-direction: column !important;
+  }
+
+  .admModalHead {
+    padding: 8px 10px !important;
+  }
+
+  .admModalTitle {
+    font-size: 11px !important;
+  }
+
+  .admModalSub {
+    font-size: 9px !important;
+  }
+
+  .admModalClose {
+    width: 24px !important;
+    height: 24px !important;
+    border-radius: 6px !important;
+    font-size: 14px !important;
+  }
+
+  .admModalBody {
+    padding: 8px 10px !important;
+    overflow-y: auto !important;
+    flex: 1 !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+}
+
+/* ── Mobile Landscape (< 992px & landscape) ───────────────────────────────── */
+@media (max-width: 992px) and (orientation: landscape) {
+  .admSettingsTop {
+    margin-bottom: 8px !important;
+  }
+
+  .admSettingsTitle {
+    font-size: 12px !important;
+  }
+
+  .admSettingsSaveBtn {
+    padding: 4px 8px !important;
+    font-size: 10px !important;
+  }
+
+  .admModal {
+    max-height: 95vh !important;
+    display: flex !important;
+    flex-direction: column !important;
+  }
+
+  .admModalBody {
+    overflow-y: auto !important;
+    flex: 1 !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+}

@@ -2,10 +2,12 @@
    🏛️ KHUNG BỐ CỤC CHÍNH DASHBOARD VÀ TIÊU ĐỀ
    ========================================================================== */
 .fs-dashboard-container {
-  padding: 24px;
+  padding: 0;
   background-color: #f8fafc;
   min-height: 100vh;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial,
+    sans-serif;
 }
 
 html.dark .fs-dashboard-container {
@@ -22,7 +24,7 @@ html.dark .fs-dashboard-container {
 
 .fs-page-title {
   font-size: 1.75rem;
-  font-weight: 800;
+  font-weight: 600;
   color: #0f172a;
   margin: 0 0 6px 0;
   letter-spacing: -0.02em;
@@ -86,7 +88,7 @@ html.dark .fs-dashboard-container {
 .fs-metric-card {
   background: #ffffff;
   border: 1px solid #e2e8f0;
-  border-radius: 16px;
+  border-radius: 8px;
   padding: 20px;
   display: flex;
   align-items: center;
@@ -131,9 +133,18 @@ html.dark .fs-metric-num {
   font-weight: 500;
 }
 
-.m-active .fs-metric-icon { background: #dcfce7; color: #16a34a; }
-.m-waiting .fs-metric-icon { background: #dbeafe; color: #2563eb; }
-.m-total .fs-metric-icon { background: #fef3c7; color: #d97706; }
+.m-active .fs-metric-icon {
+  background: #dcfce7;
+  color: #16a34a;
+}
+.m-waiting .fs-metric-icon {
+  background: #dbeafe;
+  color: #2563eb;
+}
+.m-total .fs-metric-icon {
+  background: #fef3c7;
+  color: #d97706;
+}
 
 /* ==========================================================================
    🔍 BỘ LỌC SEARCH VÀ TABS PHÂN PHÒNG
@@ -249,8 +260,11 @@ html.dark .fs-tab-btn.active {
   background: #ffffff;
   border: 1px solid #e2e8f0;
   border-radius: 12px;
-  overflow: hidden;
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.05);
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  box-shadow:
+    0 1px 3px 0 rgba(0, 0, 0, 0.05),
+    0 1px 2px -1px rgba(0, 0, 0, 0.05);
   margin-top: 20px;
 }
 
@@ -259,7 +273,9 @@ html.dark .fs-tab-btn.active {
   width: 100%;
   border-collapse: collapse;
   text-align: left;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue",
+    Arial, sans-serif;
   margin: 0;
   padding: 0;
 }
@@ -326,7 +342,7 @@ html.dark .fs-txt-name {
 }
 
 .fs-txt-name::before {
-  content: '⚡';
+  content: "⚡";
   font-size: 1.1rem;
   color: #f97316;
 }
@@ -517,13 +533,16 @@ html.dark .fs-badge-count {
   flex-direction: column;
   overflow: hidden;
 }
-.fs-modal-box.max-w-form { max-width: 580px; }
-.fs-modal-box.max-w-items { max-width: 1280px; } /* Mở rộng thêm cho layout 2 cột */
+.fs-modal-box.max-w-form {
+  max-width: 580px;
+}
+.fs-modal-box.max-w-items {
+  max-width: 1280px;
+} /* Mở rộng thêm cho layout 2 cột */
 
 html.dark .fs-modal-box {
   background: #0f172a;
 }
-
 
 .fs-modal-header {
   padding: 20px 28px;
@@ -532,7 +551,7 @@ html.dark .fs-modal-box {
   align-items: flex-start;
   background: #ffffff;
 }
- 
+
 html.dark .fs-modal-header {
   background: #0f172a;
 }
@@ -595,7 +614,8 @@ html.dark .fs-modal-close {
   margin-bottom: 6px;
 }
 
-.fs-form-input, .fs-form-select {
+.fs-form-input,
+.fs-form-select {
   box-sizing: border-box;
   width: 100%;
   padding: 10px 14px;
@@ -708,7 +728,7 @@ html.dark .fs-modal-right-column {
   color: #ea580c;
 }
 .fs-inner-tab-btn.active::after {
-  content: '';
+  content: "";
   position: absolute;
   bottom: -6px;
   left: 0;
@@ -749,7 +769,7 @@ html.dark .fs-tab-content-panel.side-form {
   font-size: 0.8rem;
   color: #9a3412;
   line-height: 1.4;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
 }
 
 /* Phần nhập input */
@@ -960,12 +980,17 @@ html.dark .fs-tab-content-panel.side-form {
 }
 
 /* UTILITIES KHÁC */
-.mt-sm { margin-top: 8px; }
+.mt-sm {
+  margin-top: 8px;
+}
 
 /* ==========================================================================
    📱 TƯƠNG THÍCH MÀN HÌNH NHỎ (RESPONSIVE CHUYỂN VỀ DẠNG DỌC)
    ========================================================================== */
 @media (max-width: 992px) {
+  .fs-page-title {
+    font-size: 18px !important;
+  }
   .fs-modal-split-layout {
     grid-template-columns: 1fr; /* Trên màn hình nhỏ quay về dạng 1 cột xếp chồng */
     overflow-y: auto;
@@ -989,25 +1014,437 @@ html.dark .fs-tab-content-panel.side-form {
 
 @media (max-width: 768px) {
   .fs-main-header {
-    flex-direction: column;
-    align-items: flex-start;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 10px !important;
+    margin-bottom: 16px !important;
+  }
+  .fs-page-title {
+    font-size: 18px !important;
+  }
+  .fs-page-subtitle {
+    display: none !important;
   }
   .fs-btn-primary {
-    width: 100%;
+    width: auto !important;
+    padding: 8px 12px !important;
+    font-size: 0.8rem !important;
+    border-radius: 6px !important;
     justify-content: center;
   }
+  .fs-metrics-grid {
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 6px !important;
+    margin-bottom: 16px !important;
+  }
+  .fs-metric-card {
+    padding: 8px !important;
+    gap: 6px !important;
+    border-radius: 8px !important;
+  }
+  .fs-metric-icon {
+    font-size: 1.1rem !important;
+    width: 32px !important;
+    height: 32px !important;
+    border-radius: 6px !important;
+  }
+  .fs-metric-num {
+    font-size: 1.1rem !important;
+  }
+  .fs-metric-label {
+    font-size: 0.7rem !important;
+  }
   .fs-filter-wrapper {
-    flex-direction: column;
-    align-items: stretch;
+    flex-direction: row !important;
+    align-items: center !important;
+    padding: 8px !important;
+    gap: 8px !important;
   }
   .fs-search-box {
-    max-width: 100%;
-    min-width: 100%;
+    min-width: 0 !important;
+    max-width: 45% !important;
+    flex: 1 !important;
+  }
+  .fs-search-box input {
+    height: 30px !important;
+    padding: 4px 10px 4px 28px !important;
+    font-size: 0.75rem !important;
+    border-radius: 6px !important;
+  }
+  .fs-search-icon {
+    left: 8px !important;
+    font-size: 0.8rem !important;
   }
   .fs-filter-tabs {
-    overflow-x: auto;
+    flex: 1 !important;
+    overflow-x: auto !important;
+    display: flex !important;
+    gap: 2px !important;
+    background: #f1f5f9 !important;
+    padding: 2px !important;
+    border-radius: 6px !important;
+    max-width: 55% !important;
+    scrollbar-width: none;
+  }
+  .fs-filter-tabs::-webkit-scrollbar {
+    display: none;
+  }
+  .fs-tab-btn {
+    padding: 4px 8px !important;
+    font-size: 0.7rem !important;
+    border-radius: 4px !important;
+    white-space: nowrap !important;
   }
   .fs-form-grid-2 {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 10px !important;
+  }
+  .fs-form-input,
+  .fs-form-select,
+  .h-input {
+    height: 32px !important;
+    padding: 4px 8px !important;
+    font-size: 0.75rem !important;
+    box-sizing: border-box !important;
+  }
+  .fs-form-label {
+    font-size: 0.7rem !important;
+    margin-bottom: 3px !important;
+  }
+  .fs-form-body {
+    padding: 12px 14px !important;
+  }
+  .fs-modal-header {
+    padding: 12px 14px !important;
+  }
+  .fs-modal-title {
+    font-size: 1rem !important;
+  }
+  .fs-modal-subtitle {
+    font-size: 0.75rem !important;
+  }
+  .fs-modal-footer {
+    margin-top: 12px !important;
+    padding-top: 12px !important;
+  }
+
+  /* Tables & Lists */
+  .fs-main-table-wrap table.adminTable th,
+  .fs-main-table-wrap table.adminTable td {
+    padding: 8px 10px !important;
+    font-size: 0.75rem !important;
+  }
+  .fs-txt-name {
+    font-size: 0.75rem !important;
+  }
+  .fs-txt-name::before {
+    font-size: 0.9rem !important;
+  }
+  .fs-time-clock {
+    font-size: 0.75rem !important;
+  }
+  .fs-time-date {
+    font-size: 0.65rem !important;
+  }
+  .fs-status-pill {
+    padding: 4px 8px !important;
+    font-size: 0.65rem !important;
+  }
+  .fs-badge-count {
+    padding: 4px 8px !important;
+    font-size: 0.65rem !important;
+  }
+
+  /* Action group */
+  .fs-action-group {
+    gap: 4px !important;
+  }
+  .fs-action-btn.b-items {
+    padding: 4px 8px !important;
+    font-size: 0.75rem !important;
+    border-radius: 6px !important;
+  }
+  .fs-icon-btn {
+    width: 26px !important;
+    height: 26px !important;
+    border-radius: 6px !important;
+  }
+  .fs-icon-btn svg {
+    width: 14px !important;
+    height: 14px !important;
+  }
+
+  .fs-modal-overlay {
+    padding: 10px !important;
+  }
+  .fs-modal-box {
+    max-height: 95vh !important;
+  }
+  .fs-modal-box.max-w-form {
+    max-width: 400px !important;
+    width: 90vw !important;
+  }
+  .fs-modal-header {
+    padding: 12px 16px !important;
+  }
+  .fs-form-body {
+    padding: 10px 12px !important;
+  }
+  .fs-form-group {
+    margin-bottom: 10px !important;
+  }
+  .fs-form-input,
+  .fs-form-select {
+    box-sizing: border-box !important;
+    width: 100% !important;
+    min-width: 0 !important;
+  }
+  .fs-modal-split-layout {
+    padding: 0 !important;
+  }
+  .fs-modal-left-column {
+    padding: 12px 16px !important;
+  }
+  .fs-modal-right-column {
+    padding: 12px 16px !important;
+  }
+}
+
+@media (max-width: 992px) and (orientation: landscape) {
+  .fs-page-title {
+    font-size: 18px !important;
+  }
+  
+  /* Metrics grid - 3 columns for the 3 cards */
+  .fs-metrics-grid {
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 20px !important;
+  }
+  .fs-metric-card {
+    padding: 30px !important;
+  }
+  .fs-metric-icon {
+    width: 20px !important;
+    height: 20px !important;
+    font-size: 10px !important;
+  }
+  .fs-metric-num {
+    font-size: 0.9rem !important;
+  }
+  .fs-metric-label {
+    font-size: 0.6rem !important;
+  }
+
+  /* Filter bar - keep 1 row on landscape */
+  .fs-filter-wrapper {
+    flex-direction: row !important;
+    align-items: center !important;
+  }
+  .fs-search-box {
+    max-width: 150px !important;
+    min-width: 120px !important;
+  }
+  .fs-search-box input {
+    font-size: 0.7rem !important;
+    height: 26px !important;
+  }
+  .fs-tab-btn {
+    padding: 4px 8px !important;
+    font-size: 0.65rem !important;
+  }
+
+  /* Form layout - use 2 columns to save vertical space */
+  .fs-form-grid-2 {
+    grid-template-columns: 1fr 1fr !important;
+  }
+
+  /* Split layout - side by side for landscape */
+  .fs-modal-split-layout {
+    grid-template-columns: 200px 1fr !important;
+    overflow: hidden !important;
+  }
+
+  .fs-modal-left-column {
+    border-right: 1px solid #e2e8f0 !important;
+    border-bottom: none !important;
+    padding: 6px 8px !important;
+    overflow-y: auto !important;
+  }
+
+  .fs-modal-right-column {
+    padding: 6px 8px !important;
+    overflow-y: hidden !important;
+    display: flex !important;
+    flex-direction: column !important;
+  }
+
+  .modal-scrollbar-custom.layout-split-table {
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    flex: 1 !important;
+    max-height: none !important;
+  }
+
+  /* Override inline hardcoded widths to let table flex naturally */
+  .modal-scrollbar-custom.layout-split-table table.adminTable th,
+  .modal-scrollbar-custom.layout-split-table table.adminTable td {
+    width: auto !important;
+    min-width: 0 !important;
+  }
+
+  .modal-scrollbar-custom.layout-split-table table.adminTable {
+    min-width: 0 !important;
+  }
+
+  .fs-inner-tab-btn {
+    padding: 2px 4px !important;
+    font-size: 0.6rem !important;
+  }
+
+  .fs-tab-content-panel.side-form {
+    padding: 6px !important;
+    gap: 4px !important;
+  }
+
+  .fs-info-notice-bar {
+    padding: 4px !important;
+    font-size: 0.55rem !important;
+  }
+
+  /* Modal scaling */
+  .fs-modal-box {
+    max-height: 96vh !important;
+  }
+
+  .fs-modal-header {
+    padding: 6px 8px !important;
+  }
+
+  .fs-form-body {
+    padding: 6px 8px !important;
+  }
+
+  .fs-form-group {
+    margin-bottom: 4px !important;
+  }
+
+  .fs-form-label {
+    font-size: 0.6rem !important;
+    margin-bottom: 2px !important;
+  }
+
+  .fs-modal-title {
+    font-size: 0.75rem !important;
+    margin-bottom: 2px !important;
+  }
+
+  .fs-modal-subtitle {
+    font-size: 0.55rem !important;
+  }
+
+  .fs-form-input,
+  .fs-form-select,
+  .h-input {
+    padding: 2px 4px !important;
+    height: 24px !important;
+    font-size: 0.6rem !important;
+  }
+
+  .bg-light-panel {
+    padding: 4px !important;
+    border-radius: 4px !important;
+  }
+
+  .fs-input-hint {
+    font-size: 0.55rem !important;
+    margin-top: 2px !important;
+  }
+
+  /* Buttons */
+  .fs-modal-footer {
+    margin-top: 4px !important;
+    padding-top: 4px !important;
+  }
+
+  .fs-btn-gradient,
+  .fs-action-btn,
+  .fs-tab-btn,
+  .fs-btn-secondary {
+    padding: 2px 6px !important;
+    font-size: 0.6rem !important;
+  }
+  /* Main Page Tables (outside modal) */
+  .fs-main-table-wrap table.adminTable th,
+  .fs-main-table-wrap table.adminTable td {
+    padding: 6px 8px !important;
+    font-size: 0.75rem !important;
+  }
+
+  .fs-main-table-wrap .fs-txt-name {
+    font-size: 0.75rem !important;
+  }
+
+  .fs-main-table-wrap .fs-status-pill,
+  .fs-main-table-wrap .fs-badge-count {
+    font-size: 0.7rem !important;
+    padding: 4px 8px !important;
+  }
+
+  /* Modal Tables (Ultra-compact) */
+  .modal-scrollbar-custom.layout-split-table table th,
+  .modal-scrollbar-custom.layout-split-table table td {
+    padding: 2px 4px !important;
+    font-size: 0.65rem !important;
+  }
+
+  .fs-p-name,
+  .modal-scrollbar-custom .fs-txt-name {
+    font-size: 0.65rem !important;
+    -webkit-line-clamp: 2 !important;
+    line-height: 1.1 !important;
+  }
+
+  .fs-product-thumb {
+    width: 20px !important;
+    height: 20px !important;
+  }
+
+  .fs-btn-primary {
+    padding: 10px 10px !important;
+    font-size: 0.7rem !important;
+  }
+
+  .modal-scrollbar-custom .fs-status-pill {
+    padding: 2px 6px !important;
+    font-size: 0.6rem !important;
+  }
+
+  .modal-scrollbar-custom .fs-badge-count {
+    padding: 2px 6px !important;
+    font-size: 0.6rem !important;
+  }
+
+  .fs-action-btn.b-items {
+    padding: 2px 6px !important;
+    font-size: 0.65rem !important;
+  }
+
+  .fs-icon-btn {
+    width: 26px !important;
+    height: 26px !important;
+  }
+
+  .fs-icon-btn svg {
+    width: 14px !important;
+    height: 14px !important;
+  }
+
+  .fs-time-clock {
+    font-size: 0.7rem !important;
+  }
+
+  .fs-time-date {
+    font-size: 0.65rem !important;
   }
 }

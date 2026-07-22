@@ -316,7 +316,7 @@ export default function VideoAdminPage() {
               <button className="catCloseModal" onClick={() => setIsModalOpen(false)}>×</button>
             </div>
             <form onSubmit={handleSubmit} className="catForm">
-              <div style={{ maxHeight: 'calc(100vh - 200px)', overflowY: 'auto', paddingRight: '4px', scrollbarWidth: 'none', msOverflowStyle: 'none', WebkitOverflowScrolling: 'touch' }}>
+              <div className="videoadminpage-modal-body">
               {/* Loại video: liên kết sản phẩm hay video chung */}
               <div className="catFormField videoadminpage-style-11" >
                 <label>LOẠI VIDEO</label>
@@ -360,17 +360,7 @@ export default function VideoAdminPage() {
                 {isLinkedToProduct ? (
                   <div className="catFormField">
                     <label>SẢN PHẨM LIÊN KẾT (CÓ THỂ CHỌN NHIỀU)</label>
-                    <div style={{
-                      maxHeight: '220px',
-                      overflowY: 'auto',
-                      border: '1px solid var(--admin-border)',
-                      borderRadius: '8px',
-                      background: 'var(--admin-card-bg)',
-                      padding: '6px',
-                      display: 'flex',
-                      flexDirection: 'column',
-                      gap: '2px'
-                    }}>
+                    <div className="videoadminpage-products-list">
                       {products.map(p => (
                         <label key={p.id} style={{ 
                           display: 'flex', 
@@ -475,7 +465,7 @@ export default function VideoAdminPage() {
                       setVideoFile(null)
                     }
                   }}
-                  style={{ padding: '8px', border: '1px solid var(--admin-border)', borderRadius: '6px', background: 'var(--admin-card-bg)', color: 'var(--admin-text-p)', width: '100%' }}
+                  className="videoadminpage-file-input"
                   disabled={!!formData.video_url}
                 />
               </div>
@@ -503,7 +493,7 @@ export default function VideoAdminPage() {
                       setThumbnailFile(null)
                     }
                   }}
-                  style={{ padding: '8px', border: '1px solid var(--admin-border)', borderRadius: '6px', background: 'var(--admin-card-bg)', color: 'var(--admin-text-p)', width: '100%' }}
+                  className="videoadminpage-file-input"
                   disabled={!!formData.thumbnail_url}
                 />
               </div>
@@ -535,7 +525,7 @@ export default function VideoAdminPage() {
 
               {error && <div className="catErrorBanner videoadminpage-style-20" >{error}</div>}
 
-              <div className="catModalFooter" style={{ marginTop: '16px', paddingTop: '16px', borderTop: '1px solid var(--admin-border)' }}>
+              <div className="catModalFooter videoadminpage-modal-footer">
                 <button type="button" className="catCancelBtn" onClick={() => setIsModalOpen(false)}>Hủy</button>
                 <button type="submit" className="catSubmitBtn">{editingVideo ? 'Cập nhật' : 'Thêm'}</button>
               </div>

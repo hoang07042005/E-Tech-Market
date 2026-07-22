@@ -1,4 +1,4 @@
-﻿import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback } from "react";
 import type { ChangeEvent } from "react";
 import { apiFetch, API_BASE_URL } from "@/configs/api.config";
 import ConfirmModal from "@/components/ConfirmModal";
@@ -157,8 +157,7 @@ export default function ReviewsAdminPage() {
 
   return (
     <div className="adminContainer">
-      {/* Header Panel */}
-      <header className="pageHeader" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+      <header className="pageHeader">
         <div className="pageHeaderLeft">
           <h2>Quản lý Đánh giá</h2>
           <p>
@@ -170,18 +169,7 @@ export default function ReviewsAdminPage() {
         <div className="pageHeaderRight">
           <button
             type="button"
-            className="iconActionBtn"
-            style={{ 
-              background: "#ef4444", 
-              color: "#fff", 
-              padding: "16px 20px", 
-              borderRadius: "6px",
-              border: "none",
-              cursor: "pointer",
-              fontWeight: "500",
-              height: "auto",
-              width: "auto"
-            }}
+            className="revHardDeleteBtn"
             onClick={() => setViewMode('hard_delete')}
             title="Dữ liệu đã xóa (Hard delete)"
           >

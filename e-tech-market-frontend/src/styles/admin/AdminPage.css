@@ -3109,6 +3109,7 @@ html.dark .admOrdersFiltersAdvanced {
   .admOrderStatusForm {
     flex-direction: column;
     align-items: stretch;
+    gap: 12px;
   }
 
   .admOrderStatusFormControls {
@@ -5292,8 +5293,8 @@ html.dark .admOrdersFiltersAdvanced {
   width: 40px;
   height: 40px;
   border-radius: 12px;
-  border: 1px solid var(--admin-border);
-  background: #ffffff;
+  border: none;
+  background: none;
   color: var(--admin-text-s);
   display: inline-flex;
   align-items: center;
@@ -5356,7 +5357,6 @@ html.dark .adminScrollContent {
   background: var(--admin-main-bg);
 }
 
-html.dark .adminThemeBtn,
 html.dark .adminSearchBox,
 html.dark .adminSidebarUserCard,
 html.dark .dashboardDateRange,
@@ -6515,4 +6515,442 @@ html.dark
   border: 1px solid #e2e8f0;
   margin-top: 8px;
   line-height: 1.5;
+}
+
+/* Mobile Portrait Overlay */
+.adminPortraitOverlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(246, 247, 251, 0.95);
+  backdrop-filter: blur(8px);
+  z-index: 99999;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 24px;
+}
+
+.adminPortraitOverlayContent {
+  background: #ffffff;
+  padding: 40px 30px;
+  border-radius: 20px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  max-width: 400px;
+  width: 100%;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.adminPortraitOverlayIcon {
+  color: var(--admin-accent);
+  margin-bottom: 24px;
+  animation: rotateLandscape 2s ease-in-out infinite;
+}
+
+@keyframes rotateLandscape {
+  0% { transform: rotate(0deg); }
+  30% { transform: rotate(-90deg); }
+  70% { transform: rotate(-90deg); }
+  100% { transform: rotate(0deg); }
+}
+
+.adminPortraitOverlayContent h2 {
+  font-size: 22px;
+  font-weight: 700;
+  color: #0f172a;
+  margin-bottom: 12px;
+  margin-top: 0;
+}
+
+.adminPortraitOverlayContent p {
+  font-size: 15px;
+  color: #64748b;
+  line-height: 1.6;
+  margin: 0;
+}
+
+@media (max-width: 990px) and (orientation: portrait) {
+  .adminPortraitOverlay {
+    display: flex;
+  }
+}
+
+/* Form Styles for Mobile Landscape */
+@media (max-width: 990px) and (orientation: landscape) {
+  /* Make sure forms fit vertically */
+  .adminFormContent,
+  .adminModalContent,
+  .adminPanelContent,
+  .admOrderContent,
+  .adminForm {
+    max-height: 80vh !important;
+    overflow-y: auto !important;
+  }
+  
+  /* Shrink headers/paddings if needed to save space */
+  .adminModalHeader {
+    padding: 10px 16px !important;
+  }
+  
+  .adminModalBody {
+    padding: 12px 16px !important;
+  }
+  
+  .adminModalFooter {
+    padding: 10px 16px !important;
+  }
+  
+  .adminMainArea {
+    min-height: 100vh;
+  }
+  
+  /* Orders Table scaling */
+  .admOrdersTable2 {
+    min-width: 600px !important;
+  }
+  .admOrdersTable2 thead th {
+    font-size: 9px !important;
+    padding: 4px 6px !important;
+  }
+  .admOrdersTable2 tbody td {
+    font-size: 11px !important;
+    padding: 4px 6px !important;
+  }
+  .admOrdersCode2, .admOrdersCust2Name, .admOrdersAmount2 {
+    font-size: 11px !important;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .admOrdersCust2 {
+    max-width: 140px !important;
+  }
+  .admOrdersCust2Sub {
+    font-size: 9px !important;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .admOrdersAvatar2, .admOrdersAvatar2Img {
+    width: 20px !important;
+    height: 20px !important;
+    font-size: 9px !important;
+  }
+  .admOrdersIconBtn {
+    width: 24px !important;
+    height: 24px !important;
+  }
+  .admOrdersIconBtn svg {
+    width: 12px !important;
+    height: 12px !important;
+  }
+  .admOrdersStatus2, .admOrdersPaymentBadge {
+    padding: 2px 4px !important;
+    font-size: 9px !important;
+  }
+  
+  /* KPIs scaling to 5 cols */
+  .admOrdersKpis {
+    grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+    gap: 6px !important;
+  }
+  .admOrdersKpi {
+    padding: 6px 8px !important;
+  }
+  .admOrdersKpiLabel, .admOrdersKpiSub {
+    font-size: 8px !important;
+  }
+  .admOrdersKpiValue {
+    font-size: 14px !important;
+  }
+
+  /* Filter bar scaling */
+  .admOrdersFiltersRow {
+    padding: 4px 8px !important;
+  }
+  .admOrdersInputGroup {
+    padding: 0 4px !important;
+  }
+  .admOrdersInput.flat {
+    font-size: 10px !important;
+    padding: 4px 0 !important;
+  }
+  .admOrdersFilterToggle, .admOrdersLinkBtn, .admOrdersBtn.primary {
+    font-size: 10px !important;
+    padding: 4px 8px !important;
+  }
+
+  /* Advanced Filters scaling */
+  .admOrdersFiltersAdvanced {
+    padding: 8px 12px !important;
+    gap: 10px !important;
+    margin-top: 6px !important;
+  }
+  .admOrdersFieldLabel {
+    font-size: 9px !important;
+    margin-bottom: 4px !important;
+  }
+  .admOrdersSelect {
+    padding: 6px 10px !important;
+    font-size: 10px !important;
+    height: auto !important;
+  }
+
+  /* Order Detail Layout scaling */
+  .admOrderGrid {
+    grid-template-columns: 1.2fr 1fr !important;
+    gap: 12px !important;
+  }
+  .admOrderCard {
+    padding: 8px !important;
+  }
+  .admOrderHeader {
+    margin-bottom: 8px !important;
+  }
+  .admOrderTitle {
+    font-size: 14px !important;
+  }
+  .admOrderSub {
+    font-size: 10px !important;
+  }
+  .admOrderCardHead {
+    margin-bottom: 6px !important;
+  }
+  .admOrderCardTitle {
+    font-size: 12px !important;
+  }
+  .admOrderTable {
+    min-width: 300px !important;
+  }
+  .admOrderTable thead th {
+    padding: 6px 8px !important;
+    font-size: 10px !important;
+  }
+  .admOrderTable tbody td {
+    padding: 6px 8px !important;
+    font-size: 11px !important;
+  }
+  .admOrderPayRow {
+    font-size: 11px !important;
+  }
+  .admOrderPayRow.total {
+    font-size: 12px !important;
+  }
+  .admOrderStepLabel {
+    font-size: 10px !important;
+  }
+  .admOrderStepTime {
+    font-size: 9px !important;
+  }
+  .admOrderStepDot {
+    width: 20px !important;
+    height: 20px !important;
+    font-size: 10px !important;
+  }
+  .admOrderStep:not(:last-child)::after {
+    top: 10px !important;
+  }
+}
+
+/* Base styles for sidebar overlay (hidden on desktop) */
+.adminSidebarOverlay {
+  display: none;
+}
+
+/* Mobile Sidebar Drawer */
+@media (max-width: 990px) {
+  .adminSidebarPremium {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100dvh;
+    transform: translateX(0);
+    z-index: 1000;
+    width: 210px !important;
+    max-width: 85vw;
+    box-shadow: 4px 0 24px rgba(0, 0, 0, 0.15);
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .adminLayout.collapsed .adminSidebarPremium {
+    transform: translateX(-100%);
+    box-shadow: none;
+  }
+
+  .adminSidebarNav {
+    padding: 0 8px;
+    gap: 0;
+  }
+  
+  .adminNavSectionTitle {
+    margin-top: 10px;
+    margin-bottom: 2px;
+    font-size: 9px;
+  }
+  
+  .sidebarItem {
+    padding: 6px 8px;
+    gap: 10px;
+  }
+  
+  .sidebarItemLabel {
+    font-size: 12px;
+  }
+  
+  .sidebarItemIcon {
+    width: 20px;
+  }
+  
+  .sidebarItemIcon svg {
+    width: 16px;
+    height: 16px;
+  }
+  
+  .adminBrand {
+    padding: 8px 10px;
+  }
+  
+  .adminBrandLogoImg {
+    height: 40px;
+  }
+  
+  .adminSidebarFooter {
+    padding: 8px;
+  }
+  
+  .adminSidebarUserCard {
+    padding: 6px;
+    margin-bottom: 6px;
+    gap: 8px;
+  }
+  
+  .adminSidebarUserAvatarImg, .adminSidebarUserAvatar {
+    width: 28px;
+    height: 28px;
+  }
+  
+  .adminSidebarUserName {
+    font-size: 11px;
+  }
+  
+  .adminSidebarUserEmail {
+    font-size: 9px;
+  }
+  
+  .adminSidebarAction {
+    padding: 8px;
+    font-size: 12px;
+    gap: 10px;
+  }
+
+  .adminSidebarAction svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .adminSidebarOverlay {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.4);
+    backdrop-filter: blur(2px);
+    z-index: 999;
+    opacity: 1;
+    visibility: visible;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .adminLayout.collapsed .adminSidebarOverlay {
+    opacity: 0;
+    visibility: hidden;
+  }
+  
+  .adminTopBarLeft .adminToggleBtn {
+    margin-right: 8px;
+  }
+
+  /* Top Bar Mobile Adjustments */
+  .adminTopBar {
+    padding: 0 10px;
+    height: 52px;
+  }
+  
+  .adminTopBarLeft {
+    gap: 8px;
+  }
+  
+  .adminBreadcrumb {
+    font-size: 13px;
+    gap: 6px;
+    white-space: nowrap;
+  }
+  
+  .breadcrumbParent, .breadcrumbSeparator {
+    display: none; /* Hide 'Quản trị /' */
+  }
+  
+  .adminTopBarRight {
+    gap: 10px;
+    flex: 1;
+    justify-content: flex-end;
+  }
+  
+  .adminSearchBox {
+    width: auto;
+    flex: 1;
+    max-width: 240px;
+    min-width: 100px;
+    height: 34px;
+    padding: 0 10px;
+  }
+  
+  .adminSearchBox input {
+    font-size: 13px;
+  }
+  
+  .adminUserCard {
+    padding-left: 10px;
+    border-left: 1px solid var(--admin-border);
+    gap: 8px;
+  }
+  
+  .adminUserInfo {
+    display: flex !important;
+    justify-content: center;
+  }
+  
+  .adminUserName {
+    font-size: 12px;
+    white-space: nowrap;
+    max-width: 80px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  
+  .adminUserRole {
+    display: none; /* Hide role on mobile to save space */
+  }
+
+  .adminNotificationBtn {
+    padding: 4px;
+  }
+  
+  /* Make header icons a bit smaller to fit 52px height */
+  .adminTopBarRight svg {
+    width: 18px;
+    height: 18px;
+  }
+  
+  .adminUserAvatarImg, .adminUserAvatar {
+    width: 28px;
+    height: 28px;
+  }
+  
+  .adminFooter {
+    display: none !important;
+  }
 }

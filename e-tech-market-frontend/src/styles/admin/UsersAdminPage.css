@@ -29,20 +29,17 @@
 
 .usersAdminSearch {
     width: 100%;
-    max-width: 380px;
-
-    height: 44px;
+    max-width: 320px;
+    height: 42px;
     padding: 0 16px;
-
     border: 1px solid #dcdcdc;
-    border-radius: 12px;
-
+    border-radius: 8px;
     background: #fff;
-
     font-size: 14px;
     outline: none;
-
     transition: all 0.2s ease;
+    box-sizing: border-box;
+    margin: 0;
 }
 
 /* Hover */
@@ -83,7 +80,12 @@
   border: 1px solid #dadadad8;
   display: flex;
   align-items: center;
-  justify-content: right;
+  justify-content: center; /* Fixed from right to center */
+}
+
+.usersAdminIconBtn svg {
+  width: 16px;
+  height: 16px;
 }
 
 .usersRoleModalOverlay {
@@ -98,7 +100,8 @@
 }
 
 .usersRoleModal {
-    width: 40%;
+    width: 90%;
+    max-width: 500px;
     background: #ffffff;
     border-radius: 16px;
     box-shadow:
@@ -260,3 +263,262 @@
 .pAddBtn:hover {
     background: #e87e00;
 }
+
+/* ── Desktop Structural Classes ────────────────────────────────────────────── */
+.usersAdminHeaderContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    margin-bottom: 24px;
+    text-align: left;
+}
+
+.usersAdminPageTitle {
+    margin: 0;
+    font-size: 26px;
+    font-weight: 700;
+    color: #0f172a;
+}
+
+.usersAdminPageSubtitle {
+    margin: 6px 0 0 0;
+    color: #64748b;
+    font-size: 14px;
+}
+
+.usersAdminToolbarRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    gap: 16px;
+}
+
+.usersAdminActionsWrapper {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.usersAdminBtn {
+    padding: 0 16px;
+    font-size: 13px;
+    height: 42px;
+    border-radius: 8px;
+    white-space: nowrap;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    font-weight: 600;
+    background: #f49003;
+    color: #fff;
+}
+
+.usersAdminBtnDanger {
+    background-color: #ef4444 !important;
+}
+
+.usersAdminBtnDanger:hover {
+    background-color: #dc2626 !important;
+}
+
+/* ── Mobile Responsive Optimizations ───────────────────────────────────────── */
+@media (max-width: 680px) {
+    .usersAdminHeaderContainer {
+        gap: 16px;
+        margin-bottom: 16px;
+    }
+
+    .usersAdminPageTitle {
+        font-size: 18px !important;
+    }
+
+    .usersAdminPageSubtitle {
+        font-size: 12px !important;
+    }
+
+    .usersAdminToolbarRow {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+    }
+
+    .usersAdminActionsWrapper {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
+    }
+
+    .usersAdminBtn {
+        width: 100%;
+        height: 38px;
+        font-size: 13px;
+    }
+
+    .usersAdminSearch {
+        width: 100% !important;
+        max-width: 100% !important;
+        height: 38px;
+    }
+
+    .usersAdminIconBtn {
+        width: 28px !important;
+        height: 28px !important;
+    }
+
+    .usersAdminIconBtn svg {
+        width: 14px !important;
+        height: 14px !important;
+    }
+
+    /* Modal */
+    .usersRoleModal {
+        width: 95%;
+        max-height: 90vh;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .usersRoleModalHead {
+        padding: 16px;
+    }
+
+    .usersRoleModalTitle {
+        font-size: 18px;
+    }
+
+    .usersRoleModalLead {
+        font-size: 12px;
+    }
+
+    .usersRoleModalBody {
+        padding: 16px;
+        max-height: calc(90vh - 120px);
+        gap: 10px;
+    }
+
+    .usersRoleCheckRow {
+        padding: 10px;
+        gap: 8px;
+        border-radius: 8px;
+    }
+
+    .usersRoleCheckLabel {
+        font-size: 14px;
+    }
+
+    .usersRoleCheckDesc {
+        font-size: 11px;
+    }
+
+    .usersRoleModalFoot {
+        padding: 12px 16px;
+    }
+
+    .usersRoleModalBtnGhost, 
+    .usersRoleModalBtnSave {
+        padding: 8px 16px;
+        font-size: 13px;
+        border-radius: 8px;
+    }
+}
+
+@media (max-width: 992px) and (orientation: landscape) {
+    .usersAdminHeaderContainer {
+        gap: 12px;
+        margin-bottom: 12px;
+    }
+
+    .usersAdminPageTitle {
+        font-size: 16px;
+    }
+
+    .usersAdminPageSubtitle {
+        font-size: 11px;
+    }
+
+    .usersAdminToolbarRow {
+        gap: 12px;
+        align-items: center;
+    }
+
+    .usersAdminActionsWrapper {
+        gap: 8px;
+    }
+
+    .usersAdminBtn {
+        height: 32px;
+        padding: 0 12px;
+        font-size: 12px;
+    }
+
+    .usersAdminSearch {
+        max-width: 240px;
+        height: 32px;
+        font-size: 12px;
+    }
+
+    .usersAdminIconBtn {
+        width: 26px !important;
+        height: 26px !important;
+    }
+
+    .usersAdminIconBtn svg {
+        width: 12px !important;
+        height: 12px !important;
+    }
+
+    /* Modal */
+    .usersRoleModal {
+        width: 90%;
+        max-width: 500px;
+        max-height: 98vh;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .usersRoleModalHead {
+        padding: 10px 16px;
+    }
+
+    .usersRoleModalTitle {
+        font-size: 16px;
+    }
+
+    .usersRoleModalLead {
+        font-size: 11px;
+    }
+
+    .usersRoleModalBody {
+        padding: 10px 16px;
+        max-height: calc(98vh - 100px);
+        gap: 8px;
+    }
+
+    .usersRoleCheckRow {
+        padding: 8px;
+        gap: 8px;
+        border-radius: 8px;
+    }
+
+    .usersRoleCheckLabel {
+        font-size: 13px;
+    }
+
+    .usersRoleCheckDesc {
+        font-size: 11px;
+    }
+
+    .usersRoleModalFoot {
+        padding: 10px 16px;
+    }
+
+    .usersRoleModalBtnGhost, 
+    .usersRoleModalBtnSave {
+        padding: 6px 12px;
+        font-size: 12px;
+        border-radius: 6px;
+    }
+}

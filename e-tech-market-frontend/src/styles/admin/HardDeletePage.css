@@ -8,7 +8,9 @@
   display: flex;
   gap: 12px;
   align-items: center;
-  margin: 20px 0 20px 25px;
+  padding: 16px 24px;
+  margin: 0;
+  background: #ffffff;
 }
 
 .hdp-select-header label {
@@ -175,4 +177,56 @@
 .hdp-confirm-warning {
   margin: 0;
   color: #ef4444;
+}
+
+/* ── Mobile Responsive Optimizations ───────────────────────────────────────── */
+@media (max-width: 680px) {
+  .hdp-select-header {
+    padding: 12px 16px;
+  }
+
+  .hdp-tab-nav {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding-bottom: 5px; /* space for scrollbar */
+    margin-bottom: 15px;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .hdp-tab-nav::-webkit-scrollbar {
+    height: 4px;
+  }
+
+  .hdp-tab-nav::-webkit-scrollbar-thumb {
+    background-color: #cbd5e1;
+    border-radius: 4px;
+  }
+
+  .hdp-tab-btn {
+    padding: 8px 12px;
+    font-size: 12px;
+  }
+  
+  .hdp-header-actions {
+    gap: 6px;
+  }
+}
+
+@media (max-width: 992px) and (orientation: landscape) {
+  .hdp-select-header {
+    padding: 8px 12px;
+  }
+
+  .hdp-tab-nav {
+    margin-bottom: 10px;
+  }
+
+  .hdp-tab-btn {
+    padding: 6px 10px;
+    font-size: 11px;
+  }
+  
+  .hdp-header-actions {
+    gap: 8px;
+  }
 }

@@ -202,17 +202,16 @@ export default function CategoryPage() {
           <h2 className="catAdminTitle">Quản lý danh mục sản phẩm</h2>
           <p className="catAdminSub">Tổ chức cấu trúc và phân loại cửa hàng</p>
         </div>
-        <div style={{ display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}>
+        <div className="catHeaderRight">
           <button className="catAddBtn" onClick={() => handleOpenModal()} type="button">
             <PlusIcon />
             <span>Thêm danh mục</span>
           </button>
 
           <button
-            className="catAddBtn"
+            className="catAddBtn catHardDeleteBtn"
             type="button"
             onClick={() => setViewMode("hard_delete")}
-            style={{ background: "#ef4444", padding: "12px 20px" }}
             title="Hard delete dữ liệu đã xóa"
           >
             Dữ liệu đã xóa (Hard delete)

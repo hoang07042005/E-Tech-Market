@@ -310,15 +310,7 @@ export default function ProductPage({
           <p className="prodSub">Theo dõi và cập nhật hàng hóa theo danh mục</p>
         </div>
 
-        <div
-          style={{
-            display: "flex",
-            gap: 12,
-            alignItems: "center",
-            justifyContent: "flex-end",
-            flexWrap: "wrap",
-          }}
-        >
+        <div className="prodHeaderActions">
           <button className="prodAddBtn" onClick={handleAdd} type="button">
             + Thêm sản phẩm
           </button>

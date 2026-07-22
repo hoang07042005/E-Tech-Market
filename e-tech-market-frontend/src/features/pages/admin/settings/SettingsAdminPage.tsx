@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { apiFetch, API_BASE_URL } from "@/configs/api.config";
 import { useAuthStore } from "@/features/store/useAuthStore";
+import "@/styles/admin/SettingsAdminPage.css";
 import logoMomo from "@/assets/logo-momo.png";
 import logoVnpay from "@/assets/vnpay-logo.png";
 import logoCod from "@/assets/COD.png";
@@ -821,7 +822,7 @@ export default function SettingsAdminPage() {
 
       {/* 1) General */}
       <div className="admSettingsGridTop">
-        <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+        <div className="admSetMainCol">
           <section className="admSetCard">
             <div className="admSetCardHead">
               <div className="admSetCardTitle">

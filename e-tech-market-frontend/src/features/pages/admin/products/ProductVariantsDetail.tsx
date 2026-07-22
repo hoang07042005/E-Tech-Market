@@ -1,4 +1,4 @@
-﻿import { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { fetchAdminProductDetail } from "@/features/services/admin/products.admin.service";
 import { API_BASE_URL } from "@/configs/api.config";
 
@@ -383,10 +383,7 @@ export default function ProductVariantsDetail({
             <div className="prodStatHint">Giá hiệu lực</div>
           </div>
           <div className="prodStatLabel">Giá thấp nhất</div>
-          <div
-            className="prodStatValue"
-            style={{ fontSize: "24px", paddingTop: "10px" }}
-          >
+          <div className="prodStatValue pDetailStatPrice">
             {formatCurrency(minPrice)}
           </div>
         </div>
@@ -399,10 +396,7 @@ export default function ProductVariantsDetail({
             <div className="prodStatHint">Giá hiệu lực</div>
           </div>
           <div className="prodStatLabel">Giá cao nhất</div>
-          <div
-            className="prodStatValue"
-            style={{ fontSize: "24px", paddingTop: "10px" }}
-          >
+          <div className="prodStatValue pDetailStatPrice">
             {formatCurrency(maxPrice)}
           </div>
         </div>

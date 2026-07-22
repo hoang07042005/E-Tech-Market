@@ -258,7 +258,7 @@ export default function AdminPage() {
       setQLoading(true)
       ;(async () => {
         try {
-          const res = await apiFetch<any>(`/api/admin/products`)
+          const res = await apiFetch<any>(`/api/admin/products?search=${encodeURIComponent(query)}&per_page=50`)
           const data = Array.isArray(res?.data) ? res.data : (Array.isArray(res) ? res : [])
           const rows: QuickProduct[] = data.map((p: any) => {
             const obj = (p ?? {}) as Record<string, unknown>
@@ -400,6 +400,20 @@ export default function AdminPage() {
 
   return (
     <div className={`adminLayout ${isSidebarCollapsed ? 'collapsed' : ''}`}>
+      {/* Mobile Portrait Overlay */}
+      <div className="adminPortraitOverlay">
+        <div className="adminPortraitOverlayContent">
+          <div className="adminPortraitOverlayIcon">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+              <path d="M3 3v5h5" />
+            </svg>
+          </div>
+          <h2>Vui lòng xoay ngang màn hình</h2>
+          <p>Để có trải nghiệm quản trị tốt nhất, hãy sử dụng thiết bị ở chế độ màn hình ngang.</p>
+        </div>
+      </div>
+
       {/* Sidebar Overlay for Mobile */}
       <div className="adminSidebarOverlay" onClick={() => setIsSidebarCollapsed(true)}></div>
 

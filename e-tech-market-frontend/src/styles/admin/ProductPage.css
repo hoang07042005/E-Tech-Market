@@ -291,22 +291,155 @@
     }
 
     .prodFiltersGrid {
-        grid-template-columns: 1fr 1fr
+        grid-template-columns: 1.5fr 1fr 1fr 1fr auto !important;
+        gap: 6px !important;
     }
 
     .prodFilterActions--inline {
-        grid-column: 1 / -1;
-        justify-content: flex-start
+        grid-column: auto !important;
+        justify-content: flex-end !important;
+        align-self: end !important;
+    }
+
+    .prodFilterField span {
+        font-size: 9px !important;
+    }
+
+    .prodFilterField input,
+    .prodFilterField select {
+        height: 24px !important;
+        font-size: 10px !important;
+        padding: 4px 6px !important;
+    }
+
+    .prodClearBtn {
+        height: 30px !important;
+        font-size: 10px !important;
+        padding: 0 10px !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
     }
 }
 
 @media (max-width:680px) {
     .prodStatsGrid {
-        grid-template-columns: 1fr
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+    }
+
+    .prodStatCard {
+        padding: 10px;
+    }
+
+    .prodStatIcon {
+        width: 28px;
+        height: 28px;
+        font-size: 14px;
+    }
+
+    .prodStatValue {
+        font-size: 20px !important;
+    }
+
+    .prodStatLabel {
+        font-size: 12px !important;
+    }
+
+
+    
+    .prodAddBtn, .pCancelBtn, .pSubmitBtn {
+        padding: 8px 12px !important;
+        font-size: 12px !important;
+        height: auto !important;
+    }
+    
+    .prodTable th, .prodTable td {
+        padding: 8px 10px !important;
+        font-size: 12px !important;
+    }
+    
+    .pName {
+        font-size: 12px !important;
+    }
+    
+    .pBrand, .pCat, .pDescMuted {
+        font-size: 11px !important;
+    }
+}
+
+@media (max-width: 992px) and (orientation: landscape) {
+    .prodStatsGrid {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 6px;
+    }
+
+    .prodStatCard {
+        padding: 8px;
+    }
+    
+    .prodStatValue {
+        font-size: 18px !important;
+    }
+    
+    .prodStatLabel {
+        font-size: 11px !important;
     }
 
     .prodFiltersGrid {
-        grid-template-columns: 1fr
+        grid-template-columns: repeat(4, 1fr) auto;
+        gap: 6px;
+        align-items: center;
+    }
+
+    .prodFilterField {
+        margin-bottom: 0;
+    }
+    
+    .prodFilterField span {
+        font-size: 10px !important;
+    }
+    
+    .prodFilterField input, .prodFilterField select {
+        height: 30px !important;
+        font-size: 11px !important;
+        padding: 4px 8px !important;
+    }
+
+    .prodFilterActions--inline {
+        margin-top: 0;
+    }
+
+    .prodAddBtn, .pCancelBtn, .pSubmitBtn {
+        padding: 10px 10px !important;
+        font-size: 11px !important;
+        height: auto !important;
+    }
+
+    .prodTable th, .prodTable td {
+        padding: 6px 8px !important;
+        font-size: 11px !important;
+    }
+    
+    .pName {
+        font-size: 11px !important;
+    }
+    
+    .pBrand, .pCat, .pDescMuted {
+        font-size: 10px !important;
+    }
+    
+    .prodHeader {
+        margin-bottom: 12px;
+        flex-direction: row;
+    }
+    
+    .prodTitle {
+        font-size: 18px !important;
+    }
+    
+    .prodSub {
+        font-size: 12px !important;
     }
 }
 
@@ -314,7 +447,9 @@
     background: #ffffff;
     border: 1px solid var(--admin-border);
     border-radius: 5px;
-    overflow: hidden;
+    overflow-x: auto;
+    overflow-y: hidden;
+
 }
 
 .prodPaginationBar {
@@ -542,7 +677,7 @@
 .pStatus {
     padding: 0;
     border-radius: 6px;
-    font-size: 10px;
+    font-size: 9px;
     font-weight: 600;
 }
 
@@ -1439,18 +1574,92 @@
 }
 
 @media (max-width:1000px) {
-    .pVariantCard__main {
-        flex-direction: column
+    .pStickyActions {
+        position: static !important;
+        margin-top: 20px;
+        padding: 0 !important;
+        background: transparent !important;
+        box-shadow: none !important;
     }
 
-    .pVariantCard__pricing {
-        width: 100%
+    .pFormSection {
+        padding: 12px !important;
+        margin-top: 8px !important;
+        overflow-x: auto; /* Allow horizontal scrolling for desktop-like layouts */
     }
-
-    .vDiscountFields {
-        grid-template-columns: repeat(2, 1fr)
+    
+    .pSectionTitle {
+        font-size: 14px !important;
+    }
+    
+    .pField label {
+        font-size: 12px !important;
+        margin-bottom: 4px !important;
+    }
+    
+    .pField input, .pField select, .pField textarea, .vField input, .vField select, .uInput {
+        font-size: 12px !important;
+        padding: 6px 10px !important;
+    }
+    
+    .pField input:not([type="checkbox"]):not([type="radio"]), 
+    .pField select, .vField input, .vField select, .uInput {
+        height: 32px !important;
+    }
+    
+    .pRemoveSpec, .pRemoveVariant {
+        align-self: center;
+    }
+    
+    .pFaqCard {
+        padding: 10px !important;
+        gap: 10px !important;
+    }
+    
+    .pFaqMeta {
+        width: 100%;
+        justify-content: space-between;
     }
 }
+@media (max-width: 992px) and (orientation: landscape) {
+    .pStickyActions {
+        position: static !important;
+        margin-top: 10px;
+        padding: 0 !important;
+        background: transparent !important;
+        box-shadow: none !important;
+    }
+    .pFormSection {
+        padding: 8px !important;
+        margin-top: 4px !important;
+        overflow-x: auto; /* Enable scrolling */
+    }
+    .pSectionTitle {
+        font-size: 12px !important;
+        margin-bottom: 4px !important;
+    }
+    .pField label {
+        font-size: 11px !important;
+        margin-bottom: 2px !important;
+    }
+    .pField input, .pField select, .pField textarea, .vField input, .vField select, .uInput {
+        font-size: 11px !important;
+        padding: 4px 6px !important;
+    }
+    .pField input:not([type="checkbox"]):not([type="radio"]), 
+    .pField select, .vField input, .vField select, .uInput {
+        height: 26px !important;
+    }
+    .vImgField {
+        width: 100px !important;
+        margin-bottom: 0 !important;
+    }
+    .pFaqCard {
+        padding: 6px !important;
+        gap: 6px !important;
+    }
+}
+
 
 /* --- Premium Product Variants Detail Styles --- */
 .pDetailPremium {
@@ -2014,4 +2223,101 @@
 .prodNameCell:hover .pName.hover-accent {
     color: var(--admin-accent);
     text-decoration: none;
+}
+
+/* --- MOBILE & RESPONSIVE UX REFINE --- */
+.prodHeaderActions {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+}
+
+.pDetailStatPrice {
+    font-size: 24px !important;
+    padding-top: 10px !important;
+}
+
+@media (max-width: 1100px) {
+    .pVariantsWrapper {
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+    }
+    .pVariantHeaderRow,
+    .pVariantRowGroup {
+        min-width: 750px !important;
+    }
+    .pSpecsGrid {
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+    }
+    .pSpecHeaderRow,
+    .pSpecRow {
+        min-width: 700px !important;
+    }
+    .pActions {
+        gap: 4px !important;
+    }
+    .pIconBtn {
+        width: 26px !important;
+        height: 26px !important;
+        border-radius: 4px !important;
+    }
+    .pIconBtn svg {
+        width: 14px !important;
+        height: 14px !important;
+    }
+}
+
+@media (max-width: 680px) {
+    .prodHeader {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 12px !important;
+        margin-bottom: 16px !important;
+    }
+    .prodHeaderActions {
+        width: 100% !important;
+        justify-content: flex-start !important;
+        gap: 8px !important;
+    }
+    .prodHeaderActions button {
+        flex: 1 !important;
+        justify-content: center !important;
+        text-align: center !important;
+        white-space: nowrap !important;
+    }
+    .pHeaderLeft {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 12px !important;
+        width: 100% !important;
+    }
+    .pDetailStatPrice {
+        font-size: 15px !important;
+        padding-top: 4px !important;
+    }
+    .pModalContent {
+        width: 95% !important;
+        max-height: 90vh !important;
+        display: flex !important;
+        flex-direction: column !important;
+    }
+    .pModalBody {
+        overflow-y: auto !important;
+        flex: 1 !important;
+    }
+    .pActions {
+        gap: 4px !important;
+    }
+    .pIconBtn {
+        width: 26px !important;
+        height: 26px !important;
+        border-radius: 4px !important;
+    }
+    .pIconBtn svg {
+        width: 14px !important;
+        height: 14px !important;
+    }
 }

@@ -31,11 +31,11 @@
   color: #64748b;
 }
 
-/* Nút bấm (Buttons) */
 .adminBtnPrimary {
   background-color: #ea580c; /* Cam thương hiệu */
   color: white;
-  padding: 10px 20px;
+  height: 42px; /* Fixed height for consistency */
+  padding: 0 20px;
   border-radius: 8px;
   font-weight: 600;
   font-size: 14px;
@@ -43,9 +43,11 @@
   border: none;
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 8px;
   box-shadow: 0 1px 2px rgba(234, 88, 12, 0.2);
   transition: all .2s ease;
+  box-sizing: border-box;
 }
 
 .adminBtnPrimary:hover {
@@ -235,6 +237,12 @@
   align-items: center;
   justify-content: center;
   padding: 0;
+}
+
+.adminBtnSecondary svg,
+.adminBtnDanger svg {
+  width: 16px;
+  height: 16px;
 }
 
 .adminBtnSecondary {
@@ -475,3 +483,287 @@
   flex-direction: column;
   gap: 4px;
 }
+
+/* ── Mobile Responsive Optimizations ───────────────────────────────────────── */
+@media (max-width: 680px) {
+  .adminPageContainer {
+    padding: 12px;
+  }
+
+  .adminPageHeader {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+
+  .adminPageTitle {
+    font-size: 16px !important;
+  }
+
+  .adminPageSubtitle {
+    display: none !important;
+  }
+
+  .adminBtnPrimary {
+    width: auto;
+    height: 32px;
+    padding: 0 10px;
+    font-size: 12px;
+    white-space: nowrap;
+  }
+
+  .adminTable th, 
+  .adminTable td {
+    padding: 8px 10px;
+    font-size: 11px;
+  }
+
+  .adminTableWrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .couponCodeBadge {
+    padding: 4px 12px;
+    font-size: 12px;
+    letter-spacing: 1px;
+  }
+
+  .couponDiscountVal {
+    font-size: 13px;
+  }
+
+  .couponTypeSub {
+    font-size: 11px;
+  }
+
+  .couponMinOrder {
+    font-size: 12px;
+  }
+
+  .couponTimeBlock .timeItem {
+    font-size: 11px;
+    gap: 2px;
+  }
+
+  .couponUsage {
+    font-size: 12px;
+  }
+
+  .adminStatusBadge {
+    padding: 3px 8px;
+    font-size: 11px;
+  }
+
+  .adminBtnSecondary, 
+  .adminBtnDanger {
+    width: 28px !important;
+    height: 28px !important;
+    border-radius: 4px !important;
+  }
+
+  .adminBtnSecondary svg, 
+  .adminBtnDanger svg {
+    width: 14px !important;
+    height: 14px !important;
+  }
+
+  /* Modal */
+  .adminModalContent {
+    width: 95%;
+    max-height: 92vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .adminModalBody {
+    padding: 16px;
+    overflow-y: auto;
+  }
+
+  .formRow {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .adminFormGroup {
+    margin-bottom: 12px;
+  }
+
+  .adminFormGroup input[type="text"], 
+  .adminFormGroup input[type="number"], 
+  .adminFormGroup input[type="datetime-local"], 
+  .adminFormGroup select {
+    padding: 8px 12px;
+    font-size: 13px;
+    height: 36px;
+  }
+
+  .adminFormCheckbox {
+    margin: 8px 0 16px;
+  }
+
+  .adminFormCheckbox label {
+    font-size: 12px;
+  }
+
+  .adminModalFooter {
+    margin-top: 8px;
+    padding-top: 12px;
+  }
+
+  .modalBtnCancel {
+    padding: 8px 16px;
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 992px) and (orientation: landscape) {
+  .adminPageContainer {
+    padding: 12px;
+  }
+
+  .adminPageHeader {
+    margin-bottom: 16px;
+    align-items: center;
+  }
+
+  .adminPageTitle {
+    font-size: 16px;
+  }
+
+  .adminPageSubtitle {
+    font-size: 11px;
+  }
+
+  .adminBtnPrimary {
+    height: 32px;
+    padding: 0 12px;
+    font-size: 12px;
+  }
+
+  .adminTable th, 
+  .adminTable td {
+    padding: 8px 12px;
+    font-size: 11px;
+  }
+
+  .adminTableWrap {
+    overflow-x: auto;
+  }
+
+  .couponCodeBadge {
+    padding: 4px 10px;
+    font-size: 11px;
+    letter-spacing: 1px;
+  }
+
+  .couponDiscountVal {
+    font-size: 12px;
+  }
+
+  .couponTypeSub {
+    font-size: 10px;
+  }
+
+  .couponMinOrder {
+    font-size: 11px;
+  }
+
+  .couponTimeBlock .timeItem {
+    font-size: 10px;
+    gap: 2px;
+  }
+
+  .couponUsage {
+    font-size: 11px;
+  }
+
+  .adminStatusBadge {
+    padding: 2px 6px;
+    font-size: 10px;
+  }
+
+  .adminBtnSecondary, 
+  .adminBtnDanger {
+    width: 26px !important;
+    height: 26px !important;
+    border-radius: 4px !important;
+  }
+
+  .adminBtnSecondary svg, 
+  .adminBtnDanger svg {
+    width: 12px !important;
+    height: 12px !important;
+  }
+
+  /* Modal */
+  .adminModalContent {
+    width: 95%;
+    max-width: 500px;
+    max-height: 98vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .adminModalHeader {
+    padding: 10px 16px;
+  }
+
+  .adminModalHeader h3 {
+    font-size: 15px;
+  }
+
+  .adminModalClose {
+    font-size: 20px;
+  }
+
+  .adminModalBody {
+    padding: 12px 16px;
+    overflow-y: auto;
+    max-height: calc(98vh - 44px);
+  }
+
+  .formRow {
+    flex-direction: row;
+    gap: 10px;
+  }
+
+  .adminFormGroup {
+    margin-bottom: 8px;
+  }
+
+  .adminFormGroup label {
+    font-size: 11px;
+    margin-bottom: 4px;
+  }
+
+  .adminFormGroup input[type="text"], 
+  .adminFormGroup input[type="number"], 
+  .adminFormGroup input[type="datetime-local"], 
+  .adminFormGroup select {
+    padding: 6px 10px;
+    font-size: 12px;
+    height: 30px;
+  }
+
+  .adminFormCheckbox {
+    margin: 6px 0 12px;
+  }
+
+  .adminFormCheckbox label {
+    font-size: 11px;
+  }
+
+  .adminModalFooter {
+    margin-top: 8px;
+    padding-top: 10px;
+  }
+
+  .modalBtnCancel {
+    padding: 6px 12px;
+    font-size: 12px;
+  }
+}

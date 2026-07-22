@@ -1208,3 +1208,488 @@ html.dark .admKpiBlock.filled {
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
   pointer-events: auto; /* Prevent clicks on image from closing */
 }
+
+/* --- Mobile Adjustments for Dashboard --- */
+@media (max-width: 990px) {
+  .adm-dash-style-45 {
+    min-width: unset !important;
+  }
+
+  /* Shrink chart heights to fit better on mobile screens */
+  .adm-dash-style-30 {
+    height: 180px !important;
+  }
+  
+  .adm-dash-style-65 {
+    height: 160px !important;
+  }
+
+  /* Shrink huge fonts */
+  .adm-dash-style-67 {
+    font-size: 18px !important;
+  }
+
+  .adm-dash-style-58,
+  .adm-dash-style-59,
+  .adm-dash-style-60 {
+    font-size: 12px !important;
+  }
+
+  /* Portrait mobile: stack everything */
+  @media (orientation: portrait) {
+    .adm-dash-style-32,
+    .adm-dash-style-64,
+    .adm-dash-style-69 {
+      grid-template-columns: 1fr !important;
+      gap: 16px !important;
+    }
+
+    .adm-dash-style-48,
+    .adm-dash-style-57 {
+      width: 100% !important;
+      grid-template-columns: 1fr 1fr 1fr !important;
+      gap: 8px !important;
+      text-align: left !important;
+    }
+
+    .adm-dash-style-60 {
+      text-align: left !important;
+    }
+
+    .adm-dash-style-47,
+    .adm-dash-style-55 {
+      grid-template-columns: 1fr !important;
+      gap: 8px !important;
+    }
+
+    .admAnalyticsHeader {
+      flex-direction: column;
+      gap: 12px;
+    }
+    
+    .admAnalyticsLegend {
+      justify-content: flex-start;
+    }
+  }
+
+  /* Landscape mobile: keep desktop-like columns but shrink scales */
+  @media (orientation: landscape) {
+    .admDashGrid3 {
+      grid-template-columns: 1.5fr 1fr !important;
+      gap: 10px !important;
+      margin-bottom: 10px !important;
+    }
+    .admDashGrid2 {
+      grid-template-columns: 1fr 1fr !important;
+      gap: 10px !important;
+      margin-bottom: 10px !important;
+    }
+    .admDashGrid2.admDashGrid2--triple {
+      grid-template-columns: 1.15fr 1fr 1fr !important;
+    }
+    .admDashGrid2b {
+      grid-template-columns: 1.3fr 1fr !important;
+      gap: 10px !important;
+      margin-top: 10px !important;
+    }
+    .admKpiGrid {
+      grid-template-columns: repeat(6, minmax(0, 1fr)) !important;
+      gap: 6px !important;
+    }
+    .admCard, .admCardTight {
+      padding: 12px !important;
+    }
+    .admKpiCard2 {
+      padding: 10px 12px 60px 12px !important;
+      min-height: 170px !important;
+      min-width: 0 !important;
+      overflow: hidden !important;
+    }
+    .admCardHead {
+      margin-bottom: 10px !important;
+    }
+    .admDashWrap {
+      gap: 10px !important;
+    }
+    .adm-dash-style-32 {
+      gap: 12px !important;
+      padding-top: 10px !important;
+      margin-top: 10px !important;
+    }
+    .adm-dash-style-47, .adm-dash-style-55 {
+      grid-template-columns: 70px 1fr !important;
+      gap: 10px !important;
+      width: 100% !important;
+    }
+    .adm-dash-style-48, .adm-dash-style-57 {
+      width: 100% !important;
+      gap: 4px !important;
+      grid-template-columns: 1fr 1.2fr 1fr !important;
+    }
+    .adm-dash-style-49, .adm-dash-style-51, .adm-dash-style-53 {
+      font-size: 9px !important;
+    }
+    .adm-dash-style-58, .adm-dash-style-59, .adm-dash-style-60 {
+      font-size: 10px !important;
+      text-align: left !important;
+    }
+    .adm-dash-style-56 {
+      font-size: 10px !important;
+    }
+    .adm-dash-style-35, .adm-dash-style-44 {
+      font-size: 9px !important;
+    }
+    .admRangeSelectWrap, .adm-dash-style-42, .admResolutionSelect {
+      padding: 4px 8px !important;
+      font-size: 10px !important;
+    }
+    .adm-dash-style-33 {
+      gap: 8px !important;
+    }
+    .adm-dash-style-34, .adm-dash-style-43 {
+      gap: 2px !important;
+    }
+    
+    /* Recent Orders Table scaling */
+    .admOrdersTable {
+      min-width: 600px !important;
+    }
+    .admOrdersTable thead th {
+      font-size: 8px !important;
+      padding: 6px 8px !important;
+    }
+    .admOrdersTable tbody td {
+      font-size: 11px !important;
+      padding: 6px 8px !important;
+    }
+    .admOrdersCodeCell {
+      width: auto !important;
+    }
+    .admOrdersCode {
+      font-size: 10px !important;
+      white-space: nowrap !important;
+      word-break: keep-all !important;
+    }
+    .admOrdersCustomerName {
+      font-size: 11px !important;
+      white-space: nowrap !important;
+    }
+    .admOrdersProduct {
+      font-size: 11px !important;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      max-width: 150px;
+    }
+    .admOrdersAmount, .admOrdersDate {
+      font-size: 11px !important;
+      white-space: nowrap !important;
+    }
+    .admOrdersAvatar, .admOrdersAvatarImg {
+      width: 20px !important;
+      height: 20px !important;
+      font-size: 9px !important;
+    }
+    .admOrdersCustomer {
+      gap: 6px !important;
+    }
+
+    /* Low Stock Table scaling */
+    .admTable {
+      min-width: 600px !important;
+    }
+    .admTable th {
+      font-size: 8px !important;
+      padding: 6px 4px !important;
+    }
+    .admTable td {
+      font-size: 10px !important;
+      padding: 6px 4px !important;
+    }
+    .admTable td:nth-child(2) {
+      max-width: 120px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .admTable td:nth-child(3), .admTable td:nth-child(4) {
+      max-width: 80px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .adm-dash-style-77 input {
+      width: 50px !important;
+      padding: 4px 6px !important;
+      font-size: 10px !important;
+    }
+    .adm-dash-style-78 {
+      padding: 4px 8px !important;
+      font-size: 10px !important;
+      height: 24px !important;
+      min-height: 24px !important;
+    }
+
+    /* Analytics Main Chart scaling */
+    .adm-dash-style-14 {
+      font-size: 13px !important;
+    }
+    .adm-dash-style-15 {
+      font-size: 10px !important;
+    }
+    .admAnalyticsLegend {
+      gap: 12px !important;
+      font-size: 9px !important;
+    }
+    .adm-dash-style-21, .adm-dash-style-24, .adm-dash-style-27 {
+      gap: 4px !important;
+    }
+    .admAnalyticsAxisRow {
+      margin-bottom: 6px !important;
+    }
+    .adm-dash-style-19, .admAnalyticsAxisRight {
+      font-size: 9px !important;
+    }
+    .adm-dash-style-30 {
+      height: 160px !important;
+    }
+
+    /* Recent Reviews scaling */
+    .admReviewRow2 {
+      padding: 6px 8px !important;
+    }
+    .admReviewUserName {
+      font-size: 11px !important;
+    }
+    .admReviewQuote {
+      font-size: 10px !important;
+      margin-top: 4px !important;
+    }
+    .admReviewTime2 {
+      font-size: 9px !important;
+      margin-top: 4px !important;
+    }
+    .admReviewAvatar, .admReviewAvatarImg {
+      width: 20px !important;
+      height: 20px !important;
+      font-size: 10px !important;
+    }
+    .admReviewStars2 {
+      font-size: 10px !important;
+    }
+    .admReviewMediaRow2 {
+      margin-top: 6px !important;
+      gap: 6px !important;
+    }
+    .admReviewMediaItem2 {
+      width: 42px !important;
+      height: 32px !important;
+    }
+    .admReviewMediaVideoBadge2 {
+      width: 14px !important;
+      height: 14px !important;
+      font-size: 8px !important;
+      left: 50% !important;
+      top: 50% !important;
+      bottom: auto !important;
+      transform: translate(-50%, -50%) !important;
+    }
+    .admReviewMediaMore2 {
+      font-size: 10px !important;
+      padding: 4px 6px !important;
+    }
+
+    /* Loyal Customers scaling */
+    .admLoyalRow {
+      padding: 6px 8px !important;
+      gap: 8px !important;
+    }
+    .admLoyalName, .admLoyalSpent {
+      font-size: 11px !important;
+    }
+    .admLoyalOrders {
+      font-size: 9px !important;
+    }
+    .admVipBadge {
+      font-size: 9px !important;
+      padding: 2px 4px !important;
+      margin-top: 2px !important;
+    }
+    .admLoyalAvatar, .admLoyalAvatarImg {
+      width: 24px !important;
+      height: 24px !important;
+      font-size: 11px !important;
+      min-width: 24px !important;
+    }
+    .admLoyalLeft {
+      gap: 8px !important;
+    }
+
+    /* Top Dashboard Header scaling */
+    .admDashTop {
+      flex-direction: row !important;
+      align-items: center !important;
+      justify-content: space-between !important;
+      margin-bottom: 10px !important;
+    }
+    .admDashTitle {
+      font-size: 16px !important;
+    }
+    .admDashSub {
+      font-size: 10px !important;
+      margin-top: 2px !important;
+    }
+    .admDashTopActions {
+      margin-top: 0 !important;
+    }
+    .admDashTopActions .admBtnPrimary {
+      padding: 6px 12px !important;
+      font-size: 11px !important;
+      height: 28px !important;
+    }
+
+    .adm-dash-style-64 {
+      grid-template-columns: 1fr 1.5fr !important;
+      gap: 12px !important;
+      padding: 6px 0 !important;
+    }
+    .adm-dash-style-69 {
+      gap: 4px !important;
+    }
+    .admPieCategoryItem {
+      padding: 4px 6px !important;
+      padding-left: 10px !important;
+    }
+    .admPieCategoryItem::before {
+      width: 3px !important;
+    }
+    .adm-dash-style-71, .adm-dash-style-73 {
+      font-size: 10px !important;
+    }
+    .adm-dash-style-67 {
+      font-size: 18px !important;
+    }
+    .adm-dash-style-68 {
+      font-size: 9px !important;
+    }
+    
+    /* Scale down KPI fonts extremely to fit 6 cols */
+    .admKpiLabel2, .admKpiValue2, .admKpiSub2 {
+      white-space: nowrap !important;
+      overflow: hidden !important;
+      text-overflow: ellipsis !important;
+      width: 100% !important;
+      display: block !important;
+    }
+    .admKpiValue2 {
+      font-size: 13px !important;
+      margin-top: 4px !important;
+    }
+    .admKpiLabel2 {
+      font-size: 9px !important;
+      margin-bottom: 2px !important;
+    }
+    .admKpiSub2 {
+      font-size: 8px !important;
+      margin-top: 2px !important;
+    }
+    .admKpiSparkWrap {
+      width: 90px !important;
+      height: 40px !important;
+      left: 50% !important;
+      transform: translateX(-50%) !important;
+      right: auto !important;
+      bottom: 12px !important;
+      display: flex !important;
+      justify-content: center !important;
+      align-items: center !important;
+    }
+    .admKpiSparkline, .admKpiBarChart {
+      max-width: 90px !important;
+      width: 100% !important;
+      height: 40px !important;
+    }
+    .admKpiDonut {
+      width: 48px !important;
+      height: 48px !important;
+      margin: 0 auto;
+    }
+    /* Donut chart layout */
+    .admKpiCard2--chartCenter .admKpiSparkWrap {
+      left: 50% !important;
+      transform: translateX(-50%) !important;
+      right: auto !important;
+      bottom: 12px !important;
+      width: 48px !important;
+      height: 48px !important;
+    }
+    /* Fix red squares (admKpiBlocks) */
+    .admKpiBlocks {
+      gap: 5px !important;
+    }
+    .admKpiBlock {
+      width: 12px !important;
+      height: 12px !important;
+    }
+    .adm-dash-style-74 {
+      font-size: 8px !important;
+      padding: 2px 4px !important;
+      min-width: 30px !important;
+    }
+
+    /* Shrink the triple grid content */
+    .admQuickRow {
+      padding: 6px 8px !important;
+      gap: 8px !important;
+      margin-bottom: 6px !important;
+    }
+    .admQuickRowIcon {
+      width: 20px !important;
+      height: 20px !important;
+    }
+    .admQuickRowIcon svg {
+      width: 12px !important; 
+      height: 12px !important;
+    }
+    .admQuickRowText {
+      font-size: 11px !important;
+    }
+    .admQuickRowChevron {
+      font-size: 14px !important;
+    }
+
+    .admActivityRow {
+      gap: 8px !important;
+      margin-bottom: 10px !important;
+    }
+    .admActivityRowText {
+      font-size: 11px !important;
+    }
+    .admActivityRowTime {
+      font-size: 9px !important;
+    }
+
+    .admTopRatedRow {
+      gap: 8px !important;
+      margin-bottom: 10px !important;
+    }
+    .admTopRatedThumb {
+      width: 32px !important;
+      height: 32px !important;
+    }
+    .admTopRatedName {
+      font-size: 11px !important;
+    }
+    .admTopRatedStars {
+      font-size: 10px !important;
+    }
+    .admTopRatedScore, .admTopRatedCount {
+      font-size: 9px !important;
+    }
+    .admCardTitle {
+      font-size: 13px !important;
+    }
+  }
+}
+

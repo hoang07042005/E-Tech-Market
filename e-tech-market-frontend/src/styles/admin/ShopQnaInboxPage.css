@@ -243,6 +243,27 @@
   white-space: pre-line;
 }
 
+/* ===== Current Answer ===== */
+.sqCurrentAnswerLabel {
+  font-size: 12px;
+  font-weight: 700;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 4px;
+}
+
+.sqCurrentAnswerText {
+  font-size: 14px;
+  line-height: 1.6;
+  color: #059669;
+  background: #f0fdf4;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border-left: 3px solid #10b981;
+  margin: 0 0 18px 0;
+}
+
 /* ===== Textarea ===== */
 .sqAnswerArea {
   width: 100%;
@@ -358,30 +379,250 @@
   }
 }
 
-/* ===== Responsive ===== */
-@media (max-width: 768px) {
+/* ===== Responsive Optimizations ===== */
+@media (max-width: 680px) {
   .sqInboxRoot {
-    padding: 16px;
+    padding: 12px;
   }
 
   .sqInboxHeader {
     flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+    margin-bottom: 16px;
   }
 
   .sqInboxTitle {
-    font-size: 22px;
+    font-size: 18px !important;
+    margin-bottom: 6px;
+  }
+
+  .sqInboxLead {
+    font-size: 12px !important;
+    line-height: 1.5;
+  }
+
+  .sqInboxFilter {
+    margin-top: 8px;
+    gap: 8px;
+  }
+
+  .sqFilterBtn {
+    height: 38px;
+    padding: 0 12px;
+    font-size: 13px;
+    border-radius: 8px;
+    flex: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    min-width: 100px;
+  }
+
+  .sqInboxRefresh {
+    width: 100%;
+    height: 38px;
+    font-size: 13px;
+    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
   }
 
   .sqCard {
-    padding: 18px;
+    padding: 14px;
+    border-radius: 12px;
   }
 
-  .sqSendBtn,
-  .sqInboxRefresh {
-    width: 100%;
+  .sqBadge {
+    font-size: 11px;
+    padding: 4px 8px;
+  }
+
+  .sqTime {
+    font-size: 11px;
+  }
+
+  .sqProductLine {
+    gap: 6px;
+    margin-bottom: 8px;
+  }
+
+  .sqProductLink {
+    font-size: 13px;
+  }
+
+  .sqInactive {
+    font-size: 11px;
+    padding: 2px 6px;
+  }
+
+  .sqAskerRow {
+    gap: 6px;
+  }
+
+  .sqAskerLabel {
+    font-size: 11px;
+  }
+
+  .sqAskerName {
+    font-size: 13px;
+  }
+
+  .sqQuestion {
+    font-size: 13px;
+    padding: 10px;
+    border-radius: 8px;
+    margin-bottom: 12px;
+  }
+
+  .sqCurrentAnswerLabel {
+    font-size: 11px;
+  }
+
+  .sqCurrentAnswerText {
+    font-size: 13px;
+    padding: 10px;
+    margin-bottom: 12px;
+  }
+
+  .sqAnswerArea {
+    border-radius: 8px;
+    padding: 10px;
+    font-size: 13px;
+    min-height: 80px;
   }
 
   .sqCardActions {
-    justify-content: stretch;
+    margin-top: 12px;
+    gap: 8px;
+  }
+
+  .sqDeleteBtn,
+  .sqSendBtn {
+    flex: 1;
+    height: 38px;
+    padding: 0;
+    font-size: 13px;
+    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+  }
+}
+
+@media (max-width: 992px) and (orientation: landscape) {
+  .sqInboxRoot {
+    padding: 12px;
+  }
+
+  .sqInboxHeader {
+    margin-bottom: 12px;
+    gap: 12px;
+    align-items: center;
+  }
+
+  .sqInboxTitle {
+    font-size: 16px !important;
+    margin-bottom: 4px;
+  }
+
+  .sqInboxLead {
+    font-size: 11px !important;
+  }
+
+  .sqInboxFilter {
+    margin-top: 6px;
+    gap: 6px;
+  }
+
+  .sqFilterBtn {
+    height: 30px;
+    padding: 0 10px;
+    font-size: 12px;
+    border-radius: 6px;
+  }
+
+  .sqInboxRefresh {
+    height: 30px;
+    padding: 0 12px;
+    font-size: 12px;
+    border-radius: 6px;
+  }
+
+  .sqCard {
+    padding: 12px;
+    border-radius: 10px;
+  }
+
+  .sqBadge {
+    font-size: 10px;
+    padding: 2px 6px;
+  }
+
+  .sqTime {
+    font-size: 10px;
+  }
+
+  .sqProductLine {
+    gap: 6px;
+    margin-bottom: 6px;
+  }
+
+  .sqProductLink {
+    font-size: 12px;
+  }
+
+  .sqInactive {
+    font-size: 10px;
+    padding: 1px 4px;
+  }
+
+  .sqAskerLabel {
+    font-size: 10px;
+  }
+
+  .sqAskerName {
+    font-size: 12px;
+  }
+
+  .sqQuestion {
+    font-size: 12px;
+    padding: 8px 10px;
+    border-radius: 6px;
+    margin-bottom: 10px;
+  }
+
+  .sqCurrentAnswerLabel {
+    font-size: 10px;
+  }
+
+  .sqCurrentAnswerText {
+    font-size: 12px;
+    padding: 8px 10px;
+    margin-bottom: 10px;
+  }
+
+  .sqAnswerArea {
+    border-radius: 6px;
+    padding: 8px;
+    font-size: 12px;
+    min-height: 60px;
+  }
+
+  .sqCardActions {
+    margin-top: 8px;
+    gap: 6px;
+  }
+
+  .sqDeleteBtn,
+  .sqSendBtn {
+    height: 30px;
+    font-size: 12px;
+    border-radius: 6px;
+    padding: 0 16px;
   }
 }

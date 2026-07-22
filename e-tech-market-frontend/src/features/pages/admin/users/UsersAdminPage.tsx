@@ -268,25 +268,19 @@ export default function UsersAdminPage() {
 
   return (
     <div className="prodAdminRoot">
-      {/* KHU VỰC TIÊU ĐỀ: Đã khử flex lệch, ép luôn căn trái và xếp theo 1 hàng ngang lý tưởng */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', marginBottom: '24px', textAlign: 'left' }}>
-        
-        {/* Dòng chữ tiêu đề */}
-        <div style={{ textAlign: 'left' }}>
-          <h2 style={{ margin: 0, fontSize: '26px', fontWeight: '700', color: '#0f172a', textAlign: 'left' }}>
+      <div className="usersAdminHeaderContainer">
+        <div className="usersAdminHeaderTitleWrap">
+          <h2 className="usersAdminPageTitle">
             Quản lý người dùng
           </h2>
-          <p style={{ margin: '6px 0 0 0', color: '#64748b', fontSize: '14px', textAlign: 'left' }}>
+          <p className="usersAdminPageSubtitle">
             Đổi vai trò (nhiều vai trò được phép), khóa / mở khóa đăng nhập hoặc xóa mềm — không áp dụng chính tài khoản bạn.
           </p>
         </div>
         
-        {/* Hàng công cụ: Gồm Tabs bên trái và các Nút + Search bên phải dồn lên cùng 1 hàng */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', gap: '16px' }}>
-          
-          {/* Nhóm Tabs chuyển mục đối tượng bên TRÁI */}
-          <div className="pDetailFilterBar usersadminpage-style-1" style={{ margin: 0, padding: 0 }}>
-            <div className="pVariantFilterTabs usersadminpage-style-2" style={{ padding: 0, margin: 0 }}>
+        <div className="usersAdminToolbarRow">
+          <div className="pDetailFilterBar usersadminpage-style-1">
+            <div className="pVariantFilterTabs usersadminpage-style-2">
               <button 
                 type="button"
                 className={`pVariantTabBtn ${activeTab === 'customer' ? 'active' : ''}`}
@@ -304,12 +298,10 @@ export default function UsersAdminPage() {
             </div>
           </div>
 
-          {/* Nhóm Hành động & Ô tìm kiếm nằm hàng ngang bên PHẢI */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <div className="usersAdminActionsWrapper">
             <button 
               type="button"
-              className="pAddBtn"
-              style={{ padding: '0 16px', fontSize: '13px', height: '42px', borderRadius: '8px', whiteSpace: 'nowrap', cursor: 'pointer' }}
+              className="pAddBtn usersAdminBtn"
               onClick={() => setRoleCatalogOpen(true)}
             >
               Cập nhật vai trò
@@ -317,8 +309,7 @@ export default function UsersAdminPage() {
             
             <button
               type="button"
-              className="pAddBtn"
-              style={{ backgroundColor: '#ef4444', padding: '0 16px', fontSize: '13px', height: '42px', borderRadius: '8px', whiteSpace: 'nowrap', cursor: 'pointer' }}
+              className="pAddBtn usersAdminBtn usersAdminBtnDanger"
               onClick={() => setViewMode('hard_delete')}
               title="Dữ liệu đã xóa (Hard delete)"
             >
@@ -328,14 +319,12 @@ export default function UsersAdminPage() {
             <input
               type="search"
               className="usersAdminSearch"
-              style={{ height: '42px', borderRadius: '8px', width: '320px', margin: 0 }}
               placeholder="Tìm theo tên, email, SĐT…"
               value={search}
               onChange={e => setSearch(e.target.value)}
               aria-label="Tìm người dùng"
             />
           </div>
-
         </div>
       </div>
 

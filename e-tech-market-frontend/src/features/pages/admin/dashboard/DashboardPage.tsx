@@ -1252,7 +1252,7 @@ export default function DashboardPage({
                 <AlertIcon />
               </div>
               <div className="admKpiBadge" aria-hidden>
-                {kpi ? `${kpi.low_stock_variants}` : "—"} sản phẩm
+                {kpi ? `${kpi.low_stock_variants}` : "—"}
               </div>
             </div>
             <div className="admKpiLabel2">Cảnh báo tồn kho</div>
@@ -1897,8 +1897,8 @@ export default function DashboardPage({
                           data={pieData}
                           cx="50%"
                           cy="50%"
-                          innerRadius={65}
-                          outerRadius={95}
+                          innerRadius="55%"
+                          outerRadius="85%"
                           paddingAngle={4}
                           dataKey="value"
                         >
