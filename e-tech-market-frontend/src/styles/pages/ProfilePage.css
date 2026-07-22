@@ -1296,6 +1296,14 @@
     gap: 20px
   }
 
+  .pfDashGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .pfTwoCol {
+    grid-template-columns: 1fr;
+  }
+
   .pfMiniCard,
   .pfPromoContent {
     padding: 20px
@@ -1364,11 +1372,18 @@
   .pfFileBtn { width: 100%; text-align: center }
   .pfModalActions { flex-direction: row; gap: 12px; margin-top: 12px; }
   .pfBtn { width: 50%; padding: 12px; }
+  .pfBtn { width: 50%; padding: 12px; }
 
-  /* Ensure profile two-column blocks collapse */
-  .pfTwoCol { grid-template-columns: 1fr }
-  .pfDashGrid { grid-template-columns: 1fr }
   .pfDashRight { position: static }
+
+  /* Ensure rows flow nicely on small screens */
+  .pfSimpleRow {
+    flex-direction: column;
+    gap: 4px;
+  }
+  .pfSimpleLabel {
+    min-width: auto;
+  }
 
   /* Tighten order thumb grids for small screens */
   .pfThumbLayout-two { grid-template-columns: repeat(2, 56px); grid-auto-rows: 56px }
@@ -1377,23 +1392,33 @@
 
   /* Override inline styles for member card on mobile */
   .pfCard[aria-label="Thẻ thành viên"] {
-    padding: 18px !important;
+    padding: 20px !important;
     aspect-ratio: auto !important;
-    min-height: 200px !important;
+    min-height: 180px !important;
   }
   .pfCard[aria-label="Thẻ thành viên"] h2 {
-    font-size: 17px !important;
+    font-size: 16px !important;
   }
   .pfCard[aria-label="Thẻ thành viên"] h1.metallic-text {
-    font-size: 22px !important;
+    font-size: 20px !important;
   }
   .pfCard[aria-label="Thẻ thành viên"] .metallic-text {
-    font-size: 20px !important;
+    font-size: 18px !important;
+  }
+  .pfCard[aria-label="Thẻ thành viên"] span {
+    font-size: 12px !important;
   }
   /* Points block */
   .pfCard[aria-label="Thẻ thành viên"] > div > div > div:nth-child(1) > div:nth-child(2) {
     padding: 6px 12px !important;
   }
+  .pfMemberProgressInfo span {
+    font-size: 12px !important;
+  }
+  .pfMemberProgressLabel, .pfMemberProgressValue {
+    font-size: 12px !important;
+  }
+
 }
 
 /* Recent orders responsive fixes */

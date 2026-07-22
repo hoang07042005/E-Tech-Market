@@ -682,15 +682,18 @@ export default function CheckoutPage() {
               </div>
 
               <div className="coSuccessCodeRow">
-                <div className="coSuccessCodeLabel">Mã đơn hàng của bạn:</div>
-                <div className="coSuccessCode">{orderCode}</div>
-                <button
-                  type="button"
-                  className="coCopyBtn"
-                  onClick={() => void navigator.clipboard?.writeText(orderCode)}
-                >
-                  Sao chép
-                </button>
+                <div className="coSuccessCodeLabel">Mã đơn hàng:</div>
+                <div className="coSuccessCodeBox">
+                  <div className="coSuccessCode">{orderCode}</div>
+                  <button
+                    type="button"
+                    className="coCopyBtnIcon"
+                    onClick={() => void navigator.clipboard?.writeText(orderCode)}
+                    title="Sao chép"
+                  >
+                    <CopyIcon />
+                  </button>
+                </div>
               </div>
 
               <div className="coSuccessDesc">
@@ -699,14 +702,14 @@ export default function CheckoutPage() {
               </div>
 
               <div className="coSuccessActions">
-                <button type="button" className="coPrimaryBtn" onClick={() => navigate('/products')}>
-                  Tiếp tục mua sắm
-                </button>
-                <Link className="coGhostBtn" to="/">
-                  Về trang chủ
+                <Link className="coGhostBtn coIconBtn" to="/" title="Về trang chủ">
+                  <HomeIcon />
                 </Link>
-                <Link className="coGhostBtn" to="/profile/orders">
-                  Xem đơn hàng
+                <button type="button" className="coPrimaryBtn coIconBtn" onClick={() => navigate('/products')} title="Tiếp tục mua sắm">
+                  <ShoppingBagIcon />
+                </button>
+                <Link className="coGhostBtn coIconBtn" to="/profile/orders" title="Xem đơn hàng">
+                  <PackageIcon />
                 </Link>
               </div>
             </div>
@@ -1135,3 +1138,11 @@ export default function CheckoutPage() {
 
 
 function CheckIcon() {return (<svg width="40" height="40" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M20 6L9 17l-5-5"stroke="currentColor"strokeWidth="2.4"strokeLinecap="round"strokeLinejoin="round"/></svg>)}
+
+function CopyIcon() {return (<svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect width="14" height="14" x="8" y="8" rx="2" ry="2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>)}
+
+function HomeIcon() {return (<svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>)}
+
+function PackageIcon() {return (<svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="16.5" y1="9.4" x2="7.5" y2="4.21"/><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>)}
+
+function ShoppingBagIcon() {return (<svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" /><line x1="3" y1="6" x2="21" y2="6" /><path d="M16 10a4 4 0 0 1-8 0" /></svg>)}

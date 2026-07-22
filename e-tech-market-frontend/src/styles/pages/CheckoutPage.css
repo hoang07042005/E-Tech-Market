@@ -571,7 +571,6 @@
   align-items: center;
   justify-content: center;
   gap: 10px;
-  margin-bottom: 14px;
   text-align: center;
 }
 .coSuccessBadge {
@@ -603,7 +602,6 @@
   text-align: center;
 }
 .coSuccessCodeRow {
-  margin-top: 14px;
   border-radius: 14px;
   padding: 12px 12px;
   display: flex;
@@ -617,26 +615,33 @@
   font-weight: 600;
   text-align: center;
 }
+.coSuccessCodeBox {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(249, 115, 22, 0.1);
+  border: 1px solid rgba(249, 115, 22, 0.18);
+  padding: 6px 6px 6px 14px;
+  border-radius: 8px;
+}
 .coSuccessCode {
   font-weight: 1000;
   letter-spacing: 0.06em;
   color: #0f172a;
-  padding: 6px 10px;
-  border-radius: 5px;
-  background: rgba(249, 115, 22, 0.1);
-  border: 1px solid rgba(249, 115, 22, 0.18);
 }
-.coCopyBtn {
-  margin-left: 0;
-  border: 1px solid rgba(15, 23, 42, 0.1);
+.coCopyBtnIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   background: #fff;
+  border: 1px solid rgba(15, 23, 42, 0.1);
   color: #0f172a;
-  font-weight: 1000;
-  padding: 10px 12px;
-  border-radius: 5px;
+  padding: 8px;
+  border-radius: 6px;
   cursor: pointer;
+  transition: all 0.2s ease;
 }
-.coCopyBtn:hover {
+.coCopyBtnIcon:hover {
   border-color: rgba(249, 115, 22, 0.35);
   color: var(--et-primary-hover);
 }
@@ -679,6 +684,20 @@
 .coGhostBtn:hover {
   border-color: rgba(249, 115, 22, 0.45);
   color: var(--et-primary);
+}
+.coFlex1 {
+  flex: 1;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.coIconBtn {
+  padding: 12px;
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 @media (max-width: 980px) {
@@ -961,5 +980,68 @@
   }
   .coTitle {
     font-size: 1.8rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .coSuccessCard {
+    padding: 24px 0;
+  }
+  .coSuccessTitle {
+    font-size: 1.25rem;
+  }
+  .coSuccessKicker {
+    font-size: 11px;
+  }
+  .coSuccessDesc {
+    font-size: 12px;
+    line-height: 1.6;
+    margin: 0 0 24px;
+  }
+  .coSuccessCodeRow {
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 0;
+    gap: 8px;
+  }
+  .coSuccessCodeLabel {
+    font-size: 13px;
+    white-space: nowrap;
+  }
+  .coSuccessCodeBox {
+    padding: 4px 4px 4px 10px;
+    gap: 6px;
+  }
+  .coSuccessCode {
+    text-align: center;
+    font-size: 13px;
+    letter-spacing: 0.02em;
+  }
+  .coCopyBtnIcon {
+    padding: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .coCopyBtnIcon svg {
+    width: 16px;
+    height: 16px;
+  }
+  .coSuccessActions {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+  }
+  .coSuccessActions > * {
+    width: auto;
+    flex: 1 1 auto;
+    max-width: none;
+    text-align: center;
+    padding: 10px 12px;
+    font-size: 13px;
   }
 }
