@@ -1198,9 +1198,20 @@
 }
 
 @media (max-width:560px) {
+    .hfFooterTopGrid {
+        grid-template-columns: 1fr 1fr;
+        gap: 32px 16px;
+    }
+    #footer-gioi-thieu,
+    .hfFooterTopGrid > div:nth-child(4),
+    .hfFooterTopGrid > div:nth-child(5) {
+        grid-column: span 2;
+    }
     .hfFooterBottomRow {
         flex-direction: column;
-        align-items: flex-start
+        align-items: center;
+        text-align: center;
+        gap: 16px;
     }
 }
 

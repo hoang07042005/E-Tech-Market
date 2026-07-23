@@ -1549,40 +1549,48 @@
   .oudLeft, .oudRight {
     display: contents;
   }
-  .oudLeft > section:nth-child(1) { order: 1; } /* Trạng thái */
-  .oudRight > section:nth-child(1) { order: 2; } /* Địa chỉ */
-  .oudLeft > section:nth-child(2) { order: 3; } /* Sản phẩm */
-  .oudRight > section:nth-child(2) { order: 4; } /* Thanh toán */
-  .oudRight > section:nth-child(3) { order: 5; } /* Tổng kết */
-  .oudLeft > section:nth-child(3) { order: 6; } /* Lịch sử */
+  .oudLeft > section:nth-child(1) { order: 1; } /* 2. Sản phẩm */
+  .oudRight > section:nth-child(1) { order: 2; } /* 3. Địa chỉ */
+  .oudRight > section:nth-child(2) { order: 3; } /* 4. Thanh toán */
+  .oudRight > section:nth-child(3) { order: 4; } /* 5. Tổng kết */
+  .oudLeft > section:nth-child(2) { order: 5; } /* 6. Lịch sử */
 
   .oudSteps {
+    flex-direction: column-reverse;
     flex-wrap: nowrap;
-    gap: 2px;
-    padding: 16px 0 8px;
-    margin: 0 -12px;
+    gap: 16px;
+    padding: 16px 12px;
+    margin: 0;
   }
   .oudStep {
+    flex-direction: row;
+    align-items: flex-start;
     min-width: 0;
-    flex: 1 1 0;
+    flex: 0 0 auto;
+    width: 100%;
+    gap: 16px;
   }
   .oudStepLabel {
-    font-size: 9.5px;
-    text-align: center;
-    word-break: break-word;
-    line-height: 1.2;
+    font-size: 14px;
+    text-align: left;
+    word-break: normal;
+    line-height: 1.4;
   }
   .oudStepTime {
-    font-size: 8.5px;
-    letter-spacing: -0.2px;
-    text-align: center;
+    font-size: 13px;
+    letter-spacing: 0;
+    text-align: left;
     white-space: normal;
     word-break: normal;
+    margin-top: 4px;
   }
   .oudSteps::before {
-    left: 15px;
-    right: 15px;
-    top: 30px;
+    left: 23px;
+    right: auto;
+    top: 28px;
+    bottom: 28px;
+    width: 2px;
+    height: auto;
   }
   .oudStepDot {
     width: 24px;

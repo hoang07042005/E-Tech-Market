@@ -140,7 +140,7 @@
   padding: 12px 16px;
   border-radius: 12px;
   cursor: pointer;
-  min-width: 240px;
+  min-width: 150px;
 }
 
 .secPrimaryBtn:disabled {

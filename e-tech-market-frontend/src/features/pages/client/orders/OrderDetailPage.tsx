@@ -665,15 +665,10 @@ export default function OrderDetailPage() {
         </div>
       </div>
 
-      <div className={`oudBottomGrid ${hasAdminResponse ? 'twoCol' : ''}`}>
-        <section className={`oudCard ${hasAdminResponse ? '' : 'span2'}`}>
-          <div className="oudCardTitle">Yêu cầu hoàn trả</div>
-          {!order.return_request ? (
-            <div style={{ fontSize: 12, color: 'var(--et-text-muted)', fontWeight: 700 }}>
-              Chưa có yêu cầu hoàn trả cho đơn hàng này.
-            </div>
-          ) : (
-            <>
+      {order.return_request && (
+        <div className={`oudBottomGrid ${hasAdminResponse ? 'twoCol' : ''}`}>
+          <section className={`oudCard ${hasAdminResponse ? '' : 'span2'}`}>
+            <div className="oudCardTitle">Yêu cầu hoàn trả</div>
               <div style={{ marginTop: 6, fontSize: 12, fontWeight: 800, color: 'var(--et-text)' }}>
                 Trạng thái: {rrStatusLabel(order.return_request.status)}
               </div>
@@ -704,16 +699,7 @@ export default function OrderDetailPage() {
                   })}
                 </div>
               ) : null}
-            </>
-          )}
-          {!order.return_request && showRequestReturn ? (
-            <div style={{ marginTop: 12 }}>
-              <button type="button" className="oudBtn outline" disabled={actionBusy} onClick={() => setShowReturnForm(true)}>
-                Tạo yêu cầu hoàn trả
-              </button>
-            </div>
-          ) : null}
-        </section>
+          </section>
 
         {hasAdminResponse ? (
           <section className="oudCard">
@@ -778,6 +764,7 @@ export default function OrderDetailPage() {
           </section>
         ) : null}
       </div>
+      )}
 
       {showReturnForm ? (
         <div
