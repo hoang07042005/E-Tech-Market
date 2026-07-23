@@ -1,0 +1,286 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "E-Tech Market API",
+        "description": "API for E-Tech Market e-commerce platform",
+        "contact": {
+            "email": "support@etech.com"
+        },
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "http://localhost:8000/api/v1"
+        }
+    ],
+    "paths": {
+        "/products": {
+            "get": {
+                "tags": [
+                    "Products"
+                ],
+                "summary": "Get list of products",
+                "description": "Returns paginated list of products with filters",
+                "operationId": "getProducts",
+                "parameters": [
+                    {
+                        "name": "category_id",
+                        "in": "query",
+                        "description": "Filter by category ID",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "brand",
+                        "in": "query",
+                        "description": "Filter by brand",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "min_price",
+                        "in": "query",
+                        "description": "Minimum price filter",
+                        "schema": {
+                            "type": "number"
+                        }
+                    },
+                    {
+                        "name": "max_price",
+                        "in": "query",
+                        "description": "Maximum price filter",
+                        "schema": {
+                            "type": "number"
+                        }
+                    },
+                    {
+                        "name": "search",
+                        "in": "query",
+                        "description": "Search query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "sort",
+                        "in": "query",
+                        "description": "Sort field (price, created_at, name)",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "order",
+                        "in": "query",
+                        "description": "Sort order (asc, desc)",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "description": "Number of items to return",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Product"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    }
+                }
+            }
+        },
+        "/products/{id}": {
+            "get": {
+                "tags": [
+                    "Products"
+                ],
+                "summary": "Get product by ID",
+                "description": "Returns single product details",
+                "operationId": "getProduct",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Product ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Product"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Product not found"
+                    }
+                }
+            }
+        },
+        "/products/{id}/related": {
+            "get": {
+                "tags": [
+                    "Products"
+                ],
+                "summary": "Get related products",
+                "description": "Returns related and bought together products",
+                "operationId": "getRelatedProducts",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Product ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "Product": {
+                "title": "Product",
+                "description": "Product model",
+                "required": [
+                    "id",
+                    "name",
+                    "slug"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "name": {
+                        "type": "string",
+                        "example": "iPhone 15 Pro Max"
+                    },
+                    "slug": {
+                        "type": "string",
+                        "example": "iphone-15-pro-max"
+                    },
+                    "sku": {
+                        "type": "string",
+                        "example": "IP15PM-256-BLK"
+                    },
+                    "description": {
+                        "type": "string",
+                        "example": "Product description..."
+                    },
+                    "short_description": {
+                        "type": "string",
+                        "example": "Short description"
+                    },
+                    "price": {
+                        "type": "number",
+                        "format": "decimal",
+                        "example": 29990000
+                    },
+                    "compare_price": {
+                        "type": "number",
+                        "format": "decimal",
+                        "example": 32990000
+                    },
+                    "images": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "example": [
+                            "/images/product1.jpg"
+                        ]
+                    },
+                    "category_id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "brand": {
+                        "type": "string",
+                        "example": "Apple"
+                    },
+                    "is_active": {
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "is_featured": {
+                        "type": "boolean",
+                        "example": false
+                    },
+                    "is_new": {
+                        "type": "boolean",
+                        "example": false
+                    },
+                    "average_rating": {
+                        "type": "number",
+                        "example": 4.5
+                    },
+                    "review_count": {
+                        "type": "integer",
+                        "example": 100
+                    },
+                    "stock_quantity": {
+                        "type": "integer",
+                        "example": 50
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                },
+                "type": "object"
+            }
+        },
+        "securitySchemes": {
+            "sanctum": {
+                "type": "http",
+                "bearerFormat": "JWT",
+                "scheme": "bearer"
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Products",
+            "description": "Products"
+        }
+    ]
+}
