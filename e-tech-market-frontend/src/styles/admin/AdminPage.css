@@ -314,6 +314,12 @@
   gap: 30px;
 }
 
+.adminOmniSearchWrap {
+  width: 380px;
+  flex: none;
+  max-width: 100%;
+}
+
 .adminSearchBox {
   display: flex;
   align-items: center;
@@ -423,7 +429,8 @@
   text-align: left;
 }
 
-.adminQuickRow:hover {
+.adminQuickRow:hover,
+.adminQuickRowActive {
   background: rgba(15, 23, 42, 0.04);
 }
 
@@ -3258,7 +3265,7 @@ html.dark .admOrdersFiltersAdvanced {
 .admKpiBadge {
   font-size: 11px;
   font-weight: 600;
-  padding: 6px 10px;
+  padding: 4px 4px;
   border-radius: 999px;
   background: #f3f4f6;
   color: #16a34a;
@@ -3935,7 +3942,7 @@ html.dark .admOrdersFiltersAdvanced {
 
 .admBadge {
   display: inline-flex;
-  padding: 4px 8px;
+  padding: 4px 6px;
   border-radius: 999px;
   font-size: 11px;
   font-weight: 600;
@@ -4114,7 +4121,7 @@ html.dark .admOrdersFiltersAdvanced {
 .admOrdersStatus {
   display: inline-flex;
   align-items: center;
-  padding: 6px 10px;
+  padding: 6px 6px;
   border-radius: 999px;
   font-size: 11px;
   font-weight: 600;
@@ -6899,16 +6906,52 @@ html.dark
     justify-content: flex-end;
   }
   
-  .adminSearchBox {
-    width: auto;
-    flex: 1;
-    max-width: 240px;
-    min-width: 100px;
+  .adminSearchBox, .adminOmniSearchWrap {
+    display: block !important;
+    width: auto !important;
+    flex: 1 !important;
+    max-width: 240px !important;
+    min-width: 100px !important;
     height: 34px;
     padding: 0 10px;
   }
   
-  .adminSearchBox input {
+  .adminOmniSearchWrap .hfSearchDropdown {
+    width: 320px !important;
+    max-width: calc(100vw - 20px) !important;
+    right: -10px !important;
+    top: calc(100% + 4px) !important;
+    max-height: 70vh !important;
+    overflow-y: auto !important;
+  }
+  
+  .adminOmniSearchWrap .hfSearchItem {
+    padding: 6px 10px !important;
+    gap: 8px !important;
+  }
+  
+  .adminOmniSearchWrap .hfSearchItemName {
+    font-size: 11px !important;
+    -webkit-line-clamp: 2 !important;
+    line-clamp: 2 !important;
+  }
+  
+  .adminOmniSearchWrap .hfSearchItemPrice {
+    font-size: 10px !important;
+  }
+  
+  .adminOmniSearchWrap .hfSearchItemImg,
+  .adminOmniSearchWrap .hfSearchItemImgPlaceholder {
+    width: 40px !important;
+    height: 30px !important;
+  }
+  
+  .adminOmniSearchWrap .hfSearchItemIcon {
+    width: 16px !important;
+    height: 16px !important;
+  }
+  
+  .adminSearchBox input, .adminOmniSearchWrap input {
     font-size: 13px;
   }
   
@@ -6920,19 +6963,22 @@ html.dark
   
   .adminUserInfo {
     display: flex !important;
+    flex-direction: column;
     justify-content: center;
   }
   
   .adminUserName {
-    font-size: 12px;
+    font-size: 11.5px;
     white-space: nowrap;
-    max-width: 80px;
+    max-width: 90px;
     overflow: hidden;
     text-overflow: ellipsis;
   }
   
   .adminUserRole {
-    display: none; /* Hide role on mobile to save space */
+    font-size: 9.5px;
+    color: var(--admin-text-s);
+    text-transform: capitalize;
   }
 
   .adminNotificationBtn {

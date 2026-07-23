@@ -423,40 +423,74 @@
   }
 }
 
-@media (max-width: 600px) {
+@media (max-width: 768px) {
   .blogPage {
     padding-bottom: 60px;
   }
+  .blogMainGrid {
+    gap: 30px;
+  }
+  .blogContentArea, .blogSidebar {
+    min-width: 0;
+  }
   .blogHero {
-    height: 380px;
+    height: 240px;
+    border-radius: 12px;
+    margin-top: 15px;
+    margin-bottom: 25px;
+  }
+  .blogHeroContent {
+    padding: 15px;
   }
   .blogHeroTag {
-    padding: 4px 12px;
-    font-size: 11px;
-    margin-bottom: 12px;
+    padding: 4px 10px;
+    font-size: 10px;
+    margin-bottom: 8px;
   }
   .blogHeroTitle {
-    font-size: 20px;
-    margin-bottom: 12px;
+    font-size: 18px;
+    margin-bottom: 8px;
   }
   .blogHeroExcerpt {
-    display: none;
+    display: -webkit-box;
+    font-size: 12px;
+    line-height: 1.4;
+    -webkit-line-clamp: 2;
+    margin-bottom: 10px;
   }
   .blogHeroMeta {
+    font-size: 11px;
+    gap: 12px;
+  }
+  .blogSectionTitleRow {
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+  .blogSectionTitle {
+    font-size: 18px;
+  }
+  .blogFilterBtn {
     font-size: 12px;
-    gap: 15px;
+    padding: 6px 12px;
   }
   .blogPostsGrid {
     grid-template-columns: 1fr;
-    gap: 24px;
+    gap: 20px;
   }
   .blogCardThumbWrap {
-    height: 200px;
+    height: 180px;
   }
   .blogCardTitle {
-    font-size: 16px;
+    font-size: 15px;
   }
   .blogSidebarWidget {
-    padding: 24px 20px;
+    padding: 16px;
+  }
+  .blogTrendingThumb {
+    width: 70px;
+    height: 50px;
+  }
+  .blogTrendingTitle {
+    font-size: 13px;
   }
 }

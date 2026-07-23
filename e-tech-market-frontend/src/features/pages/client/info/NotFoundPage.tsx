@@ -58,7 +58,7 @@ export default function NotFoundPage() {
           Rất tiếc, liên kết này có thể đã lỗi thời, trang đã bị đổi tên hoặc không tồn tại trên hệ thống của chúng tôi.
         </p>
 
-        <div style={{ display: 'flex', gap: '16px' }}>
+        <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', justifyContent: 'center' }}>
           <Link
             to="/"
             style={{

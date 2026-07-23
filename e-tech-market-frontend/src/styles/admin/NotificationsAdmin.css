@@ -32,15 +32,56 @@
   color: #64748b;
 }
 
-/* Badge số thông báo chưa đọc */
-.notifUnreadBadge {
-  background-color: #ffedd5;
-  color: #ea580c;
-  padding: 6px 14px;
-  border-radius: 99px;
-  font-size: 13px;
+/* Tabs phân loại */
+.notifTabsWrapper {
+  margin-bottom: 24px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.notifTabs {
+  display: flex;
+  gap: 32px;
+  max-width: 850px;
+  margin: 0 auto;
+}
+
+.notifTabBtn {
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  padding: 0 4px 12px 4px;
+  font-size: 15px;
   font-weight: 600;
-  border: 1px solid #fed7aa;
+  color: #64748b;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s;
+  margin-bottom: -1px;
+}
+
+.notifTabBtn:hover {
+  color: #0f172a;
+}
+
+.notifTabBtn.active {
+  color: #ea580c;
+  border-bottom-color: #ea580c;
+}
+
+.tabBadge {
+  background-color: #f1f5f9;
+  color: #64748b;
+  padding: 2px 8px;
+  border-radius: 99px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.tabBadge.unread {
+  background-color: #ea580c;
+  color: #ffffff;
 }
 
 /* Khung bọc luồng thông báo */
@@ -122,8 +163,19 @@
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  gap: 12px;
   margin-bottom: 4px;
+}
+
+.notifMetaLeft {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.notifMetaRight {
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
 .notifTitleText {
@@ -158,21 +210,80 @@
   color: #94a3b8;
 }
 
-/* Thân nội dung chữ thông báo */
-.notifBodyText {
-  margin: 0 0 8px 0;
-  font-size: 13.5px;
-  color: #475569;
-  line-height: 1.5;
+.notifChevron {
+  color: #94a3b8;
 }
 
-.notifItemRow.isRead .notifBodyText {
+.notifItemRow.isUnread .notifChevron {
+  color: #ea580c;
+}
+
+/* Thân nội dung mở rộng */
+.notifBodyExpanded {
+  margin-top: 12px;
+  padding-top: 14px;
+  border-top: 1px dashed #e2e8f0;
+  animation: notifExpand .25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes notifExpand {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.notifStandardText p {
+  margin: 0 0 8px 0;
+  font-size: 14px;
+  line-height: 1.6;
+  color: #475569;
+}
+.notifStandardText p:last-child {
+  margin-bottom: 0;
+}
+
+/* Kiểu dáng cho dạng Contact (Liên hệ) */
+.notifContactCard {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 16px;
+}
+
+.notifContactRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+  font-size: 14px;
+  color: #334155;
+}
+
+.notifContactRow svg {
   color: #64748b;
+  flex-shrink: 0;
+}
+
+.notifContactRow strong {
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.notifContactMessage {
+  margin-top: 14px;
+  padding: 14px;
+  background: #ffffff;
+  border-radius: 6px;
+  border: 1px solid #e2e8f0;
+  font-size: 14px;
+  line-height: 1.65;
+  color: #475569;
+  font-style: italic;
+  position: relative;
 }
 
 /* Thời gian */
 .notifTimeText {
-  font-size: 12px;
+  font-size: 12.5px;
   color: #94a3b8;
   font-weight: 500;
   display: inline-flex;
@@ -281,22 +392,34 @@
     flex-direction: column;
     align-items: flex-start;
     gap: 12px;
-    margin-bottom: 20px;
+    margin-bottom: 16px;
   }
 
   .notifPageTitle {
-    font-size: 1.3rem !important;
+    font-size: 1.15rem !important;
     margin-bottom: 4px;
   }
 
   .notifPageSubtitle {
-    font-size: 12px !important;
+    font-size: 11px !important;
   }
 
-  .notifUnreadBadge {
-    align-self: flex-start;
-    padding: 4px 10px;
-    font-size: 12px;
+  .notifTabsWrapper {
+    margin-bottom: 16px;
+  }
+
+  .notifTabs {
+    gap: 24px;
+  }
+
+  .notifTabBtn {
+    font-size: 13.5px !important;
+    padding-bottom: 8px;
+  }
+
+  .tabBadge {
+    font-size: 10px;
+    padding: 2px 6px;
   }
 
   .notifItemRow {
@@ -313,26 +436,38 @@
   }
 
   .notifMetaTop {
-    gap: 8px;
+    align-items: center;
   }
 
   .notifTitleText {
-    font-size: 13.5px !important;
+    font-size: 12.5px !important;
     line-height: 1.3;
   }
 
   .notifStatusTag {
-    font-size: 10px;
+    font-size: 9px;
     padding: 1px 6px;
   }
 
-  .notifBodyText {
-    font-size: 12.5px !important;
-    margin-bottom: 6px;
+  .notifTimeText {
+    font-size: 10.5px !important;
   }
 
-  .notifTimeText {
-    font-size: 11px !important;
+  .notifContactCard {
+    padding: 10px;
+  }
+
+  .notifContactRow {
+    font-size: 12.5px;
+  }
+
+  .notifContactMessage {
+    padding: 10px;
+    font-size: 12px;
+  }
+
+  .notifStandardText p {
+    font-size: 12px;
   }
 
   .notifPagination {
@@ -342,12 +477,12 @@
 
   .notifPagerBtn {
     padding: 6px 12px;
-    font-size: 13px;
+    font-size: 12.5px;
     gap: 4px;
   }
 
   .notifPagerInfo {
-    font-size: 12px;
+    font-size: 11.5px;
   }
 
   .notifEmptyState,
@@ -366,7 +501,29 @@
   }
 
   .notifPageTitle {
-    font-size: 1.4rem !important;
+    font-size: 1.15rem !important;
+  }
+
+  .notifPageSubtitle {
+    font-size: 11px !important;
+  }
+
+  .notifTabsWrapper {
+    margin-bottom: 16px;
+  }
+
+  .notifTabs {
+    gap: 24px;
+  }
+
+  .notifTabBtn {
+    font-size: 13.5px !important;
+    padding-bottom: 8px;
+  }
+
+  .tabBadge {
+    font-size: 10px;
+    padding: 2px 6px;
   }
 
   .notifItemRow {
@@ -381,11 +538,23 @@
   }
 
   .notifTitleText {
-    font-size: 13.5px !important;
+    font-size: 12.5px !important;
   }
 
-  .notifBodyText {
-    font-size: 12.5px !important;
+  .notifTimeText {
+    font-size: 10.5px !important;
+  }
+
+  .notifContactRow {
+    font-size: 12.5px;
+  }
+
+  .notifContactMessage {
+    font-size: 12px;
+  }
+
+  .notifStandardText p {
+    font-size: 12px;
   }
 
   .notifPagination {
@@ -394,6 +563,6 @@
 
   .notifPagerBtn {
     padding: 6px 14px;
-    font-size: 13px;
+    font-size: 12.5px;
   }
 }

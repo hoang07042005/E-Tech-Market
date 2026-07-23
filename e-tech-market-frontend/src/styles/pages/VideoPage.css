@@ -895,3 +895,54 @@
 .dark .vdpRecProduct {
   color: #94a3b8;
 }
+
+/* Mobile Responsiveness fixes */
+@media (max-width: 768px) {
+  .clientVideoPage {
+    padding: 20px 0 40px;
+  }
+  .cvTitle {
+    font-size: 24px;
+  }
+  .cvFilterChips {
+    flex-wrap: wrap;
+    overflow-x: auto;
+    padding-bottom: 4px;
+  }
+  .cvChip {
+    font-size: 13px;
+    padding: 6px 14px;
+    white-space: nowrap;
+  }
+  .vdpTitle {
+    font-size: 20px;
+  }
+  .cvGrid {
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 12px;
+  }
+  .cvThumbnailWrap {
+    height: auto;
+  }
+  .cvCardBody {
+    padding: 12px;
+  }
+  .cvCardTitle {
+    font-size: 14px;
+  }
+  .vdpMain, .vdpSidebar {
+    min-width: 0;
+  }
+  .vdpDescriptionText, .vdpDescription p {
+    overflow-wrap: break-word;
+    word-break: break-word;
+  }
+  .vdpLayout {
+    width: 100%;
+    max-width: 100vw;
+  }
+  .cvContainer {
+    box-sizing: border-box;
+    overflow: hidden;
+  }
+}

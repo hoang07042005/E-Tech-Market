@@ -114,7 +114,7 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
 
 function PageLoader() {
   return (
-    <div className="et-page-loader" style={{ minHeight: '50vh', background: 'transparent' }}>
+    <div className="et-page-loader" style={{ minHeight: '50vh', background: 'transparent', position: 'relative' }}>
       <div className="et-loader-spinner"></div>
       <div className="et-loader-text">Đang tải trang...</div>
     </div>

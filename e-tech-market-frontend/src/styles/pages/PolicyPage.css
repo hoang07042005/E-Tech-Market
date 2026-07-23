@@ -135,9 +135,15 @@
   font-size: 15px;
   text-decoration: none;
 }
-@media (max-width: 700px) {
+@media (max-width: 768px) {
+  .policyPage {
+    padding: 16px;
+  }
   .policyCard {
-    padding: 18px 4vw 18px 4vw;
+    padding: 20px 16px;
+    min-width: 0;
+    overflow-wrap: break-word;
+    word-break: break-word;
   }
   .policyPaymentGrid, .policyContactGrid {
     flex-direction: column;

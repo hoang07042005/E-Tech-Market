@@ -175,8 +175,8 @@ export default function VideoDetailPage() {
 
       <div className="clientVideoPage">
         <div className="cvContainer">
-          <nav className="cvBreadcrumb">
-            <Link to="/">Trang chủ</Link> / <Link to="/videos">Videos</Link> / <span>{video.title}  </span>
+          <nav className="cvBreadcrumb" style={{ whiteSpace: 'normal', wordBreak: 'break-word', display: 'block' }}>
+            <Link to="/">Trang chủ</Link> / <Link to="/videos">Videos</Link> / <span>{video.title}</span>
           </nav>
 
           <div className="vdpLayout">
@@ -239,7 +239,7 @@ export default function VideoDetailPage() {
                           alt={p.name}
                           style={{ width: '64px', height: '64px', objectFit: 'contain', borderRadius: '4px', backgroundColor: '#f8fafc' }}
                         />
-                        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '4px', minWidth: 0 }}>
                           <h4 style={{ margin: 0, fontSize: '14px', fontWeight: 600, color: '#1e293b', lineHeight: '1.4', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
                             {p.name}
                           </h4>
@@ -282,7 +282,7 @@ export default function VideoDetailPage() {
                       alt={video.product.name}
                       style={{ width: '64px', height: '64px', objectFit: 'contain', borderRadius: '4px', backgroundColor: '#f8fafc' }}
                     />
-                    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '4px', minWidth: 0 }}>
                       <h4 style={{ margin: 0, fontSize: '14px', fontWeight: 600, color: '#1e293b', lineHeight: '1.4', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
                         {video.product.name}
                       </h4>

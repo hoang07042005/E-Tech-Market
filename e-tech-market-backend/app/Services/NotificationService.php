@@ -10,7 +10,7 @@ class NotificationService
     /**
      * Lấy danh sách thông báo của user
      */
-    public function getUserNotifications(User $user, int $perPage = 20, bool $unreadOnly = false)
+    public function getUserNotifications(User $user, int $perPage = 20, string $status = 'all')
     {
         if ($perPage < 5) {
             $perPage = 5;
@@ -21,8 +21,10 @@ class NotificationService
 
         $q = Notification::query()->where('user_id', $user->id);
         
-        if ($unreadOnly) {
+        if ($status === 'unread') {
             $q->whereNull('read_at');
+        } elseif ($status === 'read') {
+            $q->whereNotNull('read_at');
         }
 
         $rows = $q->orderByDesc('created_at')->paginate($perPage);
@@ -30,6 +32,11 @@ class NotificationService
         $unread = (int) Notification::query()
             ->where('user_id', $user->id)
             ->whereNull('read_at')
+            ->count();
+
+        $readCount = (int) Notification::query()
+            ->where('user_id', $user->id)
+            ->whereNotNull('read_at')
             ->count();
 
         return [
@@ -41,6 +48,7 @@ class NotificationService
                 'last_page' => $rows->lastPage(),
             ],
             'unread' => $unread,
+            'read_count' => $readCount,
         ];
     }
 

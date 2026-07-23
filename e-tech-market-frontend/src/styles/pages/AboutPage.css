@@ -282,3 +282,69 @@
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
+
+@media (max-width: 768px) {
+  .abInner {
+    padding: 16px 16px 40px;
+  }
+  .abHero {
+    min-height: 220px;
+  }
+  .abHeroContent {
+    padding: 20px;
+  }
+  .abHeroTitle {
+    font-size: 26px;
+    margin-top: 24px;
+  }
+  .abHeroLead {
+    font-size: 13px;
+    margin-bottom: 20px;
+  }
+  .abHeroActions {
+    flex-direction: column;
+    width: 100%;
+  }
+  .abHeroActions button {
+    width: 100%;
+    padding: 12px;
+  }
+  .abSectionTitle {
+    font-size: 20px;
+  }
+  .abProse {
+    font-size: 14px;
+  }
+  .abValuesWrap {
+    padding: 16px;
+  }
+  .abValueCard {
+    padding: 16px;
+  }
+  .abStatsInner {
+    gap: 20px;
+    padding: 24px 16px;
+  }
+  .abStatNum {
+    font-size: 24px;
+  }
+  .abStatLabel {
+    font-size: 10px;
+  }
+  .abCta {
+    padding: 20px 16px;
+  }
+  .abCtaTitle {
+    font-size: 20px;
+  }
+  .abCtaSub {
+    font-size: 13px;
+  }
+  .abCtaActions {
+    flex-direction: column;
+  }
+  .abCtaActions button {
+    width: 100%;
+    padding: 12px;
+  }
+}

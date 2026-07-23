@@ -605,10 +605,18 @@
 }
 
 @media (max-width:700px) {
-  .odCardWithThumbs {
+  .odCard-multi {
     /* switch to stacked card on small screens */
     flex-direction: column;
     align-items: stretch;
+  }
+  .odCard-single {
+    flex-direction: row;
+    align-items: flex-start;
+  }
+  .odCard-single .odCardBody {
+    flex: 1;
+    min-width: 0;
   }
   .odThumbCell { border-radius: 6px }
 
@@ -641,15 +649,21 @@
     width: auto;
   }
   /* Thumbnails: make a small horizontal strip */
-  .odCardThumbs {
+  .odCard-multi .odCardThumbs {
     display: flex;
     gap: 8px;
     padding: 6px 0;
     justify-content: flex-start;
   }
-  .odCardThumbs .pfOrderThumbCell, .odCardThumbs .odThumbCell {
+  .odCard-single .odCardThumbs {
     width: 64px;
-    height: 64px;
+    flex: 0 0 64px;
+    display: block;
+    padding: 0;
+  }
+  .odCardThumbs .pfOrderThumbCell, .odCardThumbs .odThumbCell {
+    width: 64px !important;
+    height: 64px !important;
     flex: 0 0 64px;
   }
 
@@ -1373,7 +1387,9 @@
   font-weight: 600;
   font-size: 13px;
   color: #0f172a;
-  white-space: nowrap;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
   max-width: 100%;
@@ -1400,7 +1416,7 @@
   min-width: 0;
 }
 
-.oudAddrInfo {
+.oudAddrInfo {  
   min-width: 0;
 }
 
@@ -1530,14 +1546,78 @@
   .oudGrid {
     grid-template-columns: 1fr;
   }
+  .oudLeft, .oudRight {
+    display: contents;
+  }
+  .oudLeft > section:nth-child(1) { order: 1; } /* Trạng thái */
+  .oudRight > section:nth-child(1) { order: 2; } /* Địa chỉ */
+  .oudLeft > section:nth-child(2) { order: 3; } /* Sản phẩm */
+  .oudRight > section:nth-child(2) { order: 4; } /* Thanh toán */
+  .oudRight > section:nth-child(3) { order: 5; } /* Tổng kết */
+  .oudLeft > section:nth-child(3) { order: 6; } /* Lịch sử */
 
   .oudSteps {
-    flex-wrap: wrap;
-    gap: 10px;
+    flex-wrap: nowrap;
+    gap: 2px;
+    padding: 16px 0 8px;
+    margin: 0 -12px;
+  }
+  .oudStep {
+    min-width: 0;
+    flex: 1 1 0;
+  }
+  .oudStepLabel {
+    font-size: 9.5px;
+    text-align: center;
+    word-break: break-word;
+    line-height: 1.2;
+  }
+  .oudStepTime {
+    font-size: 8.5px;
+    letter-spacing: -0.2px;
+    text-align: center;
+    white-space: normal;
+    word-break: normal;
+  }
+  .oudSteps::before {
+    left: 15px;
+    right: 15px;
+    top: 30px;
+  }
+  .oudStepDot {
+    width: 24px;
+    height: 24px;
+    font-size: 11px;
   }
 
   .oudSteps.oudSteps--has-return {
     gap: 0;
+  }
+
+  .oudItem {
+    display: grid;
+    grid-template-columns: 46px 1fr;
+    gap: 4px 10px;
+    align-items: flex-start;
+  }
+  .oudItemImg {
+    grid-column: 1;
+    grid-row: 1;
+  }
+  .oudItemInfo {
+    grid-column: 2;
+    grid-row: 1;
+  }
+  .oudItemPrice {
+    grid-column: 2;
+    grid-row: 2;
+    margin-left: 0;
+    text-align: left;
+    font-size: 14px;
+    margin-top: 4px;
+  }
+  .oudItemName {
+    -webkit-line-clamp: 3; /* Cho phép hiển thị thêm dòng tên SP nếu cần */
   }
 
   .oudPage {

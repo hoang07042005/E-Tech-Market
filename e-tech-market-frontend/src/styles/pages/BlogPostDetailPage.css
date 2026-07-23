@@ -400,30 +400,33 @@
 }
 @media (max-width: 1000px) {
   .postPage {
-    padding: 60px 0 60px;
+    padding: 15px 0 60px;
   }
 }
 
 @media (max-width: 768px) {
+  .postMainContent, .postSidebar {
+    min-width: 0;
+  }
   .postTitle {
-    font-size: 28px;
+    font-size: 24px;
   }
   .postMeta {
     flex-wrap: wrap;
-    gap: 12px 20px;
-    margin-bottom: 30px;
+    gap: 10px 16px;
+    margin-bottom: 24px;
   }
   .postFeaturedImage {
-    border-radius: 16px;
-    margin-bottom: 30px;
+    border-radius: 12px;
+    margin-bottom: 24px;
   }
   .prosConsBox {
     grid-template-columns: 1fr;
-    gap: 24px;
-    padding: 24px;
+    gap: 20px;
+    padding: 16px;
   }
   .postContent {
-    font-size: 16px;
+    font-size: 15px;
   }
   .postContent h2 {
     font-size: 20px;
@@ -442,17 +445,17 @@
     gap: 20px;
   }
   .commentsSection {
-    margin-top: 60px;
+    margin-top: 40px;
   }
   .commentItem {
-    gap: 12px;
+    gap: 10px;
   }
   .commentAvatar {
-    width: 40px;
-    height: 40px;
+    width: 36px;
+    height: 36px;
   }
   .commentBody {
-    padding: 16px;
+    padding: 12px;
   }
   .commentHead {
     flex-direction: column;
@@ -462,14 +465,13 @@
 
 @media (max-width: 480px) {
   .postTitle {
-    font-size: 22px;
+    font-size: 20px;
   }
   .postBreadcrumb {
     font-size: 12px;
-    white-space: nowrap;
-    overflow-x: auto;
+    white-space: normal;
+    word-break: break-word;
     padding-bottom: 5px;
-    scrollbar-width: none;
   }
   .postBreadcrumb::-webkit-scrollbar {
     display: none;

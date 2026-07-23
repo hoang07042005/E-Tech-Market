@@ -959,9 +959,22 @@
     .pOneTabSide {
         position: static
     }
+}
 
+@media (max-width: 768px) {
+    .pFormHeader {
+        margin-bottom: 20px;
+    }
+    .pFormTitle {
+        font-size: 18px;
+    }
+    .pBackBtn {
+        padding: 6px 12px;
+        font-size: 12px;
+    }
     .pGeneralGrid {
-        grid-template-columns: 1fr
+        grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+        gap: 12px;
     }
 }
 
@@ -1864,8 +1877,8 @@
 
 @media (max-width:640px) {
     .pVarCardHeader {
-        flex-direction: column;
-        gap: 16px
+        flex-direction: row;
+        gap: 12px;
     }
 }
 
@@ -2319,5 +2332,133 @@
     .pIconBtn svg {
         width: 14px !important;
         height: 14px !important;
+    }
+}
+
+@media (max-width: 768px) {
+    .prodTable th, .prodTable td {
+        padding: 10px 12px;
+    }
+    .prodTable th {
+        font-size: 10px;
+    }
+    .prodThumb {
+        width: 36px;
+        height: 36px;
+    }
+    .pName {
+        font-size: 13px;
+    }
+    .pBrand, .pCat, .pDescCell {
+        font-size: 11.5px;
+    }
+    .prodNameCell {
+        gap: 10px;
+    }
+    .pStatus {
+        font-size: 10px;
+        padding: 4px 8px;
+        white-space: nowrap;
+    }
+    .prodTable th {
+        font-size: 10px;
+        white-space: nowrap;
+    }
+    .pInvValue {
+        font-size: 13px;
+    }
+    .pInvCell {
+        min-width: 80px;
+        gap: 6px;
+    }
+    .prodPaginationBar {
+        padding: 10px 12px;
+        gap: 8px;
+    }
+    .prodPaginationInfo {
+        font-size: 11px;
+    }
+    .prodPaginationBtns {
+        gap: 4px;
+    }
+    .prodPageBtn {
+        height: 28px;
+        padding: 0 8px;
+        font-size: 11px;
+        border-radius: 8px;
+    }
+    .pDetailTitle {
+        font-size: 18px;
+    }
+    .pBackDetailBtn {
+        padding: 6px 12px;
+        font-size: 12px;
+    }
+    .pDetailBadges {
+        font-size: 11px;
+    }
+    .pDetailFilterBar {
+        padding: 10px 14px;
+        gap: 10px;
+    }
+    .pBlockTitle {
+        font-size: 15px;
+    }
+    .pVariantTabBtn {
+        padding: 6px 12px;
+        font-size: 11.5px;
+    }
+    .pVarEffectivePrice {
+        font-size: 16px;
+    }
+    .pVarOriginalPrice {
+        font-size: 12px;
+    }
+    .pVarSpecsTitle {
+        font-size: 12px;
+    }
+    .pDetailGrid {
+        grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr) !important;
+        gap: 12px;
+    }
+    .pDetailVariantCard {
+        padding: 12px;
+    }
+    .pVarCardHeader {
+        gap: 12px;
+        margin-bottom: 12px;
+        padding-bottom: 12px;
+    }
+    .pVarCardImg {
+        width: 76px;
+        height: 76px;
+        border-radius: 8px;
+    }
+    .pVarCardTitle {
+        font-size: 14px;
+    }
+    .pVarMetaItem {
+        font-size: 11px;
+    }
+    .pVarMetaGrid {
+        grid-template-columns: 1fr;
+        gap: 6px;
+    }
+    .pVarEffectivePrice {
+        font-size: 16px;
+    }
+    .pVarOriginalPrice {
+        font-size: 12px;
+    }
+    .pSideSection {
+        padding: 12px;
+    }
+    .pSideSpecTable td {
+        padding: 6px 8px;
+        font-size: 11px;
+    }
+    .pSideSpecGroupName {
+        font-size: 11px;
+        padding: 2px 6px;
     }
 }

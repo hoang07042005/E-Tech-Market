@@ -293,3 +293,39 @@
     grid-template-columns: 1fr;
   }
 }
+
+@media (max-width: 768px) {
+  .ctInner {
+    padding: 16px 16px 40px;
+  }
+  .ctHero {
+    min-height: 180px;
+  }
+  .ctHeroContent {
+    padding: 20px;
+  }
+  .ctHeroTitle {
+    margin: 30px 0 8px;
+    font-size: 24px;
+  }
+  .ctHeroLead {
+    font-size: 13px;
+  }
+  .ctGrid {
+    display: flex;
+    flex-direction: column-reverse;
+    gap: 24px;
+  }
+  .ctCardPad {
+    padding: 20px;
+  }
+  .ctMap {
+    min-height: 200px;
+  }
+  .ctMapFrame {
+    min-height: 200px;
+  }
+  .ctBtn {
+    width: 100%;
+  }
+}

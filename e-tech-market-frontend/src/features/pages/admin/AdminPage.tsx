@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react'
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState, useMemo } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import DashboardContent from './dashboard/DashboardPage'
@@ -20,6 +20,7 @@ import BannerAdminPage from './banners/BannerAdminPage'
 import VideoAdminPage from './videos/VideoAdminPage'
 import VideoCategoryPage from './categories/VideoCategoryPage'
 import { apiFetch, API_BASE_URL } from '@/configs/api.config'
+import '@/styles/components/HeaderFooter.css'
 
 
 type AdminTab =
@@ -177,18 +178,16 @@ export default function AdminPage() {
     setDarkMode(nextDark)
   }
 
-  type QuickProduct = {
-    id: number
-    name: string
-    brand?: string | null
-    main_image_url?: string | null
-    category_name?: string | null
-  }
+  type QuickHit = 
+    | { type: 'product'; id: number; name: string; brand?: string | null; main_image_url?: string | null; category_name?: string | null }
+    | { type: 'page'; id: string; name: string; tab: AdminTab; desc: string }
   const [qSearch, setQSearch] = useState('')
   const [qOpen, setQOpen] = useState(false)
   const [qLoading, setQLoading] = useState(false)
-  const [qRows, setQRows] = useState<QuickProduct[]>([])
-  const [qCatHits, setQCatHits] = useState<{ name: string; items: QuickProduct[] }[]>([])
+  const [qRows, setQRows] = useState<QuickHit[]>([])
+  const [qCatHits, setQCatHits] = useState<any[]>([])
+  const [qActiveIdx, setQActiveIdx] = useState(-1)
+  const searchDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   type Notif = {
     id: number
@@ -249,61 +248,92 @@ export default function AdminPage() {
     return () => document.removeEventListener('mousedown', onDown)
   }, [])
 
-  useEffect(() => {
-    const query = qSearch.trim()
-    if (!qOpen) return
-    if (query.length < 2) return
-
-    const t = window.setTimeout(() => {
+  const handleSearchChange = (val: string) => {
+    setQSearch(val)
+    setQActiveIdx(-1)
+    if (searchDebounceRef.current) clearTimeout(searchDebounceRef.current)
+    if (val.trim().length < 2) {
+      setQRows([])
+      setQCatHits([])
+      setQOpen(val.trim().length > 0)
+      return
+    }
+    setQOpen(true)
+    searchDebounceRef.current = setTimeout(async () => {
       setQLoading(true)
-      ;(async () => {
-        try {
-          const res = await apiFetch<any>(`/api/admin/products?search=${encodeURIComponent(query)}&per_page=50`)
-          const data = Array.isArray(res?.data) ? res.data : (Array.isArray(res) ? res : [])
-          const rows: QuickProduct[] = data.map((p: any) => {
-            const obj = (p ?? {}) as Record<string, unknown>
-            const cat = (obj.category ?? {}) as Record<string, unknown>
-            return {
-              id: Number(obj.id),
-              name: String(obj.name || ''),
-              brand: (typeof obj.brand === 'string' ? obj.brand : null),
-              main_image_url: (typeof obj.main_image_url === 'string' ? obj.main_image_url : null),
-              category_name: (typeof cat.name === 'string' ? cat.name : null),
-            }
+      
+      const qLower = val.trim().toLowerCase()
+      const matchedPages: QuickHit[] = []
+      Object.entries(ADMIN_TAB_TITLE).forEach(([tabKey, title]) => {
+        const t = tabKey as AdminTab
+        if (hasPermissionForTab(t, currentUser) && (title.toLowerCase().includes(qLower) || tabKey.toLowerCase().includes(qLower))) {
+          matchedPages.push({
+            type: 'page',
+            id: `page_${tabKey}`,
+            name: title,
+            tab: t,
+            desc: 'Trang quản trị'
           })
-          const qLower = query.toLowerCase()
-
-          // 1) Category matches → show category block(s)
-          const cats = Array.from(
-            new Set(rows.map(r => (r.category_name || '').trim()).filter(Boolean))
-          )
-          const matchedCats = cats.filter(c => c.toLowerCase().includes(qLower)).slice(0, 3)
-          const catBlocks = matchedCats.map((c) => ({
-            name: c,
-            items: rows.filter(r => (r.category_name || '').trim() === c).slice(0, 8),
-          }))
-          setQCatHits(catBlocks)
-
-          // 2) Direct product matches (name/brand/category)
-          const idsInCats = new Set<number>()
-          for (const g of catBlocks) for (const it of g.items) idsInCats.add(it.id)
-
-          const filtered = rows
-            .filter((r) => `${r.name} ${r.brand || ''} ${r.category_name || ''}`.toLowerCase().includes(qLower))
-            .filter((r) => !idsInCats.has(r.id))
-            .slice(0, 8)
-          setQRows(filtered)
-        } catch {
-          setQRows([])
-          setQCatHits([])
-        } finally {
-          setQLoading(false)
         }
-      })()
-    }, 220)
+      })
 
-    return () => window.clearTimeout(t)
-  }, [qSearch, qOpen])
+      try {
+        const res = await apiFetch<any>(`/products?search=${encodeURIComponent(val.trim())}&per_page=50`)
+        const data = Array.isArray(res?.data) ? res.data : (Array.isArray(res) ? res : [])
+        const productHits: QuickHit[] = data.map((p: any) => {
+          const obj = (p ?? {}) as Record<string, unknown>
+          const cat = (obj.category ?? {}) as Record<string, unknown>
+          return {
+            type: 'product',
+            id: Number(obj.id),
+            name: String(obj.name || ''),
+            brand: (typeof obj.brand === 'string' ? obj.brand : null),
+            main_image_url: (typeof obj.main_image_url === 'string' ? obj.main_image_url : null),
+            category_name: (typeof cat.name === 'string' ? cat.name : null),
+          }
+        })
+        setQCatHits([])
+        setQRows([...matchedPages, ...productHits].slice(0, 8))
+      } catch {
+        setQRows(matchedPages.slice(0, 8))
+        setQCatHits([])
+      } finally {
+        setQLoading(false)
+      }
+    }, 220)
+  }
+
+  const allQuickHits = useMemo(() => {
+    const hits: QuickHit[] = []
+    hits.push(...qRows)
+    return hits
+  }, [qRows])
+
+  const handleSearchKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (!qOpen || (!qRows.length && !qCatHits.length)) return
+    if (e.key === 'ArrowDown') {
+      e.preventDefault()
+      setQActiveIdx((i) => Math.min(i + 1, allQuickHits.length - 1))
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault()
+      setQActiveIdx((i) => Math.max(i - 1, -1))
+    } else if (e.key === 'Enter' && qActiveIdx >= 0) {
+      e.preventDefault()
+      const hit = allQuickHits[qActiveIdx]
+      if (hit) {
+        setQOpen(false)
+        if (hit.type === 'page') {
+          setActiveTab(hit.tab)
+        } else {
+          setActiveTab('products')
+          setOpenEditProductId(hit.id as number)
+          setOpenEditProductTick((t) => t + 1)
+        }
+      }
+    } else if (e.key === 'Escape') {
+      setQOpen(false)
+    }
+  }
 
   const markNotifRead = async (id: number) => {
     try {
@@ -512,110 +542,129 @@ export default function AdminPage() {
           </div>
 
           <div className="adminTopBarRight">
-            <div className="adminSearchBox" ref={searchWrapRef}>
-              <SearchIcon />
-              <input
-                type="text"
-                placeholder="Tìm nhanh…"
-                value={qSearch}
-                onChange={(e) => {
-                  const v = e.target.value
-                  setQSearch(v)
-                  setQOpen(true)
-                  if (v.trim().length < 2) {
-                    setQRows([])
-                    setQCatHits([])
+            <div className="hfSearchWrap adminOmniSearchWrap" ref={searchWrapRef}>
+              <form
+                className="hfSearch"
+                role="search"
+                onSubmit={(e) => {
+                  e.preventDefault()
+                  const targetHit = qActiveIdx >= 0 ? allQuickHits[qActiveIdx] : (allQuickHits.length > 0 ? allQuickHits[0] : null)
+                  if (targetHit) {
+                    setQOpen(false)
+                    if (targetHit.type === 'page') {
+                      setActiveTab(targetHit.tab)
+                    } else {
+                      setActiveTab('products')
+                      setOpenEditProductId(targetHit.id as number)
+                      setOpenEditProductTick((t) => t + 1)
+                    }
                   }
                 }}
-                onFocus={() => {
-                  setQOpen(true)
-                  if (qSearch.trim().length < 2) {
-                    setQRows([])
-                    setQCatHits([])
-                  }
-                }}
-                onKeyDown={(e) => {
-                  if (e.key === 'Escape') setQOpen(false)
-                }}
-              />
-
-              {qOpen && (
-                <div className="adminQuickMenu" role="menu">
-                  <div className="adminQuickHead">Tìm sản phẩm</div>
-                  {qSearch.trim().length < 2 ? (
-                    <div className="adminQuickEmpty">Nhập ít nhất 2 ký tự…</div>
-                  ) : qLoading ? (
-                    <div className="adminQuickEmpty">Đang tìm…</div>
-                  ) : !qRows.length && !qCatHits.length ? (
-                    <div className="adminQuickEmpty">Không tìm thấy.</div>
+              >
+                <input
+                  type="search"
+                  className="hfSearchInput"
+                  placeholder="Tìm nhanh…"
+                  value={qSearch}
+                  autoComplete="off"
+                  onChange={(e) => handleSearchChange(e.target.value)}
+                  onFocus={() => {
+                    setQOpen(true)
+                    if (qSearch.trim().length < 2) {
+                      setQRows([])
+                      setQCatHits([])
+                    }
+                  }}
+                  onKeyDown={handleSearchKeyDown}
+                />
+                <button
+                  type="submit"
+                  className="hfSearchButton"
+                  aria-label="Tìm kiếm"
+                >
+                  {qLoading ? (
+                    <svg className="hfSearchIcon hfSearchSpinner" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                      <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="2" strokeDasharray="28" strokeLinecap="round" />
+                    </svg>
                   ) : (
-                    <div className="adminQuickList">
-                      {qCatHits.map((g) => (
-                        <div key={g.name} className="adminQuickGroup">
-                          <div className="adminQuickGroupHead">
-                            <span className="adminQuickGroupName">{g.name}</span>
-                          </div>
-                          <div className="adminQuickDivider" />
-                          {g.items.map((r) => (
-                            <button
-                              key={r.id}
-                              type="button"
-                              className="adminQuickRow"
-                              onClick={() => {
-                                setActiveTab('products')
-                                setOpenEditProductId(r.id)
-                                setOpenEditProductTick((t) => t + 1)
-                                setQOpen(false)
-                              }}
-                            >
-                              <div className="adminQuickThumb">
-                                {r.main_image_url ? (
-                                  <img src={resolveAdminImg(r.main_image_url)} alt="" />
-                                ) : (
-                                  <span className="adminQuickThumbPh" aria-hidden />
-                                )}
-                              </div>
-                              <div className="adminQuickBody">
-                                <div className="adminQuickTitle">{r.name}</div>
-                                <div className="adminQuickSub">{r.brand || '—'}</div>
-                              </div>
-                              <div className="adminQuickGo">Sửa</div>
-                            </button>
-                          ))}
-                        </div>
-                      ))}
+                    <svg className="hfSearchIcon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                      <circle cx="11" cy="11" r="7" stroke="currentColor" strokeWidth="1.8" />
+                      <path d="m16.5 16.5 4 4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+                    </svg>
+                  )}
+                </button>
+              </form>
 
-                      {qCatHits.length > 0 && qRows.length > 0 && (
-                        <div className="adminQuickDivider adminQuickDivider--spaced" />
-                      )}
-
-                      {qRows.map((r) => (
-                        <button
-                          key={r.id}
-                          type="button"
-                          className="adminQuickRow"
-                          onClick={() => {
+              {qOpen && qSearch.trim().length >= 2 && (
+                <div className="hfSearchDropdown" role="listbox">
+                  {!qLoading && allQuickHits.length === 0 ? (
+                    <div style={{ padding: '16px', color: '#64748b', fontSize: '13px', fontWeight: 600 }}>Không tìm thấy.</div>
+                  ) : (
+                    allQuickHits.map((hit, idx) => (
+                      <button
+                        key={hit.id}
+                        type="button"
+                        role="option"
+                        aria-selected={idx === qActiveIdx}
+                        className={`hfSearchItem${idx === qActiveIdx ? " hfSearchItemActive" : ""}`}
+                        onMouseEnter={() => setQActiveIdx(idx)}
+                        onClick={() => {
+                          setQOpen(false)
+                          if (hit.type === 'page') {
+                            setActiveTab(hit.tab)
+                          } else {
                             setActiveTab('products')
-                            setOpenEditProductId(r.id)
+                            setOpenEditProductId(hit.id as number)
                             setOpenEditProductTick((t) => t + 1)
-                            setQOpen(false)
-                          }}
-                        >
-                          <div className="adminQuickThumb">
-                            {r.main_image_url ? (
-                              <img src={resolveAdminImg(r.main_image_url)} alt="" />
-                            ) : (
-                              <span className="adminQuickThumbPh" aria-hidden />
-                            )}
+                          }
+                        }}
+                      >
+                        <svg className="hfSearchItemIcon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                          {hit.type === 'page' ? (
+                            <path d="M4 6h16M4 12h16M4 18h16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                          ) : (
+                            <>
+                              <circle cx="11" cy="11" r="7" stroke="currentColor" strokeWidth="1.8" />
+                              <path d="m16.5 16.5 4 4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+                            </>
+                          )}
+                        </svg>
+                        <div className="hfSearchItemInfo">
+                          <span className="hfSearchItemName">{hit.name}</span>
+                          <span className="hfSearchItemPrice" style={{ fontSize: '12px', color: 'var(--et-text-muted)', marginTop: '2px' }}>
+                            {hit.type === 'page' ? hit.desc : (hit.brand || hit.category_name || '—')}
+                          </span>
+                        </div>
+                        {hit.type === 'page' ? (
+                          <div style={{ color: 'var(--et-text-muted)', paddingRight: '8px' }}>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                              <path d="M5 12h14M12 5l7 7-7 7"/>
+                            </svg>
                           </div>
-                          <div className="adminQuickBody">
-                            <div className="adminQuickTitle">{r.name}</div>
-                            <div className="adminQuickSub">{r.brand || r.category_name || '—'}</div>
-                          </div>
-                          <div className="adminQuickGo">Sửa</div>
-                        </button>
-                      ))}
-                    </div>
+                        ) : hit.main_image_url ? (
+                          <img
+                            className="hfSearchItemImg"
+                            src={resolveAdminImg(hit.main_image_url)}
+                            alt=""
+                            decoding="async"
+                          />
+                        ) : (
+                          <div className="hfSearchItemImgPlaceholder" />
+                        )}
+                      </button>
+                    ))
+                  )}
+                  {allQuickHits.length > 0 && (
+                    <button
+                      type="button"
+                      className="hfSearchViewAll"
+                      onClick={() => {
+                        setActiveTab('products')
+                        setQOpen(false)
+                      }}
+                    >
+                      Xem tất cả kết quả cho &ldquo;{qSearch.trim()}&rdquo;
+                    </button>
                   )}
                 </div>
               )}

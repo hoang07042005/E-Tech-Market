@@ -1,4 +1,4 @@
-﻿import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import '@/styles/pages/OrdersPage.css'
 import { apiFetch, API_BASE_URL } from '@/configs/api.config'
@@ -342,7 +342,7 @@ export default function OrdersPage() {
                   const text = names.length > 0 ? names.join(', ') : '—'
 
                   return (
-                    <div key={o.id} className="odCard odCardWithThumbs">
+                    <div key={o.id} className={`odCard odCardWithThumbs ${thumbCount === 1 ? 'odCard-single' : 'odCard-multi'}`}>
                       <div className={`odCardThumbs pfOrderThumbGrid pfThumbLayout-${layout}`}>
                           {thumbs.length === 0 ? (
                             <div className={`pfOrderThumbCell odThumbCell odThumbCell-empty`} />
@@ -411,7 +411,7 @@ export default function OrdersPage() {
                     .filter(Boolean) as string[]
 
                   return (
-                    <Link key={o.id} to={detailHref(o.id)} className="odCard odCardWithThumbs">
+                    <Link key={o.id} to={detailHref(o.id)} className={`odCard odCardWithThumbs ${imgs.length <= 1 ? 'odCard-single' : 'odCard-multi'}`}>
                       <div className="odCardThumbs">
                         {imgs.slice(0, 4).map((src, i) => (
                           <div key={i} className={`odThumbCell odThumbCell-${Math.min(4, imgs.length)}`} style={{ backgroundImage: `url(${src})` }} />

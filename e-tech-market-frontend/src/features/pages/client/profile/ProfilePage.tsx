@@ -589,10 +589,10 @@ export default function ProfilePage() {
                               style={{
                                 display: "flex",
                                 alignItems: "center",
-                                gap: "8px",
+                                gap: "5px",
                                 backgroundColor: "rgba(42, 53, 71, 0.4)",
                                 backdropFilter: "blur(12px)",
-                                padding: "8px 16px",
+                                padding: "8px 8px",
                                 borderRadius: "8px",
                                 border: "1px solid rgba(255, 225, 109, 0.2)",
                               }}
@@ -1039,7 +1039,7 @@ export default function ProfilePage() {
                                             : o.status || "—";
 
                               return (
-                                <div key={o.id} className="pfOrderItem">
+                                <div key={o.id} className={`pfOrderItem ${thumbCount === 1 ? 'pfOrderItem-single' : 'pfOrderItem-multi'}`}>
                                   <div
                                     className={`pfOrderThumbGrid pfThumbLayout-${layout}`}
                                   >

@@ -1288,7 +1288,7 @@
   }
 
   .pfCard {
-    padding: 15px
+    padding: 5px
   }
 
   .pfRowGrid {
@@ -1378,11 +1378,11 @@
 
   /* Ensure rows flow nicely on small screens */
   .pfSimpleRow {
-    flex-direction: column;
-    gap: 4px;
+    flex-direction: row;
+    gap: 8px;
   }
   .pfSimpleLabel {
-    min-width: auto;
+    min-width: 110px;
   }
 
   /* Tighten order thumb grids for small screens */
@@ -1425,21 +1425,33 @@
 @media (max-width: 520px) {
   .pfOrderList { gap: 10px }
   .pfOrderItem {
-    flex-direction: column;
-    align-items: flex-start;
     gap: 8px;
     padding: 10px;
   }
-  .pfOrderThumbGrid {
+  .pfOrderItem-multi {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .pfOrderItem-single {
+    flex-direction: row;
+    align-items: flex-start;
+  }
+  .pfOrderItem-multi .pfOrderThumbGrid {
     display: flex;
     gap: 8px;
     width: 100%;
     justify-content: flex-start;
     align-items: center;
   }
-  .pfOrderThumbCell { width: 56px; height: 56px }
-  .pfOrderThumbImg { width: 56px; height: 56px }
-  .pfOrderMain { width: 100% }
+  .pfOrderItem-single .pfOrderThumbGrid {
+    width: 56px;
+    flex: 0 0 56px;
+    display: block;
+  }
+  .pfOrderThumbCell { width: 56px !important; height: 56px !important }
+  .pfOrderThumbImg { width: 100% !important; height: 100% !important; object-fit: cover !important }
+  .pfOrderItem-multi .pfOrderMain { width: 100% }
+  .pfOrderItem-single .pfOrderMain { flex: 1; min-width: 0; }
   .pfOrderHeader { width: 100%; display: flex; justify-content: space-between; align-items: center }
   .pfOrderName {
     font-size: 14px;

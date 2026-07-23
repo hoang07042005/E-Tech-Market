@@ -455,6 +455,16 @@
     grid-template-columns: 1fr
   }
 
+  .ppArticle, .ppAside {
+    min-width: 0;
+    overflow-wrap: break-word;
+    word-break: break-word;
+  }
+
+  .ppTableWrap {
+    overflow-x: auto;
+  }
+
   .ppAside {
     position: relative;
     top: auto

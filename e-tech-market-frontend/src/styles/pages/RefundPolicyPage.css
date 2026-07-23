@@ -428,6 +428,12 @@
     grid-template-columns: 1fr;
   }
 
+  .refundLayout > * {
+    min-width: 0;
+    overflow-wrap: break-word;
+    word-break: break-word;
+  }
+
   .excludedGrid {
     grid-template-columns: 1fr;
   }
