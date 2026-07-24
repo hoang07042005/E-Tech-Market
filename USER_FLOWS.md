@@ -1,5 +1,5 @@
 
-## Sơ Đồ Khách Hàng (User Flow)
+## Sơ Đồ Khách Hàng
 
 ```mermaid
 mindmap
@@ -40,7 +40,7 @@ mindmap
 
 ---
 
-## Sơ Đồ Quản Trị Viên (Admin Flow)
+## Sơ Đồ Quản Trị Viên
 
 ```mermaid
 mindmap
