@@ -1,6 +1,6 @@
 # Phân Tích Lưu Trình Người Dùng (User Flows)
 
-Tài liệu này mô tả chi tiết các luồng nghiệp vụ (user flows) trong hệ thống E-Tech Market, bao gồm Khách Hàng, Quản Trị Viên (Admin), và Nhân Viên Giao Hàng.
+Tài liệu này mô tả chi tiết các luồng nghiệp vụ (user flows) trong hệ thống E-Tech Market, được phân tích chặt chẽ dựa trên code thực tế của dự án. Hệ thống quản lý Khách Hàng, Quản Trị Viên (Admin), và Nhân Viên Giao Hàng.
 
 ---
 
@@ -34,10 +34,10 @@ mindmap
       Cập Nhật Thông Tin, Avatar, Mật Khẩu
       Quản Lý Thông Báo
     Quản Lý Đơn Hàng
-      Theo Dõi Trạng Thái
-      Yêu Cầu Hủy Đơn (Khi chưa xử lý)
-      Xác Nhận Nhận Hàng (Hoàn thành)
-      Yêu Cầu Hoàn Trả / Hoàn Tiền
+      Theo Dõi Trạng Thái Đơn
+      Yêu Cầu Hủy Đơn (Chỉ khi Pending)
+      Xác Nhận Đã Nhận Hàng (Chuyển sang Completed)
+      Yêu Cầu Hoàn Trả (Kèm lý do & Ảnh minh chứng)
 ```
 
 ### 1.2. Sơ Đồ Quản Trị Viên (Admin)
@@ -53,11 +53,11 @@ mindmap
       Sản Phẩm & Biến Thể
       Tồn Kho & Lịch Sử Tồn Kho
       Đánh Giá Sản Phẩm
-    Quản Lý Đơn Hàng & Hoàn Trả
-      Duyệt & Xử Lý Đơn Hàng
+    Quản Lý Đơn Hàng
+      Cập Nhật Trạng Thái (Processing, Paid, Shipped, Delivered)
       Gán Nhân Viên Giao Hàng
-      Quản Lý Yêu Cầu Hoàn Trả (Duyệt/Từ Chối)
-      Xử Lý Hoàn Tiền
+      Duyệt/Từ chối Yêu cầu Hoàn Trả (Approve / Reject)
+      Xác nhận Hoàn tiền & Nhận lại kho (Mark Refunded)
     Quản Lý Khách Hàng & Phân Quyền
       Danh Sách Khách Hàng & Lịch Sử
       Quản Lý Vai Trò (Admin, Giao Hàng, Nhân Viên)
@@ -68,107 +68,139 @@ mindmap
       Cấu Hình Vận Chuyển (Shipping Methods)
 ```
 
-### 1.3. Sơ Đồ Nhân Viên Giao Hàng
-```mermaid
-mindmap
-  root((NV Giao Hàng))
-    Đơn Hàng Được Giao
-      Danh Sách Đơn Cần Giao
-      Cập Nhật Trạng Thái (Đang giao, Đã giao)
-    Lịch Sử Giao Hàng
-      Thống Kê Đơn Thành Công
-```
-
 ---
 
-## 2. Lưu Trình Nghiệp Vụ Chi Tiết (Flowcharts)
+## 2. Lưu Trình Nghiệp Vụ Chặt Chẽ (Strict Flowcharts & State Machines)
 
-### 2.1. Luồng Mua Hàng & Thanh Toán (Checkout Flow)
-```mermaid
-flowchart TD
-    A["Khách hàng thêm SP vào giỏ"] --> B{"Giỏ hàng có SP?"}
-    B -- Không --> C["Tiếp tục mua sắm"]
-    B -- Có --> D["Chuyển đến trang Thanh toán"]
-    D --> E["Nhập/Chọn Địa Chỉ Giao Hàng"]
-    E --> F["Chọn Đơn Vị & Phương Thức Vận Chuyển"]
-    F --> G["Áp dụng Mã Giảm Giá & Điểm Thưởng"]
-    G --> H["Chọn Phương Thức Thanh Toán"]
-    
-    H --> I{"Thanh toán Online?"}
-    I -- VNPAY / MoMo --> J["Chuyển hướng đến Cổng Thanh Toán"]
-    J --> K{"Thanh toán thành công?"}
-    K -- Thất bại / Hủy --> L["Đơn hàng trạng thái Pending, chờ thanh toán lại"]
-    K -- Thành công --> M["Tạo Đơn Hàng: Trạng thái Paid/Processing"]
-    
-    I -- COD (Tiền mặt) --> M2["Tạo Đơn Hàng: Trạng thái Pending/Processing"]
-    
-    M --> N["Gửi Email Xác Nhận / Thông Báo"]
-    M2 --> N
-    N --> O(("Kết thúc luồng"))
-```
+Dựa trên code API backend, đây là các quy trình thực tế mà hệ thống cho phép.
 
-### 2.2. Luồng Xử Lý Đơn Hàng (Order Processing Flow)
+### 2.1. Luồng Thanh Toán (Payment State Machine)
 ```mermaid
 stateDiagram-v2
-    [*] --> Pending: Khách đặt hàng (COD)
-    [*] --> Paid: Khách thanh toán Online
+    [*] --> Cart: Thêm SP vào giỏ
+    Cart --> CheckoutForm: Nhấn Thanh toán
     
-    Pending --> Processing: Admin xác nhận
-    Paid --> Processing: Admin xác nhận
+    CheckoutForm --> Processing_VNPAY_MoMo: Chọn TT Online
+    Processing_VNPAY_MoMo --> pending_payment: Tạo Đơn ẩn
+    pending_payment --> Payment_Gateway: Chuyển Cổng TT
     
-    Pending --> Cancelled: Khách/Admin hủy
-    Paid --> Cancelled: Admin hủy (Cần hoàn tiền thủ công)
-    Processing --> Cancelled: Admin hủy
+    Payment_Gateway --> pending: TT thành công
+    Payment_Gateway --> pending_payment: Hủy hoặc Lỗi
     
-    Processing --> Shipped: Admin bàn giao cho ĐVVC / NV Giao hàng
+    CheckoutForm --> pending: Chọn COD
     
-    Shipped --> Delivered: Khách đã nhận hàng / NV xác nhận giao
-    
-    Delivered --> Completed: Khách xác nhận / Hết hạn đổi trả
-    Delivered --> Return_Requested: Khách yêu cầu hoàn trả
-    
-    Return_Requested --> Returned: Admin duyệt & Hoàn tiền
-    Return_Requested --> Completed: Admin từ chối hoàn trả
-    
-    Completed --> [*]
-    Cancelled --> [*]
-    Returned --> [*]
+    pending --> [*]: Ghi nhận Đơn hàng
 ```
 
-### 2.3. Luồng Hoàn Trả & Hoàn Tiền (Return & Refund Flow)
-```mermaid
-sequenceDiagram
-    participant C as Khách Hàng
-    participant S as Hệ Thống
-    participant A as Quản Trị Viên
+### 2.2. Vòng Đời & Trạng Thái Đơn Hàng (Order State Machine)
+*(Ghi chú: Admin không thể chủ động chuyển đơn hàng sang trạng thái "Completed", "Cancelled" hay "Returned". Các trạng thái này bắt buộc phải đi qua hành động của Khách hàng hoặc luồng Hoàn trả).*
 
-    C->>S: Gửi yêu cầu hoàn trả (Lý do, Hình ảnh minh chứng)
-    S->>S: Chuyển trạng thái ĐH có Return Request (Pending)
-    S->>A: Gửi thông báo có yêu cầu mới
-    A->>S: Xem xét minh chứng
+```mermaid
+stateDiagram-v2
+    [*] --> pending: Đặt hàng thành công
     
-    alt Từ chối hoàn trả
-        A->>S: Từ chối (Kèm lý do)
-        S->>C: Thông báo từ chối
-        S->>S: Đóng yêu cầu, Đơn hàng tiếp tục trạng thái cũ (hoặc Completed)
-    else Chấp nhận hoàn trả
-        A->>S: Phê duyệt (Kèm ghi chú)
-        S->>C: Thông báo gửi hàng hoàn về kho
-        C->>S: Cung cấp mã vận đơn hoàn trả (Tuỳ chọn)
-        A->>S: Xác nhận nhận lại hàng & Thực hiện hoàn tiền
-        S->>S: Trạng thái ĐH -> Returned, Cộng lại Tồn kho
-        S->>C: Thông báo hoàn tiền thành công
-    end
+    pending --> processing: Admin Xác Nhận
+    processing --> paid: Admin Báo Đang Chuẩn Bị
+    paid --> shipped: Admin Báo Đang Giao
+    
+    %% Cập nhật nhảy cóc
+    pending --> shipped: Admin Giao Ngay
+    
+    shipped --> delivered: Admin Báo Đã Giao
+    
+    %% Luồng Khách Hàng thao tác
+    pending --> cancelled: Khách tự Hủy đơn
+    delivered --> completed: Khách Xác nhận
+    
+    %% Luồng Hoàn Trả
+    delivered --> ReturnRequest: Khách Yêu Cầu Hoàn Trả
+    ReturnRequest --> returned: Admin Duyệt và Hoàn tiền
+    ReturnRequest --> delivered: Admin Từ chối
+    
+    cancelled --> [*]
+    completed --> [*]
+    returned --> [*]
 ```
 
-### 2.4. Luồng Giao Hàng Nội Bộ (Delivery Staff Flow)
+### 2.3. Luồng Hoàn Trả & Hoàn Tiền (Return & Refund State Machine)
 ```mermaid
-flowchart TD
-    A["Admin gán Đơn Hàng cho NV Giao Hàng"] --> B["NV Giao Hàng nhận thông báo"]
-    B --> C["NV Giao Hàng đăng nhập, xem Danh Sách Đơn"]
-    C --> D["Chuyển trạng thái: Đang Giao (Shipped)"]
-    D --> E{"Giao thành công?"}
-    E -- Thành Công --> F["NV chuyển trạng thái: Đã Giao (Delivered)"]
-    E -- Thất Bại --> G["NV báo cáo Admin (Thêm ghi chú)"]
-    G --> H["Admin xem xét, Hủy đơn hoặc dời ngày giao"]
+stateDiagram-v2
+    [*] --> pending: Khách tạo Yêu cầu
+    
+    pending --> rejected: Admin Từ Chối
+    rejected --> [*]: Quay về Đã Giao
+    
+    pending --> approved: Admin Chấp Nhận
+    approved --> waiting_for_goods: Khách trả hàng
+    waiting_for_goods --> item_received: Kho nhận hàng
+    
+    item_received --> refunded: Admin bấm Hoàn Tiền
+    refunded --> order_returned: Đơn Hàng thành Hoàn Trả
+    order_returned --> inventory_restored: Hệ thống Cộng Tồn Kho
+    
+    inventory_restored --> [*]
+```
+
+### 2.4. Luồng Nhân Viên Giao Hàng Nội Bộ (Shipper State Machine)
+```mermaid
+stateDiagram-v2
+    [*] --> Unassigned: Đơn hàng mới
+    
+    Unassigned --> Assigned_To_Shipper: Admin gán Shipper
+    Assigned_To_Shipper --> Shipped: Bấm Đang Giao
+    
+    Shipped --> Delivered: Bấm Đã Giao
+    
+    Shipped --> Delivery_Failed: Giao thất bại
+    Delivery_Failed --> Admin_Review: Báo lỗi lên Admin
+    
+    Admin_Review --> Cancelled: Admin Hủy đơn
+    Admin_Review --> Shipped: Yêu cầu giao lại
+    
+    Delivered --> [*]: Chờ Khách Xác nhận
+    Cancelled --> [*]: Kết thúc thất bại
+```
+
+### 2.5. Luồng Nghiệp Vụ Của Quản Trị Viên (Admin Operations)
+
+Phần này đặc tả chặt chẽ các quy trình quản trị cốt lõi mà Admin thực hiện hàng ngày trên Dashboard.
+
+#### A. Quản Lý Sản Phẩm & Tồn Kho (Product Management State Machine)
+```mermaid
+stateDiagram-v2
+    [*] --> Draft: Tạo Sản phẩm mới
+    
+    Draft --> Configuring_Variants: Thêm Biến thể
+    Configuring_Variants --> Pricing: Cài đặt Giá
+    
+    Pricing --> Stock_Entry: Nhập Tồn kho
+    Stock_Entry --> Published: Bật Hiển thị
+    
+    Published --> Out_Of_Stock: Khách mua hết hàng
+    Out_Of_Stock --> Stock_Entry: Admin nhập thêm hàng
+    
+    Published --> Hidden: Admin Ẩn SP
+    Hidden --> Published: Admin Bật lại
+    
+    Published --> [*]: Xóa SP
+```
+
+#### B. Xử Lý Phân Phối Đơn Hàng (Order Fulfillment State Machine)
+```mermaid
+stateDiagram-v2
+    [*] --> New_Order: Có Đơn mới
+    
+    New_Order --> Stock_Check: Kiểm tra Tồn kho
+    
+    Stock_Check --> Processing: Còn hàng
+    Stock_Check --> Cancelled: Hết hàng
+    
+    Processing --> Packing: In vận đơn
+    Packing --> Ready_To_Ship: Đóng gói xong
+    
+    Ready_To_Ship --> Handed_Over: Giao ĐVVC hoặc Shipper
+    Handed_Over --> Shipped: Cập nhật Đang Giao
+    
+    Shipped --> [*]: Chờ phản hồi
+    Cancelled --> [*]: Hoàn tất hủy
 ```
