@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useState } from 'react'
 import { API_BASE_URL } from '@/configs/api.config'
-import { fetchOrders, fetchOrderDetail, updateOrder, processOrderReturn, deleteOrder } from '@/features/services/admin/api.admin.service'
+import { fetchOrders, fetchOrderDetail, updateOrder, processOrderReturn, deleteOrder, fetchDeliveryStaffs } from '@/features/services/admin/api.admin.service'
 import ConfirmModal from '@/components/ConfirmModal'
+import { useAuthStore } from '@/features/store/useAuthStore'
 
 type OrderRow = {
   id: number
@@ -97,6 +98,8 @@ type OrderDetail = {
     changed_at?: string | null
     changed_by?: { id: number; name: string; avatar_url?: string | null } | null
   }>
+  delivery_staff_id?: number | null
+  delivery_staff?: { id: number; name: string; phone?: string | null } | null
   items: Array<{
     product_id: number
     variant_id?: number | null
@@ -220,6 +223,19 @@ function fmtViTime(iso?: string | null) {
 }
 
 export default function OrdersAdminPage() {
+  const userStr = useAuthStore((s) => s.userStr)
+  const isOnlyDelivery = useMemo(() => {
+    if (!userStr) return false
+    try {
+      const user = JSON.parse(userStr) as { roles?: { slug?: string }[] }
+      if (!user?.roles) return false
+      const slugs = user.roles.map((r) => r.slug)
+      return slugs.includes('delivery') && !slugs.includes('admin') && !slugs.includes('order-staff')
+    } catch {
+      return false
+    }
+  }, [userStr])
+
   // 🔒 Token is sent via httpOnly cookie automatically
   const hasAuth = true  // Always authenticated — behind ProtectedRoute
 
@@ -233,6 +249,8 @@ export default function OrdersAdminPage() {
   const [detailError, setDetailError] = useState<string | null>(null)
   const [savingDetail, setSavingDetail] = useState(false)
   const [draftStatus, setDraftStatus] = useState<string>('pending')
+  const [draftDeliveryStaffId, setDraftDeliveryStaffId] = useState<number | ''>('')
+  const [deliveryStaffs, setDeliveryStaffs] = useState<Array<{ id: number; name: string; phone?: string | null }>>([])
   const [listTab, setListTab] = useState<'all' | 'returns'>('all')
   const [rrBusy, setRrBusy] = useState(false)
   const [rrError, setRrError] = useState<string | null>(null)
@@ -321,6 +339,24 @@ export default function OrdersAdminPage() {
 
   useEffect(() => {
     let cancelled = false
+    async function loadStaffs() {
+      if (!hasAuth) return
+      try {
+        const res = await fetchDeliveryStaffs<{ data: Array<{ id: number; name: string; phone?: string | null }> }>()
+        if (cancelled) return
+        setDeliveryStaffs(res.data)
+      } catch (e) {
+        // ignore
+      }
+    }
+    loadStaffs()
+    return () => {
+      cancelled = true
+    }
+  }, [hasAuth])
+
+  useEffect(() => {
+    let cancelled = false
     async function loadDetail() {
       if (view !== 'detail' || !selectedId) return
       if (!hasAuth) {
@@ -334,6 +370,7 @@ export default function OrdersAdminPage() {
         if (cancelled) return
         setDetail(d)
         setDraftStatus(d.status || 'pending')
+        setDraftDeliveryStaffId(d.delivery_staff_id || '')
       } catch (e) {
         if (cancelled) return
         setDetailError(e instanceof Error ? e.message : 'Không tải được chi tiết đơn.')
@@ -347,15 +384,14 @@ export default function OrdersAdminPage() {
     }
   }, [hasAuth, view, selectedId])
 
-  const saveDetail = async () => {
+  const saveStatus = async () => {
     if (!hasAuth || !detail) return
     setSavingDetail(true)
     setDetailError(null)
     try {
-      const updated = await updateOrder<OrderDetail>(detail.id, { status: draftStatus })
+      const payload: any = { status: draftStatus }
+      const updated = await updateOrder<OrderDetail>(detail.id, payload)
       setDetail(updated)
-
-      // Update row badge in list if already loaded
       setRes((cur) => {
         if (!cur) return cur
         const nextRows = cur.data.map((r) =>
@@ -372,6 +408,33 @@ export default function OrdersAdminPage() {
       })
     } catch (e) {
       setDetailError(e instanceof Error ? e.message : 'Không thể lưu trạng thái.')
+    } finally {
+      setSavingDetail(false)
+    }
+  }
+
+  const saveDeliveryStaff = async () => {
+    if (!hasAuth || !detail) return
+    setSavingDetail(true)
+    setDetailError(null)
+    try {
+      const payload: any = { delivery_staff_id: draftDeliveryStaffId === '' ? null : draftDeliveryStaffId }
+      const updated = await updateOrder<OrderDetail>(detail.id, payload)
+      setDetail(updated)
+      setRes((cur) => {
+        if (!cur) return cur
+        const nextRows = cur.data.map((r) =>
+          r.id === updated.id
+            ? {
+                ...r,
+                delivery_staff_id: updated.delivery_staff_id,
+              }
+            : r,
+        )
+        return { ...cur, data: nextRows }
+      })
+    } catch (e) {
+      setDetailError(e instanceof Error ? e.message : 'Không thể lưu nhân viên giao hàng.')
     } finally {
       setSavingDetail(false)
     }
@@ -544,7 +607,8 @@ export default function OrdersAdminPage() {
                   <span className={`admOrdersStatus2 tone-${resolveStatusTone(detail.status, detail.status_tone)}`}>{detail.status_label}</span>
                 </div>
               </div>
-              <div className="admOrderStatusForm">
+              <div className="admOrderFormsGrid">
+                <div className="admOrderStatusForm">
                 <div className="admOrderStatusFormText">
                   <label className="admOrderStatusFormLabel" htmlFor="order-status-select">
                     Cập nhật trạng thái
@@ -579,12 +643,47 @@ export default function OrdersAdminPage() {
                   <button
                     type="button"
                     className="admOrdersBtn primary"
-                    onClick={() => void saveDetail()}
+                    onClick={() => void saveStatus()}
                     disabled={savingDetail || draftStatus === detail.status}
                   >
                     {savingDetail ? 'Đang lưu…' : 'Lưu'}
                   </button>
                 </div>
+              </div>
+              {!isOnlyDelivery && (
+                <div className="admOrderStatusForm">
+                  <div className="admOrderStatusFormText">
+                    <label className="admOrderStatusFormLabel" htmlFor="order-delivery-staff-select">
+                      Nhân viên giao hàng
+                    </label>
+                    <p className="admOrderStatusFormHint">Phân công nhân viên giao hàng cho đơn hàng này.</p>
+                  </div>
+                  <div className="admOrderStatusFormControls">
+                    <select
+                      id="order-delivery-staff-select"
+                      className="admOrdersSelect"
+                      value={draftDeliveryStaffId}
+                      onChange={(e) => setDraftDeliveryStaffId(e.target.value === '' ? '' : Number(e.target.value))}
+                      aria-label="Chọn nhân viên giao hàng"
+                    >
+                      <option value="">-- Chưa gán (Trống) --</option>
+                      {deliveryStaffs.map((staff) => (
+                        <option key={staff.id} value={staff.id}>
+                          {staff.name} {staff.phone ? `(${staff.phone})` : ''}
+                        </option>
+                      ))}
+                    </select>
+                    <button
+                      type="button"
+                      className="admOrdersBtn primary"
+                      onClick={() => void saveDeliveryStaff()}
+                      disabled={savingDetail || (draftDeliveryStaffId === (detail.delivery_staff_id ?? ''))}
+                    >
+                      {savingDetail ? 'Đang lưu…' : 'Lưu'}
+                    </button>
+                  </div>
+                </div>
+              )}
               </div>
               <div className="admOrderSteps">
                 {(() => {
@@ -899,6 +998,15 @@ export default function OrdersAdminPage() {
                   </>
                 )}
               </section>
+            </div>
+
+            <div className="admOrderFormsGrid">
+              <div className="admOrderStatusForm">
+                {/* Status Update Form Here */}
+              </div>
+              <div className="admOrderStatusForm">
+                {/* Another Status Form Here */}
+              </div>
             </div>
 
             <section className="admOrderCard" style={{ marginTop: 12 }}>

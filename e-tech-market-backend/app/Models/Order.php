@@ -61,6 +61,7 @@ class Order extends Model
         'shipping_district',
         'shipping_ward',
         'notes',
+        'delivery_staff_id',
     ];
 
     protected $casts = [
@@ -121,5 +122,10 @@ class Order extends Model
     public function returnRequest(): HasOne
     {
         return $this->hasOne(OrderReturnRequest::class, 'order_id');
+    }
+
+    public function deliveryStaff(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'delivery_staff_id');
     }
 }

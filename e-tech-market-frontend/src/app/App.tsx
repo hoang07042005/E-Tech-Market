@@ -66,7 +66,7 @@ function isStaffOrAdmin(data: unknown): boolean {
   const roles = userObj?.roles || (data as { roles?: unknown }).roles
   if (!Array.isArray(roles)) return false
   return roles.some((role: any) =>
-    ["admin", "warehouse-staff", "order-staff", "editor"].includes(role?.slug || "")
+    ["admin", "warehouse-staff", "order-staff", "editor", "shop", "delivery"].includes(role?.slug || "")
   )
 }
 

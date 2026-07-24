@@ -23,6 +23,8 @@ export const processOrderReturn = <T>(id: number, action: 'approve' | 'reject' |
   })
 }
 
+export const fetchDeliveryStaffs = <T>() => apiFetch<T>('/api/admin/orders/delivery-staff')
+
 // Settings & Shipping
 export const fetchSettings = <T>() => apiFetch<T>('/api/admin/settings')
 export const updateSettings = <T>(body: any) => apiFetch<T>('/api/admin/settings', { method: 'POST', body: JSON.stringify(body) })

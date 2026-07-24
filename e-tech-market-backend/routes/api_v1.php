@@ -122,6 +122,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // Admin Routes
     Route::prefix('admin')->name('admin.')->middleware(['admin', 'throttle:120,1'])->group(function () {
         Route::get('/dashboard/stats', [AdminDashboardController::class, 'stats'])->name('dashboard.stats');
+        Route::get('/orders/delivery-staff', [AdminOrdersController::class, 'getDeliveryStaffs'])->name('orders.delivery-staff');
         Route::get('/orders', [AdminOrdersController::class, 'index'])->name('orders');
         Route::get('/orders/{order}', [AdminOrdersController::class, 'show'])->name('orders');
         Route::patch('/orders/{order}', [AdminOrdersController::class, 'update'])->name('orders');

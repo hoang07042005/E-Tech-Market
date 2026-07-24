@@ -164,6 +164,14 @@ class OrderResource extends JsonResource
                 'total' => (float) ($this->total_amount ?? 0),
             ],
             'notes' => $this->notes ? (string) $this->notes : null,
+            'delivery_staff_id' => $this->delivery_staff_id ? (int) $this->delivery_staff_id : null,
+            'delivery_staff' => $this->whenLoaded('deliveryStaff', function () {
+                return [
+                    'id' => (int) $this->deliveryStaff->id,
+                    'name' => (string) $this->deliveryStaff->name,
+                    'phone' => $this->deliveryStaff->phone ? (string) $this->deliveryStaff->phone : null,
+                ];
+            }),
             'items' => $items,
             'status_history' => $history,
             'return_request' => $returnReq,

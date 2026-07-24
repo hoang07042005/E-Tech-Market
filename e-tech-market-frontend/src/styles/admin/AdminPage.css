@@ -1945,6 +1945,9 @@
   border-color: transparent;
   color: #fff;
   box-shadow: 0 12px 26px rgba(249, 115, 22, 0.22);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .admOrdersBtn.primary:hover {
@@ -2668,35 +2671,43 @@ html.dark .admOrdersFiltersAdvanced {
   color: #64748b;
 }
 
+.admOrderFormsGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin-top: 16px;
+}
+
 .admOrderStatusForm {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 240px;
-  margin-top: 10px;
-  padding: 14px 16px;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 16px;
+  padding: 16px 20px;
   border: 1px solid rgba(15, 23, 42, 0.08);
-  border-radius: 14px;
-  background: linear-gradient(135deg, #fffdf9 0%, #f8fafc 100%);
+  border-radius: 12px;
+  background: #ffffff;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+  height: 100%;
 }
 
 .admOrderStatusFormText {
   display: flex;
   flex-direction: column;
   gap: 4px;
-  min-width: 220px;
+  flex: 1;
 }
 
 .admOrderStatusFormLabel {
-  font-weight: 700;
-  font-size: 13px;
+  font-weight: 600;
+  font-size: 14px;
   color: #0f172a;
 }
 
 .admOrderStatusFormHint {
   margin: 0;
-  font-size: 12px;
-  font-weight: 600;
+  font-size: 13px;
+  font-weight: 400;
   color: #64748b;
   line-height: 1.4;
 }
@@ -2704,10 +2715,9 @@ html.dark .admOrdersFiltersAdvanced {
 .admOrderStatusFormControls {
   display: flex;
   align-items: center;
-  gap: 10px;
-  flex: 1;
-  justify-content: flex-end;
-  min-width: 280px;
+  gap: 12px;
+  width: 100%;
+  margin-top: auto;
 }
 
 .admOrderStatusFormControls select {
@@ -3113,15 +3123,24 @@ html.dark .admOrdersFiltersAdvanced {
     grid-template-columns: 1fr;
   }
 
+  .admOrderFormsGrid {
+    gap: 16px;
+  }
+
   .admOrderStatusForm {
-    flex-direction: column;
-    align-items: stretch;
     gap: 12px;
   }
 
   .admOrderStatusFormControls {
-    min-width: 0;
-    justify-content: stretch;
+    flex-direction: column;
+  }
+  
+  .admOrderStatusFormControls select {
+    width: 100%;
+  }
+
+  .admOrderStatusFormControls button {
+    align-self: flex-end;
   }
 }
 
@@ -6687,7 +6706,11 @@ html.dark
   }
   .admOrdersFilterToggle, .admOrdersLinkBtn, .admOrdersBtn.primary {
     font-size: 10px !important;
-    padding: 4px 8px !important;
+    padding: 6px 10px !important;
+    width: 100px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
   }
 
   /* Advanced Filters scaling */

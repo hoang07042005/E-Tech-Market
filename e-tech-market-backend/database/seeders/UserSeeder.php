@@ -11,7 +11,7 @@ class UserSeeder extends Seeder
     public function run(): void
     {
         // Create roles
-        $roles = ['admin', 'shop', 'customer'];
+        $roles = ['admin', 'shop', 'customer', 'delivery'];
         foreach ($roles as $roleName) {
             Role::firstOrCreate(['name' => $roleName, 'guard_name' => 'web']);
         }
@@ -41,6 +41,23 @@ class UserSeeder extends Seeder
             ]
         );
         $shop->assignRole('shop');
+
+        // Delivery staff
+        $delivery = \App\Models\User::updateOrCreate(
+            ['email' => 'delivery@etech.com'],
+            [
+                'name' => 'Delivery Staff',
+                'phone' => '0123456799',
+                'password' => Hash::make('delivery123'),
+                'is_active' => true,
+                'email_verified_at' => now(),
+            ]
+        );
+        $delivery->assignRole('delivery');
+
+        $deliveryRole = Role::findByName('delivery');
+        $manageOrdersPerm = \Spatie\Permission\Models\Permission::firstOrCreate(['name' => 'manage-orders', 'guard_name' => 'web']);
+        $deliveryRole->givePermissionTo($manageOrdersPerm);
 
         // Test customer with Vietnamese address
         $customer = \App\Models\User::updateOrCreate(

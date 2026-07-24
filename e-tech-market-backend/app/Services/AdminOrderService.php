@@ -11,6 +11,9 @@ use App\Support\ProductInventorySync;
 use Illuminate\Support\Carbon;
 use Illuminate\Pagination\LengthAwarePaginator;
 use App\Models\OrderReturnRequest;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\DeliveryAssignedEmail;
+use App\Models\User;
 
 class AdminOrderService
 {
@@ -156,7 +159,20 @@ class AdminOrderService
             $order->notes = $data['notes'] !== null ? (string) $data['notes'] : null;
         }
 
+        $oldDeliveryStaffId = $order->delivery_staff_id;
+
+        if (array_key_exists('delivery_staff_id', $data)) {
+            $order->delivery_staff_id = $data['delivery_staff_id'] ? (int) $data['delivery_staff_id'] : null;
+        }
+
         $order->save();
+
+        if ($order->delivery_staff_id && $order->delivery_staff_id !== $oldDeliveryStaffId) {
+            $staff = User::find($order->delivery_staff_id);
+            if ($staff && $staff->email) {
+                Mail::to($staff->email)->send(new DeliveryAssignedEmail($order));
+            }
+        }
 
         $newStatus = strtolower((string) ($order->status ?? ''));
         if ($newStatus !== '' && $newStatus !== $prevStatus) {
@@ -179,7 +195,7 @@ class AdminOrderService
         return $order;
     }
 
-    public function getAdminOrders(array $filters, int $perPage = 10, int $page = 1): array
+    public function getAdminOrders(array $filters, int $perPage = 10, int $page = 1, ?User $user = null): array
     {
         app(\App\Services\OrderService::class)->pruneExpiredUnpaidOrders();
 
@@ -195,8 +211,24 @@ class AdminOrderService
         $query = Order::query()
             ->with(['user:id,name,avatar_url', 'payment:id,order_id,method,status'])
             ->with(['items:id,order_id,product_name_snapshot,quantity'])
-            ->with(['returnRequest:id,order_id,status'])
-            ->orderByDesc('created_at');
+            ->with(['returnRequest:id,order_id,status']);
+
+        // Check if user is ONLY a delivery staff (doesn't have admin/order-staff roles)
+        $isOnlyDelivery = false;
+        if ($user) {
+            $roles = $user->roles->pluck('slug')->toArray();
+            if (in_array('delivery', $roles) && !in_array('admin', $roles) && !in_array('order-staff', $roles)) {
+                $isOnlyDelivery = true;
+            }
+        }
+
+        if ($isOnlyDelivery) {
+            // Delivery staff only sees their assigned orders, and sort by updated_at (most recently updated/assigned first)
+            $query->where('delivery_staff_id', $user->id)
+                  ->orderByDesc('updated_at');
+        } else {
+            $query->orderByDesc('created_at');
+        }
 
         if ($qCode !== '') {
             $query->where('order_code', 'ilike', '%'.$qCode.'%');

@@ -99,12 +99,13 @@ function hasPermissionForTab(tab: AdminTab, user: AdminUser | undefined): boolea
 
   switch (tab) {
     case 'dashboard':
-      return roles.length > 0
+      // allow if they have any role other than delivery
+      return roles.some(r => r !== 'delivery')
     case 'products':
     case 'categories':
       return roles.includes('warehouse-staff')
     case 'orders':
-      return roles.includes('order-staff') || roles.includes('warehouse-staff')
+      return roles.includes('order-staff') || roles.includes('warehouse-staff') || roles.includes('delivery')
     case 'blog':
     case 'productNews':
       return roles.includes('editor')
@@ -178,7 +179,18 @@ export default function AdminPage() {
     setDarkMode(nextDark)
   }
 
-  type QuickHit = 
+  // Redirect if ONLY delivery staff and trying to access anything other than orders
+  useEffect(() => {
+    if (currentUser && currentUser.roles) {
+      const roles = currentUser.roles.map(r => r.slug || '')
+      const isOnlyDelivery = roles.includes('delivery') && roles.length === 1
+      if (isOnlyDelivery && activeTab !== 'orders') {
+        navigate('/admin/orders', { replace: true })
+      }
+    }
+  }, [currentUser, activeTab, navigate])
+
+  type QuickHit =  
     | { type: 'product'; id: number; name: string; brand?: string | null; main_image_url?: string | null; category_name?: string | null }
     | { type: 'page'; id: string; name: string; tab: AdminTab; desc: string }
   const [qSearch, setQSearch] = useState('')
@@ -456,7 +468,7 @@ export default function AdminPage() {
 
         <nav className="adminSidebarNav">
           <SidebarSection title="CHÍNH" collapsed={isSidebarCollapsed} />
-          <SidebarItem active={activeTab === 'dashboard'} onClick={() => setActiveTab('dashboard')} icon={<DashboardIcon />} label="Bảng điều khiển" collapsed={isSidebarCollapsed} />
+          {hasPermissionForTab('dashboard', currentUser) && <SidebarItem active={activeTab === 'dashboard'} onClick={() => setActiveTab('dashboard')} icon={<DashboardIcon />} label="Bảng điều khiển" collapsed={isSidebarCollapsed} />}
           {hasPermissionForTab('orders', currentUser) && <SidebarItem active={activeTab === 'orders'} onClick={() => setActiveTab('orders')} icon={<CartIcon />} label="Đơn hàng" collapsed={isSidebarCollapsed} />}
           {hasPermissionForTab('flashSale', currentUser) && <SidebarItem active={activeTab === 'flashSale'} onClick={() => setActiveTab('flashSale')} icon={<FlashIcon />} label="Flash Sale" collapsed={isSidebarCollapsed} />}
           {hasPermissionForTab('products', currentUser) && <SidebarItem active={activeTab === 'products'} onClick={() => setActiveTab('products')} icon={<BoxIcon />} label="Sản phẩm" collapsed={isSidebarCollapsed} />}
@@ -936,7 +948,6 @@ function CartIcon() { return <svg width="20" height="20" viewBox="0 0 24 24" fil
 function UserGroupIcon() { return <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg> }
 function SettingsIcon() { return <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg> }
 function MenuIcon() { return <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg> }
-function SearchIcon() { return <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg> }
 function BellIcon() { return <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg> }
 function SunIcon() { return <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path></svg> }
 function MoonIcon() { return <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg> }

@@ -25,6 +25,12 @@ class OrdersController extends Controller
         $this->adminOrderService = $adminOrderService;
     }
 
+    public function getDeliveryStaffs(): JsonResponse
+    {
+        $staffs = \App\Models\User::role('delivery')->select('id', 'name', 'phone', 'avatar_url')->get();
+        return response()->json(['data' => $staffs]);
+    }
+
     public function approveReturnRequest(Order $order, ApproveReturnRequest $request): JsonResponse
     {
         $order->loadMissing(['returnRequest']);
@@ -147,6 +153,7 @@ class OrdersController extends Controller
             'statusHistories:id,order_id,from_status,to_status,changed_by_user_id,note,created_at',
             'statusHistories.changedBy:id,name,avatar_url',
             'returnRequest:id,order_id,user_id,status,content,media,admin_note,refund_proof,approved_by_user_id,approved_at,refunded_at,customer_confirmed_at,created_at,updated_at',
+            'deliveryStaff:id,name,phone,avatar_url',
         ]);
 
         return response()->json((new OrderResource($order))->resolve());
@@ -172,7 +179,7 @@ class OrdersController extends Controller
             'payment_status', 'date_from', 'date_to', 'return_requests'
         ]);
 
-        $result = $this->adminOrderService->getAdminOrders($filters, $perPage, $page);
+        $result = $this->adminOrderService->getAdminOrders($filters, $perPage, $page, $request->user());
         $paginator = $result['paginator'];
         $stats = $result['stats'];
 

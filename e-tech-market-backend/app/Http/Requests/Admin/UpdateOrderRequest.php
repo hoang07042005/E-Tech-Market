@@ -17,6 +17,7 @@ class UpdateOrderRequest extends FormRequest
             'status' => ['nullable', 'string', 'max:50'],
             'notes' => ['nullable', 'string'],
             'status_note' => ['nullable', 'string'],
+            'delivery_staff_id' => ['nullable', 'integer', 'exists:users,id'],
         ];
     }
 }

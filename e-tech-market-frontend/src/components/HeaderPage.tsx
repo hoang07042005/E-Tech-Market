@@ -50,7 +50,7 @@ type StoredUser = {
 
 function isAdminUser(user: StoredUser | null): boolean {
   if (!user?.roles || !Array.isArray(user.roles)) return false;
-  const staffRoles = ["admin", "warehouse-staff", "order-staff", "editor"];
+  const staffRoles = ["admin", "warehouse-staff", "order-staff", "editor", "delivery", "shop"];
   return user.roles.some((r) => staffRoles.includes(r?.slug || ""));
 }
 
