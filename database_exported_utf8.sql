@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
-\restrict JyQ8kp1fbYVCLqNO6DQBrUvdnqWCatHRqZXrOZ9z0vdX9Y6D8j8UxTHdjWWZ13P
+\restrict Jp7taw6FjaWSfQXqLCf94ITfOjFCfHhKbpoM3j0tOm35TObTE6WXc1ghZfAy7WO
 
 -- Dumped from database version 15.18
 -- Dumped by pg_dump version 15.18
@@ -18,344 +18,6 @@ SET xmloption = content;
 SET client_min_messages = warning;
 SET row_security = off;
 
-ALTER TABLE ONLY public.wishlists DROP CONSTRAINT wishlists_user_id_fkey;
-ALTER TABLE ONLY public.wishlists DROP CONSTRAINT wishlists_product_id_fkey;
-ALTER TABLE ONLY public.videos DROP CONSTRAINT videos_video_category_id_forei;
-ALTER TABLE ONLY public.videos DROP CONSTRAINT videos_product_id_forei;
-ALTER TABLE ONLY public.users DROP CONSTRAINT users_rank_id_forei;
-ALTER TABLE ONLY public.user_coupons DROP CONSTRAINT user_coupons_user_id_forei;
-ALTER TABLE ONLY public.user_coupons DROP CONSTRAINT user_coupons_coupon_id_forei;
-ALTER TABLE ONLY public.transactions DROP CONSTRAINT transactions_payment_id_fkey;
-ALTER TABLE ONLY public.role_has_permissions DROP CONSTRAINT role_has_permissions_role_id_forei;
-ALTER TABLE ONLY public.role_has_permissions DROP CONSTRAINT role_has_permissions_permission_id_forei;
-ALTER TABLE ONLY public.reviews DROP CONSTRAINT reviews_user_id_fkey;
-ALTER TABLE ONLY public.reviews DROP CONSTRAINT reviews_product_id_fkey;
-ALTER TABLE ONLY public.reviews DROP CONSTRAINT reviews_order_id_fkey;
-ALTER TABLE ONLY public.products DROP CONSTRAINT products_category_id_fkey;
-ALTER TABLE ONLY public.product_video DROP CONSTRAINT product_video_video_id_fkey;
-ALTER TABLE ONLY public.product_video DROP CONSTRAINT product_video_product_id_fkey;
-ALTER TABLE ONLY public.product_variants DROP CONSTRAINT product_variants_product_id_forei;
-ALTER TABLE ONLY public.product_specs DROP CONSTRAINT product_specs_product_variant_id_forei;
-ALTER TABLE ONLY public.product_specs DROP CONSTRAINT product_specs_product_id_fkey;
-ALTER TABLE ONLY public.product_shop_qnas DROP CONSTRAINT product_shop_qnas_user_id_forei;
-ALTER TABLE ONLY public.product_shop_qnas DROP CONSTRAINT product_shop_qnas_product_id_forei;
-ALTER TABLE ONLY public.product_news DROP CONSTRAINT product_news_product_id_forei;
-ALTER TABLE ONLY public.product_images DROP CONSTRAINT product_images_product_id_fkey;
-ALTER TABLE ONLY public.product_faqs DROP CONSTRAINT product_faqs_product_id_forei;
-ALTER TABLE ONLY public.point_history DROP CONSTRAINT point_history_user_id_fkey;
-ALTER TABLE ONLY public.payments DROP CONSTRAINT payments_order_id_fkey;
-ALTER TABLE ONLY public.orders DROP CONSTRAINT orders_user_id_fkey;
-ALTER TABLE ONLY public.orders DROP CONSTRAINT orders_shipping_method_id_fkey;
-ALTER TABLE ONLY public.orders DROP CONSTRAINT orders_coupon_id_fkey;
-ALTER TABLE ONLY public.orders DROP CONSTRAINT orders_cart_id_fkey;
-ALTER TABLE ONLY public.order_status_histories DROP CONSTRAINT order_status_histories_order_id_forei;
-ALTER TABLE ONLY public.order_status_histories DROP CONSTRAINT order_status_histories_changed_by_user_id_forei;
-ALTER TABLE ONLY public.order_return_requests DROP CONSTRAINT order_return_requests_user_id_forei;
-ALTER TABLE ONLY public.order_return_requests DROP CONSTRAINT order_return_requests_order_id_forei;
-ALTER TABLE ONLY public.order_return_requests DROP CONSTRAINT order_return_requests_approved_by_user_id_forei;
-ALTER TABLE ONLY public.order_items DROP CONSTRAINT order_items_variant_id_forei;
-ALTER TABLE ONLY public.order_items DROP CONSTRAINT order_items_product_id_fkey;
-ALTER TABLE ONLY public.order_items DROP CONSTRAINT order_items_order_id_fkey;
-ALTER TABLE ONLY public.notifications DROP CONSTRAINT notifications_user_id_fkey;
-ALTER TABLE ONLY public.model_has_roles DROP CONSTRAINT model_has_roles_role_id_forei;
-ALTER TABLE ONLY public.model_has_permissions DROP CONSTRAINT model_has_permissions_permission_id_forei;
-ALTER TABLE ONLY public.inventory_transactions DROP CONSTRAINT inventory_transactions_product_id_forei;
-ALTER TABLE ONLY public.inventory_transactions DROP CONSTRAINT inventory_transactions_inventory_id_forei;
-ALTER TABLE ONLY public.inventory DROP CONSTRAINT inventory_product_id_fkey;
-ALTER TABLE ONLY public.flash_sale_items DROP CONSTRAINT flash_sale_items_variant_id_forei;
-ALTER TABLE ONLY public.flash_sale_items DROP CONSTRAINT flash_sale_items_product_id_forei;
-ALTER TABLE ONLY public.flash_sale_items DROP CONSTRAINT flash_sale_items_flash_sale_id_forei;
-ALTER TABLE ONLY public.coupon_usage DROP CONSTRAINT coupon_usage_user_id_fkey;
-ALTER TABLE ONLY public.coupon_usage DROP CONSTRAINT coupon_usage_order_id_fkey;
-ALTER TABLE ONLY public.coupon_usage DROP CONSTRAINT coupon_usage_coupon_id_fkey;
-ALTER TABLE ONLY public.contact_messages DROP CONSTRAINT contact_messages_handled_by_user_id_forei;
-ALTER TABLE ONLY public.categories DROP CONSTRAINT categories_parent_id_fkey;
-ALTER TABLE ONLY public.carts DROP CONSTRAINT carts_user_id_fkey;
-ALTER TABLE ONLY public.cart_items DROP CONSTRAINT cart_items_variant_id_forei;
-ALTER TABLE ONLY public.cart_items DROP CONSTRAINT cart_items_product_id_fkey;
-ALTER TABLE ONLY public.cart_items DROP CONSTRAINT cart_items_cart_id_fkey;
-ALTER TABLE ONLY public.blog_posts DROP CONSTRAINT blog_posts_blog_category_id_forei;
-ALTER TABLE ONLY public.blog_posts DROP CONSTRAINT blog_posts_author_id_forei;
-ALTER TABLE ONLY public.blog_comments DROP CONSTRAINT blog_comments_user_id_forei;
-ALTER TABLE ONLY public.blog_comments DROP CONSTRAINT blog_comments_blog_post_id_forei;
-DROP INDEX public.uq_reviews_user_product;
-DROP INDEX public.uq_product_specs_variant_scope;
-DROP INDEX public.uq_product_images_product_primary;
-DROP INDEX public.reviews_status_index;
-DROP INDEX public.reviews_product_id_index;
-DROP INDEX public.products_is_active_is_featured_index;
-DROP INDEX public.products_is_active_index;
-DROP INDEX public.products_is_active_created_at_index;
-DROP INDEX public.products_is_active_category_id_index;
-DROP INDEX public.product_variants_product_id_price_is_active_index;
-DROP INDEX public.product_variants_product_id_is_active_price_index;
-DROP INDEX public.product_shop_qnas_product_id_answered_at_index;
-DROP INDEX public.product_news_product_id_is_active_sort_order_index;
-DROP INDEX public.product_faqs_product_id_sort_order_index;
-DROP INDEX public.personal_access_tokens_tokenable_type_tokenable_id_index;
-DROP INDEX public.orders_user_id_index;
-DROP INDEX public.orders_status_index;
-DROP INDEX public.orders_shipping_zone_id_index;
-DROP INDEX public.order_status_histories_order_created_idx;
-DROP INDEX public.order_status_histories_changed_by_idx;
-DROP INDEX public.order_return_requests_user_idx;
-DROP INDEX public.order_return_requests_status_created_idx;
-DROP INDEX public.order_return_requests_approved_by_idx;
-DROP INDEX public.model_has_roles_model_id_model_type_index;
-DROP INDEX public.model_has_permissions_model_id_model_type_index;
-DROP INDEX public.jobs_queue_index;
-DROP INDEX public.idx_wishlists_user_id;
-DROP INDEX public.idx_users_phone;
-DROP INDEX public.idx_transactions_payment_id;
-DROP INDEX public.idx_reviews_product_id;
-DROP INDEX public.idx_products_is_active;
-DROP INDEX public.idx_products_category_id;
-DROP INDEX public.idx_product_specs_product_id;
-DROP INDEX public.idx_product_images_product_id;
-DROP INDEX public.idx_orders_user_created;
-DROP INDEX public.idx_orders_status;
-DROP INDEX public.idx_order_items_product_id;
-DROP INDEX public.idx_order_items_order_id;
-DROP INDEX public.idx_notifications_user_id;
-DROP INDEX public.idx_notifications_read_at;
-DROP INDEX public.idx_inventory_product_id;
-DROP INDEX public.idx_coupon_usage_user_id;
-DROP INDEX public.idx_coupon_usage_coupon_id;
-DROP INDEX public.idx_categories_parent_id;
-DROP INDEX public.idx_categories_is_active;
-DROP INDEX public.idx_cart_items_product_id;
-DROP INDEX public.flash_sale_items_product_id_index;
-DROP INDEX public.coupons_code_index;
-DROP INDEX public.contact_messages_handled_idx;
-DROP INDEX public.contact_messages_handled_by_idx;
-DROP INDEX public.contact_messages_created_idx;
-DROP INDEX public.cart_items_cart_id_index;
-DROP INDEX public.admin_settings_updated_by_index;
-ALTER TABLE ONLY public.wishlists DROP CONSTRAINT wishlists_pkey;
-ALTER TABLE ONLY public.videos DROP CONSTRAINT videos_pkey;
-ALTER TABLE ONLY public.video_categories DROP CONSTRAINT video_categories_slug_unique;
-ALTER TABLE ONLY public.video_categories DROP CONSTRAINT video_categories_pkey;
-ALTER TABLE ONLY public.users DROP CONSTRAINT users_pkey;
-ALTER TABLE ONLY public.users DROP CONSTRAINT users_google_id_unique;
-ALTER TABLE ONLY public.users DROP CONSTRAINT users_email_key;
-ALTER TABLE ONLY public.user_coupons DROP CONSTRAINT user_coupons_user_id_coupon_id_unique;
-ALTER TABLE ONLY public.user_coupons DROP CONSTRAINT user_coupons_pkey;
-ALTER TABLE ONLY public.wishlists DROP CONSTRAINT uq_wishlists_user_product;
-ALTER TABLE ONLY public.inventory DROP CONSTRAINT uq_inventory_product_location;
-ALTER TABLE ONLY public.coupon_usage DROP CONSTRAINT uq_coupon_usage_order;
-ALTER TABLE ONLY public.transactions DROP CONSTRAINT transactions_provider_transaction_id_key;
-ALTER TABLE ONLY public.transactions DROP CONSTRAINT transactions_pkey;
-ALTER TABLE ONLY public.shipping_zones DROP CONSTRAINT shipping_zones_pkey;
-ALTER TABLE ONLY public.shipping_methods DROP CONSTRAINT shipping_methods_pkey;
-ALTER TABLE ONLY public.shipping_methods DROP CONSTRAINT shipping_methods_name_unique;
-ALTER TABLE ONLY public.shipping_methods DROP CONSTRAINT shipping_methods_name_key;
-ALTER TABLE ONLY public.roles DROP CONSTRAINT roles_pkey;
-ALTER TABLE ONLY public.roles DROP CONSTRAINT roles_name_guard_name_unique;
-ALTER TABLE ONLY public.role_has_permissions DROP CONSTRAINT role_has_permissions_pkey;
-ALTER TABLE ONLY public.reviews DROP CONSTRAINT reviews_pkey;
-ALTER TABLE ONLY public.products DROP CONSTRAINT products_slug_key;
-ALTER TABLE ONLY public.products DROP CONSTRAINT products_pkey;
-ALTER TABLE ONLY public.product_video DROP CONSTRAINT product_video_pkey;
-ALTER TABLE ONLY public.product_variants DROP CONSTRAINT product_variants_sku_unique;
-ALTER TABLE ONLY public.product_variants DROP CONSTRAINT product_variants_pkey;
-ALTER TABLE ONLY public.product_specs DROP CONSTRAINT product_specs_pkey;
-ALTER TABLE ONLY public.product_shop_qnas DROP CONSTRAINT product_shop_qnas_pkey;
-ALTER TABLE ONLY public.product_news DROP CONSTRAINT product_news_slug_unique;
-ALTER TABLE ONLY public.product_news DROP CONSTRAINT product_news_pkey;
-ALTER TABLE ONLY public.product_images DROP CONSTRAINT product_images_pkey;
-ALTER TABLE ONLY public.product_faqs DROP CONSTRAINT product_faqs_pkey;
-ALTER TABLE ONLY public.point_history DROP CONSTRAINT point_history_pkey;
-ALTER TABLE ONLY public.personal_access_tokens DROP CONSTRAINT personal_access_tokens_token_unique;
-ALTER TABLE ONLY public.personal_access_tokens DROP CONSTRAINT personal_access_tokens_pkey;
-ALTER TABLE ONLY public.permissions DROP CONSTRAINT permissions_pkey;
-ALTER TABLE ONLY public.permissions DROP CONSTRAINT permissions_name_guard_name_unique;
-ALTER TABLE ONLY public.payments DROP CONSTRAINT payments_transaction_code_key;
-ALTER TABLE ONLY public.payments DROP CONSTRAINT payments_pkey;
-ALTER TABLE ONLY public.payments DROP CONSTRAINT payments_order_id_key;
-ALTER TABLE ONLY public.password_reset_tokens DROP CONSTRAINT password_reset_tokens_pkey;
-ALTER TABLE ONLY public.orders DROP CONSTRAINT orders_pkey;
-ALTER TABLE ONLY public.orders DROP CONSTRAINT orders_order_code_key;
-ALTER TABLE ONLY public.order_status_histories DROP CONSTRAINT order_status_histories_pkey;
-ALTER TABLE ONLY public.order_return_requests DROP CONSTRAINT order_return_requests_pkey;
-ALTER TABLE ONLY public.order_return_requests DROP CONSTRAINT order_return_requests_order_unique;
-ALTER TABLE ONLY public.order_items DROP CONSTRAINT order_items_pkey;
-ALTER TABLE ONLY public.notifications DROP CONSTRAINT notifications_pkey;
-ALTER TABLE ONLY public.newsletter_subscriptions DROP CONSTRAINT newsletter_subscriptions_pkey;
-ALTER TABLE ONLY public.newsletter_subscriptions DROP CONSTRAINT newsletter_subscriptions_email_unique;
-ALTER TABLE ONLY public.model_has_roles DROP CONSTRAINT model_has_roles_pkey;
-ALTER TABLE ONLY public.model_has_permissions DROP CONSTRAINT model_has_permissions_pkey;
-ALTER TABLE ONLY public.migrations DROP CONSTRAINT migrations_pkey;
-ALTER TABLE ONLY public.membership_ranks DROP CONSTRAINT membership_ranks_pkey;
-ALTER TABLE ONLY public.jobs DROP CONSTRAINT jobs_pkey;
-ALTER TABLE ONLY public.inventory_transactions DROP CONSTRAINT inventory_transactions_pkey;
-ALTER TABLE ONLY public.inventory DROP CONSTRAINT inventory_pkey;
-ALTER TABLE ONLY public.flash_sales DROP CONSTRAINT flash_sales_pkey;
-ALTER TABLE ONLY public.flash_sale_items DROP CONSTRAINT flash_sale_items_pkey;
-ALTER TABLE ONLY public.failed_jobs DROP CONSTRAINT failed_jobs_uuid_unique;
-ALTER TABLE ONLY public.failed_jobs DROP CONSTRAINT failed_jobs_pkey;
-ALTER TABLE ONLY public.coupons DROP CONSTRAINT coupons_pkey;
-ALTER TABLE ONLY public.coupons DROP CONSTRAINT coupons_code_key;
-ALTER TABLE ONLY public.coupon_usage DROP CONSTRAINT coupon_usage_pkey;
-ALTER TABLE ONLY public.contact_messages DROP CONSTRAINT contact_messages_pkey;
-ALTER TABLE ONLY public.categories DROP CONSTRAINT categories_slug_key;
-ALTER TABLE ONLY public.categories DROP CONSTRAINT categories_pkey;
-ALTER TABLE ONLY public.carts DROP CONSTRAINT carts_user_id_key;
-ALTER TABLE ONLY public.carts DROP CONSTRAINT carts_pkey;
-ALTER TABLE ONLY public.cart_items DROP CONSTRAINT cart_items_pkey;
-ALTER TABLE ONLY public.blog_posts DROP CONSTRAINT blog_posts_slug_unique;
-ALTER TABLE ONLY public.blog_posts DROP CONSTRAINT blog_posts_pkey;
-ALTER TABLE ONLY public.blog_comments DROP CONSTRAINT blog_comments_pkey;
-ALTER TABLE ONLY public.blog_categories DROP CONSTRAINT blog_categories_slug_unique;
-ALTER TABLE ONLY public.blog_categories DROP CONSTRAINT blog_categories_pkey;
-ALTER TABLE ONLY public.banners DROP CONSTRAINT banners_pkey;
-ALTER TABLE ONLY public.admin_settings DROP CONSTRAINT admin_settings_pkey;
-ALTER TABLE ONLY public.admin_settings DROP CONSTRAINT admin_settings_key_unique;
-ALTER TABLE public.wishlists ALTER COLUMN id DROP DEFAULT;
-ALTER TABLE public.videos ALTER COLUMN id DROP DEFAULT;
-ALTER TABLE public.video_categories ALTER COLUMN id DROP DEFAULT;
-ALTER TABLE public.users ALTER COLUMN id DROP DEFAULT;
-ALTER TABLE public.user_coupons ALTER COLUMN id DROP DEFAULT;
-ALTER TABLE public.transactions ALTER COLUMN id DROP DEFAULT;
-ALTER TABLE public.shipping_zones ALTER COLUMN id DROP DEFAULT;
-ALTER TABLE public.shipping_methods ALTER COLUMN id DROP DEFAULT;
-ALTER TABLE public.roles ALTER COLUMN id DROP DEFAULT;
-ALTER TABLE public.reviews ALTER COLUMN id DROP DEFAULT;
-ALTER TABLE public.products ALTER COLUMN id DROP DEFAULT;
-ALTER TABLE public.product_video ALTER COLUMN id DROP DEFAULT;
-ALTER TABLE public.product_variants ALTER COLUMN id DROP DEFAULT;
-ALTER TABLE public.product_specs ALTER COLUMN id DROP DEFAULT;
-ALTER TABLE public.product_shop_qnas ALTER COLUMN id DROP DEFAULT;
-ALTER TABLE public.product_news ALTER COLUMN id DROP DEFAULT;
-ALTER TABLE public.product_images ALTER COLUMN id DROP DEFAULT;
-ALTER TABLE public.product_faqs ALTER COLUMN id DROP DEFAULT;
-ALTER TABLE public.point_history ALTER COLUMN id DROP DEFAULT;
-ALTER TABLE public.personal_access_tokens ALTER COLUMN id DROP DEFAULT;
-ALTER TABLE public.permissions ALTER COLUMN id DROP DEFAULT;
-ALTER TABLE public.payments ALTER COLUMN id DROP DEFAULT;
-ALTER TABLE public.orders ALTER COLUMN id DROP DEFAULT;
-ALTER TABLE public.order_status_histories ALTER COLUMN id DROP DEFAULT;
-ALTER TABLE public.order_return_requests ALTER COLUMN id DROP DEFAULT;
-ALTER TABLE public.order_items ALTER COLUMN id DROP DEFAULT;
-ALTER TABLE public.notifications ALTER COLUMN id DROP DEFAULT;
-ALTER TABLE public.newsletter_subscriptions ALTER COLUMN id DROP DEFAULT;
-ALTER TABLE public.migrations ALTER COLUMN id DROP DEFAULT;
-ALTER TABLE public.membership_ranks ALTER COLUMN id DROP DEFAULT;
-ALTER TABLE public.jobs ALTER COLUMN id DROP DEFAULT;
-ALTER TABLE public.inventory_transactions ALTER COLUMN id DROP DEFAULT;
-ALTER TABLE public.inventory ALTER COLUMN id DROP DEFAULT;
-ALTER TABLE public.flash_sales ALTER COLUMN id DROP DEFAULT;
-ALTER TABLE public.flash_sale_items ALTER COLUMN id DROP DEFAULT;
-ALTER TABLE public.failed_jobs ALTER COLUMN id DROP DEFAULT;
-ALTER TABLE public.coupons ALTER COLUMN id DROP DEFAULT;
-ALTER TABLE public.coupon_usage ALTER COLUMN id DROP DEFAULT;
-ALTER TABLE public.contact_messages ALTER COLUMN id DROP DEFAULT;
-ALTER TABLE public.categories ALTER COLUMN id DROP DEFAULT;
-ALTER TABLE public.carts ALTER COLUMN id DROP DEFAULT;
-ALTER TABLE public.cart_items ALTER COLUMN id DROP DEFAULT;
-ALTER TABLE public.blog_posts ALTER COLUMN id DROP DEFAULT;
-ALTER TABLE public.blog_comments ALTER COLUMN id DROP DEFAULT;
-ALTER TABLE public.blog_categories ALTER COLUMN id DROP DEFAULT;
-ALTER TABLE public.banners ALTER COLUMN id DROP DEFAULT;
-ALTER TABLE public.admin_settings ALTER COLUMN id DROP DEFAULT;
-DROP SEQUENCE public.wishlists_id_seq;
-DROP TABLE public.wishlists;
-DROP SEQUENCE public.videos_id_seq;
-DROP TABLE public.videos;
-DROP SEQUENCE public.video_categories_id_seq;
-DROP TABLE public.video_categories;
-DROP SEQUENCE public.users_id_seq;
-DROP TABLE public.users;
-DROP SEQUENCE public.user_coupons_id_seq;
-DROP TABLE public.user_coupons;
-DROP SEQUENCE public.transactions_id_seq;
-DROP TABLE public.transactions;
-DROP SEQUENCE public.shipping_zones_id_seq;
-DROP TABLE public.shipping_zones;
-DROP SEQUENCE public.shipping_methods_id_seq;
-DROP TABLE public.shipping_methods;
-DROP SEQUENCE public.roles_id_seq;
-DROP TABLE public.roles;
-DROP TABLE public.role_has_permissions;
-DROP SEQUENCE public.reviews_id_seq;
-DROP TABLE public.reviews;
-DROP SEQUENCE public.products_id_seq;
-DROP TABLE public.products;
-DROP SEQUENCE public.product_video_id_seq;
-DROP TABLE public.product_video;
-DROP SEQUENCE public.product_variants_id_seq;
-DROP TABLE public.product_variants;
-DROP SEQUENCE public.product_specs_id_seq;
-DROP TABLE public.product_specs;
-DROP SEQUENCE public.product_shop_qnas_id_seq;
-DROP TABLE public.product_shop_qnas;
-DROP SEQUENCE public.product_news_id_seq;
-DROP TABLE public.product_news;
-DROP SEQUENCE public.product_images_id_seq;
-DROP TABLE public.product_images;
-DROP SEQUENCE public.product_faqs_id_seq;
-DROP TABLE public.product_faqs;
-DROP SEQUENCE public.point_history_id_seq;
-DROP TABLE public.point_history;
-DROP SEQUENCE public.personal_access_tokens_id_seq;
-DROP TABLE public.personal_access_tokens;
-DROP SEQUENCE public.permissions_id_seq;
-DROP TABLE public.permissions;
-DROP SEQUENCE public.payments_id_seq;
-DROP TABLE public.payments;
-DROP TABLE public.password_reset_tokens;
-DROP SEQUENCE public.orders_id_seq;
-DROP TABLE public.orders;
-DROP SEQUENCE public.order_status_histories_id_seq;
-DROP TABLE public.order_status_histories;
-DROP SEQUENCE public.order_return_requests_id_seq;
-DROP TABLE public.order_return_requests;
-DROP SEQUENCE public.order_items_id_seq;
-DROP TABLE public.order_items;
-DROP SEQUENCE public.notifications_id_seq;
-DROP TABLE public.notifications;
-DROP SEQUENCE public.newsletter_subscriptions_id_seq;
-DROP TABLE public.newsletter_subscriptions;
-DROP TABLE public.model_has_roles;
-DROP TABLE public.model_has_permissions;
-DROP SEQUENCE public.migrations_id_seq;
-DROP TABLE public.migrations;
-DROP SEQUENCE public.membership_ranks_id_seq;
-DROP TABLE public.membership_ranks;
-DROP SEQUENCE public.jobs_id_seq;
-DROP TABLE public.jobs;
-DROP SEQUENCE public.inventory_transactions_id_seq;
-DROP TABLE public.inventory_transactions;
-DROP SEQUENCE public.inventory_id_seq;
-DROP TABLE public.inventory;
-DROP SEQUENCE public.flash_sales_id_seq;
-DROP TABLE public.flash_sales;
-DROP SEQUENCE public.flash_sale_items_id_seq;
-DROP TABLE public.flash_sale_items;
-DROP SEQUENCE public.failed_jobs_id_seq;
-DROP TABLE public.failed_jobs;
-DROP SEQUENCE public.coupons_id_seq;
-DROP TABLE public.coupons;
-DROP SEQUENCE public.coupon_usage_id_seq;
-DROP TABLE public.coupon_usage;
-DROP SEQUENCE public.contact_messages_id_seq;
-DROP TABLE public.contact_messages;
-DROP SEQUENCE public.categories_id_seq;
-DROP TABLE public.categories;
-DROP SEQUENCE public.carts_id_seq;
-DROP TABLE public.carts;
-DROP SEQUENCE public.cart_items_id_seq;
-DROP TABLE public.cart_items;
-DROP SEQUENCE public.blog_posts_id_seq;
-DROP TABLE public.blog_posts;
-DROP SEQUENCE public.blog_comments_id_seq;
-DROP TABLE public.blog_comments;
-DROP SEQUENCE public.blog_categories_id_seq;
-DROP TABLE public.blog_categories;
-DROP SEQUENCE public.banners_id_seq;
-DROP TABLE public.banners;
-DROP SEQUENCE public.admin_settings_id_seq;
-DROP TABLE public.admin_settings;
--- *not* dropping schema, since initdb creates it
 --
 -- Name: public; Type: SCHEMA; Schema: -; Owner: postgres
 --
@@ -1396,6 +1058,7 @@ CREATE TABLE public.orders (
     points_earned integer DEFAULT 0,
     points_used integer DEFAULT 0 NOT NULL,
     points_discount numeric(15,2) DEFAULT 0 NOT NULL,
+    delivery_staff_id bigint,
     CONSTRAINT orders_discount_amount_check CHECK ((discount_amount >= (0)::numeric)),
     CONSTRAINT orders_payment_status_check CHECK (((payment_status)::text = ANY (ARRAY['pending'::text, 'pending_payment'::text, 'paid'::text, 'failed'::text, 'refunded'::text, 'cancelled'::text]))),
     CONSTRAINT orders_shipping_fee_check CHECK ((shipping_fee >= (0)::numeric)),
@@ -2722,7 +2385,7 @@ COPY public.admin_settings (id, key, value, updated_by, created_at, updated_at) 
 5	chat	{"service":"zalo","facebook_page_id":null,"zalo_oa_id":"doviethoang@gmail.com","tawkto_property_id":null,"tawkto_widget_id":null}	11	2026-05-11 14:53:30	2026-07-01 16:01:44
 1	store_profile	{"store_name":"E-Tech Market Official","contact_email":"e_tech_marketsupport@gmail.com","contact_phone":"1234567890","warehouse_address":"S\\u1ed1 123 \\u0110\\u01b0\\u1eddng C\\u00f4ng Ngh\\u1ec7, Ph\\u01b0\\u1eddng B\\u1ebfn Ngh\\u00e9, Qu\\u1eadn 1, TP. H\\u1ed3 Ch\\u00ed Minh","currency":"VND","language":"vi","maintenance_mode":false,"products_per_page":24}	11	2026-05-07 01:10:19	2026-07-08 16:51:20
 2	payment_gateways	{"momo":{"enabled":true,"partner_id":null},"vnpay":{"enabled":true,"tmn_code":null},"cod":{"enabled":true}}	11	2026-05-07 01:10:19	2026-07-10 13:50:34
-4	security	{"security_2fa_enabled_user_10":false,"security_2fa_enabled_user_11":true}	11	2026-05-07 01:10:19	2026-07-20 09:45:31
+4	security	{"security_2fa_enabled_user_10":false,"security_2fa_enabled_user_11":false}	11	2026-05-07 01:10:19	2026-07-24 13:47:52
 \.
 
 
@@ -2813,8 +2476,6 @@ COPY public.carts (id, user_id, status, created_at, updated_at) FROM stdin;
 --
 
 COPY public.categories (id, parent_id, name, slug, description, sort_order, is_active, created_at, updated_at, deleted_at, image, type) FROM stdin;
-3	1	Laptop	laptop	M?y � xchh tay	20	t	2026-04-29 08:03:10.923461+00	2026-04-29 08:03:10.923461+00	\N	\N	product
-16	14	Tai Nghe	tai-nghe	\N	0	t	2026-05-05 03:29:40+00	2026-05-05 03:29:40+00	\N	\N	product
 17	14	Loa	loa	\N	0	t	2026-05-05 03:29:51+00	2026-05-05 03:29:51+00	\N	\N	product
 18	14	Mic Karaoke	mic-karaoke	\N	0	t	2026-05-05 03:30:28+00	2026-05-05 03:30:28+00	\N	\N	product
 30	28	Tivi	tivi	\N	0	t	2026-05-12 06:44:50+00	2026-05-12 06:44:50+00	\N	\N	product
@@ -2823,7 +2484,6 @@ COPY public.categories (id, parent_id, name, slug, description, sort_order, is_a
 207	6	CPU	cpu	CPU	0	t	2026-06-22 13:31:21+00	2026-06-22 13:31:21+00	\N	\N	product
 206	6	RAM	ram	RAM	0	t	2026-06-22 13:30:37+00	2026-06-22 13:32:11+00	\N	\N	product
 14	\N	Âm thanh & Mic thu âm	am-thanh	\N	0	t	2026-05-04 21:20:08+00	2026-07-02 08:36:44+00	\N	/storage/categories/ODiAHO5U2yMJ0d3IivmrL0D7mmqriSfjF5fjHpDd.jpg	product
-4	\N	Phụ kiện	phu-kien	�?p lƱng, c?p, tai nghe...	30	t	2026-04-29 08:03:10.923461+00	2026-07-01 09:42:06+00	\N	/storage/categories/DIOD9bLx3EFp1l4NbJS6TWq8yCbquSIEK3wIX0cF.png	product
 26	\N	Đồ gia dụng	do-gia-dung	\N	0	t	2026-05-12 06:39:42+00	2026-07-01 09:42:22+00	\N	/storage/categories/0baubFRuR9VB7KMl3gx9yqanSZ6xm52cWT8Ca34B.png	product
 11	5	Linh kiện điện thoại	li-kien-dien-thoai	\N	0	t	2026-05-03 21:08:28+00	2026-07-01 09:42:43+00	\N	\N	product
 6	5	Linh kiện máy PC	li-kien-may-ti	\N	0	t	2026-05-03 21:06:18+00	2026-07-01 09:43:02+00	\N	\N	product
@@ -2838,7 +2498,6 @@ COPY public.categories (id, parent_id, name, slug, description, sort_order, is_a
 20	4	Phụ kiện máy tính	phu-kien-may-ti	\N	0	t	2026-05-05 03:32:09+00	2026-07-01 09:46:35+00	\N	\N	product
 23	4	Phụ kiện mạng	phu-kien-mang	\N	0	t	2026-05-05 03:34:53+00	2026-07-01 09:46:44+00	\N	\N	product
 8	4	Phụ kiện & kết nối	phu-kien-&-ket-noi	\N	0	t	2026-05-03 21:07:33+00	2026-07-01 09:46:54+00	\N	\N	product
-2	1	Điện thoại	dien-thoai	Smartphone & accessories	10	t	2026-04-29 08:03:10.923461+00	2026-07-01 09:47:21+00	\N	\N	product
 49	1	Đồng hồ	dong-ho	\N	0	t	2026-05-12 07:02:23+00	2026-07-01 09:47:31+00	\N	\N	product
 53	1	Màn hình	man-hi	\N	0	t	2026-05-13 08:10:07+00	2026-07-01 09:47:40+00	\N	\N	product
 52	1	Máy in	may-in	\N	0	t	2026-05-13 08:09:47+00	2026-07-01 09:47:48+00	\N	\N	product
@@ -2871,6 +2530,14 @@ COPY public.categories (id, parent_id, name, slug, description, sort_order, is_a
 211	209	Tản nhiệt khí	tan-iet-khi	T�?n i�?t kh?�	0	t	2026-06-22 13:48:25+00	2026-07-01 09:45:18+00	\N	\N	product
 212	209	Tản nhiệt nước	tan-iet-nuoc	T�?n i�?t n?íchc	0	t	2026-06-22 13:49:06+00	2026-07-01 09:45:29+00	\N	\N	product
 5	\N	Linh kiện	linh-kien	\N	0	t	2026-05-03 21:04:53+00	2026-07-02 08:36:37+00	\N	/storage/categories/rjAGUtFwK7jdyhyRm1amKdQ7AoIV8n6pEne8FauH.png	product
+3	1	Laptop	laptop	M?y � xchh tay	20	t	2026-04-29 08:03:10.923461+00	2026-07-24 13:39:53+00	\N	categories/laptop.png	product
+2	1	Điện thoại	dien-thoai	Smartphone & accessories	10	t	2026-04-29 08:03:10.923461+00	2026-07-24 13:39:53+00	\N	categories/phone.png	product
+215	\N	Tablet	tablet	\N	0	t	2026-07-24 13:39:53+00	2026-07-24 13:39:53+00	\N	categories/tablet.png	product
+16	14	Tai nghe	tai-nghe	\N	0	t	2026-05-05 03:29:40+00	2026-07-24 13:39:53+00	\N	categories/headphone.png	product
+216	\N	Đồng hồ thông minh	dong-ho-thong-minh	\N	0	t	2026-07-24 13:39:53+00	2026-07-24 13:39:53+00	\N	categories/watch.png	product
+4	\N	Phụ kiện	phu-kien	�?p lƱng, c?p, tai nghe...	30	t	2026-04-29 08:03:10.923461+00	2026-07-24 13:39:53+00	\N	categories/accessory.png	product
+217	\N	PC - Máy bàn	pc-may-ban	\N	0	t	2026-07-24 13:39:53+00	2026-07-24 13:39:53+00	\N	categories/pc.png	product
+218	\N	Màn hình	man-hinh	\N	0	t	2026-07-24 13:39:53+00	2026-07-24 13:39:53+00	\N	categories/monitor.png	product
 \.
 
 
@@ -3032,8 +2699,8 @@ COPY public.inventory (id, product_id, location_code, quantity_on_hand, reorder_
 116	196	main	58	10	2026-06-22 11:35:14+00	2026-06-22 11:35:14+00	2026-07-13 13:22:13+00
 121	200	main	85	10	2026-06-22 14:34:56+00	2026-06-22 14:34:56+00	2026-07-13 13:22:13+00
 118	197	main	86	10	2026-06-22 14:03:33+00	2026-06-22 14:03:33+00	2026-07-20 10:45:40+00
-132	211	main	40	10	2026-07-09 15:51:20+00	2026-07-09 15:32:16+00	2026-07-20 11:10:24+00
-130	209	main	44	10	2026-07-20 11:15:32+00	2026-06-23 15:47:00+00	2026-07-20 11:15:32+00
+132	211	main	47	10	2026-07-24 13:42:28+00	2026-07-09 15:32:16+00	2026-07-24 13:42:28+00
+130	209	main	45	10	2026-07-24 13:42:28+00	2026-06-23 15:47:00+00	2026-07-24 13:42:28+00
 \.
 
 
@@ -3294,6 +2961,14 @@ COPY public.inventory_transactions (id, product_id, inventory_id, location_code,
 327	211	132	main	-1	40	order_checkout	\N	2026-07-20 11:10:24	2026-07-20 11:10:24
 328	209	130	main	-1	43	order_checkout	\N	2026-07-20 11:15:25	2026-07-20 11:15:25
 329	209	130	main	1	44	order_cancelled	\N	2026-07-20 11:15:32	2026-07-20 11:15:32
+330	211	132	main	1	41	order_cancelled	\N	2026-07-24 13:42:28	2026-07-24 13:42:28
+331	211	132	main	1	42	order_cancelled	\N	2026-07-24 13:42:28	2026-07-24 13:42:28
+332	211	132	main	1	43	order_cancelled	\N	2026-07-24 13:42:28	2026-07-24 13:42:28
+333	211	132	main	1	44	order_cancelled	\N	2026-07-24 13:42:28	2026-07-24 13:42:28
+334	211	132	main	1	45	order_cancelled	\N	2026-07-24 13:42:28	2026-07-24 13:42:28
+335	211	132	main	1	46	order_cancelled	\N	2026-07-24 13:42:28	2026-07-24 13:42:28
+336	211	132	main	1	47	order_cancelled	\N	2026-07-24 13:42:28	2026-07-24 13:42:28
+337	209	130	main	1	45	order_cancelled	\N	2026-07-24 13:42:28	2026-07-24 13:42:28
 \.
 
 
@@ -3302,26 +2977,6 @@ COPY public.inventory_transactions (id, product_id, inventory_id, location_code,
 --
 
 COPY public.jobs (id, queue, payload, attempts, reserved_at, available_at, created_at) FROM stdin;
-495	default	{"uuid":"2b94736f-59a3-4f39-8749-24ee80711feb","displayName":"App\\\\Jobs\\\\InvalidateAdminDashboardCache","job":"Illuminate\\\\Queue\\\\CallQueuedHandler@call","maxTries":null,"maxExceptions":null,"failOnTimeout":false,"backoff":null,"timeout":null,"retryUntil":null,"data":{"commandName":"App\\\\Jobs\\\\InvalidateAdminDashboardCache","command":"O:38:\\"App\\\\Jobs\\\\InvalidateAdminDashboardCache\\":0:{}"}}	0	\N	1783673796	1783673796
-496	default	{"uuid":"27c138a3-6509-4c13-ac8b-4f33e9f03b08","displayName":"App\\\\Notifications\\\\OrderConfirmationNotification","job":"Illuminate\\\\Queue\\\\CallQueuedHandler@call","maxTries":3,"maxExceptions":null,"failOnTimeout":false,"backoff":"10,30,60","timeout":null,"retryUntil":null,"data":{"commandName":"Illuminate\\\\Notifications\\\\SendQueuedNotifications","command":"O:48:\\"Illuminate\\\\Notifications\\\\SendQueuedNotifications\\":4:{s:11:\\"notifiables\\";O:29:\\"Illuminate\\\\Support\\\\Collection\\":2:{s:8:\\"\\u0000*\\u0000items\\";a:1:{i:0;O:44:\\"Illuminate\\\\Notifications\\\\AnonymousNotifiable\\":1:{s:6:\\"routes\\";a:1:{s:4:\\"mail\\";s:23:\\"viethoang7425@gmail.com\\";}}}s:28:\\"\\u0000*\\u0000escapeWhenCastingToString\\";b:0;}s:12:\\"notification\\";O:47:\\"App\\\\Notifications\\\\OrderConfirmationNotification\\":2:{s:5:\\"order\\";O:45:\\"Illuminate\\\\Contracts\\\\Database\\\\ModelIdentifier\\":5:{s:5:\\"class\\";s:16:\\"App\\\\Models\\\\Order\\";s:2:\\"id\\";i:297;s:9:\\"relations\\";a:2:{i:0;s:5:\\"items\\";i:1;s:4:\\"user\\";}s:10:\\"connection\\";s:5:\\"pgsql\\";s:15:\\"collectionClass\\";N;}s:2:\\"id\\";s:36:\\"17e979c7-332a-4627-85e6-7b90f0c16b99\\";}s:8:\\"channels\\";a:1:{i:0;s:4:\\"mail\\";}s:5:\\"tries\\";i:3;}"}}	0	\N	1783673841	1783673841
-497	default	{"uuid":"b2fecba6-961b-443a-b59f-2726af80a8a5","displayName":"App\\\\Jobs\\\\InvalidateAdminDashboardCache","job":"Illuminate\\\\Queue\\\\CallQueuedHandler@call","maxTries":null,"maxExceptions":null,"failOnTimeout":false,"backoff":null,"timeout":null,"retryUntil":null,"data":{"commandName":"App\\\\Jobs\\\\InvalidateAdminDashboardCache","command":"O:38:\\"App\\\\Jobs\\\\InvalidateAdminDashboardCache\\":0:{}"}}	0	\N	1783673886	1783673886
-498	default	{"uuid":"5324b20c-f828-4cc2-9823-16d406476bf6","displayName":"App\\\\Notifications\\\\OrderConfirmationNotification","job":"Illuminate\\\\Queue\\\\CallQueuedHandler@call","maxTries":3,"maxExceptions":null,"failOnTimeout":false,"backoff":"10,30,60","timeout":null,"retryUntil":null,"data":{"commandName":"Illuminate\\\\Notifications\\\\SendQueuedNotifications","command":"O:48:\\"Illuminate\\\\Notifications\\\\SendQueuedNotifications\\":4:{s:11:\\"notifiables\\";O:29:\\"Illuminate\\\\Support\\\\Collection\\":2:{s:8:\\"\\u0000*\\u0000items\\";a:1:{i:0;O:44:\\"Illuminate\\\\Notifications\\\\AnonymousNotifiable\\":1:{s:6:\\"routes\\";a:1:{s:4:\\"mail\\";s:23:\\"e_tech_market@gmail.com\\";}}}s:28:\\"\\u0000*\\u0000escapeWhenCastingToString\\";b:0;}s:12:\\"notification\\";O:47:\\"App\\\\Notifications\\\\OrderConfirmationNotification\\":2:{s:5:\\"order\\";O:45:\\"Illuminate\\\\Contracts\\\\Database\\\\ModelIdentifier\\":5:{s:5:\\"class\\";s:16:\\"App\\\\Models\\\\Order\\";s:2:\\"id\\";i:298;s:9:\\"relations\\";a:4:{i:0;s:5:\\"items\\";i:1;s:13:\\"items.product\\";i:2;s:13:\\"items.variant\\";i:3;s:7:\\"payment\\";}s:10:\\"connection\\";s:5:\\"pgsql\\";s:15:\\"collectionClass\\";N;}s:2:\\"id\\";s:36:\\"ae373340-46c4-40bc-b142-0e33b63a75f8\\";}s:8:\\"channels\\";a:1:{i:0;s:4:\\"mail\\";}s:5:\\"tries\\";i:3;}"}}	0	\N	1783923733	1783923733
-499	default	{"uuid":"32fd485f-6acb-49f9-acd8-253f4fb9d11a","displayName":"App\\\\Jobs\\\\InvalidateAdminDashboardCache","job":"Illuminate\\\\Queue\\\\CallQueuedHandler@call","maxTries":null,"maxExceptions":null,"failOnTimeout":false,"backoff":null,"timeout":null,"retryUntil":null,"data":{"commandName":"App\\\\Jobs\\\\InvalidateAdminDashboardCache","command":"O:38:\\"App\\\\Jobs\\\\InvalidateAdminDashboardCache\\":0:{}"}}	0	\N	1783923733	1783923733
-500	default	{"uuid":"6f480d86-2515-44d3-aecb-197d8ae13397","displayName":"App\\\\Jobs\\\\InvalidateAdminDashboardCache","job":"Illuminate\\\\Queue\\\\CallQueuedHandler@call","maxTries":null,"maxExceptions":null,"failOnTimeout":false,"backoff":null,"timeout":null,"retryUntil":null,"data":{"commandName":"App\\\\Jobs\\\\InvalidateAdminDashboardCache","command":"O:38:\\"App\\\\Jobs\\\\InvalidateAdminDashboardCache\\":0:{}"}}	0	\N	1783923768	1783923768
-501	default	{"uuid":"1f4a3294-519d-43c8-98fe-87429f62ef4a","displayName":"App\\\\Jobs\\\\InvalidateAdminDashboardCache","job":"Illuminate\\\\Queue\\\\CallQueuedHandler@call","maxTries":null,"maxExceptions":null,"failOnTimeout":false,"backoff":null,"timeout":null,"retryUntil":null,"data":{"commandName":"App\\\\Jobs\\\\InvalidateAdminDashboardCache","command":"O:38:\\"App\\\\Jobs\\\\InvalidateAdminDashboardCache\\":0:{}"}}	0	\N	1783923770	1783923770
-502	default	{"uuid":"bfc9390e-3a23-4325-9b65-a46fd5e15b76","displayName":"App\\\\Jobs\\\\InvalidateAdminDashboardCache","job":"Illuminate\\\\Queue\\\\CallQueuedHandler@call","maxTries":null,"maxExceptions":null,"failOnTimeout":false,"backoff":null,"timeout":null,"retryUntil":null,"data":{"commandName":"App\\\\Jobs\\\\InvalidateAdminDashboardCache","command":"O:38:\\"App\\\\Jobs\\\\InvalidateAdminDashboardCache\\":0:{}"}}	0	\N	1784518516	1784518516
-503	default	{"uuid":"c01764c7-c1d8-43fe-b280-9d037e2a276e","displayName":"App\\\\Jobs\\\\InvalidateAdminDashboardCache","job":"Illuminate\\\\Queue\\\\CallQueuedHandler@call","maxTries":null,"maxExceptions":null,"failOnTimeout":false,"backoff":null,"timeout":null,"retryUntil":null,"data":{"commandName":"App\\\\Jobs\\\\InvalidateAdminDashboardCache","command":"O:38:\\"App\\\\Jobs\\\\InvalidateAdminDashboardCache\\":0:{}"}}	0	\N	1784518659	1784518659
-504	default	{"uuid":"3c96dc44-0e09-4250-949a-a66a1f310dc6","displayName":"App\\\\Jobs\\\\InvalidateAdminDashboardCache","job":"Illuminate\\\\Queue\\\\CallQueuedHandler@call","maxTries":null,"maxExceptions":null,"failOnTimeout":false,"backoff":null,"timeout":null,"retryUntil":null,"data":{"commandName":"App\\\\Jobs\\\\InvalidateAdminDashboardCache","command":"O:38:\\"App\\\\Jobs\\\\InvalidateAdminDashboardCache\\":0:{}"}}	0	\N	1784518731	1784518731
-505	default	{"uuid":"a0512d1c-6b54-4e16-b80c-2abf49361f9b","displayName":"App\\\\Notifications\\\\OrderConfirmationNotification","job":"Illuminate\\\\Queue\\\\CallQueuedHandler@call","maxTries":3,"maxExceptions":null,"failOnTimeout":false,"backoff":"10,30,60","timeout":null,"retryUntil":null,"data":{"commandName":"Illuminate\\\\Notifications\\\\SendQueuedNotifications","command":"O:48:\\"Illuminate\\\\Notifications\\\\SendQueuedNotifications\\":4:{s:11:\\"notifiables\\";O:29:\\"Illuminate\\\\Support\\\\Collection\\":2:{s:8:\\"\\u0000*\\u0000items\\";a:1:{i:0;O:44:\\"Illuminate\\\\Notifications\\\\AnonymousNotifiable\\":1:{s:6:\\"routes\\";a:1:{s:4:\\"mail\\";s:21:\\"doviethoang@gmail.com\\";}}}s:28:\\"\\u0000*\\u0000escapeWhenCastingToString\\";b:0;}s:12:\\"notification\\";O:47:\\"App\\\\Notifications\\\\OrderConfirmationNotification\\":2:{s:5:\\"order\\";O:45:\\"Illuminate\\\\Contracts\\\\Database\\\\ModelIdentifier\\":5:{s:5:\\"class\\";s:16:\\"App\\\\Models\\\\Order\\";s:2:\\"id\\";i:302;s:9:\\"relations\\";a:4:{i:0;s:5:\\"items\\";i:1;s:13:\\"items.product\\";i:2;s:13:\\"items.variant\\";i:3;s:7:\\"payment\\";}s:10:\\"connection\\";s:5:\\"pgsql\\";s:15:\\"collectionClass\\";N;}s:2:\\"id\\";s:36:\\"061f6eb3-4c91-4193-ba75-c1fe7c2e64a7\\";}s:8:\\"channels\\";a:1:{i:0;s:4:\\"mail\\";}s:5:\\"tries\\";i:3;}"}}	0	\N	1784519090	1784519090
-506	default	{"uuid":"cd2b6373-b843-4cad-88c7-024f2924e9cc","displayName":"App\\\\Jobs\\\\InvalidateAdminDashboardCache","job":"Illuminate\\\\Queue\\\\CallQueuedHandler@call","maxTries":null,"maxExceptions":null,"failOnTimeout":false,"backoff":null,"timeout":null,"retryUntil":null,"data":{"commandName":"App\\\\Jobs\\\\InvalidateAdminDashboardCache","command":"O:38:\\"App\\\\Jobs\\\\InvalidateAdminDashboardCache\\":0:{}"}}	0	\N	1784519090	1784519090
-507	default	{"uuid":"f14694dc-1a9d-41a3-b9f9-5365da73918f","displayName":"App\\\\Jobs\\\\InvalidateAdminDashboardCache","job":"Illuminate\\\\Queue\\\\CallQueuedHandler@call","maxTries":null,"maxExceptions":null,"failOnTimeout":false,"backoff":null,"timeout":null,"retryUntil":null,"data":{"commandName":"App\\\\Jobs\\\\InvalidateAdminDashboardCache","command":"O:38:\\"App\\\\Jobs\\\\InvalidateAdminDashboardCache\\":0:{}"}}	0	\N	1784519140	1784519140
-508	default	{"uuid":"2b5e0462-34fe-462d-957e-5181311e9dbb","displayName":"App\\\\Notifications\\\\OrderConfirmationNotification","job":"Illuminate\\\\Queue\\\\CallQueuedHandler@call","maxTries":3,"maxExceptions":null,"failOnTimeout":false,"backoff":"10,30,60","timeout":null,"retryUntil":null,"data":{"commandName":"Illuminate\\\\Notifications\\\\SendQueuedNotifications","command":"O:48:\\"Illuminate\\\\Notifications\\\\SendQueuedNotifications\\":4:{s:11:\\"notifiables\\";O:29:\\"Illuminate\\\\Support\\\\Collection\\":2:{s:8:\\"\\u0000*\\u0000items\\";a:1:{i:0;O:44:\\"Illuminate\\\\Notifications\\\\AnonymousNotifiable\\":1:{s:6:\\"routes\\";a:1:{s:4:\\"mail\\";s:21:\\"doviethoang@gmail.com\\";}}}s:28:\\"\\u0000*\\u0000escapeWhenCastingToString\\";b:0;}s:12:\\"notification\\";O:47:\\"App\\\\Notifications\\\\OrderConfirmationNotification\\":2:{s:5:\\"order\\";O:45:\\"Illuminate\\\\Contracts\\\\Database\\\\ModelIdentifier\\":5:{s:5:\\"class\\";s:16:\\"App\\\\Models\\\\Order\\";s:2:\\"id\\";i:303;s:9:\\"relations\\";a:2:{i:0;s:5:\\"items\\";i:1;s:4:\\"user\\";}s:10:\\"connection\\";s:5:\\"pgsql\\";s:15:\\"collectionClass\\";N;}s:2:\\"id\\";s:36:\\"86834863-b00b-4136-9500-693193a1f00e\\";}s:8:\\"channels\\";a:1:{i:0;s:4:\\"mail\\";}s:5:\\"tries\\";i:3;}"}}	0	\N	1784519177	1784519177
-509	default	{"uuid":"de7a8c1b-9397-4ff2-9c4b-38fe03ee8edb","displayName":"App\\\\Jobs\\\\InvalidateAdminDashboardCache","job":"Illuminate\\\\Queue\\\\CallQueuedHandler@call","maxTries":null,"maxExceptions":null,"failOnTimeout":false,"backoff":null,"timeout":null,"retryUntil":null,"data":{"commandName":"App\\\\Jobs\\\\InvalidateAdminDashboardCache","command":"O:38:\\"App\\\\Jobs\\\\InvalidateAdminDashboardCache\\":0:{}"}}	0	\N	1784519199	1784519199
-510	default	{"uuid":"71ee1a94-2e33-4f57-bb14-2b33cd60818e","displayName":"App\\\\Jobs\\\\InvalidateAdminDashboardCache","job":"Illuminate\\\\Queue\\\\CallQueuedHandler@call","maxTries":null,"maxExceptions":null,"failOnTimeout":false,"backoff":null,"timeout":null,"retryUntil":null,"data":{"commandName":"App\\\\Jobs\\\\InvalidateAdminDashboardCache","command":"O:38:\\"App\\\\Jobs\\\\InvalidateAdminDashboardCache\\":0:{}"}}	0	\N	1784519795	1784519795
-511	default	{"uuid":"b1a92344-ff86-4735-9816-49b764d757c9","displayName":"App\\\\Jobs\\\\InvalidateAdminDashboardCache","job":"Illuminate\\\\Queue\\\\CallQueuedHandler@call","maxTries":null,"maxExceptions":null,"failOnTimeout":false,"backoff":null,"timeout":null,"retryUntil":null,"data":{"commandName":"App\\\\Jobs\\\\InvalidateAdminDashboardCache","command":"O:38:\\"App\\\\Jobs\\\\InvalidateAdminDashboardCache\\":0:{}"}}	0	\N	1784520624	1784520624
-512	default	{"uuid":"2f435856-24ee-4d32-92de-84a27e28a036","displayName":"App\\\\Notifications\\\\OrderConfirmationNotification","job":"Illuminate\\\\Queue\\\\CallQueuedHandler@call","maxTries":3,"maxExceptions":null,"failOnTimeout":false,"backoff":"10,30,60","timeout":null,"retryUntil":null,"data":{"commandName":"Illuminate\\\\Notifications\\\\SendQueuedNotifications","command":"O:48:\\"Illuminate\\\\Notifications\\\\SendQueuedNotifications\\":4:{s:11:\\"notifiables\\";O:29:\\"Illuminate\\\\Support\\\\Collection\\":2:{s:8:\\"\\u0000*\\u0000items\\";a:1:{i:0;O:44:\\"Illuminate\\\\Notifications\\\\AnonymousNotifiable\\":1:{s:6:\\"routes\\";a:1:{s:4:\\"mail\\";s:21:\\"doviethoang@gmail.com\\";}}}s:28:\\"\\u0000*\\u0000escapeWhenCastingToString\\";b:0;}s:12:\\"notification\\";O:47:\\"App\\\\Notifications\\\\OrderConfirmationNotification\\":2:{s:5:\\"order\\";O:45:\\"Illuminate\\\\Contracts\\\\Database\\\\ModelIdentifier\\":5:{s:5:\\"class\\";s:16:\\"App\\\\Models\\\\Order\\";s:2:\\"id\\";i:306;s:9:\\"relations\\";a:2:{i:0;s:5:\\"items\\";i:1;s:4:\\"user\\";}s:10:\\"connection\\";s:5:\\"pgsql\\";s:15:\\"collectionClass\\";N;}s:2:\\"id\\";s:36:\\"6bcf2bee-48ab-4f30-a144-353907a7545b\\";}s:8:\\"channels\\";a:1:{i:0;s:4:\\"mail\\";}s:5:\\"tries\\";i:3;}"}}	0	\N	1784520655	1784520655
-513	default	{"uuid":"9949d152-0cfa-4322-87c7-e4a2b3937889","displayName":"App\\\\Jobs\\\\InvalidateAdminDashboardCache","job":"Illuminate\\\\Queue\\\\CallQueuedHandler@call","maxTries":null,"maxExceptions":null,"failOnTimeout":false,"backoff":null,"timeout":null,"retryUntil":null,"data":{"commandName":"App\\\\Jobs\\\\InvalidateAdminDashboardCache","command":"O:38:\\"App\\\\Jobs\\\\InvalidateAdminDashboardCache\\":0:{}"}}	0	\N	1784520925	1784520925
-514	default	{"uuid":"7f065bd7-0a1b-42a1-9788-a0f4f7f1f68f","displayName":"App\\\\Jobs\\\\InvalidateAdminDashboardCache","job":"Illuminate\\\\Queue\\\\CallQueuedHandler@call","maxTries":null,"maxExceptions":null,"failOnTimeout":false,"backoff":null,"timeout":null,"retryUntil":null,"data":{"commandName":"App\\\\Jobs\\\\InvalidateAdminDashboardCache","command":"O:38:\\"App\\\\Jobs\\\\InvalidateAdminDashboardCache\\":0:{}"}}	0	\N	1784520932	1784520932
 \.
 
 
@@ -3330,10 +2985,10 @@ COPY public.jobs (id, queue, payload, attempts, reserved_at, available_at, creat
 --
 
 COPY public.membership_ranks (id, rank_name, min_spend, point_multiplier, benefits, created_at, updated_at) FROM stdin;
-1	Đồng	0.00	1	\N	2026-07-01 09:27:48	2026-07-01 09:27:48
-4	Kim Cương	90000000.00	2	\N	2026-07-01 09:29:47	2026-07-01 09:33:32
-2	Bạc	10000000.00	1.2	\N	2026-07-01 09:28:21	2026-07-06 10:14:17
-3	Vàng	60000000.00	1.5	\N	2026-07-01 09:28:49	2026-07-06 10:14:23
+1	Đồng (Bronze)	0.00	1	Hưởng các chương trình khuyến mãi cơ bản và các đợt Flash Sale chung toàn sàn.	2026-07-01 09:27:48	2026-07-24 13:39:53
+2	Bạc (Silver)	10000000.00	1.2	Tặng Voucher trị giá 50.000đ vào tháng sinh nhật khách hàng. Chiết khấu thêm 2% khi mua phụ kiện.	2026-07-01 09:28:21	2026-07-24 13:39:53
+3	Vàng (Gold)	30000000.00	1.5	Tặng Voucher trị giá 100.000đ vào tháng sinh nhật; Miễn phí dịch vụ bảo dưỡng, vệ sinh laptop/PC định kỳ tại cửa hàng.	2026-07-01 09:28:49	2026-07-24 13:39:53
+4	Kim Cương (Diamond)	80000000.00	2	Ưu tiên xử lý bảo hành; Thời gian đổi trả mở rộng lên 30 ngày; Độc quyền đặt hàng trước các siêu phẩm công nghệ giới hạn (iPhone mới, GPU hiếm).	2026-07-01 09:29:47	2026-07-24 13:39:53
 \.
 
 
@@ -3402,6 +3057,7 @@ COPY public.migrations (id, migration, batch) FROM stdin;
 63	2026_07_01_130000_drop_points_spent_from_orders_table	53
 64	2026_07_04_000001_add_media_to_reviews_table	54
 65	2026_07_10_000001_add_google_id_to_users_table	55
+66	2026_07_23_152154_add_delivery_staff_id_to_orders_table	56
 \.
 
 
@@ -3445,6 +3101,11 @@ COPY public.model_has_roles (role_id, model_type, model_id) FROM stdin;
 60	App\\Models\\User	355
 60	App\\Models\\User	356
 60	App\\Models\\User	357
+58	App\\Models\\User	358
+64	App\\Models\\User	359
+65	App\\Models\\User	360
+60	App\\Models\\User	361
+65	App\\Models\\User	361
 \.
 
 
@@ -3466,6 +3127,8 @@ COPY public.newsletter_subscriptions (id, email, source, subscribed_at, unsubscr
 COPY public.notifications (id, user_id, type, title, body, data, read_at, created_at, updated_at) FROM stdin;
 1	11	low_stock	Cảnh báo tồn kho	Ốp lưng iPhone 15 Pro UAG chống sốc Plyo đang sắp hết hàng (tồn: 7).	{"sku": "ỐP -3-6A44C8DC-1", "threshold": 10, "product_id": 3, "variant_id": 539, "product_slug": "op-lung-chong-soc-iphone-15-pro", "stock_quantity": 7}	2026-07-08 14:54:44+00	2026-07-08 14:49:49+00	2026-07-08 14:54:44+00
 2	11	contact_message	Liên hệ mới	Nguyễn Văn An • Hợp tác / Doanh nghiệp • Xin chào E-Tech Market,\n\nChúng tôi là đại diện của Công ty ABC, hiện đang quan tâm đến việc hợp tác phân phối các sản phẩm công nghệ và linh	{"email": "nguyenvanan@gmail.com", "phone": "0901 234 567", "contact_message_id": 4}	2026-07-08 16:01:57+00	2026-07-08 15:39:54+00	2026-07-08 16:01:57+00
+3	11	low_stock	Cảnh báo tồn kho	MacBook Pro 14 inch M3 đang sắp hết hàng (tồn: 10).	{"sku": "MBP14-M3-256", "threshold": 10, "product_id": 212, "variant_id": 544, "product_slug": "macbook-pro-14-m3", "stock_quantity": 10}	\N	2026-07-24 13:39:53+00	2026-07-24 13:39:53+00
+4	11	low_stock	Cảnh báo tồn kho	MacBook Pro 14 inch M3 đang sắp hết hàng (tồn: 5).	{"sku": "MBP14-M3-512", "threshold": 10, "product_id": 212, "variant_id": 545, "product_slug": "macbook-pro-14-m3", "stock_quantity": 5}	\N	2026-07-24 13:39:53+00	2026-07-24 13:39:53+00
 \.
 
 
@@ -3496,8 +3159,6 @@ COPY public.order_items (id, order_id, product_id, product_name_snapshot, quanti
 237	292	198	Case máy tính Asus ROG Hyperion GR701	1	13000000.00	13000000.00	493
 238	292	199	Mainboard ASUS ROG Strix Z890 - Gaming WiFi	1	11490000.00	11490000.00	495
 239	293	3	Ốp lưng iPhone 15 Pro UAG chống sốc Plyo	13	700000.00	9100000.00	539
-240	294	211	PC CPS X MSI Gaming Intel i7 Gen 14 Kèm màn hình	1	33990000.00	33990000.00	543
-241	295	211	PC CPS X MSI Gaming Intel i7 Gen 14 Kèm màn hình	1	33990000.00	33990000.00	543
 242	296	211	PC CPS X MSI Gaming Intel i7 Gen 14 Kèm màn hình	1	33990000.00	33990000.00	543
 243	297	29	Bàn phím không dây Aula F87	1	690000.00	690000.00	300
 244	297	26	Chuột không dây Logitech MX Master 4	1	2890000.00	2890000.00	232
@@ -3506,15 +3167,9 @@ COPY public.order_items (id, order_id, product_id, product_name_snapshot, quanti
 247	298	200	Tản nhiệt nước ASUS ROG Strix LC III 240 ARGB	1	3990000.00	3990000.00	498
 248	298	209	Máy in Laser Brother HL-L2321D	1	2690000.00	2690000.00	521
 249	298	211	PC CPS X MSI Gaming Intel i7 Gen 14 Kèm màn hình	1	33990000.00	33990000.00	543
-250	299	211	PC CPS X MSI Gaming Intel i7 Gen 14 Kèm màn hình	1	33990000.00	33990000.00	543
-251	300	211	PC CPS X MSI Gaming Intel i7 Gen 14 Kèm màn hình	1	33990000.00	33990000.00	543
-252	301	211	PC CPS X MSI Gaming Intel i7 Gen 14 Kèm màn hình	1	33990000.00	33990000.00	543
 253	302	197	Nguồn ASUS ROG THOR 1200W Platinum II	1	9000000.00	9000000.00	491
 254	303	197	Nguồn ASUS ROG THOR 1200W Platinum II	1	7990000.00	7990000.00	490
-255	304	211	PC CPS X MSI Gaming Intel i7 Gen 14 Kèm màn hình	1	33990000.00	33990000.00	543
-256	305	211	PC CPS X MSI Gaming Intel i7 Gen 14 Kèm màn hình	1	33990000.00	33990000.00	543
 257	306	211	PC CPS X MSI Gaming Intel i7 Gen 14 Kèm màn hình	1	33990000.00	33990000.00	543
-258	307	209	Máy in Laser Brother HL-L2321D	1	2690000.00	2690000.00	521
 \.
 
 
@@ -3584,7 +3239,6 @@ COPY public.order_status_histories (id, order_id, from_status, to_status, change
 266	286	paid	shipped	11	\N	2026-07-09 14:26:41+00	2026-07-09 14:26:41+00
 267	286	shipped	delivered	11	\N	2026-07-09 14:26:45+00	2026-07-09 14:26:45+00
 268	286	delivered	completed	11	\N	2026-07-09 14:27:15+00	2026-07-09 14:27:15+00
-269	295	pending_payment	cancelled	11	\N	2026-07-09 15:51:20+00	2026-07-09 15:51:20+00
 270	296	pending	processing	11	\N	2026-07-10 13:26:56+00	2026-07-10 13:26:56+00
 271	296	processing	paid	11	\N	2026-07-10 13:27:01+00	2026-07-10 13:27:01+00
 272	296	paid	shipped	11	\N	2026-07-10 13:27:05+00	2026-07-10 13:27:05+00
@@ -3600,7 +3254,6 @@ COPY public.order_status_histories (id, order_id, from_status, to_status, change
 282	298	paid	shipped	10	\N	2026-07-13 13:22:29+00	2026-07-13 13:22:29+00
 283	298	shipped	delivered	10	\N	2026-07-13 13:22:31+00	2026-07-13 13:22:31+00
 284	298	delivered	completed	10	\N	2026-07-13 13:22:50+00	2026-07-13 13:22:50+00
-285	307	pending_payment	cancelled	11	\N	2026-07-20 11:15:32+00	2026-07-20 11:15:32+00
 \.
 
 
@@ -3608,33 +3261,25 @@ COPY public.order_status_histories (id, order_id, from_status, to_status, change
 -- Data for Name: orders; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.orders (id, order_code, user_id, cart_id, coupon_id, shipping_method_id, status, payment_status, currency, subtotal_amount, discount_amount, shipping_fee, total_amount, shipping_name, shipping_phone, shipping_address_line, shipping_province, shipping_district, shipping_ward, notes, created_at, updated_at, shipping_zone_id, points_earned, points_used, points_discount) FROM stdin;
-286	ET-C0E5CFDA260702	11	\N	\N	4	completed	paid	VND	2990000.00	0.00	30000.00	3020000.00	Đỗ Việt Hoàng	1234567890	Số 5, Ngõ 2, Kiều Mai, Phường Xuân Phương, Quận Nam Từ LIêm, Thành Phố Hà Nội	\N	\N	\N	\N	2026-07-02 11:24:56+00	2026-07-09 14:27:15+00	1	59	0	0.00
-281	ET-18E5DB65260702	11	\N	\N	4	completed	paid	VND	11490000.00	0.00	0.00	11490000.00	Đỗ Việt Hoàng	1234567890	Số 5, Ngõ 2, Kiều Mai, Phường Xuân Phương, Quận Nam Từ LIêm, Thành Phố Hà Nội	\N	\N	\N	\N	2026-07-02 08:27:40+00	2026-07-02 08:28:56+00	1	114	0	0.00
-294	ET-2307423D260709	11	\N	\N	4	pending_payment	pending_payment	VND	33990000.00	0.00	0.00	33540000.00	Đỗ Việt Hoàng	1234567890	Số 5, Ngõ 2, Kiều Mai, Phường Xuân Phương, Quận Nam Từ LIêm, Thành Phố Hà Nội	\N	\N	\N	\N	2026-07-09 15:40:02+00	2026-07-09 15:40:02+00	\N	0	900	450000.00
-295	ET-1971144D260709	11	\N	\N	4	cancelled	pending_payment	VND	33990000.00	0.00	0.00	33958000.00	Đỗ Việt Hoàng	1234567890	Số 5, Ngõ 2, Kiều Mai, Phường Xuân Phương, Quận Nam Từ LIêm, Thành Phố Hà Nội	\N	\N	\N	\N	2026-07-09 15:51:14+00	2026-07-09 15:51:20+00	\N	0	64	32000.00
-282	ET-4DBD8C43260702	11	\N	1	4	completed	paid	VND	98410000.00	9841000.00	0.00	88544000.00	Đỗ Việt Hoàng	1234567890	Số 5, Ngõ 2, Kiều Mai, Phường Xuân Phương, Quận Nam Từ LIêm, Thành Phố Hà Nội	\N	\N	\N	\N	2026-07-02 08:51:25+00	2026-07-02 08:53:15+00	1	885	50	25000.00
-296	ET-E3F0C98F260709	11	\N	\N	4	completed	paid	VND	33990000.00	0.00	0.00	33958000.00	Đỗ Việt Hoàng	1234567890	Số 5, Ngõ 2, Kiều Mai, Phường Xuân Phương, Quận Nam Từ LIêm, Thành Phố Hà Nội	\N	\N	\N	\N	2026-07-09 15:51:41+00	2026-07-10 13:27:28+00	\N	679	64	32000.00
-287	ET-A44D1B2C260702	11	\N	\N	4	cancelled	pending	VND	3110000.00	0.00	30000.00	3140000.00	Đỗ Việt Hoàng	1234567890	Số 5, Ngõ 2, Kiều Mai, Phường Xuân Phương, Quận Nam Từ LIêm, Thành Phố Hà Nội	\N	\N	\N	\N	2026-07-02 11:25:07+00	2026-07-02 11:25:59+00	1	0	0	0.00
-283	ET-86AA8197260702	346	\N	\N	\N	returned	paid	VND	1840000.00	0.00	0.00	1840000.00	Nguyễn Văn An	1234567890	123, 124, 125, 126	\N	\N	\N	\N	2026-07-02 09:22:58+00	2026-07-02 09:36:27+00	\N	0	0	0.00
-297	ET-1F9D3A18260710	17	\N	\N	25	completed	paid	VND	37570000.00	0.00	0.00	37570000.00	viet hoang	0987654321	123, 123,123,123	\N	\N	\N	\N	2026-07-10 15:56:36+00	2026-07-10 15:58:06+00	108	375	0	0.00
-284	ET-DE5DAB4F260702	346	\N	\N	\N	completed	paid	VND	2990000.00	0.00	0.00	2990000.00	Nguyễn Văn An	1234567890	123, 124, 125, 126	\N	\N	\N	\N	2026-07-02 10:19:11+00	2026-07-02 10:30:42+00	\N	29	0	0.00
-285	ET-B0511390260702	346	\N	\N	\N	pending	pending	VND	1990000.00	0.00	0.00	1990000.00	Nguyễn Văn An	1234567890	123, 124, 125, 126	\N	\N	\N	\N	2026-07-02 10:57:49+00	2026-07-02 10:57:49+00	\N	0	0	0.00
-290	ET-7DFDD49B260703	353	\N	\N	4	completed	paid	VND	14990000.00	0.00	0.00	14990000.00	Tiến Nguyễn	1234567890	123, 123, 123, 123	\N	\N	\N	\N	2026-07-03 09:12:20+00	2026-07-03 09:13:08+00	118	149	0	0.00
-288	ET-423435A4260702	11	\N	\N	4	completed	paid	VND	13980000.00	0.00	0.00	13980000.00	Đỗ Việt Hoàng	1234567890	Số 5, Ngõ 2, Kiều Mai, Phường Xuân Phương, Quận Nam Từ LIêm, Thành Phố Hà Nội	\N	\N	\N	\N	2026-07-02 17:24:01+00	2026-07-02 17:24:45+00	\N	279	0	0.00
-306	ET-4966EFD6260720	11	\N	\N	4	pending	paid	VND	33990000.00	0.00	0.00	33990000.00	Đỗ Việt Hoàng	1234567890	Số 5, Ngõ 2, Kiều Mai, Phường Xuân Phương, Quận Nam Từ LIêm, Thành Phố Hà Nội	\N	\N	\N	\N	2026-07-20 11:10:24+00	2026-07-20 11:10:55+00	\N	0	0	0.00
-298	ET-2B5BE745260713	10	\N	2	\N	completed	paid	VND	90660000.00	18132000.00	0.00	72482500.00	E-TECH MARKET	1234567890	123, 123, 123, 123	\N	\N	\N	\N	2026-07-13 13:22:13+00	2026-07-13 13:22:50+00	\N	725	91	45500.00
-299	ET-EB07946D260720	11	\N	\N	4	pending_payment	pending_payment	VND	33990000.00	0.00	0.00	33990000.00	Đỗ Việt Hoàng	1234567890	Số 5, Ngõ 2, Kiều Mai, Phường Xuân Phương, Quận Nam Từ LIêm, Thành Phố Hà Nội	\N	\N	\N	\N	2026-07-20 10:35:16+00	2026-07-20 10:35:16+00	\N	0	0	0.00
-300	ET-AACB4D0D260720	11	\N	\N	4	pending_payment	pending_payment	VND	33990000.00	0.00	0.00	33990000.00	Đỗ Việt Hoàng	1234567890	Số 5, Ngõ 2, Kiều Mai, Phường Xuân Phương, Quận Nam Từ LIêm, Thành Phố Hà Nội	\N	\N	\N	\N	2026-07-20 10:37:39+00	2026-07-20 10:37:39+00	\N	0	0	0.00
-301	ET-A8DE0FC6260720	11	\N	\N	4	pending_payment	pending_payment	VND	33990000.00	0.00	0.00	33990000.00	Đỗ Việt Hoàng	1234567890	Số 5, Ngõ 2, Kiều Mai, Phường Xuân Phương, Quận Nam Từ LIêm, Thành Phố Hà Nội	\N	\N	\N	\N	2026-07-20 10:38:51+00	2026-07-20 10:38:51+00	\N	0	0	0.00
-302	ET-15626938260720	11	\N	\N	4	pending	pending	VND	9000000.00	0.00	0.00	9000000.00	Đỗ Việt Hoàng	1234567890	Số 5, Ngõ 2, Kiều Mai, Phường Xuân Phương, Quận Nam Từ LIêm, Thành Phố Hà Nội	\N	\N	\N	\N	2026-07-20 10:44:50+00	2026-07-20 10:44:50+00	\N	0	0	0.00
-289	ET-D30F26E1260702	11	\N	\N	4	completed	paid	VND	4980000.00	0.00	0.00	4980000.00	Đỗ Việt Hoàng	1234567890	Số 5, Ngõ 2, Kiều Mai, Phường Xuân Phương, Quận Nam Từ LIêm, Thành Phố Hà Nội	\N	\N	\N	\N	2026-07-02 17:33:04+00	2026-07-02 17:33:42+00	\N	99	0	0.00
-303	ET-86AE21C6260720	11	\N	\N	4	pending	paid	VND	7990000.00	0.00	0.00	7990000.00	Đỗ Việt Hoàng	1234567890	Số 5, Ngõ 2, Kiều Mai, Phường Xuân Phương, Quận Nam Từ LIêm, Thành Phố Hà Nội	\N	\N	\N	\N	2026-07-20 10:45:40+00	2026-07-20 10:46:17+00	\N	0	0	0.00
-304	ET-C61B769E260720	11	\N	\N	4	pending_payment	pending_payment	VND	33990000.00	0.00	0.00	33990000.00	Đỗ Việt Hoàng	1234567890	Số 5, Ngõ 2, Kiều Mai, Phường Xuân Phương, Quận Nam Từ LIêm, Thành Phố Hà Nội	\N	\N	\N	\N	2026-07-20 10:46:39+00	2026-07-20 10:46:39+00	\N	0	0	0.00
-305	ET-CB5D0FDA260720	11	\N	\N	4	pending_payment	pending_payment	VND	33990000.00	0.00	0.00	33990000.00	Đỗ Việt Hoàng	1234567890	Số 5, Ngõ 2, Kiều Mai, Phường Xuân Phương, Quận Nam Từ LIêm, Thành Phố Hà Nội	\N	\N	\N	\N	2026-07-20 10:56:35+00	2026-07-20 10:56:35+00	\N	0	0	0.00
-307	ET-0243CF5D260720	11	\N	\N	4	cancelled	pending_payment	VND	2690000.00	0.00	0.00	2690000.00	Đỗ Việt Hoàng	1234567890	Số 5, Ngõ 2, Kiều Mai, Phường Xuân Phương, Quận Nam Từ LIêm, Thành Phố Hà Nội	\N	\N	\N	\N	2026-07-20 11:15:25+00	2026-07-20 11:15:32+00	\N	0	0	0.00
-292	ET-DF2FC504260706	11	\N	\N	4	completed	paid	VND	39480000.00	0.00	0.00	38980000.00	Đỗ Việt Hoàng	1234567890	Số 5, Ngõ 2, Kiều Mai, Phường Xuân Phương, Quận Nam Từ LIêm, Thành Phố Hà Nội	\N	\N	\N	\N	2026-07-06 13:58:38+00	2026-07-06 14:02:07+00	\N	789	1000	500000.00
-293	ET-2B6E1591260708	10	\N	\N	\N	completed	paid	VND	9100000.00	0.00	0.00	9100000.00	E-TECH MARKET	1234567890	123, 123, 123, 123	\N	\N	\N	\N	2026-07-08 14:49:49+00	2026-07-08 14:50:31+00	\N	91	0	0.00
+COPY public.orders (id, order_code, user_id, cart_id, coupon_id, shipping_method_id, status, payment_status, currency, subtotal_amount, discount_amount, shipping_fee, total_amount, shipping_name, shipping_phone, shipping_address_line, shipping_province, shipping_district, shipping_ward, notes, created_at, updated_at, shipping_zone_id, points_earned, points_used, points_discount, delivery_staff_id) FROM stdin;
+286	ET-C0E5CFDA260702	11	\N	\N	4	completed	paid	VND	2990000.00	0.00	30000.00	3020000.00	Đỗ Việt Hoàng	1234567890	Số 5, Ngõ 2, Kiều Mai, Phường Xuân Phương, Quận Nam Từ LIêm, Thành Phố Hà Nội	\N	\N	\N	\N	2026-07-02 11:24:56+00	2026-07-09 14:27:15+00	1	59	0	0.00	\N
+281	ET-18E5DB65260702	11	\N	\N	4	completed	paid	VND	11490000.00	0.00	0.00	11490000.00	Đỗ Việt Hoàng	1234567890	Số 5, Ngõ 2, Kiều Mai, Phường Xuân Phương, Quận Nam Từ LIêm, Thành Phố Hà Nội	\N	\N	\N	\N	2026-07-02 08:27:40+00	2026-07-02 08:28:56+00	1	114	0	0.00	\N
+282	ET-4DBD8C43260702	11	\N	1	4	completed	paid	VND	98410000.00	9841000.00	0.00	88544000.00	Đỗ Việt Hoàng	1234567890	Số 5, Ngõ 2, Kiều Mai, Phường Xuân Phương, Quận Nam Từ LIêm, Thành Phố Hà Nội	\N	\N	\N	\N	2026-07-02 08:51:25+00	2026-07-02 08:53:15+00	1	885	50	25000.00	\N
+296	ET-E3F0C98F260709	11	\N	\N	4	completed	paid	VND	33990000.00	0.00	0.00	33958000.00	Đỗ Việt Hoàng	1234567890	Số 5, Ngõ 2, Kiều Mai, Phường Xuân Phương, Quận Nam Từ LIêm, Thành Phố Hà Nội	\N	\N	\N	\N	2026-07-09 15:51:41+00	2026-07-10 13:27:28+00	\N	679	64	32000.00	\N
+287	ET-A44D1B2C260702	11	\N	\N	4	cancelled	pending	VND	3110000.00	0.00	30000.00	3140000.00	Đỗ Việt Hoàng	1234567890	Số 5, Ngõ 2, Kiều Mai, Phường Xuân Phương, Quận Nam Từ LIêm, Thành Phố Hà Nội	\N	\N	\N	\N	2026-07-02 11:25:07+00	2026-07-02 11:25:59+00	1	0	0	0.00	\N
+283	ET-86AA8197260702	346	\N	\N	\N	returned	paid	VND	1840000.00	0.00	0.00	1840000.00	Nguyễn Văn An	1234567890	123, 124, 125, 126	\N	\N	\N	\N	2026-07-02 09:22:58+00	2026-07-02 09:36:27+00	\N	0	0	0.00	\N
+297	ET-1F9D3A18260710	17	\N	\N	25	completed	paid	VND	37570000.00	0.00	0.00	37570000.00	viet hoang	0987654321	123, 123,123,123	\N	\N	\N	\N	2026-07-10 15:56:36+00	2026-07-10 15:58:06+00	108	375	0	0.00	\N
+284	ET-DE5DAB4F260702	346	\N	\N	\N	completed	paid	VND	2990000.00	0.00	0.00	2990000.00	Nguyễn Văn An	1234567890	123, 124, 125, 126	\N	\N	\N	\N	2026-07-02 10:19:11+00	2026-07-02 10:30:42+00	\N	29	0	0.00	\N
+285	ET-B0511390260702	346	\N	\N	\N	pending	pending	VND	1990000.00	0.00	0.00	1990000.00	Nguyễn Văn An	1234567890	123, 124, 125, 126	\N	\N	\N	\N	2026-07-02 10:57:49+00	2026-07-02 10:57:49+00	\N	0	0	0.00	\N
+290	ET-7DFDD49B260703	353	\N	\N	4	completed	paid	VND	14990000.00	0.00	0.00	14990000.00	Tiến Nguyễn	1234567890	123, 123, 123, 123	\N	\N	\N	\N	2026-07-03 09:12:20+00	2026-07-03 09:13:08+00	118	149	0	0.00	\N
+288	ET-423435A4260702	11	\N	\N	4	completed	paid	VND	13980000.00	0.00	0.00	13980000.00	Đỗ Việt Hoàng	1234567890	Số 5, Ngõ 2, Kiều Mai, Phường Xuân Phương, Quận Nam Từ LIêm, Thành Phố Hà Nội	\N	\N	\N	\N	2026-07-02 17:24:01+00	2026-07-02 17:24:45+00	\N	279	0	0.00	\N
+298	ET-2B5BE745260713	10	\N	2	\N	completed	paid	VND	90660000.00	18132000.00	0.00	72482500.00	E-TECH MARKET	1234567890	123, 123, 123, 123	\N	\N	\N	\N	2026-07-13 13:22:13+00	2026-07-13 13:22:50+00	\N	725	91	45500.00	\N
+302	ET-15626938260720	11	\N	\N	4	pending	pending	VND	9000000.00	0.00	0.00	9000000.00	Đỗ Việt Hoàng	1234567890	Số 5, Ngõ 2, Kiều Mai, Phường Xuân Phương, Quận Nam Từ LIêm, Thành Phố Hà Nội	\N	\N	\N	\N	2026-07-20 10:44:50+00	2026-07-20 10:44:50+00	\N	0	0	0.00	\N
+289	ET-D30F26E1260702	11	\N	\N	4	completed	paid	VND	4980000.00	0.00	0.00	4980000.00	Đỗ Việt Hoàng	1234567890	Số 5, Ngõ 2, Kiều Mai, Phường Xuân Phương, Quận Nam Từ LIêm, Thành Phố Hà Nội	\N	\N	\N	\N	2026-07-02 17:33:04+00	2026-07-02 17:33:42+00	\N	99	0	0.00	\N
+303	ET-86AE21C6260720	11	\N	\N	4	pending	paid	VND	7990000.00	0.00	0.00	7990000.00	Đỗ Việt Hoàng	1234567890	Số 5, Ngõ 2, Kiều Mai, Phường Xuân Phương, Quận Nam Từ LIêm, Thành Phố Hà Nội	\N	\N	\N	\N	2026-07-20 10:45:40+00	2026-07-20 10:46:17+00	\N	0	0	0.00	\N
+292	ET-DF2FC504260706	11	\N	\N	4	completed	paid	VND	39480000.00	0.00	0.00	38980000.00	Đỗ Việt Hoàng	1234567890	Số 5, Ngõ 2, Kiều Mai, Phường Xuân Phương, Quận Nam Từ LIêm, Thành Phố Hà Nội	\N	\N	\N	\N	2026-07-06 13:58:38+00	2026-07-06 14:02:07+00	\N	789	1000	500000.00	\N
+293	ET-2B6E1591260708	10	\N	\N	\N	completed	paid	VND	9100000.00	0.00	0.00	9100000.00	E-TECH MARKET	1234567890	123, 123, 123, 123	\N	\N	\N	\N	2026-07-08 14:49:49+00	2026-07-08 14:50:31+00	\N	91	0	0.00	\N
+306	ET-4966EFD6260720	11	\N	\N	4	pending	paid	VND	33990000.00	0.00	0.00	33990000.00	Đỗ Việt Hoàng	1234567890	Số 5, Ngõ 2, Kiều Mai, Phường Xuân Phương, Quận Nam Từ LIêm, Thành Phố Hà Nội	\N	\N	\N	\N	2026-07-20 11:10:24+00	2026-07-24 13:45:23+00	\N	0	0	0.00	361
 \.
 
 
@@ -3664,20 +3309,12 @@ COPY public.payments (id, order_id, method, amount, currency, transaction_code, 
 197	292	vnpay	38980000.00	VND	15611263	paid	2026-07-06 13:59:56+00	2026-07-06 13:58:38+00	2026-07-06 13:59:56+00
 198	293	cod	9100000.00	VND	\N	paid	2026-07-08 14:50:26+00	2026-07-08 14:49:49+00	2026-07-08 14:50:26+00
 191	286	cod	3020000.00	VND	\N	paid	2026-07-09 14:27:13+00	2026-07-02 11:24:56+00	2026-07-09 14:27:13+00
-199	294	vnpay	33540000.00	VND	\N	pending	\N	2026-07-09 15:40:02+00	2026-07-09 15:40:02+00
-200	295	vnpay	33958000.00	VND	0	failed	\N	2026-07-09 15:51:14+00	2026-07-09 15:51:19+00
 201	296	vnpay	33958000.00	VND	15615481	paid	2026-07-09 15:52:16+00	2026-07-09 15:51:41+00	2026-07-09 15:52:16+00
 202	297	vnpay	37570000.00	VND	15616549	paid	2026-07-10 15:57:21+00	2026-07-10 15:56:36+00	2026-07-10 15:57:21+00
 203	298	cod	72482500.00	VND	\N	paid	2026-07-13 13:22:48+00	2026-07-13 13:22:13+00	2026-07-13 13:22:48+00
-204	299	momo	33990000.00	VND	\N	pending	\N	2026-07-20 10:35:16+00	2026-07-20 10:35:16+00
-205	300	vnpay	33990000.00	VND	\N	pending	\N	2026-07-20 10:37:39+00	2026-07-20 10:37:39+00
-206	301	vnpay	33990000.00	VND	\N	pending	\N	2026-07-20 10:38:51+00	2026-07-20 10:38:51+00
 207	302	cod	9000000.00	VND	\N	pending	\N	2026-07-20 10:44:50+00	2026-07-20 10:44:50+00
 208	303	vnpay	7990000.00	VND	15627535	paid	2026-07-20 10:46:17+00	2026-07-20 10:45:40+00	2026-07-20 10:46:17+00
-209	304	vnpay	33990000.00	VND	\N	pending	\N	2026-07-20 10:46:39+00	2026-07-20 10:46:39+00
-210	305	vnpay	33990000.00	VND	\N	pending	\N	2026-07-20 10:56:35+00	2026-07-20 10:56:35+00
 211	306	vnpay	33990000.00	VND	15627555	paid	2026-07-20 11:10:55+00	2026-07-20 11:10:24+00	2026-07-20 11:10:55+00
-212	307	vnpay	2690000.00	VND		failed	\N	2026-07-20 11:15:25+00	2026-07-20 11:15:32+00
 \.
 
 
@@ -3893,6 +3530,7 @@ COPY public.personal_access_tokens (id, tokenable_type, tokenable_id, name, toke
 341	App\\Models\\User	11	auth	fa780fcb4c98c53b2ef9d79c37a5154ad4b60f6a8fbbe642b6b1d36145ef6442	["*"]	2026-07-20 11:19:22	2026-07-21 09:44:36	2026-07-20 09:44:36	2026-07-20 11:19:22
 340	App\\Models\\User	10	auth	e77c3790c81fdb37d16ba2cadf6ff6264479c182c35b09a9bbdf49940d2a46b5	["*"]	2026-07-13 15:52:51	2026-07-14 13:20:23	2026-07-13 13:20:23	2026-07-13 15:52:51
 338	App\\Models\\User	11	auth	b51fb515ea92c6a255525da96da52dac46c33f5ede9d919d79de3136f066cbe0	["*"]	2026-07-13 16:00:00	2026-07-14 13:19:45	2026-07-13 13:19:45	2026-07-13 16:00:00
+343	App\\Models\\User	11	auth	e69ca3780b5168f2ee5c2f58df5c94d7de4447aa251de9cb79dfe2ef950bcbb4	["*"]	2026-07-24 13:59:17	2026-07-25 13:55:08	2026-07-24 13:55:08	2026-07-24 13:59:17
 \.
 
 
@@ -4897,6 +4535,7 @@ COPY public.product_specs (id, product_id, spec_group, spec_key, spec_value, spe
 6566	7	Ổ cứng	Dung lượng	512GB – 2TB	GB	27	2026-07-01 07:47:45.776285+00	\N
 6567	7	Tản nhiệt	Hệ thống	Dual Fan	-	28	2026-07-01 07:47:45.776285+00	\N
 6568	7	Tản nhiệt	Công nghệ	Arc Flow Fans	-	29	2026-07-01 07:47:45.776285+00	\N
+6590	7	Âm thanh	AI Noise Canceling	Có	-	51	2026-07-01 07:47:45.776285+00	\N
 6569	7	Tản nhiệt	Ống đồng	Nhiều heatpipe	-	30	2026-07-01 07:47:45.776285+00	\N
 6570	7	Tản nhiệt	Chế độ	Performance / Turbo / Silent	-	31	2026-07-01 07:47:45.776285+00	\N
 6571	7	WiFi	Chuẩn	Wi-Fi 6 / Wi-Fi 6E	-	32	2026-07-01 07:47:45.776285+00	\N
@@ -4975,7 +4614,6 @@ COPY public.product_specs (id, product_id, spec_group, spec_key, spec_value, spe
 6587	7	Kích thước	Dày	~22.4 – 24.9	mm	48	2026-07-01 07:47:45.776285+00	\N
 6588	7	Trọng lượng	Khối lượng	~2.2 – 2.6	kg	49	2026-07-01 07:47:45.776285+00	\N
 6589	7	Âm thanh	Dolby Atmos	Có	-	50	2026-07-01 07:47:45.776285+00	\N
-6590	7	Âm thanh	AI Noise Canceling	Có	-	51	2026-07-01 07:47:45.776285+00	\N
 6591	7	Bảo mật	TPM	Có	-	52	2026-07-01 07:47:45.776285+00	\N
 6592	7	Đèn LED	RGB Keyboard	Có	-	53	2026-07-01 07:47:45.776285+00	\N
 6593	7	Camera	Webcam	HD 720p / 1080p	-	54	2026-07-01 07:47:45.776285+00	\N
@@ -5494,6 +5132,7 @@ COPY public.product_specs (id, product_id, spec_group, spec_key, spec_value, spe
 5602	192	Lưu trữ	Dung lượng	2	TB	35	2026-07-01 04:05:27.447638+00	\N
 5603	192	Lưu trữ	Chuẩn giao tiếp	M.2 PCIe Gen5	Chuẩn kết nối	36	2026-07-01 04:05:27.447638+00	\N
 5604	192	Lưu trữ	Tốc độ đọc ghi	Tốc độ cao	Hiệu năng	37	2026-07-01 04:05:27.447638+00	\N
+5672	48	Điện áp	Định mức	3.7	V	5	2026-07-01 04:13:05.419485+00	\N
 5605	192	Tản nhiệt	Loại tản nhiệt	Tản nhiệt nước AIO	Hệ thống	38	2026-07-01 04:05:27.447638+00	\N
 5606	192	Tản nhiệt	Kích thước radiator	360	mm	39	2026-07-01 04:05:27.447638+00	\N
 5607	192	Tản nhiệt	Quạt tản nhiệt	ARGB PWM	Loại quạt	40	2026-07-01 04:05:27.447638+00	\N
@@ -5562,7 +5201,6 @@ COPY public.product_specs (id, product_id, spec_group, spec_key, spec_value, spe
 5669	48	Thiết kế	Loại máy	Máy tăm nước cầm tay	Thiết bị	2	2026-07-01 04:13:05.419485+00	\N
 5670	48	Công nghệ	Nguyên lý hoạt động	Xung nước tần số cao	Công nghệ	3	2026-07-01 04:13:05.419485+00	\N
 5671	48	Công suất	Công suất hoạt động	12	W	4	2026-07-01 04:13:05.419485+00	\N
-5672	48	Điện áp	Định mức	3.7	V	5	2026-07-01 04:13:05.419485+00	\N
 5673	48	Nguồn sạc	Đầu vào	5V 1A	Input	6	2026-07-01 04:13:05.419485+00	\N
 5674	48	Pin	Thời gian sạc	4	Giờ	7	2026-07-01 04:13:05.419485+00	\N
 5675	48	Pin	Thời gian sử dụng	~90	Ngày	8	2026-07-01 04:13:05.419485+00	\N
@@ -5937,7 +5575,6 @@ COPY public.product_variants (id, product_id, variant_name, color, configuration
 504	202	Infinity 120mm White	Trắng - RGB	Quạt 120mm, LED RGB cí ?��?�, vg sñng Infinity Mirror	QU�?�-202-6A38E7B0-2	210000.00	24	http://localhost:8000/storage/variants/aoAt0r0wqkkeaZXS9os44NicTIn39C2PDTz2vcOf.webp	t	2026-06-22 14:43:44	2026-07-01 10:30:51	\N	\N	\N	\N	\N
 502	201	Xigmatek EPIX II White	Trắng - RGB	6 ống đồng, quạt ARGB 120mm, hỗ trợ LGA1700/AM5	T�?�N-201-6A38E6A3-2	920000.00	39	http://localhost:8000/storage/variants/9xjPbtzclQ2CTIotaV2zZeFfd0E8Xlvn4CQXy0ke.png	t	2026-06-22 14:39:15	2026-07-02 09:36:27	\N	\N	\N	\N	\N
 495	199	ROG Strix Z890-E Gaming WiFi	Đen - RGB	ATX, 4 khe RAM DDR5, PCIe 5.0, WiFi 7, thôim cñng M.2	ASU-199-6A38E415-1	11490000.00	26	http://localhost:8000/storage/variants/b6Ttqa1TN20iEHYamwO10UoRT1DbLcXn7RAYSHxE.png	t	2026-06-22 14:28:21	2026-07-06 13:58:38	\N	\N	\N	\N	\N
-521	209	Brother HL-L2321D	Xám	In laser trắng đen, A4, 30 trang/phút, Duplex tự động, USB 2.0, khay giấy 250 tờ	M?�Y-209-6A3A4804-1	2990000.00	44	http://localhost:8000/storage/variants/JTMXKC7aaMULFRhlsa9tasv0jMJH5EQCg5JSalCu.jpg	t	2026-06-23 15:47:00	2026-07-20 11:15:32	\N	fixed	300000.00	2026-07-08 22:11:00	2026-07-31 10:12:00
 520	208	Acnos MiCar 3 Live	Đen	Micro karaoke không dây + vang sác DSP + Bluetooth 5.0	MIC-208-6A3A4697-1	1990000.00	47	http://localhost:8000/storage/variants/QpDjTJAnzBMToIPb9IBduZRG8ksmxNeRhPuD0PBR.png	t	2026-06-23 15:40:55	2026-07-09 14:58:00	\N	\N	\N	\N	\N
 489	197	ROG THOR 850W Platinum II	Đen	Chuẩn 80 Plus Platinum, quạt 135mm, OLED, hiệu suất 92%	NGU-197-6A38DE45-1	6990000.00	29	http://localhost:8000/storage/variants/IumDVGXxwL3rxfkDJoX9HOIYhCvCsUlHcWdFyKVR.png	t	2026-06-22 14:03:33	2026-07-01 10:54:26	\N	\N	\N	\N	\N
 501	201	Xigmatek EPIX II Black	Đen - RGB	6 ống đồng, quạt ARGB 120mm, hỗ trợ LGA1700/AM5	T�?�N-201-6A38E6A3-1	890000.00	39	http://localhost:8000/storage/variants/ee6SxiIdXXTNqTlkC6OFm3uVM3zMxYVOCEESvF5Z.webp	t	2026-06-22 14:39:15	2026-07-02 08:51:25	\N	\N	\N	\N	\N
@@ -5990,13 +5627,18 @@ COPY public.product_variants (id, product_id, variant_name, color, configuration
 536	7	ASUS TUF F15 FX507ZC	Đen	i5-12500H / RTX 3050	ASU-7-6A44C621-3	24990000.00	50	http://localhost:8000/storage/variants/ZAzd4zmCzUOMSEmy4SJ30IQs1cifnG0WiulljhLc.png	t	2026-07-01 14:47:45	2026-07-01 14:47:45	\N	\N	\N	\N	\N
 537	7	ASUS TUF F15 FX507VU	Đen	i7-13620H / RTX 4050	ASU-7-6A44C621-4	31990000.00	50	http://localhost:8000/storage/variants/tpl46vP6CCs3PaKyqiixPHjmfSfmjqN9QXb33F9B.png	t	2026-07-01 14:47:45	2026-07-01 14:47:45	\N	\N	\N	\N	\N
 538	7	ASUS TUF F15 FX507VV	Đen	i9-13900H / RTX 4060	ASU-7-6A44C621-5	39990000.00	50	http://localhost:8000/storage/variants/7FQSVwxN7g4tU4SCAZ1jxprn7X7lpmx55YUAjaIg.png	t	2026-07-01 14:47:45	2026-07-01 14:47:45	\N	\N	\N	\N	\N
-543	211	PC CPS X MSI Gaming i7 14700F / 16GB RAM / 500GB SSD / RTX 5060 / Màn hình 24 inch	Đen - Đèn LED RGB	Intel Core i7 14700F, RAM 16GB DDR5 6000Mhz, SSD 500GB PCIe Gen4, VGA MSI RTX 5060 8GB, Màn hình MSI MAG 245PF X24 24"	PC -211-6A4F5C90-1	36990000.00	40	http://localhost:8000/storage/variants/0WkgE6nm8ZrAVUTPC7HLZsvv67hPlnzskHCOiCk6.webp	t	2026-07-09 15:32:16	2026-07-20 11:10:24	\N	fixed	400000.00	2026-07-09 01:32:00	2026-07-31 01:32:00
 540	3	UAG Plyo iPhone 15 Pro Ash	Xám khói (Ash)	TPU + PC chống sốc	ỐP -3-6A44C8DC-2	700000.00	20	http://localhost:8000/storage/variants/7tmlNOWa9h0p6KmfzcH5oSV4Hc3ZytRiXaIU2SN8.png	t	2026-07-01 14:59:24	2026-07-01 14:59:24	\N	\N	\N	\N	\N
 541	3	UAG Plyo MagSafe iPhone 15 Pro Ice	Trong suốt + MagSafe	TPU + PC + nam châm	ỐP -3-6A44C8DC-3	850000.00	20	http://localhost:8000/storage/variants/UX39Kq8nIRHyaRm6NCJLXPATPtnpzUj1bYXXg6xo.jpg	t	2026-07-01 14:59:24	2026-07-01 14:59:24	\N	\N	\N	\N	\N
 542	3	UAG Plyo MagSafe iPhone 15 Pro Ash	Xám khói + MagSafe	TPU + PC + nam châm	ỐP -3-6A44C8DC-4	850000.00	20	http://localhost:8000/storage/variants/LVt9HZEAqnZpvNkAFoMJCXFWC7VSTkiMp28hpb4Z.png	t	2026-07-01 14:59:24	2026-07-01 14:59:24	\N	\N	\N	\N	\N
 500	200	ROG Strix LC III 240 ARGB Premium	Đen - RGB-Pre	Radiator 240mm, 2 qu�?t ARGB, bym c�?i ti�?, logo ROG ph?t sñng	ASU-200-6A38E5A0-3	4490000.00	29	http://localhost:8000/storage/variants/6Kz9adlYWrAS91MFBizy4JHWSt9QmSLC51qHxdJm.png	t	2026-06-22 14:34:56	2026-07-02 08:51:25	\N	\N	\N	\N	\N
 26	9	Đen 1TB	Đen	1TB	IPH-9-69F95471-4	33990000.00	49	/storage/variants/RU3xgbuxG7oye8FGakU18xyhk4n025EVCtcumMgy.webp	t	2026-05-05 02:22:41	2026-07-06 09:44:06	\N	\N	\N	\N	\N
 539	3	UAG Plyo iPhone 15 Pro Ice	Trong suốt (Ice)	TPU + PC chống sốc	ỐP -3-6A44C8DC-1	700000.00	7	http://localhost:8000/storage/variants/0PcK9Z1rdwP4UjyGYpEeNPBM62IJW9JbhLBiBo4n.jpg	t	2026-07-01 14:59:24	2026-07-08 14:49:49	\N	\N	\N	\N	\N
+544	212	Space Gray - 256GB	Space Gray	256GB	MBP14-M3-256	32990000.00	10	\N	t	2026-07-24 13:39:53	2026-07-24 13:39:53	\N	\N	\N	\N	\N
+545	212	Space Gray - 512GB	Space Gray	512GB	MBP14-M3-512	36990000.00	5	\N	t	2026-07-24 13:39:53	2026-07-24 13:39:53	\N	\N	\N	\N	\N
+546	213	Titan tự nhiên - 256GB	Titan tự nhiên	256GB	IP15PM-256-NAT	28990000.00	15	\N	t	2026-07-24 13:39:53	2026-07-24 13:39:53	\N	\N	\N	\N	\N
+547	215	AirPods Pro 2 - White	White	\N	APP2-W	4990000.00	20	\N	t	2026-07-24 13:39:53	2026-07-24 13:39:53	\N	\N	\N	\N	\N
+543	211	PC CPS X MSI Gaming i7 14700F / 16GB RAM / 500GB SSD / RTX 5060 / Màn hình 24 inch	Đen - Đèn LED RGB	Intel Core i7 14700F, RAM 16GB DDR5 6000Mhz, SSD 500GB PCIe Gen4, VGA MSI RTX 5060 8GB, Màn hình MSI MAG 245PF X24 24"	PC -211-6A4F5C90-1	36990000.00	47	http://localhost:8000/storage/variants/0WkgE6nm8ZrAVUTPC7HLZsvv67hPlnzskHCOiCk6.webp	t	2026-07-09 15:32:16	2026-07-24 13:42:28	\N	fixed	400000.00	2026-07-09 01:32:00	2026-07-31 01:32:00
+521	209	Brother HL-L2321D	Xám	In laser trắng đen, A4, 30 trang/phút, Duplex tự động, USB 2.0, khay giấy 250 tờ	M?�Y-209-6A3A4804-1	2990000.00	45	http://localhost:8000/storage/variants/JTMXKC7aaMULFRhlsa9tasv0jMJH5EQCg5JSalCu.jpg	t	2026-06-23 15:47:00	2026-07-24 13:42:28	\N	fixed	300000.00	2026-07-08 22:11:00	2026-07-31 10:12:00
 \.
 
 
@@ -6045,6 +5687,8 @@ COPY public.products (id, category_id, name, slug, brand, description, main_imag
 50	40	Tông đơ cắt tóc Panasonic ER-GP21-K751	tong-do-cat-toc-panasonic-er-gp21-k751-6a02ed3089873	Panasonic	Tông đơ Panasonic ER-GP21-K751 là dòng tông đơ cắt tóc chuyên nghiệp, thiết kế nhỏ gọn và dễ cầm nắm, phù hợp cho cả thợ barber và sử dụng tại nhà. Máy sử dụng lưỡi cắt thép không gỉ sắc bén, cho khả năng cắt sát và mượt, hạn chế kẹt tóc khi sử dụng. Với thiết kế không dây tiện lợi và động cơ ổn định, sản phẩm mang lại trải nghiệm cắt tóc chính xác và thoải mái.	http://localhost:8000/storage/products/b4QF2m3jk70QfnHMiKZ3aCkROXAvtFbLsA0WrQ9T.webp	t	2026-05-12 09:04:48+00	2026-07-01 11:09:47+00	\N	<div id="cpsContent" class="cps-block-content" style="max-height:567px;"><h2 class="ksp-title">\n    Đặc điểm nổi bật\n  </h2>  <div class="ksp-content" style><p style="text-align: justify;"><strong>Tông đơ cắt tóc Panasonic ER-GP21-K751</strong> sở hữu các lưỡi cắt thế hệ mới để có thể cắt sát hơn tới 40% so với các mẫu tông đơ thông thường. Đi kèm là 2 bộ cữ lược để hỗ trợ người dùng cắt tỉa, điều chỉnh độ dài tóc và phục vụ nhu cầu làm đẹp chuyên nghiệp. Sản phẩm còn được thiết kế dạng công thái học, bọc cao su chống trơn trượt để mang tới cảm giác cầm nắm thoải mái và giúp việc di chuyển tông đơ linh hoạt hơn.</p>\n</div> <div class="table-content"><div class="table-content__title"><p>Nội dung chính</p> </div> <div class="table-content__wrapper" style="max-height: 100000px;"><div class="table-content__list"><a href="#tong-do-cat-toc-panasonic-er-gp21-k751-cat-tia-chinh-xac-cam-nam-chac-chan" class="table-content__item level-2">\n        1. Tông đơ cắt tóc Panasonic ER-GP21-K751 - Cắt tỉa chính xác, cầm nắm chắc chắn\n      </a><a href="#thiet-ke-cong-thai-hoc-cung-mau-sac-trang-nha" class="table-content__item level-3">\n        1.1. Thiết kế công thái học cùng màu sắc trang nhã\n      </a><a href="#de-dang-dieu-chinh-chieu-dai-toc-han-che-do-rung" class="table-content__item level-3">\n        1.2. Dễ dàng điều chỉnh chiều dài tóc, hạn chế độ rung\n      </a><a href="#cat-tia-chinh-xac-chuyen-nghiep-voi-luoi-cat-sieu-sat" class="table-content__item level-3">\n        1.3. Cắt tỉa chính xác, chuyên nghiệp với lưỡi cắt siêu sát\n      </a><a href="#de-sac-tien-loi-thoi-luong-hoat-dong-co-the-toi-40-phut" class="table-content__item level-3">\n        1.4. Đế sạc tiện lợi, thời lượng hoạt động có thể tới 40 phút\n      </a><a href="#mua-tong-do-cat-toc-panasonic-er-gp21-k751-gia-tot-chinh-hang-tai-cellphones" class="table-content__item level-2">\n        2. Mua tông đơ cắt tóc Panasonic ER-GP21-K751 giá tốt, chính hãng tại CellphoneS\n      </a></div></div></div><div id="cpsContentSEO"><h2 style="scroll-margin : 148px;" id="tong-do-cat-toc-panasonic-er-gp21-k751-cat-tia-chinh-xac-cam-nam-chac-chan"><strong>Tông đơ cắt tóc Panasonic ER-GP21-K751 - Cắt tỉa chính xác, cầm nắm chắc chắn</strong></h2>\n<p style="text-align: justify;">Tông đơ cắt tóc Panasonic ER-GP21-K751 là mẫu <a href="https://cellphones.com.vn/nha-thong-minh/suc-khoe-lam-dep/tong-do-cat-toc.html" title="tông đơ" target="_blank"><strong>tông đơ</strong></a> sở hữu thế hệ lưỡi cắt mới cùng bộ động cơ có độ rung thấp hơn để phục vụ tốt cho các nhu cầu cắt tỉa, tạo kiểu tóc chuyên nghiệp. Đi kèm là một thiết kế công thái học cùng nhiều phụ kiện đế sạc, bộ cữ lược,...để mang tới sự tiện lợi tối đa trong quá trình sử dụng.</p>\n<h3 style="scroll-margin : 148px;" id="thiet-ke-cong-thai-hoc-cung-mau-sac-trang-nha"><strong>Thiết kế công thái học cùng màu sắc trang nhã</strong></h3>\n<p style="text-align: justify;">Tông đơ cắt tóc Panasonic ER-GP21-K751 sở hữu một thiết kế công thái học tiêu chuẩn. Phần thân máy được thiết kế với các đường cong mềm mại, vừa vặn với tay để việc cầm nắm trong thời gian dài luôn được thoải mái. Đồng thời, với kích thước và trọng lượng nhỏ gọn, người dùng còn có thể di chuyển tông đơ Panasonic ER-GP21-K751 một cách chính xác để đáp ứng tốt cho công việc cắt tóc, tạo kiểu chuyên nghiệp.</p>\n<p style="text-align: justify;"><img loading="lazy" alt="Tông đơ cắt tóc Panasonic ER-GP21-K751" src="https://cdn2.cellphones.com.vn/insecure/rs:fill:0:0/q:100/plain/https://cellphones.com.vn/media/wysiwyg/Smarthome/Cham-soc-suc-khoe-lam-dep/Tong-do-cat-toc/Panasonic/Tong-do-cat-toc-panasonic-er-gp21-k751-1.jpg" /></p>\n<p style="text-align: justify;">Bên ngoài thân máy còn được bọc thêm một lớp cao su mềm. Lớp cao su này không chỉ mang tới sự êm ái mà còn hạn chế tình trạng rung tay khi tông đơ hoạt động. Đồng thời, lớp cao su sẽ còn chống trượt, đặc biệt với những ai thường xuyên ra mồ hôi tay, để tối ưu khả năng cầm nắm.</p>\n<h3 style="scroll-margin : 148px;" id="de-dang-dieu-chinh-chieu-dai-toc-han-che-do-rung"><strong>Dễ dàng điều chỉnh chiều dài tóc, hạn chế độ rung</strong></h3>\n<p style="text-align: justify;">Đi kèm với tông đơ cắt tóc Panasonic ER-GP21-K751 còn có 2 bộ cữ lược để hỗ trợ việc cắt tóc. Với hai kích thước 3mm và 6mm, bộ cữ lược đi kèm tông đỡ sẽ giúp người dùng có thể dễ dàng điều chỉnh độ dài của tóc theo ý muốn. Nhờ vậy mà người dùng sẽ luôn tạo ra được những kiểu tóc theo đúng ý tưởng mà mong muốn của bản thân.</p>\n<p style="text-align: justify;"><img loading="lazy" alt="Tông đơ cắt tóc Panasonic ER-GP21-K751 - Cắt tỉa chính xác, cầm nắm chắc chắn" src="https://cdn2.cellphones.com.vn/insecure/rs:fill:0:0/q:100/plain/https://cellphones.com.vn/media/wysiwyg/Smarthome/Cham-soc-suc-khoe-lam-dep/Tong-do-cat-toc/Panasonic/Tong-do-cat-toc-panasonic-er-gp21-k751-2.jpg" /></p>\n<p style="text-align: justify;">Và để giúp việc cắt tóc diễn ra nhanh chóng, hiệu quả hơn, bộ động cơ của tông đơ Panasonic ER-GP21-K751 còn được tối ưu về độ rung trong quá trình hoạt động. Cụ thể, so với các model thông thường, độ rung của sản phẩm đã được giảm xuống chỉ còn một nửa. Điều này sẽ giúp việc cầm, nắm tông đơ để cắt tóc trong thời gian dài có được sự thoải mái, chính xác.</p>\n<h3 style="scroll-margin : 148px;" id="cat-tia-chinh-xac-chuyen-nghiep-voi-luoi-cat-sieu-sat"><strong>Cắt tỉa chính xác, chuyên nghiệp với lưỡi cắt siêu sát</strong></h3>\n<p style="text-align: justify;">Tông đơ cắt tóc Panasonic ER-GP21-K751 là mẫu tông đơ sở hữu bộ lưỡi dao cải tiến. Với lưỡi dao thế hệ mới này, độ dài tóc mà tông đơ ER-GP21-K751 có thể cắt khi không kết hợp với cữ lược là khoảng 0,3mm. So với các sản phẩm thông thường, tông đơ Panasonic ER-GP21-K751 có thể cắt tỉa sát hơn tới 40% để tạo ra những đường cắt thẳng cùng độ chính xác vượt trội.</p>\n<p style="text-align: justify;"><img loading="lazy" alt="Tông đơ cắt tóc Panasonic ER-GP21-K751 - Cắt tỉa chính xác, cầm nắm chắc chắn" src="https://cdn2.cellphones.com.vn/insecure/rs:fill:0:0/q:100/plain/https://cellphones.com.vn/media/wysiwyg/Smarthome/Cham-soc-suc-khoe-lam-dep/Tong-do-cat-toc/Panasonic/Tong-do-cat-toc-panasonic-er-gp21-k751-3.jpg" /></p>\n<h3 style="scroll-margin : 148px;" id="de-sac-tien-loi-thoi-luong-hoat-dong-co-the-toi-40-phut"><strong>Đế sạc tiện lợi, thời lượng hoạt động có thể tới 40 phút</strong></h3>\n<p style="text-align: justify;">Và để quá trình sử dụng diễn ra tiện lợi hơn, Tông đơ cắt tóc Panasonic ER-GP21-K751 còn được trang bị thêm đế sạc thay cho cáp sạc như các sản phẩm khác. Nhờ bộ đế sạc này mà người dùng sẽ dễ dàng lấy và đặt thiết bị vào để có thể sạc pin thiết bị liên tục ngay cả khi đang làm việc. Với thời gian sạc đầy trong vòng 8 giờ, bạn hoàn toàn có thể yên tâm việc sạc pin liên tục sẽ không gây ảnh hưởng tới tuổi thọ của thiết bị.</p>\n<p style="text-align: justify;"><img loading="lazy" alt="Tông đơ cắt tóc Panasonic ER-GP21-K751 - Cắt tỉa chính xác, cầm nắm chắc chắn" src="https://cdn2.cellphones.com.vn/insecure/rs:fill:0:0/q:100/plain/https://cellphones.com.vn/media/wysiwyg/Smarthome/Cham-soc-suc-khoe-lam-dep/Tong-do-cat-toc/Panasonic/Tong-do-cat-toc-panasonic-er-gp21-k751-4.jpg" /></p>\n<p style="text-align: justify;">Với mỗi lần sạc đầy, tông đơ Panasonic ER-GP21-K751 có thể cắt không dây có thể lên đến 40 phút. Panasonic còn tích hợp lên trên thân máy một đèn báo để người dùng theo dõi tình trạng pin một cách trực quan.</p>\n<h2 style="scroll-margin : 148px;" id="mua-tong-do-cat-toc-panasonic-er-gp21-k751-gia-tot-chinh-hang-tai-cellphones"><strong>Mua tông đơ cắt tóc Panasonic ER-GP21-K751 giá tốt, chính hãng tại CellphoneS</strong></h2>\n<p style="text-align: justify;"><strong>Tông đơ cắt tóc Panasonic ER-GP21-K751</strong> hiện đã có thể tìm thấy và đặt mua chính hãng tại hệ thống cửa hàng CellphoneS trên cả nước. Đi kèm mẫu tông đơ của Panasonic là rất nhiều các chương trình giảm giá, ưu đãi thanh toán, chiết khấu hội viên Smember,...để bạn luôn có thể sở hữu sản phẩm này với giá bán hợp lý.</p></div> <div class="cps-block-content_btn-showmore" style="display:;"><a class="btn-show-more button__content-show-more">\n      Xem thêm  <div></div></a></div></div>	f
 46	35	Robot hút bụi lau nhà và máy hút bụi cầm tay Ecovacs Deebot T30S Combo	robot-hut-bui-lau-a-va-may-hut-bui-cam-tay-ecovacs-deebot-t30s-combo-6a02df3c0f3c8	Ecovacs	Ecovacs Deebot T30S Combo là hệ thống làm sạch 2 trong 1 gồm robot hút bụi lau nhà và máy hút bụi cầm tay. Sản phẩm nổi bật với lực hút mạnh, khả năng lau thông minh, dock tự động hút rác – giặt – sấy khăn lau, cùng hệ thống điều hướng laser chính xác. Ngoài ra, máy hút cầm tay đi kèm giúp làm sạch sofa, góc hẹp và khu vực robot khó tiếp cận, mang lại giải pháp vệ sinh toàn diện cho gia đình hiện đại.	http://localhost:8000/storage/products/YWtJnOXUlo2s3eEDvsxnsFntIk9zQN9heAgXj5si.webp	t	2026-05-12 08:05:16+00	2026-07-01 11:16:02+00	\N	<div id="cpsContent" class="cps-block-content" style="max-height:567px;"><h2 class="ksp-title">\n    Đặc điểm nổi bật\n  </h2>  <div class="ksp-content" style><p style="text-align: justify;">Combo robot hút bụi và máy hút bụi cầm tay Ecovacs Deebot T30S sở hữu lực hút mạnh mẽ 11.000Pa, pin 5200mAh cho thời gian hoạt động khoảng 220 phút. Máy hút bụi cầm tay trọng lượng nhẹ và độ ồn chỉ khoảng 65dB. Phiên bản <a href="https://cellphones.com.vn/nha-thong-minh/may-hut-bui/robot-hut-bui/ecovacs.html" title="Robot hút bụi lau nhà Ecovacs chính hãng" target="_blank"><strong>robot hút bụi Ecovacs Deebot</strong></a> này có trạm sạc với kích thước nhỏ gọn, dung tích hộp chứa bụi và chứa nước lớn.</p>\n</div> <div class="table-content"><div class="table-content__title"><p>Nội dung chính</p> </div> <div class="table-content__wrapper" style="max-height: 100000px;"><div class="table-content__list"><a href="#vi-sao-nen-mua-combo-robot-hut-bui-va-may-hut-bui-cam-tay-ecovacs-t30s-combo" class="table-content__item level-2">\n        1. Vì sao nên mua combo robot hút bụi và máy hút bụi cầm tay Ecovacs T30S Combo?\n      </a><a href="#combo-robot-hut-bui-va-may-hut-bui-cam-tay-ecovacs-deebot-t30s-thiet-ke-thong-minh" class="table-content__item level-2">\n        2. Combo robot hút bụi và máy hút bụi cầm tay Ecovacs Deebot T30S - Thiết kế thông minh\n      </a><a href="#robot-co-cong-suat-an-tuong-11-000pa-do-on-chi-khoang-65db" class="table-content__item level-3">\n        2.1. Robot có công suất ấn tượng 11,000Pa, độ ồn chỉ khoảng 65dB\n      </a><a href="#may-cam-tay-gom-4-dau-hut-tram-sac-thong-minh-tien-loi" class="table-content__item level-3">\n        2.2. Máy cầm tay gồm 4 đầu hút, trạm sạc thông minh, tiện lợi\n      </a><a href="#cong-nghe-lau-ozmo-turbo-2-0-hien-dai-dieu-huong-lds-thong-minh" class="table-content__item level-3">\n        2.3. Công nghệ lau OZMO Turbo 2.0 hiện đại, điều hướng LDS thông minh\n      </a><a href="#dung-luong-5200mah-co-the-su-dung-len-den-290-phut" class="table-content__item level-3">\n        2.4. Dung lượng 5200mAh, có thể sử dụng lên đến 290 phút\n      </a><a href="#tram-sac-da-nang-tu-dong-lam-trong-kep" class="table-content__item level-3">\n        2.5. Trạm sạc đa năng, tự động làm trống kép \n      </a><a href="#tro-ly-giong-noi-cam-ung-chan" class="table-content__item level-3">\n        2.6. Trợ lý giọng nói, cảm ứng chân\n      </a><a href="#tranh-vat-can-chinh-xac-len-lich-lam-sach" class="table-content__item level-3">\n        2.7. Tránh vật cản chính xác, lên lịch làm sạch\n      </a><a href="#huong-dan-su-dung-bo-robot-hut-bui-va-may-hut-bui-cam-tay-ecovacs-t30s-combo" class="table-content__item level-2">\n        3. Hướng dẫn sử dụng bộ robot hút bụi và máy hút bụi cầm tay Ecovacs T30S Combo\n      </a><a href="#mua-ngay-combo-robot-hut-bui-va-may-hut-bui-cam-tay-ecovacs-deebot-t30s-chinh-hang-tai-cellphones" class="table-content__item level-2">\n        4. Mua ngay combo robot hút bụi và máy hút bụi cầm tay Ecovacs Deebot T30S chính hãng tại CellphoneS\n      </a></div></div></div><div id="cpsContentSEO"><h2 style="scroll-margin : 148px;" id="vi-sao-nen-mua-combo-robot-hut-bui-va-may-hut-bui-cam-tay-ecovacs-t30s-combo"><strong> Vì sao nên mua combo robot hút bụi và máy hút bụi cầm tay Ecovacs T30S Combo? </strong></h2>\n<p style="text-align: justify;">Đầu tiên, hãy cùng điểm qua những lý do nên đầu tư bộ 2 thiết bị robot hút bụi và máy hút bụi cầm tay Ecovacs Deebot T30S Combo cho gia đình ngay dưới đây:</p>\n<ul>\n<li>\n<p><span style="text-align: justify;">Robot có lực hút mạnh mẽ 11000Pa, dễ dàng loại bỏ bụi bẩn và mảnh vụn trên nhiều bề mặt sàn, đảm bảo ngôi nhà luôn sạch sẽ.</span></p>\n</li>\n<li>\n<p><span style="text-align: justify;">Thời gian hoạt động của robot dài đến 220 phút với lượng pin 5200mAh, phục vụ tốt cho các căn hộ lớn và nhiều phòng.</span></p>\n</li>\n<li>\n<p><span style="text-align: justify;">Trang bị nhiều công nghệ làm sạch tân tiến như TruEdge, ZeroTangle, TrueDetect 3D 3.0, OZMO Turbo 2.0,...</span></p>\n</li>\n<li>\n<p><span style="text-align: justify;">Kết hợp linh hoạt giữa robot và máy hút bụi cầm tay cho phép làm sạch toàn diện, từ sàn nhà, ghế sofa đến những khu vực khó tiếp cận.</span></p>\n</li>\n</ul>\n<p style="text-align: justify;"><span style="text-align: justify;"></span></p>\n<p style="text-align: justify;"><span style="text-align: justify;"></span></p>\n<p style="text-align: justify;"><img loading="lazy" alt="Vì sao nên mua combo robot hút bụi và máy hút bụi cầm tay Ecovacs Deebot T30S?" src="https://cdn2.cellphones.com.vn/insecure/rs:fill:0:0/q:100/plain/https://cellphones.com.vn/media/wysiwyg/Smarthome/robot/Ecovacs/combo-robot-hut-bui-va-may-hut-bui-cam-tay-ecovacs-deebot-t30s-1_1.jpg" /></p>\n<h2 style="scroll-margin : 148px;" id="combo-robot-hut-bui-va-may-hut-bui-cam-tay-ecovacs-deebot-t30s-thiet-ke-thong-minh"><strong> Combo robot hút bụi và máy hút bụi cầm tay Ecovacs Deebot T30S - Thiết kế thông minh</strong></h2>\n<p style="text-align: justify;">Bộ robot hút bụi và máy hút bụi cầm tay Ecovacs Deebot T30S Combo là thiết bị gia dụng tân tiến với sự kết hợp giữa 2 sản phẩm trong 1 đầy ấn tượng. Với lực hút mạnh, công nghệ hiện đại và điều khiển thông minh, combo này hứa hẹn sẽ giúp khách hàng làm sạch mọi ngóc ngách trong ngôi nhà.</p>\n<h3 style="scroll-margin : 148px;" id="robot-co-cong-suat-an-tuong-11-000pa-do-on-chi-khoang-65db"><strong> Robot có công suất ấn tượng 11,000Pa, độ ồn chỉ khoảng 65dB </strong></h3>\n<p style="text-align: justify;"><strong>Ecovacs T30S Combo</strong> bao gồm robot với lực hút mạnh đến 11,000Pa đầy ấn tượng, dễ dàng loại bỏ bụi bẩn. Với công suất định mức 60W, robot có thể xử lý được ngay cả những vết bẩn cứng đầu trên các loại sàn như gỗ, thảm hay gạch men. Thiết bị có kích thước nhỏ gọn và dễ dàng di chuyển linh hoạt, luồn lách trong các không gian nhỏ hẹp.</p>\n<p style="text-align: justify;"><img loading="lazy" alt="Combo robot hút bụi và máy hút bụi cầm tay Ecovacs Deebot T30S - Thiết kế thông minh" src="https://cdn2.cellphones.com.vn/insecure/rs:fill:0:0/q:100/plain/https://cellphones.com.vn/media/wysiwyg/Smarthome/robot/Ecovacs/combo-robot-hut-bui-va-may-hut-bui-cam-tay-ecovacs-deebot-t30s-3.jpg" /></p>\n<p style="text-align: justify;">Dù có công suất cao nhưng cả 2 thiết bị của <strong>Ecovacs Deebot T30S Combo</strong> lại vận hành cực kỳ êm ái với độ ồn chỉ 65dB. Điều này cho phép khách hàng sử dụng robot ngay cả khi đang nghỉ ngơi hoặc làm việc mà không bị ảnh hưởng bởi tiếng ồn. Hơn nữa, dung lượng pin 5200mAh cho phép robot hoạt động liên tục trong khoảng 220 phút, phù hợp để làm sạch các căn hộ có diện tích lớn. </p>\n<h3 style="scroll-margin : 148px;" id="may-cam-tay-gom-4-dau-hut-tram-sac-thong-minh-tien-loi"><strong> Máy cầm tay gồm 4 đầu hút, trạm sạc thông minh, tiện lợi </strong></h3>\n<p style="text-align: justify;">Máy cầm tay trong combo robot hút bụi và máy hút bụi cầm tay Ecovacs T30S Combo cũng được đánh giá cao với khả năng làm sạch vượt trội với độ ồn thấp. Máy đi kèm với 4 đầu hút đa năng với hệ thống lọc 4 giai đoạn, thu giữ tới 99,97% những loại bụi bẩn có kích thước nhỏ. Máy cầm tay này có khối lượng nhẹ, kết hợp với thiết kế thông minh để tạo nên trải nghiệm sử dụng rất thoải mái.</p>\n<p style="text-align: justify;"><img loading="lazy" alt="Combo robot hút bụi và máy hút bụi cầm tay Ecovacs Deebot T30S - Thiết kế thông minh" src="https://cdn2.cellphones.com.vn/insecure/rs:fill:0:0/q:100/plain/https://cellphones.com.vn/media/wysiwyg/Smarthome/robot/Ecovacs/combo-robot-hut-bui-va-may-hut-bui-cam-tay-ecovacs-deebot-t30s-2.jpg" /></p>\n<p style="text-align: justify;">Trạm sạc của <strong>combo Ecovacs Deebot T30S</strong> không chỉ đơn thuần là nơi nạp pin mà còn tích hợp các hệ thống thu gom bụi 2 chiều. Với dung tích hộp chứa bụi lên đến 3L, hộp chứa nước sạch 4L và nước bẩn 3.5L, người dùng có thể yên tâm sử dụng robot trong thời gian dài. Quá trình điều khiển và theo dõi thiết bị cũng rất đơn giản nhờ phần mềm Ecovacs Home và trợ lý giọng nói YIKO AI.</p>\n<h3 style="scroll-margin : 148px;" id="cong-nghe-lau-ozmo-turbo-2-0-hien-dai-dieu-huong-lds-thong-minh"><strong>Công nghệ lau OZMO Turbo 2.0 hiện đại, điều hướng LDS thông minh </strong></h3>\n<p style="text-align: justify;">Ecovacs T30S Combo lau nhà sâu với với công nghệ OZMO Turbo 2.0 tiên tiến. Cộng thêm tính năng tự bổ sung lượng nước trong quá trình làm sạch. Qua đó, mẫu robot hút bụi trong combo này có thể đánh bay các vết bẩn cứng đầu hiệu quả với khả năng điều chỉnh áp lực lau phù hợp từng loại sàn. Bên cạnh đó, hệ thống lau mô phỏng động tác lau thực tế kết hợp tính năng tự động nâng giẻ lâu lên 9mm, giúp tạo ra lực ma sát thích hợp.</p>\n<p style="text-align: justify;"><img loading="lazy" alt="Combo robot hút bụi và máy hút bụi cầm tay Ecovacs Deebot T30S - Thiết kế thông minh" src="https://cdn2.cellphones.com.vn/insecure/rs:fill:0:0/q:100/plain/https://cellphones.com.vn/media/wysiwyg/Smarthome/may-hut-bui/Dreame/ecovacs-t30s-combo-1.jpg" /></p>\n<p style="text-align: justify;">Bên cạnh đó, công nghệ TrueMapping 2.0 cũng giúp robot trong Combo Ecovacs T30S lập bản đồ nhà chính xác và nhanh chóng nhớ cấu trúc không gian. Từ đó, tối ưu hóa lộ trình làm sạch và tránh những khu vực đã làm sạch nhằm hạn chế bỏ sót ngóc ngách. Thêm vào đó, cảm biến laser LiDAR cũng giúp robot đảm bảo hiệu suất làm sạch.</p>\n<blockquote>\n<p style="text-align: justify;">Lưu ý: Tuy sản phẩm được trang bị tính năng lau sàn nhưng người dùng không nên để robot hoạt động trong khu vực đọng nước. Bên cạnh đó còn nhiều <a href="https://cellphones.com.vn/sforum/luu-y-khi-su-dung-robot-hut-bui-lau-nha-ecovacs" rel="nofollow" target="_blank"><strong>lưu ý sử dụng Ecovacs</strong></a> quan trong khác mà người sử dụng cần biết để giúp thiết bị có thể hoạt động bền bỉ.</p>\n</blockquote>\n<h3 style="scroll-margin : 148px;" id="dung-luong-5200mah-co-the-su-dung-len-den-290-phut"><strong> Dung lượng 5200mAh, có thể sử dụng lên đến 290 phút</strong></h3>\n<p style="text-align: justify;"><strong>T30S Combo</strong> trang bị pin dung lượng 5200mAh cho robot hút bụi. Theo đó, Deebot T30S có thể hoạt động đến 290 phút ở chế độ im lặng với tính năng quét, 220 phút ở chế độ tiêu chuẩn với tính năng quét, đến 200 phút ở chế độ tiêu chuẩn với tính năng quét và lau.</p>\n<p style="text-align: justify;">Với thời gian sạc khoảng 3,1 tiếng ở trạm sạc, thiết bị rất thích hợp để làm sạch cho các không gian có diện tích lớn. Nhờ vậy, người dùng có thể sử dụng robot liên tục trong nhiều ngày mà không lo lắng về việc phải sạc lại thường xuyên, tiết kiệm thời gian. </p>\n<p style="text-align: justify;"><img loading="lazy" alt="Combo robot hút bụi và máy hút bụi cầm tay Ecovacs Deebot T30S - Thiết kế thông minh" src="https://cdn2.cellphones.com.vn/insecure/rs:fill:0:0/q:100/plain/https://cellphones.com.vn/media/wysiwyg/Smarthome/may-hut-bui/Dreame/ecovacs-t30s-combo-2.jpg" /></p>\n<p style="text-align: justify;">Robot hút bụi và máy hút bụi cầm tay Ecovacs Deebot T30S Combo đều cho thời gian sử dụng lâu để tăng sự tiện lợi cho người dùng. Với thiết kế không dây, máy hút bụi cầm tay trong Ecovacs Deebot T30S Combo giúp việc dọn dẹp trở nên linh hoạt và tiện lợi hơn. Dung lượng pin lớn đảm bảo sử dụng máy hút bụi cầm tay trong thời gian dài, hạn chế gián đoạn.</p>\n<h3 style="scroll-margin : 148px;" id="tram-sac-da-nang-tu-dong-lam-trong-kep"><strong> Trạm sạc đa năng, tự động làm trống kép  </strong></h3>\n<p style="text-align: justify;">Ecovacs T30S Combo nổi bật với trạm sạc thông minh, được thiết kế để tự động kết nối với cả robot hút bụi và máy hút bụi cầm tay trong combo. Đặc biệt, trạm sạc sẽ tự động chuyển đổi giữa các chế độ sạc nhanh hoặc sạc tiết kiệm năng lượng, tùy vào nhu cầu sử dụng.</p>\n<p style="text-align: justify;"><img loading="lazy" alt="Combo robot hút bụi và máy hút bụi cầm tay Ecovacs Deebot T30S - Thiết kế thông minh" src="https://cdn2.cellphones.com.vn/insecure/rs:fill:0:0/q:100/plain/https://cellphones.com.vn/media/wysiwyg/Smarthome/may-hut-bui/Dreame/ecovacs-t30s-combo-3.jpg" /></p>\n<p style="text-align: justify;">Thêm vào đó, tính năng tự động làm trống kép còn giảm thiểu công việc vệ sinh sau mỗi lần sử dụng. Đồng thời góp phần duy trì hiệu suất hoạt động tối ưu của cả robot hút bụi và máy hút bụi cầm tay Ecovacs Deebot T30S Combo.</p>\n<h3 style="scroll-margin : 148px;" id="tro-ly-giong-noi-cam-ung-chan"><strong> Trợ lý giọng nói, cảm ứng chân </strong></h3>\n<p style="text-align: justify;"><strong>Ecovacs Deebot T30S Combo</strong> tích hợp trợ lý ảo Ecovacs Home, giúp người dùng điều khiển các tính năng thông qua giọng nói. Thông qua ứng dụng, thiết bị sẽ nhận diện lệnh và yêu cầu để thực hiện hoạt động với trợ lý YIKO AI. Không những vậy, app này còn hỗ trợ người dùng thiết lập lập trình lịch làm sạch, chọn chế độ lau mà còn theo dõi quá trình làm việc của robot theo thời gian thực. </p>\n<p style="text-align: justify;"><img loading="lazy" alt="Combo robot hút bụi và máy hút bụi cầm tay Ecovacs Deebot T30S - Thiết kế thông minh" src="https://cdn2.cellphones.com.vn/insecure/rs:fill:0:0/q:100/plain/https://cellphones.com.vn/media/wysiwyg/Smarthome/may-hut-bui/Dreame/ecovacs-t30s-combo-4.jpg" /></p>\n<p style="text-align: justify;">Đồng thời, điều chỉnh đường đi, thiết lập các vùng hạn chế hoặc theo dõi trạng thái pin của robot. Một điểm sáng khác của combo Ecovacs Deebot T30S đó là khả năng tương thích với các trợ lý ảo phổ biến như Google Assistant và Amazon Alexa. Hơn thế nữa, công nghệ cảm ứng tiên tiến cho phép người dùng chỉ cần chạm nhẹ bằng chân để bắt đầu khởi động quá trình làm sạch của thiết bị. </p>\n<h3 style="scroll-margin : 148px;" id="tranh-vat-can-chinh-xac-len-lich-lam-sach"><strong> Tránh vật cản chính xác, lên lịch làm sạch </strong></h3>\n<p style="text-align: justify;">Ecovacs T30S Combo nổi bật với hệ thống tránh vật cản với độ chính xác cao. Nhờ vào cảm biến TrueDetect 3D, robot có khả năng phát hiện và tránh các chướng ngại vật nhỏ nhất trong nhà như dây điện, đồ chơi trẻ em, và cả các vật dụng nhỏ rơi trên sàn nhà. Hệ thống cảm biến này giúp robot di chuyển linh hoạt hơn mà còn bảo vệ các vật dụng trong nhà không bị va chạm hoặc hư hỏng. </p>\n<p style="text-align: justify;"><img loading="lazy" alt="Tránh vật cản chính xác, lên lịch làm sạch" src="https://cdn2.cellphones.com.vn/insecure/rs:fill:0:0/q:100/plain/https://cellphones.com.vn/media/wysiwyg/Smarthome/may-hut-bui/Dreame/ecovacs-t30s-combo-5.jpg" /></p>\n<p style="text-align: justify;">Đặc biệt, <strong>Deebot T30S Combo</strong> có khả năng nhận diện và vượt qua các ngưỡng cửa hoặc bậc thềm thấp, giúp dễ dàng di chuyển giữa các phòng có độ cao sàn khác nhau mà không bị kẹt lại. Ngoài ra, thiết bị còn cho phép thiết lập lịch làm sạch cho từng khu vực cụ thể vào các thời điểm khác nhau trong ngày. Mặt khác, hỗ trợ khả năng nhận diện thảm và tự động tăng lực hút khi di chuyển lên bề mặt thảm, giúp làm sạch sâu hơn. </p>\n<h2 style="scroll-margin : 148px;" id="huong-dan-su-dung-bo-robot-hut-bui-va-may-hut-bui-cam-tay-ecovacs-t30s-combo"><strong> Hướng dẫn sử dụng bộ robot hút bụi và máy hút bụi cầm tay Ecovacs T30S Combo</strong></h2>\n<p style="text-align: justify;">Để sử dụng hiệu quả combo Ecovacs Deebot T30S, khách hàng cần thực hiện theo các bước cơ bản sau:</p>\n<ul>\n<li>\n<p>Bước 1: Sạc đầy thiết bị trước khi sử dụng lần đầu tiên, cài đặt ứng dụng Ecovacs Home trên điện thoại và ghép nối với robot để dễ dàng quản lý.</p>\n</li>\n<li>\n<p>Bước 2: Đặt trạm sạc ở nơi thoáng đãng, tránh xa các vật cản, thiết lập bản đồ khu vực làm sạch cho robot và các cài đặt khác tùy theo nhu cầu.</p>\n</li>\n<li>\n<p>Bước 3: Cho robot tự động làm sạch các khu vực đã thiết lập, kết hợp sử dụng máy hút bụi cầm tay để làm sạch những chỗ đặc biệt như cầu thang, rèm cửa,...</p>\n</li>\n</ul>\n<p>Ngoài ra còn nhiều hướng dẫn cài đặt và sử dụng khác của Ecovacs T30S Combo mà người dùng có thể biết để có thể sử dụng robot hiệu quả: <a href="https://cellphones.com.vn/sforum/su-dung-robot-hut-bui-ecovacs" rel="nofollow" target="_blank">https://cellphones.com.vn/sforum/su-dung-robot-hut-bui-ecovacs</a></p>\n<p style="text-align: justify;"><img loading="lazy" alt="Hướng dẫn sử dụng combo robot hút bụi và máy hút bụi cầm tay Ecovacs Deebot T30S" /></p></div></div>	f
 7	3	ASUS TUF Gaming F15	asus-tuf-gaming-f15-69f83d4711309	ASUS	ASUS TUF Gaming F15 là dòng laptop gaming phổ thông–cận cao cấp của ASUS, hướng đến hiệu năng chơi game ổn định, độ bền đạt chuẩn quân đội MIL-STD-810H, màn hình 144Hz, GPU NVIDIA GeForce RTX/GTX (tùy phiên bản), và hệ thống tản nhiệt kép. Máy phù hợp gaming, học tập kỹ thuật và đồ họa.	/storage/products/6Gp4HeMyYJcuW5ZxfwHWS8rVORgyO1soCVq96KzD.webp	t	2026-05-03 23:31:35+00	2026-07-01 14:47:45+00	\N	\N	t
+217	2	Samsung Galaxy S24 Ultra	samsung-galaxy-s24-ultra	Samsung	Samsung Galaxy S24 Ultra 12GB/256GB	\N	t	2026-07-24 13:39:53+00	2026-07-24 13:39:53+00	\N	\N	f
+218	1	Dell XPS 15	dell-xps-15	Dell	Dell XPS 15 Intel Core i7, RAM 16GB, SSD 512GB	\N	t	2026-07-24 13:39:54+00	2026-07-24 13:39:54+00	\N	\N	f
 193	205	Card đồ họa  NVIDIA RTX 5090	nvidia-geforce-rtx-5090-6a26420e51cd4	NVIDIA	NVIDIA GeForce RTX 5090 là GPU gaming cao cấp nhất thuộc kiến trúc Blackwell, hướng đến hiệu năng 4K/8K, AI rendering, ray tracing thế hệ mới và DLSS 4.5. Card được thiết kế cho gaming cao cấp, làm đồ họa 3D, AI và xử lý tác vụ nặng với bộ nhớ GDDR7 dung lượng lớn và băng thông cực cao.	http://localhost:8000/storage/products/CEJusSWrvlXQ15652vMeiboNACdOtw3yxoFqbod8.jpg	t	2026-06-08 11:16:14+00	2026-07-01 15:07:17+00	\N	\N	t
 199	208	Mainboard ASUS ROG Strix Z890 - Gaming WiFi	asus-rog-strix-z890-a-gaming-wifi-6a38e4150ce63	ASUS	ainboard ASUS ROG Strix Z890 Gaming WiFi mang đến hiệu năng mạnh mẽ với nền tảng Intel mới, hỗ trợ DDR5, kết nối WiFi tốc độ cao và thiết kế ROG đậm chất gaming. Bo mạch phù hợp cho game thủ, nhà sáng tạo nội dung và các bộ PC cao cấp	http://localhost:8000/storage/products/QiCbFS6V3MmrTMrV70OT3SBYLI6DglJVJZUTI9x4.png	t	2026-06-22 14:28:21+00	2026-07-09 15:21:38+00	\N	<div class="cps-block-content">  <div class="ksp-content"><p style="text-align:justify;">Tản nhiệt nước Asus ROG Strix LC III 240 ARGB White Edition sở hữu máy bơm Asetek Gen7 V2 với công nghệ tấm lạnh cải tiến sẽ hỗ trợ làm mát vượt trội. Với quạt có tốc độ quay tối đa 2,200 RPM, áp suất không khí 3.92mm H2O và luồng khí 70.38 cfm, mẫu <a href="https://cellphones.com.vn/linh-kien/tan-nhiet/nuoc.html" title="Tản nhiệt nước chính hãng"><strong>tản nhiệt nước</strong></a> của Asus này luôn mang tới hiệu suất làm mát mạnh mẽ. Đặc biệt, quạt ARGB tự động điều chỉnh hiệu ứng dựa trên thiết bị RGB Gen2.</p>\n</div> <div class="table-content"><div class="table-content__title"><p>Nội dung chính</p> </div> <div class="table-content__wrapper" style="max-height:100000px;"><div class="table-content__list"><a href="#tan-nhiet-nuoc-asus-rog-strix-lc-iii-240-argb-white-edition-hieu-suat-vuot-troi" class="table-content__item level-2">\n        1. Tản nhiệt nước Asus ROG Strix LC III 240 ARGB White Edition - Hiệu suất vượt trội \n      </a><a href="#hieu-suat-tan-nhiet-ngoai-mong-doi" class="table-content__item level-3">\n        1.1. Hiệu suất tản nhiệt ngoài mong đợi \n      </a><a href="#tinh-nang-quat-tien-tien-va-hieu-ung-argb-dep-mat" class="table-content__item level-3">\n        1.2. Tính năng quạt tiên tiến và hiệu ứng ARGB đẹp mắt\n      </a><a href="#thiet-ke-tinh-te" class="table-content__item level-3">\n        1.3. Thiết kế tinh tế\n      </a><a href="#mua-ngay-tan-nhiet-nuoc-asus-rog-strix-lc-iii-240-argb-white-edition-chinh-hang-tai-cellphones" class="table-content__item level-2">\n        2. Mua ngay tản nhiệt nước Asus ROG Strix LC III 240 ARGB White Edition chính hãng tại CellphoneS\n      </a></div></div></div><div><h2><strong>Tản nhiệt nước Asus ROG Strix LC III 240 ARGB White Edition - Hiệu suất vượt trội </strong></h2>\n<p style="text-align:justify;">Asus ROG Strix LC III 240 ARGB White Edition là <a href="https://cellphones.com.vn/linh-kien/tan-nhiet.html" title="Quạt tản nhiệt"><strong>quạt tản nhiệt</strong></a> hoàn hảo cho người dùng đòi hỏi hiệu suất cao lẫn những game thủ chuyên nghiệp. Sản phẩm không chỉ mang đến khả năng làm mát vượt trội với công nghệ bơm Asetek Gen7 V2 và quạt ARGB mạnh mẽ, mà còn có thiết kế tinh tế. Dưới đây là các thông số chung để khách hàng tham khảo:</p>\n<h3><strong>Hiệu suất tản nhiệt ngoài mong đợi </strong></h3>\n<p style="text-align:justify;">Tản nhiệt nước Asus ROG Strix LC III 240 ARGB White Edition là giải pháp làm mát vượt trội nhờ hệ thống máy bơm Asetek Gen7 V2. Công nghệ tấm lạnh cải tiến sẽ nâng tầm hiệu suất làm mát thêm 100 watts và giảm nhiệt độ hệ thống đến 0.5°C nhằm giúp kiểm soát nhiệt độ hiệu quả ở cả cường độ hoạt động cao cao. Water block với thiết kế xoay 360° từ tính mang lại sự linh hoạt chưa từng có, giúp người dùng dễ dàng lắp đặt và tùy chỉnh hệ thống làm mát nước theo nhu cầu riêng.</p>\n<p style="text-align:justify;"><img alt="Hiệu suất làm mát của tản nhiệt nước Asus ROG Strix LC III 240 ARGB White Edition" src="https://cdn2.cellphones.com.vn/insecure/rs:fill:0:0/q:100/plain/https://cellphones.com.vn/media/wysiwyg/linh-kien-may-tinh/Tan-nhiet/Asus/tan-nhiet-nuoc-asus-rog-strix-lc-iii-240-argb-white-edition-1.jpg" /></p>\n<p style="text-align:justify;">Ngoài ra, hệ thống quạt tản nhiệt được thiết kế đặc biệt với áp suất không khí mạnh mẽ, đảm bảo luồng khí mát liên tục và ổn định. Quạt hoạt động mượt mà ngay cả khi hệ thống phải chịu tải nặng, giữ cho nhiệt độ luôn được kiểm soát trong mức an toàn.</p>\n<h3><strong>Tính năng quạt tiên tiến và hiệu ứng ARGB đẹp mắt</strong></h3>\n<p style="text-align:justify;">Asus ROG Strix LC III 240 ARGB White Edition sử dụng quạt ROG Strix AF-12S ARGB với cánh quạt mới, tối ưu hiệu suất tản nhiệt. Được trang bị cao su chống rung, quạt mang lại sự yên tĩnh trong quá trình vận hành. Ở chế độ tải thấp, quạt tự động giảm xuống 0 RPM để tiết kiệm năng lượng và giảm thiểu độ ồn xuống chỉ 36dB(A).</p>\n<p style="text-align:justify;"><img alt="Quạt, độ ồn của tản nhiệt nước Asus ROG Strix LC III 240 ARGB White Edition" src="https://cdn2.cellphones.com.vn/insecure/rs:fill:0:0/q:100/plain/https://cellphones.com.vn/media/wysiwyg/linh-kien-may-tinh/Tan-nhiet/Asus/tan-nhiet-nuoc-asus-rog-strix-lc-iii-240-argb-white-edition-2.jpg" /></p>\n<p style="text-align:justify;">Quạt ROG Strix còn có khả năng tự động phát hiện số lượng đèn LED trên các thiết bị RGB Gen2, từ đó điều chỉnh hiệu ứng ánh sáng theo sở thích của người dùng. Với tốc độ quay tối đa 2,200 RPM và luồng khí mạnh mẽ lên tới 70.38 cfm, quạt đảm bảo hiệu suất tản nhiệt tốt mà vẫn giữ được hiệu ứng ánh sáng ARGB bắt mắt.</p>\n<h3><strong>Thiết kế tinh tế</strong></h3>\n<p style="text-align:justify;">Asus ROG Strix LC III 240 ARGB White Edition không chỉ vượt trội về hiệu năng mà còn thể hiện sự tinh tế trong từng chi tiết thiết kế. Với màn hình LCD tích hợp, người dùng có thể theo dõi thông số hệ thống hoặc tùy chỉnh hình ảnh động để thể hiện phong cách cá nhân khi <a href="https://cellphones.com.vn/may-tinh-de-ban/build-pc.html" title="Build PC"><strong>build PC</strong></a>. Tản nhiệt này tương thích với nhiều socket (ổ cắm) CPU của cả Intel và AMD, dễ dàng kết hợp với đa dạng cấu hình, đảm bảo hiệu suất ổn định trong suốt quá trình sử dụng.</p>\n<p style="text-align:justify;"><img alt="Thiết kế tản nhiệt nước Asus ROG Strix LC III 240 ARGB White Edition" src="https://cdn2.cellphones.com.vn/insecure/rs:fill:0:0/q:100/plain/https://cellphones.com.vn/media/wysiwyg/linh-kien-may-tinh/Tan-nhiet/Asus/tan-nhiet-nuoc-asus-rog-strix-lc-iii-240-argb-white-edition-3.jpg" /></p>\n<h2><strong>Mua ngay tản nhiệt nước Asus ROG Strix LC III 240 ARGB White Edition chính hãng tại CellphoneS</strong></h2>\n<p style="text-align:justify;">Tản nhiệt nước Asus ROG Strix Lc III 240 ARGB White Edition hiện đã có mặt tại CellphoneS. Quý khách sẽ có cơ hội hưởng chương trình ưu đãi khi mua tản nhiệt nước Asus ROG Strix Lc III trong các dịp sale xả kho, lễ 20/10, Black Friday… Ưu đãi còn nâng lên tối đa với đối tượng khách hàng Smember hoặc Sstudent.</p>\n<p style="text-align:justify;">Bên cạnh tản nhiệt nước, CellphoneS còn cung cấp nhiều mẫu linh kiện hệ thống như CPU, RAM, Motherboard… Liên hệ ngay hotline 1800.2097 để biết thêm thông tin về tản nhiệt nước Asus ROG Strix LC III 240 ARGB White Edition tại cửa hàng.</p>\n<p style="text-align:justify;"></p></div> <div class="cps-block-content_btn-showmore"><a class="btn-show-more button__content-show-more">\n      Xem thêm  </a><div><a class="btn-show-more button__content-show-more"></a></div><a class="btn-show-more button__content-show-more"></a></div></div>	t
 13	16	Tai nghe Bluetooth Apple AirPods	tai-nghe-bluetooth-apple-airpods-69f98e325c400	Apple	Apple AirPods là dòng tai nghe Bluetooth không dây của Apple, hỗ trợ kết nối nhanh với hệ sinh thái iPhone, iPad, Mac, mang lại trải nghiệm âm thanh ổn định, dễ sử dụng, pin lâu và nhiều tính năng thông minh như chống ồn, xuyên âm (tùy phiên bản).	/storage/products/rfA7u9N4uBpxhhIADc762M7aJ1BsVqGsuZw6fdYe.webp	t	2026-05-04 23:29:06+00	2026-07-01 14:15:57+00	\N	\N	t
@@ -6070,6 +5714,12 @@ COPY public.products (id, category_id, name, slug, brand, description, main_imag
 44	32	Máy làm mát không khí Hoà Phát HPCF1-045	may-lam-mat-khong-khi-hoa-phat-hpcf1-045-6a02dabd373e6	Hòa Phát	Máy làm mát không khí Hòa Phát HPCF1-045 là thiết bị quạt điều hòa sử dụng công nghệ làm mát bằng hơi nước, phù hợp cho không gian phòng vừa và nhỏ. Máy giúp giảm nhiệt nhanh, tiết kiệm điện năng so với điều hòa truyền thống và có khả năng tạo luồng gió tự nhiên dễ chịu. Thiết kế dạng tháp hiện đại, tích hợp bánh xe di chuyển linh hoạt và bình chứa nước dung tích lớn, phù hợp sử dụng trong gia đình, văn phòng hoặc quán nhỏ.	http://localhost:8000/storage/products/7eIydSQrnHpNifZ5jcxn1QEtIAXNSZJjOUoDXy92.webp	t	2026-05-12 07:46:05+00	2026-07-06 13:16:43+00	\N	<div class="cps-block-content" style="max-height:567px;"><h2 class="ksp-title">\n    Đặc điểm nổi bật\n  </h2>  <div class="ksp-content"><p>Quạt điều hòa Hòa Phát HPCF1-045 là thiết bị sở hữu khả năng làm mát ấn tượng cho diện tích phòng từ 15m2 đến 20m2 nhờ nguyên lý hơi nước tự nhiên. Máy được trang bị công suất 112W, cung cấp lưu lượng gió đạt 1115 m3/h. Sản phẩm còn tích hợp bình chứa nước 25 lít đi kèm nhiều tính năng như hẹn giờ và đảo gió.</p>\n</div> <div class="table-content"><div class="table-content__title"><p>Nội dung chính</p> </div> <div class="table-content__wrapper" style="max-height:100000px;"><div class="table-content__list"><a href="#quat-dieu-hoa-hoa-phat-hpcf1-045-kieu-dang-hien-dai-ha-nhiet-nhanh-chong" class="table-content__item level-2">\n        1. Quạt điều hòa Hòa Phát HPCF1-045 - Kiểu dáng hiện đại, hạ nhiệt nhanh chóng\n      </a><a href="#ngoai-hinh-gon-gang-hai-hoa-voi-khong-gian-song" class="table-content__item level-3">\n        1.1. Ngoại hình gọn gàng, hài hòa với không gian sống\n      </a><a href="#cong-suat-112w-dap-ung-3-muc-do-lam-mat" class="table-content__item level-3">\n        1.2. Công suất 112W đáp ứng 3 mức độ làm mát\n      </a><a href="#he-thong-nut-bam-dien-tu-phan-hoi-nhanh-nhay" class="table-content__item level-3">\n        1.3. Hệ thống nút bấm điện tử phản hồi nhanh nhạy\n      </a><a href="#mua-ngay-quat-dieu-hoa-hoa-phat-hpcf1-045-chinh-hang-tai-cellphones" class="table-content__item level-2">\n        2. Mua ngay quạt điều hòa Hòa Phát HPCF1-045 chính hãng tại CellphoneS\n      </a></div></div></div><div><h2><strong> Quạt điều hòa Hòa Phát HPCF1-045 - Kiểu dáng hiện đại, hạ nhiệt nhanh chóng </strong></h2>\n<p>Đây là mẫu máy <a href="https://cellphones.com.vn/do-gia-dung/quat/hoi-nuoc.html" title="Quạt hơi nước chính hãng"><strong>quạt hơi nước</strong></a> làm mát không khí lý tưởng giúp xua tan sự oi bức của những ngày hè nóng nực. Thiết bị mang lại cho không gian sống sự tươi mới cùng luồng gió tự nhiên dịu mát mỗi ngày.</p>\n<h3><strong> Ngoại hình gọn gàng, hài hòa với không gian sống </strong></h3>\n<p>Quạt điều hòa Hòa Phát HPCF1-045 thu hút ánh nhìn nhờ thiết kế dạng tháp thon gọn với hai tông màu trắng và đen tối giản. Kích thước chiều cao 1050mm giúp luồng gió tỏa ra từ họng gió ở vị trí vừa tầm người ngồi sinh hoạt và làm việc.</p>\n<p style="text-align:center;"><img alt="Kiểu dáng quạt điều hòa Hòa Phát HPCF1-045" src="https://cdn2.cellphones.com.vn/insecure/rs:fill:0:0/q:100/plain/https://cellphones.com.vn/media/wysiwyg/Do-gia-dung/Quat/Quat-hoi-nuoc/hang-khac/quat-dieu-hoa-hoa-phat-hpcf1-045-1.jpg" /></p>\n<p style="text-align:center;">Kiểu dáng đứng gọn gàng giúp tối ưu hóa diện tích</p>\n<p>Trọng lượng máy chỉ 11kg đi kèm hệ thống 4 bánh xe linh hoạt hỗ trợ việc di chuyển thiết bị nhẹ nhàng hơn. Lớp vỏ nhựa bên ngoài được hoàn thiện bóng bẩy giúp người dùng dễ dàng lau chùi các vết bụi bẩn bám dính. Sản phẩm không chiếm quá nhiều diện tích nên phù hợp để đặt tại góc nhỏ trong phòng khách hay quán cafe.</p>\n<h3><strong> Công suất 112W đáp ứng 3 mức độ làm mát </strong></h3>\n<p>Nhờ công suất 112W, quạt điều hòa Hòa Phát HPCF1-045 có thể tạo ra luồng gió đều và mạnh với lưu lượng đạt mức 1115 m3/h. Sản phẩm phù hợp sử dụng trong các khu vực mở rộng khoảng 15m2 đến 20m2 với khả năng giảm nhiệt tốt.</p>\n<p style="text-align:center;"><img alt="Công suất quạt điều hòa Hòa Phát HPCF1-045" src="https://cdn2.cellphones.com.vn/insecure/rs:fill:0:0/q:100/plain/https://cellphones.com.vn/media/wysiwyg/Do-gia-dung/Quat/Quat-hoi-nuoc/hang-khac/quat-dieu-hoa-hoa-phat-hpcf1-045-4.jpg" /></p>\n<p style="text-align:center;">Luồng gió lưu lượng lớn thổi bay cảm giác oi bức</p>\n<p>Người dùng có thể thay đổi giữa 3 chế độ gió để đáp ứng nhu cầu làm mát phù hợp với điều kiện thời tiết thực tế. Động cơ xoay chiều AC bền bỉ giúp duy trì tốc độ quay ổn định nhằm cung cấp luồng gió mát liên tục. So với điều hòa truyền thống, thiết bị tiêu thụ điện ít hơn đến 90%, giúp giảm áp lực chi phí cho người dùng.</p>\n<h3><strong> Hệ thống nút bấm điện tử phản hồi nhanh nhạy </strong></h3>\n<p>Quạt điều hòa Hòa Phát HPCF1-045 trang bị hệ thống điều khiển điện tử đi kèm màn hình LED hiển thị thông số rõ nét. Người sử dụng có thể thao tác trực tiếp thông qua các phím bấm hoặc phím cảm ứng nhạy bén ngay trên thân máy.</p>\n<p style="text-align:center;"><img alt="Hệ thống nút bấm quạt điều hòa Hòa Phát HPCF1-045" src="https://cdn2.cellphones.com.vn/insecure/rs:fill:0:0/q:100/plain/https://cellphones.com.vn/media/wysiwyg/Do-gia-dung/Quat/Quat-hoi-nuoc/hang-khac/quat-dieu-hoa-hoa-phat-hpcf1-045-3.jpg" /></p>\n<p style="text-align:center;">Hệ thống phím bấm điện tử phản hồi nhanh nhạy</p>\n<p>Đi kèm với thiết bị là chiếc điều khiển từ xa nhỏ gọn giúp việc chuyển đổi các chế độ làm mát trở nên thuận tiện. Các biểu tượng trên bảng điều khiển được thiết kế rõ ràng, giúp người dùng dễ nhận biết và ghi nhớ. Hệ thống điều khiển hiện đại này mang lại cảm giác công nghệ cao và nâng cao trải nghiệm sử dụng hàng ngày.</p>\n<h2><strong> Mua ngay quạt điều hòa Hòa Phát HPCF1-045 chính hãng tại CellphoneS </strong></h2>\n<p>Khách hàng muốn sở hữu quạt điều hòa Hòa Phát HPCF1-045 chính hãng có thể đến ngay CellphoneS. Các nhân viên tư vấn sẽ giới thiệu chi tiết về máy làm mát không khí và kiểm tra kỹ lưỡng các phụ kiện đi kèm.</p>\n<p>Chính sách giảm giá đặc biệt cùng ưu đãi tích điểm Smember mang lại nhiều giá trị cộng thêm cho khách hàng khi mua sắm. Quá trình thanh toán tại CellphoneS diễn ra linh hoạt qua nhiều hình thức hoặc khách hàng có thể chọn trả góp 0% để sở hữu sản phẩm dễ dàng.</p></div> <div class="cps-block-content_btn-showmore"><a class="btn-show-more button__content-show-more">\n      Xem thêm  </a><div><a class="btn-show-more button__content-show-more"></a></div><a class="btn-show-more button__content-show-more"></a></div></div>	f
 201	211	Tản nhiệt khí Xigmatek EPIX II	tan-iet-khi-xigmatek-epix-ii-6a38e6a2d87b0	Xigmatek	Tản nhiệt khí Xigmatek EPIX II mang đến hiệu năng làm mát mạnh mẽ với 4 ống dẫn nhiệt, quạt PWM 120mm và hiệu ứng RGB Infinity Mirror nổi bật. Thiết kế hiện đại, vận hành êm ái, phù hợp cho các bộ PC gaming và làm việc hiệu suất cao.	http://localhost:8000/storage/products/viJM1Tk95yscaNeEwrNSzSDIpmYzMo3Unbo5IKdQ.png	t	2026-06-22 14:39:14+00	2026-07-09 15:23:04+00	\N	<div class="cps-block-content">  <div class="ksp-content"><p style="text-align:justify;"><strong>Tản nhiệt khí Xigmatek Epix II</strong> sở hữu thiết kế hiện đại với kích thước 125x98x154 mm, đảm bảo phù hợp với nhiều hệ thống PC, kể cả cấu hình cao cấp. Với khả năng phân tán lên đến 225W, sản phẩm <a href="https://cellphones.com.vn/linh-kien/tan-nhiet.html" title="quạt tản nhiệt"><strong>quạt tản nhiệt</strong></a> này giúp duy trì nhiệt độ ổn định khi hoạt động. Không chỉ vậy, hệ thống quạt PWM RGB với tốc độ quay 600–1600 RPM mang lại sự cân bằng đỉnh cao giữa hiệu suất và độ ồn tối thiểu.</p>\n</div> <div class="table-content"><div class="table-content__title"><p>Nội dung chính</p> </div> <div class="table-content__wrapper" style="max-height:100000px;"><div class="table-content__list"><a href="#tan-nhiet-khi-xigmatek-epix-ii-tan-nhiet-manh-me-thiet-ke-hien-dai-ben-bi" class="table-content__item level-2">\n        1. Tản nhiệt khí Xigmatek Epix II - Tản nhiệt mạnh mẽ, thiết kế hiện đại, bền bỉ\n      </a><a href="#kha-nang-tan-nhiet-manh-me-phu-hop-voi-cac-cpu-hieu-nang-cao" class="table-content__item level-3">\n        1.1. Khả năng tản nhiệt mạnh mẽ, phù hợp với các CPU hiệu năng cao\n      </a><a href="#hieu-suat-quat-xuat-sac-giup-tang-cuong-kha-nang-lam-mat" class="table-content__item level-3">\n        1.2. Hiệu suất quạt xuất sắc, giúp tăng cường khả năng làm mát\n      </a><a href="#ho-tro-tuong-thich-an-tuong-phu-hop-voi-ngay-ca-cac-dong-cpu-moi" class="table-content__item level-3">\n        1.3. Hỗ trợ tương thích ấn tượng, phù hợp với ngay cả các dòng CPU mới\n      </a><a href="#thiet-ke-hien-dai-tao-diem-nhan-voi-hieu-ung-anh-sang-rgb-bat-mat" class="table-content__item level-3">\n        1.4. Thiết kế hiện đại, tạo điểm nhấn với hiệu ứng ánh sáng RGB bắt mắt\n      </a><a href="#mua-tan-nhiet-khi-xigmatek-epix-ii-gia-uu-dai-tai-cellphones" class="table-content__item level-2">\n        2. Mua tản nhiệt khí Xigmatek Epix II giá ưu đãi tại CellphoneS\n      </a></div></div></div><div><h2><strong>Tản nhiệt khí Xigmatek Epix II - Tản nhiệt mạnh mẽ, thiết kế hiện đại, bền bỉ</strong></h2>\n<p style="text-align:justify;">Được đánh giá cao nhờ khả năng làm mát hiệu quả, tản nhiệt khí Xigmatek Epix II đáp ứng nhu cầu của các game thủ và người dùng chuyên nghiệp. Không chỉ nổi bật về hiệu suất tản nhiệt, sản phẩm còn thu hút sự chú ý bởi thiết kế hiện đại, bền bỉ và khả năng tương thích linh hoạt với nhiều dòng CPU thế hệ mới.</p>\n<h3><strong>Khả năng tản nhiệt mạnh mẽ, phù hợp với các CPU hiệu năng cao</strong></h3>\n<p style="text-align:justify;">Tản nhiệt khí Xigmatek Epix II được thiết kế để đáp ứng nhu cầu làm mát của các CPU hiệu năng cao với khối tản nhiệt kích thước lớn 120x90x148 mm. Sản phẩm sở hữu 4 ống dẫn nhiệt Ø6 mm làm từ đồng nguyên chất, kết hợp với các lá tản nhiệt bằng nhôm. Thiết kế này giúp truyền nhiệt nhanh chóng và hiệu quả từ bề mặt CPU sang hệ thống lá tản nhiệt, đảm bảo phân tán nhiệt đều đặn. </p>\n<p style="text-align:justify;"><img alt="Tản nhiệt khí Xigmatek Epix II - Tản nhiệt mạnh mẽ, thiết kế hiện đại, bền bỉ" src="https://cdn2.cellphones.com.vn/insecure/rs:fill:0:0/q:100/plain/https://cellphones.com.vn/media/wysiwyg/linh-kien-may-tinh/Tan-nhiet/Xigmatek/tan-nhiet-khi-xigmatek-epix-ii-den-1.jpg" /></p>\n<p style="text-align:justify;">Công suất tản nhiệt tối đa lên đến 225W giúp tản nhiệt Xigmatek này duy trì hiệu năng ổn định ngay cả khi CPU phải hoạt động ở cường độ cao. Điều này đặc biệt hữu ích cho các game thủ sử dụng hệ thống chơi game nặng hoặc các chuyên gia cần xử lý đồ họa, dựng hình 3D, và chỉnh sửa video.</p>\n<h3><strong>Hiệu suất quạt xuất sắc, giúp tăng cường khả năng làm mát</strong></h3>\n<p style="text-align:justify;">Một trong những điểm mạnh của tản nhiệt khí Xigmatek Epix II chính là hệ thống quạt chất lượng cao kích thước 120x120x25 mm. Với vận tốc quay linh hoạt từ 600–1600RPM ±10%, quạt có khả năng điều chỉnh tự động theo yêu cầu làm mát của hệ thống. Kèm theo đó là lưu lượng gió 69.3 CFM kết hợp với áp suất khí mạnh mẽ 2.9 mm-H2O giúp tối ưu hóa luồng không khí, đẩy nhanh quá trình làm mát, đặc biệt là trong các tình huống tải nhiệt lớn. </p>\n<p style="text-align:justify;"><img alt="Tản nhiệt khí Xigmatek Epix II - Tản nhiệt mạnh mẽ, thiết kế hiện đại, bền bỉ" src="https://cdn2.cellphones.com.vn/insecure/rs:fill:0:0/q:100/plain/https://cellphones.com.vn/media/wysiwyg/linh-kien-may-tinh/Tan-nhiet/Xigmatek/tan-nhiet-khi-xigmatek-epix-ii-den-2.jpg" /></p>\n<p style="text-align:justify;">Ấn tượng hơn, Xigmatek Epix II còn sở hữu loại bạc đạn Long Life Hydraulic Bearing không chỉ giảm thiểu độ ồn xuống mức ≤28.6 dBA mà còn gia tăng tuổi thọ quạt lên đến 40,000 giờ. Qua đó, nó mang lại sự cân bằng ấn tượng giữa hiệu suất hoạt động và độ bền, đáp ứng nhu cầu sử dụng lâu dài cho cả game thủ lẫn người dùng chuyên nghiệp.</p>\n<h3><strong>Hỗ trợ tương thích ấn tượng, phù hợp với ngay cả các dòng CPU mới</strong></h3>\n<p style="text-align:justify;">Khả năng tương thích vượt trội của tản nhiệt khí Xigmatek Epix II giúp nó dễ dàng lắp đặt trên hầu hết các dòng CPU hiện đại. Cụ thể, sản phẩm hỗ trợ đa dạng socket CPU từ Intel, bao gồm LGA1851, LGA1700, và các nền tảng LGA115x, LGA1200, đến AMD với AM4, AM5. Với ưu điểm này, người dùng có thể linh hoạt hơn trong việc nâng cấp hoặc thay đổi cấu hình máy tính mà không phải lo lắng về việc không tương thích với bộ tản nhiệt. </p>\n<p style="text-align:justify;"><img alt="Tản nhiệt khí Xigmatek Epix II - Tản nhiệt mạnh mẽ, thiết kế hiện đại, bền bỉ" src="https://cdn2.cellphones.com.vn/insecure/rs:fill:0:0/q:100/plain/https://cellphones.com.vn/media/wysiwyg/linh-kien-may-tinh/Tan-nhiet/Xigmatek/tan-nhiet-khi-xigmatek-epix-ii-den-3.jpg" /></p>\n<p style="text-align:justify;">Đặc biệt, với thiết kế hướng đến các dòng vi xử lý cao cấp, thiết bị tản nhiệt Xigmatek này còn đảm bảo hiệu năng làm mát tối ưu cho cả các hệ thống ép xung (overclocking). Đây là lợi thế lớn đối với những người sử dụng đòi hỏi hiệu năng cao trong công việc hay giải trí.</p>\n<h3><strong>Thiết kế hiện đại, tạo điểm nhấn với hiệu ứng ánh sáng RGB bắt mắt</strong></h3>\n<p style="text-align:justify;">Tản nhiệt khí Xigmatek Epix II không chỉ mạnh mẽ về hiệu suất mà còn gây ấn tượng với thiết kế đậm chất thẩm mỹ. Theo đó, Xigmatek Epix II được trang bị nắp gương vô cực Infinity Mirror Plastic Top Cover, tạo nên hiệu ứng ánh sáng Slow Motion Random RGB độc đáo. Hệ thống ánh sáng này không chỉ giúp tăng tính thẩm mỹ cho bộ PC mà còn tạo ra một không gian sống động, đầy màu sắc, đặc biệt là trong các hệ thống gaming.</p>\n<p style="text-align:justify;"><img alt="Tản nhiệt khí Xigmatek Epix II - Tản nhiệt mạnh mẽ, thiết kế hiện đại, bền bỉ" src="https://cdn2.cellphones.com.vn/insecure/rs:fill:0:0/q:100/plain/https://cellphones.com.vn/media/wysiwyg/linh-kien-may-tinh/Tan-nhiet/Xigmatek/tan-nhiet-khi-xigmatek-epix-ii-den-4.jpg" /></p>\n<h2><strong>Mua tản nhiệt khí Xigmatek Epix II giá ưu đãi tại CellphoneS</strong></h2>\n<p style="text-align:justify;">CellphoneS là điểm đến lý tưởng hàng đầu thị trường Việt mà bạn nên ghé tới khi tìm mua tản nhiệt khí Xigmatek Epix II. Với vị thế hàng đầu trong ngành công nghệ bán lẻ Việt, CellphoneS cam kết cung cấp sản phẩm chính hãng, chất lượng cao. Kèm theo đó là chế độ bảo hành đầy đủ cùng chính sách đổi trả linh hoạt giúp người tiêu dùng hoàn toàn yên tâm khi mua sắm. Ngoài ra, các chương trình khuyến mãi thường xuyên và đội ngũ tư vấn chuyên nghiệp tại cửa hàng cũng luôn sẵn sàng hỗ trợ bạn chọn lựa sản phẩm phù hợp với nhu cầu.</p></div> <div class="cps-block-content_btn-showmore"><a class="btn-show-more button__content-show-more">\n      Xem thêm  </a><div><a class="btn-show-more button__content-show-more"></a></div><a class="btn-show-more button__content-show-more"></a></div></div>	f
 211	51	PC CPS X MSI Gaming Intel i7 Gen 14 Kèm màn hình	pc-cps-x-msi-gaming-intel-i7-gen-14-kem-man-hinh-6a4f5c908fd6e	MSI	PC CPS MSI Gaming Intel i7 Gen 14 trang bị vi xử lý Intel Core i7 với 20 lõi và 28 luồng, xung nhịp tối đa 5.4GHz, với bộ nhớ đệm L2, L3 là 28MB và 33MB. Card đồ họa RTX 4060 cùng RAM DDR5 16GB tốc độ 5600MHz trên PC Gaming này mang lại hiệu năng vượt trội. Hệ thống tản nhiệt nước MSI MAG CoreLiquid E240 và case MSI MAG Forge 320R Airflow đảm bảo giải nhiệt hiệu quả.	http://localhost:8000/storage/products/DsuxcUgKS71gJmIgrCGfUClNz2mBAiuWxDkKqj0v.webp	t	2026-07-09 15:32:16+00	2026-07-09 15:32:16+00	\N	<div class="cps-block-content"><h2 class="ksp-title">\n    Đặc điểm nổi bật\n  </h2>  <div class="ksp-content"><p style="text-align:justify;">PC CPS MSI Gaming Intel i7 Gen 14 trang bị vi xử lý Intel Core i7 với 20 lõi và 28 luồng, xung nhịp tối đa 5.4GHz, với bộ nhớ đệm L2, L3 là 28MB và 33MB. Card đồ họa RTX 4060 cùng RAM DDR5 16GB tốc độ 5600MHz trên <a href="https://cellphones.com.vn/may-tinh-de-ban/pc-gaming.html" title="PC Gaming"><strong>PC Gaming</strong></a> này mang lại hiệu năng vượt trội. Hệ thống tản nhiệt nước MSI MAG CoreLiquid E240 và case MSI MAG Forge 320R Airflow đảm bảo giải nhiệt hiệu quả.</p>\n</div> <div class="table-content"><div class="table-content__title"><p>Nội dung chính</p> <svg width="20" height="20" viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" class="rotate"><path d="M5 7.5L10 12.5L15 7.5" stroke="#18181B" /></svg></div> <div class="table-content__wrapper" style="max-height:100000px;"><div class="table-content__list"><a href="#pc-cps-msi-gaming-intel-i7-gen-14-cau-hinh-manh-me" class="table-content__item level-2">\n        1. PC CPS MSI Gaming Intel i7 Gen 14 - Cấu hình mạnh mẽ\n      </a><a href="#hieu-nang-da-nhiem-vuot-troi" class="table-content__item level-3">\n        1.1. Hiệu năng đa nhiệm vượt trội\n      </a><a href="#card-do-hoa-va-he-thong-tan-nhiet-toi-uu" class="table-content__item level-3">\n        1.2. Card đồ họa và hệ thống tản nhiệt tối ưu\n      </a><a href="#thiet-ke-cong-thai-hoc-va-den-rgb" class="table-content__item level-3">\n        1.3. Thiết kế công thái học và đèn RGB\n      </a><a href="#mua-pc-cps-msi-gaming-intel-i7-gen-14-gia-tot-tai-cellphones" class="table-content__item level-2">\n        2. Mua PC CPS MSI Gaming Intel i7 Gen 14 giá tốt tại CellphoneS\n      </a></div></div></div><div><h2><strong>PC CPS MSI Gaming Intel i7 Gen 14 - Cấu hình mạnh mẽ</strong></h2>\n<p style="text-align:justify;">Sở hữu cấu hình phần cứng mạnh mẽ, PC CPS MSI Gaming có thể xử lý đa dạng tác vụ từ chơi game đến thiết kế đồ họa chuyên sâu. Sự kết hợp hài hòa giữa hiệu suất và hệ thống tản nhiệt giúp PC hoạt động ổn định ngay cả khi tải nặng.</p>\n<h3><strong>Hiệu năng đa nhiệm vượt trội</strong></h3>\n<p style="text-align:justify;">CPU Intel Core i7-14700F trên PC CPS MSI Gaming Intel i7 Gen 14 sở hữu 20 lõi, 28 luồng xử lý trên kiến trúc Raptor Lake. Xung nhịp tối đa 5.4GHz và công suất 65W cho phép xử lý tác vụ nặng như render video, stream game mà không làm giảm tốc độ máy. Mainboard MSI B760M Gaming Plus Wifi DDR5 hỗ trợ kết nối đa luồng, tương thích với RAM DDR5 tốc độ cao.</p>\n<p style="text-align:justify;"><em><strong>&gt;&gt; Sản phẩm tham khảo</strong>: <a href="https://cellphones.com.vn/may-tinh-de-ban/do-hoa.html" title="Máy tính đồ họa"><strong>Máy tính đồ họa</strong></a> - Siêu tốc độ, tiết kiệm thời gian trong công việc thiết kế.</em></p>\n<p style="text-align:justify;"><img alt="PC CPS MSI Gaming Intel i7 Gen 14 - Cấu hình mạnh mẽ" src="https://cdn2.cellphones.com.vn/insecure/rs:fill:0:0/q:100/plain/https://cellphones.com.vn/media/wysiwyg/pc/CPS/pc-cps-msi-gaming-intel-i7-gen-14-1.jpg" /></p>\n<p style="text-align:justify;">SSD 256GB đạt tốc độ đọc đến 6.000 MB/s và tốc độ ghi là 5.000 MB/s nhờ giao thức NVMe 1.4, rút ngắn thời gian khởi động hệ thống. Công nghệ LDPC và SSD Toolbox giám sát tuổi thọ, đảm bảo độ bền dữ liệu. Dung lượng 500GB trên PC CPS MSI Gaming phù hợp lưu trữ hệ điều hành, ứng dụng và game phổ thông.</p>\n<h3><strong>Card đồ họa và hệ thống tản nhiệt tối ưu</strong></h3>\n<p style="text-align:justify;">PC CPS MSI Gaming Intel i7 Gen 14 sở hữu VGA MSI RTX 4060 Ventus 2X 8G OC trang bị hai quạt TORX 4.0, tăng lưu lượng khí so với thiết kế thông thường. Tấm backplate cứng cáp hỗ trợ hấp thụ nhiệt từ mạch điện bên dưới và tản nhiệt ra khỏi card. Ray Tracing và DLSS 3 cải thiện đồ họa, mang đến khung hình mượt mà cùng chất lượng hình ảnh sắc nét.</p>\n<p style="text-align:justify;"><img alt="PC CPS MSI Gaming Intel i7 Gen 14 - Cấu hình mạnh mẽ" src="https://cdn2.cellphones.com.vn/insecure/rs:fill:0:0/q:100/plain/https://cellphones.com.vn/media/wysiwyg/pc/CPS/pc-cps-msi-gaming-intel-i7-gen-14-2.jpg" /></p>\n<p style="text-align:justify;">Tản nhiệt nước MSI MAG CoreLiquid E240 kết hợp với case MSI MAG Forge 320R Airflow có khả năng lắp tối đa 11 quạt, giúp linh kiện luôn duy trì nhiệt độ lý tưởng. Chiếc case này thực hiện tốt chức năng giữ cho nhiệt độ của cả CPU và GPU ở mức ổn định, đặc biệt khi thực hiện các tác vụ cần hiệu suất cao như chơi game hoặc xử lý đồ họa.</p>\n<h3><strong>Thiết kế công thái học và đèn RGB</strong></h3>\n<p style="text-align:justify;">Case MSI MAG Forge 320R Airflow trên PC CPS MSI Gaming Intel i7 Gen 14 sở hữu thiết kế mạnh mẽ với các đường nét góc cạnh, tạo nên vẻ ngoài hiện đại và cứng cáp. Mặt trước dạng lưới không chỉ giúp tăng tính thẩm mỹ mà còn mang lại sự độc đáo cho tổng thể. Phần hông bằng kính cường lực trong suốt cho phép người dùng dễ dàng quan sát linh kiện bên trong.</p>\n<p style="text-align:justify;"><img alt="Thiết kế công thái học và đèn RGB" src="https://cdn2.cellphones.com.vn/insecure/rs:fill:0:0/q:100/plain/https://cellphones.com.vn/media/wysiwyg/pc/CPS/pc-cps-msi-gaming-intel-i7-gen-14-3.jpg" /></p>\n<p style="text-align:justify;">Hệ thống LED RGB với 9 hiệu ứng màu sắc độc đáo giúp PC trở nên nổi bật và bắt mắt hơn. Điều này không chỉ cải thiện trải nghiệm thị giác mà còn cho phép người dùng tùy chỉnh phong cách theo sở thích cá nhân. Vì vậy, hệ thống đèn RGB trên PC CPS MSI Gaming tạo ra ánh sáng sống động, làm phong phú thêm trải nghiệm hình ảnh.</p>\n<h2><strong>Mua PC CPS MSI Gaming Intel i7 Gen 14 giá tốt tại CellphoneS</strong></h2>\n<p style="text-align:justify;">PC CPS MSI Gaming Intel i7 Gen 14 mang đến hiệu suất mạnh mẽ, phù hợp cho game thủ. Cấu hình hiện đại với Intel Core i7-14700F và VGA RTX 4060 đảm bảo xử lý nhanh, trải nghiệm mượt. Mua ngay PC CPS MSI Gaming tại CellphoneS để sở hữu sản phẩm với giá tốt và nhiều ưu đãi! CellphoneS hỗ trợ trả góp linh hoạt và đặt cọc trực tuyến tiện lợi, giúp khách hàng mua sắm dễ dàng.</p></div> <div class="cps-block-content_btn-showmore" style="display:none;"><a class="btn-show-more button__content-show-more">\n      Xem thêm  </a><div><a class="btn-show-more button__content-show-more"></a><svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 448 512" width="10" height="10"><a class="btn-show-more button__content-show-more"><path d="M224 416c-8.188 0-16.38-3.125-22.62-9.375l-192-192c-12.5-12.5-12.5-32.75 0-45.25s32.75-12.5 45.25 0L224 338.8l169.4-169.4c12.5-12.5 32.75-12.5 45.25 0s12.5 32.75 0 45.25l-192 192C240.4 412.9 232.2 416 224 416z" /></a></svg><a class="btn-show-more button__content-show-more"></a></div><a class="btn-show-more button__content-show-more"></a></div></div>	t
+212	1	MacBook Pro 14 inch M3	macbook-pro-14-m3	Apple	MacBook Pro 14 inch với chip M3, RAM 16GB, SSD 512GB	\N	t	2026-07-24 13:39:53+00	2026-07-24 13:39:53+00	\N	\N	f
+213	2	iPhone 15 Pro Max	iphone-15-pro-max	Apple	iPhone 15 Pro Max 256GB, Titan tự nhiên	\N	t	2026-07-24 13:39:53+00	2026-07-24 13:39:53+00	\N	\N	f
+214	3	iPad Pro 12.9 inch M2	ipad-pro-12-9-m2	Apple	iPad Pro 12.9 inch với chip M2, WiFi 256GB	\N	t	2026-07-24 13:39:53+00	2026-07-24 13:39:53+00	\N	\N	f
+215	4	AirPods Pro 2	airpods-pro-2	Apple	Tai nghe AirPods Pro thế hệ thứ 2	\N	t	2026-07-24 13:39:53+00	2026-07-24 13:39:53+00	\N	\N	f
+216	5	Apple Watch Series 9	apple-watch-series-9	Apple	Apple Watch Series 9 GPS 45mm	\N	t	2026-07-24 13:39:53+00	2026-07-24 13:39:53+00	\N	\N	f
+219	6	Logitech MX Master 3S	logitech-mx-master-3s	Logitech	Chuột không dây Logitech MX Master 3S	\N	t	2026-07-24 13:39:54+00	2026-07-24 13:39:54+00	\N	\N	f
 \.
 
 
@@ -6091,6 +5741,7 @@ COPY public.role_has_permissions (permission_id, role_id) FROM stdin;
 13	61
 14	62
 16	63
+14	65
 \.
 
 
@@ -6105,6 +5756,8 @@ COPY public.roles (id, name, slug, description, guard_name, created_at, updated_
 61	warehouse-staff	warehouse-staff	Nhân viên quản lý kho	web	2026-05-18 16:57:30	2026-07-06 10:00:07
 63	editor	editor	Biên tập viên tin tức	web	2026-05-18 16:57:30	2026-07-06 10:00:22
 62	order-staff	order-staff	Nhân viên xử lý đơn hàng	web	2026-05-18 16:57:30	2026-07-06 10:00:49
+64	shop	shop	Nhân viên cửa hàng	web	2026-07-24 13:39:54	2026-07-24 06:44:56
+65	delivery	delivery	Nhân viên giao hàng	web	2026-07-24 13:39:54	2026-07-24 06:44:56
 \.
 
 
@@ -6114,9 +5767,9 @@ COPY public.roles (id, name, slug, description, guard_name, created_at, updated_
 
 COPY public.shipping_methods (id, name, description, base_fee, estimated_days_min, estimated_days_max, is_active, created_at, updated_at) FROM stdin;
 7	test	test	0.00	3	6	f	2026-05-06 20:09:47+00	2026-05-06 20:15:56+00
-25	Nhân viên	Nhân viên giao hàng	0.00	1	2	t	2026-05-21 17:18:13+00	2026-07-01 09:35:01+00
 3	Giao tiêu chuẩn	Giao hàng toàn quốc	0.00	3	5	t	2026-05-07 02:03:34.085128+00	2026-07-01 09:35:37+00
 4	Giao hàng nhanh	Giao hàng nhanh	0.00	1	2	t	2026-05-07 02:03:34.085128+00	2026-07-01 09:36:04+00
+25	Nhân viên giao hàng	Nhân viên giao hàng	0.00	1	2	t	2026-05-21 17:18:13+00	2026-07-24 13:48:28+00
 \.
 
 
@@ -6161,12 +5814,10 @@ COPY public.shipping_zones (id, name, eta, fee, is_active, created_at, updated_a
 COPY public.transactions (id, payment_id, provider, provider_transaction_id, amount, currency, status, raw_response, created_at) FROM stdin;
 69	187	vnpay	15607056	88544000.00	VND	success	{"vnp_Amount": "8854400000", "vnp_TxnRef": "ET-4DBD8C43260702", "vnp_PayDate": "20260702085219", "vnp_TmnCode": "MCLYG8VX", "vnp_BankCode": "NCB", "vnp_CardType": "ATM", "vnp_OrderInfo": "Thanh toan don ET-4DBD8C43260702", "vnp_BankTranNo": "VNP15607056", "vnp_ResponseCode": "00", "vnp_TransactionNo": "15607056", "vnp_TransactionStatus": "00"}	2026-07-02 01:52:10.122649+00
 70	197	vnpay	15611263	38980000.00	VND	success	{"vnp_Amount": "3898000000", "vnp_TxnRef": "ET-DF2FC504260706", "vnp_PayDate": "20260706140002", "vnp_TmnCode": "MCLYG8VX", "vnp_BankCode": "NCB", "vnp_CardType": "ATM", "vnp_OrderInfo": "Thanh toan don ET-DF2FC504260706", "vnp_BankTranNo": "VNP15611263", "vnp_ResponseCode": "00", "vnp_TransactionNo": "15611263", "vnp_TransactionStatus": "00"}	2026-07-06 06:59:56.286775+00
-71	200	vnpay	0	33958000.00	VND	failed	{"vnp_Amount": "3395800000", "vnp_TxnRef": "ET-1971144D260709", "vnp_PayDate": "20260709155140", "vnp_TmnCode": "MCLYG8VX", "vnp_BankCode": "VNPAY", "vnp_CardType": "QRCODE", "vnp_OrderInfo": "Thanh toan don ET-1971144D260709", "vnp_ResponseCode": "24", "vnp_TransactionNo": "0", "vnp_TransactionStatus": "02"}	2026-07-09 08:51:19.978649+00
 72	201	vnpay	15615481	33958000.00	VND	success	{"vnp_Amount": "3395800000", "vnp_TxnRef": "ET-E3F0C98F260709", "vnp_PayDate": "20260709155230", "vnp_TmnCode": "MCLYG8VX", "vnp_BankCode": "NCB", "vnp_CardType": "ATM", "vnp_OrderInfo": "Thanh toan don ET-E3F0C98F260709", "vnp_BankTranNo": "VNP15615481", "vnp_ResponseCode": "00", "vnp_TransactionNo": "15615481", "vnp_TransactionStatus": "00"}	2026-07-09 08:52:16.287681+00
 73	202	vnpay	15616549	37570000.00	VND	success	{"vnp_Amount": "3757000000", "vnp_TxnRef": "ET-1F9D3A18260710", "vnp_PayDate": "20260710155741", "vnp_TmnCode": "MCLYG8VX", "vnp_BankCode": "NCB", "vnp_CardType": "ATM", "vnp_OrderInfo": "Thanh toan don ET-1F9D3A18260710", "vnp_BankTranNo": "VNP15616549", "vnp_ResponseCode": "00", "vnp_TransactionNo": "15616549", "vnp_TransactionStatus": "00"}	2026-07-10 08:57:21.706323+00
 74	208	vnpay	15627535	7990000.00	VND	success	{"vnp_Amount": "799000000", "vnp_TxnRef": "ET-86AE21C6260720", "vnp_PayDate": "20260720104636", "vnp_TmnCode": "MCLYG8VX", "vnp_BankCode": "NCB", "vnp_CardType": "ATM", "vnp_OrderInfo": "Thanh toan don ET-86AE21C6260720", "vnp_BankTranNo": "VNP15627535", "vnp_ResponseCode": "00", "vnp_TransactionNo": "15627535", "vnp_TransactionStatus": "00"}	2026-07-20 03:46:17.175929+00
 75	211	vnpay	15627555	33990000.00	VND	success	{"vnp_Amount": "3399000000", "vnp_TxnRef": "ET-4966EFD6260720", "vnp_PayDate": "20260720111115", "vnp_TmnCode": "MCLYG8VX", "vnp_BankCode": "NCB", "vnp_CardType": "ATM", "vnp_OrderInfo": "Thanh toan don ET-4966EFD6260720", "vnp_BankTranNo": "VNP15627555", "vnp_ResponseCode": "00", "vnp_TransactionNo": "15627555", "vnp_TransactionStatus": "00"}	2026-07-20 04:10:55.848986+00
-76	212	vnpay	\N	2690000.00	VND	failed	{"vnp_Amount": "269000000", "vnp_TxnRef": "ET-0243CF5D260720", "vnp_PayDate": "20260720111555", "vnp_TmnCode": "MCLYG8VX", "vnp_BankCode": "VNPAY", "vnp_CardType": "QRCODE", "vnp_OrderInfo": "Thanh toan don ET-0243CF5D260720", "vnp_ResponseCode": "24", "vnp_TransactionNo": "0", "vnp_TransactionStatus": "02"}	2026-07-20 04:15:32.830078+00
 \.
 
 
@@ -6190,7 +5841,6 @@ COPY public.users (id, name, email, password, phone, address_line, province, dis
 73	?�í Vi�?t Hoñng	doviethoang07042005@gmail.com	$2y$12$b24R0tVlcJVHgpt77jNd4.EObcQACoG6.fH6845Mxdma03/KhOHYy	\N	\N	\N	\N	\N	t	2026-05-21 16:30:37+00	\N	2026-05-21 16:30:37+00	2026-06-29 16:15:42+00	\N	https://lh3.googleusercontent.com/a/ACg8ocLbwb5cfjn47mo39bVnxEq_tUoO2gHj4xtct3dMfjsWPfCg6T_O=s96-c	0	0.00	\N	\N	f	\N
 352	Nguy�?n Ti�? Ph?t	tienphat@gmail.com	$2y$12$W/1qS9yG8SLy8r7ZCrJRrO/E58kYy9Gnw2XJS01ldouIoOpuzqTpi	\N	\N	\N	\N	\N	t	\N	\N	2026-06-18 14:28:54+00	2026-06-29 16:15:42+00	\N	\N	0	0.00	\N	\N	f	\N
 346	Nguyễn Văn An	annguyen@etech.com	$2y$12$KxPzihkh5WsGLppd9nWGxeUZ9pbsd5FmKUG.4mDWrrn6QVPtFtK7.	1234567890	123	126	125	124	t	\N	Erj06Qdfod6U2PKO9fFyugz8tAcc7li3DLsJxNSquaruj4DoPQfYaNtHwsNT	2026-06-01 10:18:54+00	2026-07-02 10:30:42+00	\N	http://nginx:8000/storage/avatars/FBHOSctwyzE2c6uEvdjHKSo0gphQ4fWcuiMGCMsy.png	29	2990000.00	1	\N	f	\N
-11	Đỗ Việt Hoàng	doviethoang@gmail.com	$2y$12$HLzWuy3aXGq2XiZYhHu6WeYygw0NhpswnCjFHkrzNojtBa88gJjri	1234567890	Số 5, Ngõ 2, Kiều Mai	Thành Phố Hà Nội	Quận Nam Từ LIêm	Phường Xuân Phương	t	\N	wfvcetBndAWs4QKjPuFAs0N0XOeh02bILKHEf6lJhFzdEBi3mKW6IXnuvrLw	2026-05-04 23:18:01+00	2026-07-20 09:45:31+00	\N	http://localhost:8000/storage/avatars/hEe0GJE5XwMY09by9Vbwr5HrXez9gxWpdwIgBbWL.png	1743	234959000.00	4	MYDSHLE6KAJHN37V	t	\N
 12	Trần Văn Tuấn	tuantran5448@gmail.com	$2y$12$Y6kLOAm0qT7OeaFpKuti3ux4Ny.2oKNYNSjpPbKlL8aWTw/5yR8eK	0973124568	\N	\N	\N	\N	t	\N	pFnPQGgYGnZFPM3lglqtYCRzJaQJPGOrbmtUtiOxKltOymHHToWsbY2k79qC	2026-05-07 01:54:44+00	2026-07-06 10:07:36+00	\N	\N	0	0.00	\N	\N	f	\N
 353	Tiến Nguyễn	tiennguyen@gmail.com	$2y$12$oMcl.duPJaHbHgk4BxXJreZlMp1Z9gWo247kRbMMhFB5KpIovlPv6	1234567890	123	123	123	123	t	\N	\N	2026-06-18 15:10:43+00	2026-07-03 09:13:08+00	\N	http://nginx:8000/storage/avatars/YNZ0RGbd7p9Jg30qktatLLMEjV0CAoNZis6q51V7.png	149	14990000.00	2	\N	f	\N
 341	Nguyễn Tiến Thành	thanhnguyen@tech.com	$2y$12$lJv8zUr2wHjLmafzVWPdx.L0wfqukFX62CozAenFjKKLU/RurGIuu	0987654321	123	126	125	124	t	\N	\N	2026-05-19 11:19:55+00	2026-07-06 10:04:53+00	\N	\N	0	0.00	\N	\N	f	\N
@@ -6198,6 +5848,12 @@ COPY public.users (id, name, email, password, phone, address_line, province, dis
 18	do hoang	do7509243@gmail.com	$2y$12$l5M5N.l19xW2f8NRs/xmM.SrBjY31hyg4YH3h5cxa823PAvs1Vmxy	\N	\N	\N	\N	\N	t	2026-05-12 09:41:10+00	\N	2026-05-12 09:41:10+00	2026-07-10 14:43:06+00	\N	https://lh3.googleusercontent.com/a/ACg8ocKZ_4Rs0Br3-LHDQxKD_716cNGreG2ZwMZSsDRJFKY64_Q6KA=s96-c	0	0.00	\N	\N	f	107066343840035406585
 10	E-TECH MARKET	e_tech_market@gmail.com	$2y$12$xu3zUMi.Ul4Vziv3N2L6NudnRVKlYhH2eNudWEF/FYuOEv6CDhR4y	1234567890	123	123	123	123	t	\N	yDSPat4wA9brCEiLYm4KFOBX82dDXPNm6HwozyFJIibJdcNQKiwgyjbbPb1a	2026-05-03 20:47:01+00	2026-07-13 13:22:50+00	\N	http://nginx:8000/storage/avatars/mDUg5foUH0qYWvG9PCnujm2Q0d5qWA57IrIkQDLN.png	725	81628000.00	3	\N	f	\N
 17	viet hoang	viethoang7425@gmail.com	$2y$12$uPgIB4MMEkLjmr08DWcs6u8kLeA.bX5UAu0QgVyGewJDQeTyQHInC	0945612378	123	126	125	124	t	2026-05-12 09:40:23+00	\N	2026-05-12 09:40:23+00	2026-07-10 15:58:55+00	\N	http://localhost:8000/storage/avatars/lloZDVwg8cmuymdOfKd4o4ZqwPP96lzLyV7lOgq5.webp	375	37570000.00	2	\N	f	114585305248866029315
+358	Admin	admin@etech.com	$2y$12$WtXwHAYFl4JH4viq2z3kRO0hiApgc3dx5Jfh7NquPzzJW8sHW00Ga	0123456789	\N	\N	\N	\N	t	2026-07-24 13:39:54+00	\N	2026-07-24 13:39:54+00	2026-07-24 13:39:54+00	\N	\N	0	0.00	\N	\N	f	\N
+359	Shop Manager	shop@etech.com	$2y$12$nL/DyGdF08P4876FqoJ4RO6QLwW3Fe4yiiwe8.ofzOe7iD2GqzZYS	0123456788	\N	\N	\N	\N	t	2026-07-24 13:39:54+00	\N	2026-07-24 13:39:54+00	2026-07-24 13:39:54+00	\N	\N	0	0.00	\N	\N	f	\N
+360	Delivery Staff	delivery@etech.com	$2y$12$.GukH5UGJHk01jmNP9YMfe.TEx1Inv5z1Eh8gqqDv/wqEr1H89DJi	0123456799	\N	\N	\N	\N	t	2026-07-24 13:39:54+00	\N	2026-07-24 13:39:54+00	2026-07-24 13:39:54+00	\N	\N	0	0.00	\N	\N	f	\N
+361	Nguyễn Văn A	test@example.com	$2y$12$aDn9bbuMIfAQ19pGWnpmmutuXI9mYFpCpxLSCL9d0SD5TAbLixmpK	0123456787	12 Nguyễn Văn A	Hà Nội	Cầu Giấy	Dịch Vọng	t	2026-07-24 13:39:55+00	\N	2026-07-24 13:39:55+00	2026-07-24 13:39:55+00	\N	\N	500	0.00	\N	\N	f	\N
+362	Trần Thị B	customer@etech.com	$2y$12$RV6K5F3eBl4ILEDjaJ9M/.bONxePAyN94sfAEjqrwqw1XNwABpW8.	0901000002	56 Trần Phú	Hồ Chí Minh	Quận 1	Phường Bến Nghé	t	2026-07-24 13:39:55+00	\N	2026-07-24 13:39:55+00	2026-07-24 13:39:55+00	\N	\N	0	0.00	\N	\N	f	\N
+11	Đỗ Việt Hoàng	doviethoang@gmail.com	$2y$12$HLzWuy3aXGq2XiZYhHu6WeYygw0NhpswnCjFHkrzNojtBa88gJjri	1234567890	Số 5, Ngõ 2, Kiều Mai	Thành Phố Hà Nội	Quận Nam Từ LIêm	Phường Xuân Phương	t	\N	wfvcetBndAWs4QKjPuFAs0N0XOeh02bILKHEf6lJhFzdEBi3mKW6IXnuvrLw	2026-05-04 23:18:01+00	2026-07-24 13:47:52+00	\N	http://localhost:8000/storage/avatars/hEe0GJE5XwMY09by9Vbwr5HrXez9gxWpdwIgBbWL.png	1743	234959000.00	4	\N	f	\N
 \.
 
 
@@ -6303,7 +5959,7 @@ SELECT pg_catalog.setval('public.carts_id_seq', 15, true);
 -- Name: categories_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.categories_id_seq', 214, true);
+SELECT pg_catalog.setval('public.categories_id_seq', 218, true);
 
 
 --
@@ -6359,14 +6015,14 @@ SELECT pg_catalog.setval('public.inventory_id_seq', 132, true);
 -- Name: inventory_transactions_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.inventory_transactions_id_seq', 329, true);
+SELECT pg_catalog.setval('public.inventory_transactions_id_seq', 337, true);
 
 
 --
 -- Name: jobs_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.jobs_id_seq', 514, true);
+SELECT pg_catalog.setval('public.jobs_id_seq', 526, true);
 
 
 --
@@ -6380,7 +6036,7 @@ SELECT pg_catalog.setval('public.membership_ranks_id_seq', 4, true);
 -- Name: migrations_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.migrations_id_seq', 65, true);
+SELECT pg_catalog.setval('public.migrations_id_seq', 66, true);
 
 
 --
@@ -6394,7 +6050,7 @@ SELECT pg_catalog.setval('public.newsletter_subscriptions_id_seq', 33, true);
 -- Name: notifications_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.notifications_id_seq', 2, true);
+SELECT pg_catalog.setval('public.notifications_id_seq', 4, true);
 
 
 --
@@ -6443,7 +6099,7 @@ SELECT pg_catalog.setval('public.permissions_id_seq', 18, true);
 -- Name: personal_access_tokens_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.personal_access_tokens_id_seq', 341, true);
+SELECT pg_catalog.setval('public.personal_access_tokens_id_seq', 343, true);
 
 
 --
@@ -6492,7 +6148,7 @@ SELECT pg_catalog.setval('public.product_specs_id_seq', 7456, true);
 -- Name: product_variants_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.product_variants_id_seq', 543, true);
+SELECT pg_catalog.setval('public.product_variants_id_seq', 547, true);
 
 
 --
@@ -6506,7 +6162,7 @@ SELECT pg_catalog.setval('public.product_video_id_seq', 5, true);
 -- Name: products_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.products_id_seq', 211, true);
+SELECT pg_catalog.setval('public.products_id_seq', 219, true);
 
 
 --
@@ -6520,7 +6176,7 @@ SELECT pg_catalog.setval('public.reviews_id_seq', 13, true);
 -- Name: roles_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.roles_id_seq', 63, true);
+SELECT pg_catalog.setval('public.roles_id_seq', 65, true);
 
 
 --
@@ -6555,7 +6211,7 @@ SELECT pg_catalog.setval('public.user_coupons_id_seq', 4, true);
 -- Name: users_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.users_id_seq', 357, true);
+SELECT pg_catalog.setval('public.users_id_seq', 362, true);
 
 
 --
@@ -7839,6 +7495,14 @@ ALTER TABLE ONLY public.orders
 
 
 --
+-- Name: orders orders_delivery_staff_id_foreign; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.orders
+    ADD CONSTRAINT orders_delivery_staff_id_foreign FOREIGN KEY (delivery_staff_id) REFERENCES public.users(id) ON DELETE SET NULL;
+
+
+--
 -- Name: orders orders_shipping_method_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -8073,5 +7737,5 @@ REVOKE USAGE ON SCHEMA public FROM PUBLIC;
 -- PostgreSQL database dump complete
 --
 
-\unrestrict JyQ8kp1fbYVCLqNO6DQBrUvdnqWCatHRqZXrOZ9z0vdX9Y6D8j8UxTHdjWWZ13P
+\unrestrict Jp7taw6FjaWSfQXqLCf94ITfOjFCfHhKbpoM3j0tOm35TObTE6WXc1ghZfAy7WO
 
