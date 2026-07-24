@@ -507,11 +507,66 @@
 @media (max-width: 968px) {
   .notifMainGrid {
     grid-template-columns: 1fr;
-    gap: 24px
+    gap: 24px;
   }
 
   .notifSidebar {
-    position: static
+    position: static;
+  }
+  
+  /* Convert Sidebar to Horizontal Tabs on Mobile */
+  .notifSidebarCard {
+    padding: 0;
+    border: none;
+    box-shadow: none;
+    background: transparent;
+    border-bottom: 1px solid #e2e8f0;
+    border-radius: 0;
+  }
+
+  .notifSidebarTitle {
+    display: none;
+  }
+
+  .notifFilterList {
+    flex-direction: row;
+    gap: 24px;
+    margin-bottom: 0;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 0;
+  }
+
+  .notifFilterItem {
+    width: auto;
+    padding: 0 4px 12px 4px;
+    background: transparent !important;
+    border: none;
+    border-bottom: 2px solid transparent;
+    border-radius: 0;
+    color: #64748b !important;
+    white-space: nowrap;
+    justify-content: center;
+  }
+
+  .notifFilterItem.active {
+    color: #ea580c !important;
+    border-bottom-color: #ea580c !important;
+  }
+
+  .notifFilterItem .notifFilterCount {
+    background: #f1f5f9;
+    color: #64748b;
+  }
+  
+  .notifFilterItem.active .notifFilterCount {
+    color: #ea580c;
+  }
+
+  .notifBtnMarkAll {
+    margin-top: 16px;
+    width: auto;
+    display: inline-flex;
   }
 }
 
@@ -519,28 +574,26 @@
   .notifTop {
     flex-direction: column;
     align-items: stretch;
-    gap: 16px
+    gap: 16px;
   }
 
   .notifBackLink {
-    align-self: flex-start
+    align-self: flex-start;
   }
 
   .notifCardHeader {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 6px
+    gap: 6px;
   }
 
   .notifCardMeta {
-    align-self: flex-start
+    align-self: flex-start;
   }
 
   .notifCardInner {
-    align-items: flex-start
+    align-items: flex-start;
   }
 
   .notifCard {
-    padding: 16px 20px
+    padding: 16px 20px;
   }
 }

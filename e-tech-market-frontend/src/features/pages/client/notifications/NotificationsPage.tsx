@@ -66,6 +66,21 @@ export default function NotificationsPage() {
   const [page, setPage] = useState(1)
   const [markingAll, setMarkingAll] = useState(false)
   const [filter, setFilter] = useState<'all' | 'unread' | 'read'>('all')
+  const [expandedNotifs, setExpandedNotifs] = useState<number[]>([])
+
+  const toggleExpand = (id: number) => {
+    setExpandedNotifs((prev) => 
+      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
+    )
+  }
+
+  const getActionUrl = (n: Notif): string | null => {
+    const data = (n.data || {}) as Record<string, unknown>
+    if (typeof data.order_id === 'number') return `/orders/${data.order_id}`
+    if (typeof data.post_slug === 'string') return `/blog/${data.post_slug}`
+    if (typeof data.action_url === 'string') return data.action_url
+    return null
+  }
 
   const load = useCallback(async () => {
     if (!hasAuth) {
@@ -123,40 +138,25 @@ export default function NotificationsPage() {
     }
   }
 
-  const openFromNotif = async (n: Notif) => {
-    await markRead(n.id)
-    const data = (n.data || {}) as Record<string, unknown>
-    if (typeof data.order_id === 'number') {
-      navigate(`/orders/${data.order_id}`)
-      return
-    }
-    if (typeof data.post_slug === 'string') {
-      navigate(`/blog/${data.post_slug}`)
-      return
-    }
-    if (typeof data.action_url === 'string') {
-      navigate(data.action_url)
-      return
-    }
-  }
+
 
   return (
     <div className="notifPage">
-      <div className="notifTop">
+      <div className="notifTop" style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: '20px' }}>
+        <Link className="notifBackLink" to="/profile" title="Quay lại trang cá nhân" style={{ padding: '8px 16px', fontSize: '13.5px', marginBottom: '-8px' }}>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ marginRight: '6px' }}>
+            <line x1="19" y1="12" x2="5" y2="12" />
+            <polyline points="12 19 5 12 12 5" />
+          </svg>
+          <span>Quay lại trang cá nhân</span>
+        </Link>
+        
         <div className="notifTitleRow">
           <h1 className="notifTitle">Hộp thư thông báo</h1>
           <div className="notifSub">
             Xem tất cả các tin tức công nghệ, cảnh báo kho và cập nhật đơn hàng của bạn.
           </div>
         </div>
-
-        <Link className="notifBackLink" to="/profile" title="Quay lại trang cá nhân">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-            <line x1="19" y1="12" x2="5" y2="12" />
-            <polyline points="12 19 5 12 12 5" />
-          </svg>
-          <span>Quay lại</span>
-        </Link>
       </div>
 
       {error && <div className="prodErrorBanner" style={{ marginBottom: 24 }}>{error}</div>}
@@ -244,42 +244,75 @@ export default function NotificationsPage() {
                       <button
                         key={n.id}
                         type="button"
-                        className={`notifCard ${n.read_at ? 'read' : 'unread'} notifCard--${type}`}
-                        onClick={() => void openFromNotif(n)}
+                        className={`notifCard ${n.read_at ? 'read' : 'unread'} notifCard--${type} ${expandedNotifs.includes(n.id) ? 'isExpanded' : ''}`}
+                        onClick={() => {
+                          toggleExpand(n.id)
+                          if (!n.read_at) void markRead(n.id)
+                        }}
                       >
                         <div className="notifCardInner">
                           <div className={`notifIconContainer notifIcon--${type}`}>
                             {renderIcon(type)}
                           </div>
                           <div className="notifCardContent">
-                            <div className="notifCardHeader">
-                              <h3 className="notifCardTitle">{n.title || 'Thông báo'}</h3>
-                              <div className="notifCardMeta">
-                                <span className="notifCardTime">{fmtDateTime(n.created_at)}</span>
-                                {n.read_at ? (
-                                  <span className="notifBadgeRead">Đã đọc</span>
-                                ) : (
-                                  <>
-                                    <span className="notifBadgeNew">Mới</span>
-                                    <button
-                                      type="button"
-                                      className="notifSingleMarkReadBtn"
-                                      onClick={(e) => {
-                                        e.stopPropagation() // Prevents navigating to the detail link!
-                                        void markRead(n.id)
-                                      }}
-                                      title="Đánh dấu đã đọc"
-                                      aria-label="Đánh dấu đã đọc thông báo này"
-                                    >
-                                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                                        <polyline points="20 6 9 17 4 12" />
-                                      </svg>
-                                    </button>
-                                  </>
+                            <div className="notifCardHeader" style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', width: '100%', marginBottom: expandedNotifs.includes(n.id) ? '0' : '0' }}>
+                              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', flex: 1, paddingRight: '12px' }}>
+                                <h3 className="notifCardTitle">{n.title || 'Thông báo'}</h3>
+                                <div className="notifCardMeta">
+                                  <span className="notifCardTime">{fmtDateTime(n.created_at)}</span>
+                                  {n.read_at ? (
+                                    <span className="notifBadgeRead">Đã đọc</span>
+                                  ) : (
+                                    <>
+                                      <span className="notifBadgeNew">Mới</span>
+                                      <button
+                                        type="button"
+                                        className="notifSingleMarkReadBtn"
+                                        onClick={(e) => {
+                                          e.stopPropagation()
+                                          void markRead(n.id)
+                                        }}
+                                        title="Đánh dấu đã đọc"
+                                        aria-label="Đánh dấu đã đọc thông báo này"
+                                      >
+                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                                          <polyline points="20 6 9 17 4 12" />
+                                        </svg>
+                                      </button>
+                                    </>
+                                  )}
+                                </div>
+                              </div>
+                              <svg className="notifChevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ transform: expandedNotifs.includes(n.id) ? 'rotate(180deg)' : 'none', transition: 'transform 0.25s cubic-bezier(0.4, 0, 0.2, 1)', color: '#9ca3af', flexShrink: 0 }}>
+                                <polyline points="6 9 12 15 18 9"></polyline>
+                              </svg>
+                            </div>
+                            
+                            {expandedNotifs.includes(n.id) && (
+                              <div className="notifBodyExpanded" style={{ marginTop: '12px', paddingTop: '12px', borderTop: '1px solid #e5e7eb', textAlign: 'left' }}>
+                                {(() => {
+                                  const parts = n.body ? n.body.split(/(?: \u2022 |\n|<br\s*\/?>)/) : [];
+                                  return (
+                                    <div className="notifStandardText" style={{ fontSize: '14px', color: '#4b5563', lineHeight: '1.5' }}>
+                                      {parts.map((line, idx) => (
+                                        <p key={idx} style={{ marginBottom: '6px' }}>{line}</p>
+                                      ))}
+                                    </div>
+                                  )
+                                })()}
+                                
+                                {getActionUrl(n) && (
+                                  <button 
+                                    onClick={(e) => { e.stopPropagation(); navigate(getActionUrl(n) as string); }}
+                                    style={{ marginTop: '12px', padding: '8px 16px', backgroundColor: '#eff6ff', color: '#2563eb', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '13.5px', fontWeight: '600', transition: 'background-color 0.2s' }}
+                                    onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#dbeafe'}
+                                    onMouseOut={(e) => e.currentTarget.style.backgroundColor = '#eff6ff'}
+                                  >
+                                    Xem chi tiết
+                                  </button>
                                 )}
                               </div>
-                            </div>
-                            <p className="notifCardBody">{n.body || ''}</p>
+                            )}
                           </div>
                         </div>
                       </button>
