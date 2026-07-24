@@ -59,6 +59,7 @@ class OrderListResource extends JsonResource
             'created_date' => $this->created_at ? $this->created_at->format('d/m/Y') : '',
             'total_amount' => (float) ($this->total_amount ?? 0),
             'payment_method' => $paymentLabel($this->payment?->method),
+            'shipping_method' => $this->shippingMethod?->name ? (string) $this->shippingMethod->name : null,
             'status' => (string) ($this->status ?? ''),
             'status_label' => $statusLabel,
             'status_tone' => $statusTone,

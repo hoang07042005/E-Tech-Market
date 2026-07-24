@@ -147,6 +147,7 @@ class OrdersController extends Controller
         $order->load([
             'user:id,name,email,phone,avatar_url',            
             'payment:id,order_id,method,status,transaction_code,paid_at',
+            'shippingMethod:id,name',
             'items:id,order_id,product_id,variant_id,product_name_snapshot,quantity,unit_price,total_price',
             'items.product:id,main_image_url',
             'items.variant:id,color,configuration,image_url',

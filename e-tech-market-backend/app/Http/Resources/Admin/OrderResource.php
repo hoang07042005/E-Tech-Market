@@ -155,6 +155,7 @@ class OrderResource extends JsonResource
                 'name' => $this->shipping_name ? (string) $this->shipping_name : null,
                 'phone' => $this->shipping_phone ? (string) $this->shipping_phone : null,
                 'address' => $address,
+                'shipping_method' => $this->shippingMethod?->name ? (string) $this->shippingMethod->name : null,
             ],
             'amounts' => [
                 'subtotal' => (float) ($this->subtotal_amount ?? 0),

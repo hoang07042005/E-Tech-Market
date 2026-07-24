@@ -12,6 +12,7 @@ type OrderRow = {
   created_date: string
   total_amount: number
   payment_method: string
+  shipping_method?: string | null
   status: string
   status_label: string
   status_tone: 'ok' | 'wait' | 'info' | 'bad' | 'muted'
@@ -67,6 +68,7 @@ type OrderDetail = {
     name?: string | null
     phone?: string | null
     address: string
+    shipping_method?: string | null
   }
   amounts: {
     subtotal: number
@@ -650,7 +652,7 @@ export default function OrdersAdminPage() {
                   </button>
                 </div>
               </div>
-              {!isOnlyDelivery && (
+              {!isOnlyDelivery && detail.shipping?.shipping_method === 'Nhân viên giao hàng' && (
                 <div className="admOrderStatusForm">
                   <div className="admOrderStatusFormText">
                     <label className="admOrderStatusFormLabel" htmlFor="order-delivery-staff-select">
@@ -1311,6 +1313,28 @@ export default function OrdersAdminPage() {
                         >
                           <CopyIcon />
                         </button>
+                        {o.shipping_method === 'Nhân viên giao hàng' && (
+                          <div style={{ marginTop: '6px' }}>
+                            <span style={{ 
+                              display: 'inline-flex', 
+                              alignItems: 'center',
+                              gap: '4px',
+                              padding: '2px 8px', 
+                              fontSize: '12px', 
+                              background: '#fff1f2', 
+                              color: '#e11d48', 
+                              border: '1px solid #fda4af',
+                              borderRadius: '4px', 
+                              fontWeight: 600, 
+                              whiteSpace: 'nowrap' 
+                            }}>
+                              <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                              </svg>
+                              Nhân viên giao
+                            </span>
+                          </div>
+                        )}
                       </td>
                       <td>
                         <div className="admOrdersCust2">

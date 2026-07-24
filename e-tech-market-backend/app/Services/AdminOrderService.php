@@ -209,7 +209,7 @@ class AdminOrderService
         $returnRequests = trim((string) ($filters['return_requests'] ?? ''));
 
         $query = Order::query()
-            ->with(['user:id,name,avatar_url', 'payment:id,order_id,method,status'])
+            ->with(['user:id,name,avatar_url', 'payment:id,order_id,method,status', 'shippingMethod:id,name'])
             ->with(['items:id,order_id,product_name_snapshot,quantity'])
             ->with(['returnRequest:id,order_id,status']);
 
