@@ -629,6 +629,7 @@ export default function OrdersAdminPage() {
                       const isTerminal = detail.status === 'cancelled' || detail.status === 'returned' || detail.status === 'completed'
                       // Admin không được set completed/returned/cancelled. Chỉ hiển thị option này khi đơn đang ở đúng trạng thái (để xem).
                       if ((s.value === 'completed' || s.value === 'returned' || s.value === 'cancelled') && detail.status !== s.value) return null
+                      if (isOnlyDelivery && s.value !== 'shipped' && s.value !== 'delivered' && s.value !== detail.status) return null
                       const disableBack =
                         s.value !== 'cancelled' &&
                         s.step > 0 &&

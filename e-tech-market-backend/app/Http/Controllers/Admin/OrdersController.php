@@ -97,6 +97,15 @@ class OrdersController extends Controller
         $prevStatus = strtolower((string) ($order->status ?? ''));
         $status = isset($data['status']) ? strtolower(trim((string) $data['status'])) : null;
         if ($status !== null && $status !== '') {
+            $user = $request->user();
+            $isOnlyDelivery = $user && $user->hasRole('delivery') && !$user->hasRole('admin') && !$user->hasRole('order-staff');
+            
+            if ($isOnlyDelivery) {
+                if (! in_array($status, ['shipped', 'delivered'], true) && $status !== $prevStatus) {
+                    abort(403, 'Nhân viên giao hàng chỉ được phép cập nhật trạng thái thành Đang giao (shipped) hoặc Đã giao (delivered).');
+                }
+            }
+
             $allowed = ['pending', 'paid', 'processing', 'shipped', 'delivered', 'completed', 'cancelled', 'returned'];
             if (! in_array($status, $allowed, true)) {
                 abort(422, 'Status invalid');
