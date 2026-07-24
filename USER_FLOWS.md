@@ -17,6 +17,7 @@ mindmap
     Giỏ Hàng & Thanh Toán
       Quản Lý Giỏ Hàng
       Áp Dụng Mã Giảm Giá
+      Áp Dụng Điểm Thưởng
       Tiến Hành Thanh Toán
         Chọn Địa Chỉ Giao Hàng
         Chọn Đơn Vị Vận Chuyển
