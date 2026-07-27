@@ -381,7 +381,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
       setState(() {
         _banners = results[0] as List<dynamic>;
-        _availableCoupons = (results[1] as List<dynamic>).take(4).toList();
+        _availableCoupons = (results[1] as List<dynamic>).toList();
         // Use fixed categories like web
         _apiCategories = results[2] as List<dynamic>? ?? [];
         _categories = _apiCategories;
@@ -801,8 +801,8 @@ class _HomeScreenState extends State<HomeScreen> {
               _buildFeaturedProductSection(),
               const SizedBox(height: 20),
               _buildFutureSection(),
-              const SizedBox(height: 20),
-              _buildTabbedCategorySection(),
+              // const SizedBox(height: 20),
+              // _buildTabbedCategorySection(),
               const SizedBox(height: 20),
               _buildNewsSection(),
               const SizedBox(height: 20),

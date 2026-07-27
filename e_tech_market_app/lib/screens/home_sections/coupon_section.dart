@@ -72,11 +72,13 @@ class _CouponSectionState extends State<CouponSection> {
   }
 
   /// Lọc ẩn mã user đã hết lượt (giống web frontend)
+  /// Chỉ lọc khi đã đăng nhập - nếu chưa đăng nhập thì hiển thị tất cả
   List<Map<String, dynamic>> _getVisibleCoupons() {
     return widget.coupons.cast<Map<String, dynamic>>().where((c) {
+      // Giống web: chỉ lọc khi max_uses_per_user có giá trị và user đã dùng hết lượt
       final maxPerUser = c['max_uses_per_user'];
       final userUsed = c['user_usage_count'] ?? 0;
-      if (maxPerUser != null && maxPerUser is num && userUsed is num) {
+      if (maxPerUser != null && maxPerUser is num && maxPerUser > 0 && userUsed is num) {
         if (userUsed >= maxPerUser) return false;
       }
       return true;
@@ -175,17 +177,17 @@ class _CouponSectionState extends State<CouponSection> {
 
   Widget _buildLoadingCoupons() {
     return SizedBox(
-      height: 155,
+      height: 170,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         physics: const NeverScrollableScrollPhysics(),
         itemCount: 2,
         separatorBuilder: (_, __) => const SizedBox(width: 12),
         itemBuilder: (context, index) => Container(
-          width: 260,
+          width: 330,
           decoration: BoxDecoration(
             color: const Color(0xFFF9F9FA),
-            borderRadius: BorderRadius.circular(10),
+            borderRadius: BorderRadius.circular(12),
           ),
         ),
       ),
@@ -197,7 +199,7 @@ class _CouponSectionState extends State<CouponSection> {
     final items = [...visibleCoupons, ...visibleCoupons];
 
     return SizedBox(
-      height: 155,
+      height: 145,
       child: ListView.separated(
         controller: _scrollController,
         scrollDirection: Axis.horizontal,
@@ -228,17 +230,14 @@ class _CouponSectionState extends State<CouponSection> {
             showLimit = maxUses.toInt();
           }
 
-          final valueText = couponType == 'percentage'
-              ? Trans.discountPercentValue((double.tryParse(value) ?? 0).toInt())
-              : Trans.discountAmountValue2(double.tryParse(value) ?? 0);
-
           final subtitle = minAmount != null
               ? Trans.ordersFrom(double.tryParse(minAmount.toString()) ?? 0)
               : Trans.allOrders;
 
           return _CouponCard(
             code: code,
-            valueText: valueText,
+            couponType: couponType,
+            value: double.tryParse(value) ?? 0.0,
             subtitle: subtitle,
             isSaved: isSaved,
             showRemaining: showRemaining,
@@ -254,7 +253,8 @@ class _CouponSectionState extends State<CouponSection> {
 
 class _CouponCard extends StatelessWidget {
   final String code;
-  final String valueText;
+  final String couponType;
+  final double value;
   final String subtitle;
   final bool isSaved;
   final int? showRemaining;
@@ -264,7 +264,8 @@ class _CouponCard extends StatelessWidget {
 
   const _CouponCard({
     required this.code,
-    required this.valueText,
+    required this.couponType,
+    required this.value,
     required this.subtitle,
     required this.isSaved,
     this.showRemaining,
@@ -275,173 +276,240 @@ class _CouponCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final leftWidth = 110.0;
+    
     return CustomPaint(
       painter: _VoucherPainter(
-        backgroundColor: Theme.of(context).colorScheme.surface,
-        borderColor: Theme.of(context).colorScheme.outline,
+        leftWidth: leftWidth,
       ),
-      child: Container(
-        width: 265,
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+      child: SizedBox(
+        width: 330,
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // Dòng trên: Thông tin chi tiết giảm giá
-            Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(1),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: const Icon(
-                    Icons.local_offer_rounded,
-                    size: 25,
-                    color: Color(0xFFEF7A45),
-                  ),
-                ),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+            // Left Part
+            SizedBox(
+              width: leftWidth,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                 
+                  const SizedBox(height: 2),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.baseline,
+                    textBaseline: TextBaseline.alphabetic,
                     children: [
                       Text(
-                        valueText,
-                          style: TextStyle(
-                          fontSize: 16,
+                        couponType == 'percentage'
+                            ? value.toInt().toString()
+                            : (value / 1000).floor().toString(),
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 23,
                           fontWeight: FontWeight.w800,
-                          color: Theme.of(context).colorScheme.onSurface,
-                          height: 1.2,
+                          height: 1.0,
                         ),
                       ),
-                      const SizedBox(height: 3),
                       Text(
-                        subtitle,
-                          style: TextStyle(
-                          fontSize: 11,
-                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        couponType == 'percentage' ? '%' : 'K',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 18,
+                          fontWeight: FontWeight.w700,
                         ),
                       ),
                     ],
                   ),
-                ),
-                // Nút Lưu mã — đổi style nếu đã lưu
-                TextButton(
-                  onPressed: isSaved ? null : onSave,
-                  style: TextButton.styleFrom(
-                    backgroundColor: isSaved
-                        ? const Color(0xFFE8F5E9)
-                        : const Color(0xFFFFF2EC),
-                    foregroundColor: isSaved
-                        ? const Color(0xFF4CAF50)
-                        : const Color(0xFFEF7A45),
-                    disabledForegroundColor: const Color(0xFF4CAF50),
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                    minimumSize: Size.zero,
-                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(6),
+                  const SizedBox(height: 6),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.white.withOpacity(0.5)),
+                      borderRadius: BorderRadius.circular(4),
                     ),
-                  ),
-                  child: Text(
-                    isSaved ? '✓ Đã lưu' : Trans.save,
-                    style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w700),
-                  ),
-                ),
-              ],
-            ),
-            // Thanh tiến trình + lượt còn lại (nằm ngang, giống web)
-            if (showRemaining != null && showLimit != null && showLimit! > 0) ...[
-              const SizedBox(height: 8),
-              Row(
-                children: [
-                  // Thanh progress ngang
-                  SizedBox(
-                    width: 50,
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(3),
-                      child: SizedBox(
-                        height: 5,
-                        child: LinearProgressIndicator(
-                          value: ((showLimit! - showRemaining!) / showLimit!).clamp(0.0, 1.0),
-                          backgroundColor: const Color(0xFFEEEEEE),
-                          valueColor: AlwaysStoppedAnimation<Color>(
-                            ((showLimit! - showRemaining!) / showLimit!) >= 0.8
-                                ? const Color(0xFFEF4444)
-                                : const Color(0xFFEF7A45),
-                          ),
-                        ),
+                    child: Text(
+                      couponType == 'percentage' ? 'Phiếu ưu đãi' : 'Giảm trực tiếp',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 10,
+                        fontWeight: FontWeight.w500,
                       ),
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  // Text lượt còn lại
-                  Text(
-                    'Còn $showRemaining/$showLimit lượt',
-                    style: TextStyle(
-                      fontSize: 10,
-                      fontWeight: FontWeight.w600,
-                      color: ((showLimit! - showRemaining!) / showLimit!) >= 0.8
-                          ? const Color(0xFFEF4444)
-                          : const Color(0xFFEF7A45),
                     ),
                   ),
                 ],
               ),
-            ],
-            const Spacer(),
-            // Đường phân cách đứt đoạn
-            Row(
-              children: List.generate(
-                20,
-                (index) => Expanded(
-                  child: Container(
-                    color: index % 2 == 0 ? Colors.transparent : const Color(0xFFE5E5E5),
-                    height: 1,
-                  ),
-                ),
-              ),
             ),
-            const Spacer(),
-            // Dòng dưới: Ô hiển thị mã Code
-            GestureDetector(
-              onTap: onCopy,
-              child: Container(
-                height: 34,
-                padding: const EdgeInsets.symmetric(horizontal: 10),
-                decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.surface,
-                  borderRadius: BorderRadius.circular(6),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            // Right Part
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(14, 12, 12, 12),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      code,
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w700,
-                        color: Theme.of(context).colorScheme.onSurfaceVariant,
-                        letterSpacing: 0.3,
-                      ),
-                    ),
-                    const Row(
+                    // Top Section
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          'Sao chép',
-                          style: TextStyle(
-                            fontSize: 10,
-                            color: Color(0xFFEF7A45),
-                            fontWeight: FontWeight.w600,
+                        const Icon(
+                          Icons.local_offer_outlined,
+                          color: Color(0xFFFF6B00),
+                          size: 20,
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                couponType == 'percentage'
+                                    ? '${value.toInt()}%'
+                                    : '${Trans.discountAmountValue2(value)}',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w800,
+                                  color: Colors.black87,
+                                  height: 1.2,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                subtitle,
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.black87,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ],
                           ),
                         ),
-                        SizedBox(width: 4),
-                        Icon(
-                          Icons.copy_rounded,
-                          size: 12, 
-                          color: Color(0xFFEF7A45),
+                        const SizedBox(width: 6),
+                        // Save Button
+                        TextButton(
+                          onPressed: isSaved ? null : onSave,
+                          style: TextButton.styleFrom(
+                            backgroundColor: isSaved
+                                ? const Color(0xFFF3F4F6)
+                                : const Color(0xFFFFF2EC),
+                            foregroundColor: isSaved
+                                ? const Color(0xFF9CA3AF)
+                                : const Color(0xFFFF6B00),
+                            disabledForegroundColor: const Color(0xFF9CA3AF),
+                            disabledBackgroundColor: const Color(0xFFF3F4F6),
+                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                            minimumSize: Size.zero,
+                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                          ),
+                          child: Text(
+                            isSaved ? 'Đã lưu' : 'Lưu',
+                            style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w700),
+                          ),
                         ),
                       ],
+                    ),
+                    // Progress Bar
+                    if (showRemaining != null && showLimit != null && showLimit! > 0) ...[
+                      const SizedBox(height: 8),
+                      Container(
+                        height: 1,
+                        color: Theme.of(context).colorScheme.outlineVariant.withOpacity(0.5),
+                      ),
+                      const SizedBox(height: 8),
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.timer_outlined,
+                            size: 14,
+                            color: const Color(0xFFFF6B00),
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            'Còn ',
+                            style: TextStyle(
+                              fontSize: 11,
+                              color: Colors.black54,
+                            ),
+                          ),
+                          Text(
+                            '$showRemaining/$showLimit',
+                            style: const TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.bold,
+                              color: Color(0xFFFF6B00),
+                            ),
+                          ),
+                          const Text(
+                            ' lượt',
+                            style: TextStyle(
+                              fontSize: 11,
+                              color: Color(0xFFFF6B00),
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(4),
+                              child: SizedBox(
+                                height: 5,
+                                child: LinearProgressIndicator(
+                                  value: ((showLimit! - showRemaining!) / showLimit!).clamp(0.0, 1.0),
+                                  backgroundColor: const Color(0xFFFEE2E2),
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                    const Color(0xFFFF6B00),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                    const Spacer(),
+                    // Code Box
+                    GestureDetector(
+                      onTap: onCopy,
+                      child: Container(
+                        height: 32,
+                        padding: const EdgeInsets.symmetric(horizontal: 10),
+                        decoration: BoxDecoration(
+                          color: Colors.grey[200],
+                          borderRadius: BorderRadius.circular(6),
+                          border: Border.all(color: Colors.grey[400]!.withOpacity(0.5)),
+                        ),
+                        child: Row(
+                          children: [
+                            const Icon(
+                              Icons.confirmation_number_outlined,
+                              size: 14,
+                              color: Color(0xFFFF6B00),
+                            ),
+                            const SizedBox(width: 6),
+                            Expanded(
+                              child: Text(
+                                code,
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w700,
+                                  color: Colors.black87,
+                                ),
+                              ),
+                            ),
+                            const Icon(
+                              Icons.copy_rounded,
+                              size: 16,
+                              color: Color(0xFF9CA3AF),
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
                   ],
                 ),
@@ -454,68 +522,105 @@ class _CouponCard extends StatelessWidget {
   }
 }
 
-
-/// Custom Painter vẽ hình dáng voucher có khoét lỗ và border chính xác
 class _VoucherPainter extends CustomPainter {
-  final Color backgroundColor;
-  final Color borderColor;
+  final double leftWidth;
 
-  _VoucherPainter({required this.backgroundColor, required this.borderColor});
+  _VoucherPainter({required this.leftWidth});
 
   @override
   void paint(Canvas canvas, Size size) {
-    final path = Path();
-    final double radius = 10.0;
+    final double radius = 12.0;
+    final double holeRadius = 6.0;
+    final double bigHoleRadius = 8.0;
     
-    // Vị trí lỗ khoét (ở giữa chiều cao card)
-    double cutoutY = size.height * 0.45;
-    double cutoutRadius = 6.0;
+    // Draw right part shadow
+    final ticketPath = Path();
+    ticketPath.moveTo(radius, 0);
+    // Top edge and divider hole
+    ticketPath.lineTo(leftWidth - holeRadius, 0);
+    ticketPath.arcToPoint(Offset(leftWidth + holeRadius, 0), radius: Radius.circular(holeRadius), clockwise: false);
+    ticketPath.lineTo(size.width - radius, 0);
+    // Top right corner
+    ticketPath.arcToPoint(Offset(size.width, radius), radius: Radius.circular(radius), clockwise: true);
+    // Right edge and hole
+    ticketPath.lineTo(size.width, size.height * 0.5 - holeRadius);
+    ticketPath.arcToPoint(Offset(size.width, size.height * 0.5 + holeRadius), radius: Radius.circular(holeRadius), clockwise: false);
+    ticketPath.lineTo(size.width, size.height - radius);
+    // Bottom right corner
+    ticketPath.arcToPoint(Offset(size.width - radius, size.height), radius: Radius.circular(radius), clockwise: true);
+    // Bottom edge and divider hole
+    ticketPath.lineTo(leftWidth + holeRadius, size.height);
+    ticketPath.arcToPoint(Offset(leftWidth - holeRadius, size.height), radius: Radius.circular(holeRadius), clockwise: false);
+    ticketPath.lineTo(radius, size.height);
+    // Bottom left corner
+    ticketPath.arcToPoint(Offset(0, size.height - radius), radius: Radius.circular(radius), clockwise: true);
+    // Left edge and big hole
+    ticketPath.lineTo(0, size.height * 0.5 + bigHoleRadius);
+    ticketPath.arcToPoint(Offset(0, size.height * 0.5 - bigHoleRadius), radius: Radius.circular(bigHoleRadius), clockwise: false); 
+    ticketPath.lineTo(0, radius);
+    // Top left corner
+    ticketPath.arcToPoint(Offset(radius, 0), radius: Radius.circular(radius), clockwise: true);
+    ticketPath.close();
 
-    path.moveTo(0, radius);
+    canvas.drawShadow(ticketPath, Colors.black.withOpacity(0.06), 8.0, false);
+
+    // Left Path
+    final lPath = Path();
+    lPath.moveTo(radius, 0);
+    lPath.lineTo(leftWidth - holeRadius, 0);
+    lPath.arcToPoint(Offset(leftWidth, holeRadius), radius: Radius.circular(holeRadius), clockwise: false);
+    lPath.lineTo(leftWidth, size.height - holeRadius);
+    lPath.arcToPoint(Offset(leftWidth - holeRadius, size.height), radius: Radius.circular(holeRadius), clockwise: false);
+    lPath.lineTo(radius, size.height);
+    lPath.arcToPoint(Offset(0, size.height - radius), radius: Radius.circular(radius), clockwise: true);
+    lPath.lineTo(0, size.height * 0.5 + bigHoleRadius);
+    lPath.arcToPoint(Offset(0, size.height * 0.5 - bigHoleRadius), radius: Radius.circular(bigHoleRadius), clockwise: false);
+    lPath.lineTo(0, radius);
+    lPath.arcToPoint(Offset(radius, 0), radius: Radius.circular(radius), clockwise: true);
+    lPath.close();
+
+    final leftGradient = LinearGradient(
+      colors: const [Color(0xFFFF8C4A), Color(0xFFFF5715)],
+      begin: Alignment.topLeft,
+      end: Alignment.bottomRight,
+    ).createShader(Rect.fromLTWH(0, 0, leftWidth, size.height));
     
-    // Khoét cạnh trái
-    path.lineTo(0, cutoutY - cutoutRadius);
-    path.arcToPoint(
-      Offset(0, cutoutY + cutoutRadius),
-      radius: Radius.circular(cutoutRadius),
-      clockwise: true,
-    );
-    path.lineTo(0, size.height - radius);
-    path.arcToPoint(Offset(radius, size.height), radius: Radius.circular(radius), clockwise: false);
+    canvas.drawPath(lPath, Paint()..shader = leftGradient);
 
-    path.lineTo(size.width - radius, size.height);
-    path.arcToPoint(Offset(size.width, size.height - radius), radius: Radius.circular(radius), clockwise: false);
+    // Right Path
+    final rPath = Path();
+    rPath.moveTo(leftWidth, holeRadius);
+    rPath.arcToPoint(Offset(leftWidth + holeRadius, 0), radius: Radius.circular(holeRadius), clockwise: false);
+    rPath.lineTo(size.width - radius, 0);
+    rPath.arcToPoint(Offset(size.width, radius), radius: Radius.circular(radius), clockwise: true);
+    rPath.lineTo(size.width, size.height * 0.5 - holeRadius);
+    rPath.arcToPoint(Offset(size.width, size.height * 0.5 + holeRadius), radius: Radius.circular(holeRadius), clockwise: false);
+    rPath.lineTo(size.width, size.height - radius);
+    rPath.arcToPoint(Offset(size.width - radius, size.height), radius: Radius.circular(radius), clockwise: true);
+    rPath.lineTo(leftWidth + holeRadius, size.height);
+    rPath.arcToPoint(Offset(leftWidth, size.height - holeRadius), radius: Radius.circular(holeRadius), clockwise: false);
+    rPath.lineTo(leftWidth, holeRadius);
+    rPath.close();
 
-    // Khoét cạnh phải
-    path.lineTo(size.width, cutoutY + cutoutRadius);
-    path.arcToPoint(
-      Offset(size.width, cutoutY - cutoutRadius),
-      radius: Radius.circular(cutoutRadius),
-      clockwise: true,
-    );
-    path.lineTo(size.width, radius);
-    path.arcToPoint(Offset(size.width - radius, 0), radius: Radius.circular(radius), clockwise: false);
+    final rightGradient = LinearGradient(
+      colors: const [Color(0xFFFFC1A5), Color(0xFFF9EAE4)],
+      begin: Alignment.topLeft,
+      end: Alignment.bottomRight,
+    ).createShader(Rect.fromLTWH(leftWidth, 0, size.width - leftWidth, size.height));
     
-    path.lineTo(radius, 0);
-    path.arcToPoint(Offset(0, radius), radius: Radius.circular(radius), clockwise: false);
-    
-    path.close();
+    canvas.drawPath(rPath, Paint()..shader = rightGradient);
 
-    // Draw shadow
-    canvas.drawShadow(path, Colors.black.withValues(alpha: 0.02), 4.0, false);
-
-    // Draw background
-    final bgPaint = Paint()
-      ..color = backgroundColor
-      ..style = PaintingStyle.fill;
-    canvas.drawPath(path, bgPaint);
-
-    // Draw border
-    final borderPaint = Paint()
-      ..color = borderColor
-      ..style = PaintingStyle.stroke
+    // Draw dashed line
+    final double dashWidth = 4, dashSpace = 4;
+    double startY = holeRadius + 4;
+    final dashPaint = Paint()
+      ..color = const Color(0xFFE5E5E5)
       ..strokeWidth = 1.0;
-    canvas.drawPath(path, borderPaint);
+      
+    while (startY < size.height - holeRadius - 4) {
+      canvas.drawLine(Offset(leftWidth, startY), Offset(leftWidth, startY + dashWidth), dashPaint);
+      startY += dashWidth + dashSpace;
+    }
   }
 
   @override
