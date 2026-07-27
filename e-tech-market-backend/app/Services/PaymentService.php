@@ -252,12 +252,12 @@ class PaymentService
         $resp = Http::timeout(10)->acceptJson()->asJson()->post($endpoint, $payload);
         if (! $resp->ok()) {
             \Illuminate\Support\Facades\Log::error('MoMo Create Failed', ['status' => $resp->status(), 'body' => $resp->body(), 'payload' => $payload]);
-            return ['error' => 'MoMo create payment failed', 'detail' => $resp->body(), 'code' => 502];
+            return ['error' => 'Khởi tạo thanh toán MoMo thất bại', 'detail' => $resp->body(), 'code' => 502];
         }
 
         $json = $resp->json();
         if (! is_array($json)) {
-            return ['error' => 'MoMo invalid response', 'detail' => $json, 'code' => 502];
+            return ['error' => 'Phản hồi từ MoMo không hợp lệ', 'detail' => $json, 'code' => 502];
         }
 
         $resultCode = isset($json['resultCode']) ? (string) $json['resultCode'] : null;

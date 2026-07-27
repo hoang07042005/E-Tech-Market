@@ -51,7 +51,7 @@ class AdminBlogPostsController extends Controller
     {
         $this->blogPostService->deletePost($blogPost);
 
-        return response()->json(['message' => 'Post deleted successfully']);
+        return response()->json(['message' => 'Bài viết đã được xóa thành công.']);
     }
 
     public function storeCategory(StoreBlogCategoryRequest $request): JsonResponse
@@ -72,6 +72,6 @@ class AdminBlogPostsController extends Controller
     {
         $this->blogPostService->deleteCategory($category);
 
-        return response()->json(['message' => 'Category deleted successfully']);
+        return response()->json(['message' => 'Danh mục đã được xóa thành công.']);
     }
 }

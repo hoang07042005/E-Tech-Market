@@ -29,7 +29,7 @@ class PaymentsController extends Controller
 
         $order = Order::query()->find($data['order_id']);
         if (! $order) {
-            abort(404, 'Order not found');
+            abort(404, 'Không tìm thấy đơn hàng.');
         }
 
         // Allow payment for pending_payment orders (not visible in regular list, but accessible here)
@@ -68,10 +68,10 @@ class PaymentsController extends Controller
         $result = $this->paymentService->handleVnpayCallback($request->query());
 
         if (! $result['verified']) {
-            return response()->json(['RspCode' => '97', 'Message' => 'Invalid signature']);
+            return response()->json(['RspCode' => '97', 'Message' => 'Chữ ký không hợp lệ.']);
         }
 
-        return response()->json(['RspCode' => '00', 'Message' => 'Confirm Success']);
+        return response()->json(['RspCode' => '00', 'Message' => 'Xác nhận thành công.']);
     }
 
     // ─── MOMO ─────────────────────────────────────────────────────────
@@ -89,7 +89,7 @@ class PaymentsController extends Controller
 
         $order = Order::query()->find($data['order_id']);
         if (! $order) {
-            abort(404, 'Order not found');
+            abort(404, 'Không tìm thấy đơn hàng.');
         }
 
         // Allow payment for pending_payment orders (not visible in regular list, but accessible here)
@@ -121,7 +121,7 @@ class PaymentsController extends Controller
     {
         $data = $request->all();
         if (! is_array($data)) {
-            abort(400, 'Invalid payload');
+            abort(400, 'Dữ liệu không hợp lệ.');
         }
 
         $result = $this->paymentService->handleMomoCallback($data);

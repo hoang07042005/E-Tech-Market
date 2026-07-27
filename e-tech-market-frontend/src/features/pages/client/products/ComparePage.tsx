@@ -51,7 +51,7 @@ export default function ComparePage() {
     ).then(res => {
       setProducts(res)
     }).catch(err => {
-      console.error('Failed to fetch compare details', err)
+      console.error('Lỗi lấy thông tin so sánh sản phẩm', err)
     }).finally(() => {
       setLoading(false)
     })

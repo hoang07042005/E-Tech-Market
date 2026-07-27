@@ -47,7 +47,7 @@ class Controller extends BaseController
     /**
      * Not found JSON response
      */
-    protected function notFoundResponse(string $message = 'Resource not found')
+    protected function notFoundResponse(string $message = 'Không tìm thấy dữ liệu.')
     {
         return $this->errorResponse($message, 404);
     }
@@ -55,7 +55,7 @@ class Controller extends BaseController
     /**
      * Validation error JSON response
      */
-    protected function validationErrorResponse(array $errors, string $message = 'Validation failed')
+    protected function validationErrorResponse(array $errors, string $message = 'Lỗi xác thực dữ liệu.')
     {
         return $this->errorResponse($message, 422, $errors);
     }
@@ -79,7 +79,7 @@ class Controller extends BaseController
     /**
      * Server error JSON response
      */
-    protected function serverErrorResponse(string $message = 'Server error')
+    protected function serverErrorResponse(string $message = 'Lỗi máy chủ.')
     {
         return $this->errorResponse($message, 500);
     }

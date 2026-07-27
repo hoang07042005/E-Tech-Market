@@ -56,15 +56,23 @@ class AuthController extends Controller
         $r->validate([
             "email"=>"required|email",
             "password"=>"required|string"
+        ], [
+            "email.required" => "Vui lòng nhập email.",
+            "email.email" => "Email không hợp lệ.",
+            "password.required" => "Vui lòng nhập mật khẩu."
         ]);
 
         $u = User::where("email",$r->email)->first();
 
-        if(!$u || !Hash::check($r->password,$u->password))
-            throw ValidationException::withMessages(["email"=>["Login failed"]]);
+        if(!$u) {
+            throw ValidationException::withMessages(["email"=>["Không tìm thấy email."]]);
+        }
+        if(!Hash::check($r->password,$u->password)) {
+            throw ValidationException::withMessages(["email"=>["Sai mật khẩu."]]);
+        }
 
         if(!$u->is_active) {
-            throw ValidationException::withMessages(["email"=>["Account is disabled"]]);
+            throw ValidationException::withMessages(["email"=>["Tài khoản của bạn đã bị vô hiệu hóa."]]);
         }
 
         if ($u->google2fa_enabled) {
@@ -106,6 +114,13 @@ class AuthController extends Controller
             "province"=>"nullable|string|max:100",
             "district"=>"nullable|string|max:100",
             "ward"=>"nullable|string|max:100",
+        ], [
+            "email.unique" => "Email này đã được sử dụng.",
+            "password.min" => "Mật khẩu phải có ít nhất 8 ký tự.",
+            "name.required" => "Vui lòng nhập họ tên.",
+            "email.required" => "Vui lòng nhập email.",
+            "password.required" => "Vui lòng nhập mật khẩu.",
+            "phone.required" => "Vui lòng nhập số điện thoại."
         ]);
 
         $u = User::create([
@@ -229,14 +244,18 @@ class AuthController extends Controller
         $data = $r->validate([
             "current_password"=>"required|string",
             "new_password"=>"required|string|min:8"
+        ], [
+            "new_password.min" => "Mật khẩu mới phải có ít nhất 8 ký tự.",
+            "current_password.required" => "Vui lòng nhập mật khẩu hiện tại.",
+            "new_password.required" => "Vui lòng nhập mật khẩu mới."
         ]);
 
         if(!Hash::check($data['current_password'], $user->password)) {
-            throw ValidationException::withMessages(["current_password"=>["Current password incorrect"]]);
+            throw ValidationException::withMessages(["current_password"=>["Mật khẩu hiện tại không đúng."]]);
         }
 
         if(Hash::check($data['new_password'], $user->password)) {
-            throw ValidationException::withMessages(["new_password"=>["New password cannot be same as current"]]);
+            throw ValidationException::withMessages(["new_password"=>["Mật khẩu mới không được trùng với mật khẩu hiện tại."]]);
         }
 
         $user->password = Hash::make($data['new_password']);

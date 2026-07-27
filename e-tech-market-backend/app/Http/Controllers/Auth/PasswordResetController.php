@@ -17,14 +17,18 @@ class PasswordResetController extends Controller
     {
         $data = $request->validate([
             'email' => ['required', 'email', 'max:255'],
+        ], [
+            'email.required' => 'Vui lòng nhập email.',
+            'email.email' => 'Email không hợp lệ.',
         ]);
 
         /** @var User|null $user */
         $user = User::where('email', $data['email'])->first();
 
-        // Always respond OK to avoid user enumeration.
         if (! $user) {
-            return response()->json(['ok' => true]);
+            throw ValidationException::withMessages([
+                'email' => ['Không tìm thấy email.'],
+            ]);
         }
 
         $token = Password::broker()->createToken($user);
@@ -42,6 +46,11 @@ class PasswordResetController extends Controller
             'email' => ['required', 'email', 'max:255'],
             'token' => ['required', 'string'],
             'password' => ['required', 'string', \Illuminate\Validation\Rules\Password::min(8)->mixedCase()->numbers()->symbols(), 'confirmed'],
+        ], [
+            'email.required' => 'Vui lòng nhập email.',
+            'email.email' => 'Email không hợp lệ.',
+            'password.required' => 'Vui lòng nhập mật khẩu.',
+            'password.confirmed' => 'Mật khẩu không trùng khớp.',
         ]);
 
         $status = Password::broker()->reset(
@@ -62,8 +71,9 @@ class PasswordResetController extends Controller
         );
 
         if ($status !== Password::PASSWORD_RESET) {
+            $msg = $status === Password::INVALID_USER ? 'Không tìm thấy email.' : 'Token không hợp lệ hoặc đã hết hạn.';
             throw ValidationException::withMessages([
-                'email' => [__($status)],
+                'email' => [$msg],
             ]);
         }
 

@@ -93,7 +93,7 @@ class ProductsDeletedVariantsController extends Controller
         });
 
         return response()->json([
-            'message' => 'Hard delete completed.',
+            'message' => 'Đã xóa vĩnh viễn thành công.',
             'counts' => $counts ?? null,
         ]);
     }

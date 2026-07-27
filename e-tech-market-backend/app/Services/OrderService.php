@@ -391,7 +391,7 @@ class OrderService
     public function getClientOrder(Order $order, User $user): Order
     {
         if ($order->user_id !== $user->id) {
-            throw new \Exception('Unauthorized', 403);
+            throw new \Exception('Không có quyền thực hiện thao tác này.', 403);
         }
 
         $order->load(['items.product', 'items.variant', 'payment', 'returnRequest', 'statusHistories', 'statusHistories.changedBy', 'user']);
@@ -402,7 +402,7 @@ class OrderService
     public function cancelOrder(Order $order, User $user): Order
     {
         if ($order->user_id !== $user->id) {
-            throw new \Exception('Unauthorized', 403);
+            throw new \Exception('Không có quyền thực hiện thao tác này.', 403);
         }
 
         $cur = strtolower((string) ($order->status ?? ''));
@@ -450,7 +450,7 @@ class OrderService
     public function confirmReceived(Order $order, User $user): Order
     {
         if ($order->user_id !== $user->id) {
-            throw new \Exception('Unauthorized', 403);
+            throw new \Exception('Không có quyền thực hiện thao tác này.', 403);
         }
 
         $cur = strtolower((string) ($order->status ?? ''));
@@ -511,7 +511,7 @@ class OrderService
     public function confirmPayment(Order $order, User $user): Order
     {
         if ($order->user_id !== $user->id) {
-            throw new \Exception('Unauthorized', 403);
+            throw new \Exception('Không có quyền thực hiện thao tác này.', 403);
         }
 
         $order->loadMissing(['payment']);
@@ -538,7 +538,7 @@ class OrderService
     public function requestReturn(Order $order, User $user, array $data, array $files): Order
     {
         if ($order->user_id !== $user->id) {
-            throw new \Exception('Unauthorized', 403);
+            throw new \Exception('Không có quyền thực hiện thao tác này.', 403);
         }
 
         $cur = strtolower((string) ($order->status ?? ''));
@@ -606,7 +606,7 @@ class OrderService
     public function confirmRefundReceived(Order $order, User $user): Order
     {
         if ($order->user_id !== $user->id) {
-            throw new \Exception('Unauthorized', 403);
+            throw new \Exception('Không có quyền thực hiện thao tác này.', 403);
         }
 
         $order->loadMissing(['returnRequest']);

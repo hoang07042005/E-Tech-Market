@@ -54,12 +54,12 @@ class MembershipRanksController extends Controller
 
         if ($userCount > 0) {
             return response()->json([
-                'message' => "Cannot delete rank '{$rankName}' because {$userCount} user(s) are using this rank. Please reassign users to another rank first."
-            ], 422);
+                'message' => "Không thể xóa hạng '{$rankName}' vì có {$userCount} người dùng đang ở hạng này. Vui lòng chuyển người dùng sang hạng khác trước."
+            ], 400);
         }
 
         $membershipRank->delete();
 
-        return response()->json(['message' => "Rank '{$rankName}' deleted successfully"]);
+        return response()->json(['message' => "Đã xóa hạng '{$rankName}' thành công."]);
     }
 }

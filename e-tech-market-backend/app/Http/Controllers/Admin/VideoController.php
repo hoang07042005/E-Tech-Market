@@ -57,7 +57,7 @@ class VideoController extends Controller
         }
 
         if (empty($data['video_url'])) {
-            abort(422, 'The video url or video file field is required.');
+            abort(422, 'Vui lòng nhập đường dẫn video hoặc tải file lên.');
         }
 
         $video = Video::create($data);
@@ -162,6 +162,6 @@ class VideoController extends Controller
 
         $video->delete();
 
-        return response()->json(['message' => 'Video deleted successfully']);
+        return response()->json(['message' => 'Video đã được xóa thành công.']);
     }
 }

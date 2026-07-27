@@ -30,7 +30,7 @@ class ClientBlogPostsController extends Controller
             $post = $this->blogPostService->getClientPost($slug);
             return response()->json($post);
         } catch (\Exception $e) {
-            abort(404, 'Not found');
+            abort(404, 'Không tìm thấy dữ liệu.');
         }
     }
 
@@ -48,7 +48,7 @@ class ClientBlogPostsController extends Controller
             $comment = $this->blogPostService->storeComment($slug, $data, $user);
             return response()->json($comment->load('user:id,name,avatar_url'), 201);
         } catch (\Exception $e) {
-            abort(404, 'Post not found');
+            abort(404, 'Không tìm thấy bài viết.');
         }
     }
 

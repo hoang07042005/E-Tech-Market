@@ -48,7 +48,7 @@ class ProductShopQnaService
     public function replyQna(Product $product, ProductShopQna $shopQna, array $data): ProductShopQna
     {
         if ((int) $shopQna->product_id !== (int) $product->id) {
-            throw new \Exception('Not found', 404);
+            throw new \Exception('Không tìm thấy dữ liệu.', 404);
         }
 
         if (array_key_exists('answer', $data)) {
@@ -72,7 +72,7 @@ class ProductShopQnaService
     public function getVisibleQnasClient(Product $product)
     {
         if (! $product->is_active) {
-            throw new \Exception('Product not active', 404);
+            throw new \Exception('Sản phẩm đang không hoạt động.', 404);
         }
 
         return ProductShopQna::query()
@@ -89,7 +89,7 @@ class ProductShopQnaService
     public function submitQuestion(Product $product, ?User $user, array $data): ProductShopQna
     {
         if (! $product->is_active) {
-            throw new \Exception('Product not active', 404);
+            throw new \Exception('Sản phẩm đang không hoạt động.', 404);
         }
 
         $guestName = isset($data['guest_name']) ? trim($data['guest_name']) : '';

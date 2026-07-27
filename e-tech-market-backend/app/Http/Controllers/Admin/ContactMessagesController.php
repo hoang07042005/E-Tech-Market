@@ -32,6 +32,6 @@ class ContactMessagesController extends Controller
     {
         $this->contactMessageService->deleteMessage($id);
 
-        return response()->json(['message' => 'Message deleted successfully']);
+        return response()->json(['message' => 'Tin nhắn đã được xóa thành công.']);
     }
 }

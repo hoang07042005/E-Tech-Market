@@ -41,6 +41,6 @@ class CouponsController extends Controller
     {
         $this->couponService->deleteCoupon($coupon);
 
-        return response()->json(['message' => 'Coupon deleted successfully']);
+        return response()->json(['message' => 'Mã giảm giá đã được xóa thành công.']);
     }
 }

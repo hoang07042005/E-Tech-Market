@@ -75,6 +75,6 @@ class BannerController extends Controller
         }
         $banner->delete();
 
-        return response()->json(['message' => 'Banner deleted successfully']);
+        return response()->json(['message' => 'Banner đã được xóa thành công.']);
     }
 }

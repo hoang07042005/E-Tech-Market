@@ -52,7 +52,7 @@ class ProductNewsService
     public function updateProductNews(Product $product, ProductNews $news, array $data): ProductNews
     {
         if ((int) $news->product_id !== (int) $product->id) {
-            throw new \Exception('Not found', 404);
+            throw new \Exception('Không tìm thấy dữ liệu.', 404);
         }
 
         $news->update([
@@ -73,7 +73,7 @@ class ProductNewsService
     public function deleteProductNews(Product $product, ProductNews $news): void
     {
         if ((int) $news->product_id !== (int) $product->id) {
-            throw new \Exception('Not found', 404);
+            throw new \Exception('Không tìm thấy dữ liệu.', 404);
         }
 
         $news->delete();
@@ -85,7 +85,7 @@ class ProductNewsService
     public function getActiveClientNews(ProductNews $news): ProductNews
     {
         if (! $news->is_active) {
-            throw new \Exception('Not found', 404);
+            throw new \Exception('Không tìm thấy dữ liệu.', 404);
         }
 
         return $news;

@@ -91,7 +91,7 @@ class CategoryService
     public function deleteCategory(Category $category): void
     {
         if ($category->children()->count() > 0) {
-            throw new \Exception('Cannot delete category with sub-categories');
+            throw new \Exception('Không thể xóa danh mục đang có danh mục con.');
         }
 
         $category->delete();
@@ -177,11 +177,11 @@ class CategoryService
     public function getCategoryWithRelations(Category $category, ?string $type = null): Category
     {
         if ($type !== null && $category->type !== $type) {
-            throw new \Exception('Category not found', 404);
+            throw new \Exception('Không tìm thấy danh mục.', 404);
         }
 
         if (! $category->is_active) {
-            throw new \Exception('Category not active', 404);
+            throw new \Exception('Danh mục đang không hoạt động.', 404);
         }
 
         $category->load([

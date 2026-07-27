@@ -37,11 +37,13 @@ export type ApiError = {
 
 export class ApiRequestError extends Error {
   public readonly globalErrorNotified: boolean
+  public readonly errors?: Record<string, string[]>
 
-  constructor(message: string, options: { globalErrorNotified?: boolean } = {}) {
+  constructor(message: string, options: { globalErrorNotified?: boolean, errors?: Record<string, string[]> } = {}) {
     super(message)
     this.name = 'ApiRequestError'
     this.globalErrorNotified = options.globalErrorNotified ?? false
+    this.errors = options.errors
   }
 }
 
@@ -86,7 +88,7 @@ export async function apiFetch<T>(
     ensureAuthExpiryMigrated()
     if (isAuthSessionExpired()) {
       performAuthSessionExpiry()
-      throw new Error('Session expired. Please login again.')
+      throw new Error('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.')
     }
   }
 
@@ -140,10 +142,10 @@ export async function apiFetch<T>(
 
     const message =
         data && typeof data.message === 'string'
-          ? data.message + (responseDetail ? ` — ${responseDetail.slice(0, 1000)}` : '')
+          ? data.message
           : fallbackText && fallbackText.trim().length > 0
-            ? `Request failed: ${res.status} (${fallbackText.slice(0, 140)})`
-            : `Request failed: ${res.status}`
+            ? `Yêu cầu thất bại: ${res.status} (${fallbackText.slice(0, 140)})`
+            : `Yêu cầu thất bại: ${res.status}`
 
     // Log full details to console to help debug 422 validation errors during development
     try {
@@ -152,7 +154,7 @@ export async function apiFetch<T>(
     } catch {}
 
     notifyGlobalError(message)
-    throw new ApiRequestError(message, { globalErrorNotified: true })
+    throw new ApiRequestError(message, { globalErrorNotified: true, errors: data?.errors as Record<string, string[]> | undefined })
   }
 
   return (data as T) ?? ({} as T)

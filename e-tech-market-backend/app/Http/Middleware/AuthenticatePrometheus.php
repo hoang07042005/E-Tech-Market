@@ -31,7 +31,7 @@ class AuthenticatePrometheus
         if (!$auth || !str_starts_with($auth, 'Basic ')) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Unauthorized - Basic Authentication required',
+                'message' => 'Không có quyền truy cập - Yêu cầu xác thực cơ bản.',
             ], Response::HTTP_UNAUTHORIZED, [
                 'WWW-Authenticate' => 'Basic realm="Prometheus Metrics"',
             ]);
@@ -44,7 +44,7 @@ class AuthenticatePrometheus
         if ($providedUsername !== $username || $providedPassword !== $password) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Invalid credentials.',
+                'message' => 'Thông tin đăng nhập không hợp lệ.',
             ], Response::HTTP_UNAUTHORIZED);
         }
 

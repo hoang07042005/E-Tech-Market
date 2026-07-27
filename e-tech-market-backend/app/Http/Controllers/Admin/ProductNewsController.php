@@ -46,7 +46,7 @@ class ProductNewsController extends Controller
     {
         try {
             $this->newsService->deleteProductNews($product, $news);
-            abort(204, 'Deleted');
+            abort(204, 'Đã xóa thành công.');
         } catch (\Exception $e) {
             $code = $e->getCode() ?: 404;
             return response()->json(['message' => $e->getMessage()]);

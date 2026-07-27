@@ -76,7 +76,7 @@ class ProductsController extends Controller
     {
         $this->productService->deleteProduct($product);
 
-        return response()->json(['message' => 'Deleted']);
+        return response()->json(['message' => 'Đã xóa thành công.']);
     }
 
     private function cleanUtf8(mixed $data): mixed

@@ -58,7 +58,7 @@ class NotificationService
     public function markAsRead(Notification $notification, User $user): void
     {
         if ((int) $notification->user_id !== (int) $user->id) {
-            throw new \Exception('Forbidden', 403);
+            throw new \Exception('Bị từ chối truy cập.', 403);
         }
 
         if ($notification->read_at === null) {

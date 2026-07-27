@@ -36,7 +36,7 @@ class CartService
     {
         $product = Product::query()->where('id', $data['product_id'])->where('is_active', true)->first();
         if (! $product) {
-            throw new \Exception('Product not found or inactive', 404);
+            throw new \Exception('Sản phẩm không tồn tại hoặc đã ngừng kinh doanh.', 404);
         }
 
         $variant = null;
@@ -47,14 +47,14 @@ class CartService
                 ->where('is_active', true)
                 ->first();
             if (! $variant) {
-                throw new \Exception('Variant not found or inactive', 404);
+                throw new \Exception('Phiên bản sản phẩm không tồn tại hoặc đã ngừng kinh doanh.', 404);
             }
         } else {
             $variant = $product->variants()->where('is_active', true)->orderBy('id')->first();
         }
 
         if (! $variant) {
-            throw new \Exception('Product variant not found', 422);
+            throw new \Exception('Không tìm thấy phiên bản sản phẩm.', 422);
         }
 
         $cart = Cart::query()->firstOrCreate(
@@ -72,7 +72,7 @@ class CartService
             // Lock variant for update to prevent race conditions
             $lockedVariant = ProductVariant::lockForUpdate()->find($variant->id);
             if (! $lockedVariant || ! $lockedVariant->is_active) {
-                throw new \Exception('Variant not available', 422);
+                throw new \Exception('Phiên bản sản phẩm không có sẵn.', 422);
             }
 
             if ($cartItem) {
@@ -150,7 +150,7 @@ class CartService
         $item = $query->first();
 
         if (! $item) {
-            throw new \Exception('Item not found in cart', 404);
+            throw new \Exception('Không tìm thấy sản phẩm trong giỏ hàng.', 404);
         }
 
         $item->quantity = $quantity;

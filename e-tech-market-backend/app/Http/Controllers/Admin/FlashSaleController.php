@@ -65,7 +65,7 @@ class FlashSaleController extends Controller
     {
         try {
             $this->flashSaleService->removeItem($flashSale, $item);
-            return response()->json(['message' => 'Item removed successfully']);
+            return response()->json(['message' => 'Đã xóa mục thành công.']);
         } catch (\Exception $e) {
             return response()->json(['message' => $e->getMessage()]);
         }

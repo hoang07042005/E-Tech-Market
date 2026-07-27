@@ -29,7 +29,7 @@ class WishlistService
         $product = Product::query()->where('id', $productId)->where('is_active', true)->first();
         if (! $product) {
             throw ValidationException::withMessages([
-                'product_id' => ['Product not found or inactive.'],
+                'product_id' => ['Sản phẩm không tồn tại hoặc đã ngừng kinh doanh.'],
             ]);
         }
 

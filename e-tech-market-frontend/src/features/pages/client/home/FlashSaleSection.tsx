@@ -89,7 +89,7 @@ export default function FlashSaleSection() {
           setIsCurrentlyActive(now >= start && now <= end)
         }
       } catch (e) {
-        console.error('Failed to load flash sale:', e)
+        console.error('Lỗi tải dữ liệu Flash Sale:', e)
       } finally {
         setLoading(false)
       }

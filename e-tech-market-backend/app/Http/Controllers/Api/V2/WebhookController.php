@@ -28,7 +28,7 @@ class WebhookController extends Controller
                 Log::channel('single')->warning('VNPAY IPN V2 - Invalid signature', $request->query());
                 return response()->json([
                     'RspCode' => '97',
-                    'Message' => 'Invalid signature'
+                    'Message' => 'Chữ ký không hợp lệ.'
                 ]);
             }
 
@@ -37,7 +37,7 @@ class WebhookController extends Controller
                 // VNPAY still considers 00 as successful receipt of the webhook, even if the transaction failed.
                 return response()->json([
                     'RspCode' => '00',
-                    'Message' => 'Transaction failed but webhook received'
+                    'Message' => 'Giao dịch thất bại nhưng đã nhận webhook.'
                 ]);
             }
 
@@ -45,14 +45,14 @@ class WebhookController extends Controller
 
             return response()->json([
                 'RspCode' => '00',
-                'Message' => 'Confirm Success'
+                'Message' => 'Xác nhận thành công.'
             ]);
 
         } catch (\Exception $e) {
             Log::error('VNPAY IPN V2 Error: ' . $e->getMessage());
             return response()->json([
                 'RspCode' => '99',
-                'Message' => 'Unknown error'
+                'Message' => 'Lỗi không xác định.'
             ]);
         }
     }
@@ -67,14 +67,14 @@ class WebhookController extends Controller
         try {
             $data = $request->all();
             if (empty($data)) {
-                return response()->json(['message' => 'Invalid payload'], 400);
+                return response()->json(['message' => 'Dữ liệu không hợp lệ.'], 400);
             }
 
             $result = $this->paymentService->handleMomoCallback($data);
 
             if (!$result['verified']) {
                 Log::channel('single')->warning('MoMo IPN V2 - Invalid signature', $data);
-                return response()->json(['message' => 'Invalid signature'], 400);
+                return response()->json(['message' => 'Chữ ký không hợp lệ.'], 400);
             }
 
             Log::channel('single')->info('MoMo IPN V2 - Successfully processed order: ' . ($result['order_code'] ?? 'Unknown'));
@@ -84,7 +84,7 @@ class WebhookController extends Controller
 
         } catch (\Exception $e) {
             Log::error('MoMo IPN V2 Error: ' . $e->getMessage());
-            return response()->json(['message' => 'Internal server error'], 500);
+            return response()->json(['message' => 'Lỗi máy chủ nội bộ.'], 500);
         }
     }
 }

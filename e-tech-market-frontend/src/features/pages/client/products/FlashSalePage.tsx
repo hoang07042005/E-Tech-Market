@@ -202,7 +202,7 @@ export default function FlashSalePage() {
         const res = await apiFetch<FlashSale | FlashSale[]>('/api/flash-sale/current')
         setSalesData(res)
       } catch (e) {
-        console.error('Failed to load flash sale:', e)
+        console.error('Lỗi tải dữ liệu Flash Sale:', e)
       } finally {
         setLoading(false)
       }

@@ -71,7 +71,7 @@ class DeletedDataController extends Controller
         });
 
         return response()->json([
-            'message' => 'Hard delete completed.',
+            'message' => 'Đã xóa vĩnh viễn thành công.',
             'counts'  => ['reviews' => $deletedCount],
         ]);
     }
@@ -136,7 +136,7 @@ class DeletedDataController extends Controller
         });
 
         return response()->json([
-            'message' => 'Hard delete completed.',
+            'message' => 'Đã xóa vĩnh viễn thành công.',
             'counts'  => ['users' => $deletedCount],
         ]);
     }
@@ -193,7 +193,7 @@ class DeletedDataController extends Controller
         });
 
         return response()->json([
-            'message' => 'Hard delete completed.',
+            'message' => 'Đã xóa vĩnh viễn thành công.',
             'counts'  => ['categories' => $deletedCount],
         ]);
     }
@@ -288,7 +288,7 @@ class DeletedDataController extends Controller
         });
 
         return response()->json([
-            'message' => 'Hard delete completed.',
+            'message' => 'Đã xóa vĩnh viễn thành công.',
             'counts'  => ['products' => $deletedCount],
         ]);
     }
@@ -347,7 +347,7 @@ class DeletedDataController extends Controller
         });
 
         return response()->json([
-            'message' => 'Hard delete completed.',
+            'message' => 'Đã xóa vĩnh viễn thành công.',
             'counts'  => ['product_news' => $deletedCount],
         ]);
     }
@@ -406,7 +406,7 @@ class DeletedDataController extends Controller
         });
 
         return response()->json([
-            'message' => 'Hard delete completed.',
+            'message' => 'Đã xóa vĩnh viễn thành công.',
             'counts'  => ['product_faqs' => $deletedCount],
         ]);
     }
@@ -467,7 +467,7 @@ class DeletedDataController extends Controller
         });
 
         return response()->json([
-            'message' => 'Hard delete completed.',
+            'message' => 'Đã xóa vĩnh viễn thành công.',
             'counts'  => ['blog_posts' => $deletedCount],
         ]);
     }
@@ -526,7 +526,7 @@ class DeletedDataController extends Controller
         });
 
         return response()->json([
-            'message' => 'Hard delete completed.',
+            'message' => 'Đã xóa vĩnh viễn thành công.',
             'counts'  => ['blog_comments' => $deletedCount],
         ]);
     }

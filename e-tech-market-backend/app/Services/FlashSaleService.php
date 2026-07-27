@@ -81,7 +81,7 @@ class FlashSaleService
     public function removeItem(FlashSale $flashSale, FlashSaleItem $item): void
     {
         if ($item->flash_sale_id !== $flashSale->id) {
-            throw new \Exception('Item does not belong to this sale', 403);
+            throw new \Exception('Sản phẩm này không thuộc chương trình Flash Sale này.', 403);
         }
         Cache::forget('active_flash_sale');
         $item->delete();

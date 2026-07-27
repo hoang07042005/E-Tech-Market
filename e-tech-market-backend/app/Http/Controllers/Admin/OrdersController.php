@@ -108,7 +108,7 @@ class OrdersController extends Controller
 
             $allowed = ['pending', 'paid', 'processing', 'shipped', 'delivered', 'completed', 'cancelled', 'returned'];
             if (! in_array($status, $allowed, true)) {
-                abort(422, 'Status invalid');
+                abort(422, 'Trạng thái không hợp lệ.');
             }
 
             $statusStep = static function (?string $s): int {

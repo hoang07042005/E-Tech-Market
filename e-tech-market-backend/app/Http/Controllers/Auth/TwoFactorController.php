@@ -17,7 +17,7 @@ class TwoFactorController extends Controller
 
         // If already enabled, return error
         if ($user->google2fa_enabled) {
-            abort(400, '2FA is already enabled.');
+            abort(400, 'Xác thực 2 bước (2FA) đã được bật từ trước.');
         }
 
         $google2fa = new Google2FA();
@@ -56,11 +56,11 @@ class TwoFactorController extends Controller
         $user = $request->user();
 
         if ($user->google2fa_enabled) {
-            abort(400, '2FA is already enabled.');
+            abort(400, 'Xác thực 2 bước (2FA) đã được bật từ trước.');
         }
 
         if (!$user->google2fa_secret) {
-            abort(400, 'Please setup 2FA first.');
+            abort(400, 'Vui lòng thiết lập 2FA trước.');
         }
 
         $google2fa = new Google2FA();
@@ -69,10 +69,10 @@ class TwoFactorController extends Controller
         if ($valid) {
             $user->google2fa_enabled = true;
             $user->save();
-            return response()->json(['message' => '2FA has been successfully enabled.']);
+            return response()->json(['message' => 'Xác thực 2 bước (2FA) đã được bật thành công.']);
         }
 
-        abort(422, 'Invalid OTP code.');
+        abort(422, 'Mã OTP không hợp lệ.');
     }
     
     /**
@@ -87,13 +87,13 @@ class TwoFactorController extends Controller
         $user = $request->user();
         
         if (!\Illuminate\Support\Facades\Hash::check($request->password, $user->password)) {
-            abort(422, 'Incorrect password.');
+            abort(422, 'Mật khẩu không đúng.');
         }
         
         $user->google2fa_enabled = false;
         $user->google2fa_secret = null;
         $user->save();
         
-        return response()->json(['message' => '2FA has been disabled.']);
+        return response()->json(['message' => 'Xác thực 2 bước (2FA) đã bị tắt.']);
     }
 }

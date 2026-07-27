@@ -34,6 +34,6 @@ class ReviewsController extends Controller
     {
         $this->reviewService->deleteReview($review);
 
-        return response()->json(['message' => 'Review deleted successfully']);
+        return response()->json(['message' => 'Đánh giá đã được xóa thành công.']);
     }
 }

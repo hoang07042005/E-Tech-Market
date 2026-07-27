@@ -53,12 +53,12 @@ class ProductShopQnaController extends Controller
     {
         try {
             if ((int) $shopQna->product_id !== (int) $product->id) {
-                abort(404, 'Not found');
+                abort(404, 'Không tìm thấy dữ liệu.');
             }
 
             $shopQna->delete();
 
-            return response()->json(['message' => 'Question deleted successfully']);
+            return response()->json(['message' => 'Câu hỏi đã được xóa thành công.']);
         } catch (\Exception $e) {
             $code = $e->getCode() ?: 500;
             abort($code, $e->getMessage());
