@@ -65,7 +65,7 @@ class ReviewService
     public function submitReview(User $user, Product $product, array $data): Review
     {
         if (! $product->is_active) {
-            throw new \Exception('Product not active', 404);
+            throw new \Exception('Sản phẩm đang không hoạt động.', 404);
         }
 
         if (! empty($data['order_id'])) {
@@ -79,7 +79,7 @@ class ReviewService
                 ->exists();
 
             if (! $hasPurchased) {
-                throw new \Exception('Order is not eligible for this review', 422);
+                throw new \Exception('Đơn hàng không đủ điều kiện để đánh giá.', 422);
             }
         }
 
