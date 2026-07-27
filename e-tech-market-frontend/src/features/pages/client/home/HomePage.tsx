@@ -904,10 +904,33 @@ export default function HomePage() {
                                 </div>
                               </div>
 
-                              <div className="hpCouponCardNewRight">
+                              <div className="hpCouponCardNewRightWrapper">
+                                <div className="hpCouponCardNewRight">
                                 <div className="hpCouponCardNewRightTop">
                                   <div className="hpCouponCardNewIconBox">
-                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ff6b2b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M15.4 3.6a2.8 2.8 0 0 1 3.9 0l1.1 1.1a2.8 2.8 0 0 1 0 3.9L8.6 20.4a2.8 2.8 0 0 1-3.9 0l-1.1-1.1a2.8 2.8 0 0 1 0-3.9Z"></path><path d="m20.2 7.8-12.4 12.4"></path><path d="m3.8 16.2 12.4-12.4"></path></svg>
+                                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                      <path d="M21 10V6C21 4.9 20.1 4 19 4H5C3.9 4 3 4.9 3 6V10C4.1 10 5 10.9 5 12C5 13.1 4.1 14 3 14V18C3 19.1 3.9 20 5 20H19C20.1 20 21 19.1 21 18V14C19.9 14 19 13.1 19 12C19 10.9 19.9 10 21 10Z"
+                                            stroke="#FF6B00"
+                                            stroke-width="2"
+                                            stroke-linejoin="round"/>
+
+                                      <path d="M10 10L8.5 12L10 14"
+                                                stroke="#FF6B00"
+                                            stroke-width="2"
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"/>
+
+                                      <path d="M14 10L15.5 12L14 14"
+                                            stroke="#FF6B00"
+                                            stroke-width="2"
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"/>
+
+                                      <path d="M12.8 9L11.2 15"
+                                            stroke="#FF6B00"
+                                            stroke-width="2"
+                                            stroke-linecap="round"/>
+                                    </svg>
                                   </div>
                                   <div className="hpCouponCardNewInfo">
                                     <div className="hpCouponCardNewTitle">
@@ -920,7 +943,7 @@ export default function HomePage() {
                                   <button
                                     className={`hpCouponCardNewSaveBtn${c.is_saved ? ' saved' : ''}`}
                                     onClick={() => !c.is_saved && saveCoupon(c.code)}
-                                    disabled={c.is_saved}
+                                   disabled={c.is_saved}
                                   >
                                     {c.is_saved ? 'Đã lưu' : 'Lưu'}
                                   </button>
@@ -952,6 +975,7 @@ export default function HomePage() {
                                   <div className="hpCouponCardNewCopy">
                                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
                                   </div>
+                                </div>
                                 </div>
                               </div>
                             </div>

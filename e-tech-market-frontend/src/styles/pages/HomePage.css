@@ -1312,6 +1312,7 @@
   overflow: hidden;
   width: 100%;
   position: relative;
+  padding: 16px 0; /* Cần padding để không bị cắt mất bóng (shadow) */
 }
 
 .hpCouponGrid {
@@ -1863,9 +1864,8 @@
 
 .hpCouponGrid {
   display: flex;
-  gap: 16px;
+  gap: 22px;
   width: max-content;
-  padding-bottom: 8px; /* For box-shadow */
 }
 
 /* --- New Coupon Card Layout --- */
@@ -1874,19 +1874,19 @@
   display: flex;
   align-items: stretch;
   background: transparent;
-  filter: drop-shadow(0 4px 12px rgba(0,0,0,0.06));
 }
 
 .hpCouponCardNewLeft {
   width: 110px;
   background: linear-gradient(135deg, #ff8c4a, #ff5715);
   border-radius: 12px 0 0 12px;
-  padding: 16px 12px;
+  padding: 12px 10px;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   position: relative;
+  z-index: 1; /* Nằm đè lên shadow của phần bên phải */
   color: #fff;
   border-right: none;
   /* Left big cutout + Top/Bottom groove cutouts + Right perforated edge */
@@ -1936,15 +1936,20 @@
   text-align: center;
 }
 
+.hpCouponCardNewRightWrapper {
+  flex: 1;
+  display: flex;
+  filter: drop-shadow(4px 0 12px rgba(0, 0, 0, 0.08));
+}
+
 .hpCouponCardNewRight {
   flex: 1;
-  background: #fff;
+  background: linear-gradient(135deg, #ffc1a5, #f9eae4);
   border-radius: 0 12px 12px 0;
-  padding: 16px;
+  padding: 12px;
   display: flex;
   flex-direction: column;
   position: relative;
-  /* Right big cutout + Top/Bottom groove cutouts + Left perforated edge */
   -webkit-mask-image: 
     radial-gradient(circle at 100% 50%, transparent 8px, black 8.5px),
     radial-gradient(circle at 0% 0px, transparent 6px, black 6.5px),
@@ -1967,7 +1972,7 @@
   display: flex;
   align-items: center;
   gap: 5px;
-  margin-bottom: 12px;
+  margin-bottom: 8px;
 }
 
 .hpCouponCardNewIconBox {
@@ -1993,7 +1998,7 @@
 }
 
 .hpCouponCardNewMin {
-  font-size: 12px;
+  font-size: 10px;
   color: #64748b;
 }
 
@@ -2023,14 +2028,14 @@
 .hpCouponCardNewDivider {
   height: 1px;
   background: #f1f5f9;
-  margin: 0 0 12px 0;
+  margin: 0 0 8px 0;
 }
 
 .hpCouponCardNewUsageRow {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 12px;
+  margin-bottom: 8px;
 }
 
 .hpCouponCardNewUsageText {
@@ -2059,7 +2064,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 10px 12px;
+  padding: 8px 10px;
   border: 1px dashed #cbd5e1;
   border-radius: 8px;
   background: #f8fafc;

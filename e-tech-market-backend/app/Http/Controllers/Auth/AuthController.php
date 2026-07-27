@@ -65,10 +65,10 @@ class AuthController extends Controller
         $u = User::where("email",$r->email)->first();
 
         if(!$u) {
-            throw ValidationException::withMessages(["email"=>["Không tìm thấy email."]]);
+            throw ValidationException::withMessages(["email"=>["Sai mật khẩu hoặc email không tồn tại."]]);
         }
         if(!Hash::check($r->password,$u->password)) {
-            throw ValidationException::withMessages(["email"=>["Sai mật khẩu."]]);
+            throw ValidationException::withMessages(["email"=>["Sai mật khẩu hoặc email không tồn tại."]]);
         }
 
         if(!$u->is_active) {

@@ -109,6 +109,9 @@ class CouponService
                 return false;
             }
             return true;
+        })->map(function ($coupon) use ($user) {
+            $coupon->user_usage_count = $coupon->usages->where('user_id', $user->id)->count();
+            return $coupon;
         })->values();
     }
 

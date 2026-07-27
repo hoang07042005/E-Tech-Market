@@ -1205,12 +1205,13 @@
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 12px;
-    padding: 0;
+    padding: 10px;
     background: transparent;
     border: none;
     box-shadow: none;
     position: static;
     align-items: stretch;
+    margin-bottom: 10px;
   }
 
   /* Avatar + profile block chiếm toàn bộ chiều rộng */
@@ -1288,7 +1289,7 @@
   }
 
   .pfCard {
-    padding: 5px
+    padding: 12px
   }
 
   .pfRowGrid {

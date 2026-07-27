@@ -1,0 +1,267 @@
+.cpCouponCardNew {
+  width: 360px;
+  display: flex;
+  align-items: stretch;
+  background: transparent;
+}
+
+.cpCouponCardNewLeft {
+  width: 110px;
+  background: linear-gradient(135deg, #ff8c4a, #ff5715);
+  border-radius: 12px 0 0 12px;
+  padding: 12px 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  z-index: 1; /* Nằm đè lên shadow của phần bên phải */
+  color: #fff;
+  border-right: none;
+  /* Left big cutout + Top/Bottom groove cutouts + Right perforated edge */
+  -webkit-mask-image: 
+    radial-gradient(circle at 0 50%, transparent 8px, black 8.5px),
+    radial-gradient(circle at 100% 0px, transparent 6px, black 6.5px),
+    radial-gradient(circle at 100% 100%, transparent 6px, black 6.5px),
+    radial-gradient(circle at 100% 50%, transparent 1.5px, black 2px);
+  -webkit-mask-size: 100% 100%, 100% 100%, 100% 100%, 100% 8px;
+  -webkit-mask-repeat: no-repeat, no-repeat, no-repeat, repeat-y;
+  -webkit-mask-composite: source-in;
+  mask-image: 
+    radial-gradient(circle at 0 50%, transparent 8px, black 8.5px),
+    radial-gradient(circle at 100% 0px, transparent 6px, black 6.5px),
+    radial-gradient(circle at 100% 100%, transparent 6px, black 6.5px),
+    radial-gradient(circle at 100% 50%, transparent 1.5px, black 2px);
+  mask-size: 100% 100%, 100% 100%, 100% 100%, 100% 8px;
+  mask-repeat: no-repeat, no-repeat, no-repeat, repeat-y;
+  mask-composite: intersect;
+}
+
+.cpCouponCardNewLeftLabel {
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+
+.cpCouponCardNewLeftValue {
+  font-size: 23px;
+  font-weight: 800;
+  line-height: 1;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: baseline;
+}
+
+.cpCouponCardNewLeftValue .percent {
+  font-size: 18px;
+  margin-left: 2px;
+}
+
+.cpCouponCardNewLeftMax {
+  font-size: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  padding: 3px 6px;
+  border-radius: 4px;
+  text-align: center;
+}
+
+.cpCouponCardNewRightWrapper {
+  flex: 1;
+  display: flex;
+  filter: drop-shadow(4px 0 12px rgba(0, 0, 0, 0.08));
+}
+
+.cpCouponCardNewRight {
+  flex: 1;
+  background: linear-gradient(135deg, #ffc1a5, #f9eae4);
+  border-radius: 0 12px 12px 0;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  -webkit-mask-image: 
+    radial-gradient(circle at 100% 50%, transparent 8px, black 8.5px),
+    radial-gradient(circle at 0% 0px, transparent 6px, black 6.5px),
+    radial-gradient(circle at 0% 100%, transparent 6px, black 6.5px),
+    radial-gradient(circle at 0% 50%, transparent 1.5px, black 2px);
+  -webkit-mask-size: 100% 100%, 100% 100%, 100% 100%, 100% 8px;
+  -webkit-mask-repeat: no-repeat, no-repeat, no-repeat, repeat-y;
+  -webkit-mask-composite: source-in;
+  mask-image: 
+    radial-gradient(circle at 100% 50%, transparent 8px, black 8.5px),
+    radial-gradient(circle at 0% 0px, transparent 6px, black 6.5px),
+    radial-gradient(circle at 0% 100%, transparent 6px, black 6.5px),
+    radial-gradient(circle at 0% 50%, transparent 1.5px, black 2px);
+  mask-size: 100% 100%, 100% 100%, 100% 100%, 100% 8px;
+  mask-repeat: no-repeat, no-repeat, no-repeat, repeat-y;
+  mask-composite: intersect;
+}
+
+.cpCouponCardNewRightTop {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-bottom: 8px;
+}
+
+.cpCouponCardNewIconBox {
+  width: 40px;
+  height: 40px;
+  background: #fff2ec;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.cpCouponCardNewInfo {
+  flex: 1;
+}
+
+.cpCouponCardNewTitle {
+  font-size: 15px;
+  font-weight: 800;
+  color: #1e293b;
+  margin-bottom: 2px;
+}
+
+.cpCouponCardNewMin {
+  font-size: 10px;
+  color: #64748b;
+}
+
+.cpCouponCardNewSaveBtn {
+  background: #fff;
+  color: #ff6b2b;
+  border: 1px solid #ff6b2b;
+  border-radius: 20px;
+  padding: 6px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.cpCouponCardNewSaveBtn:hover {
+  background: #fff2ec;
+}
+
+.cpCouponCardNewSaveBtn.saved {
+  border-color: #cbd5e1;
+  color: #94a3b8;
+  cursor: default;
+  background: #f8fafc;
+}
+
+.cpCouponCardNewDivider {
+  height: 1px;
+  background: #f1f5f9;
+  margin: 0 0 8px 0;
+}
+
+.cpCouponCardNewUsageRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.cpCouponCardNewUsageText {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: #475569;
+}
+
+.cpCouponCardNewUsageBar {
+  width: 90px;
+  height: 6px;
+  background: #ffebd9;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.cpCouponCardNewUsageFill {
+  height: 100%;
+  background: #ff6b2b;
+  border-radius: 4px;
+}
+
+.cpCouponCardNewCodeBox {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 10px;
+  border: 1px dashed #cbd5e1;
+  border-radius: 8px;
+  background: #f8fafc;
+  cursor: pointer;
+  transition: background 0.2s;
+  margin-top: auto;
+}
+
+.cpCouponCardNewCodeBox:hover {
+  background: #f1f5f9;
+}
+
+.cpCouponCardNewCodeLeft {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.cpCouponCardNewCopy {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #ff6b2b;
+}
+
+@media (max-width: 768px) {
+  .cpCouponCardNew {
+    width: 100% !important;
+    max-width: none !important;
+  }
+  .cpCouponCardNewLeft {
+    width: 105px;
+    padding: 12px 8px;
+  }
+  .cpCouponCardNewLeftValue {
+    font-size: 18px !important;
+  }
+  .cpCouponCardNewLeftValue .percent {
+    font-size: 14px;
+  }
+  .cpCouponCardNewRight {
+    padding: 12px;
+  }
+  .cpCouponCardNewTitle {
+    font-size: 13px !important;
+  }
+  .cpCouponCardNewMin {
+    font-size: 10px !important;
+  }
+  .cpCouponCardNewSaveBtn {
+    padding: 4px 10px;
+    font-size: 11px;
+  }
+}
+
+.cpCouponGridContainer {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+@media (max-width: 768px) {
+  .cpCouponGridContainer {
+    grid-template-columns: 1fr;
+  }
+}
