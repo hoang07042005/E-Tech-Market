@@ -728,35 +728,63 @@ export default function HomePage() {
             </div>
 
             <div className="hpHeroFeatures">
-              <div className="hpFeatureItem">
-                <div className="hpFeatureIcon">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><path d="m9 12 2 2 4-4"></path></svg>
-                </div>
-                <div className="hpFeatureText">Đảm bảo thiết bị chính hãng, nguyên seal, đầy đủ chứng từ.</div>
-              </div>
-              <div className="hpFeatureItem">
-                <div className="hpFeatureIcon">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 18H3c-.6 0-1-.4-1-1V7c0-.6.4-1 1-1h10c.6 0 1 .4 1 1v11"></path><path d="M14 9h4l4 4v4c0 .6-.4 1-1 1h-2"></path><circle cx="7" cy="18" r="2"></circle><path d="M15 18H9"></path><circle cx="17" cy="18" r="2"></circle></svg>
-                </div>
-                <div className="hpFeatureText">Hỗ trợ giao hàng nhanh chóng và an toàn tận tay bạn.</div>
-              </div>
-              <div className="hpFeatureItem">
-                <div className="hpFeatureIcon">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 18v-6a9 9 0 0 1 18 0v6"></path><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"></path><path d="M12 18v3"></path></svg>
-                </div>
-                <div className="hpFeatureText">Chuyên viên luôn sẵn sàng tư vấn và giải đáp mọi thắc mắc.</div>
-              </div>
-              <div className="hpFeatureItem">
-                <div className="hpFeatureIcon">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z"></path><path d="m9 12 2 2 4-4"></path></svg>
-                </div>
-                <div className="hpFeatureText">Xử lý bảo hành chuyên nghiệp, đúng tiêu chuẩn nhà sản xuất.</div>
-              </div>
-              <div className="hpFeatureItem">
-                <div className="hpFeatureIcon">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></svg>
-                </div>
-                <div className="hpFeatureText">Thủ tục linh hoạt, hỗ trợ 1 đổi 1 khi phát sinh lỗi.Đổi trả dễ dàng</div>
+              <div className="hpHeroMarqueeTrack">
+                {[
+                  {
+                    icon: <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><path d="m9 12 2 2 4-4"></path></svg>,
+                    text: "Đảm bảo thiết bị chính hãng, nguyên seal, đầy đủ chứng từ."
+                  },
+                  {
+                    icon: <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 18H3c-.6 0-1-.4-1-1V7c0-.6.4-1 1-1h10c.6 0 1 .4 1 1v11"></path><path d="M14 9h4l4 4v4c0 .6-.4 1-1 1h-2"></path><circle cx="7" cy="18" r="2"></circle><path d="M15 18H9"></path><circle cx="17" cy="18" r="2"></circle></svg>,
+                    text: "Hỗ trợ giao hàng nhanh chóng và an toàn tận tay bạn."
+                  },
+                  {
+                    icon: <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 18v-6a9 9 0 0 1 18 0v6"></path><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"></path><path d="M12 18v3"></path></svg>,
+                    text: "Chuyên viên luôn sẵn sàng tư vấn và giải đáp mọi thắc mắc."
+                  },
+                  {
+                    icon: <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z"></path><path d="m9 12 2 2 4-4"></path></svg>,
+                    text: "Xử lý bảo hành chuyên nghiệp, đúng tiêu chuẩn nhà sản xuất."
+                  },
+                  {
+                    icon: <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></svg>,
+                    text: "Thủ tục linh hoạt, hỗ trợ 1 đổi 1 khi phát sinh lỗi. Đổi trả dễ dàng"
+                  }
+                ].map((f, idx) => (
+                  <div key={idx} className="hpFeatureItem">
+                    <div className="hpFeatureIcon">{f.icon}</div>
+                    <div className="hpFeatureText">{f.text}</div>
+                  </div>
+                ))}
+                
+                {/* Duplicated items for seamless marquee on mobile */}
+                {[
+                  {
+                    icon: <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><path d="m9 12 2 2 4-4"></path></svg>,
+                    text: "Đảm bảo thiết bị chính hãng, nguyên seal, đầy đủ chứng từ."
+                  },
+                  {
+                    icon: <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 18H3c-.6 0-1-.4-1-1V7c0-.6.4-1 1-1h10c.6 0 1 .4 1 1v11"></path><path d="M14 9h4l4 4v4c0 .6-.4 1-1 1h-2"></path><circle cx="7" cy="18" r="2"></circle><path d="M15 18H9"></path><circle cx="17" cy="18" r="2"></circle></svg>,
+                    text: "Hỗ trợ giao hàng nhanh chóng và an toàn tận tay bạn."
+                  },
+                  {
+                    icon: <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 18v-6a9 9 0 0 1 18 0v6"></path><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"></path><path d="M12 18v3"></path></svg>,
+                    text: "Chuyên viên luôn sẵn sàng tư vấn và giải đáp mọi thắc mắc."
+                  },
+                  {
+                    icon: <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z"></path><path d="m9 12 2 2 4-4"></path></svg>,
+                    text: "Xử lý bảo hành chuyên nghiệp, đúng tiêu chuẩn nhà sản xuất."
+                  },
+                  {
+                    icon: <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></svg>,
+                    text: "Thủ tục linh hoạt, hỗ trợ 1 đổi 1 khi phát sinh lỗi. Đổi trả dễ dàng"
+                  }
+                ].map((f, idx) => (
+                  <div key={`dup-${idx}`} className="hpFeatureItem hpFeatureItemDup">
+                    <div className="hpFeatureIcon">{f.icon}</div>
+                    <div className="hpFeatureText">{f.text}</div>
+                  </div>
+                ))}
               </div>
             </div>
 

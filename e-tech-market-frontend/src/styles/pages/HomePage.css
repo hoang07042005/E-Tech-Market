@@ -156,11 +156,17 @@
   left: 0;
   width: 100%;
   padding: 20px max(80px, calc((100% - 1240px) / 2)) 50px;
+  z-index: 5;
+}
+.hpHeroMarqueeTrack {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  z-index: 5;
   gap: 30px;
+  width: 100%;
+}
+.hpFeatureItemDup {
+  display: none;
 }
 .hpFeatureItem {
   display: flex;
@@ -241,13 +247,24 @@
 
 @media (max-width: 1024px) {
   .hpHeroNew {
-    padding-bottom: 0;
+    padding-bottom: 100px;
   }
   .hpHeroTitleNew {
     font-size: 3rem;
   }
   .hpHeroFeatures {
+    padding: 15px 40px 30px;
+    gap: 20px;
+    overflow-x: auto;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+    justify-content: flex-start;
+  }
+  .hpHeroFeatures::-webkit-scrollbar {
     display: none;
+  }
+  .hpFeatureItem {
+    flex-shrink: 0;
   }
 }
 
@@ -293,48 +310,103 @@
 
 @media (max-width: 768px) {
   .hpHeroNew {
-    aspect-ratio: 16 / 9; /* Slightly taller to prevent text cut-off */
-    min-height: 200px;
+    min-height: 300px;
     width: 100%;
     margin: 0;
     border-radius: 0;
+    padding-bottom: 75px;
   }
   .hpHeroImg {
     object-fit: cover;
     object-position: center;
   }
   .hpHeroContent {
-    padding: 0 16px;
+    padding: 0 30px 0 45px !important;
     margin-bottom: 0;
+    text-align: left !important;
+  }
+  .hpHeroTextWrapper {
+    text-align: left !important;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
   }
   .hpHeroBadge {
     padding: 2px 8px;
-    font-size: 0.6rem;
+    font-size: 0.55rem;
     margin-bottom: 8px;
   }
   .hpHeroTitleNew {
-    font-size: 1.2rem;
-    margin-bottom: 8px;
-    line-height: 1.2;
+    font-size: 1.25rem !important;
+    margin-bottom: 8px !important;
+    line-height: 1.2 !important;
+    text-align: left !important;
   }
   .hpHeroDescNew {
-    font-size: 0.75rem;
-    margin-bottom: 12px;
-    line-height: 1.3;
-    max-width: 80%;
+    font-size: 0.75rem !important;
+    margin-bottom: 12px !important;
+    line-height: 1.3 !important;
+    max-width: 100%;
+    text-align: left !important;
   }
   .hpHeroActions {
-    flex-direction: row;
-    gap: 8px;
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    gap: 8px !important;
+    justify-content: flex-start !important;
   }
   .hpBtnShopNow, .hpBtnHotDeals {
-    width: auto;
-    padding: 6px 12px;
-    font-size: 0.7rem;
-    margin: 0;
+    width: auto !important;
+    padding: 6px 10px !important;
+    font-size: 0.65rem !important;
+    margin: 0 !important;
+    white-space: nowrap !important;
   }
   .hpBannerNavBtn {
-    display: none;
+    display: flex;
+    width: 28px;
+    height: 28px;
+    font-size: 1rem;
+  }
+  .hpBannerPrev {
+    left: 8px;
+  }
+  .hpBannerNext {
+    right: 8px;
+  }
+  .hpBannerDots {
+    bottom: 58px;
+  }
+  .hpHeroFeatures {
+    padding: 15px 20px;
+    width: 100% !important;
+    overflow: hidden !important;
+  }
+  .hpHeroMarqueeTrack {
+    display: flex;
+    gap: 16px;
+    width: max-content !important;
+    animation: hpHeroMarquee 45s linear infinite;
+  }
+  .hpFeatureItemDup {
+    display: flex !important;
+  }
+  @keyframes hpHeroMarquee {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+  .hpFeatureItem {
+    width: 240px;
+    flex-shrink: 0;
+  }
+  .hpFeatureIcon svg {
+    width: 24px;
+    height: 24px;
+  }
+  .hpFeatureText {
+    font-size: 0.75rem !important;
+    line-height: 1.4 !important;
   }
 }
 
@@ -1217,24 +1289,11 @@
 }
 
 @media (max-width: 1024px) {
-  .hpHeroTitleNew {
-    font-size: 3.5rem;
-  }
-
-  .hpHeroContent,
   .hpPromoCard {
     grid-template-columns: 1fr;
     text-align: center;
   }
 
-  .hpHeroDescNew {
-    margin-left: auto;
-    margin-right: auto;
-  }
-
-  .hpHeroActions {
-    justify-content: center;
-  }
 
   .hpWhyUsGrid {
     grid-template-columns: repeat(2, 1fr);
@@ -1319,7 +1378,7 @@
   display: flex;
   gap: 20px;
   width: max-content;
-  animation: coupon-marquee 40s linear infinite;
+  animation: coupon-marquee 80s linear infinite;
 }
 
 .hpCouponGrid:hover {
@@ -2272,18 +2331,11 @@
     margin-bottom: 8px !important;
   }
   
-  /* Hero */
-  .hpHeroTitleNew {
-    font-size: 2rem !important;
-  }
-  .hpHeroDescNew {
-    font-size: 0.95rem !important;
-    margin-bottom: 20px !important;
-  }
+
   
   /* Coupons */
   .hpCouponCardNew {
-    width: 280px !important;
+    width: 310px !important;
   }
   .hpCouponCardNewLeft {
     width: 90px;
@@ -2310,7 +2362,6 @@
   }
   
   /* Buttons */
-  .hpBtnShopNow,
   .hpNewsletterBtn {
     padding: 12px 24px !important;
     font-size: 0.8rem !important;
