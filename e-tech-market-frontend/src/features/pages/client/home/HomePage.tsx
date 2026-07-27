@@ -386,8 +386,53 @@ export default function HomePage() {
   const [loading, setLoading] = useState(true)
   const [banners, setBanners] = useState<Banner[]>([])
   const [currentBannerIndex, setCurrentBannerIndex] = useState(0)
+  const [isLightBg, setIsLightBg] = useState(false)
   const [selectedReviewMediaList, setSelectedReviewMediaList] = useState<{ url: string; type: string }[]>([])
   const [selectedReviewMediaIndex, setSelectedReviewMediaIndex] = useState(0)
+
+  useEffect(() => {
+    if (!banners.length) return
+    const banner = banners[currentBannerIndex]
+    if (!banner || !banner.image_url) return
+    const url = resolveImageUrl(banner.image_url)
+    
+    const img = new Image()
+    img.crossOrigin = "Anonymous"
+    img.onload = () => {
+      try {
+        const canvas = document.createElement('canvas')
+        canvas.width = img.width
+        canvas.height = img.height
+        const ctx = canvas.getContext('2d')
+        if (!ctx) return
+        ctx.drawImage(img, 0, 0)
+        
+        // Analyze the left 50% of the image (where text is placed)
+        const w = Math.floor(img.width / 2) || 1
+        const h = img.height || 1
+        const imgData = ctx.getImageData(0, 0, w, h)
+        const data = imgData.data
+        let colorSum = 0
+        
+        for (let x = 0, len = data.length; x < len; x += 4) {
+          const r = data[x]
+          const g = data[x + 1]
+          const b = data[x + 2]
+          // Relative luminance formula
+          const luminance = 0.2126 * r + 0.7152 * g + 0.0722 * b
+          colorSum += luminance
+        }
+        
+        const avgLuminance = colorSum / (w * h)
+        // If average luminance is > 160 (out of 255), we consider it a light background
+        setIsLightBg(avgLuminance > 160)
+      } catch (e) {
+        // Fallback in case of CORS errors
+        setIsLightBg(false)
+      }
+    }
+    img.src = url
+  }, [currentBannerIndex, banners])
 
   useEffect(() => {
     if (banners.length <= 1) return
@@ -600,8 +645,8 @@ export default function HomePage() {
     <div className="hpPage">
       <main className="hpMain">
         {banners.length > 0 ? (
-          <section className="hpHeroNew" style={{ position: 'relative' }}>
-            <div className="hpHeroImageContainer" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}>
+          <section className={`hpHeroNew ${isLightBg ? 'theme-light' : ''}`}>
+            <div className="hpHeroImageContainer">
               {banners.map((b, idx) => (
                 <img 
                   key={b.id} 
@@ -609,46 +654,119 @@ export default function HomePage() {
                   alt={b.title || ''} 
                   className="hpHeroImg"
                   style={{ opacity: idx === currentBannerIndex ? 1 : 0, transition: 'opacity 0.8s ease-in-out', position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover' }}
+                  onError={(e) => {
+                    e.currentTarget.src = heroImg;
+                  }}
                 />
               ))}
               <div className="hpHeroOverlay"></div>
             </div>
 
-            <div className="hpHeroContent" style={{ position: 'relative', zIndex: 2 }}>
-              <div className="hpHeroText">
-                <h1 className="hpHeroTitleNew" style={{ whiteSpace: 'pre-line' }}>
-                  {banners[currentBannerIndex]?.title || 'Chính xác.\nSức mạnh.\nHoàn hảo.'}
-                </h1>
-                {(banners[currentBannerIndex]?.description) && (
-                  <p className="hpHeroDescNew" style={{ whiteSpace: 'pre-line' }}>
-                    {banners[currentBannerIndex].description}
-                  </p>
-                )}
+            <div className="hpHeroContent">
+              {banners.length > 1 && (
+                <>
+                  <button className="hpBannerNavBtn hpBannerPrev" onClick={() => setCurrentBannerIndex(i => i === 0 ? banners.length - 1 : i - 1)}>
+                    ‹
+                  </button>
+                  <button className="hpBannerNavBtn hpBannerNext" onClick={() => setCurrentBannerIndex(i => i === banners.length - 1 ? 0 : i + 1)}>
+                    ›
+                  </button>
+                </>
+              )}
+
+              <div className="hpHeroTextWrapper">
+                <div className="hpHeroBadge">
+                  <span className="hpHeroBadgeText">E-TECH</span>
+                  <span className="hpHeroBadgeHighlight">MARKET</span>
+                </div>
                 
+                <h1 className="hpHeroTitleNew">
+                  {(() => {
+                    const title = banners[currentBannerIndex]?.title || 'CHẠM ĐẾN TƯƠNG LAI\nTHIẾT BỊ ĐỈNH CAO';
+                    let parts = title.split('\n');
+                    
+                    if (parts.length === 1 && title.includes(' ')) {
+                       // If no newline but has spaces, split into two roughly equal halves
+                       const words = title.split(' ');
+                       const mid = Math.floor(words.length / 2);
+                       parts = [words.slice(0, mid).join(' '), words.slice(mid).join(' ')];
+                    }
+                    
+                    if (parts.length > 1) {
+                      return (
+                        <>
+                          <span className="text-white">{parts[0]}</span><br />
+                          <span className="text-orange">{parts.slice(1).join('\n')}</span>
+                        </>
+                      );
+                    }
+                    return <span className="text-white">{title}</span>;
+                  })()}
+                </h1>
+                
+                <p className="hpHeroDescNew">
+                  {banners[currentBannerIndex]?.description || 'Khám phá thế hệ công nghệ mới với những thiết bị chính hãng, hiệu năng vượt trội và thiết kế hiện đại - đáp ứng mọi nhu cầu học tập, làm việc và giải trí.'}
+                </p>
+
                 <div className="hpHeroActions">
                   <button 
                     type="button" 
                     className="hpBtnShopNow" 
                     onClick={() => navigate(banners[currentBannerIndex]?.link_url || '/products')}
                   >
-                    Khám Phá Ngay
+                    KHÁM PHÁ NGAY &rarr;
                   </button>
-                </div>
-
-                <div className="hpHeroIndicator">
-                  <span className="hpIndicatorLine"></span>
-                  <span className="hpIndicatorText">CẬP NHẬT MỚI NHẤT</span>
+                  <button 
+                    type="button" 
+                    className="hpBtnHotDeals" 
+                    onClick={() => navigate('/flash-sale')}
+                  >
+                    XEM ƯU ĐÃI HOT 🎁
+                  </button>
                 </div>
               </div>
             </div>
-            
+
+            <div className="hpHeroFeatures">
+              <div className="hpFeatureItem">
+                <div className="hpFeatureIcon">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><path d="m9 12 2 2 4-4"></path></svg>
+                </div>
+                <div className="hpFeatureText">Đảm bảo thiết bị chính hãng, nguyên seal, đầy đủ chứng từ.</div>
+              </div>
+              <div className="hpFeatureItem">
+                <div className="hpFeatureIcon">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 18H3c-.6 0-1-.4-1-1V7c0-.6.4-1 1-1h10c.6 0 1 .4 1 1v11"></path><path d="M14 9h4l4 4v4c0 .6-.4 1-1 1h-2"></path><circle cx="7" cy="18" r="2"></circle><path d="M15 18H9"></path><circle cx="17" cy="18" r="2"></circle></svg>
+                </div>
+                <div className="hpFeatureText">Hỗ trợ giao hàng nhanh chóng và an toàn tận tay bạn.</div>
+              </div>
+              <div className="hpFeatureItem">
+                <div className="hpFeatureIcon">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 18v-6a9 9 0 0 1 18 0v6"></path><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"></path><path d="M12 18v3"></path></svg>
+                </div>
+                <div className="hpFeatureText">Chuyên viên luôn sẵn sàng tư vấn và giải đáp mọi thắc mắc.</div>
+              </div>
+              <div className="hpFeatureItem">
+                <div className="hpFeatureIcon">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z"></path><path d="m9 12 2 2 4-4"></path></svg>
+                </div>
+                <div className="hpFeatureText">Xử lý bảo hành chuyên nghiệp, đúng tiêu chuẩn nhà sản xuất.</div>
+              </div>
+              <div className="hpFeatureItem">
+                <div className="hpFeatureIcon">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></svg>
+                </div>
+                <div className="hpFeatureText">Thủ tục linh hoạt, hỗ trợ 1 đổi 1 khi phát sinh lỗi.Đổi trả dễ dàng</div>
+              </div>
+            </div>
+
             {banners.length > 1 && (
-              <div className="hpBannerDots" style={{ position: 'absolute', bottom: '30px', left: '0', width: '100%', display: 'flex', justifyContent: 'center', gap: '10px', zIndex: 10 }}>
+              <div className="hpBannerDots">
                 {banners.map((_, idx) => (
                   <button 
                     key={idx} 
+                    className={`hpBannerDot ${idx === currentBannerIndex ? 'active' : ''}`}
                     onClick={() => setCurrentBannerIndex(idx)}
-                    style={{ width: '12px', height: '12px', borderRadius: '50%', background: idx === currentBannerIndex ? '#f97316' : '#fff', border: 'none', cursor: 'pointer', transition: 'all 0.3s', opacity: idx === currentBannerIndex ? 1 : 0.4 }}
                     aria-label={`Go to slide ${idx + 1}`}
                   />
                 ))}
@@ -663,24 +781,62 @@ export default function HomePage() {
             </div>
 
             <div className="hpHeroContent">
-              <div className="hpHeroText">
+              <div className="hpHeroTextWrapper">
+                <div className="hpHeroBadge">
+                  <span className="hpHeroBadgeText">CÔNG NGHỆ</span>
+                  <span className="hpHeroBadgeHighlight">DẪN LỐI</span>
+                </div>
+                
                 <h1 className="hpHeroTitleNew">
-                  Chính xác.<br />Sức mạnh.<br />Hoàn hảo.
+                  <span className="text-white">CHẠM ĐẾN TƯƠNG LAI</span><br />
+                  <span className="text-orange">THIẾT BỊ ĐỈNH CAO</span>
                 </h1>
+                
                 <p className="hpHeroDescNew">
-                  Trải nghiệm đỉnh cao của kỹ thuật hiệu năng cao.<br />
-                  Mỗi linh kiện đều được tuyển chọn dành cho người dùng chuyên nghiệp khó tính.
+                  Khám phá thế hệ công nghệ mới với những thiết bị chính hãng, hiệu năng vượt trội và thiết kế hiện đại - đáp ứng mọi nhu cầu học tập, làm việc và giải trí.
                 </p>
+
                 <div className="hpHeroActions">
                   <button type="button" className="hpBtnShopNow" onClick={() => navigate('/products')}>
-                    MUA NGAY
+                    KHÁM PHÁ NGAY &rarr;
+                  </button>
+                  <button type="button" className="hpBtnHotDeals" onClick={() => navigate('/flash-sale')}>
+                    XEM ƯU ĐÃI HOT 🎁
                   </button>
                 </div>
+              </div>
+            </div>
 
-                <div className="hpHeroIndicator">
-                  <span className="hpIndicatorLine"></span>
-                  <span className="hpIndicatorText">HÀNG MỚI: BỘ TITANIUM</span>
+            <div className="hpHeroFeatures">
+              <div className="hpFeatureItem">
+                <div className="hpFeatureIcon">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><path d="m9 12 2 2 4-4"></path></svg>
                 </div>
+                <div className="hpFeatureText">Sản phẩm<br/>chính hãng 100%</div>
+              </div>
+              <div className="hpFeatureItem">
+                <div className="hpFeatureIcon">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 18H3c-.6 0-1-.4-1-1V7c0-.6.4-1 1-1h10c.6 0 1 .4 1 1v11"></path><path d="M14 9h4l4 4v4c0 .6-.4 1-1 1h-2"></path><circle cx="7" cy="18" r="2"></circle><path d="M15 18H9"></path><circle cx="17" cy="18" r="2"></circle></svg>
+                </div>
+                <div className="hpFeatureText">Giao hàng<br/>toàn quốc</div>
+              </div>
+              <div className="hpFeatureItem">
+                <div className="hpFeatureIcon">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 18v-6a9 9 0 0 1 18 0v6"></path><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"></path><path d="M12 18v3"></path></svg>
+                </div>
+                <div className="hpFeatureText">Hỗ trợ<br/>24/7</div>
+              </div>
+              <div className="hpFeatureItem">
+                <div className="hpFeatureIcon">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z"></path><path d="m9 12 2 2 4-4"></path></svg>
+                </div>
+                <div className="hpFeatureText">Bảo hành<br/>uy tín</div>
+              </div>
+              <div className="hpFeatureItem">
+                <div className="hpFeatureIcon">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></svg>
+                </div>
+                <div className="hpFeatureText">Đổi trả<br/>dễ dàng</div>
               </div>
             </div>
           </section>
@@ -729,49 +885,73 @@ export default function HomePage() {
                           const showLimit = userRemaining !== null ? perUserLimit! : totalLimit
 
                           return (
-                            <div key={`${c.id}-${index}`} className="hpCouponCard">
-                              <div className="hpCouponCardTop">
-                                <div className="hpCouponInfo">
-                                  <div className="hpCouponValue">
-                                    {c.coupon_type === 'percentage' ? `Giảm ${c.value}%` : `Giảm ${formatPriceVnd(c.value.toString())}`}
+                            <div key={`${c.id}-${index}`} className="hpCouponCardNew">
+                              <div className="hpCouponCardNewLeft">
+                                <span className="hpCouponCardNewLeftLabel">Giảm</span>
+                                <span className="hpCouponCardNewLeftValue">
+                                  {c.coupon_type === 'percentage' ? (
+                                    <>
+                                      {c.value}<span className="percent">%</span>
+                                    </>
+                                  ) : (
+                                    <>
+                                      {Math.floor(c.value / 1000)}<span className="percent">K</span>
+                                    </>
+                                  )}
+                                </span>
+                                <div className="hpCouponCardNewLeftMax">
+                                  {c.coupon_type === 'percentage' ? 'Phiếu ưu đãi' : 'Giảm trực tiếp'}
+                                </div>
+                              </div>
+
+                              <div className="hpCouponCardNewRight">
+                                <div className="hpCouponCardNewRightTop">
+                                  <div className="hpCouponCardNewIconBox">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ff6b2b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M15.4 3.6a2.8 2.8 0 0 1 3.9 0l1.1 1.1a2.8 2.8 0 0 1 0 3.9L8.6 20.4a2.8 2.8 0 0 1-3.9 0l-1.1-1.1a2.8 2.8 0 0 1 0-3.9Z"></path><path d="m20.2 7.8-12.4 12.4"></path><path d="m3.8 16.2 12.4-12.4"></path></svg>
                                   </div>
-                                  <div className="hpCouponMin">
-                                    {c.min_order_amount ? `Đơn từ ${formatPriceVnd(c.min_order_amount.toString())}` : 'Áp dụng mọi đơn hàng'}
+                                  <div className="hpCouponCardNewInfo">
+                                    <div className="hpCouponCardNewTitle">
+                                      {c.coupon_type === 'percentage' ? `Giảm ${c.value}%` : `Giảm ${formatPriceVnd(c.value.toString())}`}
+                                    </div>
+                                    <div className="hpCouponCardNewMin">
+                                      {c.min_order_amount ? `Đơn từ ${formatPriceVnd(c.min_order_amount.toString())}` : 'Áp dụng mọi đơn hàng'}
+                                    </div>
                                   </div>
-                                  {/* Hiển thị lượt còn lại nếu có giới hạn */}
-                                  {hasAuth && showRemaining !== null && showLimit !== null && (
-                                    <div className="hpCouponUsageWrap">
-                                      <div className="hpCouponUsageBar">
+                                  <button
+                                    className={`hpCouponCardNewSaveBtn${c.is_saved ? ' saved' : ''}`}
+                                    onClick={() => !c.is_saved && saveCoupon(c.code)}
+                                    disabled={c.is_saved}
+                                  >
+                                    {c.is_saved ? 'Đã lưu' : 'Lưu'}
+                                  </button>
+                                </div>
+
+                                {hasAuth && showRemaining !== null && showLimit !== null && (
+                                  <>
+                                    <div className="hpCouponCardNewDivider" />
+                                    <div className="hpCouponCardNewUsageRow">
+                                      <div className="hpCouponCardNewUsageText">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ff6b2b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                                        <span>Còn <strong style={{color: '#ff6b2b'}}>{showRemaining}/{showLimit}</strong> lượt</span>
+                                      </div>
+                                      <div className="hpCouponCardNewUsageBar">
                                         <div
-                                          className="hpCouponUsageFill"
+                                          className="hpCouponCardNewUsageFill"
                                           style={{ width: `${Math.max(0, Math.min(100, ((showLimit - showRemaining) / showLimit) * 100))}%` }}
                                         />
                                       </div>
-                                      <span className="hpCouponUsageText">
-                                        Còn {showRemaining}/{showLimit} lượt
-                                      </span>
                                     </div>
-                                  )}
-                                </div>
-                                <button
-                                  className={`hpCouponSaveBtn${c.is_saved ? ' hpCouponSavedBtn' : ''}`}
-                                  onClick={() => !c.is_saved && saveCoupon(c.code)}
-                                  disabled={c.is_saved}
-                                >
-                                  {c.is_saved ? '✓ Đã lưu' : 'Lưu'}
-                                </button>
-                              </div>
+                                  </>
+                                )}
 
-                              <div className="hpCouponDivider"></div>
-
-                              <div className="hpCouponCardBottom" onClick={() => { navigator.clipboard.writeText(c.code); alert('Đã sao chép mã!'); }}>
-                                <div className="hpCouponCode">{c.code}</div>
-                                <div className="hpCouponCopyAction">
-                                  <span>Sao chép</span>
-                                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                                  </svg>
+                                <div className="hpCouponCardNewCodeBox" onClick={() => { navigator.clipboard.writeText(c.code); alert('Đã sao chép mã!'); }}>
+                                  <div className="hpCouponCardNewCodeLeft">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ff6b2b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg>
+                                    <span>{c.code}</span>
+                                  </div>
+                                  <div className="hpCouponCardNewCopy">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                                  </div>
                                 </div>
                               </div>
                             </div>

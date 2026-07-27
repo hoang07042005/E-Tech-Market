@@ -147,9 +147,6 @@ html.dark .hpHeroNew {
     background: linear-gradient(165deg, #090d16 0%, #0d1527 50%, #17253d 100%);
 }
 
-html.dark .hpHeroOverlay {
-    background: linear-gradient(to right, rgba(9, 13, 22, .9) 0%, rgba(13, 21, 39, .6) 42%, rgba(23, 37, 61, .3) 100%);
-}
 
 html.dark .hpFeaturedSection {
     background: var(--et-bg);
