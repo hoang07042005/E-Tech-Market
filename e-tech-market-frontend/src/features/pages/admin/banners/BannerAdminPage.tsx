@@ -3,6 +3,7 @@ import { API_BASE_URL } from '@/configs/api.config'
 import ConfirmModal from '@/components/ConfirmModal'
 import '@/styles/admin/CategoryPage.css' // Reuse CategoryPage CSS since it fits the admin layout perfectly
 import { fetchAdminBanners, deleteAdminBanner, saveAdminBanner, type Banner } from '@/features/services/admin/banners.admin.service'
+import { toast } from '@/utils/toast';
 
 const resolveImageUrl = (url?: string | null) => {
   if (!url) return 'https://via.placeholder.com/150x50'
@@ -81,7 +82,7 @@ export default function BannerAdminPage() {
     setError(null)
     
     if (!editingBanner && !imageFile) {
-      alert('Vui lòng chọn ảnh cho banner mới.')
+      toast.error('Vui lòng chọn ảnh cho banner mới.')
       return
     }
 
@@ -121,7 +122,7 @@ export default function BannerAdminPage() {
       await deleteAdminBanner(id)
       fetchBanners()
     } catch (err: any) {
-      alert(err.message || 'Xóa banner thất bại.')
+      toast.error(err.message || 'Xóa banner thất bại.')
     }
   }
 

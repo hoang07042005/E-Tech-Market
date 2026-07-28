@@ -79,5 +79,88 @@ class PrometheusServiceProvider extends ServiceProvider
         $this->publishes([
             __DIR__ . '/../../config/metrics.php' => config_path('metrics.php'),
         ], 'config');
+
+        if (!config('metrics.enabled', false)) {
+            return;
+        }
+
+        $this->registerDatabaseListener();
+        $this->registerCacheListeners();
+        $this->registerQueueListeners();
+    }
+
+    /**
+     * Listen to DB queries and record duration metrics
+     */
+    private function registerDatabaseListener(): void
+    {
+        try {
+            \Illuminate\Support\Facades\DB::listen(function ($query) {
+                try {
+                    $collector = app(MetricsCollector::class);
+                    // $query->time is in milliseconds, convert to seconds
+                    $collector->recordDatabaseQuery($query->sql, $query->time / 1000);
+                } catch (\Exception $e) {
+                    // Silently ignore to avoid breaking queries
+                }
+            });
+        } catch (\Exception $e) {
+            Log::warning('Failed to register DB listener for metrics', ['error' => $e->getMessage()]);
+        }
+    }
+
+    /**
+     * Listen to cache events (hit, miss) and record metrics
+     */
+    private function registerCacheListeners(): void
+    {
+        try {
+            $events = $this->app['events'];
+
+            $events->listen(\Illuminate\Cache\Events\CacheHit::class, function ($event) {
+                try {
+                    app(MetricsCollector::class)->recordCacheOperation('get', true);
+                } catch (\Exception $e) {}
+            });
+
+            $events->listen(\Illuminate\Cache\Events\CacheMissed::class, function ($event) {
+                try {
+                    app(MetricsCollector::class)->recordCacheOperation('get', false);
+                } catch (\Exception $e) {}
+            });
+        } catch (\Exception $e) {
+            Log::warning('Failed to register cache listeners for metrics', ['error' => $e->getMessage()]);
+        }
+    }
+
+    /**
+     * Listen to queue job events and record metrics
+     */
+    private function registerQueueListeners(): void
+    {
+        try {
+            $events = $this->app['events'];
+
+            $events->listen(\Illuminate\Queue\Events\JobProcessed::class, function ($event) {
+                try {
+                    $jobName = method_exists($event->job, 'resolveName')
+                        ? $event->job->resolveName()
+                        : get_class($event->job);
+                    // Use a rough duration estimate from job payload if available
+                    app(MetricsCollector::class)->recordQueueJob($jobName, 0, 'completed');
+                } catch (\Exception $e) {}
+            });
+
+            $events->listen(\Illuminate\Queue\Events\JobFailed::class, function ($event) {
+                try {
+                    $jobName = method_exists($event->job, 'resolveName')
+                        ? $event->job->resolveName()
+                        : get_class($event->job);
+                    app(MetricsCollector::class)->recordQueueJob($jobName, 0, 'failed');
+                } catch (\Exception $e) {}
+            });
+        } catch (\Exception $e) {
+            Log::warning('Failed to register queue listeners for metrics', ['error' => $e->getMessage()]);
+        }
     }
 }

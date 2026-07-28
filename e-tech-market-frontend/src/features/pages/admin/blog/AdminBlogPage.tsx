@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { apiFetch, API_BASE_URL } from '@/configs/api.config'
 import ConfirmModal from '@/components/ConfirmModal'
 import HardDeletePage from '../products/HardDeletePage'
+import { toast } from '@/utils/toast';
 import '@/styles/admin/AdminBlogPage.css' // File CSS làm mới ở dưới
 
 type BlogCategory = {
@@ -98,7 +99,7 @@ export default function AdminBlogPage() {
       const catsRes = await apiFetch<BlogCategory[]>('/api/blog/categories')
       setCategories(catsRes)
     } catch (e: any) {
-      alert('Lỗi tải danh mục: ' + e.message)
+      toast.error('Lỗi tải danh mục: ' + e.message)
     }
   }
 
@@ -157,7 +158,7 @@ export default function AdminBlogPage() {
       setIsFormOpen(false)
       loadData()
     } catch (e: any) {
-      alert(e.message)
+      toast.error(e.message)
     } finally {
       setSubmitting(false)
     }
@@ -178,7 +179,7 @@ export default function AdminBlogPage() {
       await apiFetch(`/api/admin/blog-posts/${id}`, { method: 'DELETE' })
       loadData()
     } catch (e: any) {
-      alert(e.message)
+      toast.error(e.message)
     }
   }
 
@@ -192,7 +193,7 @@ export default function AdminBlogPage() {
       })
       await reloadCategories()
     } catch (e: any) {
-      alert('Lỗi tạo danh mục: ' + e.message)
+      toast.error('Lỗi tạo danh mục: ' + e.message)
     }
   }
 
@@ -208,7 +209,7 @@ export default function AdminBlogPage() {
         })
         await reloadCategories()
       } catch (e: any) {
-        alert('Lỗi cập nhật danh mục: ' + e.message)
+        toast.error('Lỗi cập nhật danh mục: ' + e.message)
       }
     }
     submitEdit()
@@ -231,7 +232,7 @@ export default function AdminBlogPage() {
       }
       await reloadCategories()
     } catch (e: any) {
-      alert('Lỗi xóa danh mục: ' + e.message)
+      toast.error('Lỗi xóa danh mục: ' + e.message)
     }
   }
 
@@ -460,7 +461,7 @@ export default function AdminBlogPage() {
                           })
                           setFormData({ ...formData, thumbnail_url: res.url })
                         } catch (err: any) {
-                          alert('Lỗi tải ảnh: ' + err.message)
+                          toast.error('Lỗi tải ảnh: ' + err.message)
                         }
                       }}
                     />

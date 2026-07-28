@@ -22,6 +22,7 @@ const resolveImageUrl = (url?: string | null) => {
 
 import { fetchAdminCategories, deleteAdminCategory, saveAdminCategory, type Category } from '@/features/services/admin/categories.admin.service'
 import HardDeletePage from '../products/HardDeletePage'
+import { toast } from '@/utils/toast';
 
 export default function CategoryPage() {
   const [categories, setCategories] = useState<Category[]>([])
@@ -128,7 +129,7 @@ export default function CategoryPage() {
       setPendingDeleteCategory(null)
       fetchCategories()
     } catch (err: any) {
-      alert(err.message || 'Xóa danh mục thất bại.')
+      toast.error(err.message || 'Xóa danh mục thất bại.')
     }
   }
 

@@ -4,6 +4,7 @@ import { useAuthStore } from '@/features/store/useAuthStore'
 import { apiFetch, API_BASE_URL } from '@/configs/api.config'
 import { fetchRoles, fetchUsers, updateRole } from '@/features/services/admin/api.admin.service'
 import HardDeletePage from '../products/HardDeletePage' 
+import { toast } from '@/utils/toast';
 import '@/styles/admin/ProductPage.css'
 import '@/styles/admin/UsersAdminPage.css'
 
@@ -168,7 +169,7 @@ export default function UsersAdminPage() {
   const handleUpdateRole = async () => {
     if (!editingRole) return
     if (!editingRoleName.trim()) {
-      alert('Tên vai trò không được để trống')
+      toast.error('Tên vai trò không được để trống')
       return
     }
     setRoleSaving(true)
@@ -181,7 +182,7 @@ export default function UsersAdminPage() {
       setEditingRole(null)
       await reloadRoleCatalog()
     } catch (e: unknown) {
-      alert(e instanceof Error ? e.message : 'Lỗi khi cập nhật vai trò')
+      toast.error(e instanceof Error ? e.message : 'Lỗi khi cập nhật vai trò')
     } finally {
       setRoleSaving(false)
     }
@@ -267,7 +268,7 @@ export default function UsersAdminPage() {
     if (!roleEditor || busy != null) return
     const { user, selectedIds } = roleEditor
     if (selectedIds.length < 1) {
-      alert('Chọn ít nhất một vai trò.')
+      toast.error('Chọn ít nhất một vai trò.')
       return
     }
 

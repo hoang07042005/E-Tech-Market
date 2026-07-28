@@ -24,6 +24,7 @@ import {
 } from "@/features/services/mutations";
 import Skeleton from "@/components/Skeleton";
 import { useAuthStore } from "@/features/store/useAuthStore";
+import { toast } from '@/utils/toast';
 
 const TEN_DAYS_MS = 10 * 24 * 60 * 60 * 1000;
 
@@ -433,7 +434,7 @@ function ProductCard({
         price: displayPrice,
       });
       if (!res.success && res.message) {
-        alert(res.message);
+        toast.error(res.message);
       }
     }
   };

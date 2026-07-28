@@ -1,6 +1,7 @@
 ﻿import { useState, useEffect } from 'react'
 import { apiFetch } from '@/configs/api.config'
 import ConfirmModal from '@/components/ConfirmModal'
+import { toast } from '@/utils/toast';
 import '@/styles/admin/CouponsAdmin.css'
 
 type Coupon = {
@@ -68,7 +69,7 @@ export default function CouponsAdminPage() {
       setEditData(null)
       fetchCoupons(page)
     } catch (err: any) {
-      alert('Lỗi lưu mã giảm giá: ' + (err.message || ''))
+      toast.error('Lỗi lưu mã giảm giá: ' + (err.message || ''))
     }
   }
 
@@ -80,7 +81,7 @@ export default function CouponsAdminPage() {
       setShowDeleteModal(false)
       setCouponToDelete(null)
     } catch {
-      alert('Lỗi khi xoá.')
+      toast.error('Lỗi khi xoá.')
     }
   }
 

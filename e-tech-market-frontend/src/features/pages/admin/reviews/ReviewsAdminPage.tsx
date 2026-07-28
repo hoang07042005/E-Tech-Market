@@ -3,6 +3,7 @@ import type { ChangeEvent } from "react";
 import { apiFetch, API_BASE_URL } from "@/configs/api.config";
 import ConfirmModal from "@/components/ConfirmModal";
 import HardDeletePage from "../products/HardDeletePage"; // Tích hợp component Hard delete
+import { toast } from '@/utils/toast';
 import "@/styles/admin/ReviewsAdminPage.css";
 
 type Review = {
@@ -128,7 +129,7 @@ export default function ReviewsAdminPage() {
         );
       }
     } catch {
-      alert("Lỗi cập nhật trạng thái.");
+      toast.error("Lỗi cập nhật trạng thái.");
     }
   };
 
@@ -140,7 +141,7 @@ export default function ReviewsAdminPage() {
       setShowDeleteModal(false);
       setReviewToDelete(null);
     } catch {
-      alert("Lỗi khi xoá.");
+      toast.error("Lỗi khi xoá.");
     }
   };
 

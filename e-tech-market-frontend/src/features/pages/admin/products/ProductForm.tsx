@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { API_BASE_URL } from '@/configs/api.config'
 import { fetchAdminCategories, fetchAdminProductDetail, saveAdminProduct } from '@/features/services/admin/products.admin.service'
+import { toast } from '@/utils/toast';
 import '@/styles/admin/ProductPage.css'
 
 const MAX_PRODUCT_IMAGES = 12
@@ -216,7 +217,7 @@ export default function ProductForm({ productId, onSave, onCancel }: ProductForm
     if (e.target.files) {
       const files = Array.from(e.target.files)
       if (files.length + selectedFiles.length > MAX_PRODUCT_IMAGES) {
-        alert(`Tối đa ${MAX_PRODUCT_IMAGES} ảnh cho mỗi sản phẩm.`)
+        toast.error(`Tối đa ${MAX_PRODUCT_IMAGES} ảnh cho mỗi sản phẩm.`)
         return
       }
       setSelectedFiles([...selectedFiles, ...files])

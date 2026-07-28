@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import '@/styles/admin/CategoryPage.css'
 import ConfirmModal from '@/components/ConfirmModal'
+import { toast } from '@/utils/toast';
 
 import {
   fetchAdminVideoCategories,
@@ -105,7 +106,7 @@ export default function VideoCategoryPage() {
       setPendingDeleteCategory(null)
       fetchCategories()
     } catch (err: any) {
-      alert(err.message || 'Xóa danh mục video thất bại.')
+      toast.error(err.message || 'Xóa danh mục video thất bại.')
     }
   }
 

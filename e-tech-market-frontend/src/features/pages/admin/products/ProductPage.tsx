@@ -8,6 +8,7 @@ import ProductForm from "./ProductForm";
 import ProductVariantsDetail from "./ProductVariantsDetail";
 import ConfirmModal from "@/components/ConfirmModal";
 import HardDeletePage from "./HardDeletePage";
+import { toast } from '@/utils/toast';
 import "@/styles/admin/ProductPage.css";
 
 interface ProductImage {
@@ -184,7 +185,7 @@ export default function ProductPage({
       setPendingDeleteProduct(null);
       fetchData();
     } catch (err: unknown) {
-      alert(getErrMsg(err));
+      toast.error(getErrMsg(err));
     }
   };
 

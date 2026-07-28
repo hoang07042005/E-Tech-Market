@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { apiFetch, setAuthToken } from "@/configs/api.config";
 import { setAuthSessionExpiry } from "@/features/store/auth.store";
 import { useState } from "react";
+import { toast } from '@/utils/toast';
 
 interface GoogleAuthResponse {
   // Trong prod/https, backend chỉ set httpOnly cookie (token = undefined).
@@ -46,13 +47,13 @@ export function GoogleLoginButton() {
       } catch (err: unknown) {
         const msg =
           err instanceof Error ? err.message : "Đăng nhập Google thất bại.";
-        alert(msg);
+        toast.error(msg);
       } finally {
         setIsLoading(false);
       }
     },
     onError: () => {
-      alert("Đăng nhập Google bị hủy hoặc thất bại.");
+      toast.error("Đăng nhập Google bị hủy hoặc thất bại.");
     },
   });
 

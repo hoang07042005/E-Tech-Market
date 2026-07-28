@@ -1,6 +1,7 @@
 ﻿import { useState, useEffect, useCallback, useMemo } from 'react'
 import type { ChangeEvent } from 'react'
 import { apiFetch } from '@/configs/api.config'
+import { toast } from '@/utils/toast';
 import '@/styles/admin/ContactsAdminPage.css' // Import CSS mới cập nhật
 
 type ContactMessage = {
@@ -72,7 +73,7 @@ export default function ContactsAdminPage() {
         setSelectedMessage(res)
       }
     } catch {
-      alert('Lỗi cập nhật.')
+      toast.error('Lỗi cập nhật.')
     }
   }
 
@@ -84,7 +85,7 @@ export default function ContactsAdminPage() {
       setMessages((prev) => prev.filter((m) => m.id !== id))
       if (selectedMessage?.id === id) setSelectedMessage(null)
     } catch {
-      alert('Lỗi khi xoá.')
+      toast.error('Lỗi khi xoá.')
     }
   }
 

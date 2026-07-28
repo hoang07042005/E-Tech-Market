@@ -6,6 +6,7 @@ import { fetchAdminVideos, deleteAdminVideo, saveAdminVideo, buildVideoPayload, 
 import type { VideoCategory } from '@/features/services/admin/video-categories.admin.service'
 import '@/styles/admin/VideoAdminPage.css'
 import ConfirmModal from '@/components/ConfirmModal'
+import { toast } from '@/utils/toast';
 
 interface SimpleProduct {
   id: number
@@ -162,7 +163,7 @@ export default function VideoAdminPage() {
       await deleteAdminVideo(video.id)
       loadData()
     } catch (err: any) {
-      alert(err.message || 'Xóa video thất bại.')
+      toast.error(err.message || 'Xóa video thất bại.')
     }
   }
 

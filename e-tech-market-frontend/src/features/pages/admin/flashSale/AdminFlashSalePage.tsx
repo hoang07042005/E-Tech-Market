@@ -1,6 +1,7 @@
 ﻿import { useEffect, useState } from 'react'
 import { apiFetch, API_BASE_URL } from '@/configs/api.config'
 import { fetchFlashSales, fetchFlashSaleDetail } from '@/features/services/admin/api.admin.service'
+import { toast } from '@/utils/toast';
 import '@/styles/admin/AdminPage.css'
 import '@/styles/admin/AdminFlashSalePage.css'
 
@@ -151,7 +152,7 @@ export default function AdminFlashSalePage() {
       setIsFormOpen(false)
       loadSales()
     } catch (e: any) {
-      alert(e.message)
+      toast.error(e.message)
     }
   }
 
@@ -162,7 +163,7 @@ export default function AdminFlashSalePage() {
       setCurrentSale(fullSale)
       setIsItemsModalOpen(true)
     } catch (e: any) {
-      alert(e.message)
+      toast.error(e.message)
     }
   }
 
@@ -182,7 +183,7 @@ export default function AdminFlashSalePage() {
       handleOpenItems(currentSale)
       setAddItemData({ product_id: '', variant_id: '', flash_sale_price: '', quantity_limit: '' })
     } catch (e: any) {
-      alert(e.message)
+      toast.error(e.message)
     }
   }
 
@@ -190,12 +191,12 @@ export default function AdminFlashSalePage() {
     e.preventDefault()
     if (!hasAuth || !currentSale) return
     if (!bulkDiscountPercentage) {
-      alert('Vui lòng nhập phần trăm giảm giá!')
+      toast.error('Vui lòng nhập phần trăm giảm giá!')
       return
     }
     const percent = Number(bulkDiscountPercentage)
     if (isNaN(percent) || percent < 1 || percent > 99) {
-      alert('Phần trăm giảm giá phải từ 1 đến 99%!')
+      toast.error('Phần trăm giảm giá phải từ 1 đến 99%!')
       return
     }
     if (!confirm(`Bạn có chắc chắn muốn giảm giá đồng loạt ${percent}% cho TẤT CẢ sản phẩm trong cửa hàng cho chiến dịch này không?`)) {
@@ -210,12 +211,12 @@ export default function AdminFlashSalePage() {
           quantity_limit: bulkQuantityLimit ? Number(bulkQuantityLimit) : null
         })
       })
-      alert(res.message)
+      toast.error(res.message)
       handleOpenItems(currentSale)
       setBulkDiscountPercentage('')
       setBulkQuantityLimit('')
     } catch (e: any) {
-      alert(e.message)
+      toast.error(e.message)
     } finally {
       setIsBulkApplying(false)
     }
@@ -230,7 +231,7 @@ export default function AdminFlashSalePage() {
       })
       handleOpenItems(currentSale)
     } catch (e: any) {
-      alert(e.message)
+      toast.error(e.message)
     }
   }
 
@@ -243,7 +244,7 @@ export default function AdminFlashSalePage() {
       })
       loadSales()
     } catch (e: any) {
-      alert(e.message)
+      toast.error(e.message)
     }
   }
 

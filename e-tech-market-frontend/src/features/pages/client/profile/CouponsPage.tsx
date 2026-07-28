@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { apiFetch } from '@/configs/api.config'
 import { useAuthStore } from '@/features/store/useAuthStore'
+import { toast } from '@/utils/toast';
 import '@/styles/pages/CouponsPage.css'
 
 type CouponPublic = {
@@ -49,7 +50,7 @@ export default function CouponsPage() {
 
   const handleCopyCode = (code: string) => {
     navigator.clipboard.writeText(code)
-    alert('Đã lưu mã vào bộ nhớ tạm!')
+    toast.success('Đã lưu mã vào bộ nhớ tạm!')
   }
 
   if (loading) {

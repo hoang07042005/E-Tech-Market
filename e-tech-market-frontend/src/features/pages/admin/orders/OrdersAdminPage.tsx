@@ -3,6 +3,7 @@ import { API_BASE_URL } from '@/configs/api.config'
 import { fetchOrders, fetchOrderDetail, updateOrder, processOrderReturn, deleteOrder, fetchDeliveryStaffs } from '@/features/services/admin/api.admin.service'
 import ConfirmModal from '@/components/ConfirmModal'
 import { useAuthStore } from '@/features/store/useAuthStore'
+import { toast } from '@/utils/toast';
 
 type OrderRow = {
   id: number
@@ -481,7 +482,7 @@ export default function OrdersAdminPage() {
       setDeleteModalOpen(false)
       setOrderToDelete(null)
     } catch (err) {
-      alert(err instanceof Error ? err.message : 'Không thể xóa đơn hàng.')
+      toast.error(err instanceof Error ? err.message : 'Không thể xóa đơn hàng.')
     }
   }
 

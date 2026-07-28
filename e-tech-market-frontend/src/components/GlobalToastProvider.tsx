@@ -38,8 +38,22 @@ export function GlobalToastProvider({ children }: { children: ReactNode }) {
       showToast({ type: 'error', message })
     }
 
+    const handleGlobalToast = (event: Event) => {
+      const customEvent = event as CustomEvent<{ type?: ToastType; message?: string }>
+      const type = customEvent.detail?.type || 'info'
+      const message = customEvent.detail?.message || ''
+      if (message) {
+        showToast({ type, message })
+      }
+    }
+
     window.addEventListener('global-error', handleGlobalError as EventListener)
-    return () => window.removeEventListener('global-error', handleGlobalError as EventListener)
+    window.addEventListener('global-toast', handleGlobalToast as EventListener)
+    
+    return () => {
+      window.removeEventListener('global-error', handleGlobalError as EventListener)
+      window.removeEventListener('global-toast', handleGlobalToast as EventListener)
+    }
   }, [showToast])
 
   const contextValue = useMemo(() => ({ showToast }), [showToast])

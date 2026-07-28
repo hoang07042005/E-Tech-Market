@@ -3,6 +3,7 @@ import { apiFetch, API_BASE_URL } from "@/configs/api.config";
 import ConfirmModal from "@/components/ConfirmModal";
 import "@/styles/admin/ProductNewsPage.css";
 import { sanitizeHtml } from "@/utils/sanitizeHtml";
+import { toast } from '@/utils/toast';
 
 type ProductLite = {
   id: number;
@@ -141,11 +142,11 @@ export default function ProductNewsPage() {
   const save = async () => {
     if (!selectedProductId) return;
     if (thumbnailUploading) {
-      alert("Ảnh thumbnail đang upload, vui lòng đợi xong rồi bấm Lưu.");
+      toast.error("Ảnh thumbnail đang upload, vui lòng đợi xong rồi bấm Lưu.");
       return;
     }
     if (!form.title.trim() || !form.content_html.trim()) {
-      alert("Vui lòng nhập tiêu đề và nội dung HTML.");
+      toast.error("Vui lòng nhập tiêu đề và nội dung HTML.");
       return;
     }
 
@@ -179,7 +180,7 @@ export default function ProductNewsPage() {
       setEditing(null);
       fetchNews(selectedProductId);
     } catch (e: unknown) {
-      alert(e instanceof Error ? e.message : "Lưu tin tức thất bại.");
+      toast.error(e instanceof Error ? e.message : "Lưu tin tức thất bại.");
     }
   };
 
@@ -226,7 +227,7 @@ export default function ProductNewsPage() {
       setPendingDeleteNews(null);
       fetchNews(selectedProductId);
     } catch (e: unknown) {
-      alert(e instanceof Error ? e.message : "Xóa thất bại.");
+      toast.error(e instanceof Error ? e.message : "Xóa thất bại.");
     }
   };
 

@@ -1,5 +1,6 @@
 import { useCallback, useState, useEffect, useMemo } from "react";
 import ConfirmModal from "@/components/ConfirmModal";
+import { toast } from '@/utils/toast';
 import {
   fetchAdminDeletedProductVariants,
   hardDeleteAdminDeletedProductVariants,
@@ -1036,7 +1037,7 @@ export default function HardDeletePage({ onBack }: { onBack: () => void }) {
 
   const openConfirm = () => {
     if (currentSel.selectedIds.length === 0) {
-      alert("Chưa chọn dữ liệu nào để xóa hẳn.");
+      toast.error("Chưa chọn dữ liệu nào để xóa hẳn.");
       return;
     }
     setPendingIds(currentSel.selectedIds);
@@ -1078,9 +1079,9 @@ export default function HardDeletePage({ onBack }: { onBack: () => void }) {
       setPendingIds([]);
     } catch (err: unknown) {
       if (err && typeof err === "object" && "message" in err) {
-        alert((err as { message?: unknown }).message as string);
+        toast.error((err as { message?: unknown }).message as string);
       } else {
-        alert("Xóa hẳn thất bại.");
+        toast.error("Xóa hẳn thất bại.");
       }
     } finally {
       setPending(false);

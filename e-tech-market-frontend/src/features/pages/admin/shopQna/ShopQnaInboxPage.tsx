@@ -2,6 +2,7 @@
 import { Link } from 'react-router-dom'
 import { apiFetch } from '@/configs/api.config'
 import { deleteShopQna, fetchShopQna } from '@/features/services/admin/api.admin.service'
+import { toast } from '@/utils/toast';
 import '@/styles/admin/ShopQnaInboxPage.css'
 
 type PendingShopQna = {
@@ -62,7 +63,7 @@ export default function ShopQnaInboxPage() {
   async function submitAnswer(row: PendingShopQna) {
     const answer = (drafts[row.id] ?? '').trim()
     if (!answer.length) {
-      alert('Vui lòng nhập nội dung trả lời.')
+      toast.error('Vui lòng nhập nội dung trả lời.')
       return
     }
     if (!hasAuth) return
@@ -80,7 +81,7 @@ export default function ShopQnaInboxPage() {
       })
       setItems(prev => prev.map(r => (r.id === row.id ? { ...r, ...updated } : r)))
     } catch (e: unknown) {
-      alert(e instanceof Error ? e.message : 'Gửi trả lời thất bại.')
+      toast.error(e instanceof Error ? e.message : 'Gửi trả lời thất bại.')
     } finally {
       setSavingId(null)
     }
@@ -101,7 +102,7 @@ export default function ShopQnaInboxPage() {
       })
       setItems(prev => prev.filter(r => r.id !== row.id))
     } catch (e: unknown) {
-      alert(e instanceof Error ? e.message : 'Xóa câu hỏi thất bại.')
+      toast.error(e instanceof Error ? e.message : 'Xóa câu hỏi thất bại.')
     } finally {
       setDeletingId(null)
     }

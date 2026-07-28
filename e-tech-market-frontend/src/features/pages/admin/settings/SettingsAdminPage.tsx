@@ -5,6 +5,7 @@ import "@/styles/admin/SettingsAdminPage.css";
 import logoMomo from "@/assets/logo-momo.png";
 import logoVnpay from "@/assets/vnpay-logo.png";
 import logoCod from "@/assets/COD.png";
+import { toast } from '@/utils/toast';
 
 type IconProps = { className?: string; title?: string };
 
@@ -227,7 +228,7 @@ export default function SettingsAdminPage() {
       setTwoFaError(null);
       setTwoFaOtp("");
     } catch (e: any) {
-      alert(e.message);
+      toast.error(e.message);
     } finally {
       setTwoFaLoading(false);
     }

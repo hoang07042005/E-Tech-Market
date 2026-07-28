@@ -3,6 +3,7 @@ import { apiFetch } from "@/configs/api.config";
 import "@/styles/pages/SecurityPage.css";
 import { useAuthStore } from "@/features/store/useAuthStore";
 import ConfirmModal from "@/components/ConfirmModal";
+import { toast } from '@/utils/toast';
 
 type SessionRow = {
   id: string;
@@ -304,7 +305,7 @@ export default function SecurityPage() {
             className="secDangerOutlineBtn"
             onClick={() => {
               // UI only
-              alert("Chức năng sẽ được hoàn thiện ở bản sau.");
+              toast.error("Chức năng sẽ được hoàn thiện ở bản sau.");
             }}
           >
             Xóa khỏi tài khoản

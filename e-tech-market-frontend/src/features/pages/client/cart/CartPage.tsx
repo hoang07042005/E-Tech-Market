@@ -11,6 +11,7 @@ import {
   type CartState,
 } from '@/features/services/cart.service'
 import { useCartMutation } from '@/features/services/mutations'
+import { toast } from '@/utils/toast';
 
 function formatVnd(n: number) {
   return `${Math.round(n).toLocaleString('vi-VN')} đ`
@@ -318,7 +319,7 @@ export default function CartPage() {
                       className="cartCheckoutBtn"
                       onClick={() => {
                         if (selectedKeys.length === 0) {
-                          alert('Vui lòng chọn ít nhất một sản phẩm để thanh toán.')
+                          toast.error('Vui lòng chọn ít nhất một sản phẩm để thanh toán.')
                           return
                         }
                         try {

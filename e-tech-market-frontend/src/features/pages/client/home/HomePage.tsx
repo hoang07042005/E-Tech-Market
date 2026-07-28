@@ -16,6 +16,7 @@ import { fetchActiveBanners, type Banner } from '@/features/services/client/bann
 import { useWishlistQuery, useWishlistMutation } from '@/features/services/mutations'
 import Skeleton from '@/components/Skeleton'
 import { useAuthStore } from '@/features/store/useAuthStore'
+import { toast } from '@/utils/toast';
 
 const resolveImageUrl = (url: string | null) => {
   if (!url) return 'https://via.placeholder.com/400'
@@ -276,7 +277,7 @@ function ProductCard({
         price: displayPrice,
       })
       if (!res.success && res.message) {
-        alert(res.message)
+        toast.error(res.message)
       }
     }
   }
@@ -682,7 +683,7 @@ export default function HomePage() {
 
   const saveCoupon = async (code: string) => {
     if (!hasAuth) {
-      alert('Vui lòng đăng nhập để lưu mã giảm giá!')
+      toast.error('Vui lòng đăng nhập để lưu mã giảm giá!')
       navigate('/login')
       return
     }
@@ -693,9 +694,9 @@ export default function HomePage() {
         method: 'POST',
         body: JSON.stringify({ code })
       })
-      alert(res.message)
+      toast.error(res.message)
     } catch (e: unknown) {
-      alert(e instanceof Error ? e.message : 'Có lỗi xảy ra khi lưu mã.')
+      toast.error(e instanceof Error ? e.message : 'Có lỗi xảy ra khi lưu mã.')
     }
   }
 
@@ -710,9 +711,9 @@ export default function HomePage() {
         body: JSON.stringify({ email, source: 'home' }),
       })
       setNewsletterEmail('')
-      alert('Đăng ký nhận tin tức thành công!')
+      toast.success('Đăng ký nhận tin tức thành công!')
     } catch (err: unknown) {
-      alert(err instanceof Error ? err.message : 'Có lỗi xảy ra khi đăng ký.')
+      toast.error(err instanceof Error ? err.message : 'Có lỗi xảy ra khi đăng ký.')
     } finally {
       setNewsletterLoading(false)
     }
@@ -1129,7 +1130,7 @@ export default function HomePage() {
                                   </>
                                 )}
 
-                                <div className="hpCouponCardNewCodeBox" onClick={() => { navigator.clipboard.writeText(c.code); alert('Đã sao chép mã!'); }}>
+                                <div className="hpCouponCardNewCodeBox" onClick={() => { navigator.clipboard.writeText(c.code); toast.success('Đã sao chép mã!'); }}>
                                   <div className="hpCouponCardNewCodeLeft">
                                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ff6b2b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg>
                                     <span>{c.code}</span>
