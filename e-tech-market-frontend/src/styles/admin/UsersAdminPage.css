@@ -58,6 +58,55 @@
     color: #999;
 }
 
+/* ── User Avatar in Table ──────────────────────────────────────────────────── */
+.usersAdminUserCell {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.usersAdminAvatar,
+.usersAdminAvatarImg {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.usersAdminAvatar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+
+.usersAdminAvatarImg {
+    object-fit: cover;
+    border: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.usersAdminAvatar.tone-beige {
+    background: #fef3c7; color: #92400e;
+}
+
+.usersAdminAvatar.tone-blue {
+    background: #dbeafe; color: #1e40af;
+}
+
+.usersAdminAvatar.tone-peach {
+    background: #ffe4e6; color: #be123c;
+}
+
+.usersAdminAvatar.tone-sand {
+    background: #e2e8f0; color: #334155;
+}
+
+.usersAdminAvatar.tone-gray {
+    background: #f1f5f9; color: #475569;
+}
+
 
 .usersAdminRoleCell {
     display: flex;

@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useAuthStore } from '@/features/store/useAuthStore'
 
-import { apiFetch } from '@/configs/api.config'
+import { apiFetch, API_BASE_URL } from '@/configs/api.config'
 import { fetchRoles, fetchUsers, updateRole } from '@/features/services/admin/api.admin.service'
 import HardDeletePage from '../products/HardDeletePage' 
 import '@/styles/admin/ProductPage.css'
@@ -19,6 +19,7 @@ type AdminUserRow = {
   name: string
   email: string
   phone: string | null
+  avatar_url?: string | null
   is_active: boolean
   created_at: string
   roles?: Role[]
@@ -42,6 +43,36 @@ function roleDisplayLabel(role: Role): string {
   const desc = role.description?.trim()
   if (desc) return desc
   return ROLE_FALLBACK_VI[role.slug] ?? role.name
+}
+
+function resolveAvatar(url?: string | null) {
+  if (!url) return null
+  const s = url.trim()
+  if (!s) return null
+  if (/^https?:\/\//i.test(s)) {
+    try {
+      const urlObj = new URL(s)
+      if (urlObj.hostname === 'nginx' || urlObj.hostname === 'localhost') {
+        const path = s.replace(/^https?:\/\/[^/]+/, '')
+        return window.location.origin + path
+      }
+    } catch { /* keep original */ }
+    return s
+  }
+  return `${API_BASE_URL}${s.startsWith('/') ? s : `/${s}`}`
+}
+
+function initialsOf(name: string) {
+  const parts = (name || '').trim().split(/\s+/).filter(Boolean)
+  if (!parts.length) return '—'
+  const a = parts[0]?.[0] ?? ''
+  const b = parts.length > 1 ? (parts[parts.length - 1]?.[0] ?? '') : (parts[0]?.[1] ?? '')
+  return (a + b).toUpperCase()
+}
+
+function avatarToneOf(s: string) {
+  const x = Array.from(s).reduce((acc, ch) => acc + ch.charCodeAt(0), 0) % 5
+  return (['beige', 'blue', 'peach', 'sand', 'gray'] as const)[x]
 }
 
 function formatRoles(roles: Role[] | undefined): string {
@@ -401,7 +432,14 @@ export default function UsersAdminPage() {
                   return (
                     <tr key={u.id}>
                       <td>
-                        <span className="pName">{u.name}</span>
+                        <div className="usersAdminUserCell">
+                          {u.avatar_url ? (
+                            <img className="usersAdminAvatarImg" src={resolveAvatar(u.avatar_url) || undefined} alt="" loading="lazy" decoding="async" />
+                          ) : (
+                            <span className={`usersAdminAvatar tone-${avatarToneOf(u.name)}`} aria-hidden>{initialsOf(u.name)}</span>
+                          )}
+                          <span className="pName">{u.name}</span>
+                        </div>
                       </td>
                       <td>
                         <span className="pCat">{u.email}</span>
