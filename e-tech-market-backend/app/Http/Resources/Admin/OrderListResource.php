@@ -56,7 +56,7 @@ class OrderListResource extends JsonResource
             'order_code' => (string) ($this->order_code ?: ('ET-'.$this->id)),
             'customer_name' => $customerName,
             'customer_avatar_url' => $this->user?->avatar_url ? (string) $this->user->avatar_url : null,
-            'created_date' => $this->created_at ? $this->created_at->format('d/m/Y') : '',
+            'created_date' => $this->created_at ? $this->created_at->format('d/m/Y H:i') : '',
             'total_amount' => (float) ($this->total_amount ?? 0),
             'payment_method' => $paymentLabel($this->payment?->method),
             'shipping_method' => $this->shippingMethod?->name ? (string) $this->shippingMethod->name : null,

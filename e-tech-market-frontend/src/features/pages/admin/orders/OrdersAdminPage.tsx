@@ -1223,7 +1223,18 @@ export default function OrdersAdminPage() {
                 setPage(1)
               }}
             >
-              Thiết lập lại
+             <svg xmlns="http://www.w3.org/2000/svg"
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round">
+                <path d="M3 12a9 9 0 1 0 3-6.7"/>
+                <polyline points="3 4 3 9 8 9"/>
+              </svg>
             </button>
             <button
               type="button"
@@ -1302,11 +1313,10 @@ export default function OrdersAdminPage() {
                 </thead>
                 <tbody>
                   {rows.map((o) => {
-                    const shortCode = o.order_code.length > 8 ? o.order_code.substring(0, 8) + '...' : o.order_code
                     return (
                     <tr key={o.id}>
                       <td className="admOrdersCode2">
-                        <span style={{ color: '#334155', fontWeight: 600 }}>#{shortCode}</span>
+                        <span style={{ color: '#334155', fontWeight: 600 }}>#{o.order_code}</span>
                         <button 
                           className="admOrdersCopyBtn" 
                           title="Sao chép mã"
@@ -1346,12 +1356,21 @@ export default function OrdersAdminPage() {
                           )}
                           <div className="admOrdersCust2Info">
                             <div className="admOrdersCust2Name">{o.customer_name}</div>
-                            <div className="admOrdersCust2Sub">{o.product}</div>
                           </div>
                         </div>
                       </td>
-                      <td className="admOrdersDate2">{o.created_date}</td>
-                      <td className="admOrdersTotal2">{fmtVnd(o.total_amount)}đ</td>
+                      <td className="admOrdersDate2">
+                        {(() => {
+                          const parts = o.created_date.split(' ')
+                          return (
+                            <div>
+                              <div>{parts[0]}</div>
+                              {parts[1] && <div style={{ fontSize: '12px', color: '#94a3b8', marginTop: '2px' }}>{parts[1]}</div>}
+                            </div>
+                          )
+                        })()}
+                      </td>
+                      <td className="admOrdersTotal2">{fmtVnd(o.total_amount)} đ</td>
                       <td className="admOrdersPay2">{o.payment_method}</td>
                       <td>
                         <span className={`admOrdersStatus2 tone-${resolveStatusTone(o.status, o.status_tone)}`}>{o.status_label}</span>
@@ -1368,9 +1387,6 @@ export default function OrdersAdminPage() {
                           }}
                         >
                           <DetailIcon />
-                        </button>
-                        <button className="admOrdersIconBtn" type="button" aria-label="Thêm">
-                          <MoreIcon />
                         </button>
                         {o.status === 'cancelled' && (
                           <button
