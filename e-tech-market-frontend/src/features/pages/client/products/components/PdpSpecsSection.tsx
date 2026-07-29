@@ -28,7 +28,7 @@ export function PdpSpecsSection({ mergedDisplaySpecs }: { mergedDisplaySpecs: Pr
                     <div key={i} className="vValueLine">
                       <span className="vInnerKey">{s.spec_key}: </span>
                       <span className="vInnerVal">
-                        {s.spec_value} {s.spec_unit}
+                        {s.spec_value} {s.spec_unit && s.spec_unit.trim() !== '-' ? s.spec_unit : ''}
                       </span>
                     </div>
                   ))}

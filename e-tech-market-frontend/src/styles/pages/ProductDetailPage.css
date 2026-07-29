@@ -1515,12 +1515,20 @@
   }
 
   .vValueLine {
-    grid-template-columns: 1fr;
-    gap: 2px;
+    grid-template-columns: 100px minmax(0, 1fr);
+    gap: 8px;
+    padding: 8px 0;
+    border-bottom: 1px dashed #e2e8f0;
+  }
+  .vValueLine:last-child {
+    border-bottom: none;
   }
 
   .vInnerKey {
-    font-size: 12px;
+    font-size: 13px;
+  }
+  .vInnerVal {
+    font-size: 13px;
   }
 }
 
