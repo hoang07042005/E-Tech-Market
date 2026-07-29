@@ -221,6 +221,10 @@ class ProductService
             })->with('flashSale'),
         ]);
 
+        // Tổng số lượng đã bán (sum of order_items.quantity)
+        $product->loadSum('orderItems', 'quantity');
+        $product->total_sold = (int) ($product->order_items_sum_quantity ?? 0);
+
         return $product;
     }
 

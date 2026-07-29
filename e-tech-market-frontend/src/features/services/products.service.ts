@@ -139,6 +139,8 @@ export type Product = {
       is_active: boolean
     }
   }[]
+  /** Tổng số lượng đã bán (từ API chi tiết sản phẩm). */
+  total_sold?: number | null
 }
 
 export type Category = {

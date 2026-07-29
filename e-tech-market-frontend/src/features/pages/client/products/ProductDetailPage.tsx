@@ -29,7 +29,6 @@ import {
   buildVariantFacetModel,
   PdpThumbStrip,
   PdpFacetVariantPicker,
-  
   ratingLabel} from './components/PdpShared'
 import { ProductReviewsSection } from './components/ProductReviewsSection'
 import { ProductQnASection } from './components/ProductQnASection'
@@ -685,62 +684,168 @@ export default function ProductDetailPage() {
             <Link to="/">Trang chủ</Link> / <Link to="/products">Danh sách sản phẩm</Link> / <span>{product.name}</span>
           </nav>
           <h1 className="pdpProductName">{product.name}</h1>
+          {/* Rating / Sold summary bar */}
+          <div className="pdpRatingSoldBar">
+            <div className="pdpRatingSoldBar__stars">
+              {Array.from({ length: 5 }).map((_, i) => {
+                const filled = i < Math.floor(reviewStats.avg)
+                const half = !filled && i < Math.ceil(reviewStats.avg) && reviewStats.avg % 1 >= 0.3
+                return (
+                  <span
+                    key={i}
+                    className={`pdpRatingSoldBar__star ${filled ? 'pdpRatingSoldBar__star--full' : half ? 'pdpRatingSoldBar__star--half' : ''}`}
+                  >
+                    ★
+                  </span>
+                )
+              })}
+            </div>
+            {reviewStats.total > 0 && (
+              <span className="pdpRatingSoldBar__avg">{reviewStats.avg.toFixed(1)}</span>
+            )}
+            <a href="#pdp-reviews" className="pdpRatingSoldBar__count">
+              ({reviewStats.total} đánh giá)
+            </a>
+            {typeof product.total_sold === 'number' && product.total_sold > 0 && (
+              <>
+                <span className="pdpRatingSoldBar__sep">|</span>
+                <span className="pdpRatingSoldBar__sold">Đã bán {product.total_sold.toLocaleString('vi-VN')}</span>
+              </>
+            )}
+          </div>
           <div className="pdpMainGrid">
-            {/* Image/Video Gallery */}
-            <div className="pdpGallery">
-              <div className="pdpGalleryGrid">
-                {isVideo ? (
-                  <div className="pdpMainImageWrap pdpMainVideoWrap">
-                    {renderVideoPlayer(selectedMediaItem?.url ?? '', selectedMediaItem?.video?.title ?? '')}
-                  </div>
-                ) : (
-                  <div className="pdpMainImageWrap">
-                    <img 
-                      src={resolveImageUrl(selectedImg || product.main_image_url)} 
-                      alt={product.name} 
-                      className="pdpMainImage" 
-                      style={{ cursor: 'zoom-in' }}
-                      onClick={() => setIsFullscreen(true)}
+            <div className="pdpMainGrid-left">
+              {/* Image/Video Gallery */}
+              <div className="pdpGallery">
+                <div className="pdpGalleryGrid">
+                  {isVideo ? (
+                    <div className="pdpMainImageWrap pdpMainVideoWrap">
+                      {renderVideoPlayer(selectedMediaItem?.url ?? '', selectedMediaItem?.video?.title ?? '')}
+                    </div>
+                  ) : (
+                    <div className="pdpMainImageWrap">
+                      <img 
+                        src={resolveImageUrl(selectedImg || product.main_image_url)} 
+                        alt={product.name} 
+                        className="pdpMainImage" 
+                        style={{ cursor: 'zoom-in' }}
+                        onClick={() => setIsFullscreen(true)}
+                      />
+                    </div>
+                  )}
+                  {mediaItems.length > 1 && (
+                    <PdpThumbStrip
+                      key={product.id}
+                      mediaItems={mediaItems}
+                      selectedImg={selectedImg || (mediaItems[0]?.url ?? null)}
+                      onSelectImage={setSelectedImg}
                     />
-                  </div>
-                )}
-                {mediaItems.length > 1 && (
-                  <PdpThumbStrip
-                    key={product.id}
-                    mediaItems={mediaItems}
-                    selectedImg={selectedImg || (mediaItems[0]?.url ?? null)}
-                    onSelectImage={setSelectedImg}
-                  />
-                )}
+                  )}
+                </div>
               </div>
+
+              <PdpSpecsSection mergedDisplaySpecs={mergedDisplaySpecs} />
             </div>
 
+            <div className="pdpMainGrid-right">
             {/* Product Info */}
             <div className="pdpInfo">
               {activeFlashSale && flashTimeLeft ? (
                 <div className="pdpFlashBanner">
-                  <div className="pdpFlashBanner-left">
-                    <div className="pdpFlashBanner-priceRow">
-                      <span className="pdpFlashBanner-badge">
-                        -{Math.round((1 - parseFloat(activeFlashSale.flash_sale_price?.toString() || '0') / parseFloat(selectedVariant ? selectedVariant.price : (product.price || '0').toString())) * 100)}%
-                      </span>
-                      <span className="pdpFlashBanner-price">
-                        {parseFloat(activeFlashSale.flash_sale_price?.toString() || '0').toLocaleString('vi-VN')} <u>đ</u>
-                      </span>
+                  <div className="pdpFlashBanner-header">
+                    <div className="pdpFlashBanner-headerLeft">
+                      <svg viewBox="0 0 43 49" fill="currentColor" className="pdpFlashBanner-icon">
+                        <path
+                          d="M17.2 3.1
+                            L32.9 3.1
+                            L23.2 20.7
+                            L36.2 20.7
+                            L8.8 45.9
+                            L15.6 27.5
+                            L6.8 27.5
+                            L17.2 3.1Z"
+                        />
+                      </svg>
+                      <div className="pdpFlashBanner-headerTitles">
+                        <span className="pdpFlashBanner-titleText">FLASH SALE</span>
+                        <span className="pdpFlashBanner-subTitleText">SIÊU ƯU ĐÃI &ndash; SỐ LƯỢNG CÓ HẠN!</span>
+                      </div>
                     </div>
-                    <div className="pdpFlashBanner-oldPrice">
-                      {parseFloat(selectedVariant ? selectedVariant.price : (product.price || '0').toString()).toLocaleString('vi-VN')} <u>đ</u>
+                    <div className="pdpFlashBanner-headerRight">
+                      <div className="pdpFlashBanner-discountBadge">
+                        <span>-{Math.round((1 - parseFloat(activeFlashSale.flash_sale_price?.toString() || '0') / parseFloat(selectedVariant ? selectedVariant.price : (product.price || '0').toString())) * 100)}%</span>
+                      </div>
                     </div>
                   </div>
-                  <div className="pdpFlashBanner-right">
-                    <div className="pdpFlashBanner-title">
-                      <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                         <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
-                      </svg>
-                      Flash Sale
+                  <div className="pdpFlashBanner-body">
+                    <div className="pdpFlashBanner-bodyTop">
+                      <div className="pdpFlashBanner-prices">
+                        <div className="pdpFlashBanner-currentPrice">
+                          {parseFloat(activeFlashSale.flash_sale_price?.toString() || '0').toLocaleString('vi-VN')}<u>đ</u>
+                        </div>
+                        <div className="pdpFlashBanner-oldPrice">
+                          {parseFloat(selectedVariant ? selectedVariant.price : (product.price || '0').toString()).toLocaleString('vi-VN')}<u>đ</u>
+                        </div>
+                      </div>
+                      
+                      {/* Vertical Divider */}
+                      <div className="pdpFlashBanner-divider"></div>
+
+                      <div className="pdpFlashBanner-countdown">
+                        <div className="pdpFlashBanner-countdownTitle">Kết thúc sau</div>
+                        <div className="pdpFlashBanner-countdownTimer">
+                          <div className="timer-col">
+                            <div className="timer-box">
+                              <span className="timer-num">{String(flashTimeLeft.h).padStart(2, '0')}</span>
+                            </div>
+                            <span className="timer-label">Giờ</span>
+                          </div>
+                          <span className="timer-colon">:</span>
+                          <div className="timer-col">
+                            <div className="timer-box">
+                              <span className="timer-num">{String(flashTimeLeft.m).padStart(2, '0')}</span>
+                            </div>
+                            <span className="timer-label">Phút</span>
+                          </div>
+                          <span className="timer-colon">:</span>
+                          <div className="timer-col">
+                            <div className="timer-box">
+                              <span className="timer-num">{String(flashTimeLeft.s).padStart(2, '0')}</span>
+                            </div>
+                            <span className="timer-label">Giây</span>
+                          </div>
+                        </div>
+                      </div>
                     </div>
-                    <div className="pdpFlashBanner-timer">
-                      Kết thúc sau {String(flashTimeLeft.h).padStart(2, '0')}:{String(flashTimeLeft.m).padStart(2, '0')}:{String(flashTimeLeft.s).padStart(2, '0')}
+                    
+                    <div className="pdpFlashBanner-progressSection">
+                      <div className="pdpFlashBanner-soldText">
+                        <svg viewBox="0 0 32 32" width="22" height="22">
+                          <defs>
+                            <linearGradient id="appleFireOuter" x1="0%" y1="0%" x2="0%" y2="100%">
+                              <stop offset="0%" stopColor="#ff3a30" />
+                              <stop offset="50%" stopColor="#ff9500" />
+                              <stop offset="100%" stopColor="#ffcc00" />
+                            </linearGradient>
+                            <linearGradient id="appleFireInner" x1="0%" y1="0%" x2="0%" y2="100%">
+                              <stop offset="0%" stopColor="#ffe620" />
+                              <stop offset="100%" stopColor="#fffcdd" />
+                            </linearGradient>
+                          </defs>
+                          <path fill="url(#appleFireOuter)" d="M15.4 2.3c0 0-1.8 4.1-1.3 7.7-2.3-1.8-3.4-5.2-3.4-5.2s-2.1 4.3-1 8.9C7.8 11.5 4 14.3 4 19.8c0 6.6 5.4 12 12 12s12-5.4 12-12c0-7.5-9-9.9-12.6-17.5z" />
+                          <path fill="url(#appleFireInner)" d="M16.1 14.4c0 0-1 2.8-0.3 4.9-1.3-1-1.8-2.9-1.8-2.9s-1.1 2.5-0.3 5c-1-1.3-2.9-1.3-2.9 1c0 3.3 2.7 6 6 6s6-2.7 6-6c0-4.6-4.8-4.2-6.7-7.9z" />
+                        </svg>
+                        Đã bán {activeFlashSale.sold_quantity}
+                      </div>
+                      <div className="pdpFlashBanner-progressBar">
+                        <div 
+                          className="pdpFlashBanner-progressFill" 
+                          style={{ width: `${Math.min(100, Math.round((activeFlashSale.sold_quantity / (activeFlashSale.quantity_limit || 1)) * 100))}%` }}
+                        ></div>
+                      </div>
+                      <div className="pdpFlashBanner-remainText">
+                        Còn lại {activeFlashSale.quantity_limit ? activeFlashSale.quantity_limit - activeFlashSale.sold_quantity : '∞'} sản phẩm
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -757,13 +862,16 @@ export default function ProductDetailPage() {
                 </div>
               )}
 
-              <div className="pdpLoyaltyBadge" style={{ marginBottom: '12px', padding: '12px', background: 'rgba(255, 193, 7, 0.1)', border: '1px solid rgba(255, 193, 7, 0.3)', borderRadius: '8px', color: '#b78103', fontSize: '14px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <span style={{ fontSize: '18px' }}>💡</span>
+              <div className="pdpLoyaltyBadge">
+                <svg viewBox="0 0 24 24" fill="currentColor" width="24" height="24" style={{ color: '#f59e0b' }}>
+                  <path d="M20 8h-3V4H3c-1.1 0-2 .9-2 2v11h2c0 1.66 1.34 3 3 3s3-1.34 3-3h6c0 1.66 1.34 3 3 3s3-1.34 3-3h2v-5l-3-4zM6 18.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm13.5-9l1.96 2.5H17V9.5h2.5zm-1.5 9c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/>
+                </svg>
                 <span>
                   <strong>Đặc quyền Hội viên:</strong> Mua ngay sản phẩm này và tích lũy thêm 
-                  <strong style={{ color: '#d97706' }}> +{Math.floor(Number(selectedVariant ? selectedVariant.effective_price : (product.price ?? 0)) / 100000)} điểm</strong> 
+                  <strong style={{ color: '#d97706' }}> +{Math.floor(Number(selectedVariant ? selectedVariant.effective_price : (product.price ?? 0)) / 100000)} điểm</strong>
                   (tương đương tiết kiệm {Math.floor(Number(selectedVariant ? selectedVariant.effective_price : (product.price ?? 0)) / 100000) * 500}đ cho các đơn sắm sửa phụ kiện lần sau).
                 </span>
+                
               </div>
 
               {/* Variants: facet (màu + dung lượng) hoặc danh sách gọn */}
@@ -820,25 +928,21 @@ export default function ProductDetailPage() {
                   <span className="label">SKU</span>
                   <span className="value">{selectedVariant ? selectedVariant.sku : 'N/A'}</span>
                 </div>
-                <div className="pdpMetaItem">
-                  <span className="label">AVAILABILITY</span>
-                  <span className={`value stock ${
-                    activeFlashSale && activeFlashSale.quantity_limit !== null && activeFlashSale.quantity_limit > 0
-                      ? ((activeFlashSale.quantity_limit - activeFlashSale.sold_quantity) <= 0 ? 'out' : '')
-                      : (selectedVariant && selectedVariant.stock_quantity === 0 ? 'out' : '')
-                  }`}>
-                    {(() => {
-                      if (activeFlashSale && activeFlashSale.quantity_limit !== null && activeFlashSale.quantity_limit > 0) {
-                        const fsLeft = activeFlashSale.quantity_limit - activeFlashSale.sold_quantity;
-                        return fsLeft > 0 ? `Còn hàng (${fsLeft})` : 'Hết hàng';
-                      }
-                      if (selectedVariant) {
-                        return selectedVariant.stock_quantity > 0 ? `Còn hàng (${selectedVariant.stock_quantity})` : 'Hết hàng';
-                      }
-                      return 'Còn hàng';
-                    })()}
-                  </span>
-                </div>
+                {!(activeFlashSale && flashTimeLeft) && (
+                  <div className="pdpMetaItem">
+                    <span className="label">AVAILABILITY</span>
+                    <span className={`value stock ${
+                      selectedVariant && selectedVariant.stock_quantity === 0 ? 'out' : ''
+                    }`}>
+                      {(() => {
+                        if (selectedVariant) {
+                          return selectedVariant.stock_quantity > 0 ? `Còn hàng (${selectedVariant.stock_quantity})` : 'Hết hàng';
+                        }
+                        return 'Còn hàng';
+                      })()}
+                    </span>
+                  </div>
+                )}
                 <div className="pdpMetaItem pdpMetaItem--compare" style={{ alignItems: 'center' }}>
                   <span className="label">COMPARE</span>
                   <span className="value">
@@ -857,13 +961,6 @@ export default function ProductDetailPage() {
                 </div>
               </div>
             </div>
-          </div>
-
-
-
-          {/* Bottom Section - Two Columns */}
-          <div className="pdpBottomGrid">
-            <PdpSpecsSection mergedDisplaySpecs={mergedDisplaySpecs} />
 
             <div className="pdpSidebarSide">
               {/* Product Commitments */}
@@ -888,6 +985,7 @@ export default function ProductDetailPage() {
               />
             </div>
           </div>
+        </div>
 
           <PdpRelatedProductsSection 
             relatedProducts={relatedProducts} 

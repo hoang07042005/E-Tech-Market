@@ -1,4 +1,4 @@
-/* PDP — nền trắng, nhấn cam */
+/* PDP â€” ná»n tráº¯ng, nháº¥n cam */
 .pdpPage {
   --pdp-bg: #ffffff;
   --pdp-surface: #ffffff;
@@ -16,94 +16,254 @@
 }
 
 /* Flash Sale Banner */
+/* --- Flash Sale Banner --- */
 .pdpFlashBanner {
-  background: linear-gradient(90deg, #ff416c 0%, #ff4b2b 100%);
+  background: 
+    radial-gradient(circle at 70% 30%, rgba(255, 255, 255, 0.2) 0%, transparent 40%),
+    linear-gradient(100deg, #d30005 0%, #fa0011 30%, #da0006 70%, #a80003 100%);
+  border-radius: 8px;
+  margin-bottom: 24px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(250, 0, 17, 0.2);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.pdpFlashBanner-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  color: #fff;
+  position: relative;
+  z-index: 1;
+}
+
+.pdpFlashBanner-headerLeft {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.pdpFlashBanner-icon {
+  width: 44px;
+  height: 44px;
+  color: #ffeb00;
+  flex-shrink: 0;
+}
+
+.pdpFlashBanner-headerTitles {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.pdpFlashBanner-titleText {
+  font-size: 28px;
+  font-weight: 900;
+  font-style: italic;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+  letter-spacing: 0.5px;
+  line-height: 1;
+  color: #ffffff;
+}
+
+.pdpFlashBanner-subTitleText {
+  font-size: 13px;
+  font-weight: 600;
+  color: #ffffff;
+  letter-spacing: 0.5px;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+  margin-top: 4px;
+}
+
+.pdpFlashBanner-headerRight {
+  filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.3));
+}
+
+.pdpFlashBanner-discountBadge {
+  background: #ffeb00;
+  color: #cc0000;
+  font-size: 28px;
+  font-weight: 900;
+  padding: 4px 14px 4px 20px;
+  border-radius: 6px;
+  clip-path: polygon(12px 0, 100% 0, 100% 100%, 12px 100%, 0 50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+
+
+.pdpFlashBanner-body {
+  background: #fff;
+  margin: 0 12px 10px 12px;
+  border-radius: 8px;
+  padding: 18px 24px 18px 24px;
+  position: relative;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  z-index: 2;
+}
+
+.pdpFlashBanner-bodyTop {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  padding-bottom: 10px;
+  border-bottom: 1px dashed #d1d5db;
+}
+
+.pdpFlashBanner-prices {
+  display: flex;
+  flex-direction: column;
+}
+
+.pdpFlashBanner-currentPrice {
+  color: #ef4444;
+  font-size: 38px;
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.5px;
+}
+
+.pdpFlashBanner-currentPrice u {
+  font-size: 24px;
+  text-decoration: underline;
+  margin-left: 2px;
+  font-weight: 700;
+}
+
+.pdpFlashBanner-oldPrice {
+  color: #6b7280;
+  font-size: 18px;
+  text-decoration: line-through;
+  font-weight: 500;
+  margin-top: 4px;
+}
+
+.pdpFlashBanner-divider {
+  width: 1px;
+  height: 60px;
+  background-color: #e5e7eb;
+  margin: 0 24px;
+}
+
+.pdpFlashBanner-countdown {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.pdpFlashBanner-countdownTitle {
+  color: #1f2937;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.pdpFlashBanner-countdownTimer {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+}
+
+.timer-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.timer-box {
+  background: #fff0f0;
+  padding: 6px;
+  border-radius: 8px;
+  min-width: 42px;
+  text-align: center;
+}
+
+.timer-num {
+  color: #ef4444;
+  font-size: 20px;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.timer-label {
+  font-size: 12px;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.timer-colon {
+  font-size: 20px;
+  font-weight: 800;
+  color: #ef4444;
+  margin-top: 8px; /* push down to align with numbers */
+}
+
+.pdpFlashBanner-progressSection {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.pdpFlashBanner-soldText {
+  color: #ef4444;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.pdpFlashBanner-remainText {
+  color: #4b5563;
+  white-space: nowrap;
+}
+
+.pdpFlashBanner-progressBar {
+  flex: 1;
+  height: 10px;
+  background: #fee2e2;
+  border-radius: 6px;
+  overflow: hidden;
+  position: relative;
+}
+
+.pdpFlashBanner-progressFill {
+  height: 100%;
+  background: linear-gradient(90deg, #f97316 0%, #ef4444 100%);
+  border-radius: 6px;
+  transition: width 0.3s ease;
+}
+
+/* --- Loyalty Badge --- */
+.pdpLoyaltyBadge {
+  background: #fefce8;
+  border: 1px solid #fef08a;
   border-radius: 8px;
   padding: 12px 16px;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  gap: 12px;
   margin-bottom: 24px;
-  color: #fff;
-  position: relative;
-  overflow: hidden;
-}
-
-.pdpFlashBanner::before {
-  content: "";
-  position: absolute;
-  top: -20px;
-  bottom: -20px;
-  left: 55%;
-  width: 80px;
-  background: url('data:image/svg+xml;utf8,<svg viewBox="0 0 24 24" fill="%23fcd34d" xmlns="http://www.w3.org/2000/svg"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" /></svg>')
-    no-repeat center center;
-  background-size: contain;
-  opacity: 0.15;
-  transform: skewX(-20deg);
-}
-
-.pdpFlashBanner-left {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  z-index: 1;
-}
-
-.pdpFlashBanner-priceRow {
-  display: flex;
-  align-items: baseline;
-  gap: 8px;
-}
-
-.pdpFlashBanner-badge {
-  background: #fff;
-  color: #ef4444;
-  font-size: 13px;
-  font-weight: 700;
-  padding: 2px 8px;
-  border-radius: 12px;
-}
-
-.pdpFlashBanner-price {
-  font-size: 28px;
-  font-weight: 700;
-  line-height: 1;
-}
-.pdpFlashBanner-price u {
-  font-size: 18px;
-  text-decoration: underline;
-}
-
-.pdpFlashBanner-oldPrice {
   font-size: 14px;
-  text-decoration: line-through;
-  color: rgba(255, 255, 255, 0.7);
+  color: #4b5563;
+  cursor: pointer;
+  transition: background 0.2s;
 }
 
-.pdpFlashBanner-right {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 4px;
-  z-index: 1;
+.pdpLoyaltyBadge:hover {
+  background: #fef9c3;
 }
 
-.pdpFlashBanner-title {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 18px;
-  font-weight: 700;
-  text-transform: uppercase;
-  font-style: italic;
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
-}
-
-.pdpFlashBanner-timer {
-  font-size: 14px;
-  font-weight: 500;
-  color: rgba(255, 255, 255, 0.9);
+.pdpLoyaltyBadge strong {
+  color: #111827;
 }
 
 .pdpQnaListEmpty svg {
@@ -240,6 +400,68 @@
   font-weight: 600;
 }
 
+/* â”€â”€â”€ Rating / Sold summary bar â”€â”€â”€ */
+.pdpRatingSoldBar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 0 12px;
+  flex-wrap: wrap;
+  font-size: 18px;
+  line-height: 1;
+}
+
+.pdpRatingSoldBar__stars {
+  display: flex;
+  gap: 1px;
+  font-size: 18px;
+  line-height: 1;
+}
+
+.pdpRatingSoldBar__star {
+  color: #d1d5db;
+  transition: color 0.2s;
+}
+
+.pdpRatingSoldBar__star--full {
+  color: #f59e0b;
+}
+
+.pdpRatingSoldBar__star--half {
+  color: #f59e0b;
+  opacity: 0.65;
+}
+
+.pdpRatingSoldBar__avg {
+  font-weight: 700;
+  font-size: 18px;
+  color: #f59e0b;
+}
+
+.pdpRatingSoldBar__count {
+  color: #6b7280;
+  text-decoration: none;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.pdpRatingSoldBar__count:hover {
+  color: #f59e0b;
+  text-decoration: underline;
+}
+
+.pdpRatingSoldBar__sep {
+  color: #d1d5db;
+  margin: 0 2px;
+  font-size: 13px;
+  user-select: none;
+}
+
+.pdpRatingSoldBar__sold {
+  color: #6b7280;
+  font-size: 18px;
+}
+
 .pdpMainGrid {
   display: grid;
   grid-template-columns: 1.4fr 1fr;
@@ -248,11 +470,27 @@
   align-items: start;
 }
 
+.pdpMainGrid-left,
+.pdpMainGrid-right {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
 @media (max-width: 992px) {
   .pdpMainGrid {
-    grid-template-columns: 1fr;
+    display: flex;
+    flex-direction: column;
     gap: 20px;
   }
+  .pdpMainGrid-left,
+  .pdpMainGrid-right {
+    display: contents;
+  }
+  .pdpGallery { order: 1; }
+  .pdpInfo { order: 2; }
+  .pdpSidebarSide { order: 3; }
+  .pdpSpecsSide { order: 4; }
 }
 
 /* Gallery */
@@ -356,7 +594,7 @@
 }
 
 .pdpMainImage {
-  /* Fix sizing để tránh ảnh có/không nền bị co do object-fit */
+  /* Fix sizing Ä‘á»ƒ trÃ¡nh áº£nh cÃ³/khÃ´ng ná»n bá»‹ co do object-fit */
   width: 645px;
   height: 100%;
   max-width: 100%;
@@ -575,7 +813,7 @@
   align-items: stretch;
 }
 
-/* Dung lượng: 1 hàng 3 option (desktop), giảm dãn cách */
+/* Dung lÆ°á»£ng: 1 hÃ ng 3 option (desktop), giáº£m dÃ£n cÃ¡ch */
 .pdpFacetChipRow--storages {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -594,7 +832,7 @@
   }
 }
 
-/* Màu luôn 1 hàng; màn nhỏ thì cuộn ngang */
+/* MÃ u luÃ´n 1 hÃ ng; mÃ n nhá» thÃ¬ cuá»™n ngang */
 .pdpFacetChipRow--colors {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -1295,7 +1533,7 @@
   border-radius: 8px;
 }
 
-/* Hỏi đáp — cuối trang PDP (layout tham khảo CellphoneS) */
+/* Há»i Ä‘Ã¡p â€” cuá»‘i trang PDP (layout tham kháº£o CellphoneS) */
 .pdpQnaPageEnd {
   margin-top: 48px;
   padding: 40px 0 8px;
@@ -1312,7 +1550,7 @@
   letter-spacing: -0.02em;
 }
 
-/* Một khối: ô đặt câu hỏi + danh sách hỏi đáp */
+/* Má»™t khá»‘i: Ã´ Ä‘áº·t cÃ¢u há»i + danh sÃ¡ch há»i Ä‘Ã¡p */
 .pdpQnaUnifiedCard {
   background: #fff;
   border: 1px solid #e8eaef;
@@ -1755,7 +1993,7 @@
   margin-bottom: 0;
 }
 
-/* FAQ accordion — thẻ tách riêng, giống layout “Câu hỏi thường gặp” mẫu */
+/* FAQ accordion â€” tháº» tÃ¡ch riÃªng, giá»‘ng layout â€œCÃ¢u há»i thÆ°á»ng gáº·pâ€ máº«u */
 .pdpFaqSection {
   margin-top: 50px;
 }
@@ -1945,7 +2183,7 @@
   width: 100%;
 }
 
-/* Khi bấm "Xem thêm": cột tin tức sticky, không cuộn mất */
+/* Khi báº¥m "Xem thÃªm": cá»™t tin tá»©c sticky, khÃ´ng cuá»™n máº¥t */
 .pdpRichGrid.is-expanded {
   align-items: start;
   overflow: visible;
@@ -3273,6 +3511,7 @@
     overflow: hidden;
   }
 
+
   .pdpName {
     font-size: 22px;
     margin-bottom: 12px;
@@ -3441,7 +3680,7 @@
   line-height: 1.4;
 }
 
-/* Floating Bar - hiển thị khi cuộn xuống */
+/* Floating Bar - hiá»ƒn thá»‹ khi cuá»™n xuá»‘ng */
 .pdpFloatingBar {
   position: fixed;
   bottom: 0;
@@ -3683,4 +3922,59 @@ html.dark .pdpFloatingQty button:hover {
 
 html.dark .pdpFloatingQty span {
   color: #f1f5f9;
+}
+
+/* Mobile optimizations for Flash Banner */
+@media (max-width: 576px) {
+  .pdpFlashBanner-header {
+    padding: 10px 12px;
+  }
+  .pdpFlashBanner-icon {
+    width: 32px;
+    height: 32px;
+  }
+  .pdpFlashBanner-titleText {
+    font-size: 20px;
+  }
+  .pdpFlashBanner-subTitleText {
+    font-size: 10px;
+    letter-spacing: 0;
+  }
+  .pdpFlashBanner-body {
+    padding: 12px 12px;
+    margin: 0 8px 8px 8px;
+  }
+  .pdpFlashBanner-bodyTop {
+    gap: 8px;
+  }
+  .pdpFlashBanner-currentPrice {
+    font-size: 24px;
+  }
+  .pdpFlashBanner-currentPrice u {
+    font-size: 16px;
+  }
+  .pdpFlashBanner-oldPrice {
+    font-size: 14px;
+  }
+  .pdpFlashBanner-divider {
+    margin: 0 8px;
+  }
+  .timer-box {
+    min-width: 28px;
+    padding: 4px;
+  }
+  .timer-num {
+    font-size: 14px;
+  }
+  .timer-label {
+    font-size: 9px;
+  }
+  .pdpFlashBanner-countdownTitle {
+    font-size: 11px;
+  }
+  .pdpFlashBanner-discountBadge {
+    width: 44px;
+    height: 28px;
+    font-size: 14px;
+  }
 }
