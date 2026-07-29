@@ -11,6 +11,7 @@ import 'payment_result_screen.dart';
 import 'package:flutter/gestures.dart';
 import '../../config/dio_client.dart';
 import '../../config/api_config.dart';
+import '../account/loyalty/loyalty_screen.dart';
 
 class CheckoutScreen extends StatefulWidget {
   final List<CartItem>? selectedItems;
@@ -1206,7 +1207,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
           _summaryRow('Giảm giá (Điểm thưởng)', '-${_formatCurrency(_pointsDiscountAmount)}',
               valueColor: const Color(0xFF16A34A)),
         const SizedBox(height: 16),
-        if (_hasAuth && _loyaltyData != null && (_loyaltyData!['current_points'] ?? 0) > 0)
+        if (_hasAuth && _loyaltyData != null && _loyaltyData!.containsKey('id'))
           Container(
             margin: const EdgeInsets.only(bottom: 16),
             padding: const EdgeInsets.all(12),
@@ -1221,7 +1222,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text('Điểm thưởng: ${_loyaltyData!['current_points']}', style: const TextStyle(fontWeight: FontWeight.bold)),
+                    Text('Điểm thưởng: ${_loyaltyData!['current_points'] ?? 0}', style: const TextStyle(fontWeight: FontWeight.bold)),
                     const Text('1 điểm = 500đ', style: TextStyle(color: Colors.orange, fontSize: 13)),
                   ],
                 ),
@@ -1275,6 +1276,75 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                 ],
                 const SizedBox(height: 4),
                 Text('(Tối đa dùng $_maxPointsAllowed điểm cho đơn hàng này)', style: const TextStyle(color: Colors.grey, fontSize: 12)),
+              ],
+            ),
+          )
+        else if (_hasAuth)
+          Container(
+            margin: const EdgeInsets.only(bottom: 16),
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: const Color(0xFFEFF6FF), // Màu nền giống web
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: const Color(0xFFDBEAFE)),
+            ),
+            child: Row(
+              children: [
+                const Icon(Icons.info_outline, color: Color(0xFF2563EB), size: 20),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: RichText(
+                    text: TextSpan(
+                      style: const TextStyle(fontSize: 13, color: Colors.black87, height: 1.4),
+                      children: [
+                        const TextSpan(text: 'Bạn chưa có thẻ hội viên! Hãy '),
+                        TextSpan(
+                          text: 'đăng ký ngay',
+                          style: const TextStyle(color: Color(0xFF2563EB), decoration: TextDecoration.underline, fontWeight: FontWeight.bold),
+                          recognizer: TapGestureRecognizer()
+                            ..onTap = () {
+                              Navigator.push(context, MaterialPageRoute(builder: (_) => const LoyaltyScreen()));
+                            },
+                        ),
+                        const TextSpan(text: ' để tích lũy và sử dụng điểm thưởng.'),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          )
+        else if (!_hasAuth)
+          Container(
+            margin: const EdgeInsets.only(bottom: 16),
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: const Color(0xFFEFF6FF), // Màu nền giống web
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: const Color(0xFFDBEAFE)),
+            ),
+            child: Row(
+              children: [
+                const Icon(Icons.info_outline, color: Color(0xFF2563EB), size: 20),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: RichText(
+                    text: TextSpan(
+                      style: const TextStyle(fontSize: 13, color: Colors.black87, height: 1.4),
+                      children: [
+                        TextSpan(
+                          text: 'Đăng nhập & Đăng ký hội viên',
+                          style: const TextStyle(color: Color(0xFF2563EB), decoration: TextDecoration.underline, fontWeight: FontWeight.bold),
+                          recognizer: TapGestureRecognizer()
+                            ..onTap = () {
+                              Navigator.pushNamed(context, '/login');
+                            },
+                        ),
+                        const TextSpan(text: ' ngay để tích lũy và sử dụng điểm thưởng.'),
+                      ],
+                    ),
+                  ),
+                ),
               ],
             ),
           ),

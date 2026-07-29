@@ -3,8 +3,12 @@ import 'dart:io';
 
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter_html/flutter_html.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import '../../config/dio_client.dart';
 import '../../services/auth_service.dart';
+import '../account/loyalty/loyalty_screen.dart';
 import '../auth/login_screen.dart';
 import '../../utils/app_dialogs.dart';
 import '../../services/cart_service.dart';
@@ -528,9 +532,26 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   @override
   void initState() {
     super.initState();
+    _checkAuthAndLoyalty();
     _loadProduct();
     _loadWishlist();
     _loadWishlistData();
+  }
+
+  bool _isLoggedIn = false;
+  bool _isLoyaltyMember = false;
+
+  Future<void> _checkAuthAndLoyalty() async {
+    final token = await const FlutterSecureStorage().read(key: 'auth_token');
+    if (token != null && token.isNotEmpty) {
+       _isLoggedIn = true;
+       try {
+         final meRes = await DioClient.instance.get('/me');
+         final user = meRes.data is Map ? (meRes.data['user'] ?? meRes.data) : {};
+         _isLoyaltyMember = user['is_loyalty_member'] == true;
+       } catch (_) {}
+       if (mounted) setState(() {});
+    }
   }
 
   @override
@@ -1333,19 +1354,64 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                       style: const TextStyle(
                           fontSize: 13, color: Colors.black87, height: 1.4),
                       children: [
-                        const TextSpan(
+                        if (_isLoggedIn && _isLoyaltyMember) ...[
+                          const TextSpan(
+                              text:
+                                  '💡 Đặc quyền Hội viên: Mua ngay sản phẩm này và tích lũy thêm '),
+                          TextSpan(
+                            text: '+${(displayPrice / 100000).floor()} điểm',
+                            style: const TextStyle(
+                                color: Color(0xFFEA580C),
+                                fontWeight: FontWeight.bold),
+                          ),
+                          TextSpan(
                             text:
-                                '💡 Đặc quyền Hội viên: Mua ngay sản phẩm này và tích lũy thêm '),
-                        TextSpan(
-                          text: '+${(displayPrice / 100000).floor()} điểm',
-                          style: const TextStyle(
-                              color: Color(0xFFEA580C),
-                              fontWeight: FontWeight.bold),
-                        ),
-                        TextSpan(
-                          text:
-                              ' (tương đương tiết kiệm ${formatCurrency((displayPrice / 100000).floor() * 500)}đ cho các đơn sắm sửa phụ kiện lần sau).',
-                        ),
+                                ' (tương đương tiết kiệm ${formatCurrency((displayPrice / 100000).floor() * 500)}đ cho các đơn sắm sửa phụ kiện lần sau).',
+                          ),
+                        ] else if (_isLoggedIn && !_isLoyaltyMember) ...[
+                          const TextSpan(
+                            text: '💡 Bạn chưa có thẻ hội viên! Hãy ',
+                          ),
+                          TextSpan(
+                            text: 'đăng ký ngay',
+                            style: const TextStyle(
+                                color: Color(0xFF2563EB),
+                                decoration: TextDecoration.underline,
+                                fontWeight: FontWeight.bold),
+                            recognizer: TapGestureRecognizer()
+                              ..onTap = () {
+                                Navigator.push(context, MaterialPageRoute(builder: (_) => const LoyaltyScreen()));
+                              },
+                          ),
+                          const TextSpan(text: ' để tích lũy thêm '),
+                          TextSpan(
+                            text: '+${(displayPrice / 100000).floor()} điểm',
+                            style: const TextStyle(
+                                color: Color(0xFFEA580C),
+                                fontWeight: FontWeight.bold),
+                          ),
+                          const TextSpan(text: ' khi mua sản phẩm này.'),
+                        ] else ...[
+                          TextSpan(
+                            text: '💡 Đăng nhập & Đăng ký hội viên',
+                            style: const TextStyle(
+                                color: Color(0xFF2563EB),
+                                decoration: TextDecoration.underline,
+                                fontWeight: FontWeight.bold),
+                            recognizer: TapGestureRecognizer()
+                              ..onTap = () {
+                                Navigator.pushNamed(context, '/login');
+                              },
+                          ),
+                          const TextSpan(text: ' ngay để tích lũy thêm '),
+                          TextSpan(
+                            text: '+${(displayPrice / 100000).floor()} điểm',
+                            style: const TextStyle(
+                                color: Color(0xFFEA580C),
+                                fontWeight: FontWeight.bold),
+                          ),
+                          const TextSpan(text: ' khi mua sản phẩm này.'),
+                        ]
                       ],
                     ),
                   ),
@@ -1544,11 +1610,11 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
             for (var color in colors) {
               if (sValue.toLowerCase().contains(color.toLowerCase())) {
                 sValue =
-                    sValue.replaceAll(RegExp(color, caseSensitive: false), '');
+                    sValue.replaceAll(RegExp(color, caseSensitive: false), '').trim();
               }
             }
-            final parts = sValue.trim().split(' ');
-            sValue = parts.last.trim();
+            // Loại bỏ các ký tự thừa như gạch ngang ở đầu/cuối nếu có
+            sValue = sValue.replaceAll(RegExp(r'^-|-$'), '').trim();
           }
           if (sValue.toUpperCase().endsWith('G') &&
               !sValue.toUpperCase().endsWith('GB')) {
@@ -1697,10 +1763,10 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
             const SizedBox(height: 16),
           ],
 
-          // ================= HÀNG 2: CHỌN DUNG LƯỢNG (ĐÃ LỌC SẠCH CHỮ) =================
+          // ================= HÀNG 2: CHỌN PHIÊN BẢN (ĐÃ LỌC SẠCH CHỮ) =================
           if (storages.isNotEmpty) ...[
             Text(
-              'Dung lượng',
+              'Phiên bản',
               style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 14,

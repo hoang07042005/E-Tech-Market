@@ -481,6 +481,7 @@ class _OrderListScreenState extends State<OrderListScreen> {
                   ),
                   const SizedBox(height: 4),
                   Text(Trans.orderDateLabel(date), style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6), fontSize: 12)),
+                  const SizedBox(height: 4),
                   // const Divider(height: 24),
                   if (items.length > 1) ...[
                     // Hàng 1: Cuộn ngang ảnh sản phẩm

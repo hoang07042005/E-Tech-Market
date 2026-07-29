@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../utils/network_utils.dart';
 import '../../utils/translation.dart';
+import '../../config/dio_client.dart';
 import 'clause/terms_screen.dart';
 import '../orders/order_list_screen.dart';
 import 'security/security_screen.dart';
@@ -14,6 +15,8 @@ import '../admin/inventory/admin_inventory_screen.dart';
 import '../admin/products/admin_product_screen.dart';
 import '../admin/orders/admin_order_screen.dart';
 import '../admin/dashboard/admin_dashboard_screen.dart';
+import 'widgets/loyalty_card.dart';
+import 'loyalty/loyalty_screen.dart';
 
 import '../../services/checkout_service.dart';
 
@@ -56,6 +59,35 @@ class _AccountScreenState extends State<AccountScreen> {
         setState(() {
           _isLoadingLoyalty = false;
         });
+      }
+    }
+  }
+
+  Future<void> _cancelLoyalty() async {
+    try {
+      await DioClient.instance.post('/loyalty/cancel');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Đã hủy thẻ hội viên thành công.'),
+            backgroundColor: Colors.orange,
+          ),
+        );
+        // Refresh loyalty data
+        setState(() {
+          _isLoadingLoyalty = true;
+          _loyaltyData = null;
+        });
+        await _fetchLoyalty();
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Lỗi: ${e.toString()}'),
+            backgroundColor: Colors.red,
+          ),
+        );
       }
     }
   }
@@ -176,179 +208,6 @@ class _AccountScreenState extends State<AccountScreen> {
             ),
             const SizedBox(height: 24),
 
-            // Điểm thưởng & Hạng thành viên
-            if (_isLoadingLoyalty)
-              const CircularProgressIndicator()
-            else if (_loyaltyData != null && _loyaltyData!.isNotEmpty)
-              Container(
-                margin: const EdgeInsets.symmetric(horizontal: 0),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(16),
-                  boxShadow: [
-                    BoxShadow(color: Colors.black26, blurRadius: 10, offset: const Offset(0, 5)),
-                  ],
-                ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(16),
-                  child: Stack(
-                    children: [
-                      // Lớp hình nền mờ ảo
-                      Positioned.fill(
-                        child: Opacity(
-                          opacity: 0.5,
-                          child: Image.asset(
-                            'assets/images/screen1.png',
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                      ),
-                      // Lớp Gradient phủ lên ảnh nền
-                      Positioned.fill(
-                        child: Container(
-                          decoration: const BoxDecoration(
-                            gradient: LinearGradient(
-                              colors: [Color(0xF00F172A), Color(0x661E293B)], // Có độ trong suốt
-                              begin: Alignment.bottomLeft,
-                              end: Alignment.topRight,
-                            ),
-                          ),
-                        ),
-                      ),
-                      // Nội dung chính
-                      Padding(
-                        padding: const EdgeInsets.all(24),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    const Text('E-TECH ECOSYSTEM', style: TextStyle(color: Color(0xFFD0C6AB), fontSize: 10, fontWeight: FontWeight.w600, letterSpacing: 1.2)),
-                                    const SizedBox(height: 4),
-                                    const Text('Thẻ Thành Viên E-Tech', style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
-                                  ],
-                                ),
-                                Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                                  decoration: BoxDecoration(
-                                    color: Colors.white.withOpacity(0.1),
-                                    borderRadius: BorderRadius.circular(8),
-                                    border: Border.all(color: const Color(0xFFFFE16D).withOpacity(0.3)),
-                                  ),
-                                  child: Row(
-                                    children: [
-                                      Text('${_loyaltyData!['current_points']}', style: const TextStyle(color: Color(0xFFFFE16D), fontSize: 16, fontWeight: FontWeight.bold)),
-                                      const SizedBox(width: 4),
-                                      const Text('Điểm', style: TextStyle(color: Color(0xFFFFE16D), fontSize: 10)),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 24),
-                            Text(
-                              (_loyaltyData!['membership_rank']?['rank_name'] != null ? 'Thành viên (${_loyaltyData!['membership_rank']['rank_name']})' : 'Thành viên').toUpperCase(), // Viết hoa toàn bộ
-                              style: TextStyle(
-                                color: const Color(0xFFE3B707), // Giữ màu cũ của bạn
-                                fontSize: 20,
-                                fontWeight: FontWeight.w800, // Rất đậm
-                                letterSpacing: 1.2, // Giãn chữ nhìn rất "pro"
-                                shadows: [
-                                  Shadow(
-                                    blurRadius: 4.0,
-                                    color: Colors.black.withOpacity(0.3),
-                                    offset: const Offset(1.0, 1.0),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            Row(
-                              children: [
-                                const Text('Chi tiêu tích lũy: ', style: TextStyle(color: Color(0xFFD0C6AB), fontSize: 13)),
-                                Text('${_formatCurrency(_loyaltyData!['total_spent'])} đ', style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
-                              ],
-                            ),
-                            const SizedBox(height: 16),
-                            Builder(builder: (context) {
-                              double parseDouble(dynamic value) {
-                                if (value == null) return 0.0;
-                                if (value is num) return value.toDouble();
-                                return double.tryParse(value.toString()) ?? 0.0;
-                              }
-
-                      final nextRank = _loyaltyData!['next_rank'];
-                      final totalSpent = parseDouble(_loyaltyData!['total_spent']);
-                      if (nextRank == null) {
-                        return Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Container(
-                              height: 6,
-                              width: double.infinity,
-                              decoration: BoxDecoration(
-                                gradient: const LinearGradient(colors: [Color(0xFFE9C400), Color(0xFFFFE16D)]),
-                                borderRadius: BorderRadius.circular(3),
-                              ),
-                            ),
-                            const SizedBox(height: 12),
-                            Row(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                const Icon(Icons.verified_outlined, color: Color(0xFFFFE16D), size: 16),
-                                const SizedBox(width: 8),
-                                Expanded(
-                                  child: Text(
-                                    'Chúc mừng! Bạn đang ở hạng thẻ cao nhất.',
-                                    style: TextStyle(color: const Color(0xFFD0C6AB).withValues(alpha: 0.8), fontSize: 12),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        );
-                      }
-                      
-                      final minSpend = parseDouble(nextRank['min_spend']);
-                      final progress = minSpend > 0 ? (totalSpent / minSpend).clamp(0.0, 1.0) : 1.0;
-                      final remaining = (minSpend - totalSpent).clamp(0.0, double.infinity);
-
-                      return Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Stack(
-                            children: [
-                              Container(height: 6, width: double.infinity, decoration: BoxDecoration(color: const Color(0xFF1F2B3C), borderRadius: BorderRadius.circular(3))),
-                              FractionallySizedBox(
-                                widthFactor: progress,
-                                child: Container(height: 6, decoration: BoxDecoration(gradient: const LinearGradient(colors: [Color(0xFFE9C400), Color(0xFFFFE16D)]), borderRadius: BorderRadius.circular(3))),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 8),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text('Tiến trình hạng ${nextRank['rank_name'] ?? ''}', style: const TextStyle(color: Color(0xFFD0C6AB), fontSize: 12)),
-                              Text('Cần thêm ${_formatCurrency(remaining)} đ', style: const TextStyle(color: Color(0xFFFFE16D), fontSize: 12, fontWeight: FontWeight.bold)),
-                            ],
-                          ),
-                        ],
-                      );
-                    }),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-
-            const SizedBox(height: 24),
 
             // --- TÀI KHOẢN ---
             _buildMenuSection(
@@ -356,6 +215,7 @@ class _AccountScreenState extends State<AccountScreen> {
                 title: Trans.accountTitle,
               
               children: [
+                
                 // Thông tin cá nhân: Màu Xanh Dương (Tin cậy)
                 _buildMenuItem(
                   context,
@@ -398,6 +258,18 @@ class _AccountScreenState extends State<AccountScreen> {
                   const Color(0xFF9333EA), 
                   () {
                     Navigator.push(context, MaterialPageRoute(builder: (_) => const VoucherWarehouseScreen()));
+                  }
+                ),
+
+                // Thẻ hội viên: Màu Vàng (Tích điểm, thưởng)
+                _buildMenuItem(
+                  context,
+                  Icons.card_membership_outlined,
+                  'Thẻ Hội Viên & Điểm Thưởng',
+                  const Color(0xFFFEF9C3),
+                  const Color(0xFFCA8A04),
+                  () {
+                    Navigator.push(context, MaterialPageRoute(builder: (_) => const LoyaltyScreen()));
                   }
                 ),
               ],
