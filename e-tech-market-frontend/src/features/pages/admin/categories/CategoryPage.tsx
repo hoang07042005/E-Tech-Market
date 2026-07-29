@@ -41,8 +41,6 @@ export default function CategoryPage() {
     setExpandedIds(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id])
   }
 
-  // 🔒 Token is sent via httpOnly cookie automatically
-
   // Form State
   const [formData, setFormData] = useState({
     name: '',
@@ -93,10 +91,10 @@ export default function CategoryPage() {
     try {
       const payload = new FormData()
       payload.append('name', formData.name)
-      if (formData.slug) payload.append('slug', formData.slug)
+      payload.append('slug', formData.slug)
       if (formData.parent_id) payload.append('parent_id', formData.parent_id)
       payload.append('is_active', formData.is_active ? '1' : '0')
-      if (formData.description) payload.append('description', formData.description)
+      payload.append('description', formData.description) // Luôn gửi kể cả khi rỗng để server có thể xóa
 
       if (!formData.parent_id && imageFile) {
         payload.append('image', imageFile)

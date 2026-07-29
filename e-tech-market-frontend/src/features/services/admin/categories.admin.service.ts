@@ -26,7 +26,7 @@ export const deleteAdminCategory = (id: number) => {
 
 export const saveAdminCategory = (payload: FormData, id: number | null | undefined) => {
   if (id) {
-    payload.set('_method', 'PUT')
+    // Dùng POST trực tiếp tới /{id} (backend route hỗ trợ POST cho update)
     return apiFetch(`/api/admin/categories/${id}`, {
       method: 'POST',
       body: payload,

@@ -150,7 +150,9 @@ Route::middleware('auth:sanctum')->group(function () {
 
         Route::get('/categories', [AdminCategoriesController::class, 'index'])->name('categories');
         Route::post('/categories', [AdminCategoriesController::class, 'store'])->name('categories');
+        Route::post('/categories/{category}', [AdminCategoriesController::class, 'update'])->name('categories.update_post');
         Route::put('/categories/{category}', [AdminCategoriesController::class, 'update'])->name('categories');
+        Route::patch('/categories/{category}', [AdminCategoriesController::class, 'update'])->name('categories.patch');
         Route::delete('/categories/{category}', [AdminCategoriesController::class, 'destroy'])->name('categories');
 
         Route::apiResource('video-categories', App\Http\Controllers\Admin\VideoCategoryController::class);
