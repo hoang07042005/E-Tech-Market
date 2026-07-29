@@ -36,60 +36,9 @@ class AccountScreen extends StatefulWidget {
 }
 
 class _AccountScreenState extends State<AccountScreen> {
-  Map<String, dynamic>? _loyaltyData;
-  bool _isLoadingLoyalty = true;
-
   @override
   void initState() {
     super.initState();
-    _fetchLoyalty();
-  }
-
-  Future<void> _fetchLoyalty() async {
-    try {
-      final data = await CheckoutService.fetchLoyaltyData();
-      if (mounted) {
-        setState(() {
-          _loyaltyData = data;
-          _isLoadingLoyalty = false;
-        });
-      }
-    } catch (_) {
-      if (mounted) {
-        setState(() {
-          _isLoadingLoyalty = false;
-        });
-      }
-    }
-  }
-
-  Future<void> _cancelLoyalty() async {
-    try {
-      await DioClient.instance.post('/loyalty/cancel');
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Đã hủy thẻ hội viên thành công.'),
-            backgroundColor: Colors.orange,
-          ),
-        );
-        // Refresh loyalty data
-        setState(() {
-          _isLoadingLoyalty = true;
-          _loyaltyData = null;
-        });
-        await _fetchLoyalty();
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Lỗi: ${e.toString()}'),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
-    }
   }
 
   String _formatCurrency(dynamic value) {
@@ -261,13 +210,13 @@ class _AccountScreenState extends State<AccountScreen> {
                   }
                 ),
 
-                // Thẻ hội viên: Màu Vàng (Tích điểm, thưởng)
+                // Thẻ hội viên: Màu Xanh Cyan/Premium (Tích điểm, thưởng)
                 _buildMenuItem(
                   context,
-                  Icons.card_membership_outlined,
+                  Icons.workspace_premium_outlined,
                   'Thẻ Hội Viên & Điểm Thưởng',
-                  const Color(0xFFFEF9C3),
-                  const Color(0xFFCA8A04),
+                  const Color(0xFFCFFAFE),
+                  const Color(0xFF0891B2),
                   () {
                     Navigator.push(context, MaterialPageRoute(builder: (_) => const LoyaltyScreen()));
                   }
