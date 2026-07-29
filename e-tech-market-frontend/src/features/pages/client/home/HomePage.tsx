@@ -1348,7 +1348,7 @@ export default function HomePage() {
                 <h2 className="hpSectionTitleNew text-center mb-5">Bài viết mới nhất</h2>
               </div>
               <div className="hpNewsGrid">
-                {latestNews.map((post) => (
+                {latestNews.slice(0, 10).map((post) => (
                   <Link key={post.id} to={`/blog/${post.slug}`} className="hpNewsCard">
                     <div className="hpNewsThumb">
                       <img src={resolveImageUrl(post.thumbnail_url)} alt={post.title} />
