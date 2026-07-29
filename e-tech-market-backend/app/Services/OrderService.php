@@ -204,6 +204,9 @@ class OrderService
                 'all_keys'            => array_keys($data),
             ]);
             if ($user && !empty($data['points_used'])) {
+                if (!$user->is_loyalty_member) {
+                    throw ValidationException::withMessages(['points_used' => 'Bạn cần đăng ký thẻ hội viên để sử dụng điểm thưởng']);
+                }
                 $requestedPoints = (int) $data['points_used'];
                 if ($requestedPoints > 0) {
                     if ($user->current_points < $requestedPoints) {
@@ -470,7 +473,7 @@ class OrderService
         $eligibleAmount = max(0, $order->subtotal_amount - $order->discount_amount);
         $pointsEarned = (int) floor(($eligibleAmount / 100000) * $multiplier);
         
-        if ($pointsEarned > 0) {
+        if ($pointsEarned > 0 && $user && $user->is_loyalty_member) {
             $order->points_earned = $pointsEarned;
             
             $user->increment('current_points', $pointsEarned);

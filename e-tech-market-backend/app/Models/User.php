@@ -62,6 +62,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'email_verified_at',
         'remember_token',
         'current_points',
+        'is_loyalty_member',
         'total_spent',
         'rank_id',
         'google_id',
@@ -85,6 +86,7 @@ class User extends Authenticatable implements MustVerifyEmail
     protected $casts = [
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
+        'is_loyalty_member' => 'boolean',
     ];
 
     public function carts(): HasOne

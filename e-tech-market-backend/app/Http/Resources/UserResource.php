@@ -27,6 +27,7 @@ class UserResource extends JsonResource
             'roles' => $this->whenLoaded('roles'),
             'created_at' => $this->created_at,
             // Loyalty fields
+            'is_loyalty_member' => $this->is_loyalty_member,
             'current_points' => $this->current_points,
             'total_spent' => $this->total_spent,
             'rank_id' => $this->rank_id,

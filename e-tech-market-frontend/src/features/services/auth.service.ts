@@ -72,4 +72,26 @@ export async function logout(): Promise<void> {
 // Export for other modules to check auth state
 export { getAuthToken }
 
+export async function registerLoyaltyCard(): Promise<{ message: string, user: any }> {
+  const res = await apiFetch<any>('/api/loyalty/register', {
+    method: 'POST',
+  })
+  if (res.user) {
+    try { localStorage.setItem("user", JSON.stringify(res.user)) } catch {}
+    window.dispatchEvent(new Event("auth-change"))
+  }
+  return res
+}
+
+export async function cancelLoyaltyCard(): Promise<{ message: string, user: any }> {
+  const res = await apiFetch<any>('/api/loyalty/cancel', {
+    method: 'POST',
+  })
+  if (res.user) {
+    try { localStorage.setItem("user", JSON.stringify(res.user)) } catch {}
+    window.dispatchEvent(new Event("auth-change"))
+  }
+  return res
+}
+
 

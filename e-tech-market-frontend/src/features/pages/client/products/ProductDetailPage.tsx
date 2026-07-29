@@ -16,6 +16,7 @@ import {
 } from '@/features/services/products.service'
 import {} from '@/features/services/wishlist.service'
 import { addToCompare, getCompareList, removeFromCompare } from '@/features/services/compare.service'
+import { registerLoyaltyCard } from '@/features/services/auth.service'
 import { useWishlistQuery, useWishlistMutation, useCartMutation } from '@/features/services/mutations'
 import '@/styles/pages/ProductDetailPage.css'
 import Skeleton from '@/components/Skeleton'
@@ -50,6 +51,18 @@ export default function ProductDetailPage() {
   // 🔒 Check auth via user in localStorage (not token - token is in httpOnly cookie)
   const userStr = useAuthStore((state) => state.userStr)
   const hasAuth = !!userStr
+  const user = userStr ? (function() { try { return JSON.parse(userStr) } catch { return null } })() : null;
+
+  const handleRegisterLoyalty = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    try {
+      await registerLoyaltyCard();
+      toast.showToast({ type: 'success', message: 'Đăng ký thẻ hội viên thành công! Bạn đã có thể tích lũy điểm.' });
+    } catch (error: any) {
+      toast.showToast({ type: 'error', message: error.message || 'Có lỗi xảy ra khi đăng ký thẻ hội viên.' });
+    }
+  };
+
   const [relatedProducts, setRelatedProducts] = useState<Product[]>([])
   
   const { data: wishlistData } = useWishlistQuery(hasAuth)
@@ -309,7 +322,7 @@ export default function ProductDetailPage() {
     return schema
   }, [product, reviewStats, selectedVariant])
 
-  const isFlashSaleMode = searchParams.get('flashSale') === 'true'
+  // Unused variable removed
 
   const activeFlashSale = useMemo(() => {
     if (!product?.flash_sale_items?.length) return null
@@ -867,9 +880,23 @@ export default function ProductDetailPage() {
                   <path d="M20 8h-3V4H3c-1.1 0-2 .9-2 2v11h2c0 1.66 1.34 3 3 3s3-1.34 3-3h6c0 1.66 1.34 3 3 3s3-1.34 3-3h2v-5l-3-4zM6 18.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm13.5-9l1.96 2.5H17V9.5h2.5zm-1.5 9c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/>
                 </svg>
                 <span>
-                  <strong>Đặc quyền Hội viên:</strong> Mua ngay sản phẩm này và tích lũy thêm 
-                  <strong style={{ color: '#d97706' }}> +{Math.floor(Number(selectedVariant ? selectedVariant.effective_price : (product.price ?? 0)) / 100000)} điểm</strong>
-                  (tương đương tiết kiệm {Math.floor(Number(selectedVariant ? selectedVariant.effective_price : (product.price ?? 0)) / 100000) * 500}đ cho các đơn sắm sửa phụ kiện lần sau).
+                  {hasAuth && user?.is_loyalty_member ? (
+                    <>
+                      <strong>Đặc quyền Hội viên:</strong> Mua ngay sản phẩm này và tích lũy thêm 
+                      <strong style={{ color: '#d97706' }}> +{Math.floor(Number(selectedVariant ? selectedVariant.effective_price : (product.price ?? 0)) / 100000)} điểm</strong>
+                      (tương đương tiết kiệm {Math.floor(Number(selectedVariant ? selectedVariant.effective_price : (product.price ?? 0)) / 100000) * 500}đ cho các đơn sắm sửa phụ kiện lần sau).
+                    </>
+                  ) : hasAuth ? (
+                    <>
+                      <strong>Bạn chưa có thẻ hội viên!</strong> Hãy <a href="#" onClick={handleRegisterLoyalty} style={{ color: '#2563eb', textDecoration: 'underline', cursor: 'pointer' }}>đăng ký ngay</a> để tích lũy thêm 
+                      <strong style={{ color: '#d97706' }}> +{Math.floor(Number(selectedVariant ? selectedVariant.effective_price : (product.price ?? 0)) / 100000)} điểm</strong> từ sản phẩm này.
+                    </>
+                  ) : (
+                    <>
+                      <a href="/login" style={{ color: '#2563eb', textDecoration: 'underline', cursor: 'pointer' }}>Đăng nhập & Đăng ký hội viên</a> ngay để tích lũy thêm 
+                      <strong style={{ color: '#d97706' }}> +{Math.floor(Number(selectedVariant ? selectedVariant.effective_price : (product.price ?? 0)) / 100000)} điểm</strong> từ sản phẩm này.
+                    </>
+                  )}
                 </span>
                 
               </div>
