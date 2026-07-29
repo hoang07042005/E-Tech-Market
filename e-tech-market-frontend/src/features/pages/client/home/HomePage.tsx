@@ -512,6 +512,12 @@ export default function HomePage() {
   const [homeVideos, setHomeVideos] = useState<Video[]>([])
   const [newsletterEmail, setNewsletterEmail] = useState('')
   const [newsletterLoading, setNewsletterLoading] = useState(false)
+  // Removed setTabActive
+  // Removed phoneProducts
+  // Removed laptopProducts
+  // Removed pcProducts
+  // Removed monitorProducts
+  // Removed printerProducts
   const [tabActive, setTabActive] = useState<'phone' | 'laptop' | 'pc' | 'monitor' | 'printer'>('phone')
   const [phoneProducts, setPhoneProducts] = useState<ApiProduct[]>([])
   const [laptopProducts, setLaptopProducts] = useState<ApiProduct[]>([])

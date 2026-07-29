@@ -49,6 +49,7 @@ const OrderDetailPage = lazy(() => import('@/features/pages/client/orders/OrderD
 const NotificationsPage = lazy(() => import('@/features/pages/client/notifications/NotificationsPage'))
 const SecurityPage = lazy(() => import('@/features/pages/client/profile/SecurityPage'))
 const CouponsPage = lazy(() => import('@/features/pages/client/profile/CouponsPage'))
+const LoyaltyPage = lazy(() => import('@/features/pages/client/profile/LoyaltyPage'))
 const BlogPage = lazy(() => import('@/features/pages/client/blog/BlogPage'))
 const BlogPostDetailPage = lazy(() => import('@/features/pages/client/blog/BlogPostDetailPage'))
 const ComparePage = lazy(() => import('@/features/pages/client/products/ComparePage'))
@@ -330,6 +331,7 @@ function AppFrame() {
             <Route path="notifications" element={<NotificationsPage />} />
             <Route path="security" element={<SecurityPage />} />
             <Route path="coupons" element={<CouponsPage />} />
+            <Route path="loyalty" element={<LoyaltyPage />} />
           </Route>
           <Route path="/notifications" element={<NotificationsPage />} />
           <Route path="/orders" element={<OrdersPage />} />
