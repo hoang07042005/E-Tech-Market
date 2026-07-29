@@ -268,10 +268,23 @@
   transition: background .18s ease, color .18s ease;
 }
 
-.pfNavBtnActive .pfSideIcon {
-  background: var(--et-primary);
-  color: #fff;
-}
+/* Colored Icon Variations */
+.pfSideIcon-info { background: rgba(59, 130, 246, 0.12) !important; color: #3b82f6 !important; }
+.pfNavBtnActive .pfSideIcon-info { background: #3b82f6 !important; color: #fff !important; }
+
+.pfSideIcon-orders { background: rgba(34, 197, 94, 0.12) !important; color: #22c55e !important; }
+.pfNavBtnActive .pfSideIcon-orders { background: #22c55e !important; color: #fff !important; }
+
+.pfSideIcon-security { background: rgba(168, 85, 247, 0.12) !important; color: #a855f7 !important; }
+.pfNavBtnActive .pfSideIcon-security { background: #a855f7 !important; color: #fff !important; }
+
+.pfSideIcon-coupons { background: rgba(239, 68, 68, 0.12) !important; color: #ef4444 !important; }
+.pfNavBtnActive .pfSideIcon-coupons { background: #ef4444 !important; color: #fff !important; }
+
+.pfSideIcon-loyalty { background: rgba(234, 179, 8, 0.12) !important; color: #eab308 !important; }
+.pfNavBtnActive .pfSideIcon-loyalty { background: #eab308 !important; color: #fff !important; }
+
+.pfSideIcon-logout { background: rgba(239, 68, 68, 0.12) !important; color: #ef4444 !important; }
 
 .pfNavSep {
   height: 1px;
@@ -539,7 +552,7 @@
   justify-content: space-between;
   align-items: center;
   gap: 12px;
-  margin-bottom: 14px;
+  margin-bottom: 30px;
 }
 
 .pfCardTitle {
@@ -1201,24 +1214,30 @@
     gap: 20px
   }
 
+  .pfSubPageActive .pfSidebar {
+    display: none !important;
+  }
+  
+  .pfMobileBackBtn {
+    display: flex !important;
+  }
+
   .pfSidebar {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    display: flex;
+    flex-direction: column;
     gap: 12px;
     padding: 10px;
     background: transparent;
     border: none;
     box-shadow: none;
     position: static;
-    align-items: stretch;
     margin-bottom: 10px;
   }
 
   /* Avatar + profile block chiếm toàn bộ chiều rộng */
   .pfSideProfile {
-    grid-column: 1 / -1;
     background: #fff;
-    border: 1px solid var(--et-border);
+    border: none;
     border-radius: 16px;
     padding: 20px 16px 16px;
     box-shadow: 0 4px 12px rgba(15, 23, 42, .03);
@@ -1226,27 +1245,28 @@
   }
 
   .pfNavBtn {
-    flex-direction: column;
-    justify-content: center;
-    padding: 16px 8px;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    padding: 14px 16px;
     background: #fff;
-    border: 1px solid var(--et-border);
-    border-radius: 16px;
-    height: 100%;
-    text-align: center;
-    gap: 8px;
-    font-size: 11px;
-    box-shadow: 0 4px 12px rgba(15, 23, 42, .03);
-    min-width: 0;
+    border: none;
+    border-radius: 12px;
+    height: auto;
+    text-align: left;
+    gap: 16px;
+    font-size: 14px;
+    font-weight: 600;
+    box-shadow: 0 2px 8px rgba(15, 23, 42, .03);
     white-space: normal;
     word-break: break-word;
     line-height: 1.3
   }
 
   .pfSideIcon {
-    width: 36px;
-    height: 36px;
-    margin: 0 auto
+    width: 24px;
+    height: 24px;
+    margin: 0;
   }
 
   .pfNavSep {
@@ -1289,7 +1309,8 @@
   }
 
   .pfCard {
-    padding: 12px
+    padding: 0;
+    border: none
   }
 
   .pfRowGrid {
@@ -1407,7 +1428,7 @@
     font-size: 18px !important;
   }
   .pfCard[aria-label="Thẻ thành viên"] span {
-    font-size: 12px !important;
+    font-size: 13px !important;
   }
   /* Points block */
   .pfCard[aria-label="Thẻ thành viên"] > div > div > div:nth-child(1) > div:nth-child(2) {

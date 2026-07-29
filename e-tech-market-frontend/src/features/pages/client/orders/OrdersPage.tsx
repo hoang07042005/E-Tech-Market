@@ -244,8 +244,17 @@ export default function OrdersPage() {
       ) : error ? (
         <div className={inProfile ? 'odhEmpty' : 'odEmpty'}>{error}</div>
       ) : !rows.length ? (
-        <div className={inProfile ? 'odhEmpty' : 'odEmpty'}>
-          Bạn chưa có đơn hàng nào. <Link to="/products">Mua sắm ngay</Link>
+        <div className="od-empty-state">
+          <div className="od-empty-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/>
+              <path d="M3 6h18"/>
+              <path d="M16 10a4 4 0 0 1-8 0"/>
+            </svg>
+          </div>
+          <h3 className="od-empty-title">Bạn chưa có đơn hàng nào</h3>
+          <p className="od-empty-desc">Có vẻ như bạn chưa thực hiện đơn hàng nào. Hãy khám phá các sản phẩm tuyệt vời của E-Tech ngay hôm nay!</p>
+          <Link to="/products" className="od-empty-btn">Mua sắm ngay</Link>
         </div>
       ) : (
         <>
@@ -299,8 +308,22 @@ export default function OrdersPage() {
               </div>
 
               <div className="odhList">
-                {filteredRows.map((o) => {
-                  const meta = statusMeta(o.status)
+                {filteredRows.length === 0 ? (
+                  <div className="od-empty-state">
+                    <div className="od-empty-icon">
+                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/>
+                        <path d="M3 6h18"/>
+                        <path d="M16 10a4 4 0 0 1-8 0"/>
+                      </svg>
+                    </div>
+                    <h3 className="od-empty-title">Bạn chưa có đơn hàng nào</h3>
+                    <p className="od-empty-desc">Có vẻ như bạn chưa thực hiện đơn hàng nào. Hãy khám phá các sản phẩm tuyệt vời của E-Tech ngay hôm nay!</p>
+                    <Link to="/products" className="od-empty-btn">Mua sắm ngay</Link>
+                  </div>
+                ) : (
+                  filteredRows.map((o) => {
+                    const meta = statusMeta(o.status)
                   const total = typeof o.total_amount === 'string' ? Number(o.total_amount) : (o.total_amount ?? 0)
 
                   // build thumbnails similar to ProfilePage
@@ -378,14 +401,29 @@ export default function OrdersPage() {
                       </div>
                     </div>
                   )
-                })}
+                  })
+                )}
               </div>
             </>
           ) : (
             <>
               <div className="odList">
-                {filteredRows.map((o) => {
-                  const meta = statusMeta(o.status)
+                {filteredRows.length === 0 ? (
+                  <div className="od-empty-state">
+                    <div className="od-empty-icon">
+                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/>
+                        <path d="M3 6h18"/>
+                        <path d="M16 10a4 4 0 0 1-8 0"/>
+                      </svg>
+                    </div>
+                    <h3 className="od-empty-title">Bạn chưa có đơn hàng nào</h3>
+                    <p className="od-empty-desc">Có vẻ như bạn chưa thực hiện đơn hàng nào. Hãy khám phá các sản phẩm tuyệt vời của E-Tech ngay hôm nay!</p>
+                    <Link to="/products" className="od-empty-btn">Mua sắm ngay</Link>
+                  </div>
+                ) : (
+                  filteredRows.map((o) => {
+                    const meta = statusMeta(o.status)
                   const total = typeof o.total_amount === 'string' ? Number(o.total_amount) : (o.total_amount ?? 0)
 
                   // collect product names (show all, joined)
@@ -441,7 +479,8 @@ export default function OrdersPage() {
                       </div>
                     </Link>
                   )
-                })}
+                  })
+                )}
               </div>
 
               <div className="odPager">

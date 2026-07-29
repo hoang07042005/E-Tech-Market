@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { apiFetch } from '@/configs/api.config'
 import { useAuthStore } from '@/features/store/useAuthStore'
 import { toast } from '@/utils/toast';
@@ -60,8 +61,18 @@ export default function CouponsPage() {
   return (
     <div style={{ marginTop: '20px' }}>
       {activeCoupons.length === 0 ? (
-        <div style={{ padding: '40px', textAlign: 'center', color: 'var(--et-text-muted)', background: 'var(--et-surface)', border: '1px solid var(--et-border)', borderRadius: '12px' }}>
-          Hiện bạn chưa có mã giảm giá nào.
+        <div className="cp-empty-state">
+          <div className="cp-empty-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M21 10V6C21 4.9 20.1 4 19 4H5C3.9 4 3 4.9 3 6V10C4.1 10 5 10.9 5 12C5 13.1 4.1 14 3 14V18C3 19.1 3.9 20 5 20H19C20.1 20 21 19.1 21 18V14C19.9 14 19 13.1 19 12C19 10.9 19.9 10 21 10Z" />
+              <path d="M10 10L8.5 12L10 14" />
+              <path d="M14 10L15.5 12L14 14" />
+              <path d="M12.8 9L11.2 15" />
+            </svg>
+          </div>
+          <h3 className="cp-empty-title">Bạn chưa có mã giảm giá nào</h3>
+          <p className="cp-empty-desc">Rất tiếc, hiện tại bạn chưa có mã giảm giá nào. Hãy mua sắm ngay để có cơ hội nhận các voucher ưu đãi hấp dẫn!</p>
+          <Link to="/products" className="cp-empty-btn">Mua sắm ngay</Link>
         </div>
       ) : (
         <div className="cpCouponGridContainer">

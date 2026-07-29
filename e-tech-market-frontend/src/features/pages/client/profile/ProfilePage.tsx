@@ -107,6 +107,8 @@ export default function ProfilePage() {
   const securityRoute = path.startsWith("/profile/security");
   const couponsRoute = path.startsWith("/profile/coupons");
   const loyaltyRoute = path.startsWith("/profile/loyalty");
+  const isInfoTab = new URLSearchParams(location.search).get('tab') === 'info';
+  
   const activeTab = ordersRoute
     ? "orders"
     : loyaltyRoute
@@ -118,6 +120,9 @@ export default function ProfilePage() {
           : couponsRoute
             ? "coupons"
             : tab;
+            
+  const isSubPage = activeTab !== 'profile' || isInfoTab;
+  
   const [twoFa] = useState(false);
 
   const [loading, setLoading] = useState(true);
@@ -321,7 +326,7 @@ export default function ProfilePage() {
   return (
     <main className="pfPage">
       <div className="pfInner">
-        <section className="pfGrid" aria-label="Khu vực tài khoản">
+        <section className={`pfGrid ${isSubPage ? 'pfSubPageActive' : ''}`} aria-label="Khu vực tài khoản">
           <aside className="pfSidebar">
             {/* ── Avatar + Tên + Badge trong sidebar ── */}
             <div className="pfSideProfile">
@@ -371,10 +376,10 @@ export default function ProfilePage() {
               }
               onClick={() => {
                 setTab("profile");
-                navigate("/profile");
+                navigate("/profile?tab=info");
               }}
             >
-              <SideIconWrap>
+              <SideIconWrap colorClass="pfSideIcon-info">
                 <IconUser />
               </SideIconWrap>
               Thông tin cá nhân
@@ -386,7 +391,7 @@ export default function ProfilePage() {
               }
               onClick={() => navigate("/profile/orders")}
             >
-              <SideIconWrap>
+              <SideIconWrap colorClass="pfSideIcon-orders">
                 <IconReceipt />
               </SideIconWrap>
               Lịch sử đơn hàng
@@ -426,7 +431,7 @@ export default function ProfilePage() {
                 navigate("/profile/security");
               }}
             >
-              <SideIconWrap>
+              <SideIconWrap colorClass="pfSideIcon-security">
                 <IconShield />
               </SideIconWrap>
               Bảo mật
@@ -441,7 +446,7 @@ export default function ProfilePage() {
                 navigate("/profile/coupons");
               }}
             >
-              <SideIconWrap>
+              <SideIconWrap colorClass="pfSideIcon-coupons">
                 <IconTicket />
               </SideIconWrap>
               Kho Voucher
@@ -455,10 +460,8 @@ export default function ProfilePage() {
                 navigate("/profile/loyalty");
               }}
             >
-              <SideIconWrap>
-                <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20" style={{ color: '#f59e0b' }}>
-                  <path d="M20 8h-3V4H3c-1.1 0-2 .9-2 2v11h2c0 1.66 1.34 3 3 3s3-1.34 3-3h6c0 1.66 1.34 3 3 3s3-1.34 3-3h2v-5l-3-4zM6 18.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm13.5-9l1.96 2.5H17V9.5h2.5zm-1.5 9c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/>
-                </svg>
+              <SideIconWrap colorClass="pfSideIcon-loyalty">
+                <IconAward />
               </SideIconWrap>
               Thẻ hội viên
             </button>
@@ -468,7 +471,7 @@ export default function ProfilePage() {
               className="pfNavBtn pfLogoutBtn pfLogoutBtnDesktop"
               onClick={logout}
             >
-              <SideIconWrap>
+              <SideIconWrap colorClass="pfSideIcon-logout">
                 <IconLogout />
               </SideIconWrap>
               Đăng xuất
@@ -476,10 +479,35 @@ export default function ProfilePage() {
           </aside>
 
           <div className="pfContent">
+            {isSubPage && (
+              <button 
+                className="pfMobileBackBtn" 
+                onClick={() => { setTab('profile'); navigate('/profile'); }}
+                style={{ display: 'none', marginBottom: '16px', alignItems: 'center', gap: '8px', color: '#64748b', fontSize: '14px', fontWeight: '500', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                Quay lại Menu
+              </button>
+            )}
             {/* ── Outlet cho các route con (orders / security / coupons / loyalty …) ── */}
-            {(ordersRoute || notifsRoute || securityRoute || couponsRoute || loyaltyRoute) && (
-              <section className="pfCard" aria-label="Thông tin" style={{ border: activeTab === 'loyalty' ? 'none' : '', background: activeTab === 'loyalty' ? 'transparent' : '', boxShadow: activeTab === 'loyalty' ? 'none' : '' }}>
-                <div className="pfCardHead" style={{ display: activeTab === 'loyalty' ? 'none' : 'flex' }}>
+            {(ordersRoute ||
+              notifsRoute ||
+              securityRoute ||
+              couponsRoute ||
+              loyaltyRoute) && (
+              <section
+                className="pfCard"
+                aria-label="Thông tin"
+                style={{
+                  border: activeTab === "loyalty" ? "none" : "",
+                  background: activeTab === "loyalty" ? "transparent" : "",
+                  boxShadow: activeTab === "loyalty" ? "none" : "",
+                }}
+              >
+                <div
+                  className="pfCardHead"
+                  style={{ display: activeTab === "loyalty" ? "none" : "flex" }}
+                >
                   <h2 className="pfCardTitle">
                     {activeTab === "orders"
                       ? "Lịch sử đơn hàng"
@@ -494,12 +522,13 @@ export default function ProfilePage() {
               </section>
             )}
 
-                        {tab === "profile" &&
+            {tab === "profile" &&
               !ordersRoute &&
+              !loyaltyRoute &&
               !notifsRoute &&
               !securityRoute &&
               !couponsRoute && (
-                <div className="pfDashGrid">
+                <div className={`pfDashGrid ${!isInfoTab ? 'pfHideMobile' : ''}`}>
                   {/* CỘT TRÁI: Thông tin cá nhân + Đơn hàng gần đây */}
                   <div className="pfDashLeft">
                     {/* Thông tin cá nhân */}
@@ -697,7 +726,10 @@ export default function ProfilePage() {
                                             : o.status || "—";
 
                               return (
-                                <div key={o.id} className={`pfOrderItem ${thumbCount === 1 ? 'pfOrderItem-single' : 'pfOrderItem-multi'}`}>
+                                <div
+                                  key={o.id}
+                                  className={`pfOrderItem ${thumbCount === 1 ? "pfOrderItem-single" : "pfOrderItem-multi"}`}
+                                >
                                   <div
                                     className={`pfOrderThumbGrid pfThumbLayout-${layout}`}
                                   >
@@ -964,7 +996,7 @@ export default function ProfilePage() {
                                 className="pfBtn"
                                 onClick={closeEditModal}
                                 disabled={saving}
-                              > 
+                              >
                                 Hủy
                               </button>
                             </div>
@@ -1060,12 +1092,14 @@ export default function ProfilePage() {
               )}
           </div>
 
-          <button type="button" className="pfLogoutBtnMobile" onClick={logout}>
-            <SideIconWrap>
-              <IconLogout />
-            </SideIconWrap>
-            Đăng xuất
-          </button>
+          {!isSubPage && (
+            <button type="button" className="pfLogoutBtnMobile" onClick={logout}>
+              <SideIconWrap>
+                <IconLogout />
+              </SideIconWrap>
+              Đăng xuất
+            </button>
+          )}
         </section>
       </div>
 
@@ -1082,9 +1116,9 @@ export default function ProfilePage() {
   );
 }
 
-function SideIconWrap({ children }: { children: React.ReactNode }) {
+function SideIconWrap({ children, colorClass }: { children: React.ReactNode; colorClass?: string }) {
   return (
-    <span aria-hidden="true" className="pfSideIcon">
+    <span aria-hidden="true" className={`pfSideIcon ${colorClass || ''}`}>
       {children}
     </span>
   );
@@ -1184,6 +1218,14 @@ function IconTicket() {
         strokeLinecap="round"
         strokeLinejoin="round"
       />
+    </svg>
+  );
+}
+function IconAward() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+      <circle cx="12" cy="8" r="7" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+      <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
 }
