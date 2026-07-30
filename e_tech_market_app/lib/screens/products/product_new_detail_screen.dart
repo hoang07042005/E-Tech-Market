@@ -149,17 +149,14 @@ class _ProductNewDetailScreenState extends State<ProductNewDetailScreen> {
 
   String _resolveUrl(String? url) => NetworkUtils.fixDeviceUrl(url);
 
-  /// Rewrites <img src="..."> in HTML content to use device-resolved URLs.
-  /// Handles both single and double-quoted src attributes.
-  String _fixImageUrls(String html) {
+  String _fixHtmlContent(String html) {
     if (html.trim().isEmpty) return html;
 
-    return html.replaceAllMapped(
+    // 1. Fix image URLs
+    var processed = html.replaceAllMapped(
       RegExp(r'<img[^>]*>', caseSensitive: false),
       (tagMatch) {
         var tag = tagMatch.group(0)!;
-
-        // fix double-quoted src
         tag = tag.replaceFirstMapped(
           RegExp(r'src="([^"]*)"', caseSensitive: false),
           (m) {
@@ -168,8 +165,6 @@ class _ProductNewDetailScreenState extends State<ProductNewDetailScreen> {
             return 'src="${_resolveUrl(raw.trim())}"';
           },
         );
-
-        // fix single-quoted src (if not already replaced)
         tag = tag.replaceFirstMapped(
           RegExp(r"src='([^']*)'", caseSensitive: false),
           (m) {
@@ -178,10 +173,16 @@ class _ProductNewDetailScreenState extends State<ProductNewDetailScreen> {
             return 'src="${_resolveUrl(raw.trim())}"';
           },
         );
-
         return tag;
       },
     );
+
+    // 2. Loại bỏ các thuộc tính width/height cứng (inline style hoặc attribute) có thể ép chữ thành cột dọc
+    processed = processed.replaceAll(RegExp(r'\bwidth\s*=\s*"[^"]*"', caseSensitive: false), '');
+    processed = processed.replaceAll(RegExp(r"\bwidth\s*=\s*'[^']*'", caseSensitive: false), '');
+    processed = processed.replaceAll(RegExp(r'\bwidth\s*:\s*[^;"]+;?', caseSensitive: false), '');
+    
+    return processed;
   }
 
   @override
@@ -243,7 +244,7 @@ class _ProductNewDetailScreenState extends State<ProductNewDetailScreen> {
     }
 
     final news = _news!;
-    final processedHtml = _fixImageUrls(news.contentHtml ?? '');
+    final processedHtml = _fixHtmlContent(news.contentHtml ?? '');
 
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
@@ -263,11 +264,9 @@ class _ProductNewDetailScreenState extends State<ProductNewDetailScreen> {
         iconTheme: IconThemeData(color: Theme.of(context).colorScheme.onSurface),
       ),
       body: SafeArea(
-        child: SingleChildScrollView(
+        child: ListView(
           padding: const EdgeInsets.all(18),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
+          children: [
               // ── Tiêu đề
               Text(
                 news.title,
@@ -297,66 +296,60 @@ class _ProductNewDetailScreenState extends State<ProductNewDetailScreen> {
               const SizedBox(height: 14),
 
               // ── HTML content với custom image rendering (bypass SSL)
-              SizedBox(
-                width: double.infinity,
-                child: Html(
-                  data: processedHtml,
-                  style: {
-                    'body': Style(
-                      margin: Margins.zero,
-                      padding: HtmlPaddings.zero,
-                      fontSize: FontSize(14.5),
-                      lineHeight: const LineHeight(1.6),
-                      color: Theme.of(context).colorScheme.onSurface,
-                    ),
-                    'h1': Style(fontSize: FontSize(20), fontWeight: FontWeight.bold),
-                    'h2': Style(fontSize: FontSize(18), fontWeight: FontWeight.bold),
-                    'h3': Style(fontSize: FontSize(16), fontWeight: FontWeight.bold),
-                    'p': Style(margin: Margins.only(bottom: 10)),
-                    'img': Style(
-                      width: Width(100, Unit.percent),
-                      margin: Margins.only(top: 8, bottom: 8),
-                    ),
-                    'table': Style(
-                      backgroundColor: Theme.of(context).colorScheme.surfaceContainerLow,
-                      border: Border.all(color: Theme.of(context).colorScheme.outline),
-                    ),
-                    'th': Style(
-                      padding: HtmlPaddings.all(6),
-                      backgroundColor: Theme.of(context).colorScheme.surfaceContainerLow,
-                    ),
-                    'td': Style(
-                      padding: HtmlPaddings.all(6),
-                      border: Border.all(color: Theme.of(context).colorScheme.outline),
-                    ),
-                  },
-                  extensions: [
-                    // Custom renderer cho <img>: dùng _TrustAllImage thay Image.network
-                    TagExtension(
-                      tagsToExtend: {'img'},
-                      builder: (extensionContext) {
-                        final src = extensionContext.attributes['src'] ?? '';
-                        if (src.isEmpty) return const SizedBox.shrink();
-                        return Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 6),
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(8),
-                            child: _TrustAllImage(
-                              url: src,
-                              width: double.infinity,
-                              fit: BoxFit.contain,
-                            ),
+              Html(
+                data: processedHtml,
+                style: {
+                  'body': Style(
+                    margin: Margins.zero,
+                    padding: HtmlPaddings.zero,
+                    fontSize: FontSize(14.5),
+                    lineHeight: const LineHeight(1.6),
+                    color: Theme.of(context).colorScheme.onSurface,
+                  ),
+                  'h1': Style(fontSize: FontSize(20), fontWeight: FontWeight.bold),
+                  'h2': Style(fontSize: FontSize(18), fontWeight: FontWeight.bold),
+                  'h3': Style(fontSize: FontSize(16), fontWeight: FontWeight.bold),
+                  'p': Style(margin: Margins.only(bottom: 10)),
+                  'img': Style(
+                    margin: Margins.only(top: 8, bottom: 8),
+                  ),
+                  'table': Style(
+                    backgroundColor: Theme.of(context).colorScheme.surfaceContainerLow,
+                    border: Border.all(color: Theme.of(context).colorScheme.outline),
+                  ),
+                  'th': Style(
+                    padding: HtmlPaddings.all(6),
+                    backgroundColor: Theme.of(context).colorScheme.surfaceContainerLow,
+                  ),
+                  'td': Style(
+                    padding: HtmlPaddings.all(6),
+                    border: Border.all(color: Theme.of(context).colorScheme.outline),
+                  ),
+                },
+                extensions: [
+                  // Custom renderer cho <img>: dùng _TrustAllImage thay Image.network
+                  TagExtension(
+                    tagsToExtend: {'img'},
+                    builder: (extensionContext) {
+                      final src = extensionContext.attributes['src'] ?? '';
+                      if (src.isEmpty) return const SizedBox.shrink();
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 6),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(8),
+                          child: _TrustAllImage(
+                            url: src,
+                            fit: BoxFit.contain,
                           ),
-                        );
-                      },
-                    ),
-                  ],
-                ), // Html
-              ), // SizedBox
+                        ),
+                      );
+                    },
+                  ),
+                ],
+              ), // Html
             ],
-          ),
-        ),
-      ),
-    );
+        ), // Close ListView
+      ), // Close SafeArea
+    ); // Close Scaffold
   }
 }

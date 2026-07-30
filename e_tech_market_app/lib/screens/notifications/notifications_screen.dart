@@ -15,6 +15,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
   String? _error;
   int _unreadCount = 0;
   String _filter = 'all';
+  Set<int> _expandedIds = {};
 
   @override
   void initState() {
@@ -93,8 +94,8 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     final iconData = _getIconData(type, title, body);
     if (iconData == Icons.article_outlined) return Colors.blue;
     if (iconData == Icons.local_shipping_outlined) return Colors.green;
-    if (iconData == Icons.warning_amber_rounded) return Colors.orange;
-    return const Color(0xFFEF7A45);
+    if (iconData == Icons.warning_amber_rounded) return Colors.red;
+    return Colors.blue; // Default fallback like image
   }
 
   List<dynamic> get _filteredNotifications {
@@ -110,89 +111,132 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
-      appBar: AppBar(
-        title: const Text('Hộp thư thông báo', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
-        backgroundColor: Theme.of(context).colorScheme.surface,
-        foregroundColor: Theme.of(context).colorScheme.onSurface,
-        elevation: 0,
-        actions: [
-          if (_unreadCount > 0)
-            IconButton(
-              icon: const Icon(Icons.done_all, color: Color(0xFF64748B)),
-              tooltip: 'Đánh dấu đọc tất cả',
-              onPressed: _markAllAsRead,
-            ),
-        ],
-      ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Container(
-            color: Theme.of(context).colorScheme.surface,
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
+      body: SafeArea(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
               child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  _buildFilterChip('Tất cả', 'all', _notifications.length),
-                  const SizedBox(width: 8),
-                  _buildFilterChip('Chưa đọc', 'unread', _unreadCount, highlight: true),
-                  const SizedBox(width: 8),
-                  _buildFilterChip('Đã đọc', 'read', _notifications.length - _unreadCount),
+                  InkWell(
+                    onTap: () => Navigator.of(context).pop(),
+                    borderRadius: BorderRadius.circular(20),
+                    child: Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).colorScheme.onSurface.withOpacity(0.05),
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(Icons.arrow_back, color: Theme.of(context).colorScheme.onSurface, size: 22),
+                    ),
+                  ),
+                  if (_unreadCount > 0)
+                    TextButton.icon(
+                      onPressed: _markAllAsRead,
+                      icon: Icon(Icons.done_all, size: 18, color: Theme.of(context).colorScheme.primary),
+                      label: Text(
+                        'Đánh dấu đã đọc',
+                        style: TextStyle(color: Theme.of(context).colorScheme.primary, fontWeight: FontWeight.w600),
+                      ),
+                    ),
                 ],
               ),
             ),
-          ),
-          const Divider(height: 1, color: Color(0xFFE2E8F0)),
-          Expanded(
-            child: _isLoading
-                ? const Center(child: CircularProgressIndicator())
-                : _error != null
-                    ? Center(child: Text(_error!))
-                    : _filteredNotifications.isEmpty
-                        ? _buildEmptyState()
-                        : ListView.separated(
-                            padding: const EdgeInsets.all(16),
-                            itemCount: _filteredNotifications.length,
-                            separatorBuilder: (_, __) => const SizedBox(height: 12),
-                            itemBuilder: (context, index) {
-                              final notif = _filteredNotifications[index];
-                              return _buildNotificationCard(notif);
-                            },
-                          ),
-          ),
-        ],
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Text(
+                    'Hộp thư thông báo',
+                    style: TextStyle(
+                      fontSize: 28,
+                      fontWeight: FontWeight.w900,
+                      color: Theme.of(context).colorScheme.onSurface,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Text(
+                    'Xem tất cả các tin tức công nghệ, cảnh báo kho và cập nhật đơn hàng của bạn.',
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                      height: 1.5,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Row(
+                children: [
+                  _buildTab('Tất cả', 'all', _notifications.length),
+                  const SizedBox(width: 24),
+                  _buildTab('Chưa đọc', 'unread', _unreadCount),
+                  const SizedBox(width: 24),
+                  _buildTab('Đã đọc', 'read', _notifications.length - _unreadCount),
+                ],
+              ),
+            ),
+            Divider(height: 1, color: Theme.of(context).colorScheme.outline.withOpacity(0.4)),
+            Expanded(
+              child: _isLoading
+                  ? const Center(child: CircularProgressIndicator())
+                  : _error != null
+                      ? Center(child: Text(_error!))
+                      : _filteredNotifications.isEmpty
+                          ? _buildEmptyState()
+                          : ListView.separated(
+                              padding: const EdgeInsets.all(20),
+                              itemCount: _filteredNotifications.length,
+                              separatorBuilder: (_, __) => const SizedBox(height: 16),
+                              itemBuilder: (context, index) {
+                                final notif = _filteredNotifications[index];
+                                return _buildNotificationCard(notif);
+                              },
+                            ),
+            ),
+          ],
+        ),
       ),
     );
   }
 
-  Widget _buildFilterChip(String label, String value, int count, {bool highlight = false}) {
+  Widget _buildTab(String label, String value, int count) {
     final isSelected = _filter == value;
-    return InkWell(
+    final primaryColor = const Color(0xFFF26522);
+    final unselectedColor = Theme.of(context).colorScheme.onSurface.withOpacity(0.6);
+
+    return GestureDetector(
       onTap: () => setState(() => _filter = value),
-      borderRadius: BorderRadius.circular(20),
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        padding: const EdgeInsets.only(bottom: 12),
         decoration: BoxDecoration(
-          color: isSelected ? const Color(0xFFEF7A45) : Theme.of(context).colorScheme.surface,
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: Theme.of(context).colorScheme.outline, width: 0.5),
+          border: Border(
+            bottom: BorderSide(
+              color: isSelected ? primaryColor : Colors.transparent,
+              width: 2,
+            ),
+          ),
         ),
         child: Row(
           children: [
             Text(
               label,
               style: TextStyle(
-                fontSize: 13,
-                fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
-                color: isSelected ? Colors.white : const Color(0xFF475569),
+                fontSize: 15,
+                fontWeight: isSelected ? FontWeight.bold : FontWeight.w600,
+                color: isSelected ? primaryColor : unselectedColor,
               ),
             ),
             const SizedBox(width: 6),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
               decoration: BoxDecoration(
-                color: isSelected ? Colors.white.withValues(alpha: 0.2) : (highlight && count > 0 ? Colors.red : const Color(0xFFCBD5E1)),
+                color: isSelected ? primaryColor.withOpacity(0.15) : Theme.of(context).colorScheme.onSurface.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Text(
@@ -200,7 +244,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                 style: TextStyle(
                   fontSize: 11,
                   fontWeight: FontWeight.bold,
-                  color: isSelected ? Colors.white : (highlight && count > 0 ? Colors.white : const Color(0xFF475569)),
+                  color: isSelected ? primaryColor : unselectedColor,
                 ),
               ),
             ),
@@ -215,13 +259,13 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.notifications_off_outlined, size: 64, color: Colors.grey.shade400),
+          Icon(Icons.notifications_off_outlined, size: 64, color: Theme.of(context).colorScheme.onSurface.withOpacity(0.2)),
           const SizedBox(height: 16),
           Text(
             _filter == 'unread'
-                ? 'Tuyệt vời! Bạn không có thông báo chưa đọc nào.'
+                ? 'Bạn không có thông báo chưa đọc nào.'
                 : 'Bạn chưa có thông báo nào.',
-            style: const TextStyle(fontSize: 15, color: Colors.black54),
+            style: TextStyle(fontSize: 15, color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6)),
             textAlign: TextAlign.center,
           ),
         ],
@@ -237,86 +281,115 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     
     final iconData = _getIconData(notif['type']?.toString(), title, body);
     final iconColor = _getIconColor(notif['type']?.toString(), title, body);
+    final isExpanded = _expandedIds.contains(notif['id']);
+    
+    final onSurfaceColor = Theme.of(context).colorScheme.onSurface;
 
-    return InkWell(
-      onTap: () {
-        if (!isRead) {
-          _markAsRead(notif['id'] as int);
-        }
-        // Handle navigation based on data if needed
-      },
-      borderRadius: BorderRadius.circular(12),
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: isRead ? Theme.of(context).colorScheme.surface : const Color(0xFFFFF7ED),
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: isRead ? const Color(0xFFE2E8F0) : const Color(0xFFFFEDD5), width: 1),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.02),
-              blurRadius: 4,
-              offset: const Offset(0, 2),
-            ),
-          ],
-        ),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              padding: const EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                color: isRead ? const Color(0xFFF8FAFC) : iconColor.withValues(alpha: 0.1),
-                shape: BoxShape.circle,
-              ),
-              child: Icon(iconData, size: 20, color: isRead ? const Color(0xFF94A3B8) : iconColor),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(
-                        child: Text(
-                          title,
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: isRead ? FontWeight.w600 : FontWeight.bold,
-                            color: isRead ? const Color(0xFF475569) : const Color(0xFF0F172A),
+    return Container(
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surface,
+        borderRadius: BorderRadius.circular(6),
+        border: Border.all(color: Theme.of(context).colorScheme.outline.withOpacity(0.3)),
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(6),
+        child: IntrinsicHeight(
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Container(width: 4, color: iconColor),
+              Expanded(
+                child: InkWell(
+                  onTap: () {
+                    setState(() {
+                      if (isExpanded) {
+                        _expandedIds.remove(notif['id']);
+                      } else {
+                        _expandedIds.add(notif['id'] as int);
+                        if (!isRead) _markAsRead(notif['id'] as int);
+                      }
+                    });
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(12),
+                              decoration: BoxDecoration(
+                                color: iconColor.withOpacity(0.15),
+                                shape: BoxShape.circle,
+                              ),
+                              child: Icon(iconData, size: 20, color: iconColor),
+                            ),
+                            const SizedBox(width: 16),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    title,
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                      color: onSurfaceColor,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 6),
+                                  Row(
+                                    children: [
+                                      Text(
+                                        createdAt,
+                                        style: TextStyle(fontSize: 12, color: onSurfaceColor.withOpacity(0.5)),
+                                      ),
+                                      const SizedBox(width: 8),
+                                      Container(
+                                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                                        decoration: BoxDecoration(
+                                          color: onSurfaceColor.withOpacity(0.1),
+                                          borderRadius: BorderRadius.circular(12),
+                                        ),
+                                        child: Text(
+                                          isRead ? 'Đã đọc' : 'Chưa đọc',
+                                          style: TextStyle(fontSize: 10, fontWeight: FontWeight.w600, color: onSurfaceColor.withOpacity(0.6)),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Icon(
+                              isExpanded ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down,
+                              color: onSurfaceColor.withOpacity(0.5),
+                            ),
+                          ],
+                        ),
+                        if (isExpanded) ...[
+                          const SizedBox(height: 16),
+                          Divider(height: 1, color: Theme.of(context).colorScheme.outline.withOpacity(0.4)),
+                          const SizedBox(height: 16),
+                          Text(
+                            body,
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: onSurfaceColor.withOpacity(0.8),
+                              height: 1.5,
+                            ),
                           ),
-                        ),
-                      ),
-                      if (!isRead) ...[
-                        const SizedBox(width: 8),
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                          decoration: BoxDecoration(color: Colors.red, borderRadius: BorderRadius.circular(4)),
-                          child: const Text('Mới', style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold)),
-                        ),
-                      ]
-                    ],
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    body,
-                    style: TextStyle(
-                      fontSize: 13,
-                      color: isRead ? const Color(0xFF64748B) : const Color(0xFF334155),
-                      height: 1.4,
+                        ],
+                      ],
                     ),
                   ),
-                  const SizedBox(height: 8),
-                  Text(
-                    createdAt,
-                    style: const TextStyle(fontSize: 11, color: Color(0xFF94A3B8)),
-                  ),
-                ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

@@ -378,8 +378,8 @@ class _CouponCard extends StatelessWidget {
                               Text(
                                 subtitle,
                                 style: TextStyle(
-                                  fontSize: 12,
-                                  color: Colors.black87,
+                                  fontSize: 10,
+                                  color: Colors.black54,
                                   fontWeight: FontWeight.w600,
                                 ),
                                 maxLines: 1,

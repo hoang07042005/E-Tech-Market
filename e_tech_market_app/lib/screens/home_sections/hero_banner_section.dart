@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'dart:async';
 import '../../utils/network_utils.dart';
 import '../../utils/translation.dart';
@@ -38,7 +39,7 @@ class _HeroBannerSectionState extends State<HeroBannerSection> {
     if (oldWidget.currentBannerIndex != widget.currentBannerIndex) {
       _pageController.animateToPage(
         widget.currentBannerIndex,
-        duration: const Duration(milliseconds: 500),
+        duration: const Duration(milliseconds: 600),
         curve: Curves.easeInOut,
       );
     }
@@ -100,29 +101,7 @@ class _HeroBannerSectionState extends State<HeroBannerSection> {
                   ),
                 ),
               ),
-              // Overlay gradient
-              Positioned(
-                top: 0,
-                left: 0,
-                right: 0,
-                bottom: 0,
-                child: ClipRRect(
-                  borderRadius: BorderRadius.zero,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.centerLeft,
-                        end: Alignment.centerRight,
-                        colors: [
-                          Colors.black87.withOpacity(0.6),
-                          Colors.black87.withOpacity(0.4),
-                          Colors.transparent,
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              ),
+              // Bỏ overlay gradient để banner sáng rõ theo yêu cầu
               // Content on top
               Positioned(
                 left: 45,
@@ -144,12 +123,12 @@ class _HeroBannerSectionState extends State<HeroBannerSection> {
                         onTap: () {
                           _pageController.animateToPage(
                             index,
-                            duration: const Duration(milliseconds: 500),
+                            duration: const Duration(milliseconds: 600),
                             curve: Curves.easeInOut,
                           );
                         },
                         child: AnimatedContainer(
-                          duration: const Duration(milliseconds: 500),
+                          duration: const Duration(milliseconds: 60),
                           margin: const EdgeInsets.symmetric(horizontal: 4),
                           width: index == widget.currentBannerIndex ? 12 : 8,
                           height: 8,
@@ -174,7 +153,7 @@ class _HeroBannerSectionState extends State<HeroBannerSection> {
                         final newIndex = widget.currentBannerIndex == 0 ? widget.banners.length - 1 : widget.currentBannerIndex - 1;
                         _pageController.animateToPage(
                           newIndex,
-                          duration: const Duration(milliseconds: 500),
+                          duration: const Duration(milliseconds: 600),
                           curve: Curves.easeInOut,
                         );
                       },
@@ -199,7 +178,7 @@ class _HeroBannerSectionState extends State<HeroBannerSection> {
                         final newIndex = widget.currentBannerIndex == widget.banners.length - 1 ? 0 : widget.currentBannerIndex + 1;
                         _pageController.animateToPage(
                           newIndex,
-                          duration: const Duration(milliseconds: 500),
+                          duration: const Duration(milliseconds: 600),
                           curve: Curves.easeInOut,
                         );
                       },
@@ -415,9 +394,9 @@ class HeroBannerMarquee extends StatefulWidget {
   State<HeroBannerMarquee> createState() => _HeroBannerMarqueeState();
 }
 
-class _HeroBannerMarqueeState extends State<HeroBannerMarquee> {
+class _HeroBannerMarqueeState extends State<HeroBannerMarquee> with SingleTickerProviderStateMixin {
   final ScrollController _scrollController = ScrollController();
-  Timer? _timer;
+  late Ticker _ticker;
   
   final List<Map<String, dynamic>> _features = [
     {
@@ -445,24 +424,18 @@ class _HeroBannerMarqueeState extends State<HeroBannerMarquee> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _startMarquee();
-    });
-  }
-
-  void _startMarquee() {
-    _timer = Timer.periodic(const Duration(milliseconds: 500), (timer) {
+    _ticker = createTicker((elapsed) {
       if (_scrollController.hasClients) {
-        double currentPosition = _scrollController.position.pixels;
-        // Increment position to scroll left (items move from right to left)
-        _scrollController.jumpTo(currentPosition + 1.2); 
+        // Tốc độ: 1.0 pixel mỗi frame (~60 pixel / giây ở 60fps)
+        _scrollController.jumpTo(_scrollController.position.pixels + 1.0);
       }
     });
+    _ticker.start();
   }
 
   @override
   void dispose() {
-    _timer?.cancel();
+    _ticker.dispose();
     _scrollController.dispose();
     super.dispose();
   }

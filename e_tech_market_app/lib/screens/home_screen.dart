@@ -859,7 +859,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
     return Scaffold(
       key: _scaffoldKey,
-      endDrawer: _buildNotificationDrawer(),
       appBar: (_selectedIndex == 4 || _selectedIndex == 3)
           ? null
           : AppBar(
@@ -912,7 +911,10 @@ class _HomeScreenState extends State<HomeScreen> {
                       AppDialogs.showLoginRequiredDialog(context, onLoginSuccess: _loadUser);
                       return;
                     }
-                    _scaffoldKey.currentState?.openEndDrawer();
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const NotificationsScreen()),
+                    ).then((_) => _loadNotifications());
                   },
                   tooltip: Trans.notifications,
                 ),
