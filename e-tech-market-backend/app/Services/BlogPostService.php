@@ -167,6 +167,16 @@ class BlogPostService
             if (!empty($filters['category_id'])) {
                 $query->where('blog_category_id', $filters['category_id']);
             }
+            
+            if (!empty($filters['search'])) {
+                $search = $filters['search'];
+                $searchSlugPattern = str_replace(' ', '%', \Illuminate\Support\Str::slug($search, ' '));
+                $query->where(function ($q) use ($search, $searchSlugPattern) {
+                    $q->where('title', 'ilike', "%{$search}%")
+                      ->orWhere('excerpt', 'ilike', "%{$search}%")
+                      ->orWhere('slug', 'ilike', "%{$searchSlugPattern}%");
+                });
+            }
 
             $p = $query->orderBy('published_at', 'desc')
                 ->paginate($perPage);

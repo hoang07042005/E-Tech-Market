@@ -24,6 +24,14 @@ class VideoController extends Controller
             $query->where('video_category_id', $request->video_category_id);
         }
 
+        if ($request->has('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('title', 'ilike', "%{$search}%")
+                  ->orWhere('description', 'ilike', "%{$search}%");
+            });
+        }
+
         $videos = $query->orderBy('sort_order', 'asc')->get();
 
         return response()->json($videos);

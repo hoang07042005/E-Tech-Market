@@ -129,9 +129,11 @@ class ProductService
 
         if (!empty($filters['search'])) {
             $search = $filters['search'];
-            $query->where(function ($q) use ($search) {
+            $searchSlugPattern = str_replace(' ', '%', \Illuminate\Support\Str::slug($search, ' '));
+            $query->where(function ($q) use ($search, $searchSlugPattern) {
                 $q->where('name', 'ilike', "%{$search}%")
-                    ->orWhere('description', 'ilike', "%{$search}%");
+                    ->orWhere('description', 'ilike', "%{$search}%")
+                    ->orWhere('slug', 'ilike', "%{$searchSlugPattern}%");
             });
         }
 

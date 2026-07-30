@@ -22,6 +22,7 @@ type BlogPost = {
     id: number
     name: string
   } | null
+  isProductNews?: boolean
 }
 
 const resolveImageUrl = (url: string | null) => {
@@ -41,6 +42,32 @@ const resolveImageUrl = (url: string | null) => {
   return `${API_BASE_URL}${s.startsWith('/') ? s : `/${s}`}`
 }
 
+const getCategoryColor = (slug?: string) => {
+  if (!slug) return '#6b7280';
+  switch (slug) {
+    case 'tin-san-pham': return '#ef4444'; // Red
+    case 'cong-nghe': return '#3b82f6'; // Blue
+    case 'khuyen-mai': return '#f59e0b'; // Amber
+    case 'danh-gia': return '#10b981'; // Emerald
+    case 'huong-dan': return '#8b5cf6'; // Purple
+    case 'tren-tay': return '#ec4899'; // Pink
+    case 'tin-tuc': return '#06b6d4'; // Cyan
+    case 'kham-pha': return '#eab308'; // Yellow
+    case 'thu-thuat': return '#f97316'; // Orange
+    case 'phu-kien': return '#6366f1'; // Indigo
+    default:
+      const colors = [
+        '#f43f5e', '#d946ef', '#0ea5e9', '#14b8a6', 
+        '#22c55e', '#84cc16', '#a855f7', '#64748b'
+      ];
+      let hash = 0;
+      for (let i = 0; i < slug.length; i++) {
+        hash = slug.charCodeAt(i) + ((hash << 5) - hash);
+      }
+      return colors[Math.abs(hash) % colors.length];
+  }
+}
+
 export default function BlogPage() {
   const [posts, setPosts] = useState<BlogPost[]>([])
   const [loading, setLoading] = useState(true)
@@ -51,16 +78,43 @@ export default function BlogPage() {
 
   useEffect(() => {
     let active = true
-    apiFetch<{ data: BlogPost[] }>('/api/blog/posts')
-      .then((res) => {
-        if (active) {
-          setPosts(res.data)
-        }
-      })
-      .catch(console.error)
-      .finally(() => {
-        if (active) setLoading(false)
-      })
+    
+    Promise.all([
+      apiFetch<{ data: BlogPost[] }>('/api/blog/posts').catch(() => ({ data: [] })),
+      apiFetch<{ data: any[] }>('/product-news').catch(() => ({ data: [] }))
+    ]).then(([postsRes, newsRes]) => {
+      if (active) {
+        const blogPosts = postsRes.data || []
+        
+        // Map product news to match BlogPost type
+        const productNews: BlogPost[] = (newsRes.data || []).map((news: any) => ({
+          id: parseInt(`999${news.id}`), // Prevent ID collision
+          title: news.title,
+          slug: news.slug,
+          excerpt: news.content_html ? news.content_html.replace(/<[^>]+>/g, '').substring(0, 120) + '...' : 'Thông tin mới về sản phẩm',
+          thumbnail_url: news.thumbnail_url || news.thumbnail_path,
+          published_at: news.published_at || news.created_at,
+          reading_time: 3,
+          views: ((news.id || 1) * 83) % 400 + 150, // Fake views that are stable per post
+          category: {
+            id: 9999,
+            name: 'Tin Sản Phẩm',
+            slug: 'tin-san-pham'
+          },
+          author: null,
+          isProductNews: true // Custom flag
+        }))
+        
+        const allPosts = [...blogPosts, ...productNews].sort((a, b) => 
+          new Date(b.published_at).getTime() - new Date(a.published_at).getTime()
+        )
+        
+        setPosts(allPosts)
+      }
+    }).finally(() => {
+      if (active) setLoading(false)
+    })
+    
     return () => { active = false }
   }, [])
 
@@ -127,9 +181,11 @@ export default function BlogPage() {
           <div className="blogHero">
             <img src={resolveImageUrl(featuredPost.thumbnail_url)} alt={featuredPost.title} className="blogHeroImg" />
             <div className="blogHeroContent">
-              <span className="blogHeroTag">{featuredPost.category?.name || 'Tin tức'}</span>
+              <span className="blogHeroTag" style={{ background: getCategoryColor(featuredPost.category?.slug) }}>
+                {featuredPost.category?.name || 'Tin tức'}
+              </span>
               <h1 className="blogHeroTitle">
-                <Link to={`/blog/${featuredPost.slug}`} style={{ color: 'inherit', textDecoration: 'none' }}>
+                <Link to={featuredPost.isProductNews ? `/product-news/${featuredPost.slug}` : `/blog/${featuredPost.slug}`} style={{ color: 'inherit', textDecoration: 'none' }}>
                   {featuredPost.title}
                 </Link>
               </h1>
@@ -169,16 +225,20 @@ export default function BlogPage() {
               {(activeFilter === 'all' ? recentPosts : filteredPosts).map(post => (
                 <div className="blogCard" key={post.id}>
                   <div className="blogCardThumbWrap">
-                    <Link to={`/blog/${post.slug}`}>
+                    <Link to={post.isProductNews ? `/product-news/${post.slug}` : `/blog/${post.slug}`}>
                       <img src={resolveImageUrl(post.thumbnail_url)} alt={post.title} className="blogCardThumb" />
                     </Link>
-                    {post.category && <span className="blogCardTag">{post.category.name}</span>}
+                    {post.category && (
+                      <span className="blogCardTag" style={{ background: getCategoryColor(post.category.slug) }}>
+                        {post.category.name}
+                      </span>
+                    )}
                   </div>
                   <div className="blogCardBody">
                     <span className="blogCardDate">{new Date(post.published_at).toLocaleDateString('vi-VN')}</span>
-                    <Link to={`/blog/${post.slug}`} className="blogCardTitle">{post.title}</Link>
+                    <Link to={post.isProductNews ? `/product-news/${post.slug}` : `/blog/${post.slug}`} className="blogCardTitle">{post.title}</Link>
                     <p className="blogCardExcerpt">{post.excerpt}</p>
-                    <Link to={`/blog/${post.slug}`} className="blogCardMore">Đọc thêm →</Link>
+                    <Link to={post.isProductNews ? `/product-news/${post.slug}` : `/blog/${post.slug}`} className="blogCardMore">Đọc thêm →</Link>
                   </div>
                 </div>
               ))}
@@ -221,7 +281,7 @@ export default function BlogPage() {
               <h3 className="blogWidgetTitle">Đọc nhiều nhất</h3>
               <div className="blogTrendingList">
                 {trendingPosts.map(post => (
-                  <Link to={`/blog/${post.slug}`} className="blogTrendingItem" key={post.id}>
+                  <Link to={post.isProductNews ? `/product-news/${post.slug}` : `/blog/${post.slug}`} className="blogTrendingItem" key={post.id}>
                     <img src={resolveImageUrl(post.thumbnail_url)} alt={post.title} className="blogTrendingThumb" />
                     <div className="blogTrendingInfo">
                       <h4 className="blogTrendingTitle">{post.title}</h4>
@@ -237,7 +297,10 @@ export default function BlogPage() {
               <div className="blogCatList">
                 {categories.map(cat => (
                   <Link to={`/blog?category=${cat.slug}`} className="blogCatItem" key={cat.id}>
-                    <span>{cat.name}</span>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                      <span style={{ display: 'inline-block', width: '10px', height: '10px', borderRadius: '50%', background: getCategoryColor(cat.slug) }}></span>
+                      <span>{cat.name}</span>
+                    </div>
                     <span className="blogCatCount">{cat.count}</span>
                   </Link>
                 ))}

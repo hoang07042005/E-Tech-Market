@@ -18,7 +18,7 @@ class ClientBlogPostsController extends Controller
 
     public function index(Request $request): JsonResponse
     {
-        $filters = $request->only(['category_id']);
+        $filters = $request->only(['category_id', 'search']);
         $posts = $this->blogPostService->getClientPosts($filters, (int) $request->get('per_page', 9));
 
         return response()->json($posts);

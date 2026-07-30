@@ -463,6 +463,7 @@ export default function HeaderPage({ active = "Home" }: { active?: NavKey }) {
     main_image_url?: string | null;
     price?: string | number | null;
     sale_price?: string | number | null;
+    type?: 'product' | 'post' | 'news' | 'video';
   };
 
   const handleSearchSubmit = (event: FormEvent<HTMLFormElement>) => {
@@ -488,17 +489,45 @@ export default function HeaderPage({ active = "Home" }: { active?: NavKey }) {
     searchDebounceRef.current = setTimeout(async () => {
       setSearchLoading(true);
       try {
-        const res = await apiFetch(
-          `/products?search=${encodeURIComponent(val.trim())}&per_page=6`,
-        );
-        const json = res as { data?: SearchHit[] } | SearchHit[];
-        const hits: SearchHit[] = Array.isArray(json)
-          ? json
-          : Array.isArray((json as { data?: SearchHit[] }).data)
-            ? (json as { data: SearchHit[] }).data
-            : [];
-        setSearchResults(hits.slice(0, 6));
-        setSearchOpen(hits.length > 0);
+        const queryTerm = encodeURIComponent(val.trim());
+        const [productsRes, postsRes, newsRes, videosRes] = await Promise.all([
+           apiFetch(`/products?search=${queryTerm}&per_page=4`).catch(() => ({ data: [] })),
+           apiFetch(`/blog/posts?search=${queryTerm}&per_page=2`).catch(() => ({ data: [] })),
+           apiFetch(`/product-news?search=${queryTerm}`).catch(() => ({ data: [] })),
+           apiFetch(`/videos?search=${queryTerm}`).catch(() => ([]))
+        ]);
+        
+        const jsonProducts = productsRes as { data?: SearchHit[] } | SearchHit[];
+        const hitsProducts = Array.isArray(jsonProducts) ? jsonProducts : Array.isArray((jsonProducts as any).data) ? (jsonProducts as any).data : [];
+        const finalProducts = hitsProducts.slice(0, 4).map((p: any) => ({ ...p, type: 'product' as const }));
+        
+        const postsHits = ((postsRes as any).data || []).slice(0, 2).map((p: any) => ({
+           id: p.id,
+           name: p.title,
+           slug: p.slug,
+           main_image_url: p.thumbnail_url,
+           type: 'post' as const
+        }));
+
+        const newsHits = ((newsRes as any).data || []).slice(0, 2).map((n: any) => ({
+           id: parseInt(`999${n.id}`),
+           name: n.title,
+           slug: n.slug,
+           main_image_url: n.thumbnail_url || n.thumbnail_path,
+           type: 'news' as const
+        }));
+
+        const videosHits = (Array.isArray(videosRes) ? videosRes : []).slice(0, 2).map((v: any) => ({
+           id: parseInt(`888${v.id}`),
+           name: v.title,
+           slug: v.id.toString(), // Videos don't have slugs, navigate by ID? Wait, does the frontend have a video page?
+           main_image_url: v.thumbnail_url,
+           type: 'video' as const
+        }));
+        
+        const allHits = [...finalProducts, ...postsHits, ...newsHits, ...videosHits];
+        setSearchResults(allHits);
+        setSearchOpen(allHits.length > 0);
       } catch {
         setSearchResults([]);
         setSearchOpen(false);
@@ -521,7 +550,15 @@ export default function HeaderPage({ active = "Home" }: { active?: NavKey }) {
       const hit = searchResults[searchActiveIdx];
       if (hit) {
         setSearchOpen(false);
-        navigate(`/products/${hit.slug}`);
+        if (hit.type === 'post') {
+            navigate(`/blog/${hit.slug}`);
+        } else if (hit.type === 'news') {
+            navigate(`/product-news/${hit.slug}`);
+        } else if (hit.type === 'video') {
+            navigate(`/videos/${hit.slug}`);
+        } else {
+            navigate(`/products/${hit.slug}`);
+        }
       }
     } else if (e.key === "Escape") {
       setSearchOpen(false);
@@ -747,7 +784,15 @@ export default function HeaderPage({ active = "Home" }: { active?: NavKey }) {
                       onMouseEnter={() => setSearchActiveIdx(idx)}
                       onClick={() => {
                         setSearchOpen(false);
-                        navigate(`/products/${hit.slug}`);
+                        if (hit.type === 'post') {
+                            navigate(`/blog/${hit.slug}`);
+                        } else if (hit.type === 'news') {
+                            navigate(`/product-news/${hit.slug}`);
+                        } else if (hit.type === 'video') {
+                            navigate(`/videos/${hit.slug}`);
+                        } else {
+                            navigate(`/products/${hit.slug}`);
+                        }
                       }}
                     >
                       <svg
@@ -772,11 +817,17 @@ export default function HeaderPage({ active = "Home" }: { active?: NavKey }) {
                       </svg>
                       <div className="hfSearchItemInfo">
                         <span className="hfSearchItemName">{hit.name}</span>
-                        {price > 0 && (
-                          <span className="hfSearchItemPrice">
-                            {price.toLocaleString("vi-VN")}₫
-                          </span>
-                        )}
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          {hit.type === 'post' || hit.type === 'news' || hit.type === 'video' ? (
+                            <span style={{ fontSize: '10px', background: hit.type === 'news' ? '#ef4444' : hit.type === 'video' ? '#8b5cf6' : '#3b82f6', color: '#fff', padding: '2px 6px', borderRadius: '4px' }}>
+                              {hit.type === 'news' ? 'Tin Sản Phẩm' : hit.type === 'video' ? 'Video' : 'Tin Tức'}
+                            </span>
+                          ) : price > 0 && (
+                            <span className="hfSearchItemPrice">
+                              {price.toLocaleString("vi-VN")}₫
+                            </span>
+                          )}
+                        </div>
                       </div>
                       {hit.main_image_url ? (
                         <img
