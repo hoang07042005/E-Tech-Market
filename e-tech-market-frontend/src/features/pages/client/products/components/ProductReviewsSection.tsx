@@ -68,35 +68,7 @@ export function ProductReviewsSection({
                 })}
               </div>
 
-              <div className="pdpReviewsExp">
-                <div className="pdpReviewsExpTitle">Đánh giá theo trải nghiệm</div>
-                <div className="pdpReviewsExpList">
-                  <div className="pdpExpStatRow">
-                    <div className="pdpExpStatLabel">Hiệu năng</div>
-                    <div className="pdpExpStatStars"><Stars value={reviewStats.exp.performance.avg} /></div>
-                    <div className="pdpExpStatRight">
-                      {reviewStats.exp.performance.count ? `${reviewStats.exp.performance.avg.toFixed(0)}/5` : '0/5'}
-                      <span className="pdpExpStatMeta">({reviewStats.exp.performance.count} đánh giá)</span>
-                    </div>
-                  </div>
-                  <div className="pdpExpStatRow">
-                    <div className="pdpExpStatLabel">Thời lượng pin</div>
-                    <div className="pdpExpStatStars"><Stars value={reviewStats.exp.battery.avg} /></div>
-                    <div className="pdpExpStatRight">
-                      {reviewStats.exp.battery.count ? `${reviewStats.exp.battery.avg.toFixed(0)}/5` : '0/5'}
-                      <span className="pdpExpStatMeta">({reviewStats.exp.battery.count} đánh giá)</span>
-                    </div>
-                  </div>
-                  <div className="pdpExpStatRow">
-                    <div className="pdpExpStatLabel">Chất lượng camera</div>
-                    <div className="pdpExpStatStars"><Stars value={reviewStats.exp.camera.avg} /></div>
-                    <div className="pdpExpStatRight">
-                      {reviewStats.exp.camera.count ? `${reviewStats.exp.camera.avg.toFixed(0)}/5` : '0/5'}
-                      <span className="pdpExpStatMeta">({reviewStats.exp.camera.count} đánh giá)</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
+
             </div>
 
             <div className="pdpReviewsFilters" aria-label="Lọc đánh giá theo">
@@ -141,15 +113,7 @@ export function ProductReviewsSection({
                         <span className="pdpReviewLabel">{ratingLabel(r.rating)}</span>
                       </div>
                       <div className="pdpReviewPills">
-                        {typeof r.exp_performance === 'number' && (
-                          <span className="pdpReviewPill">Hiệu năng {r.exp_performance >= 5 ? 'Siêu mạnh mẽ' : ratingLabel(r.exp_performance)}</span>
-                        )}
-                        {typeof r.exp_battery === 'number' && (
-                          <span className="pdpReviewPill">Thời lượng pin {r.exp_battery >= 5 ? 'Cực khủng' : ratingLabel(r.exp_battery)}</span>
-                        )}
-                        {typeof r.exp_camera === 'number' && (
-                          <span className="pdpReviewPill">Chất lượng camera {r.exp_camera >= 5 ? 'Chụp đẹp, chuyên nghiệp' : ratingLabel(r.exp_camera)}</span>
-                        )}
+
                         {!!r.order_id && <span className="pdpReviewPill verified">Đã mua hàng</span>}
                       </div>
                       {r.comment && <div className="pdpReviewComment">{r.comment}</div>}

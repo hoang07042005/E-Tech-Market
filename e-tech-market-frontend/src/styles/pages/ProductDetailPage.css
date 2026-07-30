@@ -2230,25 +2230,27 @@
   font-size: 16px;
   font-weight: 600;
   color: #111827;
+  text-align: right;
 }
 
 .pdpReviewsSummary {
   background: #fff;
   border-radius: 5px;
   border: 1px solid #eef2f7;
-  padding: 16px;
+  padding: 16px 150px;
   display: grid;
-  grid-template-columns: 240px minmax(0, 1fr) 360px;
+  grid-template-columns: 340px minmax(0, 1fr);
   gap: 18px;
   align-items: start;
   overflow: hidden;
 }
 
 .pdpReviewsScore {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 0 64px;
 }
 
 .pdpScoreBig {
@@ -2279,6 +2281,7 @@
   padding: 10px 14px;
   font-weight: 600;
   cursor: pointer;
+  width: 100%;
 }
 
 .pdpWriteReviewBtn:hover {
@@ -2583,11 +2586,54 @@
 
 @media (max-width: 720px) {
   .pdpReviewItem {
-    grid-template-columns: 1fr;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    row-gap: 0;
+    column-gap: 10px;
+    padding: 14px 0;
+  }
+
+  .pdpReviewRight {
+    display: contents;
   }
 
   .pdpReviewLeft {
-    margin-bottom: 6px;
+    grid-column: 1 / 2;
+    flex-direction: row;
+    align-items: center;
+    text-align: left;
+    gap: 12px;
+    margin-bottom: 0;
+  }
+
+  .pdpReviewAvatar {
+    width: 40px;
+    height: 40px;
+  }
+
+  .pdpReviewStars {
+    grid-column: 2 / 3;
+    align-self: center;
+    margin-bottom: 0;
+  }
+
+  .pdpReviewPills {
+    justify-content: flex-end;
+  }
+
+  .pdpReviewPills,
+  .pdpReviewComment,
+  .pdpReviewMediaRow,
+  .pdpReviewTime {
+    grid-column: 1 / -1;
+
+  }
+
+  .pdpReviewsTitle {
+    margin-top: 0px;
+    font-weight: 600;
+    font-size: 14px;
+    text-align: left;
   }
 }
 
@@ -2750,28 +2796,30 @@
 }
 
 .pdpRatingRow {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 10px;
+  place-items: center;
   padding: 8px 0 4px;
 }
 
 .pdpRatingStar {
-  width: 44px;
-  height: 44px;
+  width: 48px;
+  height: 48px;
   border-radius: 12px;
   border: 1px solid transparent;
   background: transparent;
   cursor: pointer;
-  font-size: 28px;
+  font-size: 36px;
   color: #e2e8f0;
   display: grid;
   place-items: center;
+  transition: all 0.2s ease;
 }
 
 .pdpRatingStar.active {
-  color: #f59e0b;
+  color: #f97316;
+  transform: scale(1.1);
 }
 
 .pdpRatingStar:hover {
@@ -3075,6 +3123,12 @@
 @media (max-width: 720px) {
   .pdpReviewsSummary {
     grid-template-columns: 1fr;
+    padding: 16px;
+    gap: 24px;
+  }
+
+  .pdpReviewsScore {
+    padding: 0;
   }
 
   .pdpReviewModalOverlay {

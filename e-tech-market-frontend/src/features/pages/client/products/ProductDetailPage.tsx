@@ -142,9 +142,7 @@ export default function ProductDetailPage() {
   const [isReviewModalOpen, setIsReviewModalOpen] = useState(false)
   const [reviewRating, setReviewRating] = useState(5)
   const [reviewComment, setReviewComment] = useState('')
-  const [expPerformance, setExpPerformance] = useState(5)
-  const [expBattery, setExpBattery] = useState(5)
-  const [expCamera, setExpCamera] = useState(5)
+
   const [reviewMediaFiles, setReviewMediaFiles] = useState<File[]>([])
   const [reviewFilter, setReviewFilter] = useState<
     'all' | 'with_images' | 'verified' | 'star_5' | 'star_4' | 'star_3' | 'star_2' | 'star_1'
@@ -1083,12 +1081,7 @@ export default function ProductDetailPage() {
                     </div>
                   </div>
 
-                  <div className="pdpReviewSection">
-                    <div className="pdpReviewSectionTitle">Theo trải nghiệm</div>
-                    <ExperienceRow label="Hiệu năng" value={expPerformance} onChange={setExpPerformance} rightText={expPerformance >= 5 ? 'Siêu mạnh mẽ' : ratingLabel(expPerformance)} />
-                    <ExperienceRow label="Thời lượng pin" value={expBattery} onChange={setExpBattery} rightText={expBattery >= 5 ? 'Cực khủng' : ratingLabel(expBattery)} />
-                    <ExperienceRow label="Chất lượng camera" value={expCamera} onChange={setExpCamera} rightText={expCamera >= 5 ? 'Chụp đẹp, chuyên nghiệp' : ratingLabel(expCamera)} />
-                  </div>
+
 
                   <div className="pdpReviewField">
                     <textarea
@@ -1164,9 +1157,7 @@ export default function ProductDetailPage() {
                         // 🔒 Token is sent via httpOnly cookie automatically
                         const body = new FormData()
                         body.append('rating', String(reviewRating))
-                        body.append('exp_performance', String(expPerformance))
-                        body.append('exp_battery', String(expBattery))
-                        body.append('exp_camera', String(expCamera))
+
                         body.append('comment', reviewComment || '')
                         reviewMediaFiles.forEach(file => body.append('media[]', file))
 
@@ -1285,27 +1276,7 @@ function RatingRow({ value, onChange }: { value: number; onChange: (v: number) =
   )
 }
 
-function ExperienceRow({
-  label,
-  value,
-  onChange,
-  rightText,
-}: {
-  label: string
-  value: number
-  onChange: (v: number) => void
-  rightText: string
-}) {
-  return (
-    <div className="pdpExpRow">
-      <div className="pdpExpLabel">{label}</div>
-      <div className="pdpExpStars">
-        <RatingRow value={value} onChange={onChange} />
-      </div>
-      <div className="pdpExpRight">{rightText}</div>
-    </div>
-  )
-}
+
 
 
 

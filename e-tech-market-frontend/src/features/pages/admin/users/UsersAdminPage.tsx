@@ -365,7 +365,7 @@ export default function UsersAdminPage() {
 
       <div className="prodTableWrap">
         {loading ? (
-          <table className="prodTable">
+          <table className="usersAdminTable">
             <thead>
               <tr>
                 <th>TÊN</th>
@@ -389,7 +389,7 @@ export default function UsersAdminPage() {
             </tbody>
           </table>
         ) : (
-          <table className="prodTable">
+          <table className="usersAdminTable">
             <thead>
               <tr>
                 <th>TÊN</th>
@@ -439,7 +439,7 @@ export default function UsersAdminPage() {
                           ) : (
                             <span className={`usersAdminAvatar tone-${avatarToneOf(u.name)}`} aria-hidden>{initialsOf(u.name)}</span>
                           )}
-                          <span className="pName">{u.name}</span>
+                          <span className="usersAdminName">{u.name}</span>
                         </div>
                       </td>
                       <td>

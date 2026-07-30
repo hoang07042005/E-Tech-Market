@@ -81,13 +81,23 @@ class ReviewService
             if (! $hasPurchased) {
                 throw new \Exception('Đơn hàng không đủ điều kiện để đánh giá.', 422);
             }
+        } else {
+            $latestOrder = Order::query()
+                ->where('user_id', $user->id)
+                ->whereIn('status', ['delivered', 'completed'])
+                ->whereHas('items', function ($q) use ($product) {
+                    $q->where('product_id', $product->id);
+                })
+                ->latest('id')
+                ->first();
+                
+            if ($latestOrder) {
+                $data['order_id'] = $latestOrder->id;
+            }
         }
 
         $reviewData = [
             'rating' => (int) $data['rating'],
-            'exp_performance' => isset($data['exp_performance']) ? (int) $data['exp_performance'] : null,
-            'exp_battery' => isset($data['exp_battery']) ? (int) $data['exp_battery'] : null,
-            'exp_camera' => isset($data['exp_camera']) ? (int) $data['exp_camera'] : null,
             'comment' => $data['comment'] ?? null,
             'order_id' => $data['order_id'] ?? null,
             'status' => 'pending',

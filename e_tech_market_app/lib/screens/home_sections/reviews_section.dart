@@ -114,17 +114,6 @@ class _ReviewCard extends StatelessWidget {
             .trim() ??
         '';
     final productName = review['product']?['name']?.toString() ?? '';
-    final expPerformance = _toNullableInt(review['exp_performance']);
-    final expBattery = _toNullableInt(review['exp_battery']);
-    final expCamera = _toNullableInt(review['exp_camera']);
-    final experienceWidgets = <Widget>[
-      if (expPerformance != null)
-        _buildExperienceMetric(context, 'performance', expPerformance),
-      if (expBattery != null)
-        _buildExperienceMetric(context, 'battery', expBattery),
-      if (expCamera != null)
-        _buildExperienceMetric(context, 'camera', expCamera),
-    ];
     final mediaItems = _extractMediaItems(review['media']);
 
     return Container(
@@ -201,17 +190,6 @@ class _ReviewCard extends StatelessWidget {
                 ),
               ],
             ),
-            if (experienceWidgets.isNotEmpty) ...[
-              const SizedBox(height: 12),
-              Row(
-                children: [
-                  for (var i = 0; i < experienceWidgets.length; i++) ...[
-                    if (i > 0) const SizedBox(width: 8),
-                    experienceWidgets[i],
-                  ],
-                ],
-              ),
-            ],
             const SizedBox(height: 10),
             // Comment
             Text(
@@ -349,54 +327,6 @@ class _ReviewCard extends StatelessWidget {
     return int.tryParse(value.toString());
   }
 
-  Widget _buildExperienceMetric(BuildContext context, String key, int value) {
-    final label = key == 'performance'
-        ? 'Hi\u1ec7u n\u0103ng'
-        : key == 'battery'
-            ? 'Th\u1eddi l\u01b0\u1ee3ng'
-            : 'Camera';
-
-    return Expanded(
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-        decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.surfaceContainerLow,
-          borderRadius: BorderRadius.circular(10),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              label,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: TextStyle(
-                fontSize: 11,
-                fontWeight: FontWeight.w600,
-                color: Theme.of(context).colorScheme.onSurfaceVariant,
-              ),
-            ),
-            const SizedBox(height: 4),
-            Row(
-              children: [
-                const Icon(Icons.star, color: Color(0xFFEF7A45), size: 14),
-                const SizedBox(width: 3),
-                Text(
-                  '$value/5',
-                  style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w700,
-                    color: Theme.of(context).colorScheme.onSurface,
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
 
   List<_ReviewMediaItem> _extractMediaItems(dynamic raw) {
     if (raw is! List) return const [];

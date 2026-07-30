@@ -29,9 +29,6 @@ class ReviewsController extends Controller
     {
         $data = $request->validate([
             'rating' => ['required', 'integer', 'min:1', 'max:5'],
-            'exp_performance' => ['nullable', 'integer', 'min:1', 'max:5'],
-            'exp_battery' => ['nullable', 'integer', 'min:1', 'max:5'],
-            'exp_camera' => ['nullable', 'integer', 'min:1', 'max:5'],
             'comment' => ['nullable', 'string'],
             'order_id' => ['nullable', 'integer', 'min:1'],
             'media' => ['nullable', 'array', 'max:8'],

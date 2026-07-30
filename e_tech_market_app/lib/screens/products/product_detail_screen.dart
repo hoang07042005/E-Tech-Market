@@ -355,9 +355,6 @@ class ProductReview {
   final String? comment;
   final String createdAt;
   final String? orderId;
-  final int? expPerformance;
-  final int? expBattery;
-  final int? expCamera;
   final String? userName;
   final String? userAvatarUrl;
   final List<ReviewMediaItem> media;
@@ -368,9 +365,6 @@ class ProductReview {
     this.comment,
     required this.createdAt,
     this.orderId,
-    this.expPerformance,
-    this.expBattery,
-    this.expCamera,
     this.userName,
     this.userAvatarUrl,
     this.media = const [],
@@ -393,12 +387,6 @@ class ProductReview {
       comment: json['comment']?.toString(),
       createdAt: json['created_at']?.toString() ?? '',
       orderId: json['order_id']?.toString(),
-      expPerformance: json['exp_performance'] == null
-          ? null
-          : _toInt(json['exp_performance']),
-      expBattery:
-          json['exp_battery'] == null ? null : _toInt(json['exp_battery']),
-      expCamera: json['exp_camera'] == null ? null : _toInt(json['exp_camera']),
       userName: user?['name']?.toString(),
       userAvatarUrl: _imageFrom(user?['avatar_url']).isEmpty
           ? null
@@ -925,55 +913,18 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
         'total': 0,
         'avg': 0.0,
         'counts': counts,
-        'exp': {
-          'performance': {'avg': 0.0, 'count': 0},
-          'battery': {'avg': 0.0, 'count': 0},
-          'camera': {'avg': 0.0, 'count': 0},
-        },
       };
     }
 
     var sum = 0;
-    var perfSum = 0;
-    var perfCount = 0;
-    var batSum = 0;
-    var batCount = 0;
-    var camSum = 0;
-    var camCount = 0;
     for (final review in visibleReviews) {
       counts[review.rating] = (counts[review.rating] ?? 0) + 1;
       sum += review.rating;
-      if (review.expPerformance != null) {
-        perfSum += review.expPerformance!;
-        perfCount++;
-      }
-      if (review.expBattery != null) {
-        batSum += review.expBattery!;
-        batCount++;
-      }
-      if (review.expCamera != null) {
-        camSum += review.expCamera!;
-        camCount++;
-      }
     }
     return {
       'total': visibleReviews.length,
       'avg': sum / visibleReviews.length,
       'counts': counts,
-      'exp': {
-        'performance': {
-          'avg': perfCount == 0 ? 0.0 : perfSum / perfCount,
-          'count': perfCount,
-        },
-        'battery': {
-          'avg': batCount == 0 ? 0.0 : batSum / batCount,
-          'count': batCount,
-        },
-        'camera': {
-          'avg': camCount == 0 ? 0.0 : camSum / camCount,
-          'count': camCount,
-        },
-      },
     };
   }
 
@@ -2661,9 +2612,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
 
     // 1. TRẠNG THÁI LƯU TRỮ CHỌN SAO (Mặc định chọn 5 sao)
     int localRating = 5; // Đánh giá chung
-    int localPerformance = 5; // Hiệu năng
-    int localBattery = 5; // Thời lượng pin
-    int localCamera = 5; // Chất lượng camera
+
 
     final TextEditingController localReviewController = TextEditingController();
     bool localIsSubmitting = false;
@@ -2678,94 +2627,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
       'Tuyệt vời'
     ];
 
-    // 2. LOGIC ĐỔI TEXT ĐỘNG CHO TỪNG TIÊU CHÍ TRẢI NGHIỆM (CHUẨN THEO WEB)
-    String _getPerformanceLabel(int score) {
-      if (score >= 5) return 'Siêu mạnh mẽ';
-      if (score == 4) return 'Mượt mà';
-      if (score == 3) return 'Ổn định';
-      if (score == 2) return 'Hơi lag';
-      return 'Rất chậm';
-    }
 
-    String _getBatteryLabel(int score) {
-      if (score >= 5) return 'Cực khủng';
-      if (score == 4) return 'Trâu bâu';
-      if (score == 3) return 'Đủ dùng';
-      if (score == 2) return 'Yếu';
-      return 'Hao pin nhanh';
-    }
-
-    String _getCameraLabel(int score) {
-      if (score >= 5) return 'Xất sắc';
-      if (score == 4) return 'Sắc nét';
-      if (score == 3) return 'Cơ bản';
-      if (score == 2) return 'Góc mờ';
-      return 'Rất tệ';
-    }
-
-    Widget _buildExperienceRow(String label, int currentValue,
-        String dynamicLabel, Function(int) onStarTap) {
-      return Padding(
-        padding: const EdgeInsets.symmetric(vertical: 8),
-        child: Row(
-          crossAxisAlignment:
-              CrossAxisAlignment.center, // SỬA THÀNH ĐOẠN NÀY ĐỂ HẾT LỖI
-          children: [
-            // 1. Tên tiêu chí bên trái (Cố định độ rộng vừa phải)
-            SizedBox(
-              width: 105,
-              child: Text(
-                label,
-                style: TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w600,
-                    color: Theme.of(context).colorScheme.onSurfaceVariant),
-              ),
-            ),
-
-            // 2. Bọc khối sao vào Expanded để tự động tính toán không gian và chống tràn viền
-            Expanded(
-              child: Align(
-                alignment: Alignment.centerLeft,
-                child: SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: List.generate(5, (index) {
-                      final starValue = index + 1;
-                      return GestureDetector(
-                        onTap: () => onStarTap(starValue),
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 1.5),
-                          child: Icon(
-                            Icons.star,
-                            size: 19,
-                            color: starValue <= currentValue
-                                ? Colors.orange
-                                : Theme.of(context).colorScheme.outline,
-                          ),
-                        ),
-                      );
-                    }),
-                  ),
-                ),
-              ),
-            ),
-
-            const SizedBox(width: 4),
-
-            // 3. Chữ trạng thái động bên phải ngoài cùng (Ví dụ: "Chụp đẹp, chuyên nghiệp")
-            Text(
-              dynamicLabel,
-              style: TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.bold,
-                  color: Theme.of(context).colorScheme.onSurface),
-            ),
-          ],
-        ),
-      );
-    }
 
     showModalBottomSheet(
       context: context,
@@ -2853,37 +2715,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                         }),
                       ),
                       const SizedBox(height: 16),
-                      Divider(
-                          color:
-                              Theme.of(context).colorScheme.surfaceContainerLow,
-                          thickness: 1),
 
-                      // ================= KHỐI 2: THEO TRẢI NGHIỆM =================
-                      const SizedBox(height: 8),
-                      Text(
-                        'Theo trải nghiệm',
-                        style: TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.bold,
-                            color: Theme.of(context).colorScheme.onSurface),
-                      ),
-                      const SizedBox(height: 12),
-                      _buildExperienceRow(
-                          'Hiệu năng',
-                          localPerformance,
-                          _getPerformanceLabel(localPerformance),
-                          (val) => setModalState(() => localPerformance = val)),
-                      _buildExperienceRow(
-                          'Thời lượng pin',
-                          localBattery,
-                          _getBatteryLabel(localBattery),
-                          (val) => setModalState(() => localBattery = val)),
-                      _buildExperienceRow(
-                          'Chất lượng camera',
-                          localCamera,
-                          _getCameraLabel(localCamera),
-                          (val) => setModalState(() => localCamera = val)),
-                      const SizedBox(height: 16),
                       Divider(
                           color:
                               Theme.of(context).colorScheme.surfaceContainerLow,
@@ -3180,9 +3012,6 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                                       token: token,
                                       rating: localRating,
                                       comment: commentText,
-                                      expPerformance: localPerformance,
-                                      expBattery: localBattery,
-                                      expCamera: localCamera,
                                       mediaFiles: localMediaFiles
                                           .map((f) => f.path)
                                           .toList(),
@@ -3253,7 +3082,6 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     final avg = stats['avg'] as double;
     final total = stats['total'] as int;
     final counts = stats['counts'] as Map<int, int>;
-    final exp = stats['exp'] as Map<String, dynamic>;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -3363,8 +3191,6 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                   ),
                 ],
               ),
-              const SizedBox(height: 14),
-              _buildExperienceStats(exp),
             ],
           ),
         ),
@@ -3404,42 +3230,6 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
         else
           ...filtered.take(5).map(_buildReviewItem),
       ],
-    );
-  }
-
-  Widget _buildExperienceStats(Map<String, dynamic> exp) {
-    return Column(
-      children: [
-        _buildExperienceStatRow('Hiệu năng', exp['performance']),
-        _buildExperienceStatRow('Thời lượng pin', exp['battery']),
-        _buildExperienceStatRow('Chất lượng camera', exp['camera']),
-      ],
-    );
-  }
-
-  Widget _buildExperienceStatRow(String label, dynamic raw) {
-    final data = raw as Map<String, dynamic>;
-    final avg = data['avg'] as double;
-    final count = data['count'] as int;
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
-      child: Row(
-        children: [
-          SizedBox(
-            width: 108,
-            child: Text(label,
-                style: TextStyle(fontSize: 12, color: Colors.black)),
-          ),
-          Expanded(child: _buildStars(avg, size: 14)),
-          Text(
-            '${count == 0 ? 0 : avg.toStringAsFixed(0)}/5',
-            style: TextStyle(
-                fontWeight: FontWeight.bold, fontSize: 12, color: Colors.black),
-          ),
-          Text(' ($count)',
-              style: TextStyle(fontSize: 11, color: Colors.black)),
-        ],
-      ),
     );
   }
 
@@ -3505,68 +3295,9 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     );
   }
 
-  Widget _buildReviewExperienceMetric(String label, int value) {
-    final displayLabel = label == 'Camera'
-        ? 'Camera'
-        : label.startsWith('Hi')
-            ? 'Hi\u1ec7u n\u0103ng'
-            : 'Th\u1eddi l\u01b0\u1ee3ng';
 
-    return Expanded(
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-        decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.surfaceContainerLow,
-          borderRadius: BorderRadius.circular(10),
-          border: Border.all(
-            color: Theme.of(context).colorScheme.outline,
-            width: 0.15,
-          ),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              displayLabel,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: TextStyle(
-                color: Theme.of(context).colorScheme.onSurfaceVariant,
-                fontSize: 11,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            const SizedBox(height: 4),
-            Row(
-              children: [
-                const Icon(Icons.star, color: Colors.orange, size: 14),
-                const SizedBox(width: 3),
-                Text(
-                  '$value/5',
-                  style: TextStyle(
-                    color: Theme.of(context).colorScheme.onSurface,
-                    fontSize: 12,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
 
   Widget _buildReviewItem(ProductReview review) {
-    final experienceWidgets = <Widget>[
-      if (review.expPerformance != null)
-        _buildReviewExperienceMetric('Hiá»‡u nÄƒng', review.expPerformance!),
-      if (review.expBattery != null)
-        _buildReviewExperienceMetric('Thá»i lÆ°á»£ng', review.expBattery!),
-      if (review.expCamera != null)
-        _buildReviewExperienceMetric('Camera', review.expCamera!),
-    ];
 
     final userName = review.userName ?? 'Người dùng';
     return Container(
@@ -3651,34 +3382,13 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
               ),
             ],
           ),
-          const SizedBox(height: 10),
-          if (experienceWidgets.isNotEmpty) ...[
-            Row(
-              children: [
-                for (var i = 0; i < experienceWidgets.length; i++) ...[
-                  if (i > 0) const SizedBox(width: 8),
-                  experienceWidgets[i],
-                ],
-              ],
-            ),
-          ],
+
           if (review.id == -1)
             Wrap(
               spacing: 6,
               runSpacing: 6,
               children: [
-                if (review.expPerformance != null)
-                  _buildReviewPill(
-                    'Hiệu năng ${review.expPerformance! >= 5 ? 'Siêu mạnh mẽ' : _ratingLabel(review.expPerformance!)}',
-                  ),
-                if (review.expBattery != null)
-                  _buildReviewPill(
-                    'Thời lượng pin ${review.expBattery! >= 5 ? 'Cực khủng' : _ratingLabel(review.expBattery!)}',
-                  ),
-                if (review.expCamera != null)
-                  _buildReviewPill(
-                    'Camera ${review.expCamera! >= 5 ? 'Chụp đẹp' : _ratingLabel(review.expCamera!)}',
-                  ),
+
                 if (review.orderId != null)
                   _buildReviewPill('Đã mua hàng', verified: true),
               ],

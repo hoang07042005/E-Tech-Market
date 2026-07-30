@@ -1490,17 +1490,7 @@ export default function HomePage() {
                         <span className="hpReviewLabel">{ratingLabel(rev.rating)}</span>
                       </div>
 
-                      {/* <div className="hpReviewPills">
-                        {typeof rev.exp_performance === 'number' && (
-                          <span className="hpReviewPill">Hiệu năng {rev.exp_performance >= 5 ? 'Siêu mạnh mẽ' : ratingLabel(rev.exp_performance)}</span>
-                        )}
-                        {typeof rev.exp_battery === 'number' && (
-                          <span className="hpReviewPill">Thời lượng pin {rev.exp_battery >= 5 ? 'Cực khủng' : ratingLabel(rev.exp_battery)}</span>
-                        )}
-                        {typeof rev.exp_camera === 'number' && (
-                          <span className="hpReviewPill">Chất lượng camera {rev.exp_camera >= 5 ? 'Chụp đẹp, chuyên nghiệp' : ratingLabel(rev.exp_camera)}</span>
-                        )}
-                      </div> */}
+                      
 
                       <div className="hpReviewComment">
                         {rev.comment || 'Khách hàng không để lại bình luận.'}

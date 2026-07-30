@@ -4,6 +4,8 @@ import ConfirmModal from "@/components/ConfirmModal";
 import "@/styles/admin/ProductNewsPage.css";
 import { sanitizeHtml } from "@/utils/sanitizeHtml";
 import { toast } from '@/utils/toast';
+import ReactQuill from "react-quill-new";
+import "react-quill-new/dist/quill.snow.css";
 
 type ProductLite = {
   id: number;
@@ -462,17 +464,13 @@ export default function ProductNewsPage() {
                   <span>Đang bật</span>
                 </div>
                 <div className="pnField">
-                  <label>Nội dung HTML (dán từ website)</label>
-                  <textarea
-                    rows={10}
+                  <label>Nội dung (Trình soạn thảo)</label>
+                  <ReactQuill
+                    theme="snow"
                     value={form.content_html}
-                    onChange={(e) =>
-                      setForm({ ...form, content_html: e.target.value })
-                    }
+                    onChange={(val) => setForm({ ...form, content_html: val })}
+                    style={{ background: "#fff", marginBottom: "40px", height: "300px" }}
                   />
-                  <div className="pnTiny">
-                    Hệ thống sẽ tự lọc thẻ nguy hiểm (script, onclick...).
-                  </div>
                 </div>
               </div>
 

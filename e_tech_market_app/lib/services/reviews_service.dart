@@ -26,18 +26,14 @@ class ReviewsService {
     required String token,
     required int rating,
     required String comment,
-    int? expPerformance,
-    int? expBattery,
-    int? expCamera,
+
     List<String> mediaFiles = const [],
   }) async {
     try {
       final formData = FormData.fromMap({
         'rating': rating,
         'comment': comment,
-        if (expPerformance != null) 'exp_performance': expPerformance,
-        if (expBattery != null) 'exp_battery': expBattery,
-        if (expCamera != null) 'exp_camera': expCamera,
+
       });
 
       // Thêm từng file media vào FormData dưới key 'media[]'

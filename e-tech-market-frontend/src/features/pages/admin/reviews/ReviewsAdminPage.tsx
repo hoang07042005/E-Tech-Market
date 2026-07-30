@@ -454,127 +454,81 @@ export default function ReviewsAdminPage() {
               </button>
             </div>
 
-            <div className="drawerBody">
-              <div>
-                <span className="drawerSectionLabel">Khách hàng phản hồi</span>
-                <div className="drawerProfileCard">
-                  {selectedReview.user?.avatar_url ? (
-                    <img
-                      className="drawerAvatar"
-                      src={resolveReviewImageUrl(
-                        selectedReview.user.avatar_url,
-                      )}
-                      alt=""
-                    />
-                  ) : (
-                    <div className="drawerAvatarFallback">
-                      {(selectedReview.user?.name || "U").charAt(0)}
-                    </div>
-                  )}
-                  <div>
-                    <h4 style={{ margin: "0 0 4px 0", fontSize: "0.95rem" }}>
-                      {selectedReview.user?.name || "—"}
-                    </h4>
-                    <p
-                      style={{
-                        margin: 0,
-                        fontSize: "0.8rem",
-                        color: "var(--admin-txt-muted)",
-                      }}
-                    >
-                      Mã tài khoản: #{selectedReview.user_id}
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              <div>
-                <span className="drawerSectionLabel">Sản phẩm liên kết</span>
-                <div className="drawerProfileCard">
-                  <img
-                    className="productImg"
-                    src={resolveReviewImageUrl(
-                      selectedReview.product?.main_image_url,
+            <div className="drawerBody premiumDrawerBody">
+              {/* THE REVIEW ITSELF: Main Focus */}
+              <div className="premiumReviewFocus">
+                <div className="premiumReviewFocusHeader">
+                  <div className="premiumFocusUser">
+                    {selectedReview.user?.avatar_url ? (
+                      <img
+                        className="premiumFocusAvatar"
+                        src={resolveReviewImageUrl(
+                          selectedReview.user.avatar_url,
+                        )}
+                        alt=""
+                      />
+                    ) : (
+                      <div className="premiumFocusAvatarFallback">
+                        {(selectedReview.user?.name || "U").charAt(0)}
+                      </div>
                     )}
-                    alt=""
-                    style={{ borderRadius: "6px" }}
-                  />
-                  <div>
-                    <h4 style={{ margin: "0 0 4px 0", fontSize: "0.9rem" }}>
-                      {selectedReview.product?.name || "—"}
-                    </h4>
-                    <p
-                      style={{
-                        margin: 0,
-                        fontSize: "0.8rem",
-                        color: "var(--admin-txt-muted)",
-                      }}
+                    <div className="premiumFocusUserInfo">
+                      <h4>{selectedReview.user?.name || "—"}</h4>
+                      <span>Khách hàng • ID: #{selectedReview.user_id}</span>
+                    </div>
+                  </div>
+                  
+                  <div className="premiumFocusStatus">
+                    <span
+                      className={`statusBadgeDot ${selectedReview.status}`}
                     >
-                      Mã sản phẩm: #{selectedReview.product_id}
-                    </p>
+                      {selectedReview.status === "pending"
+                        ? "Chờ duyệt"
+                        : selectedReview.status === "approved"
+                          ? "Đã duyệt"
+                          : "Từ chối"}
+                    </span>
                   </div>
                 </div>
-              </div>
 
-              <div className="drawerMiniGrid">
-                <div className="drawerMiniCard">
-                  <span>Điểm đánh giá</span>
-                  <strong>{selectedReview.rating} / 5 ★</strong>
-                </div>
-                <div className="drawerMiniCard">
-                  <span>Trạng thái duyệt</span>
-                  <strong
-                    style={{
-                      color:
-                        selectedReview.status === "approved"
-                          ? "#16a34a"
-                          : selectedReview.status === "rejected"
-                            ? "#dc2626"
-                            : "#ca8a04",
-                    }}
-                  >
-                    {selectedReview.status === "pending"
-                      ? "Chờ duyệt"
-                      : selectedReview.status === "approved"
-                        ? "Đã duyệt"
-                        : "Từ chối"}
-                  </strong>
-                </div>
-              </div>
+                <div className="premiumFocusRating">
+                  <div className="premiumStarsRow">
+                    {Array.from({ length: 5 }).map((_, i) => (
+                      <span
+                        key={i}
+                        className={`premiumStar ${i < selectedReview.rating ? "active" : ""}`}
+                      >
+                        ★
+                      </span>
+                    ))}
+                  </div>
+                  <span className="premiumRatingText">
+                    {selectedReview.rating} / 5
+                  </span>
 
-              <div
-                className="drawerMiniGrid"
-                style={{ gridTemplateColumns: "repeat(3, 1fr)" }}
-              >
-                <div className="drawerMiniCard">
-                  <span>Hiệu năng</span>
-                  <strong>{selectedReview.exp_performance ?? "—"}/5</strong>
+                  {!!selectedReview.order_id && (
+                    <span className="premiumVerifiedBadge">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                      </svg>
+                      Đã mua hàng
+                    </span>
+                  )}
                 </div>
-                <div className="drawerMiniCard">
-                  <span>Thời lượng pin</span>
-                  <strong>{selectedReview.exp_battery ?? "—"}/5</strong>
-                </div>
-                <div className="drawerMiniCard">
-                  <span>Camera</span>
-                  <strong>{selectedReview.exp_camera ?? "—"}/5</strong>
-                </div>
-              </div>
 
-              <div>
-                <span className="drawerSectionLabel">Nội dung text</span>
-                <div className="drawerCommentBox">
+                <div className="premiumFocusComment">
                   <p>
-                    {selectedReview.comment ||
-                      "Khách hàng không điền nội dung chữ."}
+                    {selectedReview.comment || (
+                      <i style={{ color: "#94a3b8" }}>
+                        Khách hàng không để lại nội dung chữ.
+                      </i>
+                    )}
                   </p>
                 </div>
-              </div>
 
-              {Array.isArray(selectedReview.media) &&
-                selectedReview.media.length > 0 && (
-                  <div>
-                    <span className="drawerSectionLabel">Tệp đính kèm</span>
-                    <div className="drawerGallery">
+                {Array.isArray(selectedReview.media) &&
+                  selectedReview.media.length > 0 && (
+                    <div className="premiumFocusMedia">
                       {selectedReview.media.map((med, idx) => (
                         <a
                           key={idx}
@@ -583,15 +537,33 @@ export default function ReviewsAdminPage() {
                           rel="noreferrer"
                         >
                           <img
-                            className="drawerMediaThumb"
+                            className="premiumMediaImg"
                             src={resolveReviewImageUrl(med.url)}
                             alt=""
                           />
                         </a>
                       ))}
                     </div>
+                  )}
+              </div>
+
+              {/* ATTACHED PRODUCT */}
+              <div className="premiumProductRef">
+                <span className="drawerSectionLabel">Đánh giá cho sản phẩm</span>
+                <div className="premiumProductCard">
+                  <img
+                    className="premiumProductImg"
+                    src={resolveReviewImageUrl(
+                      selectedReview.product?.main_image_url,
+                    )}
+                    alt=""
+                  />
+                  <div className="premiumProductInfo">
+                    <h4>{selectedReview.product?.name || "—"}</h4>
+                    <span>Mã sản phẩm: #{selectedReview.product_id}</span>
                   </div>
-                )}
+                </div>
+              </div>
             </div>
 
             <div className="drawerFooter">

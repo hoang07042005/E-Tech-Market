@@ -798,3 +798,185 @@
     padding: 6px;
   }
 }
+/* NEW PREMIUM DRAWER BODY */
+.premiumDrawerBody {
+  background: #f1f5f9;
+  padding: 1.5rem;
+  gap: 1.5rem;
+}
+
+.premiumReviewFocus {
+  background: #fff;
+  border-radius: 16px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 20px -5px rgba(0,0,0,0.05);
+  border: 1px solid #e2e8f0;
+}
+
+.premiumReviewFocusHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1.25rem;
+}
+
+.premiumFocusUser {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.premiumFocusAvatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.premiumFocusAvatarFallback {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+  color: white;
+  display: grid;
+  place-items: center;
+  font-weight: 700;
+  font-size: 1.2rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.premiumFocusUserInfo h4 {
+  margin: 0 0 4px 0;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.premiumFocusUserInfo span {
+  font-size: 0.8rem;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.premiumFocusRating {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 1rem;
+  background: #f8fafc;
+  padding: 8px 12px;
+  border-radius: 8px;
+  width: fit-content;
+}
+
+.premiumStarsRow {
+  display: flex;
+  gap: 4px;
+}
+
+.premiumStar {
+  color: #cbd5e1;
+  font-size: 1.25rem;
+}
+
+.premiumStar.active {
+  color: #f59e0b;
+  text-shadow: 0 2px 10px rgba(245, 158, 11, 0.4);
+}
+
+.premiumRatingText {
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: #334155;
+}
+
+.premiumFocusComment {
+  background: #fff;
+  border-left: 4px solid #3b82f6;
+  padding: 0 0 0 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.premiumFocusComment p {
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: #334155;
+  white-space: pre-wrap;
+}
+
+.premiumFocusMedia {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 1rem;
+}
+
+.premiumMediaImg {
+  width: 80px;
+  height: 80px;
+  border-radius: 12px;
+  object-fit: cover;
+  border: 1px solid #e2e8f0;
+  transition: transform 0.2s;
+  cursor: pointer;
+}
+
+.premiumMediaImg:hover {
+  transform: scale(1.05);
+}
+
+.premiumProductRef {
+  background: transparent;
+}
+
+.premiumProductCard {
+  background: #fff;
+  border-radius: 12px;
+  padding: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  border: 1px solid #e2e8f0;
+  transition: all 0.2s;
+  margin-top: 10px;
+}
+
+.premiumProductCard:hover {
+  border-color: #cbd5e1;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+}
+
+.premiumProductImg {
+  width: 60px;
+  height: 60px;
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+.premiumProductInfo h4 {
+  margin: 0 0 6px 0;
+  font-size: 0.95rem;
+  color: #0f172a;
+}
+
+.premiumProductInfo span {
+  font-size: 0.8rem;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.premiumVerifiedBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: #dcfce7;
+  color: #16a34a;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  margin-left: 8px;
+}

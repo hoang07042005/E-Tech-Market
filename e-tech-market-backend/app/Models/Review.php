@@ -15,9 +15,6 @@ class Review extends Model
         'user_id',
         'order_id',
         'rating',
-        'exp_performance',
-        'exp_battery',
-        'exp_camera',
         'comment',
         'status',
         'media',
@@ -28,9 +25,6 @@ class Review extends Model
         'user_id' => 'integer',
         'order_id' => 'integer',
         'rating' => 'integer',
-        'exp_performance' => 'integer',
-        'exp_battery' => 'integer',
-        'exp_camera' => 'integer',
         'media' => 'array',
     ];
 
