@@ -302,6 +302,8 @@ class MetricsCollector
      */
     public function getMetrics(): string
     {
+        $this->collectSystemMetrics();
+        
         try {
             $renderer = new RenderTextFormat();
             // Collect metrics from the registry using public API
@@ -310,6 +312,56 @@ class MetricsCollector
         } catch (\Exception $e) {
             Log::error('Failed to render metrics', ['error' => $e->getMessage()]);
             return '';
+        }
+    }
+
+    /**
+     * Collect system level metrics like Disk and Memory usage
+     */
+    private function collectSystemMetrics(): void
+    {
+        try {
+            // Disk usage for root drive (or where the app is installed)
+            $diskPath = base_path();
+            $diskTotal = @disk_total_space($diskPath);
+            $diskFree = @disk_free_space($diskPath);
+            
+            if ($diskTotal !== false && $diskFree !== false && $diskTotal > 0) {
+                $gaugeTotal = $this->registry->getOrRegisterGauge(
+                    $this->namespace,
+                    'system_disk_total_bytes',
+                    'Total system disk space in bytes',
+                    ['mount']
+                );
+                $gaugeTotal->set($diskTotal, ['/']);
+
+                $gaugeFree = $this->registry->getOrRegisterGauge(
+                    $this->namespace,
+                    'system_disk_free_bytes',
+                    'Free system disk space in bytes',
+                    ['mount']
+                );
+                $gaugeFree->set($diskFree, ['/']);
+                
+                $gaugePercent = $this->registry->getOrRegisterGauge(
+                    $this->namespace,
+                    'system_disk_used_percent',
+                    'Disk space used percentage',
+                    ['mount']
+                );
+                $gaugePercent->set((($diskTotal - $diskFree) / $diskTotal) * 100, ['/']);
+            }
+            
+            // Memory usage
+            $gaugeMem = $this->registry->getOrRegisterGauge(
+                $this->namespace,
+                'system_memory_usage_bytes',
+                'Memory usage in bytes'
+            );
+            $gaugeMem->set(memory_get_usage(true));
+            
+        } catch (\Exception $e) {
+            Log::warning('Failed to collect system metrics', ['error' => $e->getMessage()]);
         }
     }
 
