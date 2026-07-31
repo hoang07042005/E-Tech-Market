@@ -222,7 +222,7 @@ function ProductCard({
           if (flashVariant) {
             selectedVariant = flashVariant;
             originalPrice = Number(flashVariant.price);
-            variantId = flashVariant.id;
+            variantId = flashVariant.id; 
           }
         }
         finalPrice = Number(activeFlashSaleItem.flash_sale_price);
