@@ -45,7 +45,7 @@
   padding: 10px 20px;
   background-color: transparent;
   color: #dc2626;
-  border: 1px solid #fca5a5;
+  border: none;
   border-radius: 99px;
   font-weight: 600;
   cursor: pointer;
@@ -473,4 +473,44 @@
     width: 14px;
     height: 14px;
   }
+}
+
+
+/* Tab Styles matching BlogPage / Category tabs */
+.wlTabsContainer {
+  display: flex;
+  gap: 32px;
+  margin-bottom: 24px;
+  border-bottom: 1px solid #e2e8f0;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.wlTabsContainer::-webkit-scrollbar {
+  display: none;
+}
+
+.wlTabItem {
+  padding: 0 0 12px 0;
+  background: transparent;
+  color: #64748b;
+  border: none;
+  border-bottom: 2px solid transparent;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+  position: relative;
+  top: 1px;
+}
+
+.wlTabItem:hover {
+  color: #334155;
+}
+
+.wlTabItem--active {
+  color: #f91616;
+  border-bottom-color: #f91616;
+  font-weight: 600;
 }

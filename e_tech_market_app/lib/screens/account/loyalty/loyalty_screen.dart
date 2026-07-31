@@ -315,13 +315,13 @@ class _LoyaltyScreenState extends State<LoyaltyScreen> {
   ) {
     return Container(
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(20),
+              borderRadius: BorderRadius.circular(10),
               boxShadow: [
                 BoxShadow(color: Colors.black.withOpacity(0.4), blurRadius: 20, offset: const Offset(0, 8)),
               ],
             ),
             child: ClipRRect(
-              borderRadius: BorderRadius.circular(20),
+              borderRadius: BorderRadius.circular(10),
               child: Stack(
                 children: [
                   // Ảnh nền
@@ -348,7 +348,7 @@ class _LoyaltyScreenState extends State<LoyaltyScreen> {
                   ),
                   // Nội dung thẻ
                   Padding(
-                    padding: const EdgeInsets.fromLTRB(24, 20, 24, 20),
+                    padding: const EdgeInsets.fromLTRB(20, 16, 20, 16),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [

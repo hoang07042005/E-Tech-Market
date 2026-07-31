@@ -3,11 +3,16 @@ import 'package:dio/dio.dart';
 import '../../config/dio_client.dart';
 
 class WishlistService {
-  static Set<int> _wishlistIds = {};
+  static Map<String, Set<int>> _wishlistIds = {
+    'product': {},
+    'blog': {},
+    'video': {},
+    'news': {},
+  };
 
-  static Future<List<dynamic>> fetchWishlist() async {
+  static Future<List<dynamic>> fetchWishlist({String type = 'product'}) async {
     try {
-      final response = await DioClient.instance.get('/wishlist');
+      final response = await DioClient.instance.get('/wishlist', queryParameters: {'type': type});
       final data = response.data;
       if (data is List) return data;
       return [];
@@ -17,11 +22,11 @@ class WishlistService {
     }
   }
 
-  static Future<String?> toggleWishlist(int productId) async {
+  static Future<String?> toggleWishlist(int id, {String type = 'product'}) async {
     try {
       final response = await DioClient.instance.post(
         '/wishlist/toggle',
-        data: {'product_id': productId},
+        data: {'id': id, 'type': type},
       );
       final decoded = response.data;
       if (decoded is Map<String, dynamic>) {
@@ -30,7 +35,7 @@ class WishlistService {
       return null;
     } on DioException catch (e) {
       if (e.response?.statusCode == 401) {
-        throw Exception('Vui lòng đăng nhập để thêm sản phẩm yêu thích.');
+        throw Exception('Vui lòng đăng nhập để thêm vào danh sách yêu thích.');
       }
       if (e.response?.data is Map) {
         final data = e.response!.data as Map<String, dynamic>;
@@ -40,35 +45,44 @@ class WishlistService {
     }
   }
 
-  static Future<void> loadWishlist() async {
-    final list = await fetchWishlist();
-    _wishlistIds = list.map((item) => _toInt(item['product_id'])).toSet();
+  static Future<void> loadWishlist({String type = 'product'}) async {
+    final list = await fetchWishlist(type: type);
+    String idField = 'product_id';
+    if (type == 'blog') idField = 'blog_post_id';
+    if (type == 'video') idField = 'video_id';
+    if (type == 'news') idField = 'product_news_id';
+
+    _wishlistIds[type] = list.map((item) => _toInt(item[idField])).toSet();
   }
 
-  static bool isFavorite(int productId) => _wishlistIds.contains(productId);
+  static bool isFavorite(int id, {String type = 'product'}) => _wishlistIds[type]?.contains(id) ?? false;
 
-  static Future<void> toggleFavorite(int productId) async {
-    final wasFavorite = _wishlistIds.contains(productId);
+  static Future<void> toggleFavorite(int id, {String type = 'product'}) async {
+    if (!_wishlistIds.containsKey(type)) {
+      _wishlistIds[type] = {};
+    }
+    
+    final wasFavorite = _wishlistIds[type]!.contains(id);
     // Optimistic update
     if (wasFavorite) {
-      _wishlistIds.remove(productId);
+      _wishlistIds[type]!.remove(id);
     } else {
-      _wishlistIds.add(productId);
+      _wishlistIds[type]!.add(id);
     }
 
     try {
-      final status = await toggleWishlist(productId);
+      final status = await toggleWishlist(id, type: type);
       if (status == 'added') {
-        _wishlistIds.add(productId);
+        _wishlistIds[type]!.add(id);
       } else if (status == 'removed') {
-        _wishlistIds.remove(productId);
+        _wishlistIds[type]!.remove(id);
       }
     } catch (_) {
       // Rollback optimistic update on error
       if (wasFavorite) {
-        _wishlistIds.add(productId);
+        _wishlistIds[type]!.add(id);
       } else {
-        _wishlistIds.remove(productId);
+        _wishlistIds[type]!.remove(id);
       }
       rethrow;
     }

@@ -95,7 +95,7 @@ class _AccountScreenState extends State<AccountScreen> {
               children: [
                 // Profile Image
                 Container(
-                  padding: const EdgeInsets.all(4),
+                  padding: const EdgeInsets.all(2),
                   decoration: const BoxDecoration(
                     color: Colors.white,
                     shape: BoxShape.circle,
@@ -130,7 +130,7 @@ class _AccountScreenState extends State<AccountScreen> {
                     ),
                   ),
                 ),
-                const SizedBox(width: 16),
+                const SizedBox(width: 32),
                 
                 // Name and Email
                 Expanded(

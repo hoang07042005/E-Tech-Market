@@ -1,8 +1,9 @@
-
 import { useEffect, useState, useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { apiFetch, API_BASE_URL } from '@/configs/api.config'
 import '@/styles/pages/BlogPage.css'
+import { useWishlistQuery, useWishlistMutation } from '@/features/services/mutations'
+import { useAuthStore } from '@/features/store/useAuthStore'
 
 type BlogPost = {
   id: number
@@ -69,6 +70,37 @@ const getCategoryColor = (slug?: string) => {
 }
 
 export default function BlogPage() {
+  const userStr = useAuthStore((state) => state.userStr)
+  const hasAuth = !!userStr
+  const { data: blogWishlists } = useWishlistQuery(hasAuth, 'blog')
+  const { data: newsWishlists } = useWishlistQuery(hasAuth, 'news')
+  const blogWishlistMutation = useWishlistMutation('blog')
+  const newsWishlistMutation = useWishlistMutation('news')
+
+  const isFavorited = (post: BlogPost) => {
+    if (!hasAuth) return false
+    if (post.isProductNews) {
+      // For product news, ID was prefixed with 999
+      const realId = post.id.toString().startsWith('999') ? parseInt(post.id.toString().substring(3)) : post.id
+      return newsWishlists?.some(w => w.product_news_id === realId)
+    }
+    return blogWishlists?.some(w => w.blog_post_id === post.id)
+  }
+
+  const handleToggleFavorite = (e: React.MouseEvent, post: BlogPost) => {
+    e.preventDefault()
+    if (!hasAuth) {
+      alert('Vui lòng đăng nhập để yêu thích!')
+      return
+    }
+    if (post.isProductNews) {
+      const realId = post.id.toString().startsWith('999') ? parseInt(post.id.toString().substring(3)) : post.id
+      newsWishlistMutation.mutate(realId)
+    } else {
+      blogWishlistMutation.mutate(post.id)
+    }
+  }
+
   const [posts, setPosts] = useState<BlogPost[]>([])
   const [loading, setLoading] = useState(true)
   const [activeFilter, setActiveFilter] = useState('all')
@@ -190,9 +222,15 @@ export default function BlogPage() {
                 </Link>
               </h1>
               <p className="blogHeroExcerpt">{featuredPost.excerpt}</p>
-              <div className="blogHeroMeta">
+              <div className="blogHeroMeta" style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
                 <span>📅 {new Date(featuredPost.published_at).toLocaleDateString('vi-VN')}</span>
                 <span>⏱️ {featuredPost.reading_time} phút đọc</span>
+                <button 
+                  onClick={(e) => handleToggleFavorite(e, featuredPost)}
+                  style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '5px', padding: 0 }}
+                >
+                  <HeartIcon filled={isFavorited(featuredPost)} />
+                </button>
               </div>
             </div>
           </div>
@@ -235,7 +273,15 @@ export default function BlogPage() {
                     )}
                   </div>
                   <div className="blogCardBody">
-                    <span className="blogCardDate">{new Date(post.published_at).toLocaleDateString('vi-VN')}</span>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <span className="blogCardDate">{new Date(post.published_at).toLocaleDateString('vi-VN')}</span>
+                      <button 
+                        onClick={(e) => handleToggleFavorite(e, post)}
+                        style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
+                      >
+                        <HeartIcon filled={isFavorited(post)} />
+                      </button>
+                    </div>
                     <Link to={post.isProductNews ? `/product-news/${post.slug}` : `/blog/${post.slug}`} className="blogCardTitle">{post.title}</Link>
                     <p className="blogCardExcerpt">{post.excerpt}</p>
                     <Link to={post.isProductNews ? `/product-news/${post.slug}` : `/blog/${post.slug}`} className="blogCardMore">Đọc thêm →</Link>
@@ -312,3 +358,12 @@ export default function BlogPage() {
     </div>
   )
 }
+
+function HeartIcon({ filled }: { filled?: boolean }) {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill={filled ? '#ef4444' : 'none'} stroke={filled ? '#ef4444' : 'currentColor'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+    </svg>
+  )
+}
+

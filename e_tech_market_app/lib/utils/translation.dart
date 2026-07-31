@@ -248,7 +248,7 @@ class Trans {
   // Account screen translations
   static String get accountTitle => isVietnamese ? 'TÀI KHOẢN' : 'ACCOUNT';
   static String get personalInfo => isVietnamese ? 'Thông tin cá nhân' : 'Personal Information';
-  static String get myWishlist => isVietnamese ? 'Sản phẩm yêu thích' : 'My Wishlist';
+  static String get myWishlist => isVietnamese ? 'Nội dung yêu thích' : 'My Wishlist';
     static String get aboutEtech => isVietnamese ? 'VỀ E-TECH MARKET' : 'ABOUT E-TECH MARKET';
   static String get introduction => isVietnamese ? 'Giới thiệu' : 'Introduction';
   static String get contactSupport => isVietnamese ? 'Liên hệ & Hỗ trợ' : 'Contact & Support';

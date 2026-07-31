@@ -204,11 +204,9 @@ function ProductCard({
   const { displayPrice, displayPriceMax, displayOldPrice, discountPercent, hasMultiplePrices, showDiscountBadge, variantId, imageUrl } = useMemo(() => {
     const activeVariants = (product.variants || []).filter(v => v.is_active)
     const isSingleVariant = activeVariants.length === 1
-    let selectedVariant = null;
-
     if (activeVariants.length > 0) {
       const sorted = [...activeVariants].sort((a, b) => a.effective_price - b.effective_price)
-      selectedVariant = sorted[0];
+      let selectedVariant = sorted[0];
       const highest = sorted[sorted.length - 1]
       let hasMultiplePrices = selectedVariant.effective_price !== highest.effective_price
       let showDiscountBadge = isSingleVariant
@@ -567,7 +565,7 @@ export default function HomePage() {
         const avgLuminance = colorSum / (w * h)
         // If average luminance is > 160 (out of 255), we consider it a light background
         setIsLightBg(avgLuminance > 160)
-      } catch (e) {
+      } catch {
         // Fallback in case of CORS errors
         setIsLightBg(false)
       }

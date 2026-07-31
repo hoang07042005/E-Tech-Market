@@ -1,13 +1,15 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import '@/styles/pages/ProductsPage.css'
+import '@/styles/pages/BlogPage.css'
+import '@/styles/pages/VideoPage.css'
 import '@/styles/pages/WishlistPage.css'
-import { fetchWishlist, toggleWishlist, type WishlistItem } from '@/features/services/wishlist.service'
 import { API_BASE_URL } from '@/configs/api.config'
 import { useWishlistQuery, useWishlistMutation } from '@/features/services/mutations'
 import type { Product } from '@/features/services/products.service'
 import Skeleton from '@/components/Skeleton'
 import { useAuthStore } from '@/features/store/useAuthStore'
+import { ProductCard } from '@/features/pages/client/products/ProductsPage'
 
 const resolveImageUrl = (url: string | null) => {
   if (!url) return 'https://via.placeholder.com/400'
@@ -33,60 +35,179 @@ const resolveImageUrl = (url: string | null) => {
 
 
 
+const getVideoThumbnail = (videoUrl: string, fallbackUrl?: string | null): string => {
+  if (!videoUrl) return resolveImageUrl(fallbackUrl ?? null)
+  const ytMatch = videoUrl.match(/(?:youtube\.com\/(?:[^/]+\/.+\/|(?:v|e(?:mbed)?\/)|.*[?&]v=)|youtu\.be\/)([^"&?/\s]{11})/)
+  if (ytMatch) {
+    return `https://img.youtube.com/vi/${ytMatch[1]}/hqdefault.jpg`
+  }
+  return resolveImageUrl(fallbackUrl ?? null)
+}
+
 function WishlistCard({
-  product,
+  item,
   onRemove,
+  type
 }: {
-  product: Product
-  onRemove: (productId: number) => void
+  item: any
+  onRemove: (id: number) => void
+  type: string
 }) {
-  const imageUrl = resolveImageUrl(product.main_image_url)
-
-  return (
-    <div className="wlCard">
-      <Link to={`/products/${product.slug}`} className="wlCardImgWrap">
-        <img src={imageUrl} alt={product.name} className="wlCardImg" loading="lazy" />
-        <button
-          type="button"
-          className="wlCardRemove"
-          aria-label="Xóa khỏi yêu thích"
-          onClick={(e) => {
-            e.preventDefault()
-            onRemove(product.id)
-          }}
-        >
-          <TrashIcon />
-        </button>
-      </Link>
-
-      <div className="wlCardBody">
-        <div className="wlCardTop">
-          <span className="wlCardBrand">{(product.brand || 'TECH').toUpperCase()}</span>
-          {/* <span className="wlCardPrice">{Number.isFinite(price) ? price.toLocaleString('vi-VN') : '0'} đ</span> */}
-        </div>
-        <Link to={`/products/${product.slug}`} className="wlCardTitleLink">
-          <h3 className="wlCardTitle">{product.name}</h3>
-        </Link>
-        <p className="wlCardDesc">{product.short_description || product.description || 'Chưa có mô tả.'}</p>
-
-        <button type="button" className="wlCardAddBtn">
-          <CartIcon />
-          Thêm vào giỏ
-        </button>
+  if (type === 'product') {
+    return (
+      <div style={{ position: 'relative' }}>
+        <ProductCard
+          product={item}
+          hideCompare={true}
+          customActionNode={
+            <button
+              type="button"
+              className="wlCardRemove"
+              aria-label="Xóa khỏi yêu thích"
+              onClick={(e) => {
+                e.preventDefault()
+                onRemove(item.id)
+              }}
+              style={{ position: 'absolute', top: 12, right: 12, zIndex: 10, width: '32px', height: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'white', borderRadius: '50%', boxShadow: '0 2px 8px rgba(0,0,0,0.1)', border: 'none', cursor: 'pointer' }}
+            >
+              <TrashIcon />
+            </button>
+          }
+        />
       </div>
-    </div>
-  )
+    )
+  }
+
+  const getCardData = () => {
+    switch (type) {
+      case 'blog':
+        return {
+          id: item.id,
+          title: item.title,
+          desc: item.excerpt || 'Không có tóm tắt',
+          img: resolveImageUrl(item.thumbnail_url || item.thumbnail_path),
+          link: `/blog/${item.slug}`,
+          tag: item.category?.name || 'Bài viết',
+          date: item.published_at || item.created_at || new Date().toISOString()
+        }
+      case 'video':
+        return {
+          id: item.id,
+          title: item.title,
+          desc: item.description || item.product?.short_description || 'Không có mô tả',
+          img: getVideoThumbnail(item.video_url, item.thumbnail_url || item.product?.main_image_url),
+          link: `/videos/${item.id}`,
+          tag: item.product?.name || item.category?.name || 'Video'
+        }
+      case 'news':
+        return {
+          id: item.id,
+          title: item.title,
+          desc: item.content_html ? item.content_html.replace(/<[^>]+>/g, '').substring(0, 100) + '...' : 'Không có nội dung',
+          img: resolveImageUrl(item.thumbnail_url || item.thumbnail_path),
+          link: `/product-news/${item.slug}`,
+          tag: item.category?.name || 'Tin sản phẩm',
+          date: item.published_at || item.created_at || new Date().toISOString()
+        }
+      default:
+        return { id: item.id, title: item.title, desc: '', img: '', link: '', tag: '', date: new Date().toISOString() }
+    }
+  }
+
+  const data = getCardData()
+
+  if (type === 'blog' || type === 'news') {
+    return (
+      <div className="blogCard" style={{ position: 'relative', width: '100%', maxWidth: '100%', margin: 0 }}>
+        <div className="blogCardThumbWrap">
+          <Link to={data.link}>
+            <img src={data.img} alt={data.title} className="blogCardThumb" />
+          </Link>
+          <span className="blogCardTag" style={{ background: type === 'news' ? '#e74c3c' : '#3498db' }}>
+            {data.tag}
+          </span>
+          <button
+            type="button"
+            className="wlCardRemove"
+            aria-label="Xóa khỏi yêu thích"
+            onClick={(e) => {
+              e.preventDefault()
+              onRemove(item.id)
+            }}
+            style={{ position: 'absolute', top: 12, right: 12, zIndex: 10, width: '32px', height: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'white', borderRadius: '50%', boxShadow: '0 2px 8px rgba(0,0,0,0.1)', border: 'none', cursor: 'pointer' }}
+          >
+            <TrashIcon />
+          </button>
+        </div>
+        <div className="blogCardBody">
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <span className="blogCardDate">{new Date(data.date).toLocaleDateString('vi-VN')}</span>
+          </div>
+          <Link to={data.link} className="blogCardTitle">{data.title}</Link>
+          <p className="blogCardExcerpt">{data.desc}</p>
+          <Link to={data.link} className="blogCardMore">Đọc thêm →</Link>
+        </div>
+      </div>
+    )
+  }
+
+  if (type === 'video') {
+    return (
+      <div className="cvCard" style={{ position: 'relative', width: '100%', maxWidth: '100%', margin: 0, cursor: 'default' }}>
+        <div className="cvThumbnailWrap" style={{ position: 'relative' }}>
+          <Link to={data.link}>
+            <img src={data.img} alt={data.title} className="cvThumbnail" />
+          </Link>
+          <Link to={data.link} className="cvPlayOverlay">
+            <div className="cvPlayBtn">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="white">
+                <polygon points="6 4 20 12 6 20 6 4" />
+              </svg>
+            </div>
+          </Link>
+          <button
+            type="button"
+            className="wlCardRemove"
+            aria-label="Xóa khỏi yêu thích"
+            onClick={(e) => {
+              e.preventDefault()
+              onRemove(item.id)
+            }}
+            style={{ position: 'absolute', top: 12, right: 12, zIndex: 10, width: '32px', height: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'white', borderRadius: '50%', boxShadow: '0 2px 8px rgba(0,0,0,0.1)', border: 'none', cursor: 'pointer' }}
+          >
+            <TrashIcon />
+          </button>
+        </div>
+        <div className="cvCardBody">
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+            <h3 className="cvCardTitle">{data.title || 'Video giới thiệu'}</h3>
+          </div>
+          <p className="cvCardDesc">{data.desc}</p>
+          <div className="cvProductLinkBadge">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: '4px' }}>
+              <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+              <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+            </svg>
+            {data.tag}
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  return null
 }
 
 export default function WishlistPage() {
   const navigate = useNavigate()
   const [selectedCatId, setSelectedCatId] = useState<string>('all')
   const [showMobileFilters, setShowMobileFilters] = useState(false)
+  const [activeTab, setActiveTab] = useState<'product' | 'blog' | 'video' | 'news'>('product')
   const userStr = useAuthStore((state) => state.userStr)
   const hasAuth = !!userStr
 
-  const { data: wishlistData, isLoading: loading } = useWishlistQuery(hasAuth)
-  const wishlistMutation = useWishlistMutation()
+  const { data: wishlistData, isLoading: loading } = useWishlistQuery(hasAuth, activeTab)
+  const wishlistMutation = useWishlistMutation(activeTab)
   const items = wishlistData || []
 
   useEffect(() => {
@@ -95,11 +216,18 @@ export default function WishlistPage() {
     }
   }, [hasAuth, navigate])
 
-  const products = useMemo(() => items.map((i) => i.product).filter(Boolean) as Product[], [items])
+  const currentItems = useMemo(() => {
+    if (activeTab === 'product') return items.map((i: any) => i.product).filter(Boolean)
+    if (activeTab === 'blog') return items.map((i: any) => i.blog_post || i.blogPost).filter(Boolean)
+    if (activeTab === 'video') return items.map((i: any) => i.video).filter(Boolean)
+    if (activeTab === 'news') return items.map((i: any) => i.product_news || i.productNews).filter(Boolean)
+    return []
+  }, [items, activeTab])
 
   const categoryFacets = useMemo(() => {
+    if (activeTab !== 'product') return [{ id: 'all', name: 'Tất cả', count: currentItems.length }]
     const map = new Map<string, { id: string; name: string; count: number }>()
-    for (const p of products) {
+    for (const p of currentItems as Product[]) {
       const catId = p.category?.id != null ? String(p.category.id) : 'other'
       const name = (p.category?.name ?? 'Khác').trim() || 'Khác'
       const prev = map.get(catId)
@@ -109,23 +237,24 @@ export default function WishlistPage() {
     const facets = Array.from(map.values())
       .filter((f) => f.count > 0)
       .sort((a, b) => a.name.localeCompare(b.name, 'vi'))
-    return [{ id: 'all', name: 'Tất cả', count: products.length }, ...facets]
-  }, [products])
+    return [{ id: 'all', name: 'Tất cả', count: currentItems.length }, ...facets]
+  }, [currentItems, activeTab])
 
   const filtered = useMemo(() => {
-    if (selectedCatId === 'all') return products
-    if (selectedCatId === 'other') return products.filter((p) => !p.category?.id)
+    if (selectedCatId === 'all') return currentItems
+    if (activeTab !== 'product') return currentItems
+    if (selectedCatId === 'other') return (currentItems as Product[]).filter((p) => !p.category?.id)
     const idNum = Number.parseInt(selectedCatId, 10)
-    if (!Number.isFinite(idNum)) return products
-    return products.filter((p) => p.category?.id === idNum)
-  }, [products, selectedCatId])
+    if (!Number.isFinite(idNum)) return currentItems
+    return (currentItems as Product[]).filter((p) => p.category?.id === idNum)
+  }, [currentItems, selectedCatId, activeTab])
 
-  async function remove(productId: number) {
-    wishlistMutation.mutate(productId)
+  async function remove(id: number) {
+    wishlistMutation.mutate(id)
   }
 
   async function clearAll() {
-    const ids = items.map((i) => i.product_id)
+    const ids = currentItems.map((i: any) => i.id)
     ids.forEach((id) => wishlistMutation.mutate(id))
   }
 
@@ -157,19 +286,40 @@ export default function WishlistPage() {
         />
       )}
       <div className="wlInner">
-        <div className="wlBreadcrumb">Trang chủ &rsaquo; Sản phẩm yêu thích</div>
+        <div className="wlBreadcrumb">Trang chủ &rsaquo; Danh sách yêu thích</div>
 
         <div className="wlHeader">
           <div>
             <h1 className="wlTitle">Danh sách yêu thích</h1>
             <p className="wlSub">
-              Bạn có <b>{products.length}</b> sản phẩm được lưu trong danh sách.
+              Bạn có <b>{currentItems.length}</b> mục được lưu trong danh sách này.
             </p>
           </div>
-          <button type="button" className="wlClearBtn wlClearBtn--desktop" onClick={clearAll} disabled={products.length === 0}>
+          <button type="button" className="wlClearBtn wlClearBtn--desktop" onClick={clearAll} disabled={currentItems.length === 0}>
             <TrashIcon />
             Xóa tất cả
           </button>
+        </div>
+        
+        {/* Tabs for different wishlist types */}
+        <div className="wlTabsContainer">
+          {[
+            { id: 'product', label: 'Sản phẩm' },
+            { id: 'blog', label: 'Bài viết' },
+            { id: 'video', label: 'Video' },
+            { id: 'news', label: 'Tin sản phẩm' }
+          ].map(tab => (
+            <button 
+              key={tab.id}
+              onClick={() => {
+                setActiveTab(tab.id as any)
+                setSelectedCatId('all')
+              }}
+              className={`wlTabItem ${activeTab === tab.id ? 'wlTabItem--active' : ''}`}
+            >
+              {tab.label}
+            </button>
+          ))}
         </div>
 
         {loading ? (
@@ -192,9 +342,9 @@ export default function WishlistPage() {
               </div>
             </div>
           </div>
-        ) : products.length === 0 ? (
+        ) : currentItems.length === 0 ? (
           <div className="wlEmpty">
-            Chưa có sản phẩm yêu thích. Hãy bấm tim ở danh sách sản phẩm để lưu lại.
+            Chưa có mục yêu thích nào trong phần này. Hãy khám phá và lưu lại những gì bạn thích.
           </div>
         ) : (
           <>
@@ -243,8 +393,8 @@ export default function WishlistPage() {
 
               <div className="wlCards">
                 <div className="wlCardsGrid">
-                  {filtered.map((p) => (
-                    <WishlistCard key={p.id} product={p} onRemove={remove} />
+                  {filtered.map((p: any) => (
+                    <WishlistCard key={p.id} item={p} onRemove={remove} type={activeTab} />
                   ))}
                 </div>
               </div>
@@ -253,15 +403,17 @@ export default function WishlistPage() {
             <div className="wlBottomBar">
               <div>
                 <div className="wlBottomTitle">Bạn đang có một bộ sưu tập tuyệt vời!</div>
-                <div className="wlBottomSub">Các sản phẩm trong danh sách này được cập nhật giá tự động khi có chương trình giảm giá.</div>
+                <div className="wlBottomSub">Các mục trong danh sách này được lưu trữ an toàn.</div>
               </div>
               <div className="wlBottomActions">
-                <button type="button" className="wlClearBtn wlClearBtn--mobile" onClick={clearAll} disabled={products.length === 0}>
-                  <TrashIcon />
-                  Xóa tất cả
-                </button>
-                <button type="button" className="wlShareBtn">Chia sẻ danh sách</button>
-                <Link to="/products" className="wlContinueBtn">Tiếp tục mua sắm</Link>
+                <div className="wlMobileBtnGroup" style={{ display: 'flex', gap: '12px', width: '100%' }}>
+                  <button type="button" className="wlClearBtn wlClearBtn--mobile" onClick={clearAll} disabled={currentItems.length === 0} style={{ margin: 0, flex: 1, padding: '12px 8px' }}>
+                    <TrashIcon />
+                    Xóa
+                  </button>
+                  <button type="button" className="wlShareBtn" style={{ margin: 0, flex: 1, padding: '12px 8px' }}>Chia sẻ</button>
+                </div>
+                <Link to="/" className="wlContinueBtn">Tiếp tục khám phá</Link>
               </div>
             </div>
           </>

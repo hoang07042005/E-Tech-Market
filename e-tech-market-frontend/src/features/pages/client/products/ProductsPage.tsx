@@ -268,14 +268,18 @@ function FlashSaleBanner({ endAt, discountPercent }: { endAt: string, discountPe
   );
 }
 
-function ProductCard({
+export function ProductCard({
   product,
   liked,
   onToggleLike,
+  customActionNode,
+  hideCompare,
 }: {
   product: ApiProduct;
-  liked: boolean;
-  onToggleLike: (productId: number) => void;
+  liked?: boolean;
+  onToggleLike?: (productId: number) => void;
+  customActionNode?: React.ReactNode;
+  hideCompare?: boolean;
 }) {
   const brand = product.brand || "TECH";
 
@@ -455,37 +459,43 @@ function ProductCard({
         className="ppCardImageWrap"
       >
         <img src={imageUrl} alt={product.name} className="ppCardImg" />
-        <button
-          type="button"
-          className={liked ? "ppWishBtn ppWishBtn--active" : "ppWishBtn"}
-          aria-label={liked ? "Bỏ khỏi yêu thích" : "Thêm vào yêu thích"}
-          onClick={(e) => {
-            e.preventDefault();
-            onToggleLike(product.id);
-          }}
-        >
-          <HeartIcon filled={liked} size={16} />
-        </button>
-        <button
-          type="button"
-          className={`ppCompareBtn ${isInCompare ? "ppCompareBtn--active" : ""}`}
-          onClick={toggleCompare}
-          aria-label={isInCompare ? "Xoá khỏi so sánh" : "Thêm vào so sánh"}
-          title="So sánh sản phẩm"
-        >
-          <svg
-            width="18"
-            height="18"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
+        {customActionNode ? (
+          customActionNode
+        ) : onToggleLike ? (
+          <button
+            type="button"
+            className={liked ? "ppWishBtn ppWishBtn--active" : "ppWishBtn"}
+            aria-label={liked ? "Bỏ khỏi yêu thích" : "Thêm vào yêu thích"}
+            onClick={(e) => {
+              e.preventDefault();
+              onToggleLike(product.id);
+            }}
           >
-            <path d="M16 3h5v5M4 20l7-7M21 3l-7 7M15 14l6 6M9 3H4v5M3 21l7-7M3 3l7 7M14 15l7 7"></path>
-          </svg>
-        </button>
+            <HeartIcon filled={!!liked} size={16} />
+          </button>
+        ) : null}
+        {!hideCompare && (
+          <button
+            type="button"
+            className={`ppCompareBtn ${isInCompare ? "ppCompareBtn--active" : ""}`}
+            onClick={toggleCompare}
+            aria-label={isInCompare ? "Xoá khỏi so sánh" : "Thêm vào so sánh"}
+            title="So sánh sản phẩm"
+          >
+            <svg
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M16 3h5v5M4 20l7-7M21 3l-7 7M15 14l6 6M9 3H4v5M3 21l7-7M3 3l7 7M14 15l7 7"></path>
+            </svg>
+          </button>
+        )}
         {(isNew || product.is_featured || discountPercent > 0) && (
           <div className="ppCardBadges">
             {product.is_featured && (

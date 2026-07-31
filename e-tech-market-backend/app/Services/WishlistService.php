@@ -12,30 +12,64 @@ class WishlistService
     /**
      * Get user's wishlist
      */
-    public function getUserWishlist(User $user)
+    public function getUserWishlist(User $user, ?string $type = 'product')
     {
-        return Wishlist::query()
-            ->where('user_id', $user->id)
-            ->with(['product' => fn ($q) => $q->where('is_active', true)->with('category')])
-            ->orderBy('id', 'desc')
-            ->get();
+        $query = Wishlist::query()->where('user_id', $user->id);
+        
+        switch ($type) {
+            case 'blog':
+                $query->whereNotNull('blog_post_id')->with('blogPost');
+                break;
+            case 'video':
+                $query->whereNotNull('video_id')->with('video');
+                break;
+            case 'news':
+                $query->whereNotNull('product_news_id')->with('productNews');
+                break;
+            case 'product':
+            default:
+                $query->whereNotNull('product_id')->with(['product' => fn ($q) => $q->where('is_active', true)->with([
+                    'category',
+                    'variants' => fn ($vq) => $vq->where('is_active', true),
+                    'flashSaleItems' => fn ($fq) => $fq->whereHas('flashSale', fn ($q) => $q->where('status', 'active')->where('start_at', '<=', now())->where('end_at', '>=', now()))->with('flashSale')
+                ])]);
+                break;
+        }
+
+        return $query->orderBy('id', 'desc')->get();
     }
 
     /**
-     * Toggle product in wishlist
+     * Toggle item in wishlist
      */
-    public function toggleWishlistItem(User $user, int $productId): string
+    public function toggleWishlistItem(User $user, int $id, ?string $type = 'product'): string
     {
-        $product = Product::query()->where('id', $productId)->where('is_active', true)->first();
-        if (! $product) {
+        $column = 'product_id';
+        $model = Product::query()->where('id', $id);
+
+        if ($type === 'blog') {
+            $column = 'blog_post_id';
+            $model = \App\Models\BlogPost::query()->where('id', $id);
+        } elseif ($type === 'video') {
+            $column = 'video_id';
+            $model = \App\Models\Video::query()->where('id', $id);
+        } elseif ($type === 'news') {
+            $column = 'product_news_id';
+            $model = \App\Models\ProductNews::query()->where('id', $id);
+        } else {
+            $model->where('is_active', true);
+        }
+
+        $item = $model->first();
+        if (! $item) {
             throw ValidationException::withMessages([
-                'product_id' => ['Sản phẩm không tồn tại hoặc đã ngừng kinh doanh.'],
+                'id' => ['Mục không tồn tại hoặc đã bị ẩn.'],
             ]);
         }
 
         $exists = Wishlist::query()
             ->where('user_id', $user->id)
-            ->where('product_id', $product->id)
+            ->where($column, $item->id)
             ->first();
 
         if ($exists) {
@@ -45,7 +79,7 @@ class WishlistService
 
         Wishlist::query()->create([
             'user_id' => $user->id,
-            'product_id' => $product->id,
+            $column => $item->id,
         ]);
 
         return 'added';

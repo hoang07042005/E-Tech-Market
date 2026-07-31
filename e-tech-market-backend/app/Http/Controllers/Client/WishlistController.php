@@ -17,17 +17,20 @@ class WishlistController extends Controller
 
     public function index(Request $request): JsonResponse
     {
-        $items = $this->wishlistService->getUserWishlist($request->user());
+        $type = $request->query('type', 'product');
+        $items = $this->wishlistService->getUserWishlist($request->user(), $type);
         return response()->json($items);
     }
 
     public function toggle(Request $request): JsonResponse
     {
         $data = $request->validate([
-            'product_id' => ['required', 'integer', 'min:1'],
+            'id' => ['required', 'integer', 'min:1'],
+            'type' => ['nullable', 'string', 'in:product,blog,video,news'],
         ]);
 
-        $status = $this->wishlistService->toggleWishlistItem($request->user(), (int) $data['product_id']);
+        $type = $data['type'] ?? 'product';
+        $status = $this->wishlistService->toggleWishlistItem($request->user(), (int) $data['id'], $type);
         return response()->json(['status' => $status]);
     }
 }

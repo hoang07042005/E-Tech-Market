@@ -70,8 +70,30 @@ const getVideoThumbnail = (videoUrl: string, fallbackUrl?: string | null): strin
   return resolveImageUrl(fallbackUrl ?? null)
 }
 
+import { useWishlistQuery, useWishlistMutation } from '@/features/services/mutations'
+import { useAuthStore } from '@/features/store/useAuthStore'
+
 export default function VideoPage() {
   const navigate = useNavigate()
+  const userStr = useAuthStore((state) => state.userStr)
+  const hasAuth = !!userStr
+  const { data: videoWishlists } = useWishlistQuery(hasAuth, 'video')
+  const videoWishlistMutation = useWishlistMutation('video')
+
+  const isFavorited = (video: NormalizedVideo) => {
+    if (!hasAuth) return false
+    return videoWishlists?.some(w => w.video_id === video.id)
+  }
+
+  const handleToggleFavorite = (e: React.MouseEvent, video: NormalizedVideo) => {
+    e.stopPropagation()
+    if (!hasAuth) {
+      alert('Vui lòng đăng nhập để yêu thích!')
+      return
+    }
+    videoWishlistMutation.mutate(video.id)
+  }
+
   const [videos, setVideos] = useState<NormalizedVideo[]>([])
   const [categories, setCategories] = useState<Category[]>([])
   const [loading, setLoading] = useState(true)
@@ -222,14 +244,20 @@ export default function VideoPage() {
                     </div>
                   </div>
                   <div className="cvCardBody">
-                    <div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                       <h3 className="cvCardTitle">{video.title || 'Video giới thiệu'}</h3>
-                      {video.description ? (
+                      <button 
+                        onClick={(e) => handleToggleFavorite(e, video)}
+                        style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, marginTop: '2px' }}
+                      >
+                        <HeartIcon filled={isFavorited(video)} />
+                      </button>
+                    </div>
+                    {video.description ? (
                         <p className="cvCardDesc">{video.description}</p>
                       ) : video.product?.short_description ? (
                         <p className="cvCardDesc">{video.product.short_description}</p>
                       ) : null}
-                    </div>
                     {video.product ? (
                       <div className="cvProductLinkBadge">
                         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: '4px' }}>
@@ -257,3 +285,12 @@ export default function VideoPage() {
     </>
   )
 }
+
+function HeartIcon({ filled }: { filled?: boolean }) {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill={filled ? '#ef4444' : 'none'} stroke={filled ? '#ef4444' : 'currentColor'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+    </svg>
+  )
+}
+

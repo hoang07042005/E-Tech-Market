@@ -58,9 +58,25 @@ class _PurchasedProductsWidgetState extends State<PurchasedProductsWidget> {
                 (product?['name'] ?? item['product_name_snapshot'] ?? 'Sản phẩm').toString();
 
             final imageUrl = _resolveOrderItemImageUrl(item);
+            
+            final variant = item['variant'] as Map<String, dynamic>? ?? <String, dynamic>{};
+            final variantId = item['variant_id'];
+            String? variantLabel;
+            final direct = (variant['variant_name'] ?? variant['name'])?.toString();
+            if (direct != null && direct.trim().isNotEmpty) {
+              variantLabel = direct.trim();
+            } else {
+              final parts = [
+                variant['color']?.toString(),
+                (variant['configuration'] ?? variant['storage'])?.toString(),
+              ].where((part) => part != null && part.trim().isNotEmpty).toList();
+              final label = parts.join(' · ');
+              variantLabel = label.isEmpty ? null : label;
+            }
+
             final key = productId != null
-                ? 'id:${productId.toString()}'
-                : 'name:${productName.toLowerCase()}';
+                ? 'id:${productId.toString()}_var:${variantId?.toString() ?? '0'}'
+                : 'name:${productName.toLowerCase()}_var:${variantId?.toString() ?? '0'}';
 
             final qty = (item['quantity'] ?? 1);
             final qtyNum = qty is num ? qty.toInt() : int.tryParse(qty.toString()) ?? 1;
@@ -76,6 +92,7 @@ class _PurchasedProductsWidgetState extends State<PurchasedProductsWidget> {
                 key: key,
                 productId: productId,
                 name: productName,
+                variantName: variantLabel,
                 imageUrl: imageUrl,
                 quantity: qtyNum,
                 totalAmount: amount,
@@ -113,16 +130,6 @@ class _PurchasedProductsWidgetState extends State<PurchasedProductsWidget> {
         setState(() => _loading = false);
       }
     }
-  }
-
-  String _formatMoney(dynamic value) {
-    final amount = value is num
-        ? value.toDouble()
-        : double.tryParse(value?.toString() ?? '') ?? 0.0;
-    return amount.toStringAsFixed(0).replaceAllMapped(
-          RegExp(r'\B(?=(\d{3})+(?!\d))'),
-          (match) => '.',
-        );
   }
 
   String _resolveOrderItemImageUrl(dynamic item) {
@@ -196,7 +203,7 @@ class _PurchasedProductsWidgetState extends State<PurchasedProductsWidget> {
               style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
             ),
           ),
-          ..._products.take(20).map((p) => _buildProductRow(context, p)).toList(),
+          ..._products.take(20).map((p) => _buildProductRow(context, p)),
         ],
       ),
     );
@@ -221,7 +228,6 @@ class _PurchasedProductsWidgetState extends State<PurchasedProductsWidget> {
   }
 
   Widget _buildProductRow(BuildContext context, _PurchasedProduct p) {
-    final total = _formatMoney(p.totalAmount);
     return Container(
       padding: const EdgeInsets.all(5),
       margin: const EdgeInsets.only(bottom: 12),
@@ -265,6 +271,16 @@ class _PurchasedProductsWidgetState extends State<PurchasedProductsWidget> {
                   overflow: TextOverflow.ellipsis,
                   style: const TextStyle(fontWeight: FontWeight.w600),
                 ),
+                if (p.variantName != null) ...[
+                  const SizedBox(height: 4),
+                  Text(
+                    'Phân loại: ${p.variantName}',
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      fontSize: 12,
+                    ),
+                  ),
+                ],
                 const SizedBox(height: 6),
                 Text(
                   'Số lượng: ${p.quantity}',
@@ -294,6 +310,7 @@ class _PurchasedProduct {
     required this.key,
     required this.productId,
     required this.name,
+    this.variantName,
     required this.imageUrl,
     required this.quantity,
     required this.totalAmount,
@@ -302,6 +319,7 @@ class _PurchasedProduct {
   final String key;
   final dynamic productId;
   final String name;
+  final String? variantName;
   String? imageUrl;
   int quantity;
   double totalAmount;

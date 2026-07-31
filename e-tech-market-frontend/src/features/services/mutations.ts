@@ -5,57 +5,70 @@ import type { CartItem } from './cart.service'
 import { apiFetch } from '@/configs/api.config'
 import { useGlobalToast } from '@/components/GlobalToastProvider'
 
-export function useWishlistQuery(enabled: boolean) {
+export function useWishlistQuery(enabled: boolean, type: string = 'product') {
   return useQuery({
-    queryKey: ['wishlist', true],
-    queryFn: fetchWishlist,
+    queryKey: ['wishlist', type, true],
+    queryFn: () => fetchWishlist(type),
     enabled,
     staleTime: 1000 * 60 * 5,
   })
 }
 
-export function useWishlistMutation() {
+export function useWishlistMutation(type: string = 'product') {
   const queryClient = useQueryClient()
   const { showToast } = useGlobalToast()
 
   return useMutation({
-    mutationFn: async (product_id: number) => {
-      return toggleWishlist(product_id)
+    mutationFn: async (id: number) => {
+      return toggleWishlist(id, type)
     },
-    onMutate: async (product_id) => {
+    onMutate: async (id) => {
       // Cancel any outgoing refetches so they don't overwrite our optimistic update
-      await queryClient.cancelQueries({ queryKey: ['wishlist'] })
+      await queryClient.cancelQueries({ queryKey: ['wishlist', type] })
 
       // Snapshot the previous value
-      const previousWishlist = queryClient.getQueryData<WishlistItem[]>(['wishlist', true]) || []
+      const previousWishlist = queryClient.getQueryData<WishlistItem[]>(['wishlist', type, true]) || []
+
+      const getColumnName = () => {
+        if (type === 'blog') return 'blog_post_id'
+        if (type === 'video') return 'video_id'
+        if (type === 'news') return 'product_news_id'
+        return 'product_id'
+      }
+      const column = getColumnName()
 
       // Optimistically update to the new value
-      const isLiked = previousWishlist.some(w => w.product_id === product_id)
+      const isLiked = previousWishlist.some(w => (w as any)[column] === id)
       if (isLiked) {
-        queryClient.setQueryData<WishlistItem[]>(['wishlist', true], old => old ? old.filter(w => w.product_id !== product_id) : [])
+        queryClient.setQueryData<WishlistItem[]>(['wishlist', type, true], old => old ? old.filter(w => (w as any)[column] !== id) : [])
         showToast({ type: 'success', message: 'Đã bỏ yêu thích' })
       } else {
-        queryClient.setQueryData<WishlistItem[]>(['wishlist', true], old => [...(old || []), { product_id, user_id: 0, id: Date.now(), product: null }])
+        const relation = type === 'blog' ? 'blog_post' : type === 'video' ? 'video' : type === 'news' ? 'product_news' : 'product'
+        queryClient.setQueryData<WishlistItem[]>(['wishlist', type, true], old => [...(old || []), { 
+          [column]: id, 
+          [relation]: { id, title: 'Đang tải...', name: 'Đang tải...' }, // mock object so it isn't filtered out
+          user_id: 0, 
+          id: Date.now() 
+        } as unknown as WishlistItem])
         showToast({ type: 'success', message: 'Đã thêm vào yêu thích' })
       }
 
       return { previousWishlist }
     },
-    onError: (err, variables, context) => {
+    onError: (_err, _variables, context) => {
       // Rollback to the previous value if mutation fails
       if (context?.previousWishlist) {
-        queryClient.setQueryData(['wishlist', true], context.previousWishlist)
+        queryClient.setQueryData(['wishlist', type, true], context.previousWishlist)
       }
     },
     onSettled: () => {
       // Always refetch after error or success to ensure sync
-      queryClient.invalidateQueries({ queryKey: ['wishlist'] })
+      queryClient.invalidateQueries({ queryKey: ['wishlist', type] })
     },
   })
 }
 
 export function useCartMutation() {
-  const queryClient = useQueryClient()
   const { showToast } = useGlobalToast()
 
   const addMutation = useMutation({
@@ -84,7 +97,7 @@ export function useCartMutation() {
   })
 
   const updateMutation = useMutation({
-    mutationFn: async ({ key, qty, productId, variantId }: { key: string, qty: number, productId: number, variantId: number | null }) => {
+    mutationFn: async ({ qty, productId, variantId }: { key: string, qty: number, productId: number, variantId: number | null }) => {
       const nextQty = Math.max(1, Math.floor(qty || 1))
       return apiFetch(`/api/cart/items/${productId}`, {
         method: 'PUT',
@@ -97,7 +110,7 @@ export function useCartMutation() {
   })
 
   const removeMutation = useMutation({
-    mutationFn: async ({ key, productId, variantId }: { key: string, productId: number, variantId: number | null }) => {
+    mutationFn: async ({ productId, variantId }: { key: string, productId: number, variantId: number | null }) => {
       const qs = variantId ? `?variant_id=${variantId}` : ''
       return apiFetch(`/api/cart/items/${productId}${qs}`, { method: 'DELETE' })
     },

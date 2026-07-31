@@ -499,4 +499,60 @@
   .loyalty-member-spent-value {
     font-size: 18px;
   }
+
+  /* History mobile */
+  .loyalty-history-wrapper {
+    margin-top: 12px;
+  }
+  .loyalty-history-title {
+    font-size: 16px;
+    margin-bottom: 12px;
+  }
+  .loyalty-history-list {
+    gap: 0;
+  }
+  .loyalty-history-item {
+    padding: 14px 12px;
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
+    border-top: none;
+    border-bottom: 1px solid #f1f5f9;
+    box-shadow: none;
+    background: #fff;
+    align-items: flex-start;
+  }
+  .loyalty-history-item:first-child {
+    border-radius: 12px 12px 0 0;
+  }
+  .loyalty-history-item:last-child {
+    border-bottom: none;
+    border-radius: 0 0 12px 12px;
+  }
+  .loyalty-history-list {
+    border: 1px solid #f1f5f9;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+  }
+  .loyalty-history-item-left {
+    flex: 1;
+    min-width: 0;
+    gap: 4px;
+    margin-right: 12px;
+  }
+  .loyalty-history-item-title {
+    font-size: 14px;
+    line-height: 1.4;
+    word-break: break-word;
+  }
+  .loyalty-history-item-date {
+    font-size: 12px;
+  }
+  .loyalty-history-item-points {
+    font-size: 15px;
+    white-space: nowrap;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
 }

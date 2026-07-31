@@ -237,7 +237,7 @@ class ProductCardWidget extends StatelessWidget {
 
       displayPrice = double.tryParse(lowest['effective_price']?.toString() ?? '0') ?? 0;
       final priceMax = double.tryParse(highest['effective_price']?.toString() ?? '0') ?? 0;
-      final originalPrice = double.tryParse(lowest['price']?.toString() ?? '0') ?? 0;
+      double originalPrice = double.tryParse(lowest['price']?.toString() ?? '0') ?? 0;
 
       bool hasMultiplePrices = displayPrice != priceMax;
       showDiscountBadge = isSingleVariant;
@@ -249,6 +249,7 @@ class ProductCardWidget extends StatelessWidget {
              final flashVariant = activeVariants.firstWhere((v) => v['id'] == flashVariantId, orElse: () => lowest);
              if (flashVariant != lowest) {
                selectedVariant = flashVariant;
+               originalPrice = double.tryParse(flashVariant['price']?.toString() ?? '0') ?? 0;
              }
           }
         }
@@ -262,7 +263,20 @@ class ProductCardWidget extends StatelessWidget {
       displayOldPrice = hasDiscount ? originalPrice : null;
       discountPercent = hasDiscount ? ((1 - displayPrice / originalPrice) * 100).round() : 0;
     } else {
-      displayPrice = double.tryParse(product['price']?.toString() ?? '0') ?? 0;
+      final originalPrice = double.tryParse(product['price']?.toString() ?? '0') ?? 0;
+      displayPrice = originalPrice;
+      if (product['discount_price'] != null) {
+         displayPrice = double.tryParse(product['discount_price']?.toString() ?? '0') ?? originalPrice;
+      }
+      showDiscountBadge = true;
+      
+      if (isFlashSale) {
+        displayPrice = double.tryParse(flashSaleItem!['flash_sale_price']?.toString() ?? '0') ?? 0;
+      }
+
+      final hasDiscount = displayPrice < originalPrice && showDiscountBadge;
+      displayOldPrice = hasDiscount ? originalPrice : null;
+      discountPercent = hasDiscount ? ((1 - displayPrice / originalPrice) * 100).round() : 0;
     }
 
     final imageUrl = _resolveProductImageUrl(product, selectedVariant: selectedVariant);
@@ -283,7 +297,7 @@ class ProductCardWidget extends StatelessWidget {
         onTap: () => onTap(selectedVariantId),
         child: Container(
           decoration: BoxDecoration(
-            border: Border.all(color: Theme.of(context).colorScheme.outline, width: 0.15),
+            border: Border.all(color: Theme.of(context).colorScheme.outline, width: 0.05),
             borderRadius: BorderRadius.circular(12),
           ),
           child: Column(
@@ -391,48 +405,50 @@ class ProductCardWidget extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                     ),
                     const SizedBox(height:2),
-                    Wrap(
-                      spacing: 6,
-                      runSpacing: 2,
-                      crossAxisAlignment: WrapCrossAlignment.center,
-                      children: [
-                        if (showDiscountBadge)
-                          Text(
-                            '${_formatPrice(displayPrice)} đ',
-                            style: const TextStyle(
-                                color: _brandColor,
-                                fontSize: 12,
-                                fontWeight: FontWeight.w800),
-                          )
-                        else if (displayPriceMax != null)
-                          Text(
-                            '${_formatPrice(displayPrice)} - ${_formatPrice(displayPriceMax)} đ',
-                            style: const TextStyle(
-                                color: _brandColor,
-                                fontSize: 12,
-                                fontWeight: FontWeight.w800),
-                          )
-                        else
-                        Text(
-                          '${_formatPrice(displayPrice)}đ',
-                          style: const TextStyle(
-                              color: _brandColor,
-                              fontSize: 12,
-                              fontWeight: FontWeight.bold),
-                        ),
-                        if (displayOldPrice != null && displayOldPrice > displayPrice && showDiscountBadge)
-                          Padding(
-                            padding: const EdgeInsets.only(left: 4, bottom: 1),
-                            child: Text(
-                              '${_formatPrice(displayOldPrice)}đ',
-                              style: TextStyle(
-                                color: Theme.of(context).colorScheme.onSurfaceVariant,
-                                fontSize: 10,
-                                decoration: TextDecoration.lineThrough,
+                    FittedBox(
+                      fit: BoxFit.scaleDown,
+                      alignment: Alignment.centerLeft,
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          if (showDiscountBadge)
+                            Text(
+                              '${_formatPrice(displayPrice)} đ',
+                              style: const TextStyle(
+                                  color: _brandColor,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w800),
+                            )
+                          else if (displayPriceMax != null)
+                            Text(
+                              '${_formatPrice(displayPrice)} - ${_formatPrice(displayPriceMax)} đ',
+                              style: const TextStyle(
+                                  color: _brandColor,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w800),
+                            )
+                          else
+                            Text(
+                              '${_formatPrice(displayPrice)}đ',
+                              style: const TextStyle(
+                                  color: _brandColor,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                          if (displayOldPrice != null && displayOldPrice > displayPrice && showDiscountBadge)
+                            Padding(
+                              padding: const EdgeInsets.only(left: 6, bottom: 1),
+                              child: Text(
+                                '${_formatPrice(displayOldPrice)} đ',
+                                style: TextStyle(
+                                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                    fontSize: 10,
+                                    decoration: TextDecoration.lineThrough),
                               ),
                             ),
-                          ),
-                      ],
+                        ],
+                      ),
                     ),
                     const SizedBox(height: 6),
                     if (flashSaleItem != null && flashSaleItem['flash_sale'] != null)

@@ -1125,7 +1125,7 @@ function SideIconWrap({ children, colorClass }: { children: React.ReactNode; col
 }
 function IconUser() {
   return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
       <path
         d="M20 21a8 8 0 1 0-16 0"
         stroke="currentColor"
@@ -1142,7 +1142,7 @@ function IconUser() {
 }
 function IconReceipt() {
   return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
       <path
         d="M6 2h12v20l-2-1-2 1-2-1-2 1-2-1-2 1V2Z"
         stroke="currentColor"
@@ -1160,7 +1160,7 @@ function IconReceipt() {
 }
 function IconShield() {
   return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
       <path
         d="M12 2l8 4v6c0 5-3.4 9.4-8 10-4.6-.6-8-5-8-10V6l8-4Z"
         stroke="currentColor"
@@ -1178,7 +1178,7 @@ function IconShield() {
 }
 function IconLogout() {
   return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
       <path
         d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"
         stroke="currentColor"
@@ -1203,7 +1203,7 @@ function IconLogout() {
 }
 function IconTicket() {
   return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
       <path
         d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"
         stroke="currentColor"
@@ -1223,7 +1223,7 @@ function IconTicket() {
 }
 function IconAward() {
   return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
       <circle cx="12" cy="8" r="7" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
       <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
