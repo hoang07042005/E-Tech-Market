@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
-\restrict SHsjdsofXVkhgbNfT5jRfscpBxtOEV1liCf0xqYYrv569gdbdHPwzEYTcQYpF9X
+\restrict cijEFd1c9iT8kxCOtMpGWRcE3ZskXzaDHbpxzN77zMRGUWhHhSNBbfoedEUkt6t
 
 -- Dumped from database version 15.18
 -- Dumped by pg_dump version 15.18
@@ -19,16 +19,14 @@ SET client_min_messages = warning;
 SET row_security = off;
 
 --
--- Name: public; Type: SCHEMA; Schema: -; Owner: postgres
+-- Name: public; Type: SCHEMA; Schema: -; Owner: -
 --
 
 -- *not* creating schema, since initdb creates it
 
 
-ALTER SCHEMA public OWNER TO postgres;
-
 --
--- Name: SCHEMA public; Type: COMMENT; Schema: -; Owner: postgres
+-- Name: SCHEMA public; Type: COMMENT; Schema: -; Owner: -
 --
 
 COMMENT ON SCHEMA public IS '';
@@ -39,7 +37,7 @@ SET default_tablespace = '';
 SET default_table_access_method = heap;
 
 --
--- Name: admin_settings; Type: TABLE; Schema: public; Owner: postgres
+-- Name: admin_settings; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.admin_settings (
@@ -52,10 +50,8 @@ CREATE TABLE public.admin_settings (
 );
 
 
-ALTER TABLE public.admin_settings OWNER TO postgres;
-
 --
--- Name: admin_settings_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: admin_settings_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE public.admin_settings_id_seq
@@ -66,17 +62,15 @@ CREATE SEQUENCE public.admin_settings_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.admin_settings_id_seq OWNER TO postgres;
-
 --
--- Name: admin_settings_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+-- Name: admin_settings_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE public.admin_settings_id_seq OWNED BY public.admin_settings.id;
 
 
 --
--- Name: banners; Type: TABLE; Schema: public; Owner: postgres
+-- Name: banners; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.banners (
@@ -92,10 +86,8 @@ CREATE TABLE public.banners (
 );
 
 
-ALTER TABLE public.banners OWNER TO postgres;
-
 --
--- Name: banners_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: banners_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE public.banners_id_seq
@@ -106,17 +98,15 @@ CREATE SEQUENCE public.banners_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.banners_id_seq OWNER TO postgres;
-
 --
--- Name: banners_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+-- Name: banners_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE public.banners_id_seq OWNED BY public.banners.id;
 
 
 --
--- Name: blog_categories; Type: TABLE; Schema: public; Owner: postgres
+-- Name: blog_categories; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.blog_categories (
@@ -129,10 +119,8 @@ CREATE TABLE public.blog_categories (
 );
 
 
-ALTER TABLE public.blog_categories OWNER TO postgres;
-
 --
--- Name: blog_categories_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: blog_categories_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE public.blog_categories_id_seq
@@ -143,17 +131,15 @@ CREATE SEQUENCE public.blog_categories_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.blog_categories_id_seq OWNER TO postgres;
-
 --
--- Name: blog_categories_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+-- Name: blog_categories_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE public.blog_categories_id_seq OWNED BY public.blog_categories.id;
 
 
 --
--- Name: blog_comments; Type: TABLE; Schema: public; Owner: postgres
+-- Name: blog_comments; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.blog_comments (
@@ -170,10 +156,8 @@ CREATE TABLE public.blog_comments (
 );
 
 
-ALTER TABLE public.blog_comments OWNER TO postgres;
-
 --
--- Name: blog_comments_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: blog_comments_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE public.blog_comments_id_seq
@@ -184,17 +168,15 @@ CREATE SEQUENCE public.blog_comments_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.blog_comments_id_seq OWNER TO postgres;
-
 --
--- Name: blog_comments_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+-- Name: blog_comments_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE public.blog_comments_id_seq OWNED BY public.blog_comments.id;
 
 
 --
--- Name: blog_posts; Type: TABLE; Schema: public; Owner: postgres
+-- Name: blog_posts; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.blog_posts (
@@ -218,10 +200,8 @@ CREATE TABLE public.blog_posts (
 );
 
 
-ALTER TABLE public.blog_posts OWNER TO postgres;
-
 --
--- Name: blog_posts_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: blog_posts_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE public.blog_posts_id_seq
@@ -232,17 +212,15 @@ CREATE SEQUENCE public.blog_posts_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.blog_posts_id_seq OWNER TO postgres;
-
 --
--- Name: blog_posts_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+-- Name: blog_posts_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE public.blog_posts_id_seq OWNED BY public.blog_posts.id;
 
 
 --
--- Name: cart_items; Type: TABLE; Schema: public; Owner: postgres
+-- Name: cart_items; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.cart_items (
@@ -258,10 +236,8 @@ CREATE TABLE public.cart_items (
 );
 
 
-ALTER TABLE public.cart_items OWNER TO postgres;
-
 --
--- Name: cart_items_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: cart_items_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE public.cart_items_id_seq
@@ -272,17 +248,15 @@ CREATE SEQUENCE public.cart_items_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.cart_items_id_seq OWNER TO postgres;
-
 --
--- Name: cart_items_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+-- Name: cart_items_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE public.cart_items_id_seq OWNED BY public.cart_items.id;
 
 
 --
--- Name: carts; Type: TABLE; Schema: public; Owner: postgres
+-- Name: carts; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.carts (
@@ -295,10 +269,8 @@ CREATE TABLE public.carts (
 );
 
 
-ALTER TABLE public.carts OWNER TO postgres;
-
 --
--- Name: carts_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: carts_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE public.carts_id_seq
@@ -309,17 +281,15 @@ CREATE SEQUENCE public.carts_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.carts_id_seq OWNER TO postgres;
-
 --
--- Name: carts_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+-- Name: carts_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE public.carts_id_seq OWNED BY public.carts.id;
 
 
 --
--- Name: categories; Type: TABLE; Schema: public; Owner: postgres
+-- Name: categories; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.categories (
@@ -338,10 +308,8 @@ CREATE TABLE public.categories (
 );
 
 
-ALTER TABLE public.categories OWNER TO postgres;
-
 --
--- Name: categories_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: categories_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE public.categories_id_seq
@@ -352,17 +320,15 @@ CREATE SEQUENCE public.categories_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.categories_id_seq OWNER TO postgres;
-
 --
--- Name: categories_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+-- Name: categories_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE public.categories_id_seq OWNED BY public.categories.id;
 
 
 --
--- Name: contact_messages; Type: TABLE; Schema: public; Owner: postgres
+-- Name: contact_messages; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.contact_messages (
@@ -379,10 +345,8 @@ CREATE TABLE public.contact_messages (
 );
 
 
-ALTER TABLE public.contact_messages OWNER TO postgres;
-
 --
--- Name: contact_messages_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: contact_messages_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE public.contact_messages_id_seq
@@ -393,17 +357,15 @@ CREATE SEQUENCE public.contact_messages_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.contact_messages_id_seq OWNER TO postgres;
-
 --
--- Name: contact_messages_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+-- Name: contact_messages_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE public.contact_messages_id_seq OWNED BY public.contact_messages.id;
 
 
 --
--- Name: coupon_usage; Type: TABLE; Schema: public; Owner: postgres
+-- Name: coupon_usage; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.coupon_usage (
@@ -417,10 +379,8 @@ CREATE TABLE public.coupon_usage (
 );
 
 
-ALTER TABLE public.coupon_usage OWNER TO postgres;
-
 --
--- Name: coupon_usage_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: coupon_usage_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE public.coupon_usage_id_seq
@@ -431,17 +391,15 @@ CREATE SEQUENCE public.coupon_usage_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.coupon_usage_id_seq OWNER TO postgres;
-
 --
--- Name: coupon_usage_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+-- Name: coupon_usage_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE public.coupon_usage_id_seq OWNED BY public.coupon_usage.id;
 
 
 --
--- Name: coupons; Type: TABLE; Schema: public; Owner: postgres
+-- Name: coupons; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.coupons (
@@ -465,10 +423,8 @@ CREATE TABLE public.coupons (
 );
 
 
-ALTER TABLE public.coupons OWNER TO postgres;
-
 --
--- Name: coupons_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: coupons_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE public.coupons_id_seq
@@ -479,17 +435,15 @@ CREATE SEQUENCE public.coupons_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.coupons_id_seq OWNER TO postgres;
-
 --
--- Name: coupons_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+-- Name: coupons_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE public.coupons_id_seq OWNED BY public.coupons.id;
 
 
 --
--- Name: failed_jobs; Type: TABLE; Schema: public; Owner: postgres
+-- Name: failed_jobs; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.failed_jobs (
@@ -503,10 +457,8 @@ CREATE TABLE public.failed_jobs (
 );
 
 
-ALTER TABLE public.failed_jobs OWNER TO postgres;
-
 --
--- Name: failed_jobs_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: failed_jobs_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE public.failed_jobs_id_seq
@@ -517,17 +469,15 @@ CREATE SEQUENCE public.failed_jobs_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.failed_jobs_id_seq OWNER TO postgres;
-
 --
--- Name: failed_jobs_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+-- Name: failed_jobs_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE public.failed_jobs_id_seq OWNED BY public.failed_jobs.id;
 
 
 --
--- Name: flash_sale_items; Type: TABLE; Schema: public; Owner: postgres
+-- Name: flash_sale_items; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.flash_sale_items (
@@ -543,10 +493,8 @@ CREATE TABLE public.flash_sale_items (
 );
 
 
-ALTER TABLE public.flash_sale_items OWNER TO postgres;
-
 --
--- Name: flash_sale_items_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: flash_sale_items_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE public.flash_sale_items_id_seq
@@ -557,17 +505,15 @@ CREATE SEQUENCE public.flash_sale_items_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.flash_sale_items_id_seq OWNER TO postgres;
-
 --
--- Name: flash_sale_items_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+-- Name: flash_sale_items_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE public.flash_sale_items_id_seq OWNED BY public.flash_sale_items.id;
 
 
 --
--- Name: flash_sales; Type: TABLE; Schema: public; Owner: postgres
+-- Name: flash_sales; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.flash_sales (
@@ -581,10 +527,8 @@ CREATE TABLE public.flash_sales (
 );
 
 
-ALTER TABLE public.flash_sales OWNER TO postgres;
-
 --
--- Name: flash_sales_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: flash_sales_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE public.flash_sales_id_seq
@@ -595,17 +539,15 @@ CREATE SEQUENCE public.flash_sales_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.flash_sales_id_seq OWNER TO postgres;
-
 --
--- Name: flash_sales_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+-- Name: flash_sales_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE public.flash_sales_id_seq OWNED BY public.flash_sales.id;
 
 
 --
--- Name: inventory; Type: TABLE; Schema: public; Owner: postgres
+-- Name: inventory; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.inventory (
@@ -622,10 +564,8 @@ CREATE TABLE public.inventory (
 );
 
 
-ALTER TABLE public.inventory OWNER TO postgres;
-
 --
--- Name: inventory_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: inventory_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE public.inventory_id_seq
@@ -636,17 +576,15 @@ CREATE SEQUENCE public.inventory_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.inventory_id_seq OWNER TO postgres;
-
 --
--- Name: inventory_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+-- Name: inventory_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE public.inventory_id_seq OWNED BY public.inventory.id;
 
 
 --
--- Name: inventory_transactions; Type: TABLE; Schema: public; Owner: postgres
+-- Name: inventory_transactions; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.inventory_transactions (
@@ -663,10 +601,8 @@ CREATE TABLE public.inventory_transactions (
 );
 
 
-ALTER TABLE public.inventory_transactions OWNER TO postgres;
-
 --
--- Name: inventory_transactions_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: inventory_transactions_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE public.inventory_transactions_id_seq
@@ -677,17 +613,15 @@ CREATE SEQUENCE public.inventory_transactions_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.inventory_transactions_id_seq OWNER TO postgres;
-
 --
--- Name: inventory_transactions_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+-- Name: inventory_transactions_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE public.inventory_transactions_id_seq OWNED BY public.inventory_transactions.id;
 
 
 --
--- Name: jobs; Type: TABLE; Schema: public; Owner: postgres
+-- Name: jobs; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.jobs (
@@ -701,10 +635,8 @@ CREATE TABLE public.jobs (
 );
 
 
-ALTER TABLE public.jobs OWNER TO postgres;
-
 --
--- Name: jobs_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: jobs_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE public.jobs_id_seq
@@ -715,17 +647,15 @@ CREATE SEQUENCE public.jobs_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.jobs_id_seq OWNER TO postgres;
-
 --
--- Name: jobs_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+-- Name: jobs_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE public.jobs_id_seq OWNED BY public.jobs.id;
 
 
 --
--- Name: membership_ranks; Type: TABLE; Schema: public; Owner: postgres
+-- Name: membership_ranks; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.membership_ranks (
@@ -739,10 +669,8 @@ CREATE TABLE public.membership_ranks (
 );
 
 
-ALTER TABLE public.membership_ranks OWNER TO postgres;
-
 --
--- Name: membership_ranks_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: membership_ranks_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE public.membership_ranks_id_seq
@@ -753,17 +681,15 @@ CREATE SEQUENCE public.membership_ranks_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.membership_ranks_id_seq OWNER TO postgres;
-
 --
--- Name: membership_ranks_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+-- Name: membership_ranks_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE public.membership_ranks_id_seq OWNED BY public.membership_ranks.id;
 
 
 --
--- Name: migrations; Type: TABLE; Schema: public; Owner: postgres
+-- Name: migrations; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.migrations (
@@ -773,10 +699,8 @@ CREATE TABLE public.migrations (
 );
 
 
-ALTER TABLE public.migrations OWNER TO postgres;
-
 --
--- Name: migrations_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: migrations_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE public.migrations_id_seq
@@ -788,17 +712,15 @@ CREATE SEQUENCE public.migrations_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.migrations_id_seq OWNER TO postgres;
-
 --
--- Name: migrations_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+-- Name: migrations_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE public.migrations_id_seq OWNED BY public.migrations.id;
 
 
 --
--- Name: model_has_permissions; Type: TABLE; Schema: public; Owner: postgres
+-- Name: model_has_permissions; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.model_has_permissions (
@@ -808,10 +730,8 @@ CREATE TABLE public.model_has_permissions (
 );
 
 
-ALTER TABLE public.model_has_permissions OWNER TO postgres;
-
 --
--- Name: model_has_roles; Type: TABLE; Schema: public; Owner: postgres
+-- Name: model_has_roles; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.model_has_roles (
@@ -821,10 +741,8 @@ CREATE TABLE public.model_has_roles (
 );
 
 
-ALTER TABLE public.model_has_roles OWNER TO postgres;
-
 --
--- Name: newsletter_subscriptions; Type: TABLE; Schema: public; Owner: postgres
+-- Name: newsletter_subscriptions; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.newsletter_subscriptions (
@@ -838,10 +756,8 @@ CREATE TABLE public.newsletter_subscriptions (
 );
 
 
-ALTER TABLE public.newsletter_subscriptions OWNER TO postgres;
-
 --
--- Name: newsletter_subscriptions_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: newsletter_subscriptions_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE public.newsletter_subscriptions_id_seq
@@ -852,17 +768,15 @@ CREATE SEQUENCE public.newsletter_subscriptions_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.newsletter_subscriptions_id_seq OWNER TO postgres;
-
 --
--- Name: newsletter_subscriptions_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+-- Name: newsletter_subscriptions_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE public.newsletter_subscriptions_id_seq OWNED BY public.newsletter_subscriptions.id;
 
 
 --
--- Name: notifications; Type: TABLE; Schema: public; Owner: postgres
+-- Name: notifications; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.notifications (
@@ -878,10 +792,8 @@ CREATE TABLE public.notifications (
 );
 
 
-ALTER TABLE public.notifications OWNER TO postgres;
-
 --
--- Name: notifications_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: notifications_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE public.notifications_id_seq
@@ -892,17 +804,15 @@ CREATE SEQUENCE public.notifications_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.notifications_id_seq OWNER TO postgres;
-
 --
--- Name: notifications_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+-- Name: notifications_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE public.notifications_id_seq OWNED BY public.notifications.id;
 
 
 --
--- Name: order_items; Type: TABLE; Schema: public; Owner: postgres
+-- Name: order_items; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.order_items (
@@ -920,10 +830,8 @@ CREATE TABLE public.order_items (
 );
 
 
-ALTER TABLE public.order_items OWNER TO postgres;
-
 --
--- Name: order_items_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: order_items_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE public.order_items_id_seq
@@ -934,17 +842,15 @@ CREATE SEQUENCE public.order_items_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.order_items_id_seq OWNER TO postgres;
-
 --
--- Name: order_items_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+-- Name: order_items_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE public.order_items_id_seq OWNED BY public.order_items.id;
 
 
 --
--- Name: order_return_requests; Type: TABLE; Schema: public; Owner: postgres
+-- Name: order_return_requests; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.order_return_requests (
@@ -965,10 +871,8 @@ CREATE TABLE public.order_return_requests (
 );
 
 
-ALTER TABLE public.order_return_requests OWNER TO postgres;
-
 --
--- Name: order_return_requests_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: order_return_requests_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE public.order_return_requests_id_seq
@@ -979,17 +883,15 @@ CREATE SEQUENCE public.order_return_requests_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.order_return_requests_id_seq OWNER TO postgres;
-
 --
--- Name: order_return_requests_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+-- Name: order_return_requests_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE public.order_return_requests_id_seq OWNED BY public.order_return_requests.id;
 
 
 --
--- Name: order_status_histories; Type: TABLE; Schema: public; Owner: postgres
+-- Name: order_status_histories; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.order_status_histories (
@@ -1004,10 +906,8 @@ CREATE TABLE public.order_status_histories (
 );
 
 
-ALTER TABLE public.order_status_histories OWNER TO postgres;
-
 --
--- Name: order_status_histories_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: order_status_histories_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE public.order_status_histories_id_seq
@@ -1018,17 +918,15 @@ CREATE SEQUENCE public.order_status_histories_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.order_status_histories_id_seq OWNER TO postgres;
-
 --
--- Name: order_status_histories_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+-- Name: order_status_histories_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE public.order_status_histories_id_seq OWNED BY public.order_status_histories.id;
 
 
 --
--- Name: orders; Type: TABLE; Schema: public; Owner: postgres
+-- Name: orders; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.orders (
@@ -1068,10 +966,8 @@ CREATE TABLE public.orders (
 );
 
 
-ALTER TABLE public.orders OWNER TO postgres;
-
 --
--- Name: orders_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: orders_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE public.orders_id_seq
@@ -1082,17 +978,15 @@ CREATE SEQUENCE public.orders_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.orders_id_seq OWNER TO postgres;
-
 --
--- Name: orders_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+-- Name: orders_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE public.orders_id_seq OWNED BY public.orders.id;
 
 
 --
--- Name: password_reset_tokens; Type: TABLE; Schema: public; Owner: postgres
+-- Name: password_reset_tokens; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.password_reset_tokens (
@@ -1102,10 +996,8 @@ CREATE TABLE public.password_reset_tokens (
 );
 
 
-ALTER TABLE public.password_reset_tokens OWNER TO postgres;
-
 --
--- Name: payments; Type: TABLE; Schema: public; Owner: postgres
+-- Name: payments; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.payments (
@@ -1124,10 +1016,8 @@ CREATE TABLE public.payments (
 );
 
 
-ALTER TABLE public.payments OWNER TO postgres;
-
 --
--- Name: payments_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: payments_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE public.payments_id_seq
@@ -1138,17 +1028,15 @@ CREATE SEQUENCE public.payments_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.payments_id_seq OWNER TO postgres;
-
 --
--- Name: payments_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+-- Name: payments_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE public.payments_id_seq OWNED BY public.payments.id;
 
 
 --
--- Name: permissions; Type: TABLE; Schema: public; Owner: postgres
+-- Name: permissions; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.permissions (
@@ -1160,10 +1048,8 @@ CREATE TABLE public.permissions (
 );
 
 
-ALTER TABLE public.permissions OWNER TO postgres;
-
 --
--- Name: permissions_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: permissions_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE public.permissions_id_seq
@@ -1174,17 +1060,15 @@ CREATE SEQUENCE public.permissions_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.permissions_id_seq OWNER TO postgres;
-
 --
--- Name: permissions_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+-- Name: permissions_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE public.permissions_id_seq OWNED BY public.permissions.id;
 
 
 --
--- Name: personal_access_tokens; Type: TABLE; Schema: public; Owner: postgres
+-- Name: personal_access_tokens; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.personal_access_tokens (
@@ -1201,10 +1085,8 @@ CREATE TABLE public.personal_access_tokens (
 );
 
 
-ALTER TABLE public.personal_access_tokens OWNER TO postgres;
-
 --
--- Name: personal_access_tokens_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: personal_access_tokens_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE public.personal_access_tokens_id_seq
@@ -1215,17 +1097,15 @@ CREATE SEQUENCE public.personal_access_tokens_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.personal_access_tokens_id_seq OWNER TO postgres;
-
 --
--- Name: personal_access_tokens_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+-- Name: personal_access_tokens_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE public.personal_access_tokens_id_seq OWNED BY public.personal_access_tokens.id;
 
 
 --
--- Name: point_history; Type: TABLE; Schema: public; Owner: postgres
+-- Name: point_history; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.point_history (
@@ -1240,10 +1120,8 @@ CREATE TABLE public.point_history (
 );
 
 
-ALTER TABLE public.point_history OWNER TO postgres;
-
 --
--- Name: point_history_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: point_history_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE public.point_history_id_seq
@@ -1254,17 +1132,15 @@ CREATE SEQUENCE public.point_history_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.point_history_id_seq OWNER TO postgres;
-
 --
--- Name: point_history_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+-- Name: point_history_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE public.point_history_id_seq OWNED BY public.point_history.id;
 
 
 --
--- Name: product_faqs; Type: TABLE; Schema: public; Owner: postgres
+-- Name: product_faqs; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.product_faqs (
@@ -1280,10 +1156,8 @@ CREATE TABLE public.product_faqs (
 );
 
 
-ALTER TABLE public.product_faqs OWNER TO postgres;
-
 --
--- Name: product_faqs_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: product_faqs_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE public.product_faqs_id_seq
@@ -1294,17 +1168,15 @@ CREATE SEQUENCE public.product_faqs_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.product_faqs_id_seq OWNER TO postgres;
-
 --
--- Name: product_faqs_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+-- Name: product_faqs_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE public.product_faqs_id_seq OWNED BY public.product_faqs.id;
 
 
 --
--- Name: product_images; Type: TABLE; Schema: public; Owner: postgres
+-- Name: product_images; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.product_images (
@@ -1318,10 +1190,8 @@ CREATE TABLE public.product_images (
 );
 
 
-ALTER TABLE public.product_images OWNER TO postgres;
-
 --
--- Name: product_images_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: product_images_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE public.product_images_id_seq
@@ -1332,17 +1202,15 @@ CREATE SEQUENCE public.product_images_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.product_images_id_seq OWNER TO postgres;
-
 --
--- Name: product_images_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+-- Name: product_images_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE public.product_images_id_seq OWNED BY public.product_images.id;
 
 
 --
--- Name: product_news; Type: TABLE; Schema: public; Owner: postgres
+-- Name: product_news; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.product_news (
@@ -1361,10 +1229,8 @@ CREATE TABLE public.product_news (
 );
 
 
-ALTER TABLE public.product_news OWNER TO postgres;
-
 --
--- Name: product_news_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: product_news_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE public.product_news_id_seq
@@ -1375,17 +1241,15 @@ CREATE SEQUENCE public.product_news_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.product_news_id_seq OWNER TO postgres;
-
 --
--- Name: product_news_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+-- Name: product_news_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE public.product_news_id_seq OWNED BY public.product_news.id;
 
 
 --
--- Name: product_shop_qnas; Type: TABLE; Schema: public; Owner: postgres
+-- Name: product_shop_qnas; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.product_shop_qnas (
@@ -1402,10 +1266,8 @@ CREATE TABLE public.product_shop_qnas (
 );
 
 
-ALTER TABLE public.product_shop_qnas OWNER TO postgres;
-
 --
--- Name: product_shop_qnas_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: product_shop_qnas_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE public.product_shop_qnas_id_seq
@@ -1416,17 +1278,15 @@ CREATE SEQUENCE public.product_shop_qnas_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.product_shop_qnas_id_seq OWNER TO postgres;
-
 --
--- Name: product_shop_qnas_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+-- Name: product_shop_qnas_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE public.product_shop_qnas_id_seq OWNED BY public.product_shop_qnas.id;
 
 
 --
--- Name: product_specs; Type: TABLE; Schema: public; Owner: postgres
+-- Name: product_specs; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.product_specs (
@@ -1442,10 +1302,8 @@ CREATE TABLE public.product_specs (
 );
 
 
-ALTER TABLE public.product_specs OWNER TO postgres;
-
 --
--- Name: product_specs_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: product_specs_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE public.product_specs_id_seq
@@ -1456,17 +1314,15 @@ CREATE SEQUENCE public.product_specs_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.product_specs_id_seq OWNER TO postgres;
-
 --
--- Name: product_specs_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+-- Name: product_specs_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE public.product_specs_id_seq OWNED BY public.product_specs.id;
 
 
 --
--- Name: product_variants; Type: TABLE; Schema: public; Owner: postgres
+-- Name: product_variants; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.product_variants (
@@ -1491,38 +1347,36 @@ CREATE TABLE public.product_variants (
 );
 
 
-ALTER TABLE public.product_variants OWNER TO postgres;
-
 --
--- Name: COLUMN product_variants.discount_type; Type: COMMENT; Schema: public; Owner: postgres
+-- Name: COLUMN product_variants.discount_type; Type: COMMENT; Schema: public; Owner: -
 --
 
 COMMENT ON COLUMN public.product_variants.discount_type IS 'Ki???u gi???m gi??: percentage ho???c fixed';
 
 
 --
--- Name: COLUMN product_variants.discount_value; Type: COMMENT; Schema: public; Owner: postgres
+-- Name: COLUMN product_variants.discount_value; Type: COMMENT; Schema: public; Owner: -
 --
 
 COMMENT ON COLUMN public.product_variants.discount_value IS 'Gi?? tr??? gi???m (% ho???c s�? ti?? VND)';
 
 
 --
--- Name: COLUMN product_variants.discount_start_at; Type: COMMENT; Schema: public; Owner: postgres
+-- Name: COLUMN product_variants.discount_start_at; Type: COMMENT; Schema: public; Owner: -
 --
 
 COMMENT ON COLUMN public.product_variants.discount_start_at IS 'Th???i ??i???m byêt ?????u gi???m gi??';
 
 
 --
--- Name: COLUMN product_variants.discount_end_at; Type: COMMENT; Schema: public; Owner: postgres
+-- Name: COLUMN product_variants.discount_end_at; Type: COMMENT; Schema: public; Owner: -
 --
 
 COMMENT ON COLUMN public.product_variants.discount_end_at IS 'Th???i ??i???m ktêt th??c gi???m gi??';
 
 
 --
--- Name: product_variants_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: product_variants_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE public.product_variants_id_seq
@@ -1533,17 +1387,15 @@ CREATE SEQUENCE public.product_variants_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.product_variants_id_seq OWNER TO postgres;
-
 --
--- Name: product_variants_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+-- Name: product_variants_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE public.product_variants_id_seq OWNED BY public.product_variants.id;
 
 
 --
--- Name: product_video; Type: TABLE; Schema: public; Owner: postgres
+-- Name: product_video; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.product_video (
@@ -1555,10 +1407,8 @@ CREATE TABLE public.product_video (
 );
 
 
-ALTER TABLE public.product_video OWNER TO postgres;
-
 --
--- Name: product_video_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: product_video_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE public.product_video_id_seq
@@ -1569,17 +1419,15 @@ CREATE SEQUENCE public.product_video_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.product_video_id_seq OWNER TO postgres;
-
 --
--- Name: product_video_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+-- Name: product_video_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE public.product_video_id_seq OWNED BY public.product_video.id;
 
 
 --
--- Name: products; Type: TABLE; Schema: public; Owner: postgres
+-- Name: products; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.products (
@@ -1599,10 +1447,8 @@ CREATE TABLE public.products (
 );
 
 
-ALTER TABLE public.products OWNER TO postgres;
-
 --
--- Name: products_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: products_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE public.products_id_seq
@@ -1613,17 +1459,15 @@ CREATE SEQUENCE public.products_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.products_id_seq OWNER TO postgres;
-
 --
--- Name: products_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+-- Name: products_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE public.products_id_seq OWNED BY public.products.id;
 
 
 --
--- Name: reviews; Type: TABLE; Schema: public; Owner: postgres
+-- Name: reviews; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.reviews (
@@ -1643,10 +1487,8 @@ CREATE TABLE public.reviews (
 );
 
 
-ALTER TABLE public.reviews OWNER TO postgres;
-
 --
--- Name: reviews_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: reviews_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE public.reviews_id_seq
@@ -1657,17 +1499,15 @@ CREATE SEQUENCE public.reviews_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.reviews_id_seq OWNER TO postgres;
-
 --
--- Name: reviews_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+-- Name: reviews_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE public.reviews_id_seq OWNED BY public.reviews.id;
 
 
 --
--- Name: role_has_permissions; Type: TABLE; Schema: public; Owner: postgres
+-- Name: role_has_permissions; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.role_has_permissions (
@@ -1676,10 +1516,8 @@ CREATE TABLE public.role_has_permissions (
 );
 
 
-ALTER TABLE public.role_has_permissions OWNER TO postgres;
-
 --
--- Name: roles; Type: TABLE; Schema: public; Owner: postgres
+-- Name: roles; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.roles (
@@ -1693,10 +1531,8 @@ CREATE TABLE public.roles (
 );
 
 
-ALTER TABLE public.roles OWNER TO postgres;
-
 --
--- Name: roles_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: roles_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE public.roles_id_seq
@@ -1707,17 +1543,15 @@ CREATE SEQUENCE public.roles_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.roles_id_seq OWNER TO postgres;
-
 --
--- Name: roles_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+-- Name: roles_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE public.roles_id_seq OWNED BY public.roles.id;
 
 
 --
--- Name: shipping_methods; Type: TABLE; Schema: public; Owner: postgres
+-- Name: shipping_methods; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.shipping_methods (
@@ -1736,10 +1570,8 @@ CREATE TABLE public.shipping_methods (
 );
 
 
-ALTER TABLE public.shipping_methods OWNER TO postgres;
-
 --
--- Name: shipping_methods_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: shipping_methods_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE public.shipping_methods_id_seq
@@ -1750,17 +1582,15 @@ CREATE SEQUENCE public.shipping_methods_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.shipping_methods_id_seq OWNER TO postgres;
-
 --
--- Name: shipping_methods_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+-- Name: shipping_methods_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE public.shipping_methods_id_seq OWNED BY public.shipping_methods.id;
 
 
 --
--- Name: shipping_zones; Type: TABLE; Schema: public; Owner: postgres
+-- Name: shipping_zones; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.shipping_zones (
@@ -1774,10 +1604,8 @@ CREATE TABLE public.shipping_zones (
 );
 
 
-ALTER TABLE public.shipping_zones OWNER TO postgres;
-
 --
--- Name: shipping_zones_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: shipping_zones_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE public.shipping_zones_id_seq
@@ -1788,17 +1616,103 @@ CREATE SEQUENCE public.shipping_zones_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.shipping_zones_id_seq OWNER TO postgres;
-
 --
--- Name: shipping_zones_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+-- Name: shipping_zones_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE public.shipping_zones_id_seq OWNED BY public.shipping_zones.id;
 
 
 --
--- Name: transactions; Type: TABLE; Schema: public; Owner: postgres
+-- Name: trade_in_conditions; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.trade_in_conditions (
+    id bigint NOT NULL,
+    category_id bigint,
+    name character varying(255) NOT NULL,
+    description text,
+    deduction_percentage numeric(5,2) DEFAULT '0'::numeric NOT NULL,
+    sort_order integer DEFAULT 0 NOT NULL,
+    is_active boolean DEFAULT true NOT NULL,
+    created_at timestamp(0) with time zone,
+    updated_at timestamp(0) with time zone
+);
+
+
+--
+-- Name: trade_in_conditions_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.trade_in_conditions_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: trade_in_conditions_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.trade_in_conditions_id_seq OWNED BY public.trade_in_conditions.id;
+
+
+--
+-- Name: trade_in_request_conditions; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.trade_in_request_conditions (
+    trade_in_request_id bigint NOT NULL,
+    trade_in_condition_id bigint NOT NULL
+);
+
+
+--
+-- Name: trade_in_requests; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.trade_in_requests (
+    id bigint NOT NULL,
+    request_code character varying(50) NOT NULL,
+    user_id bigint,
+    category_id bigint,
+    machine_info text,
+    images json,
+    customer_name character varying(255) NOT NULL,
+    customer_phone character varying(30) NOT NULL,
+    customer_email character varying(255),
+    estimated_price numeric(12,2),
+    final_price numeric(12,2),
+    status character varying(30) DEFAULT 'pending'::character varying NOT NULL,
+    admin_note text,
+    created_at timestamp(0) with time zone,
+    updated_at timestamp(0) with time zone
+);
+
+
+--
+-- Name: trade_in_requests_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.trade_in_requests_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: trade_in_requests_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.trade_in_requests_id_seq OWNED BY public.trade_in_requests.id;
+
+
+--
+-- Name: transactions; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.transactions (
@@ -1816,10 +1730,8 @@ CREATE TABLE public.transactions (
 );
 
 
-ALTER TABLE public.transactions OWNER TO postgres;
-
 --
--- Name: transactions_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: transactions_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE public.transactions_id_seq
@@ -1830,17 +1742,15 @@ CREATE SEQUENCE public.transactions_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.transactions_id_seq OWNER TO postgres;
-
 --
--- Name: transactions_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+-- Name: transactions_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE public.transactions_id_seq OWNED BY public.transactions.id;
 
 
 --
--- Name: user_coupons; Type: TABLE; Schema: public; Owner: postgres
+-- Name: user_coupons; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.user_coupons (
@@ -1852,10 +1762,8 @@ CREATE TABLE public.user_coupons (
 );
 
 
-ALTER TABLE public.user_coupons OWNER TO postgres;
-
 --
--- Name: user_coupons_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: user_coupons_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE public.user_coupons_id_seq
@@ -1866,17 +1774,15 @@ CREATE SEQUENCE public.user_coupons_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.user_coupons_id_seq OWNER TO postgres;
-
 --
--- Name: user_coupons_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+-- Name: user_coupons_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE public.user_coupons_id_seq OWNED BY public.user_coupons.id;
 
 
 --
--- Name: users; Type: TABLE; Schema: public; Owner: postgres
+-- Name: users; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.users (
@@ -1906,10 +1812,8 @@ CREATE TABLE public.users (
 );
 
 
-ALTER TABLE public.users OWNER TO postgres;
-
 --
--- Name: users_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: users_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE public.users_id_seq
@@ -1920,17 +1824,15 @@ CREATE SEQUENCE public.users_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.users_id_seq OWNER TO postgres;
-
 --
--- Name: users_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+-- Name: users_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE public.users_id_seq OWNED BY public.users.id;
 
 
 --
--- Name: video_categories; Type: TABLE; Schema: public; Owner: postgres
+-- Name: video_categories; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.video_categories (
@@ -1945,10 +1847,8 @@ CREATE TABLE public.video_categories (
 );
 
 
-ALTER TABLE public.video_categories OWNER TO postgres;
-
 --
--- Name: video_categories_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: video_categories_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE public.video_categories_id_seq
@@ -1959,17 +1859,15 @@ CREATE SEQUENCE public.video_categories_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.video_categories_id_seq OWNER TO postgres;
-
 --
--- Name: video_categories_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+-- Name: video_categories_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE public.video_categories_id_seq OWNED BY public.video_categories.id;
 
 
 --
--- Name: videos; Type: TABLE; Schema: public; Owner: postgres
+-- Name: videos; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.videos (
@@ -1987,10 +1885,8 @@ CREATE TABLE public.videos (
 );
 
 
-ALTER TABLE public.videos OWNER TO postgres;
-
 --
--- Name: videos_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: videos_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE public.videos_id_seq
@@ -2001,17 +1897,15 @@ CREATE SEQUENCE public.videos_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.videos_id_seq OWNER TO postgres;
-
 --
--- Name: videos_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+-- Name: videos_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE public.videos_id_seq OWNED BY public.videos.id;
 
 
 --
--- Name: wishlists; Type: TABLE; Schema: public; Owner: postgres
+-- Name: wishlists; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.wishlists (
@@ -2025,10 +1919,8 @@ CREATE TABLE public.wishlists (
 );
 
 
-ALTER TABLE public.wishlists OWNER TO postgres;
-
 --
--- Name: wishlists_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: wishlists_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE public.wishlists_id_seq
@@ -2039,346 +1931,358 @@ CREATE SEQUENCE public.wishlists_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.wishlists_id_seq OWNER TO postgres;
-
 --
--- Name: wishlists_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+-- Name: wishlists_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE public.wishlists_id_seq OWNED BY public.wishlists.id;
 
 
 --
--- Name: admin_settings id; Type: DEFAULT; Schema: public; Owner: postgres
+-- Name: admin_settings id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.admin_settings ALTER COLUMN id SET DEFAULT nextval('public.admin_settings_id_seq'::regclass);
 
 
 --
--- Name: banners id; Type: DEFAULT; Schema: public; Owner: postgres
+-- Name: banners id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.banners ALTER COLUMN id SET DEFAULT nextval('public.banners_id_seq'::regclass);
 
 
 --
--- Name: blog_categories id; Type: DEFAULT; Schema: public; Owner: postgres
+-- Name: blog_categories id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.blog_categories ALTER COLUMN id SET DEFAULT nextval('public.blog_categories_id_seq'::regclass);
 
 
 --
--- Name: blog_comments id; Type: DEFAULT; Schema: public; Owner: postgres
+-- Name: blog_comments id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.blog_comments ALTER COLUMN id SET DEFAULT nextval('public.blog_comments_id_seq'::regclass);
 
 
 --
--- Name: blog_posts id; Type: DEFAULT; Schema: public; Owner: postgres
+-- Name: blog_posts id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.blog_posts ALTER COLUMN id SET DEFAULT nextval('public.blog_posts_id_seq'::regclass);
 
 
 --
--- Name: cart_items id; Type: DEFAULT; Schema: public; Owner: postgres
+-- Name: cart_items id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.cart_items ALTER COLUMN id SET DEFAULT nextval('public.cart_items_id_seq'::regclass);
 
 
 --
--- Name: carts id; Type: DEFAULT; Schema: public; Owner: postgres
+-- Name: carts id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.carts ALTER COLUMN id SET DEFAULT nextval('public.carts_id_seq'::regclass);
 
 
 --
--- Name: categories id; Type: DEFAULT; Schema: public; Owner: postgres
+-- Name: categories id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.categories ALTER COLUMN id SET DEFAULT nextval('public.categories_id_seq'::regclass);
 
 
 --
--- Name: contact_messages id; Type: DEFAULT; Schema: public; Owner: postgres
+-- Name: contact_messages id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.contact_messages ALTER COLUMN id SET DEFAULT nextval('public.contact_messages_id_seq'::regclass);
 
 
 --
--- Name: coupon_usage id; Type: DEFAULT; Schema: public; Owner: postgres
+-- Name: coupon_usage id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.coupon_usage ALTER COLUMN id SET DEFAULT nextval('public.coupon_usage_id_seq'::regclass);
 
 
 --
--- Name: coupons id; Type: DEFAULT; Schema: public; Owner: postgres
+-- Name: coupons id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.coupons ALTER COLUMN id SET DEFAULT nextval('public.coupons_id_seq'::regclass);
 
 
 --
--- Name: failed_jobs id; Type: DEFAULT; Schema: public; Owner: postgres
+-- Name: failed_jobs id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.failed_jobs ALTER COLUMN id SET DEFAULT nextval('public.failed_jobs_id_seq'::regclass);
 
 
 --
--- Name: flash_sale_items id; Type: DEFAULT; Schema: public; Owner: postgres
+-- Name: flash_sale_items id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.flash_sale_items ALTER COLUMN id SET DEFAULT nextval('public.flash_sale_items_id_seq'::regclass);
 
 
 --
--- Name: flash_sales id; Type: DEFAULT; Schema: public; Owner: postgres
+-- Name: flash_sales id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.flash_sales ALTER COLUMN id SET DEFAULT nextval('public.flash_sales_id_seq'::regclass);
 
 
 --
--- Name: inventory id; Type: DEFAULT; Schema: public; Owner: postgres
+-- Name: inventory id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.inventory ALTER COLUMN id SET DEFAULT nextval('public.inventory_id_seq'::regclass);
 
 
 --
--- Name: inventory_transactions id; Type: DEFAULT; Schema: public; Owner: postgres
+-- Name: inventory_transactions id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.inventory_transactions ALTER COLUMN id SET DEFAULT nextval('public.inventory_transactions_id_seq'::regclass);
 
 
 --
--- Name: jobs id; Type: DEFAULT; Schema: public; Owner: postgres
+-- Name: jobs id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.jobs ALTER COLUMN id SET DEFAULT nextval('public.jobs_id_seq'::regclass);
 
 
 --
--- Name: membership_ranks id; Type: DEFAULT; Schema: public; Owner: postgres
+-- Name: membership_ranks id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.membership_ranks ALTER COLUMN id SET DEFAULT nextval('public.membership_ranks_id_seq'::regclass);
 
 
 --
--- Name: migrations id; Type: DEFAULT; Schema: public; Owner: postgres
+-- Name: migrations id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.migrations ALTER COLUMN id SET DEFAULT nextval('public.migrations_id_seq'::regclass);
 
 
 --
--- Name: newsletter_subscriptions id; Type: DEFAULT; Schema: public; Owner: postgres
+-- Name: newsletter_subscriptions id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.newsletter_subscriptions ALTER COLUMN id SET DEFAULT nextval('public.newsletter_subscriptions_id_seq'::regclass);
 
 
 --
--- Name: notifications id; Type: DEFAULT; Schema: public; Owner: postgres
+-- Name: notifications id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.notifications ALTER COLUMN id SET DEFAULT nextval('public.notifications_id_seq'::regclass);
 
 
 --
--- Name: order_items id; Type: DEFAULT; Schema: public; Owner: postgres
+-- Name: order_items id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.order_items ALTER COLUMN id SET DEFAULT nextval('public.order_items_id_seq'::regclass);
 
 
 --
--- Name: order_return_requests id; Type: DEFAULT; Schema: public; Owner: postgres
+-- Name: order_return_requests id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.order_return_requests ALTER COLUMN id SET DEFAULT nextval('public.order_return_requests_id_seq'::regclass);
 
 
 --
--- Name: order_status_histories id; Type: DEFAULT; Schema: public; Owner: postgres
+-- Name: order_status_histories id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.order_status_histories ALTER COLUMN id SET DEFAULT nextval('public.order_status_histories_id_seq'::regclass);
 
 
 --
--- Name: orders id; Type: DEFAULT; Schema: public; Owner: postgres
+-- Name: orders id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.orders ALTER COLUMN id SET DEFAULT nextval('public.orders_id_seq'::regclass);
 
 
 --
--- Name: payments id; Type: DEFAULT; Schema: public; Owner: postgres
+-- Name: payments id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.payments ALTER COLUMN id SET DEFAULT nextval('public.payments_id_seq'::regclass);
 
 
 --
--- Name: permissions id; Type: DEFAULT; Schema: public; Owner: postgres
+-- Name: permissions id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.permissions ALTER COLUMN id SET DEFAULT nextval('public.permissions_id_seq'::regclass);
 
 
 --
--- Name: personal_access_tokens id; Type: DEFAULT; Schema: public; Owner: postgres
+-- Name: personal_access_tokens id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.personal_access_tokens ALTER COLUMN id SET DEFAULT nextval('public.personal_access_tokens_id_seq'::regclass);
 
 
 --
--- Name: point_history id; Type: DEFAULT; Schema: public; Owner: postgres
+-- Name: point_history id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.point_history ALTER COLUMN id SET DEFAULT nextval('public.point_history_id_seq'::regclass);
 
 
 --
--- Name: product_faqs id; Type: DEFAULT; Schema: public; Owner: postgres
+-- Name: product_faqs id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.product_faqs ALTER COLUMN id SET DEFAULT nextval('public.product_faqs_id_seq'::regclass);
 
 
 --
--- Name: product_images id; Type: DEFAULT; Schema: public; Owner: postgres
+-- Name: product_images id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.product_images ALTER COLUMN id SET DEFAULT nextval('public.product_images_id_seq'::regclass);
 
 
 --
--- Name: product_news id; Type: DEFAULT; Schema: public; Owner: postgres
+-- Name: product_news id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.product_news ALTER COLUMN id SET DEFAULT nextval('public.product_news_id_seq'::regclass);
 
 
 --
--- Name: product_shop_qnas id; Type: DEFAULT; Schema: public; Owner: postgres
+-- Name: product_shop_qnas id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.product_shop_qnas ALTER COLUMN id SET DEFAULT nextval('public.product_shop_qnas_id_seq'::regclass);
 
 
 --
--- Name: product_specs id; Type: DEFAULT; Schema: public; Owner: postgres
+-- Name: product_specs id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.product_specs ALTER COLUMN id SET DEFAULT nextval('public.product_specs_id_seq'::regclass);
 
 
 --
--- Name: product_variants id; Type: DEFAULT; Schema: public; Owner: postgres
+-- Name: product_variants id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.product_variants ALTER COLUMN id SET DEFAULT nextval('public.product_variants_id_seq'::regclass);
 
 
 --
--- Name: product_video id; Type: DEFAULT; Schema: public; Owner: postgres
+-- Name: product_video id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.product_video ALTER COLUMN id SET DEFAULT nextval('public.product_video_id_seq'::regclass);
 
 
 --
--- Name: products id; Type: DEFAULT; Schema: public; Owner: postgres
+-- Name: products id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.products ALTER COLUMN id SET DEFAULT nextval('public.products_id_seq'::regclass);
 
 
 --
--- Name: reviews id; Type: DEFAULT; Schema: public; Owner: postgres
+-- Name: reviews id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.reviews ALTER COLUMN id SET DEFAULT nextval('public.reviews_id_seq'::regclass);
 
 
 --
--- Name: roles id; Type: DEFAULT; Schema: public; Owner: postgres
+-- Name: roles id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.roles ALTER COLUMN id SET DEFAULT nextval('public.roles_id_seq'::regclass);
 
 
 --
--- Name: shipping_methods id; Type: DEFAULT; Schema: public; Owner: postgres
+-- Name: shipping_methods id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.shipping_methods ALTER COLUMN id SET DEFAULT nextval('public.shipping_methods_id_seq'::regclass);
 
 
 --
--- Name: shipping_zones id; Type: DEFAULT; Schema: public; Owner: postgres
+-- Name: shipping_zones id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.shipping_zones ALTER COLUMN id SET DEFAULT nextval('public.shipping_zones_id_seq'::regclass);
 
 
 --
--- Name: transactions id; Type: DEFAULT; Schema: public; Owner: postgres
+-- Name: trade_in_conditions id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.trade_in_conditions ALTER COLUMN id SET DEFAULT nextval('public.trade_in_conditions_id_seq'::regclass);
+
+
+--
+-- Name: trade_in_requests id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.trade_in_requests ALTER COLUMN id SET DEFAULT nextval('public.trade_in_requests_id_seq'::regclass);
+
+
+--
+-- Name: transactions id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.transactions ALTER COLUMN id SET DEFAULT nextval('public.transactions_id_seq'::regclass);
 
 
 --
--- Name: user_coupons id; Type: DEFAULT; Schema: public; Owner: postgres
+-- Name: user_coupons id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.user_coupons ALTER COLUMN id SET DEFAULT nextval('public.user_coupons_id_seq'::regclass);
 
 
 --
--- Name: users id; Type: DEFAULT; Schema: public; Owner: postgres
+-- Name: users id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.users ALTER COLUMN id SET DEFAULT nextval('public.users_id_seq'::regclass);
 
 
 --
--- Name: video_categories id; Type: DEFAULT; Schema: public; Owner: postgres
+-- Name: video_categories id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.video_categories ALTER COLUMN id SET DEFAULT nextval('public.video_categories_id_seq'::regclass);
 
 
 --
--- Name: videos id; Type: DEFAULT; Schema: public; Owner: postgres
+-- Name: videos id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.videos ALTER COLUMN id SET DEFAULT nextval('public.videos_id_seq'::regclass);
 
 
 --
--- Name: wishlists id; Type: DEFAULT; Schema: public; Owner: postgres
+-- Name: wishlists id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.wishlists ALTER COLUMN id SET DEFAULT nextval('public.wishlists_id_seq'::regclass);
 
 
 --
--- Data for Name: admin_settings; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: admin_settings; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY public.admin_settings (id, key, value, updated_by, created_at, updated_at) FROM stdin;
@@ -2391,10 +2295,11 @@ COPY public.admin_settings (id, key, value, updated_by, created_at, updated_at) 
 
 
 --
--- Data for Name: banners; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: banners; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY public.banners (id, title, description, image_url, link_url, is_active, sort_order, created_at, updated_at) FROM stdin;
+6	Thu Cũ Đổi Mới & Lên Đời Trợ Giá	Thu mua điện thoại và laptop cũ với giá cạnh tranh. Định giá nhanh, quy trình minh bạch, hỗ trợ trợ giá hấp dẫn khi nâng cấp lên thiết bị mới chính hãng.	/storage/banners/qiYHWjG0SldpX3xFrizu7Apw07pkqIl4Sh4MjxSW.png	/trade-in	t	4	2026-08-03 13:07:35	2026-08-03 13:11:40
 2	SỐNG THÔNG MINH TRỌN TIỆN ÍCH	Biến ngôi nhà và không gian làm việc trở nên thông minh hơn với hệ sinh thái thiết bị hiện đại, mang đến sự tiện nghi, an toàn và kết nối liền mạch.	/storage/banners/ypvrzlgDONEgCaei0jVSfx5tA3jKbPkluxR4ghmd.png	/products	t	1	2026-05-22 11:07:16	2026-07-27 10:33:32
 3	SỐNG THÔNG MINH TRỌN TIỆN ÍCH	Nâng tầm cuộc sống với các thiết bị công nghệ tiên tiến, giúp tối ưu thời gian, tiết kiệm năng lượng và nâng cao trải nghiệm mỗi ngày.	/storage/banners/JqIplY9G3Rzi27OgDMyCpq6rPykqGU1s99lvfNIa.png	/products	t	2	2026-05-22 11:11:00	2026-07-27 10:39:09
 5	KỶ NGUYÊN AI ĐỘT PHÁ GIẢI PHÁP	Đón đầu xu hướng AI với những sản phẩm công nghệ tích hợp trí tuệ nhân tạo, mang đến hiệu suất vượt trội và giải pháp thông minh cho tương lai.	/storage/banners/J2DZfmRRjrsGH17vgqRLsWw3AAQJcKD9Xq8gnaiv.png	/products	t	3	2026-07-01 15:18:54	2026-07-27 10:55:07
@@ -2403,7 +2308,7 @@ COPY public.banners (id, title, description, image_url, link_url, is_active, sor
 
 
 --
--- Data for Name: blog_categories; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: blog_categories; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY public.blog_categories (id, name, slug, sort_order, created_at, updated_at) FROM stdin;
@@ -2415,7 +2320,7 @@ COPY public.blog_categories (id, name, slug, sort_order, created_at, updated_at)
 
 
 --
--- Data for Name: blog_comments; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: blog_comments; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY public.blog_comments (id, blog_post_id, user_id, author_name, author_email, content, status, created_at, updated_at, deleted_at) FROM stdin;
@@ -2426,7 +2331,7 @@ COPY public.blog_comments (id, blog_post_id, user_id, author_name, author_email,
 
 
 --
--- Data for Name: blog_posts; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: blog_posts; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY public.blog_posts (id, blog_category_id, author_id, title, slug, excerpt, content, thumbnail_url, is_published, published_at, meta_title, meta_description, created_at, updated_at, deleted_at, views, reading_time) FROM stdin;
@@ -2442,7 +2347,7 @@ COPY public.blog_posts (id, blog_category_id, author_id, title, slug, excerpt, c
 
 
 --
--- Data for Name: cart_items; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: cart_items; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY public.cart_items (cart_id, product_id, quantity, unit_price, added_at, variant_id, id) FROM stdin;
@@ -2458,7 +2363,7 @@ COPY public.cart_items (cart_id, product_id, quantity, unit_price, added_at, var
 
 
 --
--- Data for Name: carts; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: carts; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY public.carts (id, user_id, status, created_at, updated_at) FROM stdin;
@@ -2476,7 +2381,7 @@ COPY public.carts (id, user_id, status, created_at, updated_at) FROM stdin;
 
 
 --
--- Data for Name: categories; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: categories; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY public.categories (id, parent_id, name, slug, description, sort_order, is_active, created_at, updated_at, deleted_at, image, type) FROM stdin;
@@ -2546,7 +2451,7 @@ COPY public.categories (id, parent_id, name, slug, description, sort_order, is_a
 
 
 --
--- Data for Name: contact_messages; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: contact_messages; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY public.contact_messages (id, name, email, phone, subject, message, handled_at, handled_by_user_id, created_at, updated_at) FROM stdin;
@@ -2555,7 +2460,7 @@ COPY public.contact_messages (id, name, email, phone, subject, message, handled_
 
 
 --
--- Data for Name: coupon_usage; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: coupon_usage; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY public.coupon_usage (id, coupon_id, user_id, order_id, used_at, discount_amount) FROM stdin;
@@ -2565,7 +2470,7 @@ COPY public.coupon_usage (id, coupon_id, user_id, order_id, used_at, discount_am
 
 
 --
--- Data for Name: coupons; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: coupons; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY public.coupons (id, code, coupon_type, value, min_order_amount, start_at, end_at, max_uses, max_uses_per_user, is_active, created_at, updated_at) FROM stdin;
@@ -2581,7 +2486,7 @@ COPY public.coupons (id, code, coupon_type, value, min_order_amount, start_at, e
 
 
 --
--- Data for Name: failed_jobs; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: failed_jobs; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY public.failed_jobs (id, uuid, coection, queue, payload, exception, failed_at) FROM stdin;
@@ -2620,7 +2525,7 @@ COPY public.failed_jobs (id, uuid, coection, queue, payload, exception, failed_a
 
 
 --
--- Data for Name: flash_sale_items; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: flash_sale_items; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY public.flash_sale_items (id, flash_sale_id, product_id, flash_sale_price, quantity_limit, sold_quantity, created_at, updated_at, variant_id) FROM stdin;
@@ -2641,7 +2546,7 @@ COPY public.flash_sale_items (id, flash_sale_id, product_id, flash_sale_price, q
 
 
 --
--- Data for Name: flash_sales; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: flash_sales; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY public.flash_sales (id, name, start_at, end_at, created_at, updated_at, status) FROM stdin;
@@ -2652,7 +2557,7 @@ COPY public.flash_sales (id, name, start_at, end_at, created_at, updated_at, sta
 
 
 --
--- Data for Name: inventory; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: inventory; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY public.inventory (id, product_id, location_code, quantity_on_hand, reorder_level, last_stock_in_at, created_at, updated_at) FROM stdin;
@@ -2713,7 +2618,7 @@ COPY public.inventory (id, product_id, location_code, quantity_on_hand, reorder_
 
 
 --
--- Data for Name: inventory_transactions; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: inventory_transactions; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY public.inventory_transactions (id, product_id, inventory_id, location_code, quantity_change, quantity_after, reason, notes, created_at, updated_at) FROM stdin;
@@ -2990,7 +2895,7 @@ COPY public.inventory_transactions (id, product_id, inventory_id, location_code,
 
 
 --
--- Data for Name: jobs; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: jobs; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY public.jobs (id, queue, payload, attempts, reserved_at, available_at, created_at) FROM stdin;
@@ -2998,7 +2903,7 @@ COPY public.jobs (id, queue, payload, attempts, reserved_at, available_at, creat
 
 
 --
--- Data for Name: membership_ranks; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: membership_ranks; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY public.membership_ranks (id, rank_name, min_spend, point_multiplier, benefits, created_at, updated_at) FROM stdin;
@@ -3010,7 +2915,7 @@ COPY public.membership_ranks (id, rank_name, min_spend, point_multiplier, benefi
 
 
 --
--- Data for Name: migrations; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: migrations; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY public.migrations (id, migration, batch) FROM stdin;
@@ -3080,11 +2985,12 @@ COPY public.migrations (id, migration, batch) FROM stdin;
 69	2026_07_29_110024_add_is_loyalty_member_to_users_table	57
 70	2026_07_30_140116_drop_exp_columns_from_reviews_table	57
 71	2026_07_31_082821_add_other_types_to_wishlists_table	58
+73	2026_08_03_080058_create_trade_in_tables	59
 \.
 
 
 --
--- Data for Name: model_has_permissions; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: model_has_permissions; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY public.model_has_permissions (permission_id, model_type, model_id) FROM stdin;
@@ -3092,7 +2998,7 @@ COPY public.model_has_permissions (permission_id, model_type, model_id) FROM std
 
 
 --
--- Data for Name: model_has_roles; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: model_has_roles; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY public.model_has_roles (role_id, model_type, model_id) FROM stdin;
@@ -3135,7 +3041,7 @@ COPY public.model_has_roles (role_id, model_type, model_id) FROM stdin;
 
 
 --
--- Data for Name: newsletter_subscriptions; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: newsletter_subscriptions; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY public.newsletter_subscriptions (id, email, source, subscribed_at, unsubscribed_at, created_at, updated_at) FROM stdin;
@@ -3146,7 +3052,7 @@ COPY public.newsletter_subscriptions (id, email, source, subscribed_at, unsubscr
 
 
 --
--- Data for Name: notifications; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: notifications; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY public.notifications (id, user_id, type, title, body, data, read_at, created_at, updated_at) FROM stdin;
@@ -3154,11 +3060,31 @@ COPY public.notifications (id, user_id, type, title, body, data, read_at, create
 2	11	contact_message	Liên hệ mới	Nguyễn Văn An • Hợp tác / Doanh nghiệp • Xin chào E-Tech Market,\n\nChúng tôi là đại diện của Công ty ABC, hiện đang quan tâm đến việc hợp tác phân phối các sản phẩm công nghệ và linh	{"email": "nguyenvanan@gmail.com", "phone": "0901 234 567", "contact_message_id": 4}	2026-07-08 16:01:57+00	2026-07-08 15:39:54+00	2026-07-08 16:01:57+00
 3	11	low_stock	Cảnh báo tồn kho	MacBook Pro 14 inch M3 đang sắp hết hàng (tồn: 10).	{"sku": "MBP14-M3-256", "threshold": 10, "product_id": 212, "variant_id": 544, "product_slug": "macbook-pro-14-m3", "stock_quantity": 10}	2026-07-24 14:03:41+00	2026-07-24 13:39:53+00	2026-07-24 14:03:41+00
 4	11	low_stock	Cảnh báo tồn kho	MacBook Pro 14 inch M3 đang sắp hết hàng (tồn: 5).	{"sku": "MBP14-M3-512", "threshold": 10, "product_id": 212, "variant_id": 545, "product_slug": "macbook-pro-14-m3", "stock_quantity": 5}	2026-07-24 14:03:44+00	2026-07-24 13:39:53+00	2026-07-24 14:03:44+00
+5	353	trade_in_new	Yêu cầu thu cũ đổi mới mới	Khách hàng Đỗ Việt Hoàng vừa gửi yêu cầu định giá máy cũ (Tên máy: Samsung Galaxy S25 Plus\r\nDung lượng: 512GB\r\nMàu sắc: Xám Bạc\r\nTình trạng bảo hành: Còn 4 tháng \r\nPhụ kiện đi kèm: Cáp sạc , Hộp).	{"request_id": 1, "request_code": "TIZJPGHGDW"}	\N	2026-08-03 09:03:15+00	2026-08-03 09:03:15+00
+6	347	trade_in_new	Yêu cầu thu cũ đổi mới mới	Khách hàng Đỗ Việt Hoàng vừa gửi yêu cầu định giá máy cũ (Tên máy: Samsung Galaxy S25 Plus\r\nDung lượng: 512GB\r\nMàu sắc: Xám Bạc\r\nTình trạng bảo hành: Còn 4 tháng \r\nPhụ kiện đi kèm: Cáp sạc , Hộp).	{"request_id": 1, "request_code": "TIZJPGHGDW"}	\N	2026-08-03 09:03:15+00	2026-08-03 09:03:15+00
+7	358	trade_in_new	Yêu cầu thu cũ đổi mới mới	Khách hàng Đỗ Việt Hoàng vừa gửi yêu cầu định giá máy cũ (Tên máy: Samsung Galaxy S25 Plus\r\nDung lượng: 512GB\r\nMàu sắc: Xám Bạc\r\nTình trạng bảo hành: Còn 4 tháng \r\nPhụ kiện đi kèm: Cáp sạc , Hộp).	{"request_id": 1, "request_code": "TIZJPGHGDW"}	\N	2026-08-03 09:03:15+00	2026-08-03 09:03:15+00
+8	10	trade_in_new	Yêu cầu thu cũ đổi mới mới	Khách hàng Đỗ Việt Hoàng vừa gửi yêu cầu định giá máy cũ (Tên máy: Samsung Galaxy S25 Plus\r\nDung lượng: 512GB\r\nMàu sắc: Xám Bạc\r\nTình trạng bảo hành: Còn 4 tháng \r\nPhụ kiện đi kèm: Cáp sạc , Hộp).	{"request_id": 1, "request_code": "TIZJPGHGDW"}	\N	2026-08-03 09:03:15+00	2026-08-03 09:03:15+00
+9	11	trade_in_new	Yêu cầu thu cũ đổi mới mới	Khách hàng Đỗ Việt Hoàng vừa gửi yêu cầu định giá máy cũ (Tên máy: Samsung Galaxy S25 Plus\r\nDung lượng: 512GB\r\nMàu sắc: Xám Bạc\r\nTình trạng bảo hành: Còn 4 tháng \r\nPhụ kiện đi kèm: Cáp sạc , Hộp).	{"request_id": 1, "request_code": "TIZJPGHGDW"}	2026-08-03 09:03:29+00	2026-08-03 09:03:15+00	2026-08-03 09:03:29+00
+10	353	trade_in_new	Yêu cầu thu cũ đổi mới mới	Khách hàng Đỗ Việt Hoàng vừa gửi yêu cầu định giá máy cũ (Tên máy: MacBook Air M3 13 inch 2024 8CPU 10GPU\r\nRAM: 16GB\r\nỔ cứng: 512GB\r\nVGA: Apple M3 GPU 10 nhân (10-core GPU)\r\nTình trạng bảo hành: Còn bảo hành Apple đến 08/2027\r\nPhụ kiện đi kèm: Hộp zin, sạc Apple USB-C 30W, cáp MagSafe 3 chính hãng).	{"request_id": 2, "request_code": "TI6HJF0JQF"}	\N	2026-08-03 09:49:32+00	2026-08-03 09:49:32+00
+11	347	trade_in_new	Yêu cầu thu cũ đổi mới mới	Khách hàng Đỗ Việt Hoàng vừa gửi yêu cầu định giá máy cũ (Tên máy: MacBook Air M3 13 inch 2024 8CPU 10GPU\r\nRAM: 16GB\r\nỔ cứng: 512GB\r\nVGA: Apple M3 GPU 10 nhân (10-core GPU)\r\nTình trạng bảo hành: Còn bảo hành Apple đến 08/2027\r\nPhụ kiện đi kèm: Hộp zin, sạc Apple USB-C 30W, cáp MagSafe 3 chính hãng).	{"request_id": 2, "request_code": "TI6HJF0JQF"}	\N	2026-08-03 09:49:32+00	2026-08-03 09:49:32+00
+12	358	trade_in_new	Yêu cầu thu cũ đổi mới mới	Khách hàng Đỗ Việt Hoàng vừa gửi yêu cầu định giá máy cũ (Tên máy: MacBook Air M3 13 inch 2024 8CPU 10GPU\r\nRAM: 16GB\r\nỔ cứng: 512GB\r\nVGA: Apple M3 GPU 10 nhân (10-core GPU)\r\nTình trạng bảo hành: Còn bảo hành Apple đến 08/2027\r\nPhụ kiện đi kèm: Hộp zin, sạc Apple USB-C 30W, cáp MagSafe 3 chính hãng).	{"request_id": 2, "request_code": "TI6HJF0JQF"}	\N	2026-08-03 09:49:32+00	2026-08-03 09:49:32+00
+13	10	trade_in_new	Yêu cầu thu cũ đổi mới mới	Khách hàng Đỗ Việt Hoàng vừa gửi yêu cầu định giá máy cũ (Tên máy: MacBook Air M3 13 inch 2024 8CPU 10GPU\r\nRAM: 16GB\r\nỔ cứng: 512GB\r\nVGA: Apple M3 GPU 10 nhân (10-core GPU)\r\nTình trạng bảo hành: Còn bảo hành Apple đến 08/2027\r\nPhụ kiện đi kèm: Hộp zin, sạc Apple USB-C 30W, cáp MagSafe 3 chính hãng).	{"request_id": 2, "request_code": "TI6HJF0JQF"}	\N	2026-08-03 09:49:32+00	2026-08-03 09:49:32+00
+14	11	trade_in_new	Yêu cầu thu cũ đổi mới mới	Khách hàng Đỗ Việt Hoàng vừa gửi yêu cầu định giá máy cũ (Tên máy: MacBook Air M3 13 inch 2024 8CPU 10GPU\r\nRAM: 16GB\r\nỔ cứng: 512GB\r\nVGA: Apple M3 GPU 10 nhân (10-core GPU)\r\nTình trạng bảo hành: Còn bảo hành Apple đến 08/2027\r\nPhụ kiện đi kèm: Hộp zin, sạc Apple USB-C 30W, cáp MagSafe 3 chính hãng).	{"request_id": 2, "request_code": "TI6HJF0JQF"}	2026-08-03 13:12:59+00	2026-08-03 09:49:32+00	2026-08-03 13:12:59+00
+15	353	trade_in_new	Yêu cầu thu cũ đổi mới mới	Khách hàng Trần Văn Nghĩa vừa gửi yêu cầu định giá máy cũ (Tên máy: Iphone 14 pro max\r\nDung lượng: 256GB\r\nMàu sắc: Màu Xám\r\nTình trạng bảo hành: Hết bảo hành\r\nPhụ kiện đi kèm: Sạc, Hộp).	{"request_id": 3, "request_code": "TIITP8CQ4Z"}	\N	2026-08-03 16:05:39+00	2026-08-03 16:05:39+00
+16	347	trade_in_new	Yêu cầu thu cũ đổi mới mới	Khách hàng Trần Văn Nghĩa vừa gửi yêu cầu định giá máy cũ (Tên máy: Iphone 14 pro max\r\nDung lượng: 256GB\r\nMàu sắc: Màu Xám\r\nTình trạng bảo hành: Hết bảo hành\r\nPhụ kiện đi kèm: Sạc, Hộp).	{"request_id": 3, "request_code": "TIITP8CQ4Z"}	\N	2026-08-03 16:05:39+00	2026-08-03 16:05:39+00
+17	358	trade_in_new	Yêu cầu thu cũ đổi mới mới	Khách hàng Trần Văn Nghĩa vừa gửi yêu cầu định giá máy cũ (Tên máy: Iphone 14 pro max\r\nDung lượng: 256GB\r\nMàu sắc: Màu Xám\r\nTình trạng bảo hành: Hết bảo hành\r\nPhụ kiện đi kèm: Sạc, Hộp).	{"request_id": 3, "request_code": "TIITP8CQ4Z"}	\N	2026-08-03 16:05:39+00	2026-08-03 16:05:39+00
+18	10	trade_in_new	Yêu cầu thu cũ đổi mới mới	Khách hàng Trần Văn Nghĩa vừa gửi yêu cầu định giá máy cũ (Tên máy: Iphone 14 pro max\r\nDung lượng: 256GB\r\nMàu sắc: Màu Xám\r\nTình trạng bảo hành: Hết bảo hành\r\nPhụ kiện đi kèm: Sạc, Hộp).	{"request_id": 3, "request_code": "TIITP8CQ4Z"}	\N	2026-08-03 16:05:39+00	2026-08-03 16:05:39+00
+19	11	trade_in_new	Yêu cầu thu cũ đổi mới mới	Khách hàng Trần Văn Nghĩa vừa gửi yêu cầu định giá máy cũ (Tên máy: Iphone 14 pro max\r\nDung lượng: 256GB\r\nMàu sắc: Màu Xám\r\nTình trạng bảo hành: Hết bảo hành\r\nPhụ kiện đi kèm: Sạc, Hộp).	{"request_id": 3, "request_code": "TIITP8CQ4Z"}	\N	2026-08-03 16:05:39+00	2026-08-03 16:05:39+00
+20	353	trade_in_new	Yêu cầu thu cũ đổi mới mới	Khách hàng Trần Văn Nghĩa vừa gửi yêu cầu định giá máy cũ (Tên máy: ASUS TUF Gaming F15\r\nRAM: 16GB\r\nỔ cứng: 512GB\r\nVGA: NVIDIA GTX 1650 → RTX 4070\r\nTình trạng bảo hành: Còn bảo hành hãng\r\nPhụ kiện đi kèm: Sạc, Hộp đày đủ).	{"request_id": 4, "request_code": "TIQ9M3CYO4"}	\N	2026-08-03 16:16:29+00	2026-08-03 16:16:29+00
+21	347	trade_in_new	Yêu cầu thu cũ đổi mới mới	Khách hàng Trần Văn Nghĩa vừa gửi yêu cầu định giá máy cũ (Tên máy: ASUS TUF Gaming F15\r\nRAM: 16GB\r\nỔ cứng: 512GB\r\nVGA: NVIDIA GTX 1650 → RTX 4070\r\nTình trạng bảo hành: Còn bảo hành hãng\r\nPhụ kiện đi kèm: Sạc, Hộp đày đủ).	{"request_id": 4, "request_code": "TIQ9M3CYO4"}	\N	2026-08-03 16:16:29+00	2026-08-03 16:16:29+00
+22	358	trade_in_new	Yêu cầu thu cũ đổi mới mới	Khách hàng Trần Văn Nghĩa vừa gửi yêu cầu định giá máy cũ (Tên máy: ASUS TUF Gaming F15\r\nRAM: 16GB\r\nỔ cứng: 512GB\r\nVGA: NVIDIA GTX 1650 → RTX 4070\r\nTình trạng bảo hành: Còn bảo hành hãng\r\nPhụ kiện đi kèm: Sạc, Hộp đày đủ).	{"request_id": 4, "request_code": "TIQ9M3CYO4"}	\N	2026-08-03 16:16:29+00	2026-08-03 16:16:29+00
+23	10	trade_in_new	Yêu cầu thu cũ đổi mới mới	Khách hàng Trần Văn Nghĩa vừa gửi yêu cầu định giá máy cũ (Tên máy: ASUS TUF Gaming F15\r\nRAM: 16GB\r\nỔ cứng: 512GB\r\nVGA: NVIDIA GTX 1650 → RTX 4070\r\nTình trạng bảo hành: Còn bảo hành hãng\r\nPhụ kiện đi kèm: Sạc, Hộp đày đủ).	{"request_id": 4, "request_code": "TIQ9M3CYO4"}	\N	2026-08-03 16:16:29+00	2026-08-03 16:16:29+00
+24	11	trade_in_new	Yêu cầu thu cũ đổi mới mới	Khách hàng Trần Văn Nghĩa vừa gửi yêu cầu định giá máy cũ (Tên máy: ASUS TUF Gaming F15\r\nRAM: 16GB\r\nỔ cứng: 512GB\r\nVGA: NVIDIA GTX 1650 → RTX 4070\r\nTình trạng bảo hành: Còn bảo hành hãng\r\nPhụ kiện đi kèm: Sạc, Hộp đày đủ).	{"request_id": 4, "request_code": "TIQ9M3CYO4"}	\N	2026-08-03 16:16:29+00	2026-08-03 16:16:29+00
 \.
 
 
 --
--- Data for Name: order_items; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: order_items; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY public.order_items (id, order_id, product_id, product_name_snapshot, quantity, unit_price, total_price, variant_id) FROM stdin;
@@ -3204,7 +3130,7 @@ COPY public.order_items (id, order_id, product_id, product_name_snapshot, quanti
 
 
 --
--- Data for Name: order_return_requests; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: order_return_requests; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY public.order_return_requests (id, order_id, user_id, status, content, media, admin_note, refund_proof, approved_by_user_id, approved_at, refunded_at, created_at, updated_at, customer_confirmed_at) FROM stdin;
@@ -3213,7 +3139,7 @@ COPY public.order_return_requests (id, order_id, user_id, status, content, media
 
 
 --
--- Data for Name: order_status_histories; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: order_status_histories; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY public.order_status_histories (id, order_id, from_status, to_status, changed_by_user_id, note, created_at, updated_at) FROM stdin;
@@ -3307,7 +3233,7 @@ COPY public.order_status_histories (id, order_id, from_status, to_status, change
 
 
 --
--- Data for Name: orders; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: orders; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY public.orders (id, order_code, user_id, cart_id, coupon_id, shipping_method_id, status, payment_status, currency, subtotal_amount, discount_amount, shipping_fee, total_amount, shipping_name, shipping_phone, shipping_address_line, shipping_province, shipping_district, shipping_ward, notes, created_at, updated_at, shipping_zone_id, points_earned, points_used, points_discount, delivery_staff_id) FROM stdin;
@@ -3338,7 +3264,7 @@ COPY public.orders (id, order_code, user_id, cart_id, coupon_id, shipping_method
 
 
 --
--- Data for Name: password_reset_tokens; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: password_reset_tokens; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY public.password_reset_tokens (email, token, created_at) FROM stdin;
@@ -3347,7 +3273,7 @@ staff@etech.com	$2y$12$Ua7dZI7.p1Ih7ObNvDQ3ouI1Wy5VWx0P94VMvY0EGcj54NfH/1EGK	202
 
 
 --
--- Data for Name: payments; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: payments; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY public.payments (id, order_id, method, amount, currency, transaction_code, status, paid_at, created_at, updated_at) FROM stdin;
@@ -3378,7 +3304,7 @@ COPY public.payments (id, order_id, method, amount, currency, transaction_code, 
 
 
 --
--- Data for Name: permissions; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: permissions; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY public.permissions (id, name, guard_name, created_at, updated_at) FROM stdin;
@@ -3392,7 +3318,7 @@ COPY public.permissions (id, name, guard_name, created_at, updated_at) FROM stdi
 
 
 --
--- Data for Name: personal_access_tokens; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: personal_access_tokens; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY public.personal_access_tokens (id, tokenable_type, tokenable_id, name, token, abilities, last_used_at, expires_at, created_at, updated_at) FROM stdin;
@@ -3590,6 +3516,7 @@ COPY public.personal_access_tokens (id, tokenable_type, tokenable_id, name, toke
 366	App\\Models\\User	363	auth	970d0189d6249622e443061d2c7f18f0224ee477e7ba41dc18ec9ed194094fd5	["*"]	2026-07-29 13:57:16	2026-07-30 13:54:58	2026-07-29 13:54:58	2026-07-29 13:57:16
 354	App\\Models\\User	10	auth	028aaa96e8dccca7c654c7f5cd2778eaba5891fa7bb8b176ddb2d51865b764d1	["*"]	2026-07-28 13:30:45	2026-07-29 11:26:56	2026-07-28 11:26:56	2026-07-28 13:30:45
 352	App\\Models\\User	11	auth	d62e388c60fe4b277cabc9662584632e98193f01962051b3256c2a0278e292a5	["*"]	\N	2026-07-29 11:08:03	2026-07-28 11:08:03	2026-07-28 11:08:03
+385	App\\Models\\User	363	auth	be2bbaa899484c7a455426253ff7b4664d0d757eb9788a545000cf4ce03caea2	["*"]	2026-08-03 16:18:23	2026-08-04 15:59:02	2026-08-03 15:59:02	2026-08-03 16:18:23
 344	App\\Models\\User	11	auth	73ad7fbb56120e058aa70934e5802aad6038b068346df18f6ad66f217560a693	["*"]	2026-07-24 16:09:01	2026-07-25 14:03:28	2026-07-24 14:03:28	2026-07-24 16:09:01
 347	App\\Models\\User	346	auth	2ee468922abe00775b2b1e5f8ec7dabe85052d31a02a497c07ccde26c3489290	["*"]	2026-07-24 16:09:07	2026-07-25 16:08:04	2026-07-24 16:08:04	2026-07-24 16:09:07
 368	App\\Models\\User	11	auth	276af5465ecb7dfd7e811cb07660c2ba2009957efdcb64383d444cde16a3e22e	["*"]	2026-07-29 14:46:09	2026-07-30 14:10:58	2026-07-29 14:10:58	2026-07-29 14:46:09
@@ -3612,11 +3539,13 @@ COPY public.personal_access_tokens (id, tokenable_type, tokenable_id, name, toke
 372	App\\Models\\User	363	auth	36a0ce863195bc02feb62ba15cc5bdf6d9fb2d194a2b7cd508de3eeeaa599db1	["*"]	2026-07-29 15:39:28	2026-07-30 15:34:10	2026-07-29 15:34:10	2026-07-29 15:39:28
 378	App\\Models\\User	11	auth	0a017b73e00b5967e5b214377edd2fb957bcb588b9ff63f05f5fedc952d000b5	["*"]	2026-07-30 14:39:37	2026-07-30 17:03:04	2026-07-29 17:03:04	2026-07-30 14:39:37
 381	App\\Models\\User	11	auth	4b9342531f80f9755782f513165600bf3facbe072f3ee1d5cf533027d3609f5b	["*"]	2026-07-31 11:14:09	2026-08-01 09:01:56	2026-07-31 09:01:56	2026-07-31 11:14:09
+384	App\\Models\\User	11	auth	4e7dcadf8b79e96e8b87fa7b2b511f2f60e3f0f391e6d83473b817a064249510	["*"]	2026-08-03 16:56:05	2026-08-04 08:04:55	2026-08-03 08:04:55	2026-08-03 16:56:05
+386	App\\Models\\User	363	auth	c126abc8086b662455e20711b0e2a887867a1bfa84f8bad11aefacaa34e35992	["*"]	2026-08-03 16:54:50	2026-08-04 16:33:19	2026-08-03 16:33:19	2026-08-03 16:54:50
 \.
 
 
 --
--- Data for Name: point_history; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: point_history; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY public.point_history (id, user_id, order_id, points_changed, action_type, description, created_at, updated_at) FROM stdin;
@@ -3644,7 +3573,7 @@ COPY public.point_history (id, user_id, order_id, points_changed, action_type, d
 
 
 --
--- Data for Name: product_faqs; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: product_faqs; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY public.product_faqs (id, product_id, question, answer, sort_order, is_active, created_at, updated_at, deleted_at) FROM stdin;
@@ -3927,7 +3856,7 @@ COPY public.product_faqs (id, product_id, question, answer, sort_order, is_activ
 
 
 --
--- Data for Name: product_images; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: product_images; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY public.product_images (id, product_id, image_url, alt_text, sort_order, is_primary, created_at) FROM stdin;
@@ -4294,7 +4223,7 @@ COPY public.product_images (id, product_id, image_url, alt_text, sort_order, is_
 
 
 --
--- Data for Name: product_news; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: product_news; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY public.product_news (id, product_id, title, slug, content_html, thumbnail_url, sort_order, is_active, published_at, created_at, updated_at, deleted_at) FROM stdin;
@@ -4306,7 +4235,7 @@ COPY public.product_news (id, product_id, title, slug, content_html, thumbnail_u
 
 
 --
--- Data for Name: product_shop_qnas; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: product_shop_qnas; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY public.product_shop_qnas (id, product_id, user_id, asker_display_name, question, answer, answered_at, is_visible, created_at, updated_at) FROM stdin;
@@ -4315,7 +4244,7 @@ COPY public.product_shop_qnas (id, product_id, user_id, asker_display_name, ques
 
 
 --
--- Data for Name: product_specs; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: product_specs; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY public.product_specs (id, product_id, spec_group, spec_key, spec_value, spec_unit, sort_order, created_at, product_variant_id) FROM stdin;
@@ -5679,7 +5608,7 @@ COPY public.product_specs (id, product_id, spec_group, spec_key, spec_value, spe
 
 
 --
--- Data for Name: product_variants; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: product_variants; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY public.product_variants (id, product_id, variant_name, color, configuration, sku, price, stock_quantity, image_url, is_active, created_at, updated_at, deleted_at, discount_type, discount_value, discount_start_at, discount_end_at) FROM stdin;
@@ -5839,7 +5768,7 @@ COPY public.product_variants (id, product_id, variant_name, color, configuration
 
 
 --
--- Data for Name: product_video; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: product_video; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY public.product_video (id, video_id, product_id, created_at, updated_at) FROM stdin;
@@ -5852,7 +5781,7 @@ COPY public.product_video (id, video_id, product_id, created_at, updated_at) FRO
 
 
 --
--- Data for Name: products; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: products; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY public.products (id, category_id, name, slug, brand, description, main_image_url, is_active, created_at, updated_at, deleted_at, rich_html, is_featured) FROM stdin;
@@ -5921,7 +5850,7 @@ COPY public.products (id, category_id, name, slug, brand, description, main_imag
 
 
 --
--- Data for Name: reviews; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: reviews; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY public.reviews (id, product_id, user_id, order_id, rating, comment, status, created_at, updated_at, deleted_at, media) FROM stdin;
@@ -5932,7 +5861,7 @@ COPY public.reviews (id, product_id, user_id, order_id, rating, comment, status,
 
 
 --
--- Data for Name: role_has_permissions; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: role_has_permissions; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY public.role_has_permissions (permission_id, role_id) FROM stdin;
@@ -5944,7 +5873,7 @@ COPY public.role_has_permissions (permission_id, role_id) FROM stdin;
 
 
 --
--- Data for Name: roles; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: roles; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY public.roles (id, name, slug, description, guard_name, created_at, updated_at) FROM stdin;
@@ -5960,7 +5889,7 @@ COPY public.roles (id, name, slug, description, guard_name, created_at, updated_
 
 
 --
--- Data for Name: shipping_methods; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: shipping_methods; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY public.shipping_methods (id, name, description, base_fee, estimated_days_min, estimated_days_max, is_active, created_at, updated_at) FROM stdin;
@@ -5971,7 +5900,7 @@ COPY public.shipping_methods (id, name, description, base_fee, estimated_days_mi
 
 
 --
--- Data for Name: shipping_zones; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: shipping_zones; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY public.shipping_zones (id, name, eta, fee, is_active, created_at, updated_at) FROM stdin;
@@ -6005,7 +5934,112 @@ COPY public.shipping_zones (id, name, eta, fee, is_active, created_at, updated_a
 
 
 --
--- Data for Name: transactions; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: trade_in_conditions; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.trade_in_conditions (id, category_id, name, description, deduction_percentage, sort_order, is_active, created_at, updated_at) FROM stdin;
+10	3	Trầy xước nhẹ	Có vết xước nhỏ do quá trình sử dụng, không ảnh hưởng chức năng.	0.00	0	t	2026-08-03 09:46:30+00	2026-08-03 09:46:30+00
+11	3	Cấn móp	Khung hoặc vỏ máy bị cấn, móp nhẹ.	0.00	0	t	2026-08-03 09:46:31+00	2026-08-03 09:46:31+00
+12	3	Màn hình trầy	Màn hình có vết xước nhìn thấy khi tắt máy.	0.00	0	t	2026-08-03 09:46:31+00	2026-08-03 09:46:31+00
+13	3	Điểm chết màn hình	Màn hình có điểm chết hoặc điểm sáng.	0.00	0	t	2026-08-03 09:46:31+00	2026-08-03 09:46:31+00
+14	3	Hở sáng màn hình	Màn hình bị hở sáng ở các cạnh.	0.00	0	t	2026-08-03 09:46:31+00	2026-08-03 09:46:31+00
+15	3	Ám màu màn hình	Màn hình bị ám vàng, ám xanh hoặc ám hồng.	0.00	0	t	2026-08-03 09:46:32+00	2026-08-03 09:46:32+00
+16	3	Pin chai	Dung lượng pin giảm, thời lượng sử dụng ngắn.	0.00	0	t	2026-08-03 09:46:32+00	2026-08-03 09:46:32+00
+17	3	Pin báo bảo trì	Pin hiển thị trạng thái cần bảo trì hoặc thay thế.	0.00	0	t	2026-08-03 09:46:32+00	2026-08-03 09:46:32+00
+18	3	Bàn phím lỗi	Một hoặc nhiều phím không hoạt động.	0.00	0	t	2026-08-03 09:46:32+00	2026-08-03 09:46:32+00
+19	3	Touchpad lỗi	Touchpad không nhạy hoặc không sử dụng được.	0.00	0	t	2026-08-03 09:46:33+00	2026-08-03 09:46:33+00
+20	3	Loa rè	Loa bị rè hoặc âm thanh nhỏ bất thường.	0.00	0	t	2026-08-03 09:46:33+00	2026-08-03 09:46:33+00
+21	3	Camera lỗi	Camera không hoạt động hoặc hình ảnh mờ.	0.00	0	t	2026-08-03 09:46:33+00	2026-08-03 09:46:33+00
+22	3	Micro lỗi	Micro không thu âm hoặc thu âm kém.	0.00	0	t	2026-08-03 09:46:33+00	2026-08-03 09:46:33+00
+23	3	Wi-Fi/Bluetooth lỗi	Không kết nối được hoặc kết nối chập chờn.	0.00	0	t	2026-08-03 09:46:33+00	2026-08-03 09:46:33+00
+24	3	Cổng sạc lỗi	Cổng sạc lỏng hoặc không nhận sạc.	0.00	0	t	2026-08-03 09:46:34+00	2026-08-03 09:46:34+00
+25	3	Cổng USB-C lỗi	Một hoặc nhiều cổng USB-C không hoạt động.	0.00	0	t	2026-08-03 09:46:34+00	2026-08-03 09:46:34+00
+26	3	Bản lề lỏng	Bản lề lỏng hoặc quá cứng khi gập mở.	0.00	0	t	2026-08-03 09:46:34+00	2026-08-03 09:46:34+00
+27	3	Máy đã sửa chữa	Máy đã từng thay linh kiện hoặc sửa chữa.	0.00	0	t	2026-08-03 09:46:34+00	2026-08-03 09:46:34+00
+28	3	Máy vào nước	Có dấu hiệu hoặc lịch sử vào nước.	0.00	0	t	2026-08-03 09:46:35+00	2026-08-03 09:46:35+00
+29	3	Touch ID lỗi	Cảm biến vân tay không hoạt động.	0.00	0	t	2026-08-03 09:46:35+00	2026-08-03 09:46:35+00
+30	3	Thiếu hộp	Không còn hộp sản phẩm.	0.00	0	t	2026-08-03 09:46:35+00	2026-08-03 09:46:35+00
+31	3	Thiếu sạc	Không có sạc hoặc cáp sạc đi kèm.	0.00	0	t	2026-08-03 09:46:35+00	2026-08-03 09:46:35+00
+32	3	Hết bảo hành	Máy đã hết thời gian bảo hành.	0.00	0	t	2026-08-03 09:46:35+00	2026-08-03 09:46:35+00
+33	2	Ngoại hình đẹp 99%	Máy đẹp, ít trầy xước, không cấn móp.	0.00	0	t	2026-08-03 13:21:59+00	2026-08-03 13:21:59+00
+34	2	Trầy xước nhẹ	Có vết xước nhỏ do sử dụng, không ảnh hưởng chức năng.	0.00	0	t	2026-08-03 13:21:59+00	2026-08-03 13:21:59+00
+35	2	Cấn móp	Khung hoặc vỏ máy bị cấn, móp.	0.00	0	t	2026-08-03 13:21:59+00	2026-08-03 13:21:59+00
+36	2	Nứt kính lưng	Mặt lưng bị nứt hoặc vỡ.	0.00	0	t	2026-08-03 13:22:00+00	2026-08-03 13:22:00+00
+37	2	Trầy kính màn hình	Kính màn hình có vết xước.	0.00	0	t	2026-08-03 13:22:00+00	2026-08-03 13:22:00+00
+38	2	Nứt màn hình	Màn hình bị nứt nhưng vẫn hiển thị và cảm ứng bình thường.	0.00	0	t	2026-08-03 13:22:00+00	2026-08-03 13:22:00+00
+39	2	Vỡ màn hình	Màn hình vỡ, hiển thị hoặc cảm ứng bị ảnh hưởng.	0.00	0	t	2026-08-03 13:22:00+00	2026-08-03 13:22:00+00
+40	2	Điểm chết màn hình	Có điểm chết hoặc điểm sáng trên màn hình.	0.00	0	t	2026-08-03 13:22:00+00	2026-08-03 13:22:00+00
+41	2	Hở sáng màn hình	Màn hình bị hở sáng ở viền.	0.00	0	t	2026-08-03 13:22:01+00	2026-08-03 13:22:01+00
+42	2	Ám màu màn hình	Màn hình bị ám vàng, ám xanh hoặc lưu ảnh.	0.00	0	t	2026-08-03 13:22:01+00	2026-08-03 13:22:01+00
+43	2	Cảm ứng lỗi	Cảm ứng loạn, liệt hoặc không nhạy.	0.00	0	t	2026-08-03 13:22:01+00	2026-08-03 13:22:01+00
+44	2	Pin chai	Dung lượng pin giảm, thời lượng sử dụng ngắn.	0.00	0	t	2026-08-03 13:22:01+00	2026-08-03 13:22:01+00
+45	2	Pin báo bảo trì	Pin cần thay thế hoặc báo tình trạng bảo trì.	0.00	0	t	2026-08-03 13:22:01+00	2026-08-03 13:22:01+00
+46	2	Sạc không vào	Máy sạc chập chờn hoặc không nhận sạc.	0.00	0	t	2026-08-03 13:22:02+00	2026-08-03 13:22:02+00
+47	2	Cổng sạc lỗi	Cổng sạc lỏng, gãy hoặc không nhận cáp.	0.00	0	t	2026-08-03 13:22:02+00	2026-08-03 13:22:02+00
+48	2	Loa ngoài lỗi	Loa rè, nhỏ hoặc mất tiếng.	0.00	0	t	2026-08-03 13:22:02+00	2026-08-03 13:22:02+00
+49	2	Loa thoại lỗi	Loa nghe cuộc gọi không hoạt động.	0.00	0	t	2026-08-03 13:22:02+00	2026-08-03 13:22:02+00
+50	2	Micro lỗi	Không thu được âm thanh hoặc thu nhỏ.	0.00	0	t	2026-08-03 13:22:03+00	2026-08-03 13:22:03+00
+51	2	Camera trước lỗi	Camera trước không hoạt động hoặc chụp mờ.	0.00	0	t	2026-08-03 13:22:03+00	2026-08-03 13:22:03+00
+52	2	Camera sau lỗi	Camera sau không hoạt động hoặc lấy nét kém.	0.00	0	t	2026-08-03 13:22:03+00	2026-08-03 13:22:03+00
+53	2	Flash lỗi	Đèn flash không hoạt động.	0.00	0	t	2026-08-03 13:22:03+00	2026-08-03 13:22:03+00
+54	2	Face ID lỗi	Face ID không sử dụng được.	0.00	0	t	2026-08-03 13:22:04+00	2026-08-03 13:22:04+00
+55	2	Touch ID lỗi	Cảm biến vân tay không hoạt động.	0.00	0	t	2026-08-03 13:22:04+00	2026-08-03 13:22:04+00
+56	2	Nút nguồn lỗi	Nút nguồn bấm không ăn hoặc kẹt.	0.00	0	t	2026-08-03 13:22:04+00	2026-08-03 13:22:04+00
+9	3	Ngoại hình đẹp 99%	Không cấn móp, ít trầy xước, hoạt động hoàn hảo.	0.00	0	t	2026-08-03 09:46:30+00	2026-08-03 16:19:30+00
+57	2	Nút âm lượng lỗi	Phím tăng/giảm âm lượng bị liệt.	0.00	0	t	2026-08-03 13:22:04+00	2026-08-03 13:22:04+00
+58	2	Rung lỗi	Máy không rung hoặc rung yếu.	0.00	0	t	2026-08-03 13:22:05+00	2026-08-03 13:22:05+00
+59	2	Wi-Fi lỗi	Không kết nối hoặc kết nối không ổn định.	0.00	0	t	2026-08-03 13:22:05+00	2026-08-03 13:22:05+00
+60	2	Bluetooth lỗi	Không thể kết nối Bluetooth.	0.00	0	t	2026-08-03 13:22:05+00	2026-08-03 13:22:05+00
+61	2	Mất sóng	Không nhận SIM hoặc sóng yếu.	0.00	0	t	2026-08-03 13:22:05+00	2026-08-03 13:22:05+00
+62	2	IMEI lỗi	IMEI không hợp lệ hoặc mất IMEI.	0.00	0	t	2026-08-03 13:22:05+00	2026-08-03 13:22:05+00
+63	2	Máy vào nước	Có dấu hiệu hoặc lịch sử vào nước.	0.00	0	t	2026-08-03 13:22:06+00	2026-08-03 13:22:06+00
+64	2	Máy đã sửa chữa	Đã thay linh kiện hoặc sửa chữa trước đó.	0.00	0	t	2026-08-03 13:22:06+00	2026-08-03 13:22:06+00
+65	2	Mainboard lỗi	Main có dấu hiệu hỏng hoặc sửa chữa.	0.00	0	t	2026-08-03 13:22:06+00	2026-08-03 13:22:06+00
+66	2	IC nguồn lỗi	Máy tự tắt, không lên nguồn.	0.00	0	t	2026-08-03 13:22:06+00	2026-08-03 13:22:06+00
+67	2	Khóa iCloud	Máy bị khóa iCloud.	0.00	0	t	2026-08-03 13:22:06+00	2026-08-03 13:22:06+00
+68	2	Khóa Google FRP	Máy bị khóa xác minh tài khoản Google.	0.00	0	t	2026-08-03 13:22:07+00	2026-08-03 13:22:07+00
+69	2	Mất tài khoản Samsung	Không đăng xuất được tài khoản Samsung.	0.00	0	t	2026-08-03 13:22:07+00	2026-08-03 13:22:07+00
+70	2	Thiếu hộp	Không còn hộp sản phẩm.	0.00	0	t	2026-08-03 13:22:07+00	2026-08-03 13:22:07+00
+71	2	Thiếu sạc	Không có củ sạc hoặc cáp sạc.	0.00	0	t	2026-08-03 13:22:07+00	2026-08-03 13:22:07+00
+72	2	Thiếu phụ kiện	Thiếu tai nghe, que SIM hoặc phụ kiện đi kèm.	0.00	0	t	2026-08-03 13:22:07+00	2026-08-03 13:22:07+00
+73	2	Hết bảo hành	Máy đã hết thời gian bảo hành.	0.00	0	t	2026-08-03 13:22:08+00	2026-08-03 13:22:08+00
+\.
+
+
+--
+-- Data for Name: trade_in_request_conditions; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.trade_in_request_conditions (trade_in_request_id, trade_in_condition_id) FROM stdin;
+2	27
+2	24
+2	18
+2	16
+3	43
+3	50
+3	53
+3	63
+3	73
+4	18
+4	20
+4	27
+\.
+
+
+--
+-- Data for Name: trade_in_requests; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.trade_in_requests (id, request_code, user_id, category_id, machine_info, images, customer_name, customer_phone, customer_email, estimated_price, final_price, status, admin_note, created_at, updated_at) FROM stdin;
+1	TIZJPGHGDW	\N	2	Tên máy: Samsung Galaxy S25 Plus\r\nDung lượng: 512GB\r\nMàu sắc: Xám Bạc\r\nTình trạng bảo hành: Còn 4 tháng \r\nPhụ kiện đi kèm: Cáp sạc , Hộp	["\\/storage\\/trade-in\\/b3hzwPSFtcAW1f2yU0n5dKgeqZpGnaWHYIqE7NpL.png","\\/storage\\/trade-in\\/2EAglOeIQWNyY0H1hijRQpVTE2BwSg8mELHreiSm.png","\\/storage\\/trade-in\\/76bxttDWXy06qeOCj9y7H5qtC6UhENz1OdluR1We.png","\\/storage\\/trade-in\\/pmDefnPOREld4BtwzL9Sig4FD268ZKonT25mXzvD.png","\\/storage\\/trade-in\\/VsxEF6nusur5GyY2gvqjB5kjUviXb3DPwdcivbRs.png","\\/storage\\/trade-in\\/2gpBvKM2OhEWE9Bamhx0UevCMTwgHIBjFEocknuE.png"]	Đỗ Việt Hoàng	0987654321	doviethoang@gmail.com	12500000.00	\N	quoted	Kính gửi Quý khách,\n\nSau khi kiểm tra thông tin và hình ảnh Quý khách cung cấp, chúng tôi xác nhận thiết bị Samsung Galaxy S25 Plus 512GB (màu Xám Bạc) đủ điều kiện để tiếp tục quy trình thu mua.\n\nThiết bị có ghi nhận các lỗi:\n\nKính lưng nứt nhẹ.\nMàn hình xuất hiện lưu ảnh/ám màu.\n\nDựa trên tình trạng thực tế, chúng tôi đề xuất mức thu mua là 12.500.000 VNĐ.\n\nBáo giá có hiệu lực trong 03 ngày kể từ ngày gửi. Khi tiếp nhận sản phẩm, kỹ thuật viên sẽ kiểm tra lại tình trạng thực tế. Nếu thiết bị đúng như thông tin đã cung cấp, mức giá sẽ được giữ nguyên.\n\nXin cảm ơn Quý khách đã sử dụng dịch vụ của chúng tôi.	2026-08-03 09:03:15+00	2026-08-03 09:26:39+00
+3	TIITP8CQ4Z	\N	2	Tên máy: Iphone 14 pro max\r\nDung lượng: 256GB\r\nMàu sắc: Màu Xám\r\nTình trạng bảo hành: Hết bảo hành\r\nPhụ kiện đi kèm: Sạc, Hộp	["\\/storage\\/trade-in\\/012tjRNPkVWJ1i85ogYwovQggKPTHj5k2GR5h66p.webp"]	Trần Văn Nghĩa	0987654321	nghia123@etech.com	\N	\N	pending	\N	2026-08-03 16:05:39+00	2026-08-03 16:05:39+00
+2	TI6HJF0JQF	\N	3	Tên máy: MacBook Air M3 13 inch 2024 8CPU 10GPU\r\nRAM: 16GB\r\nỔ cứng: 512GB\r\nVGA: Apple M3 GPU 10 nhân (10-core GPU)\r\nTình trạng bảo hành: Còn bảo hành Apple đến 08/2027\r\nPhụ kiện đi kèm: Hộp zin, sạc Apple USB-C 30W, cáp MagSafe 3 chính hãng	["\\/storage\\/trade-in\\/vJyhqYoZBfDHbPC1ulmQ8VbNyZn0Yd5rGv2SqMD6.png","\\/storage\\/trade-in\\/0YeNFPFcxV9sn9iZQI9IjqqJmsZSZ36HvN6sqQl1.png","\\/storage\\/trade-in\\/CEXBhOjxHOu83m0OJDYoMNk3lbrZNXpMZ9YoGDyk.png","\\/storage\\/trade-in\\/rHekyRL57gI5rTLy4FfnsAYAirOh4PoMXg6FtxB7.png"]	Đỗ Việt Hoàng	0987654321	hvietdo458@gmail.com	16500000.00	\N	quoted	Cảm ơn Quý khách đã gửi yêu cầu thu cũ tại E-Tech Market.\n\nSau khi xem xét thông tin và hình ảnh sản phẩm, cửa hàng tạm định giá thu mua 16.500.000 VNĐ.\n\nMức giá trên được đưa ra dựa trên tình trạng máy hiện tại:\n\nPin đã bị chai.\nBàn phím hoạt động không ổn định.\nCổng sạc gặp lỗi.\nMáy đã từng sửa chữa phần cứng (sửa điện).\n\nMức giá sẽ được xác nhận cuối cùng sau khi kỹ thuật kiểm tra trực tiếp để đánh giá ngoại hình, màn hình, Face ID/Touch ID, bo mạch, pin và các chức năng khác. Nếu tình trạng thực tế đúng như mô tả, cửa hàng sẽ thu mua theo mức giá trên.\n\nCảm ơn Quý khách đã tin tưởng E-Tech Market!	2026-08-03 09:49:32+00	2026-08-03 10:17:59+00
+4	TIQ9M3CYO4	363	3	Tên máy: ASUS TUF Gaming F15\r\nRAM: 16GB\r\nỔ cứng: 512GB\r\nVGA: NVIDIA GTX 1650 → RTX 4070\r\nTình trạng bảo hành: Còn bảo hành hãng\r\nPhụ kiện đi kèm: Sạc, Hộp đày đủ	["\\/storage\\/trade-in\\/KCy3DsgEMkYSo8OsOSMbujop524VFmAleZKHXPww.webp","\\/storage\\/trade-in\\/v6fCe4gCnjs3uIUBdFtXYtNClDSI7sRGXZddSLWl.png","\\/storage\\/trade-in\\/sWxyggg1XmJBOcWbHWiDqjOhSUnJuKVP42GVkKhv.webp","\\/storage\\/trade-in\\/kXJjNezcGYJg8ZlKqfVmmHw0jAI3E2SkykiSkf4V.webp","\\/storage\\/trade-in\\/FY4aLm3A2wCn2ApHvMCgl1dxJgwppiVajayntRm9.webp"]	Trần Văn Nghĩa	0987654321	nghia123@etech.com	14800000.00	\N	completed	Chào anh Trần Văn Nghĩa,\n\nSau khi kiểm tra tình trạng thiết bị ASUS TUF Gaming F15 (RAM 16GB, SSD 512GB, VGA NVIDIA GTX 1650), đội ngũ kỹ thuật ghi nhận:\n\nBàn phím có một số phím không hoạt động.\nLoa bị rè, chất lượng âm thanh không ổn định.\nMáy đã từng sửa chữa hoặc thay thế linh kiện.\n\nDựa trên cấu hình và tình trạng thực tế của thiết bị, chúng tôi đề xuất thu mua với mức giá 14.800.000 VNĐ.\n\nBáo giá có hiệu lực trong vòng 03 ngày kể từ ngày gửi. Nếu anh đồng ý, vui lòng phản hồi để chúng tôi tiến hành các bước thu mua tiếp theo.\n\nXin cảm ơn anh đã sử dụng dịch vụ.	2026-08-03 16:16:29+00	2026-08-03 16:53:37+00
+\.
+
+
+--
+-- Data for Name: transactions; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY public.transactions (id, payment_id, provider, provider_transaction_id, amount, currency, status, raw_response, created_at) FROM stdin;
@@ -6019,7 +6053,7 @@ COPY public.transactions (id, payment_id, provider, provider_transaction_id, amo
 
 
 --
--- Data for Name: user_coupons; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: user_coupons; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY public.user_coupons (id, user_id, coupon_id, created_at, updated_at) FROM stdin;
@@ -6036,7 +6070,7 @@ COPY public.user_coupons (id, user_id, coupon_id, created_at, updated_at) FROM s
 
 
 --
--- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY public.users (id, name, email, password, phone, address_line, province, district, ward, is_active, email_verified_at, remember_token, created_at, updated_at, deleted_at, avatar_url, current_points, total_spent, rank_id, google2fa_secret, google2fa_enabled, google_id, is_loyalty_member) FROM stdin;
@@ -6061,7 +6095,7 @@ COPY public.users (id, name, email, password, phone, address_line, province, dis
 
 
 --
--- Data for Name: video_categories; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: video_categories; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY public.video_categories (id, name, slug, description, is_active, sort_order, created_at, updated_at) FROM stdin;
@@ -6073,7 +6107,7 @@ COPY public.video_categories (id, name, slug, description, is_active, sort_order
 
 
 --
--- Data for Name: videos; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: videos; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY public.videos (id, product_id, title, video_url, thumbnail_url, sort_order, is_active, created_at, updated_at, video_category_id, description) FROM stdin;
@@ -6086,7 +6120,7 @@ COPY public.videos (id, product_id, title, video_url, thumbnail_url, sort_order,
 
 
 --
--- Data for Name: wishlists; Type: TABLE DATA; Schema: public; Owner: postgres
+-- Data for Name: wishlists; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY public.wishlists (id, user_id, product_id, created_at, blog_post_id, video_id, product_news_id) FROM stdin;
@@ -6113,336 +6147,350 @@ COPY public.wishlists (id, user_id, product_id, created_at, blog_post_id, video_
 
 
 --
--- Name: admin_settings_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: admin_settings_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('public.admin_settings_id_seq', 7, true);
 
 
 --
--- Name: banners_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: banners_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.banners_id_seq', 5, true);
+SELECT pg_catalog.setval('public.banners_id_seq', 6, true);
 
 
 --
--- Name: blog_categories_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: blog_categories_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('public.blog_categories_id_seq', 7, true);
 
 
 --
--- Name: blog_comments_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: blog_comments_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('public.blog_comments_id_seq', 41, true);
 
 
 --
--- Name: blog_posts_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: blog_posts_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('public.blog_posts_id_seq', 47, true);
 
 
 --
--- Name: cart_items_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: cart_items_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('public.cart_items_id_seq', 186, true);
 
 
 --
--- Name: carts_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: carts_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('public.carts_id_seq', 16, true);
 
 
 --
--- Name: categories_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: categories_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('public.categories_id_seq', 218, true);
 
 
 --
--- Name: contact_messages_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: contact_messages_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('public.contact_messages_id_seq', 4, true);
 
 
 --
--- Name: coupon_usage_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: coupon_usage_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('public.coupon_usage_id_seq', 75, true);
 
 
 --
--- Name: coupons_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: coupons_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('public.coupons_id_seq', 121, true);
 
 
 --
--- Name: failed_jobs_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: failed_jobs_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('public.failed_jobs_id_seq', 31, true);
 
 
 --
--- Name: flash_sale_items_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: flash_sale_items_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('public.flash_sale_items_id_seq', 324, true);
 
 
 --
--- Name: flash_sales_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: flash_sales_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('public.flash_sales_id_seq', 6, true);
 
 
 --
--- Name: inventory_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: inventory_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('public.inventory_id_seq', 133, true);
 
 
 --
--- Name: inventory_transactions_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: inventory_transactions_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('public.inventory_transactions_id_seq', 346, true);
 
 
 --
--- Name: jobs_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: jobs_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('public.jobs_id_seq', 615, true);
 
 
 --
--- Name: membership_ranks_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: membership_ranks_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('public.membership_ranks_id_seq', 4, true);
 
 
 --
--- Name: migrations_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: migrations_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.migrations_id_seq', 71, true);
+SELECT pg_catalog.setval('public.migrations_id_seq', 73, true);
 
 
 --
--- Name: newsletter_subscriptions_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: newsletter_subscriptions_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('public.newsletter_subscriptions_id_seq', 33, true);
 
 
 --
--- Name: notifications_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: notifications_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.notifications_id_seq', 4, true);
+SELECT pg_catalog.setval('public.notifications_id_seq', 24, true);
 
 
 --
--- Name: order_items_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: order_items_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('public.order_items_id_seq', 264, true);
 
 
 --
--- Name: order_return_requests_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: order_return_requests_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('public.order_return_requests_id_seq', 5, true);
 
 
 --
--- Name: order_status_histories_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: order_status_histories_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('public.order_status_histories_id_seq', 305, true);
 
 
 --
--- Name: orders_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: orders_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('public.orders_id_seq', 313, true);
 
 
 --
--- Name: payments_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: payments_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('public.payments_id_seq', 218, true);
 
 
 --
--- Name: permissions_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: permissions_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('public.permissions_id_seq', 18, true);
 
 
 --
--- Name: personal_access_tokens_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: personal_access_tokens_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.personal_access_tokens_id_seq', 383, true);
+SELECT pg_catalog.setval('public.personal_access_tokens_id_seq', 386, true);
 
 
 --
--- Name: point_history_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: point_history_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('public.point_history_id_seq', 22, true);
 
 
 --
--- Name: product_faqs_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: product_faqs_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('public.product_faqs_id_seq', 1125, true);
 
 
 --
--- Name: product_images_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: product_images_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('public.product_images_id_seq', 670, true);
 
 
 --
--- Name: product_news_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: product_news_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('public.product_news_id_seq', 30, true);
 
 
 --
--- Name: product_shop_qnas_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: product_shop_qnas_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('public.product_shop_qnas_id_seq', 7, true);
 
 
 --
--- Name: product_specs_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: product_specs_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('public.product_specs_id_seq', 7857, true);
 
 
 --
--- Name: product_variants_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: product_variants_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('public.product_variants_id_seq', 555, true);
 
 
 --
--- Name: product_video_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: product_video_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('public.product_video_id_seq', 5, true);
 
 
 --
--- Name: products_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: products_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('public.products_id_seq', 220, true);
 
 
 --
--- Name: reviews_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: reviews_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('public.reviews_id_seq', 15, true);
 
 
 --
--- Name: roles_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: roles_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('public.roles_id_seq', 65, true);
 
 
 --
--- Name: shipping_methods_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: shipping_methods_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('public.shipping_methods_id_seq', 25, true);
 
 
 --
--- Name: shipping_zones_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: shipping_zones_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('public.shipping_zones_id_seq', 133, true);
 
 
 --
--- Name: transactions_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: trade_in_conditions_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.trade_in_conditions_id_seq', 73, true);
+
+
+--
+-- Name: trade_in_requests_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.trade_in_requests_id_seq', 4, true);
+
+
+--
+-- Name: transactions_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('public.transactions_id_seq', 77, true);
 
 
 --
--- Name: user_coupons_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: user_coupons_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('public.user_coupons_id_seq', 9, true);
 
 
 --
--- Name: users_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: users_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('public.users_id_seq', 363, true);
 
 
 --
--- Name: video_categories_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: video_categories_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('public.video_categories_id_seq', 5, true);
 
 
 --
--- Name: videos_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: videos_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('public.videos_id_seq', 6, true);
 
 
 --
--- Name: wishlists_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: wishlists_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('public.wishlists_id_seq', 33, true);
 
 
 --
--- Name: admin_settings admin_settings_key_unique; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: admin_settings admin_settings_key_unique; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.admin_settings
@@ -6450,7 +6498,7 @@ ALTER TABLE ONLY public.admin_settings
 
 
 --
--- Name: admin_settings admin_settings_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: admin_settings admin_settings_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.admin_settings
@@ -6458,7 +6506,7 @@ ALTER TABLE ONLY public.admin_settings
 
 
 --
--- Name: banners banners_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: banners banners_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.banners
@@ -6466,7 +6514,7 @@ ALTER TABLE ONLY public.banners
 
 
 --
--- Name: blog_categories blog_categories_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: blog_categories blog_categories_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.blog_categories
@@ -6474,7 +6522,7 @@ ALTER TABLE ONLY public.blog_categories
 
 
 --
--- Name: blog_categories blog_categories_slug_unique; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: blog_categories blog_categories_slug_unique; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.blog_categories
@@ -6482,7 +6530,7 @@ ALTER TABLE ONLY public.blog_categories
 
 
 --
--- Name: blog_comments blog_comments_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: blog_comments blog_comments_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.blog_comments
@@ -6490,7 +6538,7 @@ ALTER TABLE ONLY public.blog_comments
 
 
 --
--- Name: blog_posts blog_posts_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: blog_posts blog_posts_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.blog_posts
@@ -6498,7 +6546,7 @@ ALTER TABLE ONLY public.blog_posts
 
 
 --
--- Name: blog_posts blog_posts_slug_unique; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: blog_posts blog_posts_slug_unique; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.blog_posts
@@ -6506,7 +6554,7 @@ ALTER TABLE ONLY public.blog_posts
 
 
 --
--- Name: cart_items cart_items_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: cart_items cart_items_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.cart_items
@@ -6514,7 +6562,7 @@ ALTER TABLE ONLY public.cart_items
 
 
 --
--- Name: carts carts_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: carts carts_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.carts
@@ -6522,7 +6570,7 @@ ALTER TABLE ONLY public.carts
 
 
 --
--- Name: carts carts_user_id_key; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: carts carts_user_id_key; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.carts
@@ -6530,7 +6578,7 @@ ALTER TABLE ONLY public.carts
 
 
 --
--- Name: categories categories_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: categories categories_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.categories
@@ -6538,7 +6586,7 @@ ALTER TABLE ONLY public.categories
 
 
 --
--- Name: categories categories_slug_key; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: categories categories_slug_key; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.categories
@@ -6546,7 +6594,7 @@ ALTER TABLE ONLY public.categories
 
 
 --
--- Name: contact_messages contact_messages_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: contact_messages contact_messages_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.contact_messages
@@ -6554,7 +6602,7 @@ ALTER TABLE ONLY public.contact_messages
 
 
 --
--- Name: coupon_usage coupon_usage_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: coupon_usage coupon_usage_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.coupon_usage
@@ -6562,7 +6610,7 @@ ALTER TABLE ONLY public.coupon_usage
 
 
 --
--- Name: coupons coupons_code_key; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: coupons coupons_code_key; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.coupons
@@ -6570,7 +6618,7 @@ ALTER TABLE ONLY public.coupons
 
 
 --
--- Name: coupons coupons_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: coupons coupons_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.coupons
@@ -6578,7 +6626,7 @@ ALTER TABLE ONLY public.coupons
 
 
 --
--- Name: failed_jobs failed_jobs_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: failed_jobs failed_jobs_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.failed_jobs
@@ -6586,7 +6634,7 @@ ALTER TABLE ONLY public.failed_jobs
 
 
 --
--- Name: failed_jobs failed_jobs_uuid_unique; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: failed_jobs failed_jobs_uuid_unique; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.failed_jobs
@@ -6594,7 +6642,7 @@ ALTER TABLE ONLY public.failed_jobs
 
 
 --
--- Name: flash_sale_items flash_sale_items_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: flash_sale_items flash_sale_items_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.flash_sale_items
@@ -6602,7 +6650,7 @@ ALTER TABLE ONLY public.flash_sale_items
 
 
 --
--- Name: flash_sales flash_sales_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: flash_sales flash_sales_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.flash_sales
@@ -6610,7 +6658,7 @@ ALTER TABLE ONLY public.flash_sales
 
 
 --
--- Name: inventory inventory_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: inventory inventory_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.inventory
@@ -6618,7 +6666,7 @@ ALTER TABLE ONLY public.inventory
 
 
 --
--- Name: inventory_transactions inventory_transactions_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: inventory_transactions inventory_transactions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.inventory_transactions
@@ -6626,7 +6674,7 @@ ALTER TABLE ONLY public.inventory_transactions
 
 
 --
--- Name: jobs jobs_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: jobs jobs_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.jobs
@@ -6634,7 +6682,7 @@ ALTER TABLE ONLY public.jobs
 
 
 --
--- Name: membership_ranks membership_ranks_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: membership_ranks membership_ranks_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.membership_ranks
@@ -6642,7 +6690,7 @@ ALTER TABLE ONLY public.membership_ranks
 
 
 --
--- Name: migrations migrations_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: migrations migrations_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.migrations
@@ -6650,7 +6698,7 @@ ALTER TABLE ONLY public.migrations
 
 
 --
--- Name: model_has_permissions model_has_permissions_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: model_has_permissions model_has_permissions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.model_has_permissions
@@ -6658,7 +6706,7 @@ ALTER TABLE ONLY public.model_has_permissions
 
 
 --
--- Name: model_has_roles model_has_roles_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: model_has_roles model_has_roles_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.model_has_roles
@@ -6666,7 +6714,7 @@ ALTER TABLE ONLY public.model_has_roles
 
 
 --
--- Name: newsletter_subscriptions newsletter_subscriptions_email_unique; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: newsletter_subscriptions newsletter_subscriptions_email_unique; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.newsletter_subscriptions
@@ -6674,7 +6722,7 @@ ALTER TABLE ONLY public.newsletter_subscriptions
 
 
 --
--- Name: newsletter_subscriptions newsletter_subscriptions_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: newsletter_subscriptions newsletter_subscriptions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.newsletter_subscriptions
@@ -6682,7 +6730,7 @@ ALTER TABLE ONLY public.newsletter_subscriptions
 
 
 --
--- Name: notifications notifications_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: notifications notifications_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.notifications
@@ -6690,7 +6738,7 @@ ALTER TABLE ONLY public.notifications
 
 
 --
--- Name: order_items order_items_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: order_items order_items_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.order_items
@@ -6698,7 +6746,7 @@ ALTER TABLE ONLY public.order_items
 
 
 --
--- Name: order_return_requests order_return_requests_order_unique; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: order_return_requests order_return_requests_order_unique; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.order_return_requests
@@ -6706,7 +6754,7 @@ ALTER TABLE ONLY public.order_return_requests
 
 
 --
--- Name: order_return_requests order_return_requests_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: order_return_requests order_return_requests_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.order_return_requests
@@ -6714,7 +6762,7 @@ ALTER TABLE ONLY public.order_return_requests
 
 
 --
--- Name: order_status_histories order_status_histories_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: order_status_histories order_status_histories_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.order_status_histories
@@ -6722,7 +6770,7 @@ ALTER TABLE ONLY public.order_status_histories
 
 
 --
--- Name: orders orders_order_code_key; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: orders orders_order_code_key; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.orders
@@ -6730,7 +6778,7 @@ ALTER TABLE ONLY public.orders
 
 
 --
--- Name: orders orders_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: orders orders_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.orders
@@ -6738,7 +6786,7 @@ ALTER TABLE ONLY public.orders
 
 
 --
--- Name: password_reset_tokens password_reset_tokens_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: password_reset_tokens password_reset_tokens_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.password_reset_tokens
@@ -6746,7 +6794,7 @@ ALTER TABLE ONLY public.password_reset_tokens
 
 
 --
--- Name: payments payments_order_id_key; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: payments payments_order_id_key; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.payments
@@ -6754,7 +6802,7 @@ ALTER TABLE ONLY public.payments
 
 
 --
--- Name: payments payments_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: payments payments_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.payments
@@ -6762,7 +6810,7 @@ ALTER TABLE ONLY public.payments
 
 
 --
--- Name: payments payments_transaction_code_key; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: payments payments_transaction_code_key; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.payments
@@ -6770,7 +6818,7 @@ ALTER TABLE ONLY public.payments
 
 
 --
--- Name: permissions permissions_name_guard_name_unique; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: permissions permissions_name_guard_name_unique; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.permissions
@@ -6778,7 +6826,7 @@ ALTER TABLE ONLY public.permissions
 
 
 --
--- Name: permissions permissions_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: permissions permissions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.permissions
@@ -6786,7 +6834,7 @@ ALTER TABLE ONLY public.permissions
 
 
 --
--- Name: personal_access_tokens personal_access_tokens_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: personal_access_tokens personal_access_tokens_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.personal_access_tokens
@@ -6794,7 +6842,7 @@ ALTER TABLE ONLY public.personal_access_tokens
 
 
 --
--- Name: personal_access_tokens personal_access_tokens_token_unique; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: personal_access_tokens personal_access_tokens_token_unique; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.personal_access_tokens
@@ -6802,7 +6850,7 @@ ALTER TABLE ONLY public.personal_access_tokens
 
 
 --
--- Name: point_history point_history_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: point_history point_history_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.point_history
@@ -6810,7 +6858,7 @@ ALTER TABLE ONLY public.point_history
 
 
 --
--- Name: product_faqs product_faqs_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: product_faqs product_faqs_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.product_faqs
@@ -6818,7 +6866,7 @@ ALTER TABLE ONLY public.product_faqs
 
 
 --
--- Name: product_images product_images_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: product_images product_images_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.product_images
@@ -6826,7 +6874,7 @@ ALTER TABLE ONLY public.product_images
 
 
 --
--- Name: product_news product_news_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: product_news product_news_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.product_news
@@ -6834,7 +6882,7 @@ ALTER TABLE ONLY public.product_news
 
 
 --
--- Name: product_news product_news_slug_unique; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: product_news product_news_slug_unique; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.product_news
@@ -6842,7 +6890,7 @@ ALTER TABLE ONLY public.product_news
 
 
 --
--- Name: product_shop_qnas product_shop_qnas_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: product_shop_qnas product_shop_qnas_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.product_shop_qnas
@@ -6850,7 +6898,7 @@ ALTER TABLE ONLY public.product_shop_qnas
 
 
 --
--- Name: product_specs product_specs_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: product_specs product_specs_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.product_specs
@@ -6858,7 +6906,7 @@ ALTER TABLE ONLY public.product_specs
 
 
 --
--- Name: product_variants product_variants_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: product_variants product_variants_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.product_variants
@@ -6866,7 +6914,7 @@ ALTER TABLE ONLY public.product_variants
 
 
 --
--- Name: product_variants product_variants_sku_unique; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: product_variants product_variants_sku_unique; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.product_variants
@@ -6874,7 +6922,7 @@ ALTER TABLE ONLY public.product_variants
 
 
 --
--- Name: product_video product_video_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: product_video product_video_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.product_video
@@ -6882,7 +6930,7 @@ ALTER TABLE ONLY public.product_video
 
 
 --
--- Name: products products_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: products products_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.products
@@ -6890,7 +6938,7 @@ ALTER TABLE ONLY public.products
 
 
 --
--- Name: products products_slug_key; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: products products_slug_key; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.products
@@ -6898,7 +6946,7 @@ ALTER TABLE ONLY public.products
 
 
 --
--- Name: reviews reviews_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: reviews reviews_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.reviews
@@ -6906,7 +6954,7 @@ ALTER TABLE ONLY public.reviews
 
 
 --
--- Name: role_has_permissions role_has_permissions_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: role_has_permissions role_has_permissions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.role_has_permissions
@@ -6914,7 +6962,7 @@ ALTER TABLE ONLY public.role_has_permissions
 
 
 --
--- Name: roles roles_name_guard_name_unique; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: roles roles_name_guard_name_unique; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.roles
@@ -6922,7 +6970,7 @@ ALTER TABLE ONLY public.roles
 
 
 --
--- Name: roles roles_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: roles roles_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.roles
@@ -6930,7 +6978,7 @@ ALTER TABLE ONLY public.roles
 
 
 --
--- Name: shipping_methods shipping_methods_name_key; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: shipping_methods shipping_methods_name_key; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.shipping_methods
@@ -6938,7 +6986,7 @@ ALTER TABLE ONLY public.shipping_methods
 
 
 --
--- Name: shipping_methods shipping_methods_name_unique; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: shipping_methods shipping_methods_name_unique; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.shipping_methods
@@ -6946,7 +6994,7 @@ ALTER TABLE ONLY public.shipping_methods
 
 
 --
--- Name: shipping_methods shipping_methods_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: shipping_methods shipping_methods_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.shipping_methods
@@ -6954,7 +7002,7 @@ ALTER TABLE ONLY public.shipping_methods
 
 
 --
--- Name: shipping_zones shipping_zones_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: shipping_zones shipping_zones_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.shipping_zones
@@ -6962,7 +7010,39 @@ ALTER TABLE ONLY public.shipping_zones
 
 
 --
--- Name: transactions transactions_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: trade_in_conditions trade_in_conditions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.trade_in_conditions
+    ADD CONSTRAINT trade_in_conditions_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: trade_in_request_conditions trade_in_request_conditions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.trade_in_request_conditions
+    ADD CONSTRAINT trade_in_request_conditions_pkey PRIMARY KEY (trade_in_request_id, trade_in_condition_id);
+
+
+--
+-- Name: trade_in_requests trade_in_requests_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.trade_in_requests
+    ADD CONSTRAINT trade_in_requests_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: trade_in_requests trade_in_requests_request_code_unique; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.trade_in_requests
+    ADD CONSTRAINT trade_in_requests_request_code_unique UNIQUE (request_code);
+
+
+--
+-- Name: transactions transactions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.transactions
@@ -6970,7 +7050,7 @@ ALTER TABLE ONLY public.transactions
 
 
 --
--- Name: transactions transactions_provider_transaction_id_key; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: transactions transactions_provider_transaction_id_key; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.transactions
@@ -6978,7 +7058,7 @@ ALTER TABLE ONLY public.transactions
 
 
 --
--- Name: coupon_usage uq_coupon_usage_order; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: coupon_usage uq_coupon_usage_order; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.coupon_usage
@@ -6986,7 +7066,7 @@ ALTER TABLE ONLY public.coupon_usage
 
 
 --
--- Name: inventory uq_inventory_product_location; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: inventory uq_inventory_product_location; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.inventory
@@ -6994,7 +7074,7 @@ ALTER TABLE ONLY public.inventory
 
 
 --
--- Name: wishlists uq_wishlists_user_product; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: wishlists uq_wishlists_user_product; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.wishlists
@@ -7002,7 +7082,7 @@ ALTER TABLE ONLY public.wishlists
 
 
 --
--- Name: user_coupons user_coupons_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: user_coupons user_coupons_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.user_coupons
@@ -7010,7 +7090,7 @@ ALTER TABLE ONLY public.user_coupons
 
 
 --
--- Name: user_coupons user_coupons_user_id_coupon_id_unique; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: user_coupons user_coupons_user_id_coupon_id_unique; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.user_coupons
@@ -7018,7 +7098,7 @@ ALTER TABLE ONLY public.user_coupons
 
 
 --
--- Name: users users_email_key; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: users users_email_key; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.users
@@ -7026,7 +7106,7 @@ ALTER TABLE ONLY public.users
 
 
 --
--- Name: users users_google_id_unique; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: users users_google_id_unique; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.users
@@ -7034,7 +7114,7 @@ ALTER TABLE ONLY public.users
 
 
 --
--- Name: users users_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: users users_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.users
@@ -7042,7 +7122,7 @@ ALTER TABLE ONLY public.users
 
 
 --
--- Name: video_categories video_categories_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: video_categories video_categories_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.video_categories
@@ -7050,7 +7130,7 @@ ALTER TABLE ONLY public.video_categories
 
 
 --
--- Name: video_categories video_categories_slug_unique; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: video_categories video_categories_slug_unique; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.video_categories
@@ -7058,7 +7138,7 @@ ALTER TABLE ONLY public.video_categories
 
 
 --
--- Name: videos videos_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: videos videos_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.videos
@@ -7066,7 +7146,7 @@ ALTER TABLE ONLY public.videos
 
 
 --
--- Name: wishlists wishlists_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: wishlists wishlists_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.wishlists
@@ -7074,378 +7154,378 @@ ALTER TABLE ONLY public.wishlists
 
 
 --
--- Name: admin_settings_updated_by_index; Type: INDEX; Schema: public; Owner: postgres
+-- Name: admin_settings_updated_by_index; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX admin_settings_updated_by_index ON public.admin_settings USING btree (updated_by);
 
 
 --
--- Name: cart_items_cart_id_index; Type: INDEX; Schema: public; Owner: postgres
+-- Name: cart_items_cart_id_index; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX cart_items_cart_id_index ON public.cart_items USING btree (cart_id);
 
 
 --
--- Name: contact_messages_created_idx; Type: INDEX; Schema: public; Owner: postgres
+-- Name: contact_messages_created_idx; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX contact_messages_created_idx ON public.contact_messages USING btree (created_at);
 
 
 --
--- Name: contact_messages_handled_by_idx; Type: INDEX; Schema: public; Owner: postgres
+-- Name: contact_messages_handled_by_idx; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX contact_messages_handled_by_idx ON public.contact_messages USING btree (handled_by_user_id);
 
 
 --
--- Name: contact_messages_handled_idx; Type: INDEX; Schema: public; Owner: postgres
+-- Name: contact_messages_handled_idx; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX contact_messages_handled_idx ON public.contact_messages USING btree (handled_at);
 
 
 --
--- Name: coupons_code_index; Type: INDEX; Schema: public; Owner: postgres
+-- Name: coupons_code_index; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX coupons_code_index ON public.coupons USING btree (code);
 
 
 --
--- Name: flash_sale_items_product_id_index; Type: INDEX; Schema: public; Owner: postgres
+-- Name: flash_sale_items_product_id_index; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX flash_sale_items_product_id_index ON public.flash_sale_items USING btree (product_id);
 
 
 --
--- Name: idx_cart_items_product_id; Type: INDEX; Schema: public; Owner: postgres
+-- Name: idx_cart_items_product_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX idx_cart_items_product_id ON public.cart_items USING btree (product_id);
 
 
 --
--- Name: idx_categories_is_active; Type: INDEX; Schema: public; Owner: postgres
+-- Name: idx_categories_is_active; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX idx_categories_is_active ON public.categories USING btree (is_active);
 
 
 --
--- Name: idx_categories_parent_id; Type: INDEX; Schema: public; Owner: postgres
+-- Name: idx_categories_parent_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX idx_categories_parent_id ON public.categories USING btree (parent_id);
 
 
 --
--- Name: idx_coupon_usage_coupon_id; Type: INDEX; Schema: public; Owner: postgres
+-- Name: idx_coupon_usage_coupon_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX idx_coupon_usage_coupon_id ON public.coupon_usage USING btree (coupon_id);
 
 
 --
--- Name: idx_coupon_usage_user_id; Type: INDEX; Schema: public; Owner: postgres
+-- Name: idx_coupon_usage_user_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX idx_coupon_usage_user_id ON public.coupon_usage USING btree (user_id);
 
 
 --
--- Name: idx_inventory_product_id; Type: INDEX; Schema: public; Owner: postgres
+-- Name: idx_inventory_product_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX idx_inventory_product_id ON public.inventory USING btree (product_id);
 
 
 --
--- Name: idx_notifications_read_at; Type: INDEX; Schema: public; Owner: postgres
+-- Name: idx_notifications_read_at; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX idx_notifications_read_at ON public.notifications USING btree (read_at);
 
 
 --
--- Name: idx_notifications_user_id; Type: INDEX; Schema: public; Owner: postgres
+-- Name: idx_notifications_user_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX idx_notifications_user_id ON public.notifications USING btree (user_id);
 
 
 --
--- Name: idx_order_items_order_id; Type: INDEX; Schema: public; Owner: postgres
+-- Name: idx_order_items_order_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX idx_order_items_order_id ON public.order_items USING btree (order_id);
 
 
 --
--- Name: idx_order_items_product_id; Type: INDEX; Schema: public; Owner: postgres
+-- Name: idx_order_items_product_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX idx_order_items_product_id ON public.order_items USING btree (product_id);
 
 
 --
--- Name: idx_orders_status; Type: INDEX; Schema: public; Owner: postgres
+-- Name: idx_orders_status; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX idx_orders_status ON public.orders USING btree (status);
 
 
 --
--- Name: idx_orders_user_created; Type: INDEX; Schema: public; Owner: postgres
+-- Name: idx_orders_user_created; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX idx_orders_user_created ON public.orders USING btree (user_id, created_at DESC);
 
 
 --
--- Name: idx_product_images_product_id; Type: INDEX; Schema: public; Owner: postgres
+-- Name: idx_product_images_product_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX idx_product_images_product_id ON public.product_images USING btree (product_id);
 
 
 --
--- Name: idx_product_specs_product_id; Type: INDEX; Schema: public; Owner: postgres
+-- Name: idx_product_specs_product_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX idx_product_specs_product_id ON public.product_specs USING btree (product_id);
 
 
 --
--- Name: idx_products_category_id; Type: INDEX; Schema: public; Owner: postgres
+-- Name: idx_products_category_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX idx_products_category_id ON public.products USING btree (category_id);
 
 
 --
--- Name: idx_products_is_active; Type: INDEX; Schema: public; Owner: postgres
+-- Name: idx_products_is_active; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX idx_products_is_active ON public.products USING btree (is_active);
 
 
 --
--- Name: idx_reviews_product_id; Type: INDEX; Schema: public; Owner: postgres
+-- Name: idx_reviews_product_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX idx_reviews_product_id ON public.reviews USING btree (product_id);
 
 
 --
--- Name: idx_transactions_payment_id; Type: INDEX; Schema: public; Owner: postgres
+-- Name: idx_transactions_payment_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX idx_transactions_payment_id ON public.transactions USING btree (payment_id);
 
 
 --
--- Name: idx_users_phone; Type: INDEX; Schema: public; Owner: postgres
+-- Name: idx_users_phone; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX idx_users_phone ON public.users USING btree (phone);
 
 
 --
--- Name: idx_wishlists_user_id; Type: INDEX; Schema: public; Owner: postgres
+-- Name: idx_wishlists_user_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX idx_wishlists_user_id ON public.wishlists USING btree (user_id);
 
 
 --
--- Name: jobs_queue_index; Type: INDEX; Schema: public; Owner: postgres
+-- Name: jobs_queue_index; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX jobs_queue_index ON public.jobs USING btree (queue);
 
 
 --
--- Name: model_has_permissions_model_id_model_type_index; Type: INDEX; Schema: public; Owner: postgres
+-- Name: model_has_permissions_model_id_model_type_index; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX model_has_permissions_model_id_model_type_index ON public.model_has_permissions USING btree (model_id, model_type);
 
 
 --
--- Name: model_has_roles_model_id_model_type_index; Type: INDEX; Schema: public; Owner: postgres
+-- Name: model_has_roles_model_id_model_type_index; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX model_has_roles_model_id_model_type_index ON public.model_has_roles USING btree (model_id, model_type);
 
 
 --
--- Name: order_return_requests_approved_by_idx; Type: INDEX; Schema: public; Owner: postgres
+-- Name: order_return_requests_approved_by_idx; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX order_return_requests_approved_by_idx ON public.order_return_requests USING btree (approved_by_user_id);
 
 
 --
--- Name: order_return_requests_status_created_idx; Type: INDEX; Schema: public; Owner: postgres
+-- Name: order_return_requests_status_created_idx; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX order_return_requests_status_created_idx ON public.order_return_requests USING btree (status, created_at);
 
 
 --
--- Name: order_return_requests_user_idx; Type: INDEX; Schema: public; Owner: postgres
+-- Name: order_return_requests_user_idx; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX order_return_requests_user_idx ON public.order_return_requests USING btree (user_id);
 
 
 --
--- Name: order_status_histories_changed_by_idx; Type: INDEX; Schema: public; Owner: postgres
+-- Name: order_status_histories_changed_by_idx; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX order_status_histories_changed_by_idx ON public.order_status_histories USING btree (changed_by_user_id);
 
 
 --
--- Name: order_status_histories_order_created_idx; Type: INDEX; Schema: public; Owner: postgres
+-- Name: order_status_histories_order_created_idx; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX order_status_histories_order_created_idx ON public.order_status_histories USING btree (order_id, created_at);
 
 
 --
--- Name: orders_shipping_zone_id_index; Type: INDEX; Schema: public; Owner: postgres
+-- Name: orders_shipping_zone_id_index; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX orders_shipping_zone_id_index ON public.orders USING btree (shipping_zone_id);
 
 
 --
--- Name: orders_status_index; Type: INDEX; Schema: public; Owner: postgres
+-- Name: orders_status_index; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX orders_status_index ON public.orders USING btree (status);
 
 
 --
--- Name: orders_user_id_index; Type: INDEX; Schema: public; Owner: postgres
+-- Name: orders_user_id_index; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX orders_user_id_index ON public.orders USING btree (user_id);
 
 
 --
--- Name: personal_access_tokens_tokenable_type_tokenable_id_index; Type: INDEX; Schema: public; Owner: postgres
+-- Name: personal_access_tokens_tokenable_type_tokenable_id_index; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX personal_access_tokens_tokenable_type_tokenable_id_index ON public.personal_access_tokens USING btree (tokenable_type, tokenable_id);
 
 
 --
--- Name: product_faqs_product_id_sort_order_index; Type: INDEX; Schema: public; Owner: postgres
+-- Name: product_faqs_product_id_sort_order_index; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX product_faqs_product_id_sort_order_index ON public.product_faqs USING btree (product_id, sort_order);
 
 
 --
--- Name: product_news_product_id_is_active_sort_order_index; Type: INDEX; Schema: public; Owner: postgres
+-- Name: product_news_product_id_is_active_sort_order_index; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX product_news_product_id_is_active_sort_order_index ON public.product_news USING btree (product_id, is_active, sort_order);
 
 
 --
--- Name: product_shop_qnas_product_id_answered_at_index; Type: INDEX; Schema: public; Owner: postgres
+-- Name: product_shop_qnas_product_id_answered_at_index; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX product_shop_qnas_product_id_answered_at_index ON public.product_shop_qnas USING btree (product_id, answered_at);
 
 
 --
--- Name: product_variants_product_id_is_active_price_index; Type: INDEX; Schema: public; Owner: postgres
+-- Name: product_variants_product_id_is_active_price_index; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX product_variants_product_id_is_active_price_index ON public.product_variants USING btree (product_id, is_active, price);
 
 
 --
--- Name: product_variants_product_id_price_is_active_index; Type: INDEX; Schema: public; Owner: postgres
+-- Name: product_variants_product_id_price_is_active_index; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX product_variants_product_id_price_is_active_index ON public.product_variants USING btree (product_id, price, is_active);
 
 
 --
--- Name: products_is_active_category_id_index; Type: INDEX; Schema: public; Owner: postgres
+-- Name: products_is_active_category_id_index; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX products_is_active_category_id_index ON public.products USING btree (is_active, category_id);
 
 
 --
--- Name: products_is_active_created_at_index; Type: INDEX; Schema: public; Owner: postgres
+-- Name: products_is_active_created_at_index; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX products_is_active_created_at_index ON public.products USING btree (is_active, created_at);
 
 
 --
--- Name: products_is_active_index; Type: INDEX; Schema: public; Owner: postgres
+-- Name: products_is_active_index; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX products_is_active_index ON public.products USING btree (is_active);
 
 
 --
--- Name: products_is_active_is_featured_index; Type: INDEX; Schema: public; Owner: postgres
+-- Name: products_is_active_is_featured_index; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX products_is_active_is_featured_index ON public.products USING btree (is_active, is_featured);
 
 
 --
--- Name: reviews_product_id_index; Type: INDEX; Schema: public; Owner: postgres
+-- Name: reviews_product_id_index; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX reviews_product_id_index ON public.reviews USING btree (product_id);
 
 
 --
--- Name: reviews_status_index; Type: INDEX; Schema: public; Owner: postgres
+-- Name: reviews_status_index; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX reviews_status_index ON public.reviews USING btree (status);
 
 
 --
--- Name: uq_product_images_product_primary; Type: INDEX; Schema: public; Owner: postgres
+-- Name: uq_product_images_product_primary; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE UNIQUE INDEX uq_product_images_product_primary ON public.product_images USING btree (product_id) WHERE (is_primary = true);
 
 
 --
--- Name: uq_product_specs_variant_scope; Type: INDEX; Schema: public; Owner: postgres
+-- Name: uq_product_specs_variant_scope; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE UNIQUE INDEX uq_product_specs_variant_scope ON public.product_specs USING btree (product_id, spec_group, spec_key, COALESCE(product_variant_id, ('-1'::integer)::bigint), sort_order);
 
 
 --
--- Name: uq_reviews_user_product; Type: INDEX; Schema: public; Owner: postgres
+-- Name: uq_reviews_user_product; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE UNIQUE INDEX uq_reviews_user_product ON public.reviews USING btree (user_id, product_id);
 
 
 --
--- Name: blog_comments blog_comments_blog_post_id_forei; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: blog_comments blog_comments_blog_post_id_forei; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.blog_comments
@@ -7453,7 +7533,7 @@ ALTER TABLE ONLY public.blog_comments
 
 
 --
--- Name: blog_comments blog_comments_user_id_forei; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: blog_comments blog_comments_user_id_forei; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.blog_comments
@@ -7461,7 +7541,7 @@ ALTER TABLE ONLY public.blog_comments
 
 
 --
--- Name: blog_posts blog_posts_author_id_forei; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: blog_posts blog_posts_author_id_forei; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.blog_posts
@@ -7469,7 +7549,7 @@ ALTER TABLE ONLY public.blog_posts
 
 
 --
--- Name: blog_posts blog_posts_blog_category_id_forei; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: blog_posts blog_posts_blog_category_id_forei; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.blog_posts
@@ -7477,7 +7557,7 @@ ALTER TABLE ONLY public.blog_posts
 
 
 --
--- Name: cart_items cart_items_cart_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: cart_items cart_items_cart_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.cart_items
@@ -7485,7 +7565,7 @@ ALTER TABLE ONLY public.cart_items
 
 
 --
--- Name: cart_items cart_items_product_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: cart_items cart_items_product_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.cart_items
@@ -7493,7 +7573,7 @@ ALTER TABLE ONLY public.cart_items
 
 
 --
--- Name: cart_items cart_items_variant_id_forei; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: cart_items cart_items_variant_id_forei; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.cart_items
@@ -7501,7 +7581,7 @@ ALTER TABLE ONLY public.cart_items
 
 
 --
--- Name: carts carts_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: carts carts_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.carts
@@ -7509,7 +7589,7 @@ ALTER TABLE ONLY public.carts
 
 
 --
--- Name: categories categories_parent_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: categories categories_parent_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.categories
@@ -7517,7 +7597,7 @@ ALTER TABLE ONLY public.categories
 
 
 --
--- Name: contact_messages contact_messages_handled_by_user_id_forei; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: contact_messages contact_messages_handled_by_user_id_forei; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.contact_messages
@@ -7525,7 +7605,7 @@ ALTER TABLE ONLY public.contact_messages
 
 
 --
--- Name: coupon_usage coupon_usage_coupon_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: coupon_usage coupon_usage_coupon_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.coupon_usage
@@ -7533,7 +7613,7 @@ ALTER TABLE ONLY public.coupon_usage
 
 
 --
--- Name: coupon_usage coupon_usage_order_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: coupon_usage coupon_usage_order_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.coupon_usage
@@ -7541,7 +7621,7 @@ ALTER TABLE ONLY public.coupon_usage
 
 
 --
--- Name: coupon_usage coupon_usage_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: coupon_usage coupon_usage_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.coupon_usage
@@ -7549,7 +7629,7 @@ ALTER TABLE ONLY public.coupon_usage
 
 
 --
--- Name: flash_sale_items flash_sale_items_flash_sale_id_forei; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: flash_sale_items flash_sale_items_flash_sale_id_forei; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.flash_sale_items
@@ -7557,7 +7637,7 @@ ALTER TABLE ONLY public.flash_sale_items
 
 
 --
--- Name: flash_sale_items flash_sale_items_product_id_forei; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: flash_sale_items flash_sale_items_product_id_forei; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.flash_sale_items
@@ -7565,7 +7645,7 @@ ALTER TABLE ONLY public.flash_sale_items
 
 
 --
--- Name: flash_sale_items flash_sale_items_variant_id_forei; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: flash_sale_items flash_sale_items_variant_id_forei; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.flash_sale_items
@@ -7573,7 +7653,7 @@ ALTER TABLE ONLY public.flash_sale_items
 
 
 --
--- Name: inventory inventory_product_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: inventory inventory_product_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.inventory
@@ -7581,7 +7661,7 @@ ALTER TABLE ONLY public.inventory
 
 
 --
--- Name: inventory_transactions inventory_transactions_inventory_id_forei; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: inventory_transactions inventory_transactions_inventory_id_forei; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.inventory_transactions
@@ -7589,7 +7669,7 @@ ALTER TABLE ONLY public.inventory_transactions
 
 
 --
--- Name: inventory_transactions inventory_transactions_product_id_forei; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: inventory_transactions inventory_transactions_product_id_forei; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.inventory_transactions
@@ -7597,7 +7677,7 @@ ALTER TABLE ONLY public.inventory_transactions
 
 
 --
--- Name: model_has_permissions model_has_permissions_permission_id_forei; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: model_has_permissions model_has_permissions_permission_id_forei; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.model_has_permissions
@@ -7605,7 +7685,7 @@ ALTER TABLE ONLY public.model_has_permissions
 
 
 --
--- Name: model_has_roles model_has_roles_role_id_forei; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: model_has_roles model_has_roles_role_id_forei; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.model_has_roles
@@ -7613,7 +7693,7 @@ ALTER TABLE ONLY public.model_has_roles
 
 
 --
--- Name: notifications notifications_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: notifications notifications_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.notifications
@@ -7621,7 +7701,7 @@ ALTER TABLE ONLY public.notifications
 
 
 --
--- Name: order_items order_items_order_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: order_items order_items_order_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.order_items
@@ -7629,7 +7709,7 @@ ALTER TABLE ONLY public.order_items
 
 
 --
--- Name: order_items order_items_product_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: order_items order_items_product_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.order_items
@@ -7637,7 +7717,7 @@ ALTER TABLE ONLY public.order_items
 
 
 --
--- Name: order_items order_items_variant_id_forei; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: order_items order_items_variant_id_forei; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.order_items
@@ -7645,7 +7725,7 @@ ALTER TABLE ONLY public.order_items
 
 
 --
--- Name: order_return_requests order_return_requests_approved_by_user_id_forei; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: order_return_requests order_return_requests_approved_by_user_id_forei; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.order_return_requests
@@ -7653,7 +7733,7 @@ ALTER TABLE ONLY public.order_return_requests
 
 
 --
--- Name: order_return_requests order_return_requests_order_id_forei; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: order_return_requests order_return_requests_order_id_forei; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.order_return_requests
@@ -7661,7 +7741,7 @@ ALTER TABLE ONLY public.order_return_requests
 
 
 --
--- Name: order_return_requests order_return_requests_user_id_forei; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: order_return_requests order_return_requests_user_id_forei; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.order_return_requests
@@ -7669,7 +7749,7 @@ ALTER TABLE ONLY public.order_return_requests
 
 
 --
--- Name: order_status_histories order_status_histories_changed_by_user_id_forei; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: order_status_histories order_status_histories_changed_by_user_id_forei; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.order_status_histories
@@ -7677,7 +7757,7 @@ ALTER TABLE ONLY public.order_status_histories
 
 
 --
--- Name: order_status_histories order_status_histories_order_id_forei; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: order_status_histories order_status_histories_order_id_forei; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.order_status_histories
@@ -7685,7 +7765,7 @@ ALTER TABLE ONLY public.order_status_histories
 
 
 --
--- Name: orders orders_cart_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: orders orders_cart_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.orders
@@ -7693,7 +7773,7 @@ ALTER TABLE ONLY public.orders
 
 
 --
--- Name: orders orders_coupon_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: orders orders_coupon_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.orders
@@ -7701,7 +7781,7 @@ ALTER TABLE ONLY public.orders
 
 
 --
--- Name: orders orders_delivery_staff_id_foreign; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: orders orders_delivery_staff_id_foreign; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.orders
@@ -7709,7 +7789,7 @@ ALTER TABLE ONLY public.orders
 
 
 --
--- Name: orders orders_shipping_method_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: orders orders_shipping_method_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.orders
@@ -7717,7 +7797,7 @@ ALTER TABLE ONLY public.orders
 
 
 --
--- Name: orders orders_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: orders orders_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.orders
@@ -7725,7 +7805,7 @@ ALTER TABLE ONLY public.orders
 
 
 --
--- Name: payments payments_order_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: payments payments_order_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.payments
@@ -7733,7 +7813,7 @@ ALTER TABLE ONLY public.payments
 
 
 --
--- Name: point_history point_history_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: point_history point_history_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.point_history
@@ -7741,7 +7821,7 @@ ALTER TABLE ONLY public.point_history
 
 
 --
--- Name: product_faqs product_faqs_product_id_forei; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: product_faqs product_faqs_product_id_forei; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.product_faqs
@@ -7749,7 +7829,7 @@ ALTER TABLE ONLY public.product_faqs
 
 
 --
--- Name: product_images product_images_product_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: product_images product_images_product_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.product_images
@@ -7757,7 +7837,7 @@ ALTER TABLE ONLY public.product_images
 
 
 --
--- Name: product_news product_news_product_id_forei; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: product_news product_news_product_id_forei; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.product_news
@@ -7765,7 +7845,7 @@ ALTER TABLE ONLY public.product_news
 
 
 --
--- Name: product_shop_qnas product_shop_qnas_product_id_forei; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: product_shop_qnas product_shop_qnas_product_id_forei; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.product_shop_qnas
@@ -7773,7 +7853,7 @@ ALTER TABLE ONLY public.product_shop_qnas
 
 
 --
--- Name: product_shop_qnas product_shop_qnas_user_id_forei; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: product_shop_qnas product_shop_qnas_user_id_forei; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.product_shop_qnas
@@ -7781,7 +7861,7 @@ ALTER TABLE ONLY public.product_shop_qnas
 
 
 --
--- Name: product_specs product_specs_product_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: product_specs product_specs_product_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.product_specs
@@ -7789,7 +7869,7 @@ ALTER TABLE ONLY public.product_specs
 
 
 --
--- Name: product_specs product_specs_product_variant_id_forei; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: product_specs product_specs_product_variant_id_forei; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.product_specs
@@ -7797,7 +7877,7 @@ ALTER TABLE ONLY public.product_specs
 
 
 --
--- Name: product_variants product_variants_product_id_forei; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: product_variants product_variants_product_id_forei; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.product_variants
@@ -7805,7 +7885,7 @@ ALTER TABLE ONLY public.product_variants
 
 
 --
--- Name: product_video product_video_product_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: product_video product_video_product_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.product_video
@@ -7813,7 +7893,7 @@ ALTER TABLE ONLY public.product_video
 
 
 --
--- Name: product_video product_video_video_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: product_video product_video_video_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.product_video
@@ -7821,7 +7901,7 @@ ALTER TABLE ONLY public.product_video
 
 
 --
--- Name: products products_category_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: products products_category_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.products
@@ -7829,7 +7909,7 @@ ALTER TABLE ONLY public.products
 
 
 --
--- Name: reviews reviews_order_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: reviews reviews_order_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.reviews
@@ -7837,7 +7917,7 @@ ALTER TABLE ONLY public.reviews
 
 
 --
--- Name: reviews reviews_product_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: reviews reviews_product_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.reviews
@@ -7845,7 +7925,7 @@ ALTER TABLE ONLY public.reviews
 
 
 --
--- Name: reviews reviews_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: reviews reviews_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.reviews
@@ -7853,7 +7933,7 @@ ALTER TABLE ONLY public.reviews
 
 
 --
--- Name: role_has_permissions role_has_permissions_permission_id_forei; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: role_has_permissions role_has_permissions_permission_id_forei; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.role_has_permissions
@@ -7861,7 +7941,7 @@ ALTER TABLE ONLY public.role_has_permissions
 
 
 --
--- Name: role_has_permissions role_has_permissions_role_id_forei; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: role_has_permissions role_has_permissions_role_id_forei; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.role_has_permissions
@@ -7869,7 +7949,47 @@ ALTER TABLE ONLY public.role_has_permissions
 
 
 --
--- Name: transactions transactions_payment_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: trade_in_conditions trade_in_conditions_category_id_foreign; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.trade_in_conditions
+    ADD CONSTRAINT trade_in_conditions_category_id_foreign FOREIGN KEY (category_id) REFERENCES public.categories(id) ON DELETE CASCADE;
+
+
+--
+-- Name: trade_in_request_conditions trade_in_request_conditions_trade_in_condition_id_foreign; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.trade_in_request_conditions
+    ADD CONSTRAINT trade_in_request_conditions_trade_in_condition_id_foreign FOREIGN KEY (trade_in_condition_id) REFERENCES public.trade_in_conditions(id) ON DELETE CASCADE;
+
+
+--
+-- Name: trade_in_request_conditions trade_in_request_conditions_trade_in_request_id_foreign; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.trade_in_request_conditions
+    ADD CONSTRAINT trade_in_request_conditions_trade_in_request_id_foreign FOREIGN KEY (trade_in_request_id) REFERENCES public.trade_in_requests(id) ON DELETE CASCADE;
+
+
+--
+-- Name: trade_in_requests trade_in_requests_category_id_foreign; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.trade_in_requests
+    ADD CONSTRAINT trade_in_requests_category_id_foreign FOREIGN KEY (category_id) REFERENCES public.categories(id) ON DELETE SET NULL;
+
+
+--
+-- Name: trade_in_requests trade_in_requests_user_id_foreign; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.trade_in_requests
+    ADD CONSTRAINT trade_in_requests_user_id_foreign FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE SET NULL;
+
+
+--
+-- Name: transactions transactions_payment_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.transactions
@@ -7877,7 +7997,7 @@ ALTER TABLE ONLY public.transactions
 
 
 --
--- Name: user_coupons user_coupons_coupon_id_forei; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: user_coupons user_coupons_coupon_id_forei; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.user_coupons
@@ -7885,7 +8005,7 @@ ALTER TABLE ONLY public.user_coupons
 
 
 --
--- Name: user_coupons user_coupons_user_id_forei; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: user_coupons user_coupons_user_id_forei; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.user_coupons
@@ -7893,7 +8013,7 @@ ALTER TABLE ONLY public.user_coupons
 
 
 --
--- Name: users users_rank_id_forei; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: users users_rank_id_forei; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.users
@@ -7901,7 +8021,7 @@ ALTER TABLE ONLY public.users
 
 
 --
--- Name: videos videos_product_id_forei; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: videos videos_product_id_forei; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.videos
@@ -7909,7 +8029,7 @@ ALTER TABLE ONLY public.videos
 
 
 --
--- Name: videos videos_video_category_id_forei; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: videos videos_video_category_id_forei; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.videos
@@ -7917,7 +8037,7 @@ ALTER TABLE ONLY public.videos
 
 
 --
--- Name: wishlists wishlists_blog_post_id_foreign; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: wishlists wishlists_blog_post_id_foreign; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.wishlists
@@ -7925,7 +8045,7 @@ ALTER TABLE ONLY public.wishlists
 
 
 --
--- Name: wishlists wishlists_product_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: wishlists wishlists_product_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.wishlists
@@ -7933,7 +8053,7 @@ ALTER TABLE ONLY public.wishlists
 
 
 --
--- Name: wishlists wishlists_product_news_id_foreign; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: wishlists wishlists_product_news_id_foreign; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.wishlists
@@ -7941,7 +8061,7 @@ ALTER TABLE ONLY public.wishlists
 
 
 --
--- Name: wishlists wishlists_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: wishlists wishlists_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.wishlists
@@ -7949,7 +8069,7 @@ ALTER TABLE ONLY public.wishlists
 
 
 --
--- Name: wishlists wishlists_video_id_foreign; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: wishlists wishlists_video_id_foreign; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.wishlists
@@ -7957,15 +8077,8 @@ ALTER TABLE ONLY public.wishlists
 
 
 --
--- Name: SCHEMA public; Type: ACL; Schema: -; Owner: postgres
---
-
-REVOKE USAGE ON SCHEMA public FROM PUBLIC;
-
-
---
 -- PostgreSQL database dump complete
 --
 
-\unrestrict SHsjdsofXVkhgbNfT5jRfscpBxtOEV1liCf0xqYYrv569gdbdHPwzEYTcQYpF9X
+\unrestrict cijEFd1c9iT8kxCOtMpGWRcE3ZskXzaDHbpxzN77zMRGUWhHhSNBbfoedEUkt6t
 
