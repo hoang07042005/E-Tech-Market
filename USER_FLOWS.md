@@ -38,6 +38,14 @@ mindmap
       Yêu Cầu Hủy Đơn (Chỉ khi Pending)
       Xác Nhận Đã Nhận Hàng (Chuyển sang Completed)
       Yêu Cầu Hoàn Trả (Kèm lý do & Ảnh minh chứng)
+    Thu Cũ Đổi Mới
+      Gửi Yêu Cầu Định Giá Thiết Bị
+        Mô tả máy & Chọn Tình Trạng Thiết Bị
+        Đính kèm Ảnh chụp thực tế
+      Lịch Sử Yêu Cầu (Trang Profile)
+        Xem chi tiết từng yêu cầu
+        Xác nhận mức giá khi Admin báo giá
+        Mang máy ra cửa hàng kiểm tra thực tế
 ```
 
 ### 1.2. Sơ Đồ Quản Trị Viên (Admin)
@@ -66,6 +74,14 @@ mindmap
       Banner Quảng Cáo
       Bài Viết (Tin tức công nghệ)
       Cấu Hình Vận Chuyển (Shipping Methods)
+    Quản Lý Thu Cũ Đổi Mới
+      Danh Sách Yêu Cầu Thu Mua
+      Xem Chi Tiết & Kiểm Tra Ảnh
+      Duyệt & Báo Giá (Gửi Email khách)
+      Chỉnh Sửa Báo Giá
+      Hoàn Tất Thu Mua (Khách đã đồng ý)
+      Từ Chối Thu Mua
+      Quản Lý Tiêu Chí Đánh Giá (Conditions)
 ```
 
 ---
@@ -203,4 +219,65 @@ stateDiagram-v2
     
     Shipped --> [*]: Chờ phản hồi
     Cancelled --> [*]: Hoàn tất hủy
+```
+
+### 2.6. Luồng Thu Cũ Đổi Mới (Trade-In State Machine)
+
+*Ghi chú: Đây là luồng hai chiều — Khách hàng khởi tạo yêu cầu & có thể xác nhận giá; Admin định giá và quyết định cuối cùng.*
+
+```mermaid
+stateDiagram-v2
+    [*] --> pending: Khách gửi Yêu cầu định giá
+
+    pending --> quoted: Admin Duyệt & Báo giá\n(Gửi Email thông báo khách)
+    pending --> rejected: Admin Từ chối
+
+    quoted --> quoted: Admin Chỉnh sửa báo giá
+
+    %% Hành động của khách hàng
+    quoted --> approved: Khách Xác nhận mức giá\n(Qua trang Profile - Lịch sử Thu cũ)
+
+    %% Hành động của Admin sau khi khách đồng ý
+    approved --> completed: Admin Hoàn tất thu mua\n(Sau khi kiểm tra máy tại cửa hàng)
+    approved --> rejected: Admin Từ chối (Không khớp thực tế)
+
+    rejected --> [*]
+    completed --> [*]
+```
+
+#### Chi tiết các trạng thái:
+
+| Trạng thái | Hiển thị | Người tác động | Mô tả |
+|---|---|---|---|
+| `pending` | Mới tiếp nhận | Hệ thống | Yêu cầu vừa được gửi, chờ Admin xử lý |
+| `quoted` | Đã báo giá | Admin | Admin đã định giá dự kiến và gửi email cho khách |
+| `approved` | Khách đồng ý | Khách hàng | Khách bấm "Xác nhận mức giá" trong Profile |
+| `completed` | Đã thu mua | Admin | Đã kiểm tra máy tại cửa hàng & hoàn tất giao dịch |
+| `rejected` | Từ chối | Admin | Admin từ chối ở bất kỳ bước nào |
+
+### 2.7. Luồng Trang Cá Nhân (Profile Navigation Flow)
+
+```mermaid
+flowchart TD
+    Login([Kách đăng nhập]) --> Profile["/profile"]
+
+    Profile --> InfoTab[Thông tin cá nhân]
+    Profile --> Orders["/profile/orders"]
+    Profile --> Security["/profile/security"]
+    Profile --> Coupons["/profile/coupons"]
+    Profile --> Loyalty["/profile/loyalty"]
+    Profile --> TradeIn["/profile/trade-in"]
+
+    Orders --> OrderDetail["/profile/orders/:id"]
+    OrderDetail --> ConfirmReceived[Xác nhận nhận hàng]
+    OrderDetail --> RequestReturn[Yêu cầu hoàn trả]
+
+    TradeIn --> TradeInList[Danh sách yêu cầu Thu cũ]
+    TradeInList --> TradeInDetail[Xem chi tiết yêu cầu]
+    TradeInDetail --> AcceptQuote{Trạng thái = quoted?}
+    AcceptQuote -->|Có| ConfirmPrice[Xác nhận mức giá dự kiến]
+    AcceptQuote -->|Không| ReadOnly[Đọc tóm tắt trạng thái]
+    ConfirmPrice -->|approved| WaitShop[Hướng dẫn mang máy ra cửa hàng]
+
+    TradeIn --> NewRequest["/trade-in - Gửi yêu cầu mới"]
 ```
