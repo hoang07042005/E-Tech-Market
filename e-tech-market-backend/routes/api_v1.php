@@ -37,6 +37,7 @@ use App\Http\Controllers\Client\SseController;
 use App\Http\Controllers\Client\StoreProfileController;
 use App\Http\Controllers\Client\ChatbotController;
 use App\Http\Controllers\Client\WishlistController;
+use App\Http\Controllers\Client\TradeInController as ClientTradeInController;
 use App\Http\Controllers\Admin\MetricsController;
 use Illuminate\Support\Facades\Route;
 
@@ -247,6 +248,15 @@ Route::middleware('auth:sanctum')->group(function () {
         // Videos
         Route::apiResource('videos', App\Http\Controllers\Admin\VideoController::class);
 
+        Route::get('/trade-in/conditions', [App\Http\Controllers\Admin\TradeInController::class, 'getConditions']);
+        Route::post('/trade-in/conditions', [App\Http\Controllers\Admin\TradeInController::class, 'storeCondition']);
+        Route::put('/trade-in/conditions/{id}', [App\Http\Controllers\Admin\TradeInController::class, 'updateCondition']);
+        Route::delete('/trade-in/conditions/{id}', [App\Http\Controllers\Admin\TradeInController::class, 'deleteCondition']);
+        
+        Route::get('/trade-in/requests', [App\Http\Controllers\Admin\TradeInController::class, 'getRequests']);
+        Route::get('/trade-in/requests/{id}', [App\Http\Controllers\Admin\TradeInController::class, 'showRequest']);
+        Route::put('/trade-in/requests/{id}/status', [App\Http\Controllers\Admin\TradeInController::class, 'updateRequestStatus']);
+
     });
 });
 
@@ -287,6 +297,11 @@ Route::get('/videos/{video}', [App\Http\Controllers\Client\VideoController::clas
 
 // Chatbot
 Route::post('/chatbot/message', [ChatbotController::class, 'message'])->middleware('throttle:30,1');
+
+// Trade-in
+Route::get('/trade-in/categories', [ClientTradeInController::class, 'getCategories']);
+Route::get('/trade-in/conditions', [ClientTradeInController::class, 'getConditions']);
+Route::post('/trade-in/requests', [ClientTradeInController::class, 'submitRequest']);
 
 // Unified home data endpoint - reduces multiple API calls to 1
 Route::get('/home', [App\Http\Controllers\Client\HomeController::class, 'index']);

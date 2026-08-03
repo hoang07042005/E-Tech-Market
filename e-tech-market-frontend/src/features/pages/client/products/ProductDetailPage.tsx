@@ -29,8 +29,7 @@ import {
   variantStorageLabel,
   buildVariantFacetModel,
   PdpThumbStrip,
-  PdpFacetVariantPicker,
-  ratingLabel} from './components/PdpShared'
+  PdpFacetVariantPicker} from './components/PdpShared'
 import { ProductReviewsSection } from './components/ProductReviewsSection'
 import { ProductQnASection } from './components/ProductQnASection'
 import { PdpRichSection } from './components/PdpRichSection'
@@ -66,7 +65,7 @@ export default function ProductDetailPage() {
   const [relatedProducts, setRelatedProducts] = useState<Product[]>([])
   
   const { data: wishlistData } = useWishlistQuery(hasAuth)
-  const wishSet = useMemo(() => new Set(wishlistData?.map((i) => i.product_id) || []), [wishlistData])
+  const wishSet = useMemo(() => new Set((wishlistData?.map((i) => i.product_id) || []).filter((id): id is number => typeof id === 'number')), [wishlistData])
   const wishlistMutation = useWishlistMutation()
   const { addToCart } = useCartMutation()
 
@@ -1001,6 +1000,12 @@ export default function ProductDetailPage() {
                     </div>
                   ))}
                 </div>
+              </div>
+
+              <div className="pdpTradeInWidget" style={{ marginTop: '20px', padding: '20px', background: 'linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%)', borderRadius: '12px', border: '1px solid #bfdbfe' }}>
+                <h3 style={{ fontSize: '1.2rem', color: '#1e3a8a', marginBottom: '8px' }}>Thu Cũ Đổi Mới - Trợ Giá Khủng</h3>
+                <p style={{ fontSize: '0.9rem', color: '#1e40af', marginBottom: '15px' }}>Bạn có máy cũ? Định giá nhanh và nhận trợ giá lên đời ngay hôm nay!</p>
+                <Link to="/trade-in" style={{ display: 'inline-block', background: '#2563eb', color: 'white', padding: '10px 20px', borderRadius: '6px', fontWeight: 'bold', textDecoration: 'none' }}>Định giá máy cũ ngay</Link>
               </div>
 
               <PdpFaqSection 

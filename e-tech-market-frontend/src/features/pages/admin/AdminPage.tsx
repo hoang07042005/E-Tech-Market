@@ -19,6 +19,7 @@ import AdminFlashSalePage from './flashSale/AdminFlashSalePage'
 import BannerAdminPage from './banners/BannerAdminPage'
 import VideoAdminPage from './videos/VideoAdminPage'
 import VideoCategoryPage from './categories/VideoCategoryPage'
+import AdminTradeInPage from './tradeIn/AdminTradeInPage'
 import { apiFetch, API_BASE_URL } from '@/configs/api.config'
 import '@/styles/components/HeaderFooter.css'
 
@@ -41,6 +42,7 @@ type AdminTab =
   | 'videos'
   | 'settings'
   | 'videoCategories'
+  | 'tradeIn'
 
 type AdminUser = {
   name?: string | null
@@ -72,6 +74,7 @@ const ADMIN_TAB_TITLE: Record<AdminTab, string> = {
   videos: 'Videos',
   settings: 'Cài đặt',
   videoCategories: 'Danh mục Video',
+  tradeIn: 'Thu cũ đổi mới',
 }
 
 function resolveAdminImg(url?: string | null): string {
@@ -120,6 +123,7 @@ function hasPermissionForTab(tab: AdminTab, user: AdminUser | undefined): boolea
     case 'shopQna':
     case 'contactMessages':
     case 'notifications':
+    case 'tradeIn':
       return false
     default:
       return false
@@ -472,6 +476,7 @@ export default function AdminPage() {
           {hasPermissionForTab('orders', currentUser) && <SidebarItem active={activeTab === 'orders'} onClick={() => setActiveTab('orders')} icon={<CartIcon />} label="Đơn hàng" collapsed={isSidebarCollapsed} />}
           {hasPermissionForTab('flashSale', currentUser) && <SidebarItem active={activeTab === 'flashSale'} onClick={() => setActiveTab('flashSale')} icon={<FlashIcon />} label="Flash Sale" collapsed={isSidebarCollapsed} />}
           {hasPermissionForTab('products', currentUser) && <SidebarItem active={activeTab === 'products'} onClick={() => setActiveTab('products')} icon={<BoxIcon />} label="Sản phẩm" collapsed={isSidebarCollapsed} />}
+          {hasPermissionForTab('tradeIn', currentUser) && <SidebarItem active={activeTab === 'tradeIn'} onClick={() => setActiveTab('tradeIn')} icon={<TradeInIcon />} label="Thu cũ đổi mới" collapsed={isSidebarCollapsed} />}
 
           {(hasPermissionForTab('categories', currentUser) || hasPermissionForTab('videoCategories', currentUser) || hasPermissionForTab('productNews', currentUser) || hasPermissionForTab('coupons', currentUser)) && (
             <SidebarSection title="QUẢN LÝ SẢN PHẨM" collapsed={isSidebarCollapsed} />
@@ -801,6 +806,7 @@ export default function AdminPage() {
               openEditTick={openEditProductTick}
             />
           )}
+          {activeTab === 'tradeIn' && <AdminTradeInPage />}
           {activeTab === 'productNews' && <ProductNewsPage />}
           {activeTab === 'categories' && <CategoryPage />}
           {activeTab === 'videoCategories' && <VideoCategoryPage />}
@@ -954,3 +960,8 @@ function MoonIcon() { return <svg width="20" height="20" viewBox="0 0 24 24" fil
 function ExitIcon() { return <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg> }
 
 
+function TradeInIcon() { return <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none"
+viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+  <path stroke-linecap="round" stroke-linejoin="round"
+    d="M7 7h12m0 0-3-3m3 3-3 3M17 17H5m0 0 3-3m-3 3 3 3"/>
+</svg> }

@@ -14,8 +14,12 @@
           {{-- Header --}}
           <tr>
             <td style="background: linear-gradient(135deg, #EF7A45 0%, #F59E0B 100%);padding:32px 40px;text-align:center;">
-              <div style="font-size:28px;font-weight:800;color:#ffffff;letter-spacing:2px;">E-TECH MARKET</div>
-              <div style="font-size:13px;color:rgba(255,255,255,0.85);margin-top:6px;letter-spacing:1px;">CHUỖI BÁN LẺ CÔNG NGHỆ</div>
+              @if(file_exists(public_path('logo.png')))
+                  <img src="{{ $message->embed(public_path('logo.png')) }}" alt="E-Tech Market Logo" style="max-height: 55px; margin: 0 auto; display: block; filter: brightness(0) invert(1);">
+              @else
+                  <div style="font-size:28px;font-weight:800;color:#ffffff;letter-spacing:2px;">E-TECH MARKET</div>
+                  <div style="font-size:13px;color:rgba(255,255,255,0.85);margin-top:6px;letter-spacing:1px;">CHUỖI BÁN LẺ CÔNG NGHỆ</div>
+              @endif
             </td>
           </tr>
 

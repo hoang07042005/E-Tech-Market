@@ -56,6 +56,7 @@ const ComparePage = lazy(() => import('@/features/pages/client/products/CompareP
 const FlashSalePage = lazy(() => import('@/features/pages/client/products/FlashSalePage'))
 const VideoPage = lazy(() => import('@/features/pages/client/video/VideoPage'))
 const VideoDetailPage = lazy(() => import('@/features/pages/client/video/VideoDetailPage'))
+const TradeInPage = lazy(() => import('@/features/pages/client/trade-in/TradeInPage'))
 
 // Using shared `queryClient` from configs/queryClient.ts
 
@@ -312,6 +313,7 @@ function AppFrame() {
       <Suspense fallback={<PageLoader />}>
         <Routes>
           <Route path="/" element={<HomePage />} />
+          <Route path="/trade-in" element={<TradeInPage />} />
           <Route path="/flash-sale" element={<FlashSalePage />} />
           <Route path="/products" element={<ProductsPage />} />
           <Route path="/products/:slug" element={<ProductDetailPage />} />

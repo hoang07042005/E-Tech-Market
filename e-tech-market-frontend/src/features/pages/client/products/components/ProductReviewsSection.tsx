@@ -114,7 +114,7 @@ export function ProductReviewsSection({
                       </div>
                       <div className="pdpReviewPills">
 
-                        {!!r.order_id && <span className="pdpReviewPill verified">Đã mua hàng</span>}
+                        {!!r.order_id && <span className="pdpReviewPill verified">Đã mua hàng tại E-Tech Market</span>}
                       </div>
                       {r.comment && <div className="pdpReviewComment">{r.comment}</div>}
                       {Array.isArray(r.media) && r.media.length > 0 && (

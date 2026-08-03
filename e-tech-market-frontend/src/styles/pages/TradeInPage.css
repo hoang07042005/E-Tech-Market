@@ -1,0 +1,551 @@
+/* ==========================================================================
+   E-Tech Market - Trade-In Page (3-Column Layout)
+   ========================================================================== */
+
+.ti-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 40px 20px;
+    font-family: 'Inter', sans-serif;
+    color: #1e293b;
+    background-color: #fafafa;
+}
+
+/* --- Hero Section --- */
+.ti-hero {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.ti-title {
+    font-size: 2.5rem;
+    margin-bottom: 15px;
+    font-weight: 700;
+    color: #1e293b;
+}
+
+.ti-title span {
+    color: #f97316;
+}
+
+.ti-subtitle {
+    font-size: 1.1rem;
+    color: #64748b;
+}
+
+/* --- Stepper Header --- */
+.ti-steps-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1000px;
+    margin: 0 auto 40px auto;
+    position: relative;
+}
+
+.ti-steps-header::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 10%;
+    right: 10%;
+    height: 2px;
+    background: #e2e8f0;
+    z-index: 1;
+}
+
+.ti-step-header {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    background: #fafafa;
+    padding: 0 20px;
+}
+
+.ti-step-num {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 1.2rem;
+    background: #f1f5f9;
+    color: #64748b;
+}
+
+.ti-step-num.active {
+    background: #f91633;
+    color: white;
+}
+
+.ti-step-text h4 {
+    margin: 0 0 4px 0;
+    font-size: 1rem;
+    color: #1e293b;
+}
+
+.ti-step-text h4.active {
+    color: #f91633;
+}
+
+.ti-step-text p {
+    margin: 0;
+    font-size: 0.85rem;
+    color: #94a3b8;
+}
+
+/* --- 3-Column Content Layout --- */
+.ti-content-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 60px;
+}
+
+.ti-column {
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+    border: 1px solid #f1f5f9;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+}
+
+.ti-col-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 25px;
+}
+
+.ti-col-icon {
+    width: 32px;
+    height: 32px;
+    background: #f91616;
+    color: white;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+}
+
+.ti-col-header h3 {
+    margin: 0;
+    font-size: 16px;
+    color: #1e293b;
+    font-weight: 600;
+}
+
+/* --- Column 1: Categories & Form --- */
+.ti-device-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin-bottom: 10px;
+}
+
+.ti-device-card {
+    border: 1.5px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 10px 10px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.ti-device-card.selected {
+    border-color: #f91616;
+    color: #f91616;
+}
+
+.ti-device-icon {
+    font-size: 2rem;
+}
+
+.ti-device-card h4 {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.ti-form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.ti-form-group {
+    margin-bottom: 4px;
+}
+
+.ti-form-group.full-width {
+    grid-column: 1 / -1;
+}
+
+.ti-form-group label {
+    display: block;
+    font-size: 10px;
+    color: #475569;
+    margin-bottom: 4px;
+    font-weight: 500;
+}
+
+.ti-form-group label span {
+    color: #ef4444;
+}
+
+.ti-form-group input, .ti-form-group select {
+    width: 100%;
+    padding: 8px 6px;
+    border: 1px solid #cbd5e182;
+    border-radius: 4px;
+    font-size: 11px;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.ti-form-group-profile label {
+    font-size: 12px;
+    color: #475569;
+    margin-bottom: 8px;
+    font-weight: 600;
+    display: block;
+}
+
+.ti-form-group-profile input{
+    width: 100%;
+    padding: 15px 15px;
+    font-size: 13px;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+    background: #fff;
+    margin-bottom: 14px;
+}
+
+.ti-form-group-profile input::placeholder {
+    color: #94a3b8;
+}
+
+.ti-form-group input:focus, .ti-form-group select:focus {
+    border-color: #f97316;
+}
+
+.ti-upload-box {
+    border: 2px dashed #cbd5e1;
+    border-radius: 12px;
+    padding: 30px 20px;
+    text-align: center;
+    background: #f8fafc;
+    cursor: pointer;
+    position: relative;
+}
+
+.ti-upload-box input {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+}
+
+/* --- Column 2: Conditions --- */
+.ti-cond-list {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4px;
+    flex-grow: 1;
+    max-height: 500px;
+    overflow-y: auto;
+    align-content: start;
+    overflow-y: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+/* Tùy chỉnh thanh cuộn cho danh sách tình trạng */
+.ti-cond-list::-webkit-scrollbar {
+    width: 6px;
+}
+.ti-cond-list::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 4px;
+}
+.ti-cond-list::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 4px;
+}
+.ti-cond-list::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}
+
+.ti-cond-item {
+    display: flex;
+    align-items: flex-start;
+    padding: 10px;
+    border: 1px solid #e2e8f0a5;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.ti-cond-item.selected {
+    border-color: #f9161630;
+    background: #fffaf5;
+}
+
+.ti-checkbox {
+    width: 16px;
+    height: 16px;
+    border: 1px solid #cbd5e1;
+    border-radius: 4px;
+    margin-right: 6px;
+    margin-top: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    flex-shrink: 0;
+    background: #fff;
+}
+
+.ti-cond-item.selected .ti-checkbox {
+    background: #f91616;
+    border-color: #f91616;
+}
+
+.ti-cond-text h4 {
+    margin: 0 0 2px 0;
+    font-size: 13px;
+    color: #1e293b;
+    font-weight: 600;
+    text-align: center;
+}
+
+.ti-cond-text p {
+    margin: 0;
+    font-size: 11px;
+    color: #64748b;
+    line-height: 1.4;
+    text-align: center;
+}
+
+/* --- Column 3: Contact & Submit --- */
+.ti-security-box {
+    background: #ffeded;
+    border: 1px solid #feaaaa;
+    border-radius: 10px;
+    padding: 20px;
+    display: flex;
+    gap: 15px;
+    margin-bottom: 20px;
+    margin-top: auto;
+}
+
+.ti-security-icon {
+    color: #f91616;
+    font-size: 1.5rem;
+}
+
+.ti-security-text h4 {
+    margin: 0 0 5px 0;
+    color: #ce1818;
+    font-size: 1rem;
+}
+
+.ti-security-text p {
+    margin: 0;
+    font-size: 11px;
+    line-height: 1.6;
+    color: #090909;
+    opacity: 0.8;
+}
+
+.ti-submit-btn {
+    width: 100%;
+    background: #f91616;
+    color: white;
+    border: 1px solid transparent;
+    padding: 13px 20px;
+    border-radius: 5px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: background 0.2s;
+}
+
+.ti-submit-btn:hover {
+    background: #f91616;
+}
+
+.ti-submit-btn:disabled {
+    background: #cbd5e1;
+    cursor: not-allowed;
+}
+
+/* --- Footer Features --- */
+.ti-features {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    background: #fff;
+    padding: 40px;
+    border-radius: 16px;
+    margin-top: 40px;
+}
+
+.ti-feature {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.ti-feature-icon {
+    width: 90px;
+    height: 50px;
+    background: #f97316;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+}
+
+.ti-feature-text h4 {
+    margin: 0 0 5px 0;
+    font-size: 1rem;
+    color: #1e293b;
+}
+
+.ti-feature-text p {
+    margin: 0;
+    font-size: 0.9rem;
+    color: #64748b;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+    .ti-content-grid {
+        grid-template-columns: 1fr;
+    }
+    .ti-steps-header {
+        display: none;
+    }
+    .ti-features {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+@media (max-width: 600px) {
+    .ti-features {
+        grid-template-columns: 1fr;
+    }
+}
+
+
+/* --- Disabled Columns --- */
+.ti-disabled-column {
+    opacity: 0.4;
+    pointer-events: none;
+    filter: grayscale(0.6);
+    transition: all 0.4s ease;
+}
+
+
+/* --- Column Footer --- */
+.ti-col-footer {
+    padding-top: 15px;
+    border-top: 1px solid #e2e8f0;
+    text-align: center;
+    color: #94a3b8;
+    font-size: 0.85rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+/* --- Extracted Classes --- */
+.ti-detail-title { font-size: 14px; color: #1e293b; margin-bottom: 15px; margin-top: 10px; }
+.ti-upload-icon-wrapper { font-size: 2rem; color: #94a3b8; margin-bottom: 10px; }
+.ti-upload-text-main { margin: 0; font-size: 13px; color: #1e293b; }
+.ti-upload-text-sub { margin: 5px 0 0 0; font-size: 0.8rem; color: #64748b; }
+.ti-preview-container { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 15px; }
+.ti-preview-item { position: relative; width: 60px; height: 60px; }
+.ti-preview-img { width: 100%; height: 100%; object-fit: cover; border-radius: 8px; border: 1px solid #ddd; }
+.ti-remove-btn { position: absolute; top: -5px; right: -5px; background: #ef4444; color: #fff; border: none; border-radius: 50%; width: 20px; height: 20px; cursor: pointer; font-size: 12px; }
+.ti-btn-wrapper { display: flex; justify-content: space-between; margin-top: auto; width: 100%; padding: 10px; }
+.ti-btn-wrapper-col3 { display: flex; gap: 10px; margin-bottom: 50px; width: 100%; }
+.ti-btn-auto { width: auto; padding: 8px 24px; display: flex; justify-content: center; align-items: center; }
+.ti-empty-cond { color: #94a3b8; text-align: center; margin-top: 20px; }
+.ti-col-desc { margin: 2px 0 0 0; font-size: 12px; color: #64748b; }
+.ti-form-mt { margin-top: 10px; }
+.ti-btn-back { padding: 13px 20px; text-align: center; }
+.ti-btn-submit-final { flex: 1; padding: 8px 20px; display: flex; justify-content: center; align-items: center; }
+.ti-feature-icon-orange { background: #ea580c; }
+.ti-footer-text { text-align: center; color: #94a3b8; font-size: 0.85rem; margin-top: 30px; }
+
+
+
+/* --- Contact Form Inputs --- */
+.ti-form-group input.ti-input-lg {
+    padding: 12px 15px;
+    font-size: 13px;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+    background: #fff;
+}
+
+.ti-form-group input.ti-input-lg::placeholder {
+    color: #94a3b8;
+}
+
+/* --- Secondary Button --- */
+.ti-btn-secondary {
+    background: #fff;
+    color: #f91616;
+    border: 1px solid #f91616;
+    border-radius: 5px;
+    padding: 4px 20px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.ti-btn-secondary:hover {
+    background: #f9161626;
+}
+
+.ti-security-list {
+    list-style: none;
+    padding: 0;
+    margin: 15px 0 0 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.ti-security-list li {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 11px;
+    color: #475569;
+}
+
+.ti-check-icon {
+    color: #04b015;
+    flex-shrink: 0;
+}

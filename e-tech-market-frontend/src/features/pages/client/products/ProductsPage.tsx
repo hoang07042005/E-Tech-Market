@@ -301,7 +301,6 @@ export function ProductCard({
     hasMultiplePrices,
     showDiscountBadge,
     variantId,
-    variantLabel,
     imageUrl,
   } = useMemo(() => {
     const activeVariants = (product.variants || []).filter((v) => v.is_active);
