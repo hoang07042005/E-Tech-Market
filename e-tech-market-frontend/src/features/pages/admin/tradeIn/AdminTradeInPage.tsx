@@ -39,6 +39,21 @@ const formatCurrency = (value: string | number) => {
   return Number(value).toLocaleString('vi-VN') + ' ₫';
 };
 
+// --- BỘ ICON SVG CAO CẤP ---
+const Icons = {
+  Search: () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>,
+  ArrowLeft: () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>,
+  User: () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>,
+  Device: () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect width="14" height="20" x="5" y="2" rx="2" ry="2"/><path d="M12 18h.01"/></svg>,
+  Calendar: () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>,
+  Tag: () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 2H2v10l9.29 9.29c.94.94 2.48.94 3.42 0l6.58-6.58c.94-.94.94-2.48 0-3.42L12 2Z"/><path d="M7 7h.01"/></svg>,
+  AlertCircle: () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>,
+  Eye: () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>,
+  Trash: () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 6h18M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2M10 11v6M14 11v6"/></svg>,
+  Edit: () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>,
+  Plus: () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M5 12h14M12 5v14"/></svg>
+};
+
 const AdminTradeInPage = () => {
   const [activeTab, setActiveTab] = useState('requests');
   const [requests, setRequests] = useState<TradeInRequest[]>([]);
@@ -123,14 +138,12 @@ const AdminTradeInPage = () => {
         estimated_price: quotePrice ? parseFloat(quotePrice) : null,
         admin_note: adminNote
       };
-
       const data = await apiFetch<any>(`/admin/trade-in/requests/${selectedRequest.id}/status`, {
         method: 'PUT',
         body: JSON.stringify(payload)
       });
-
       if (data.status === 'success') {
-        toast.showToast({ type: 'success', message: 'Cập nhật trạng thái thành công, email đã được gửi đi!' });
+        toast.showToast({ type: 'success', message: 'Đã cập nhật hệ thống & gửi Email cho khách hàng!' });
         setViewMode('list');
         fetchRequests();
       } else {
@@ -147,25 +160,17 @@ const AdminTradeInPage = () => {
         toast.showToast({ type: 'error', message: 'Vui lòng chọn danh mục' });
         return;
     }
-
     try {
       if (editingCond) {
           const url = `/admin/trade-in/conditions/${editingCond.id}`;
-          const data = await apiFetch<any>(url, {
-            method: 'PUT',
-            body: JSON.stringify(condForm)
-          });
-          
+          const data = await apiFetch<any>(url, { method: 'PUT', body: JSON.stringify(condForm) });
           if (data.status === 'success') {
-            toast.showToast({ type: 'success', message: 'Cập nhật tình trạng thành công' });
+            toast.showToast({ type: 'success', message: 'Cập nhật tiêu chí thành công' });
             setCondModalOpen(false);
             fetchConditions();
           }
       } else {
-          if (!bulkPasteText.trim()) {
-              toast.showToast({ type: 'error', message: 'Vui lòng nhập dữ liệu' });
-              return;
-          }
+          if (!bulkPasteText.trim()) return toast.showToast({ type: 'error', message: 'Vui lòng nhập dữ liệu' });
           const lines = bulkPasteText.split('\n').filter(line => line.trim() !== '');
           let successCount = 0;
           for (const line of lines) {
@@ -175,30 +180,24 @@ const AdminTradeInPage = () => {
              if (name) {
                  await apiFetch<any>(`/admin/trade-in/conditions`, {
                     method: 'POST',
-                    body: JSON.stringify({
-                       category_id: condForm.category_id,
-                       name: name,
-                       description: desc
-                    })
+                    body: JSON.stringify({ category_id: condForm.category_id, name, description: desc })
                  });
                  successCount++;
              }
           }
-          toast.showToast({ type: 'success', message: `Đã thêm thành công ${successCount} tiêu chí` });
+          toast.showToast({ type: 'success', message: `Đã nhập thành công ${successCount} tiêu chí` });
           setCondModalOpen(false);
           fetchConditions();
       }
     } catch (error) {
-      toast.showToast({ type: 'error', message: 'Lỗi khi lưu' });
+      toast.showToast({ type: 'error', message: 'Lỗi hệ thống' });
     }
   };
 
   const handleDeleteCondition = async (id: number) => {
     try {
-      await apiFetch(`/admin/trade-in/conditions/${id}`, {
-        method: 'DELETE'
-      });
-      toast.showToast({ type: 'success', message: 'Xóa thành công' });
+      await apiFetch(`/admin/trade-in/conditions/${id}`, { method: 'DELETE' });
+      toast.showToast({ type: 'success', message: 'Đã xóa tiêu chí' });
       fetchConditions();
       setDeleteConfirmId(null);
     } catch (error) {
@@ -206,109 +205,168 @@ const AdminTradeInPage = () => {
     }
   };
 
-
-  const getStatusBadge = (status: string) => {
-    switch(status) {
-      case 'pending': return <span className="ti-badge pending">Chờ xử lý</span>;
-      case 'quoted': return <span className="ti-badge quoted">Đã báo giá</span>;
-      case 'approved': return <span className="ti-badge approved">Đã duyệt</span>;
-      case 'rejected': return <span className="ti-badge rejected">Từ chối</span>;
-      case 'completed': return <span className="ti-badge completed">Hoàn tất</span>;
-      default: return <span>{status}</span>;
-    }
+  const renderStatusBadge = (status: string) => {
+    const statusConfig: Record<string, { label: string, cls: string }> = {
+      'pending': { label: 'Chờ định giá', cls: 'status-pending' },
+      'quoted': { label: 'Đã báo giá', cls: 'status-quoted' },
+      'approved': { label: 'Khách đồng ý', cls: 'status-approved' },
+      'rejected': { label: 'Đã hủy/Từ chối', cls: 'status-rejected' },
+      'completed': { label: 'Đã thu mua', cls: 'status-completed' }
+    };
+    const conf = statusConfig[status] || { label: status, cls: 'status-default' };
+    return (
+      <div className={`pro-badge ${conf.cls}`}>
+        <span className="dot"></span>
+        {conf.label}
+      </div>
+    );
   };
 
-  const filteredConditions = filterCategory 
-    ? conditions.filter(c => c.category_id.toString() === filterCategory)
-    : conditions;
-
+  const filteredConditions = filterCategory ? conditions.filter(c => c.category_id.toString() === filterCategory) : conditions;
   const filteredRequests = requests.filter(req => {
     if (!searchKeyword) return true;
     const kw = searchKeyword.toLowerCase();
-    const searchStr = `${req.request_code} ${req.customer_name} ${req.customer_phone} ${req.machine_info}`.toLowerCase();
-    return searchStr.includes(kw);
+    return `${req.request_code} ${req.customer_name} ${req.customer_phone} ${req.machine_info}`.toLowerCase().includes(kw);
   });
 
   if (viewMode === 'detail' && selectedRequest) {
     return (
-      <div className="admin-page-content ti-detail-page-content">
-        <div className="admin-page-header ti-detail-header">
-          <button className="btn-secondary ti-back-btn" onClick={() => setViewMode('list')}>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
-            Quay lại
+      <div className="pro-layout">
+        <div className="pro-header-compact">
+          <button className="pro-btn-back" onClick={() => setViewMode('list')}>
+            <Icons.ArrowLeft /> <span>Quay lại danh sách</span>
           </button>
-          <h2 className="ti-detail-title">Chi tiết yêu cầu: <span className="ti-highlight-text">{selectedRequest.request_code}</span></h2>
+          <div className="pro-header-title-group">
+            <h1 className="pro-title">Đơn Yêu Cầu Thu Cũ <span className="highlight">#{selectedRequest.request_code}</span></h1>
+            {renderStatusBadge(selectedRequest.status)}
+          </div>
+          <div className="pro-header-meta">
+            <span className="meta-item"><Icons.Calendar /> {new Date(selectedRequest.created_at).toLocaleString('vi-VN')}</span>
+          </div>
         </div>
         
-        <div className="ti-detail-body">
-          <div className="ti-detail-grid ti-detail-grid no-margin">
-            <div>
-              <h4>Thông tin khách hàng</h4>
-              <p><strong>Tên:</strong> {selectedRequest.customer_name}</p>
-              <p><strong>SĐT:</strong> {selectedRequest.customer_phone}</p>
-              <p><strong>Email:</strong> {selectedRequest.customer_email}</p>
-              <p><strong>Trạng thái:</strong> {getStatusBadge(selectedRequest.status)}</p>
-            </div>
-            <div>
-              <h4>Thông tin máy & Tình trạng lỗi</h4>
-              <p><strong>Loại thiết bị:</strong> {selectedRequest.category?.name}</p>
-              <div><strong>Cấu hình chi tiết:</strong></div>
-              <div className="ti-info-text">{selectedRequest.machine_info}</div>
-              
-              <div className="ti-section-label"><strong>Tình trạng lỗi do khách báo:</strong></div>
-              {selectedRequest.conditions && selectedRequest.conditions.length > 0 ? (
-                <div className="ti-condition-tags">
-                  {selectedRequest.conditions.map(c => (
-                    <span key={c.id} className="ti-condition-tag">{c.name}</span>
-                  ))}
+        <div className="pro-grid-master-detail">
+          <div className="pro-master-col">
+            {/* Customer Info Card */}
+            <div className="pro-panel">
+              <div className="pro-panel-header">
+                <div className="pro-panel-icon"><Icons.User /></div>
+                <h3 className="pro-panel-title">Thông tin khách hàng</h3>
+              </div>
+              <div className="pro-panel-body">
+                <div className="pro-info-grid">
+                  <div className="info-group">
+                    <label>Họ và tên</label>
+                    <div className="value-strong">{selectedRequest.customer_name}</div>
+                  </div>
+                  <div className="info-group">
+                    <label>Số điện thoại</label>
+                    <div className="value-link">{selectedRequest.customer_phone}</div>
+                  </div>
+                  <div className="info-group">
+                    <label>Email liên hệ</label>
+                    <div className="value">{selectedRequest.customer_email}</div>
+                  </div>
                 </div>
-              ) : (
-                <div className="ti-empty-text">Không có lỗi (Máy bình thường)</div>
-              )}
+              </div>
+            </div>
+
+            {/* Device Info Card */}
+            <div className="pro-panel mt-20">
+              <div className="pro-panel-header">
+                <div className="pro-panel-icon"><Icons.Device /></div>
+                <h3 className="pro-panel-title">Thiết bị cần định giá</h3>
+                <div className="pro-category-tag">{selectedRequest.category?.name}</div>
+              </div>
+              <div className="pro-panel-body">
+                <div className="pro-device-specs">
+                  <label>Thông số kỹ thuật (Khách hàng cung cấp):</label>
+                  <div className="specs-box">{selectedRequest.machine_info}</div>
+                </div>
+                
+                <div className="pro-device-conditions mt-16">
+                  <label>Tình trạng & Lỗi ghi nhận:</label>
+                  {selectedRequest.conditions && selectedRequest.conditions.length > 0 ? (
+                    <div className="pro-tags-wrap">
+                      {selectedRequest.conditions.map(c => (
+                        <div key={c.id} className="pro-error-tag">
+                          <Icons.AlertCircle /> <span>{c.name}</span>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="pro-empty-text">Thiết bị hoạt động bình thường, ngoại hình tốt.</div>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Gallery Card */}
+            <div className="pro-panel mt-20">
+              <div className="pro-panel-header">
+                <h3 className="pro-panel-title">Hình ảnh thực tế</h3>
+              </div>
+              <div className="pro-panel-body">
+                {selectedRequest.images && selectedRequest.images.length > 0 ? (
+                  <div className="pro-image-grid">
+                    {selectedRequest.images.map((img, i) => {
+                      const fullUrl = img.startsWith('http') ? img : `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'}/storage/${img}`;
+                      return (
+                        <a href={fullUrl} target="_blank" rel="noreferrer" key={i} className="pro-image-item">
+                          <img src={fullUrl} alt={`Ảnh máy ${i+1}`} loading="lazy" />
+                          <div className="pro-image-overlay"><Icons.Eye /></div>
+                        </a>
+                      )
+                    })}
+                  </div>
+                ) : <div className="pro-empty-box">Không có hình ảnh đính kèm</div>}
+              </div>
             </div>
           </div>
 
-          <div className="ti-image-section">
-            <h4 className="ti-section-title">Hình ảnh khách hàng gửi</h4>
-            <div className="ti-image-gallery">
-              {selectedRequest.images && selectedRequest.images.length > 0 ? (
-                selectedRequest.images.map((img, i) => {
-                  const imgUrl = (img.startsWith('http') || img.startsWith('/storage')) ? img : `/storage/${img}`;
-                  return (
-                      <a href={(import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000').replace(/\/$/, '') + imgUrl} target="_blank" rel="noreferrer" key={i}>
-                        <img src={(import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000').replace(/\/$/, '') + imgUrl} alt={`Ảnh ${i+1}`} className="ti-gallery-img ti-gallery-img zoomable" />
-                      </a>
-                  )
-                })
-              ) : <p className="ti-empty-text">Không có hình ảnh</p>}
-            </div>
-          </div>
+          <div className="pro-detail-col">
+            <div className="pro-action-sticky-panel">
+              <div className="pro-panel">
+                <div className="pro-panel-header">
+                  <div className="pro-panel-icon primary"><Icons.Tag /></div>
+                  <h3 className="pro-panel-title">Quyết Định Thu Mua</h3>
+                </div>
+                <div className="pro-panel-body">
+                  <div className="pro-input-group">
+                    <label htmlFor="quotePrice">Mức giá đề xuất (VNĐ)</label>
+                    <div className="pro-currency-input">
+                      <input 
+                        id="quotePrice"
+                        type="number" 
+                        value={quotePrice}
+                        onChange={e => setQuotePrice(e.target.value)}
+                        placeholder="VD: 15000000"
+                      />
+                      <span className="currency-symbol">VND</span>
+                    </div>
+                  </div>
 
-          <div className="ti-admin-form ti-admin-form shadowed">
-            <h4 className="ti-section-title">Xử lý yêu cầu (Báo giá / Từ chối)</h4>
-            <div className="form-group form-group spaced">
-              <label>Giá thu mua đề xuất (VNĐ)</label>
-              <input 
-                type="number" 
-                value={quotePrice}
-                onChange={e => setQuotePrice(e.target.value)}
-                placeholder="Nhập giá thu mua nếu muốn duyệt báo giá"
-                className="ti-input-control"
-              />
-            </div>
-            <div className="form-group form-group spaced">
-              <label>Ghi chú cho khách hàng (Lý do từ chối hoặc tình trạng thực tế)</label>
-              <textarea 
-                value={adminNote}
-                onChange={e => setAdminNote(e.target.value)}
-                placeholder="Khách sẽ đọc được nội dung này trong Email..."
-                className="ti-textarea-control"
-                rows={4}
-              />
-            </div>
-            <div className="ti-form-actions">
-              <button className="btn-success ti-action-btn" onClick={() => updateStatus('quoted')}>Phê duyệt & Gửi Báo Giá</button>
-              <button className="btn-danger ti-action-btn" onClick={() => updateStatus('rejected')}>Từ chối</button>
+                  <div className="pro-input-group mt-16">
+                    <label htmlFor="adminNote">Ghi chú (Gửi qua Email cho khách)</label>
+                    <textarea 
+                      id="adminNote"
+                      value={adminNote}
+                      onChange={e => setAdminNote(e.target.value)}
+                      placeholder="Lý do chốt giá hoặc lý do từ chối thu mua..."
+                      rows={5}
+                      className="pro-textarea"
+                    />
+                  </div>
+                </div>
+                <div className="pro-panel-footer">
+                  <button className="pro-btn pro-btn-success" onClick={() => updateStatus('quoted')}>
+                    Duyệt & Báo giá
+                  </button>
+                  <button className="pro-btn pro-btn-danger-ghost" onClick={() => updateStatus('rejected')}>
+                    Từ chối thu mua
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -317,217 +375,201 @@ const AdminTradeInPage = () => {
   }
 
   return (
-    <div className="admin-page-content">
-      <div className="admin-page-header">
-        <h2>Quản lý Thu cũ đổi mới</h2>
+    <div className="pro-layout">
+      <div className="pro-page-heading">
+        <div>
+          <h1 className="pro-title">Thu Cũ Đổi Mới</h1>
+          <p className="pro-subtitle">Quản lý định giá và kiểm định thiết bị thương mại điện tử.</p>
+        </div>
+        <div className="pro-heading-actions">
+           {activeTab === 'conditions' && (
+             <button className="pro-btn pro-btn-primary" onClick={() => {
+                setEditingCond(null);
+                setCondForm({ category_id: '', name: '', description: '' });
+                setBulkPasteText('');
+                setCondModalOpen(true);
+             }}>
+                <Icons.Plus /> Thêm Tiêu Chí
+             </button>
+           )}
+        </div>
       </div>
 
-      <div className="ti-admin-tabs">
-        <button className={`ti-tab-btn ${activeTab === 'requests' ? 'active' : ''}`} onClick={() => setActiveTab('requests')}>Yêu cầu định giá</button>
-        <button className={`ti-tab-btn ${activeTab === 'conditions' ? 'active' : ''}`} onClick={() => setActiveTab('conditions')}>Tiêu chí tình trạng</button>
+      <div className="pro-segment-control">
+        <button className={`segment-item ${activeTab === 'requests' ? 'active' : ''}`} onClick={() => setActiveTab('requests')}>Yêu cầu định giá</button>
+        <button className={`segment-item ${activeTab === 'conditions' ? 'active' : ''}`} onClick={() => setActiveTab('conditions')}>Tiêu chuẩn kiểm định</button>
       </div>
 
-      <div className="admin-card">
+      <div className="pro-main-card">
         {activeTab === 'requests' && (
             <>
-                <div className="ti-toolbar">
-                    <div className="ti-toolbar-left">
-                        <div className="ti-search-box">
-                            <span className="ti-search-icon">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-                            </span>
-                            <input 
-                                type="text" 
-                                className="ti-search-input" 
-                                placeholder="Tìm kiếm mã, tên khách, SĐT, thông tin máy..." 
-                                value={searchKeyword}
-                                onChange={(e) => setSearchKeyword(e.target.value)}
-                            />
-                        </div>
+                <div className="pro-toolbar">
+                    <div className="pro-search-box">
+                        <Icons.Search />
+                        <input 
+                            type="text" 
+                            placeholder="Tìm kiếm mã đơn, SĐT hoặc tên thiết bị..." 
+                            value={searchKeyword}
+                            onChange={(e) => setSearchKeyword(e.target.value)}
+                        />
                     </div>
-                    <div className="ti-toolbar-right">
-                        <select 
-                            className="ti-filter-select" 
-                            value={filterStatus}
-                            onChange={(e) => setFilterStatus(e.target.value)}
-                        >
-                        <option value="">Tất cả trạng thái</option>
-                        <option value="pending">Chờ xử lý</option>
-                        <option value="quoted">Đã báo giá</option>
-                        <option value="approved">Đã duyệt</option>
-                        <option value="rejected">Từ chối</option>
-                        <option value="completed">Hoàn tất</option>
+                    <div className="pro-filter-box">
+                        <select value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)}>
+                          <option value="">Tất cả trạng thái</option>
+                          <option value="pending">Chờ định giá</option>
+                          <option value="quoted">Đã báo giá</option>
+                          <option value="approved">Khách đồng ý</option>
+                          <option value="rejected">Từ chối</option>
+                          <option value="completed">Đã thu mua</option>
                         </select>
                     </div>
                 </div>
-                {loading ? <p>Đang tải...</p> : (
-                <table className="admin-table">
-                    <thead>
-                    <tr>
-                        <th>Mã Yêu Cầu</th>
-                        <th>Khách Hàng</th>
-                        <th>Thông tin máy</th>
-                        <th>Ngày tạo</th>
-                        <th>Giá báo</th>
-                        <th>Trạng thái</th>
-                        <th>Hành động</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {filteredRequests.map(req => (
-                        <tr key={req.id}>
-                        <td>{req.request_code}</td>
-                        <td>
-                            <div>{req.customer_name}</div>
-                            <div style={{fontSize:'0.85rem', color:'#666'}}>{req.customer_phone}</div>
-                        </td>
-                        <td>
-                          <div style={{ whiteSpace: 'pre-wrap', fontSize: '0.9rem', lineHeight: '1.4', maxHeight: '80px', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                            {req.machine_info}
-                          </div>
-                        </td>
-                        <td>{new Date(req.created_at).toLocaleDateString('vi-VN')}</td>
-                        <td>{formatCurrency(req.estimated_price || 0)}</td>
-                        <td>{getStatusBadge(req.status)}</td>
-                        <td>
-                            <button className="ti-action-btn btn-secondary btn-sm" onClick={() => handleOpenModal(req)}><EyeIcon /></button>
-                        </td>
-                        </tr>
-                    ))}
-                    {filteredRequests.length === 0 && <tr><td colSpan={7} style={{textAlign:'center'}}>Không tìm thấy yêu cầu nào phù hợp</td></tr>}
-                    </tbody>
-                </table>
-                )}
+                
+                <div className="pro-table-wrapper">
+                  {loading ? <div className="pro-loader"><div className="spinner"></div> Đang tải dữ liệu...</div> : (
+                  <table className="pro-table">
+                      <thead>
+                      <tr>
+                          <th style={{width: '120px'}}>Mã Đơn</th>
+                          <th style={{width: '20%'}}>Khách Hàng</th>
+                          <th style={{width: '28%'}}>Thiết Bị</th>
+                          <th>Ngày Yêu Cầu</th>
+                          <th>Định Giá</th>
+                          <th>Trạng Thái</th>
+                          <th className="align-right">Thao Tác</th>
+                      </tr>
+                      </thead>
+                      <tbody>
+                      {filteredRequests.map(req => (
+                          <tr key={req.id}>
+                            <td><span className="pro-code-id">#{req.request_code}</span></td>
+                            <td>
+                                <div className="pro-td-primary">{req.customer_name}</div>
+                                <div className="pro-td-secondary">{req.customer_phone}</div>
+                            </td>
+                            <td>
+                              <div className="pro-td-primary clamp-1">{req.category?.name}</div>
+                              <div className="pro-td-secondary clamp-1">{req.machine_info}</div>
+                            </td>
+                            <td><span className="pro-td-text">{new Date(req.created_at).toLocaleDateString('vi-VN')}</span></td>
+                            <td>
+                              <span className={`pro-price-text ${!req.estimated_price ? 'empty' : ''}`}>
+                                {req.estimated_price ? formatCurrency(req.estimated_price) : 'Chưa định giá'}
+                              </span>
+                            </td>
+                            <td>{renderStatusBadge(req.status)}</td>
+                            <td className="align-right">
+                                <button className="pro-action-icon" onClick={() => handleOpenModal(req)} title="Chi tiết định giá">
+                                  <span>Xử lý</span> <Icons.ArrowLeft />
+                                </button>
+                            </td>
+                          </tr>
+                      ))}
+                      {filteredRequests.length === 0 && <tr><td colSpan={7} className="pro-empty-state">Không có dữ liệu yêu cầu nào.</td></tr>}
+                      </tbody>
+                  </table>
+                  )}
+                </div>
             </>
         )}
 
         {activeTab === 'conditions' && (
             <>
-                <div className="ti-toolbar">
-                    <div className="ti-toolbar-left">
-                        <button className="ti-action-btn btn-primary" onClick={() => {
-                            setEditingCond(null);
-                            setCondForm({ category_id: '', name: '', description: '' });
-                            setBulkPasteText('');
-                            setCondModalOpen(true);
-                        }}>+ Thêm tiêu chí</button>
-                    </div>
-                    <div className="ti-toolbar-right">
-                        <select 
-                            className="ti-filter-select" 
-                            style={{ minWidth: '200px' }}
-                            value={filterCategory}
-                            onChange={(e) => setFilterCategory(e.target.value)}
-                        >
-                            <option value="">Tất cả danh mục</option>
+                <div className="pro-toolbar">
+                    <div className="pro-filter-box" style={{maxWidth: '300px', marginLeft: 'auto'}}>
+                        <select value={filterCategory} onChange={(e) => setFilterCategory(e.target.value)}>
+                            <option value="">Lọc theo tất cả danh mục</option>
                             {categories.map(c => (
                                 <option key={c.id} value={c.id}>{c.name}</option>
                             ))}
                         </select>
                     </div>
                 </div>
-                {loading ? <p>Đang tải...</p> : (
-                <table className="admin-table">
-                    <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Danh mục</th>
-                        <th>Tên lỗi / Tình trạng</th>
-                        <th>Mô tả</th>
-                        <th>Hành động</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {filteredConditions.map(cond => (
-                        <tr key={cond.id}>
-                        <td>{cond.id}</td>
-                        <td>{cond.category?.name}</td>
-                        <td>{cond.name}</td>
-                        <td>{cond.description}</td>
-                        <td>
-                            <button className="ti-action-btn btn-secondary btn-sm" style={{marginRight:'5px'}} onClick={() => {
-                                setEditingCond(cond);
-                                setCondForm({ category_id: cond.category_id.toString(), name: cond.name, description: cond.description });
-                                setCondModalOpen(true);
-                            }}>Sửa</button>
-                            <button className="ti-action-btn btn-danger btn-sm" onClick={() => setDeleteConfirmId(cond.id)}>Xóa</button>
-                        </td>
-                        </tr>
-                    ))}
-                    {filteredConditions.length === 0 && <tr><td colSpan={5} style={{textAlign:'center'}}>Chưa có tiêu chí nào</td></tr>}
-                      </tbody>
-                </table>
-                )}
+                <div className="pro-table-wrapper">
+                  {loading ? <div className="pro-loader"><div className="spinner"></div> Đang tải dữ liệu...</div> : (
+                  <table className="pro-table">
+                      <thead>
+                      <tr>
+                          <th style={{width: '80px'}}>ID</th>
+                          <th style={{width: '15%'}}>Danh Mục</th>
+                          <th style={{width: '25%'}}>Tên Tình Trạng / Lỗi</th>
+                          <th>Mô Tả Tiêu Chuẩn</th>
+                          <th className="align-right">Thao Tác</th>
+                      </tr>
+                      </thead>
+                      <tbody>
+                      {filteredConditions.map(cond => (
+                          <tr key={cond.id}>
+                            <td className="pro-td-secondary">#{cond.id}</td>
+                            <td><span className="pro-tag">{cond.category?.name}</span></td>
+                            <td><div className="pro-td-primary">{cond.name}</div></td>
+                            <td><div className="pro-td-secondary clamp-2">{cond.description}</div></td>
+                            <td className="align-right">
+                                <div className="pro-actions-group">
+                                  <button className="pro-btn-icon" onClick={() => {
+                                      setEditingCond(cond);
+                                      setCondForm({ category_id: cond.category_id.toString(), name: cond.name, description: cond.description });
+                                      setCondModalOpen(true);
+                                  }}><Icons.Edit /></button>
+                                  <button className="pro-btn-icon danger" onClick={() => setDeleteConfirmId(cond.id)}><Icons.Trash /></button>
+                                </div>
+                            </td>
+                          </tr>
+                      ))}
+                      {filteredConditions.length === 0 && <tr><td colSpan={5} className="pro-empty-state">Hệ thống chưa có tiêu chuẩn kiểm định nào.</td></tr>}
+                        </tbody>
+                  </table>
+                  )}
+                </div>
             </>
         )}  
       </div>
 
       {condModalOpen && (
-        <div className="admin-modal">
-          <div className="admin-modal-content" style={{maxWidth: '500px', width: '90%'}}>
-            <div className="admin-modal-header">
-              <h3>{editingCond ? 'Sửa tiêu chí' : 'Thêm tiêu chí tình trạng'}</h3>
-              <button className="close-btn" onClick={() => setCondModalOpen(false)}>×</button>
+        <div className="pro-modal-backdrop">
+          <div className="pro-modal-dialog">
+            <div className="pro-modal-header">
+              <h2>{editingCond ? 'Chỉnh Sửa Tiêu Chí' : 'Khởi Tạo Tiêu Chí Định Giá'}</h2>
+              <button className="pro-close-btn" onClick={() => setCondModalOpen(false)}>×</button>
             </div>
-            <div className="admin-modal-body">
+            <div className="pro-modal-body">
               <form onSubmit={handleSaveCondition}>
-                <div className="form-group form-group spaced" style={{paddingBottom:'14px'}}>
-                  <label>Danh mục</label>
-                  <select 
-                    required 
-                    value={condForm.category_id} 
-                    onChange={e => setCondForm({...condForm, category_id: e.target.value})}
-                    className="ti-input-control"
-                    style={{marginTop:'6px'}}
-                  >
-                    <option value="">Chọn danh mục</option>
-                    {categories.map(c => (
-                        <option key={c.id} value={c.id}>{c.name}</option>
-                    ))}
+                <div className="pro-input-group">
+                  <label>Danh mục áp dụng <span className="req">*</span></label>
+                  <select required value={condForm.category_id} onChange={e => setCondForm({...condForm, category_id: e.target.value})}>
+                    <option value="">-- Lựa chọn danh mục --</option>
+                    {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
                   </select>
                 </div>
                 
                 {editingCond ? (
                     <>
-                        <div className="form-group form-group spaced" style={{paddingBottom:'14px'}}> 
-                        <label>Tên tình trạng / Lỗi</label>
-                        <input 
-                            type="text" 
-                            required 
-                            value={condForm.name} 
-                            onChange={e => setCondForm({...condForm, name: e.target.value})}
-                            className="ti-input-control" style={{marginTop:'6px'}}
-                        />
+                        <div className="pro-input-group mt-20"> 
+                          <label>Tên Lỗi / Tình Trạng <span className="req">*</span></label>
+                          <input type="text" required value={condForm.name} onChange={e => setCondForm({...condForm, name: e.target.value})} placeholder="VD: Màn hình ám vàng nhẹ"/>
                         </div>
-                        <div className="form-group form-group spaced" style={{paddingBottom:'14px'}}>
-                        <label>Mô tả chi tiết</label>
-                        <textarea 
-                            value={condForm.description} 
-                            onChange={e => setCondForm({...condForm, description: e.target.value})}
-                            className="ti-textarea-control"
-                            rows={3} style={{marginTop:'6px'}}
-                        />
+                        <div className="pro-input-group mt-20">
+                          <label>Mô tả chi tiết (Tùy chọn)</label>
+                          <textarea value={condForm.description} onChange={e => setCondForm({...condForm, description: e.target.value})} rows={3} placeholder="Mô tả kỹ thuật để nhân viên dễ đối chiếu..."/>
                         </div>
                     </>
                 ) : (
-                    <div className="form-group form-group spaced">
-                        <label>Dán nhanh (Định dạng: Tên lỗi | Mô tả chi tiết)</label>
+                    <div className="pro-input-group mt-20">
+                        <label>Nhập Liệu Hàng Loạt (Bulk Data) <span className="req">*</span></label>
                         <textarea 
                             required
                             value={bulkPasteText} 
                             onChange={e => setBulkPasteText(e.target.value)}
-                            className="ti-textarea-control"
-                            style={{marginTop:'6px'}}
+                            className="code-font"
                             rows={6}
-                            placeholder="Ngoại hình đẹp 99% | Không cấn móp, ít trầy xước...&#10;Pin chai | Pin bảo trì hoặc dưới 80%..."
+                            placeholder="Màn hình xước dăm | Xước nhẹ dưới 1cm...&#10;Pin chai | Dung lượng tối đa dưới 80%..."
                         />
-                        <p style={{fontSize: '0.85rem', color: '#64748b', marginTop: '8px'}}>Mỗi tiêu chí trên một dòng, cách nhau bởi dấu gạch đứng ( <strong>|</strong> )</p>
+                        <div className="pro-help-text">Định dạng: <code>Tên tiêu chí | Mô tả chi tiết</code> (Mỗi tiêu chí 1 dòng).</div>
                     </div>
                 )}
-
-                <div className="ti-form-actions">
-                  <button type="submit" className="ti-action-btn btn-primary">Lưu lại</button>
-                  <button type="button" className="ti-action-btn btn-secondary" onClick={() => setCondModalOpen(false)}>Hủy</button>
+                <div className="pro-modal-actions mt-32">
+                  <button type="button" className="pro-btn pro-btn-default" onClick={() => setCondModalOpen(false)}>Hủy Bỏ</button>
+                  <button type="submit" className="pro-btn pro-btn-primary">{editingCond ? 'Lưu Thay Đổi' : 'Tạo Tiêu Chí'}</button>
                 </div>
               </form>
             </div>
@@ -537,20 +579,9 @@ const AdminTradeInPage = () => {
 
       <ConfirmModal
         open={deleteConfirmId !== null}
-        title="Xác nhận xóa tiêu chí"
-        message={
-          <div style={{ display: 'grid', gap: 12 }}>
-            <p>Bạn có chắc chắn muốn xóa tiêu chí này không?</p>
-            <div style={{ color: '#6b7280', fontSize: '0.9rem' }}>
-              Hành động này không thể hoàn tác.
-            </div>
-          </div>
-        }
-        onConfirm={() => {
-          if (deleteConfirmId !== null) {
-            handleDeleteCondition(deleteConfirmId);
-          }
-        }}
+        title="Xóa tiêu chí kiểm định?"
+        message="Hành động này sẽ xóa vĩnh viễn tiêu chí khỏi hệ thống và không thể khôi phục. Bạn có chắc chắn?"
+        onConfirm={() => { if (deleteConfirmId !== null) handleDeleteCondition(deleteConfirmId); }}
         onCancel={() => setDeleteConfirmId(null)}
       />
     </div>
@@ -558,21 +589,3 @@ const AdminTradeInPage = () => {
 };
 
 export default AdminTradeInPage;
-function EyeIcon() {
-  return (
-    <svg
-      width="18"
-      height="18"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-      <circle cx="12" cy="12" r="3" />
-    </svg>
-  );
-}

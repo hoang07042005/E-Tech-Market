@@ -175,6 +175,19 @@ const TradeInPage = () => {
     );
   };
 
+  const isStep1Valid = () => {
+    if (!selectedCategoryId || !machineName.trim() || images.length === 0) return false;
+    
+    const selectedCat = categories.find(c => c.id === selectedCategoryId);
+    if (selectedCat?.slug === 'dien-thoai') {
+        if (!phoneStorage.trim() || !phoneColor.trim()) return false;
+    }
+    if (selectedCat?.slug === 'laptop') {
+        if (!laptopRam.trim() || !laptopDisk.trim()) return false;
+    }
+    return true;
+  };
+
   return (
     <div className="ti-container">
       <div className="ti-hero">
@@ -255,11 +268,11 @@ const TradeInPage = () => {
                               {isPhone && (
                                   <>
                                       <div className="ti-form-group">
-                                          <label>Dung lượng lưu trữ</label>
+                                          <label>Dung lượng lưu trữ <span>*</span></label>
                                           <input type="text" placeholder="VD: 256GB..." value={phoneStorage} onChange={e => setPhoneStorage(e.target.value)} />
                                       </div>
                                       <div className="ti-form-group">
-                                          <label>Màu sắc</label>
+                                          <label>Màu sắc <span>*</span></label>
                                           <input type="text" placeholder="VD: Xanh dương..." value={phoneColor} onChange={e => setPhoneColor(e.target.value)} />
                                       </div>
                                   </>
@@ -296,7 +309,7 @@ const TradeInPage = () => {
                               </div>
 
                               <div className="ti-form-group full-width">
-                                  <label>Tải ảnh máy lên (khuyến khích) <span style={{fontSize:'0.8rem', color:'#64748b', fontWeight:'normal'}}>* Tối đa 5 ảnh</span></label>
+                                  <label>Tải ảnh máy lên <span>*</span> <span style={{fontSize:'0.8rem', color:'#64748b', fontWeight:'normal'}}>* Tối đa 5 ảnh</span></label>
                                   <div className="ti-upload-box">
                                       <input type="file" multiple accept="image/*" onChange={handleImageChange} disabled={images.length >= 5} />
                                       <div className="ti-upload-icon-wrapper">
@@ -323,7 +336,7 @@ const TradeInPage = () => {
                             <button 
                               type="button" 
                               className="ti-submit-btn ti-btn-auto"
-                              disabled={!machineName}
+                              disabled={!isStep1Valid()}
                               onClick={() => setStep(2)}
                             >
                               Tiếp tục
@@ -384,7 +397,7 @@ const TradeInPage = () => {
                   type="button" 
                   className="ti-submit-btn ti-btn-auto"
                   onClick={() => setStep(3)}
-                  disabled={step < 2}
+                  disabled={step < 2 || selectedConditions.length === 0}
                 >
                   Tiếp tục
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="ti-btn-icon"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
@@ -456,7 +469,11 @@ const TradeInPage = () => {
 
               <div className="ti-btn-wrapper-col3">
                 <button type="button" className="ti-btn-secondary ti-btn-back" onClick={() => setStep(2)}>Quay lại</button>
-                <button type="submit" className="ti-submit-btn ti-btn-submit-final" disabled={isSubmitting || !selectedCategoryId || !machineName || step < 3}>
+                <button 
+                  type="submit" 
+                  className="ti-submit-btn ti-btn-submit-final" 
+                  disabled={isSubmitting || !isStep1Valid() || step < 3 || !customerName.trim() || !customerPhone.trim() || !customerEmail.trim()}
+                >
                     {isSubmitting ? 'Đang gửi...' : (
                       <>
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
@@ -479,35 +496,184 @@ const TradeInPage = () => {
           </div>
       </form>
 
-      <div className="ti-features">
-        <div className="ti-feature">
-          <div className="ti-feature-icon ti-feature-icon-orange"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg></div>
-          <div className="ti-feature-text">
-            <h4>Định giá nhanh chóng</h4>
-            <p>Hệ thống tự động phân tích và báo giá máy chính xác chỉ trong 30 giây.</p>
+      {/* SECTION 1: QUY TRÌNH THU CŨ */}
+      <div className="ti-redesign-process-section">
+        <div className="ti-rp-header">
+          <div className="ti-rp-line"></div>
+          <h3>QUY TRÌNH THU CŨ TẠI E-TECH MARKET</h3>
+          <div className="ti-rp-line"></div>
+        </div>
+
+        <div className="ti-rp-steps">
+          
+          <div className="ti-rp-step theme-orange">
+            <div className="ti-rp-badge">01</div>
+            <div className="ti-rp-image">
+              <img src="/guiTT.png" alt="" />
+            </div>
+            <h4 className="ti-rp-title">Gửi thông tin</h4>
+            <p className="ti-rp-desc">Điền form trực tuyến với các thông tin và hình ảnh thực tế về tình trạng thiết bị của bạn chỉ trong vài phút.</p>
+          </div>
+
+          <div className="ti-rp-arrow arrow-orange">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" className="bi bi-arrow-right-short" viewBox="0 0 16 16">
+              <path fill-rule="evenodd" d="M4 8a.5.5 0 0 1 .5-.5h5.793L8.146 5.354a.5.5 0 1 1 .708-.708l3 3a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708-.708L10.293 8.5H4.5A.5.5 0 0 1 4 8"/>
+            </svg>
+          </div>
+
+          <div className="ti-rp-step theme-yellow">
+            <div className="ti-rp-badge">02</div>
+            <div className="ti-rp-image">
+              <img src="/quanTXTT.png" alt="" />
+            </div>
+            <h4 className="ti-rp-title">Tiếp nhận dữ liệu</h4>
+            <p className="ti-rp-desc">Hệ thống và chuyên viên sẽ ghi nhận yêu cầu, tiến hành kiểm tra tính hợp lệ của các thông tin được cung cấp.</p>
+          </div>
+
+          <div className="ti-rp-arrow arrow-yellow">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" className="bi bi-arrow-right-short" viewBox="0 0 16 16">
+              <path fill-rule="evenodd" d="M4 8a.5.5 0 0 1 .5-.5h5.793L8.146 5.354a.5.5 0 1 1 .708-.708l3 3a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708-.708L10.293 8.5H4.5A.5.5 0 0 1 4 8"/>
+            </svg>
+          </div>
+
+          <div className="ti-rp-step theme-green">
+            <div className="ti-rp-badge">03</div>
+            <div className="ti-rp-image">
+              <img src="/quanTDG&NX.png" alt="" />
+            </div>
+            <h4 className="ti-rp-title">Định giá chuẩn xác</h4>
+            <p className="ti-rp-desc">Thiết bị được đánh giá minh bạch dựa trên tình trạng thực tế để đưa ra mức giá thu mua cạnh tranh nhất.</p>
+          </div>
+
+          <div className="ti-rp-arrow arrow-green">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" className="bi bi-arrow-right-short" viewBox="0 0 16 16">
+              <path fill-rule="evenodd" d="M4 8a.5.5 0 0 1 .5-.5h5.793L8.146 5.354a.5.5 0 1 1 .708-.708l3 3a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708-.708L10.293 8.5H4.5A.5.5 0 0 1 4 8"/>
+            </svg>
+          </div>
+
+          <div className="ti-rp-step theme-blue">
+            <div className="ti-rp-badge">04</div>
+            <div className="ti-rp-image">
+              <img src="/pheTDTC.png" alt="" />
+            </div>
+            <h4 className="ti-rp-title">Phê duyệt yêu cầu</h4>
+            <p className="ti-rp-desc">Đơn yêu cầu được xét duyệt nhanh chóng. Mọi quyết định đồng ý hay từ chối đều đi kèm lý do rõ ràng.</p>
+          </div>
+
+          <div className="ti-rp-arrow arrow-blue">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" className="bi bi-arrow-right-short" viewBox="0 0 16 16">
+              <path fill-rule="evenodd" d="M4 8a.5.5 0 0 1 .5-.5h5.793L8.146 5.354a.5.5 0 1 1 .708-.708l3 3a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708-.708L10.293 8.5H4.5A.5.5 0 0 1 4 8"/>
+            </svg>
+          </div>
+
+          <div className="ti-rp-step theme-purple">
+            <div className="ti-rp-badge">05</div>
+            <div className="ti-rp-image">
+              <img src="/guiKQ.png" alt="" />
+            </div>
+            <h4 className="ti-rp-title">Nhận kết quả qua Email</h4>
+            <p className="ti-rp-desc">Nhận ngay thông báo kết quả thẩm định, mức giá chính thức và hướng dẫn các bước tiếp theo qua email của bạn.</p>
+          </div>
+
+        </div>
+        
+        {/* Continuous bottom line */}
+        <div className="ti-rp-bottom-line">
+          <div className="line-segment ls-orange"></div>
+          <div className="line-segment ls-yellow"></div>
+          <div className="line-segment ls-green"></div>
+          <div className="line-segment ls-blue"></div>
+          <div className="line-segment ls-purple"></div>
+        </div>
+      </div>
+
+      {/* SECTION 2: CAM KẾT & LƯU Ý */}
+      <div className="ti-redesign-bottom-layout">
+        
+        {/* Left Column */}
+        <div className="ti-rb-commitment">
+          <div className="ti-rb-c-header">
+             <div className="ti-rb-c-shield">
+               <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><polyline points="9 12 11 14 15 10"></polyline></svg>
+             </div>
+             <h4>CAM KẾT TỪ E-TECH MARKET</h4>
+          </div>
+          
+          <div className="ti-rb-c-grid">
+            <div className="ti-rb-c-item">
+              <div className="ti-rb-c-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg></div>
+              <div className="ti-rb-c-text">
+                <h5>Thông tin bảo mật</h5>
+                <p>Bảo mật tuyệt đối thông tin cá nhân và thiết bị của bạn.</p>
+              </div>
+            </div>
+            <div className="ti-rb-c-item">
+              <div className="ti-rb-c-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg></div>
+              <div className="ti-rb-c-text">
+                <h5>Định giá minh bạch</h5>
+                <p>Định giá đúng giá trị thật của thiết bị.</p>
+              </div>
+            </div>
+            <div className="ti-rb-c-item">
+              <div className="ti-rb-c-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"></path></svg></div>
+              <div className="ti-rb-c-text">
+                <h5>Không ép giá</h5>
+                <p>Nói không với ép giá, mua bán rõ ràng.</p>
+              </div>
+            </div>
+            <div className="ti-rb-c-item">
+              <div className="ti-rb-c-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg></div>
+              <div className="ti-rb-c-text">
+                <h5>Xử lý nhanh chóng</h5>
+                <p>Tiếp nhận và phản hồi trong 30 phút.</p>
+              </div>
+            </div>
+            <div className="ti-rb-c-item">
+              <div className="ti-rb-c-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5.5"></path><polygon points="8 11 5 15 8 19"></polygon><path d="M8 3v2a4 4 0 0 0 4 4h8.5"></path><polygon points="16 13 19 9 16 5"></polygon></svg></div>
+              <div className="ti-rb-c-text">
+                <h5>Hỗ trợ tận tâm</h5>
+                <p>Đội ngũ tư vấn nhiệt tình, hỗ trợ 24/7.</p>
+              </div>
+            </div>
+            <div className="ti-rb-c-item">
+              <div className="ti-rb-c-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 3v18h18"></path><path d="M18.7 8l-5.1 5.2-2.8-2.7L7 14.3"></path></svg></div>
+              <div className="ti-rb-c-text">
+                <h5>Thu cũ đổi mới dễ dàng</h5>
+                <p>Trợ giá hấp dẫn khi lên đời sản phẩm mới.</p>
+              </div>
+            </div>
           </div>
         </div>
-        <div className="ti-feature">
-          <div className="ti-feature-icon ti-feature-icon-orange"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><path d="M9 12l2 2 4-4"></path></svg></div>
-          <div className="ti-feature-text">
-            <h4>Bảo mật thông tin</h4>
-            <p>Cam kết xóa sạch hoàn toàn dữ liệu cá nhân, đảm bảo an toàn tuyệt đối</p>
+
+        {/* Right Column */}
+        <div className="ti-rb-notice">
+          <div className="ti-rb-n-header">
+             <div className="ti-rb-n-bell">
+               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+             </div>
+             <h4>LƯU Ý QUAN TRỌNG</h4>
           </div>
+          
+          <ul className="ti-rb-n-list">
+            <li>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2563eb" strokeWidth="2.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+              <span>Thông tin bạn cung cấp càng chi tiết, việc định giá càng chính xác.</span>
+            </li>
+            <li>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2563eb" strokeWidth="2.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+              <span>Thiết bị phải thuộc quyền sở hữu hợp pháp của bạn.</span>
+            </li>
+            <li>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2563eb" strokeWidth="2.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+              <span>Chúng tôi có quyền từ chối thu mua nếu thiết bị không đủ điều kiện.</span>
+            </li>
+            <li>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2563eb" strokeWidth="2.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+              <span>Mọi thông tin của bạn được bảo mật tuyệt đối.</span>
+            </li>
+          </ul>
         </div>
-        <div className="ti-feature">
-          <div className="ti-feature-icon ti-feature-icon-orange"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg></div>
-          <div className="ti-feature-text">
-            <h4>Trợ giá hấp dẫn</h4>
-            <p>Nhận ngay mức trợ giá hấp dẫn lên tới 2.000.000đ khi tham gia thu đổi máy.</p>
-          </div>
-        </div>
-        <div className="ti-feature">
-          <div className="ti-feature-icon ti-feature-icon-orange"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 3v18h18"></path><path d="M18.7 8l-5.1 5.2-2.8-2.7L7 14.3"></path></svg></div>
-          <div className="ti-feature-text">
-            <h4>Thu cũ đổi mới</h4>
-            <p>Quy trình thu đổi nhanh gọn, giúp khách hàng lên đời thiết bị mới dễ dàng.</p>
-          </div>
-        </div>
+
       </div>
       
     </div>
