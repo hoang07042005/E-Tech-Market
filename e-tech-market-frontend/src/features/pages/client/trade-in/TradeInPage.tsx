@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useGlobalToast } from '@/components/GlobalToastProvider';
-import { API_BASE_URL } from '@/configs/api.config';
+import { API_BASE_URL, getAuthToken } from '@/configs/api.config';
+import { useAuthStore } from '@/features/store/useAuthStore';
 import '@/styles/pages/TradeInPage.css';
 
 interface Category {
@@ -51,10 +52,25 @@ const TradeInPage = () => {
   
   const toast = useGlobalToast();
   const navigate = useNavigate();
+  const userStr = useAuthStore((state) => state.userStr);
 
   useEffect(() => {
     fetchCategories();
   }, []);
+
+  // Auto-fill contact info from logged-in user when entering step 3
+  useEffect(() => {
+    if (step === 3 && userStr) {
+      try {
+        const userData = JSON.parse(userStr);
+        if (!customerName && userData.name) setCustomerName(userData.name);
+        if (!customerPhone && userData.phone) setCustomerPhone(userData.phone);
+        if (!customerEmail && userData.email) setCustomerEmail(userData.email);
+      } catch(e) {
+        // ignore parse errors
+      }
+    }
+  }, [step]);
 
   const fetchCategories = async () => {
     try {
@@ -152,7 +168,8 @@ const TradeInPage = () => {
         method: 'POST',
         body: formData,
         headers: {
-            'Accept': 'application/json'
+            'Accept': 'application/json',
+            ...(getAuthToken() ? { 'Authorization': `Bearer ${getAuthToken()}` } : {})
         }
       });
       const data = await res.json();

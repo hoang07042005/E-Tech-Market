@@ -106,4 +106,47 @@ class TradeInController extends Controller
             'data' => $tradeInRequest->load('conditions')
         ]);
     }
+
+    public function history(Request $request)
+    {
+        $userId = auth('sanctum')->id();
+        if (!$userId) {
+            return response()->json(['status' => 'error', 'message' => 'Unauthorized'], 401);
+        }
+
+        $requests = TradeInRequest::with(['category', 'conditions'])
+            ->where('user_id', $userId)
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return response()->json([
+            'status' => 'success',
+            'data' => $requests
+        ]);
+    }
+
+    public function acceptQuote($id)
+    {
+        $userId = auth('sanctum')->id();
+        if (!$userId) {
+            return response()->json(['status' => 'error', 'message' => 'Unauthorized'], 401);
+        }
+
+        $tradeIn = TradeInRequest::where('id', $id)->where('user_id', $userId)->first();
+        if (!$tradeIn) {
+            return response()->json(['status' => 'error', 'message' => 'Không tìm thấy yêu cầu'], 404);
+        }
+
+        if ($tradeIn->status !== 'quoted') {
+            return response()->json(['status' => 'error', 'message' => 'Trạng thái không hợp lệ'], 400);
+        }
+
+        $tradeIn->status = 'approved';
+        $tradeIn->save();
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Đã xác nhận mức giá'
+        ]);
+    }
 }

@@ -301,7 +301,6 @@ Route::post('/chatbot/message', [ChatbotController::class, 'message'])->middlewa
 // Trade-in
 Route::get('/trade-in/categories', [ClientTradeInController::class, 'getCategories']);
 Route::get('/trade-in/conditions', [ClientTradeInController::class, 'getConditions']);
-Route::post('/trade-in/requests', [ClientTradeInController::class, 'submitRequest']);
 
 // Unified home data endpoint - reduces multiple API calls to 1
 Route::get('/home', [App\Http\Controllers\Client\HomeController::class, 'index']);
@@ -320,7 +319,9 @@ Route::middleware('auth:sanctum')->group(function () {
     });
     Route::get('/me/coupons', [ClientCouponsController::class, 'saved']);
     Route::post('/me/coupons/save', [ClientCouponsController::class, 'save']);
-
+    Route::post('/trade-in/requests', [ClientTradeInController::class, 'submitRequest']);
+    Route::get('/me/trade-in', [ClientTradeInController::class, 'history']);
+    Route::post('/me/trade-in/{id}/accept', [ClientTradeInController::class, 'acceptQuote']);
 });
 
 Route::get('/docs', function () {

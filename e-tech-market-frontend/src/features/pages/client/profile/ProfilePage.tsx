@@ -18,7 +18,8 @@ type TabKey =
   | "payments"
   | "security"
   | "coupons"
-  | "loyalty";
+  | "loyalty"
+  | "tradein";
 
 type MeUser = {
   id?: number;
@@ -107,6 +108,7 @@ export default function ProfilePage() {
   const securityRoute = path.startsWith("/profile/security");
   const couponsRoute = path.startsWith("/profile/coupons");
   const loyaltyRoute = path.startsWith("/profile/loyalty");
+  const tradeInRoute = path.startsWith("/profile/trade-in");
   const isInfoTab = new URLSearchParams(location.search).get('tab') === 'info';
   
   const activeTab = ordersRoute
@@ -119,7 +121,9 @@ export default function ProfilePage() {
           ? "security"
           : couponsRoute
             ? "coupons"
-            : tab;
+            : tradeInRoute
+              ? "tradein"
+              : tab;
             
   const isSubPage = activeTab !== 'profile' || isInfoTab;
   
@@ -465,6 +469,18 @@ export default function ProfilePage() {
               </SideIconWrap>
               Thẻ hội viên
             </button>
+            <button
+              type="button"
+              className={
+                activeTab === "tradein" ? "pfNavBtn pfNavBtnActive" : "pfNavBtn"
+              }
+              onClick={() => navigate("/profile/trade-in")}
+            >
+              <SideIconWrap colorClass="pfSideIcon-orders">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 17h2a2 2 0 0 0 2-2v-4a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v4a2 2 0 0 0 2 2h2m8-6H7m0 0l3-3m-3 3l3 3"/></svg>
+              </SideIconWrap>
+              Thu cũ đổi mới
+            </button>
             <div className="pfNavSep" />
             <button
               type="button"
@@ -489,6 +505,10 @@ export default function ProfilePage() {
                 Quay lại Menu
               </button>
             )}
+            
+            {/* ── Outlet cho Thu cũ đổi mới (giao diện full, không nằm trong pfCard) ── */}
+            {tradeInRoute && <Outlet />}
+
             {/* ── Outlet cho các route con (orders / security / coupons / loyalty …) ── */}
             {(ordersRoute ||
               notifsRoute ||
@@ -527,6 +547,7 @@ export default function ProfilePage() {
               !loyaltyRoute &&
               !notifsRoute &&
               !securityRoute &&
+              !tradeInRoute &&
               !couponsRoute && (
                 <div className={`pfDashGrid ${!isInfoTab ? 'pfHideMobile' : ''}`}>
                   {/* CỘT TRÁI: Thông tin cá nhân + Đơn hàng gần đây */}

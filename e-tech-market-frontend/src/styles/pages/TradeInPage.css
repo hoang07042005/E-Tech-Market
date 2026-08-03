@@ -908,4 +908,38 @@
 }
 @media (max-width: 768px) {
     .ti-rb-c-grid { grid-template-columns: 1fr; }
+    .ti-title {
+        font-size: 1.5rem;
+    }
+    .ti-desc {
+        font-size: 1rem;
+    }
+    .ti-redesign-bottom-layout {
+        gap: 10px;
+    }
+    .ti-rb-commitment,
+    .ti-rb-notice {
+        padding: 20px;
+    }
+    .ti-rb-c-header,
+    .ti-rb-n-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .ti-rb-c-header h4,
+    .ti-rb-n-header h4 {
+        margin: 0;
+        padding: 0;
+        margin-left: 0;
+    }
+    .ti-rb-c-header h4::after {
+        display: none;
+    }
+
+    .ti-rp-header h3 {
+        font-size: 1rem;
+    }
+    .ti-rp-desc {
+        font-size: 0.75rem;
+    }
 }

@@ -46,6 +46,7 @@ const WishlistPage = lazy(() => import('@/features/pages/client/wishlist/Wishlis
 const ProfilePage = lazy(() => import('@/features/pages/client/profile/ProfilePage'))
 const OrdersPage = lazy(() => import('@/features/pages/client/orders/OrdersPage'))
 const OrderDetailPage = lazy(() => import('@/features/pages/client/orders/OrderDetailPage'))
+const ProfileTradeInHistory = lazy(() => import('@/features/pages/client/profile/ProfileTradeInHistory'))
 const NotificationsPage = lazy(() => import('@/features/pages/client/notifications/NotificationsPage'))
 const SecurityPage = lazy(() => import('@/features/pages/client/profile/SecurityPage'))
 const CouponsPage = lazy(() => import('@/features/pages/client/profile/CouponsPage'))
@@ -109,6 +110,25 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
 
   if (!isStaffOrAdmin(user)) {
     return <Navigate to="/login" replace />
+  }
+
+  return <>{children}</>
+}
+
+function ClientProtectedRoute({ children }: { children: React.ReactNode }) {
+  const userStr = useAuthStore((state) => state.userStr)
+  const { data: user, isLoading, isError } = useCurrentUser(true)
+
+  if (isLoading) {
+    return <PageLoader />
+  }
+
+  if (isError || (!user && !userStr)) {
+    return <Navigate to="/login" replace />
+  }
+
+  if (!user && userStr) {
+    return <PageLoader />
   }
 
   return <>{children}</>
@@ -313,7 +333,11 @@ function AppFrame() {
       <Suspense fallback={<PageLoader />}>
         <Routes>
           <Route path="/" element={<HomePage />} />
-          <Route path="/trade-in" element={<TradeInPage />} />
+          <Route path="/trade-in" element={
+            <ClientProtectedRoute>
+              <TradeInPage />
+            </ClientProtectedRoute>
+          } />
           <Route path="/flash-sale" element={<FlashSalePage />} />
           <Route path="/products" element={<ProductsPage />} />
           <Route path="/products/:slug" element={<ProductDetailPage />} />
@@ -334,6 +358,7 @@ function AppFrame() {
             <Route path="security" element={<SecurityPage />} />
             <Route path="coupons" element={<CouponsPage />} />
             <Route path="loyalty" element={<LoyaltyPage />} />
+            <Route path="trade-in" element={<ProfileTradeInHistory />} />
           </Route>
           <Route path="/notifications" element={<NotificationsPage />} />
           <Route path="/orders" element={<OrdersPage />} />
