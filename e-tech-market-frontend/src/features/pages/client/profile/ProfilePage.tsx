@@ -109,8 +109,8 @@ export default function ProfilePage() {
   const couponsRoute = path.startsWith("/profile/coupons");
   const loyaltyRoute = path.startsWith("/profile/loyalty");
   const tradeInRoute = path.startsWith("/profile/trade-in");
-  const isInfoTab = new URLSearchParams(location.search).get('tab') === 'info';
-  
+  const isInfoTab = new URLSearchParams(location.search).get("tab") === "info";
+
   const activeTab = ordersRoute
     ? "orders"
     : loyaltyRoute
@@ -124,9 +124,9 @@ export default function ProfilePage() {
             : tradeInRoute
               ? "tradein"
               : tab;
-            
-  const isSubPage = activeTab !== 'profile' || isInfoTab;
-  
+
+  const isSubPage = activeTab !== "profile" || isInfoTab;
+
   const [twoFa] = useState(false);
 
   const [loading, setLoading] = useState(true);
@@ -330,7 +330,10 @@ export default function ProfilePage() {
   return (
     <main className="pfPage">
       <div className="pfInner">
-        <section className={`pfGrid ${isSubPage ? 'pfSubPageActive' : ''}`} aria-label="Khu vực tài khoản">
+        <section
+          className={`pfGrid ${isSubPage ? "pfSubPageActive" : ""}`}
+          aria-label="Khu vực tài khoản"
+        >
           <aside className="pfSidebar">
             {/* ── Avatar + Tên + Badge trong sidebar ── */}
             <div className="pfSideProfile">
@@ -477,8 +480,38 @@ export default function ProfilePage() {
               onClick={() => navigate("/profile/trade-in")}
             >
               <SideIconWrap colorClass="pfSideIcon-orders">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-arrow-left-right" viewBox="0 0 16 16">
-                  <path fill-rule="evenodd" d="M1 11.5a.5.5 0 0 0 .5.5h11.793l-3.147 3.146a.5.5 0 0 0 .708.708l4-4a.5.5 0 0 0 0-.708l-4-4a.5.5 0 0 0-.708.708L13.293 11H1.5a.5.5 0 0 0-.5.5m14-7a.5.5 0 0 1-.5.5H2.707l3.147 3.146a.5.5 0 1 1-.708.708l-4-4a.5.5 0 0 1 0-.708l4-4a.5.5 0 1 1 .708.708L2.707 4H14.5a.5.5 0 0 1 .5.5"/>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 200 200"
+                  width="60%"
+                  height="60%"
+                >
+                  <g
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="13"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path
+                      d="M 165 70 
+                            L 130 35 
+                            L 130 55 
+                            L 90 55 
+                            A 15 15 0 0 0 90 85 
+                            L 130 85 
+                            L 130 105 Z"
+                    />
+                    <path
+                      d="M 35 130 
+                            L 70 165 
+                            L 70 145 
+                            L 110 145 
+                            A 15 15 0 0 0 110 115 
+                            L 70 115 
+                            L 70 95 Z"
+                    />
+                  </g>
                 </svg>
               </SideIconWrap>
               Thu cũ đổi mới
@@ -498,16 +531,41 @@ export default function ProfilePage() {
 
           <div className="pfContent">
             {isSubPage && (
-              <button 
-                className="pfMobileBackBtn" 
-                onClick={() => { setTab('profile'); navigate('/profile'); }}
-                style={{ display: 'none', marginBottom: '16px', alignItems: 'center', gap: '8px', color: '#64748b', fontSize: '14px', fontWeight: '500', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
+              <button
+                className="pfMobileBackBtn"
+                onClick={() => {
+                  setTab("profile");
+                  navigate("/profile");
+                }}
+                style={{
+                  display: "none",
+                  alignItems: "center",
+                  gap: "8px",
+                  color: "#64748b",
+                  fontSize: "14px",
+                  fontWeight: "500",
+                  background: "none",
+                  border: "none",
+                  cursor: "pointer",
+                  padding: 0,
+                }}
               >
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M19 12H5M12 19l-7-7 7-7" />
+                </svg>
                 Quay lại Menu
               </button>
             )}
-            
+
             {/* ── Outlet cho Thu cũ đổi mới (giao diện full, không nằm trong pfCard) ── */}
             {tradeInRoute && <Outlet />}
 
@@ -532,7 +590,7 @@ export default function ProfilePage() {
                 >
                   <h2 className="pfCardTitle">
                     {activeTab === "orders"
-                      ? "Lịch sử đơn hàng"
+                      ?""
                       : activeTab === "notifications"
                         ? "Thông báo"
                         : activeTab === "coupons"
@@ -551,7 +609,9 @@ export default function ProfilePage() {
               !securityRoute &&
               !tradeInRoute &&
               !couponsRoute && (
-                <div className={`pfDashGrid ${!isInfoTab ? 'pfHideMobile' : ''}`}>
+                <div
+                  className={`pfDashGrid ${!isInfoTab ? "pfHideMobile" : ""}`}
+                >
                   {/* CỘT TRÁI: Thông tin cá nhân + Đơn hàng gần đây */}
                   <div className="pfDashLeft">
                     {/* Thông tin cá nhân */}
@@ -1116,7 +1176,11 @@ export default function ProfilePage() {
           </div>
 
           {!isSubPage && (
-            <button type="button" className="pfLogoutBtnMobile" onClick={logout}>
+            <button
+              type="button"
+              className="pfLogoutBtnMobile"
+              onClick={logout}
+            >
               <SideIconWrap>
                 <IconLogout />
               </SideIconWrap>
@@ -1139,9 +1203,15 @@ export default function ProfilePage() {
   );
 }
 
-function SideIconWrap({ children, colorClass }: { children: React.ReactNode; colorClass?: string }) {
+function SideIconWrap({
+  children,
+  colorClass,
+}: {
+  children: React.ReactNode;
+  colorClass?: string;
+}) {
   return (
-    <span aria-hidden="true" className={`pfSideIcon ${colorClass || ''}`}>
+    <span aria-hidden="true" className={`pfSideIcon ${colorClass || ""}`}>
       {children}
     </span>
   );
@@ -1247,8 +1317,22 @@ function IconTicket() {
 function IconAward() {
   return (
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-      <circle cx="12" cy="8" r="7" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-      <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+      <circle
+        cx="12"
+        cy="8"
+        r="7"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <polyline
+        points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
     </svg>
   );
 }

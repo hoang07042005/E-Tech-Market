@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom'
-import '@/styles/pages/OrdersPage.css'
+import '@/styles/pages/OrderDetailPage.css'
 import { API_BASE_URL, apiFetch } from '@/configs/api.config'
 import Skeleton from '@/components/Skeleton'
 import ConfirmModal from '@/components/ConfirmModal'

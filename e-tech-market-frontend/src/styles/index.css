@@ -1678,8 +1678,6 @@ html.dark .pfNavBtn:hover {
 }
 
 html.dark .pfNavBtnActive {
-    background: rgba(249, 115, 22, .1);
-    border-color: var(--et-primary);
     box-shadow: none;
     color: var(--et-primary);
 }

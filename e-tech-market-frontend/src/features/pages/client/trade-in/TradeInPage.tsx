@@ -326,7 +326,7 @@ const TradeInPage = () => {
                               </div>
 
                               <div className="ti-form-group full-width">
-                                  <label>Tải ảnh máy lên <span>*</span> <span style={{fontSize:'0.8rem', color:'#64748b', fontWeight:'normal'}}>* Tối đa 5 ảnh</span></label>
+                                  <label>Tải ảnh máy lên <span>*</span> <span style={{fontSize:'0.8rem', color:'#64748b', fontWeight:'normal'}}> Tối đa 6 ảnh</span></label>
                                   <div className="ti-upload-box">
                                       <input type="file" multiple accept="image/*" onChange={handleImageChange} disabled={images.length >= 5} />
                                       <div className="ti-upload-icon-wrapper">

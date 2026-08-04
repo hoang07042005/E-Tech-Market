@@ -39,7 +39,7 @@
   transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
-.dark .etech-bot-container {
+html.dark .etech-bot-container {
   background-color: #1e293b;
   border-color: #334155;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
@@ -54,7 +54,7 @@
   justify-content: space-between;
 }
 
-.dark .etech-bot-header {
+html.dark .etech-bot-header {
   background: linear-gradient(135deg, #c04c16, #e65100);
 }
 
@@ -121,7 +121,7 @@
   transition: background-color 0.3s ease;
 }
 
-.dark .etech-bot-messages {
+html.dark .etech-bot-messages {
   background-color: #0f172a;
 }
 
@@ -159,7 +159,7 @@
   flex-shrink: 0;
 }
 
-.dark .etech-bot-avatar {
+html.dark .etech-bot-avatar {
   background: linear-gradient(135deg, #c04c16, #e65100);
 }
 
@@ -173,7 +173,7 @@
   transition: background-color 0.3s, color 0.3s;
 }
 
-.dark .etech-bot-msg-bubble {
+html.dark .etech-bot-msg-bubble {
   box-shadow: 0 2px 8px rgba(0,0,0,0.3);
 }
 
@@ -183,7 +183,7 @@
   border-radius: 16px 16px 4px 16px;
 }
 
-.dark .etech-bot-msg-row.user .etech-bot-msg-bubble {
+html.dark .etech-bot-msg-row.user .etech-bot-msg-bubble {
   background-color: #c04c16;
 }
 
@@ -193,7 +193,7 @@
   border-radius: 16px 16px 16px 4px;
 }
 
-.dark .etech-bot-msg-row.model .etech-bot-msg-bubble {
+html.dark .etech-bot-msg-row.model .etech-bot-msg-bubble {
   background-color: #1e293b;
   color: #f8fafc;
 }
@@ -213,7 +213,7 @@
   text-align: left;
 }
 
-.dark .etech-bot-msg-row.model .etech-bot-msg-time {
+html.dark .etech-bot-msg-row.model .etech-bot-msg-time {
   color: #64748b;
 }
 
@@ -258,7 +258,7 @@
   transition: transform 0.2s, background-color 0.3s, border-color 0.3s;
 }
 
-.dark .etech-bot-product-card {
+html.dark .etech-bot-product-card {
   background-color: #1e293b;
   border-color: #334155;
 }
@@ -273,7 +273,7 @@
   padding: 8px;
 }
 
-.dark .etech-bot-product-img-wrap {
+html.dark .etech-bot-product-img-wrap {
   background-color: #0f172a;
 }
 
@@ -304,7 +304,7 @@
   color: #0f172a;
 }
 
-.dark .etech-bot-product-name {
+html.dark .etech-bot-product-name {
   color: #f8fafc;
 }
 
@@ -345,7 +345,7 @@
   align-self: flex-start;
 }
 
-.dark .etech-bot-coupon {
+html.dark .etech-bot-coupon {
   background: linear-gradient(135deg, #059669, #10b981);
 }
 
@@ -376,7 +376,7 @@
   transition: opacity 0.2s;
 }
 
-.dark .etech-bot-flash-btn {
+html.dark .etech-bot-flash-btn {
   background-color: #c04c16;
 }
 
@@ -393,7 +393,7 @@
   transition: background-color 0.3s;
 }
 
-.dark .etech-bot-typing-indicator {
+html.dark .etech-bot-typing-indicator {
   background-color: #1e293b;
 }
 
@@ -438,7 +438,7 @@
   transition: all 0.2s ease;
 }
 
-.dark .etech-bot-quick-btn {
+html.dark .etech-bot-quick-btn {
   background-color: transparent;
   border-color: #f26522;
   color: #f26522;
@@ -449,7 +449,7 @@
   color: white;
 }
 
-.dark .etech-bot-quick-btn:hover {
+html.dark .etech-bot-quick-btn:hover {
   background-color: #f26522;
   color: white;
 }
@@ -461,7 +461,7 @@
   transition: background-color 0.3s, border-color 0.3s;
 }
 
-.dark .etech-bot-input-wrap {
+html.dark .etech-bot-input-wrap {
   background-color: #1e293b;
   border-color: #334155;
 }
@@ -476,7 +476,7 @@
   transition: background-color 0.3s;
 }
 
-.dark .etech-bot-input-inner {
+html.dark .etech-bot-input-inner {
   background-color: #0f172a;
 }
 
@@ -490,7 +490,7 @@
   color: #0f172a;
 }
 
-.dark .etech-bot-input {
+html.dark .etech-bot-input {
   color: #f8fafc;
 }
 
@@ -515,7 +515,7 @@
   cursor: pointer;
 }
 
-.dark .etech-bot-send-btn.active {
+html.dark .etech-bot-send-btn.active {
   background: linear-gradient(135deg, #c04c16, #e65100);
 }
 
@@ -524,7 +524,7 @@
   cursor: not-allowed;
 }
 
-.dark .etech-bot-send-btn.disabled {
+html.dark .etech-bot-send-btn.disabled {
   background-color: #334155;
   color: #64748b;
 }

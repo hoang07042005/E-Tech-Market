@@ -73,8 +73,8 @@
     justify-content: center;
     font-weight: 700;
     font-size: 1.2rem;
-    background: #f1f5f9;
-    color: #64748b;
+    background: #f9f1f1;
+    color: #f81a1a;
 }
 
 .ti-step-num.active {
@@ -594,7 +594,7 @@
     flex: 1;
     background: #fff;
     border: 1px solid #f1f5f9;
-    border-radius: 12px;
+    border-radius: 8px;
     padding: 30px 5px 20px;
     text-align: center;
     position: relative;
@@ -621,7 +621,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 0px 20px 20px 20px;
+    border-radius: 8px 20px 20px 20px;
 
 }
 
@@ -655,7 +655,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-top: 60px; /* Align with center of the cards approximately */
+    margin-top: 10%; /* Align with center of the cards approximately */
     width: 32px;
     height: 32px;
     border-radius: 50%;
@@ -942,4 +942,127 @@
     .ti-rp-desc {
         font-size: 0.75rem;
     }
+}
+
+
+html.dark .ti-container{
+    background: var(--et-bg);
+}
+
+html.dark .ti-title{
+    color: #fff;
+}
+
+html.dark .ti-desc{
+    color: #fff;
+}
+
+html.dark .ti-step-header{
+    color: #fff;
+    background: var(--et-bg);
+}
+
+html.dark .ti-step-text h4,
+html.dark .ti-col-header h3{
+    color: #fff;
+}
+
+html.dark .ti-column{
+    color: #fff;
+    background: var(--et-bg);
+    border: 1px solid #68696a70;
+}
+
+html.dark .ti-device-card{
+    background: var(--et-bg);
+    border: 1px solid #68696a70;
+}
+
+html.dark .ti-detail-title{
+    color: #fff;
+}
+
+html.dark .ti-form-group label,
+html.dark .ti-form-group-profile label{
+    color: #fff;
+}
+
+html.dark .ti-cond-text p,
+html.dark .ti-rb-c-text p,
+html.dark .ti-rp-desc{
+    color: #9c9c9c;
+}
+
+html.dark .ti-btn-secondary{
+    color: #f91616;
+    background-color: #f7d0d0;
+    border: 1px solid #f2666670;
+}
+
+html.dark .ti-form-group input,
+html.dark .ti-form-group-profile input,
+html.dark .ti-form-group select{
+    background: var(--et-bg);
+    border: 1px solid #68696a70;
+    color: #fff;
+}
+
+html.dark .ti-upload-box input,
+html.dark .ti-upload-box{
+    background: var(--et-bg);
+    border: 1px solid #68696a70;
+    color: #fff;
+}
+
+html.dark .ti-upload-text-main{
+    color: #fff;
+}
+
+html.dark .ti-submit-btn:disabled{
+    background: var(--et-bg);
+    border: 1px solid #68696a70;
+    color: #fff;
+}
+    
+html.dark .ti-cond-item{
+    background: var(--et-bg);
+    border: 1px solid #68696a70;
+    color: #fff;
+}
+
+html.dark .ti-cond-text h4{
+    color: #fff;
+} 
+    
+html.dark .ti-redesign-process-section{
+    background: var(--et-bg);
+    border: 1px solid #68696a70;
+}
+
+html.dark .ti-rp-header h3{
+    color: #fff;
+}
+
+html.dark .ti-rp-step{
+    background: var(--et-bg);
+    border: 1px solid #68696a1c;
+}
+
+html.dark .ti-rp-bottom-line{
+    background: var(--et-bg);
+}
+
+html.dark .ti-rb-commitment{
+    background: var(--et-bg);
+    border: 1px solid #68696a70;
+}
+
+html.dark .ti-rb-notice{
+    background: var(--et-bg);
+    border: 1px solid #68696a70;
+}
+
+html.dark .ti-rb-c-text h5,
+html.dark .ti-rb-n-list li{
+    color: #fff;
 }
