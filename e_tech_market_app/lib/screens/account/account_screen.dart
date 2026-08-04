@@ -17,6 +17,7 @@ import '../admin/orders/admin_order_screen.dart';
 import '../admin/dashboard/admin_dashboard_screen.dart';
 import 'widgets/loyalty_card.dart';
 import 'loyalty/loyalty_screen.dart';
+import '../trande_in/trade_in_screen.dart';
 
 import '../../services/checkout_service.dart';
 
@@ -207,6 +208,18 @@ class _AccountScreenState extends State<AccountScreen> {
                   const Color(0xFF9333EA), 
                   () {
                     Navigator.push(context, MaterialPageRoute(builder: (_) => const VoucherWarehouseScreen()));
+                  }
+                ),
+
+                // Thu cũ đổi mới: Màu Cam (định giá thiết bị cũ)
+                _buildMenuItem(
+                  context,
+                  Icons.autorenew_outlined,
+                  'Thu cũ đổi mới',
+                  const Color(0xFFFFF7ED),
+                  const Color(0xFFEF7A45),
+                  () {
+                    Navigator.push(context, MaterialPageRoute(builder: (_) => TradeInScreen(user: widget.user)));
                   }
                 ),
 
