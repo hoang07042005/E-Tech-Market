@@ -688,7 +688,7 @@
     width: 100%;
     margin: 40px auto 20px;
     height: 2px;
-    background: #f1f5f9;
+    background: none;
     position: relative;
 }
 

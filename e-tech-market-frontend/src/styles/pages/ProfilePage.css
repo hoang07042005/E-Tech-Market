@@ -267,6 +267,11 @@
   transition: background .18s ease, color .18s ease;
 }
 
+html.dark .pfSideIcon {
+  background: #1e293b;
+  color: #fff;
+}
+
 
 
 .pfNavSep {

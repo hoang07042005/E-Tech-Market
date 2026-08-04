@@ -27,6 +27,7 @@ interface TradeInCondition {
   category?: { name: string; slug?: string };
   name: string;
   description: string;
+  deduction_percentage: number;
 }
 
 interface Category {
@@ -87,10 +88,15 @@ const AdminTradeInPage = () => {
   const [adminNote, setAdminNote] = useState<string>('');
 
   const [editingCond, setEditingCond] = useState<TradeInCondition | null>(null);
-  const [condForm, setCondForm] = useState({ category_id: '', name: '', description: '' });
+  const [condForm, setCondForm] = useState({ category_id: '', name: '', description: '', deduction_percentage: '' });
   const [bulkPasteText, setBulkPasteText] = useState('');
+  const [showBulk, setShowBulk] = useState(false);
   const [deleteConfirmId, setDeleteConfirmId] = useState<number | null>(null);
+  const [selectedCondIds, setSelectedCondIds] = useState<number[]>([]);
+  const [bulkDeleteConfirm, setBulkDeleteConfirm] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
+  const [rejectModal, setRejectModal] = useState(false);
+  const [rejectReason, setRejectReason] = useState('');
 
   useEffect(() => {
     if (activeTab === 'requests') {
@@ -102,6 +108,7 @@ const AdminTradeInPage = () => {
   }, [activeTab, filterStatus]);
 
   const fetchRequests = async () => {
+    console.trace('[DEBUG] fetchRequests called. activeTab:', activeTab, 'filterStatus:', filterStatus);
     setLoading(true);
     try {
       const url = filterStatus ? `/admin/trade-in/requests?status=${filterStatus}` : '/admin/trade-in/requests';
@@ -170,6 +177,42 @@ const AdminTradeInPage = () => {
     }
   };
 
+  const handleRejectClick = () => {
+    setRejectReason(adminNote || '');
+    setRejectModal(true);
+  };
+
+  const handleConfirmReject = async () => {
+    if (!rejectReason.trim()) {
+      toast.showToast({ type: 'error', message: 'Vui lòng nhập lý do từ chối' });
+      return;
+    }
+    setAdminNote(rejectReason);
+    if (!selectedRequest) return;
+    try {
+      const payload = {
+        status: 'rejected',
+        estimated_price: null,
+        admin_note: rejectReason
+      };
+      const data = await apiFetch<any>(`/admin/trade-in/requests/${selectedRequest.id}/status`, {
+        method: 'PUT',
+        body: JSON.stringify(payload)
+      });
+      if (data.status === 'success') {
+        toast.showToast({ type: 'success', message: 'Đã từ chối và gửi Email thông báo cho khách!' });
+        setRejectModal(false);
+        setRejectReason('');
+        setViewMode('list');
+        fetchRequests();
+      } else {
+        toast.showToast({ type: 'error', message: 'Có lỗi xảy ra' });
+      }
+    } catch (error) {
+      toast.showToast({ type: 'error', message: 'Lỗi kết nối' });
+    }
+  };
+
   const handleSaveCondition = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!condForm.category_id) {
@@ -183,7 +226,7 @@ const AdminTradeInPage = () => {
           if (data.status === 'success') {
             toast.showToast({ type: 'success', message: 'Cập nhật tiêu chí thành công' });
             setEditingCond(null);
-            setCondForm({ category_id: '', name: '', description: '' });
+            setCondForm({ category_id: '', name: '', description: '', deduction_percentage: '' });
             fetchConditions();
           }
       } else {
@@ -193,17 +236,32 @@ const AdminTradeInPage = () => {
           for (const line of lines) {
              const parts = line.split('|');
              const name = parts[0]?.trim();
-             const desc = parts[1]?.trim() || '';
+             
+             let deduction = 0;
+             let desc = '';
+             if (parts.length >= 3) {
+                 deduction = parseFloat(parts[1]?.trim()) || 0;
+                 desc = parts.slice(2).join('|').trim();
+             } else {
+                 const second = parts[1]?.trim() || '';
+                 if (/^\d+(\.\d+)?$/.test(second)) {
+                     deduction = parseFloat(second);
+                 } else {
+                     desc = second;
+                 }
+             }
+
              if (name) {
                  await apiFetch<any>(`/admin/trade-in/conditions`, {
                     method: 'POST',
-                    body: JSON.stringify({ category_id: condForm.category_id, name, description: desc })
+                    body: JSON.stringify({ category_id: condForm.category_id, name, deduction_percentage: deduction, description: desc })
                  });
                  successCount++;
              }
           }
           toast.showToast({ type: 'success', message: `Đã nhập thành công ${successCount} tiêu chí` });
           setBulkPasteText('');
+          setCondForm({ category_id: '', name: '', description: '', deduction_percentage: '' });
           fetchConditions();
       }
     } catch (error) {
@@ -222,6 +280,19 @@ const AdminTradeInPage = () => {
     }
   };
 
+  const handleBulkDelete = async () => {
+    let success = 0;
+    for (const id of selectedCondIds) {
+      try {
+        const res = await apiFetch<any>(`/admin/trade-in/conditions/${id}`, { method: 'DELETE' });
+        if (res.status === 'success') success++;
+      } catch (e) {}
+    }
+    toast.showToast({ type: 'success', message: `Đã xóa ${success} tiêu chuẩn kiểm định.` });
+    setSelectedCondIds([]);
+    setBulkDeleteConfirm(false);
+    fetchConditions();
+  };
 
   const filteredConds = conditions.filter(c => {
     const matchCat = !filterCategory || c.category_id.toString() === filterCategory;
@@ -258,6 +329,61 @@ const AdminTradeInPage = () => {
     const infoLines = selectedRequest.machine_info.split('\n').filter(Boolean);
     const machineName = infoLines.find(l => l.startsWith('Tên máy:'))?.replace('Tên máy: ', '') || infoLines[0] || '';
     const specLines = infoLines.filter(l => !l.startsWith('Tên máy:'));
+
+    // ── AUTO PRICE ESTIMATION ────────────────────────────────────────────
+    const computeAutoPrice = () => {
+      const categorySlug = (selectedRequest.category?.slug || selectedRequest.category?.name || '').toLowerCase();
+      const nameLower = machineName.toLowerCase();
+
+      // Base price by category
+      let basePrice = 5_000_000;
+      if (categorySlug.includes('laptop') || nameLower.includes('laptop') || nameLower.includes('macbook')) {
+        if (nameLower.includes('macbook pro') || nameLower.includes('macbook m')) basePrice = 18_000_000;
+        else if (nameLower.includes('macbook')) basePrice = 14_000_000;
+        else if (nameLower.includes('gaming') || nameLower.includes('rog') || nameLower.includes('razer')) basePrice = 16_000_000;
+        else basePrice = 10_000_000;
+      } else if (categorySlug.includes('phone') || categorySlug.includes('iphone') || nameLower.includes('iphone') || nameLower.includes('samsung') || nameLower.includes('điện thoại')) {
+        if (nameLower.includes('pro max') || nameLower.includes('ultra')) basePrice = 18_000_000;
+        else if (nameLower.includes('pro') || nameLower.includes('plus')) basePrice = 13_000_000;
+        else basePrice = 7_000_000;
+      } else if (categorySlug.includes('tablet') || categorySlug.includes('ipad') || nameLower.includes('ipad') || nameLower.includes('tablet')) {
+        if (nameLower.includes('pro')) basePrice = 14_000_000;
+        else basePrice = 8_000_000;
+      } else if (categorySlug.includes('pc') || nameLower.includes('pc') || nameLower.includes('desktop') || nameLower.includes('bàn')) {
+        basePrice = 8_000_000;
+      } else if (categorySlug.includes('watch') || nameLower.includes('watch') || nameLower.includes('đồng hồ')) {
+        basePrice = 4_000_000;
+      } else if (categorySlug.includes('airpod') || nameLower.includes('airpod') || nameLower.includes('tai nghe') || nameLower.includes('headphone')) {
+        basePrice = 2_000_000;
+      }
+
+      // ── Use deduction_percentage from DB directly ─────────────────────
+      const condBreakdown = selectedRequest.conditions?.map(c => {
+        // Use saved deduction_percentage from DB (0-100). Fallback to keyword-based if 0 or missing.
+        const savedRate = (c.deduction_percentage ?? 0) / 100;
+        const rate = savedRate > 0 ? savedRate : (() => {
+          const nameLower2 = c.name.toLowerCase();
+          if (['không nguồn','không lên','chết nguồn','vỡ màn','bể màn','hỏng main'].some(k => nameLower2.includes(k))) return 0.20;
+          if (['màn hình lỗi','pin phình','không sạc','đã sửa chữa','thay main'].some(k => nameLower2.includes(k))) return 0.14;
+          if (['bàn phím lỗi','loa rè','camera lỗi','pin chai','wifi hỏng'].some(k => nameLower2.includes(k))) return 0.09;
+          if (['trầy xước','mất phụ kiện','không có hộp','mất sạc'].some(k => nameLower2.includes(k))) return 0.04;
+          return 0.07;
+        })();
+        const severityLabel = rate >= 0.18 ? 'Nghiêm trọng' : rate >= 0.12 ? 'Nặng' : rate >= 0.07 ? 'Trung bình' : 'Nhẹ';
+        return { name: c.name, deduct: Math.round(basePrice * rate), rate, severityLabel };
+      }) ?? [];
+
+      const rawTotalDeduction = condBreakdown.reduce((sum, c) => sum + c.deduct, 0);
+      const maxDeductionRate = 0.55;
+      const totalDeduction = Math.min(rawTotalDeduction, Math.round(basePrice * maxDeductionRate));
+      const estimatedMin = Math.round((basePrice - totalDeduction) * 0.9 / 100_000) * 100_000;
+      const estimatedMax = Math.round((basePrice - totalDeduction) / 100_000) * 100_000;
+
+      return { basePrice, totalDeduction, estimatedMin, estimatedMax, condBreakdown };
+    };
+    const autoPrice = computeAutoPrice();
+    const autoPriceMid = Math.round((autoPrice.estimatedMin + autoPrice.estimatedMax) / 2 / 100_000) * 100_000;
+    // ──────────────────────────────────────────────────────────────────────
 
     // Build thumbnail URL
     const detailImgs = parseImages(selectedRequest.images);
@@ -430,10 +556,6 @@ const AdminTradeInPage = () => {
                 )}
               </div>
             </div>
-          </div>
-
-          {/* RIGHT COLUMN */}
-          <div className="ti-detail-right">
 
             {/* Pricing Decision */}
             <div className="ti-detail-card">
@@ -470,6 +592,72 @@ const AdminTradeInPage = () => {
                 </div>
               </div>
             </div>
+          </div>
+
+          {/* RIGHT COLUMN */}
+          <div className="ti-detail-right">
+
+            {/* System Auto Pricing */}
+            <div className="ti-detail-card ti-autoprice-card">
+              <div className="ti-detail-card-header">
+                <div className="ti-detail-card-icon ti-autoprice-icon">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <circle cx="12" cy="12" r="10"/>
+                    <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+                    <path d="M12 17h.01"/>
+                  </svg>
+                </div>
+                <h3>Định Giá Hệ Thống</h3>
+                <span className="ti-autoprice-badge">Tự động</span>
+              </div>
+              <div className="ti-detail-card-body">
+                <div className="ti-autoprice-summary">
+                  <div className="ti-autoprice-row">
+                    <span className="ti-autoprice-row-label">Giá cơ sở (loại máy)</span>
+                    <span className="ti-autoprice-row-val">{Number(autoPrice.basePrice).toLocaleString('vi-VN')} ₫</span>
+                  </div>
+                  {autoPrice.condBreakdown.length > 0 && (
+                    <>
+                      <div className="ti-autoprice-divider" />
+                      <div className="ti-autoprice-cond-title">Khấu trừ theo tình trạng</div>
+                      {autoPrice.condBreakdown.map((c, i) => (
+                        <div key={i} className="ti-autoprice-row deduct">
+                          <span className="ti-autoprice-row-label">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#ef4444" strokeWidth="2.5"><path d="M5 12h14"/></svg>
+                            <span>{c.name}</span>
+                            <span className={`ti-severity-badge ti-severity-${c.severityLabel === 'Nghiêm trọng' ? 'critical' : c.severityLabel === 'Nặng' ? 'heavy' : c.severityLabel === 'Trung bình' ? 'medium' : c.severityLabel === 'Nhẹ' ? 'light' : 'default'}`}>
+                              {c.severityLabel} ({Math.round(c.rate * 100)}%)
+                            </span>
+                          </span>
+                          <span className="ti-autoprice-row-val deduct">-{Number(c.deduct).toLocaleString('vi-VN')} ₫</span>
+                        </div>
+                      ))}
+                      <div className="ti-autoprice-divider" />
+                    </>
+                  )}
+                  <div className="ti-autoprice-row total">
+                    <span className="ti-autoprice-row-label bold">Tổng khấu trừ</span>
+                    <span className="ti-autoprice-row-val deduct bold">-{Number(autoPrice.totalDeduction).toLocaleString('vi-VN')} ₫</span>
+                  </div>
+                </div>
+                <div className="ti-autoprice-result">
+                  <div className="ti-autoprice-result-label">Giá đề xuất ước tính</div>
+                  <div className="ti-autoprice-result-range">
+                    <span className="ti-autoprice-min">{Number(autoPrice.estimatedMin).toLocaleString('vi-VN')} ₫</span>
+                    <span className="ti-autoprice-dash">–</span>
+                    <span className="ti-autoprice-max">{Number(autoPrice.estimatedMax).toLocaleString('vi-VN')} ₫</span>
+                  </div>
+                  <button
+                    className="ti-autoprice-apply-btn"
+                    onClick={() => setQuotePrice(String(autoPriceMid))}
+                  >
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="m5 12 5 5L20 7"/></svg>
+                    Áp dụng giá gợi ý ({Number(autoPriceMid).toLocaleString('vi-VN')} ₫)
+                  </button>
+                </div>
+              </div>
+            </div>
+
 
             {/* Timeline */}
             <div className="ti-detail-card">
@@ -538,7 +726,7 @@ const AdminTradeInPage = () => {
                     Hoàn tất thu mua
                   </button>
                 )}
-                <button className="ti-btn-action ti-btn-reject" onClick={() => updateStatus('rejected')}>
+                <button className="ti-btn-action ti-btn-reject" onClick={handleRejectClick}>
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
                   Từ chối
                 </button>
@@ -551,6 +739,87 @@ const AdminTradeInPage = () => {
             )}
           </div>
         </div>
+      {/* Reject Modal */}
+      {rejectModal && (
+        <div style={{
+          position: 'fixed', inset: 0, zIndex: 9999,
+          background: 'rgba(0,0,0,0.5)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center'
+        }}>
+          <div style={{
+            background: 'white', borderRadius: 16, padding: 32,
+            maxWidth: 480, width: '90%',
+            boxShadow: '0 20px 60px rgba(0,0,0,0.2)'
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
+              <div style={{
+                width: 44, height: 44, borderRadius: '50%',
+                background: '#fee2e2', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0
+              }}>
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#dc2626" strokeWidth="2">
+                  <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+              </div>
+              <div>
+                <h3 style={{ margin: 0, fontSize: 18, fontWeight: 700, color: '#0f172a' }}>Xác nhận từ chối</h3>
+                <p style={{ margin: 0, fontSize: 13, color: '#64748b' }}>Hành động này sẽ gửi email thông báo đến khách hàng</p>
+              </div>
+            </div>
+
+            <div style={{ marginBottom: 20 }}>
+              <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#374151', marginBottom: 8 }}>
+                Lý do từ chối <span style={{ color: '#ef4444' }}>*</span>
+              </label>
+              <textarea
+                value={rejectReason}
+                onChange={e => setRejectReason(e.target.value)}
+                placeholder="VD: Thiết bị bị vỡ màn hình, hỏng main — không đủ điều kiện thu mua ở thời điểm này..."
+                rows={5}
+                autoFocus
+                style={{
+                  width: '100%', padding: '12px 14px',
+                  border: '1.5px solid #e2e8f0', borderRadius: 10,
+                  fontSize: 14, color: '#1e293b', fontFamily: 'inherit',
+                  resize: 'vertical', outline: 'none', boxSizing: 'border-box',
+                  transition: 'border-color 0.2s'
+                }}
+                onFocus={e => e.target.style.borderColor = '#ef4444'}
+                onBlur={e => e.target.style.borderColor = '#e2e8f0'}
+              />
+              <p style={{ margin: '6px 0 0', fontSize: 12, color: '#94a3b8' }}>Lý do này sẽ được gửi trong email thông báo tới khách hàng.</p>
+            </div>
+
+            <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end' }}>
+              <button
+                onClick={() => { setRejectModal(false); setRejectReason(''); }}
+                style={{
+                  padding: '10px 22px', borderRadius: 8, border: '1px solid #e2e8f0',
+                  background: 'white', color: '#64748b', fontWeight: 600,
+                  fontSize: 14, cursor: 'pointer'
+                }}
+              >
+                Huỷ bỏ
+              </button>
+              <button
+                onClick={handleConfirmReject}
+                style={{
+                  padding: '10px 22px', borderRadius: 8, border: 'none',
+                  background: rejectReason.trim() ? '#dc2626' : '#fca5a5',
+                  color: 'white', fontWeight: 600, fontSize: 14,
+                  cursor: rejectReason.trim() ? 'pointer' : 'not-allowed',
+                  display: 'flex', alignItems: 'center', gap: 8
+                }}
+              >
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+                Xác nhận từ chối
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Lightbox */}
       {lightboxIndex !== null && (() => {
         const allImgUrls = detailImgs.map(img => {
@@ -776,10 +1045,94 @@ const AdminTradeInPage = () => {
             <>
               {/* Inline Add/Edit Form */}
               <div className="ti-cond-form-card">
-                <div className="ti-cond-form-title">
-                  {editingCond ? 'Chỉnh sửa tiêu chuẩn kiểm định' : 'Thêm tiêu chuẩn kiểm định'}
+                <div className="ti-cond-form-title" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <span>
+                    {editingCond ? 'Chỉnh sửa tiêu chuẩn kiểm định' : (showBulk ? 'Nhập nhanh nhiều chỉ tiêu' : 'Thêm tiêu chuẩn kiểm định')}
+                  </span>
+                  {!editingCond && (
+                    <button
+                      type="button"
+                      onClick={() => { setShowBulk(b => !b); setBulkPasteText(''); }}
+                      style={{
+                        display: 'flex', alignItems: 'center', gap: 6,
+                        background: showBulk ? '#f1f5f9' : '#6366f1',
+                        border: 'none', cursor: 'pointer',
+                        color: showBulk ? '#475569' : 'white',
+                        fontSize: 12, fontWeight: 600,
+                        padding: '6px 14px', borderRadius: 8,
+                        transition: 'all 0.2s'
+                      }}
+                    >
+                      {showBulk ? (
+                        <>
+                          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                          Nhập thủ công
+                        </>
+                      ) : (
+                        <>
+                          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg>
+                          Nhập nhanh
+                        </>
+                      )}
+                    </button>
+                  )}
                 </div>
                 <form onSubmit={handleSaveCondition}>
+                  {/* ── BULK MODE ── */}
+                  {!editingCond && showBulk ? (
+                    <div className="ti-cond-form-grid" style={{ gridTemplateColumns: '1fr' }}>
+                      {/* Danh mục */}
+                      <div className="ti-cond-field">
+                        <label>Danh mục <span className="req">*</span></label>
+                        <div className="ti-cond-select-wrap">
+                          <select
+                            required
+                            value={condForm.category_id}
+                            onChange={e => setCondForm({...condForm, category_id: e.target.value})}
+                          >
+                            <option value="">-- Chọn danh mục --</option>
+                            {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+                          </select>
+                          <svg className="ti-cond-select-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="6 9 12 15 18 9"/></svg>
+                        </div>
+                      </div>
+
+                      {/* Bulk textarea */}
+                      <div className="ti-cond-field ti-cond-field-desc">
+                        <label>
+                          Dán nhiều chỉ tiêu
+                          <span style={{ fontWeight: 400, color: '#94a3b8', fontSize: 11, marginLeft: 6 }}>mỗi dòng 1 chỉ tiêu</span>
+                        </label>
+                        <textarea
+                          value={bulkPasteText}
+                          onChange={e => setBulkPasteText(e.target.value)}
+                          placeholder={"Vỡ màn hình | 15 | Màn hình bị nứt kính\nPin chai | 10 | Dung lượng pin < 80%\nLoa rè | 5 | Phát ra tiếng rè"}
+                          rows={5}
+                          className="ti-cond-textarea"
+                          style={{ fontFamily: 'monospace', fontSize: 13 }}
+                        />
+                        <p style={{ margin: '5px 0 0', fontSize: 11, color: '#6366f1' }}>
+                          Cú pháp: <code style={{ background: '#e0e7ff', padding: '1px 5px', borderRadius: 4 }}>Tên tình trạng | % Khấu trừ | Mô tả</code> — % Khấu trừ là một con số, ví dụ 10.
+                        </p>
+                      </div>
+
+                      {/* Actions */}
+                      <div className="ti-cond-field ti-cond-field-actions">
+                        <label>Thao tác</label>
+                        <div className="ti-cond-action-btns">
+                          <button type="submit" className="ti-cond-btn ti-cond-btn-save">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+                            Lưu tất cả
+                          </button>
+                          <button type="button" className="ti-cond-btn ti-cond-btn-reset" onClick={() => { setBulkPasteText(''); setCondForm({ category_id: '', name: '', description: '', deduction_percentage: '' }); }}>
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.15"/></svg>
+                            Xóa
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                  /* ── MANUAL MODE ── */
                   <div className="ti-cond-form-grid">
                     {/* Danh mục */}
                     <div className="ti-cond-field">
@@ -800,47 +1153,46 @@ const AdminTradeInPage = () => {
                     {/* Tên tình trạng */}
                     <div className="ti-cond-field">
                       <label>Tên tình trạng / lỗi <span className="req">*</span></label>
-                      {editingCond ? (
+                      <input
+                        type="text"
+                        required
+                        value={condForm.name}
+                        onChange={e => setCondForm({...condForm, name: e.target.value})}
+                        placeholder="Nhập tên tình trạng hoặc lỗi"
+                        className="ti-cond-input"
+                      />
+                    </div>
+
+                    {/* Mức khấu trừ */}
+                    <div className="ti-cond-field">
+                      <label>% Khấu trừ <span className="req">*</span></label>
+                      <div style={{ position: 'relative' }}>
                         <input
-                          type="text"
+                          type="number"
+                          min="0"
+                          max="100"
+                          step="1"
                           required
-                          value={condForm.name}
-                          onChange={e => setCondForm({...condForm, name: e.target.value})}
-                          placeholder="Nhập tên tình trạng hoặc lỗi"
+                          value={condForm.deduction_percentage}
+                          onChange={e => setCondForm({...condForm, deduction_percentage: e.target.value})}
+                          placeholder="VD: 9"
                           className="ti-cond-input"
+                          style={{ paddingRight: 28 }}
                         />
-                      ) : (
-                        <input
-                          type="text"
-                          value={condForm.name}
-                          onChange={e => setCondForm({...condForm, name: e.target.value})}
-                          placeholder="Nhập tên tình trạng hoặc lỗi"
-                          className="ti-cond-input"
-                        />
-                      )}
+                        <span style={{ position: 'absolute', right: 10, top: '50%', transform: 'translateY(-50%)', color: '#94a3b8', fontSize: 13 }}>%</span>
+                      </div>
                     </div>
 
                     {/* Mô tả */}
                     <div className="ti-cond-field ti-cond-field-desc">
-                      <label>Mô tả tiêu chuẩn <span className="req">*</span></label>
-                      {editingCond ? (
-                        <textarea
-                          required
-                          value={condForm.description}
-                          onChange={e => setCondForm({...condForm, description: e.target.value})}
-                          placeholder="Nhập mô tả chi tiết tiêu chuẩn"
-                          rows={3}
-                          className="ti-cond-textarea"
-                        />
-                      ) : (
-                        <textarea
-                          value={bulkPasteText}
-                          onChange={e => setBulkPasteText(e.target.value)}
-                          placeholder="Nhập mô tả chi tiết tiêu chuẩn"
-                          rows={3}
-                          className="ti-cond-textarea"
-                        />
-                      )}
+                      <label>Mô tả tiêu chuẩn</label>
+                      <textarea
+                        value={condForm.description}
+                        onChange={e => setCondForm({...condForm, description: e.target.value})}
+                        placeholder="Nhập mô tả chi tiết tiêu chuẩn"
+                        rows={3}
+                        className="ti-cond-textarea"
+                      />
                     </div>
 
                     {/* Actions */}
@@ -853,7 +1205,7 @@ const AdminTradeInPage = () => {
                         </button>
                         <button type="button" className="ti-cond-btn ti-cond-btn-reset" onClick={() => {
                           setEditingCond(null);
-                          setCondForm({ category_id: '', name: '', description: '' });
+                          setCondForm({ category_id: '', name: '', description: '', deduction_percentage: '' });
                           setBulkPasteText('');
                         }}>
                           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.15"/></svg>
@@ -862,12 +1214,13 @@ const AdminTradeInPage = () => {
                       </div>
                     </div>
                   </div>
+                  )}
 
                   {/* Hint box */}
-                  {!editingCond && (
+                  {!editingCond && !showBulk && (
                     <div className="ti-cond-hint">
                       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#6366f1" strokeWidth="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
-                      <span><strong>Hướng dẫn:</strong> Nhập thông tin tiêu chuẩn kiểm định để đánh giá tình trạng thiết bị một cách chính xác.</span>
+                      <span><strong>Hướng dẫn:</strong> Nhập thủ công từng tiêu chí bên trên, hoặc nhấn <strong>"Nhập nhanh"</strong> để thêm nhiều chỉ tiêu cùng lúc.</span>
                     </div>
                   )}
                 </form>
@@ -894,6 +1247,18 @@ const AdminTradeInPage = () => {
                         onChange={e => setCondSearchKeyword(e.target.value)}
                       />
                     </div>
+                    {selectedCondIds.length > 0 && (
+                      <button 
+                        onClick={() => setBulkDeleteConfirm(true)}
+                        style={{
+                          background: '#fee2e2', color: '#dc2626',
+                          border: 'none', padding: '6px 12px', borderRadius: 8,
+                          fontSize: 13, fontWeight: 600, display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer', height: 34
+                        }}
+                      >
+                        <Icons.Trash /> Xóa ({selectedCondIds.length})
+                      </button>
+                    )}
                   </div>
                 </div>
 
@@ -903,9 +1268,20 @@ const AdminTradeInPage = () => {
                   <table className="ti-cond-table">
                     <thead>
                       <tr>
+                        <th style={{width: 40, textAlign: 'center'}}>
+                          <input 
+                            type="checkbox" 
+                            checked={filteredConds.length > 0 && selectedCondIds.length === filteredConds.length}
+                            onChange={(e) => {
+                              if (e.target.checked) setSelectedCondIds(filteredConds.map(c => c.id));
+                              else setSelectedCondIds([]);
+                            }}
+                          />
+                        </th>
                         <th style={{width: 60}}>ID</th>
                         <th style={{width: 120}}>Danh mục</th>
                         <th style={{width: '25%'}}>Tên tình trạng / Lỗi</th>
+                        <th style={{width: 90, textAlign: 'center'}}>Khấu trừ</th>
                         <th>Mô tả tiêu chuẩn</th>
                         <th style={{width: 100, textAlign: 'right'}}>Thao tác</th>
                       </tr>
@@ -915,7 +1291,16 @@ const AdminTradeInPage = () => {
                         const isLaptop = cond.category?.slug === 'laptop';
                         const catClass = isLaptop ? 'laptop' : (cond.category?.slug === 'dien-thoai' ? 'phone' : '');
                         return (
-                          <tr key={cond.id}>
+                          <tr key={cond.id} style={{ background: selectedCondIds.includes(cond.id) ? '#f8fafc' : '' }}>
+                            <td style={{textAlign: 'center'}}>
+                              <input 
+                                type="checkbox"
+                                checked={selectedCondIds.includes(cond.id)}
+                                onChange={() => {
+                                  setSelectedCondIds(prev => prev.includes(cond.id) ? prev.filter(id => id !== cond.id) : [...prev, cond.id]);
+                                }}
+                              />
+                            </td>
                             <td className="ti-cond-td-id">#{cond.id}</td>
                             <td>
                               <span className={`ti-cond-cat-tag ${catClass}`}>
@@ -928,26 +1313,31 @@ const AdminTradeInPage = () => {
                               </span>
                             </td>
                             <td className="ti-cond-td-name">{cond.name}</td>
-                          <td className="ti-cond-td-desc">{cond.description}</td>
-                          <td>
-                            <div className="ti-cond-td-actions">
-                              <button className="ti-cond-icon-btn edit" title="Chỉnh sửa" onClick={() => {
-                                setEditingCond(cond);
-                                setCondForm({ category_id: cond.category_id.toString(), name: cond.name, description: cond.description });
-                                setBulkPasteText('');
-                              }}>
-                                <Icons.Edit />
-                              </button>
-                              <button className="ti-cond-icon-btn delete" title="Xóa" onClick={() => setDeleteConfirmId(cond.id)}>
-                                <Icons.Trash />
-                              </button>
-                            </div>
-                          </td>
-                        </tr>
+                            <td style={{ textAlign: 'center' }}>
+                              <span style={{ fontWeight: 700, fontSize: 14, color: (cond.deduction_percentage ?? 0) >= 15 ? '#dc2626' : (cond.deduction_percentage ?? 0) >= 10 ? '#ea580c' : (cond.deduction_percentage ?? 0) >= 6 ? '#ca8a04' : '#16a34a' }}>
+                                {cond.deduction_percentage ?? 0}%
+                              </span>
+                            </td>
+                            <td className="ti-cond-td-desc">{cond.description}</td>
+                            <td>
+                              <div className="ti-cond-td-actions">
+                                <button className="ti-cond-icon-btn edit" title="Chỉnh sửa" onClick={() => {
+                                  setEditingCond(cond);
+                                  setCondForm({ category_id: cond.category_id.toString(), name: cond.name, description: cond.description, deduction_percentage: String(cond.deduction_percentage ?? '') });
+                                  setBulkPasteText('');
+                                }}>
+                                  <Icons.Edit />
+                                </button>
+                                <button className="ti-cond-icon-btn delete" title="Xóa" onClick={() => setDeleteConfirmId(cond.id)}>
+                                  <Icons.Trash />
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
                         );
                       })}
                       {filteredConds.length === 0 && (
-                        <tr><td colSpan={5} className="ti-cond-empty">Hệ thống chưa có tiêu chuẩn kiểm định nào.</td></tr>
+                        <tr><td colSpan={6} className="ti-cond-empty">Hệ thống chưa có tiêu chuẩn kiểm định nào.</td></tr>
                       )}
                     </tbody>
                   </table>
@@ -976,6 +1366,14 @@ const AdminTradeInPage = () => {
         message="Hành động này sẽ xóa vĩnh viễn tiêu chí khỏi hệ thống và không thể khôi phục. Bạn có chắc chắn?"
         onConfirm={() => { if (deleteConfirmId !== null) handleDeleteCondition(deleteConfirmId); }}
         onCancel={() => setDeleteConfirmId(null)}
+      />
+
+      <ConfirmModal
+        open={bulkDeleteConfirm}
+        title="Xóa nhiều tiêu chí?"
+        message={`Bạn đang chọn xóa ${selectedCondIds.length} tiêu chí. Hành động này sẽ xóa vĩnh viễn khỏi hệ thống. Bạn có chắc chắn?`}
+        onConfirm={handleBulkDelete}
+        onCancel={() => setBulkDeleteConfirm(false)}
       />
     </div>
   );

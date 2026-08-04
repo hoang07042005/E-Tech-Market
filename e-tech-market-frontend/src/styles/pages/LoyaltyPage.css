@@ -221,6 +221,7 @@
   position: absolute;
   inset: 0;
   background: linear-gradient(135deg, #1a1a1a2b, #464545);
+  
   z-index: 0;
 }
 
@@ -477,6 +478,7 @@
     aspect-ratio: auto;
     min-height: 220px;
     padding: 16px;
+
   }
   .loyalty-member-card-title {
     font-size: 18px;
@@ -555,4 +557,21 @@
     flex-shrink: 0;
     margin-top: 2px;
   }
+}
+
+html.dark .loyalty-history-title {
+  color: #f1f5f9;
+}
+
+html.dark .loyalty-history-item,
+html.dark .loyalty-history-item-title {
+  background: #1e293b;
+  color: #fff;
+  border:none;
+}
+
+html.dark .loyalty-member-card{
+    background-image: url('/public/screen1.png');
+  background-size: cover;
+  background-position: center;
 }
