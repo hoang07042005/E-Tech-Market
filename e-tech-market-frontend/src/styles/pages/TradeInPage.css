@@ -288,12 +288,14 @@
 
 .ti-cond-item {
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     padding: 10px;
     border: 1px solid #e2e8f0a5;
     border-radius: 5px;
     cursor: pointer;
     transition: all 0.2s;
+    height: 100%;
+    box-sizing: border-box;
 }
 
 .ti-cond-item.selected {
@@ -307,7 +309,6 @@
     border: 1px solid #cbd5e1;
     border-radius: 4px;
     margin-right: 6px;
-    margin-top: 2px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -345,7 +346,7 @@
     padding: 20px;
     display: flex;
     gap: 15px;
-    margin-bottom: 20px;
+    margin-bottom: 36px;
     margin-top: auto;
 }
 
@@ -1066,3 +1067,8 @@ html.dark .ti-rb-c-text h5,
 html.dark .ti-rb-n-list li{
     color: #fff;
 }
+
+.ti-cond-list-wrapper { -ms-overflow-style: none; scrollbar-width: none; }
+.ti-cond-list-wrapper::-webkit-scrollbar { display: none; }
+
+.ti-cond-text { flex: 1; }

@@ -381,22 +381,79 @@ const TradeInPage = () => {
                 </div>
               </div>
 
-              <div className="ti-cond-list">
-                  {conditions.map(c => (
-                      <div 
-                          key={c.id} 
-                          className={`ti-cond-item ${selectedConditions.includes(c.id) ? 'selected' : ''}`}
-                          onClick={() => toggleCondition(c.id)}
-                      >
-                          <div className="ti-checkbox">
-                              {selectedConditions.includes(c.id) && <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>}
-                          </div>
-                          <div className="ti-cond-text">
-                              <h4>{c.name}</h4>
-                              {c.description && <p>{c.description}</p>}
-                          </div>
-                      </div>
-                  ))}
+              <div className="ti-cond-list-wrapper" style={{ display: 'flex', flexDirection: 'column', gap: '20px', maxHeight: '550px', overflowY: 'auto'}}>
+                  {(() => {
+                      if (conditions.length === 0) return null;
+
+                      // 1. Deduplicate by name
+                      const seen = new Set<string>();
+                      const uniqueConds = conditions.filter(c => {
+                          const key = c.name.trim().toLowerCase();
+                          if (seen.has(key)) return false;
+                          seen.add(key);
+                          return true;
+                      });
+
+                      // 2. Group by keywords
+                      const groups: Record<string, TradeInCondition[]> = {
+                          'Ngoại hình': [],
+                          'Màn hình & Kính': [],
+                          'Pin & Sạc': [],
+                          'Camera & Âm thanh': [],
+                          'Chức năng & Kết nối': [],
+                          'Phần cứng & Sửa chữa': [],
+                          'Khác': []
+                      };
+
+                      uniqueConds.forEach(c => {
+                          const name = c.name.toLowerCase();
+                          
+                          if (name.includes('màn hình') || name.includes('hiển thị') || name.includes('cảm ứng') || name.includes('ám') || name.includes('sọc') || name.includes('mực') || name.includes('điểm chết') || name.includes('lưu ảnh') || name.includes('chấm sáng') || name.includes('hở sáng') || name.includes('bụi trong màn') || name.includes('true tone') || name.includes('ép kính') || (name.includes('kính') && !name.includes('camera'))) {
+                              groups['Màn hình & Kính'].push(c);
+                          } else if (name.includes('pin') || name.includes('sạc') || name.includes('cổng')) {
+                              groups['Pin & Sạc'].push(c);
+                          } else if (name.includes('camera') || name.includes('loa') || name.includes('mic') || name.includes('âm thanh') || name.includes('flash') || name.includes('đốm') || name.includes('chụp')) {
+                              groups['Camera & Âm thanh'].push(c);
+                          } else if (name.includes('rung') || name.includes('face id') || name.includes('touch id') || name.includes('vân tay') || name.includes('nút') || name.includes('wifi') || name.includes('bluetooth') || name.includes('gps') || name.includes('nfc') || name.includes('esim') || name.includes('sóng') || name.includes('5g') || name.includes('cảm biến') || name.includes('la bàn') || name.includes('gia tốc') || name.includes('con quay') || name.includes('nhận sim')) {
+                              groups['Chức năng & Kết nối'].push(c);
+                          } else if (name.includes('main') || name.includes('ic') || name.includes('sửa chữa') || name.includes('tháo máy') || name.includes('nước') || name.includes('oxy hóa') || name.includes('nguồn') || name.includes('treo logo') || name.includes('chống nước')) {
+                              groups['Phần cứng & Sửa chữa'].push(c);
+                          } else if (name.includes('mới') || name.includes('đẹp') || name.includes('khá') || name.includes('trầy') || name.includes('xước') || name.includes('tróc') || name.includes('cấn') || name.includes('móp') || name.includes('cong') || name.includes('vỏ') || name.includes('khung') || name.includes('lưng') || name.includes('logo') || name.includes('ốc') || name.includes('sim')) {
+                              groups['Ngoại hình'].push(c);
+                          } else {
+                              groups['Khác'].push(c);
+                          }
+                      });
+
+                      return Object.entries(groups).map(([groupName, conds]) => {
+                          if (conds.length === 0) return null;
+                          return (
+                              <div key={groupName} className="ti-cond-group">
+                                  <h4 style={{ fontSize: '14px', fontWeight: 600, color: '#334155', marginBottom: '12px', paddingBottom: '6px', borderBottom: '1px solid #e2e8f0', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                      <div style={{ width: 6, height: 16, background: '#6366f1', borderRadius: 4 }}></div>
+                                      {groupName}
+                                  </h4>
+                                  <div className="ti-cond-list">
+                                      {conds.map(c => (
+                                          <div 
+                                              key={c.id} 
+                                              className={`ti-cond-item ${selectedConditions.includes(c.id) ? 'selected' : ''}`}
+                                              onClick={() => toggleCondition(c.id)}
+                                          >
+                                              <div className="ti-checkbox">
+                                                  {selectedConditions.includes(c.id) && <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>}
+                                              </div>
+                                              <div className="ti-cond-text">
+                                                  <h4 style={{ margin: 0, fontSize: '13.5px' }}>{c.name}</h4>
+                                                  {c.description && <p style={{ margin: '4px 0 0', fontSize: '12px' }}>{c.description}</p>}
+                                              </div>
+                                          </div>
+                                      ))}
+                                  </div>
+                              </div>
+                          );
+                      });
+                  })()}
                   {conditions.length === 0 && (
                       <p className="ti-empty-cond">Vui lòng chọn Loại thiết bị trước.</p>
                   )}
