@@ -456,8 +456,34 @@ type BlogPost = {
   thumbnail_url: string | null
   excerpt: string | null
   published_at: string | null
-  category?: { name: string } | null
+  category?: { name: string; slug?: string } | null
   reading_time?: number
+}
+
+const getCategoryColor = (slug?: string) => {
+  if (!slug) return '#6b7280';
+  const s = slug.toLowerCase();
+  if (s.includes('tin-san-pham')) return '#ef4444';
+  if (s.includes('cong-nghe')) return '#3b82f6';
+  if (s.includes('tu-van')) return '#14b8a6'; // Teal
+  if (s.includes('khuyen-mai')) return '#f59e0b';
+  if (s.includes('danh-gia')) return '#a855f7'; // Purple (matching screenshot)
+  if (s.includes('huong-dan')) return '#8b5cf6';
+  if (s.includes('tren-tay')) return '#10b981'; // Green (matching screenshot)
+  if (s.includes('tin-tuc')) return '#06b6d4';
+  if (s.includes('kham-pha')) return '#eab308';
+  if (s.includes('thu-thuat')) return '#f97316';
+  if (s.includes('phu-kien')) return '#6366f1';
+  
+  const colors = [
+    '#f43f5e', '#d946ef', '#0ea5e9', '#14b8a6', 
+    '#22c55e', '#84cc16', '#a855f7', '#64748b'
+  ];
+  let hash = 0;
+  for (let i = 0; i < s.length; i++) {
+    hash = s.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  return colors[Math.abs(hash) % colors.length];
 }
 
 function FeaturedProductSkeleton() {
@@ -604,12 +630,13 @@ export default function HomePage() {
       apiFetch<CouponPublic[]>('/api/coupons'),
       fetchCategories('product'),
       apiFetch<ProductReview[]>('/api/reviews?min_rating=5&limit=6'),
-      apiFetch<{ data: BlogPost[] }>('/api/blog/posts?per_page=5'),
+      apiFetch<{ data: BlogPost[] }>('/api/blog/posts?per_page=10'),
       fetchProducts({ limit: 16, category_id: 2, is_featured: 1 }),
       fetchActiveBanners(),
-      apiFetch<Video[]>('/api/videos')
+      apiFetch<Video[]>('/api/videos'),
+      apiFetch<{ data: any[] }>('/product-news').catch(() => ({ data: [] }))
     ])
-      .then(([prodRes, couponRes, catRes, reviewRes, newsRes, phoneRes, bannerRes, videoRes]) => {
+      .then(([prodRes, couponRes, catRes, reviewRes, newsRes, phoneRes, bannerRes, videoRes, productNewsRes]) => {
         if (active) {
           setBanners(Array.isArray(bannerRes) ? bannerRes : [])
           setFeaturedProducts(prodRes.data)
@@ -623,7 +650,21 @@ export default function HomePage() {
             setGlobalReviews(reviewRes)
           }
           if (newsRes && Array.isArray(newsRes.data)) {
-            setLatestNews(newsRes.data)
+            const blogPosts = newsRes.data;
+            const productNews: BlogPost[] = (productNewsRes?.data || []).map((news: any) => ({
+              id: parseInt(`999${news.id}`),
+              title: news.title,
+              slug: news.slug,
+              excerpt: news.content_html ? news.content_html.replace(/<[^>]+>/g, '').substring(0, 120) + '...' : 'Thông tin mới về sản phẩm',
+              thumbnail_url: news.thumbnail_url || news.thumbnail_path,
+              published_at: news.published_at || news.created_at,
+              reading_time: 3,
+              category: { name: 'Tin Sản Phẩm', slug: 'tin-san-pham' }
+            }));
+            const allPosts = [...blogPosts, ...productNews].sort((a, b) => 
+              new Date(b.published_at || '').getTime() - new Date(a.published_at || '').getTime()
+            );
+            setLatestNews(allPosts);
           }
           if (phoneRes && Array.isArray(phoneRes.data)) {
             setPhoneProducts(phoneRes.data)
@@ -1350,7 +1391,7 @@ export default function HomePage() {
                   <Link key={post.id} to={`/blog/${post.slug}`} className="hpNewsCard">
                     <div className="hpNewsThumb">
                       <img src={resolveImageUrl(post.thumbnail_url)} alt={post.title} />
-                      {post.category && <span className="hpNewsTag">{post.category.name}</span>}
+                      {post.category && <span className="hpNewsTag" style={{ backgroundColor: getCategoryColor(post.category.slug), color: '#fff', border: 'none' }}>{post.category.name}</span>}
                     </div>
                     <div className="hpNewsContent">
                       <div className="hpNewsMeta">

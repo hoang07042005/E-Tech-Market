@@ -45,28 +45,28 @@ const resolveImageUrl = (url: string | null) => {
 
 const getCategoryColor = (slug?: string) => {
   if (!slug) return '#6b7280';
-  switch (slug) {
-    case 'tin-san-pham': return '#ef4444'; // Red
-    case 'cong-nghe': return '#3b82f6'; // Blue
-    case 'khuyen-mai': return '#f59e0b'; // Amber
-    case 'danh-gia': return '#10b981'; // Emerald
-    case 'huong-dan': return '#8b5cf6'; // Purple
-    case 'tren-tay': return '#ec4899'; // Pink
-    case 'tin-tuc': return '#06b6d4'; // Cyan
-    case 'kham-pha': return '#eab308'; // Yellow
-    case 'thu-thuat': return '#f97316'; // Orange
-    case 'phu-kien': return '#6366f1'; // Indigo
-    default:
-      const colors = [
-        '#f43f5e', '#d946ef', '#0ea5e9', '#14b8a6', 
-        '#22c55e', '#84cc16', '#a855f7', '#64748b'
-      ];
-      let hash = 0;
-      for (let i = 0; i < slug.length; i++) {
-        hash = slug.charCodeAt(i) + ((hash << 5) - hash);
-      }
-      return colors[Math.abs(hash) % colors.length];
+  const s = slug.toLowerCase();
+  if (s.includes('tin-san-pham')) return '#ef4444';
+  if (s.includes('cong-nghe')) return '#3b82f6';
+  if (s.includes('tu-van')) return '#14b8a6'; // Teal
+  if (s.includes('khuyen-mai')) return '#f59e0b';
+  if (s.includes('danh-gia')) return '#a855f7'; // Purple (matching screenshot)
+  if (s.includes('huong-dan')) return '#8b5cf6';
+  if (s.includes('tren-tay')) return '#10b981'; // Green (matching screenshot)
+  if (s.includes('tin-tuc')) return '#06b6d4';
+  if (s.includes('kham-pha')) return '#eab308';
+  if (s.includes('thu-thuat')) return '#f97316';
+  if (s.includes('phu-kien')) return '#6366f1';
+  
+  const colors = [
+    '#f43f5e', '#d946ef', '#0ea5e9', '#14b8a6', 
+    '#22c55e', '#84cc16', '#a855f7', '#64748b'
+  ];
+  let hash = 0;
+  for (let i = 0; i < s.length; i++) {
+    hash = s.charCodeAt(i) + ((hash << 5) - hash);
   }
+  return colors[Math.abs(hash) % colors.length];
 }
 
 export default function BlogPage() {
