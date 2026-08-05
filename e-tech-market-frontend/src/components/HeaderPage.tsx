@@ -19,6 +19,7 @@ export type NavKey =
   | "Home"
   | "Product"
   | "Accessory"
+  | "TradeIn"
   | "Blog"
   | "Contact"
   | "About";
@@ -27,6 +28,7 @@ const NAV: NavKey[] = [
   "Home",
   "Product",
   "Accessory",
+  "TradeIn",
   "Blog",
   "Contact",
   "About",
@@ -36,6 +38,7 @@ const NAV_LABEL: Record<NavKey, string> = {
   Home: "Trang chủ",
   Product: "Sản phẩm",
   Accessory: "Linh kiện",
+  TradeIn: "Thu cũ & đổi mới",
   Blog: "Tin tức",
   Contact: "Liên hệ",
   About: "Giới thiệu",
@@ -434,6 +437,10 @@ export default function HeaderPage({ active = "Home" }: { active?: NavKey }) {
       navigate("/products?category=linh-kien");
       return;
     }
+    if (item === "TradeIn") {
+      navigate("/trade-in");
+      return;
+    }
     if (item === "Blog") {
       navigate("/blog");
       return;
@@ -627,6 +634,7 @@ export default function HeaderPage({ active = "Home" }: { active?: NavKey }) {
               if (item === "Home") Icon = <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>;
               if (item === "Product") Icon = <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg>;
               if (item === "Accessory") Icon = <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>;
+              if (item === "TradeIn") Icon = <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="1 4 1 10 7 10"></polyline><polyline points="23 20 23 14 17 14"></polyline><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"></path></svg>;
               if (item === "Blog") Icon = <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>;
               if (item === "Contact") Icon = <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>;
               if (item === "About") Icon = <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>;

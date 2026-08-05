@@ -155,6 +155,7 @@ function AppFrame() {
     if (location.pathname.startsWith('/contact')) return 'Contact' as const
     if (location.pathname.startsWith('/about')) return 'About' as const
     if (location.pathname.startsWith('/blog')) return 'Blog' as const
+    if (location.pathname.startsWith('/trade-in')) return 'TradeIn' as const
     if (!location.pathname.startsWith('/products')) return 'Home' as const
     const category = new URLSearchParams(location.search).get('category')
     if (category === 'accessories' || category === 'linh-kien' || category === '4') return 'Accessory' as const

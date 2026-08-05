@@ -183,7 +183,7 @@ export default function FlashSaleSection() {
         </div>
 
         <div className="flashSaleGrid">
-          {(activeSale.items || []).filter(i => i.product).slice(0, 5).map(item => {
+          {(activeSale.items || []).filter(i => i.product).slice(0, 6).map(item => {
             const productUrl = `/products/${item.product.slug}?flashSale=true${item.variant_id ? `&variant=${item.variant_id}` : ''}`;
             const displayImage = resolveImageUrl(item.variant?.image_url || item.product.main_image_url);
             const displayName = item.variant

@@ -599,7 +599,7 @@ export default function HomePage() {
   useEffect(() => {
     let active = true
     Promise.all([
-      fetchProducts({ limit: 10, is_featured: 1 }),
+      fetchProducts({ limit: 12, is_featured: 1 }),
       // 🔒 Token is sent via httpOnly cookie automatically
       apiFetch<CouponPublic[]>('/api/coupons'),
       fetchCategories('product'),
@@ -1217,7 +1217,7 @@ export default function HomePage() {
             </div>
             <div className="hpProductGrid">
               {loading ? (
-                Array.from({ length: 10 }).map((_, i) => <FeaturedProductSkeleton key={i} />)
+                Array.from({ length: 12 }).map((_, i) => <FeaturedProductSkeleton key={i} />)
               ) : featuredProducts.length === 0 ? (
                 <div className="hpStatusText">Chưa có sản phẩm nổi bật.</div>
               ) : (

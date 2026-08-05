@@ -1,5 +1,5 @@
 .adminLayout {
-  --admin-sidebar-w: 280px;
+  --admin-sidebar-w: 240px;
   --admin-sidebar-c: 80px;
   --admin-accent: var(--et-primary, #f97316);
   --admin-accent-2: var(--et-primary-hover, #ea580c);

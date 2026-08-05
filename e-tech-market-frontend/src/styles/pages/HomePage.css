@@ -22,7 +22,7 @@
   color: var(--et-text-muted);
 }
 .hpContainer {
-  max-width: 1280px;
+  max-width: 1470px;
   margin: 0 auto;
   padding: 24px 24px;
   margin-bottom: 20px;
@@ -679,7 +679,7 @@
 /* Product Grid */
 .hpProductGrid {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(6, 1fr);
   gap: 20px;
 }
 
@@ -861,7 +861,7 @@
   font-weight: 600;
   line-height: 1.4;
   color: #0f172a;
-  margin: 0 0 10px 0;
+  margin: 0 0 4px 0;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   line-clamp: 2;
@@ -873,7 +873,7 @@
   font-size: 0.85rem;
   color: #64748b;
   line-height: 1.6;
-  margin: 0 0 10px 0;
+  margin: 0;
   display: -webkit-box;
   -webkit-line-clamp: 3;
   line-clamp: 3;

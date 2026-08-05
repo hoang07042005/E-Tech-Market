@@ -131,7 +131,7 @@
 }
 .blogPostsGrid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 10px;
 }
 .blogCard {
@@ -147,7 +147,7 @@
 }
 .blogCardThumbWrap {
   position: relative;
-  height: 240px;
+  height: 170px;
   overflow: hidden;
 }
 .blogCardThumb {

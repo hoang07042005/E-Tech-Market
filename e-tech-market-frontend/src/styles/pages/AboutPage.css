@@ -6,7 +6,7 @@
   font-family: 'Inter', sans-serif;
 }
 .abInner {
-  max-width: 1240px;
+  max-width: 1470px;
   margin: 0 auto;
   padding: clamp(18px, 3vw, 28px) 20px 72px;
 }

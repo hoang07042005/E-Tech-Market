@@ -7,8 +7,8 @@
 
 .ppCardDescClamp {
   color: #777;
-  font-size: 13px;
-  line-height: 1.6;
+  font-size: 12px;
+  line-height: 1.4;
   flex: 1 1 auto;
   min-width: 0;
   display: -webkit-box;
@@ -16,6 +16,7 @@
   overflow: hidden;
   -webkit-line-clamp: 3;
   line-clamp: 3;
+  margin-top: 5px;
 }
 
 /* Nút đang dùng class ppCardAddBtn sẵn có trong ProductsPage.css */
