@@ -208,8 +208,8 @@ const TradeInPage = () => {
   return (
     <div className="ti-container">
       <div className="ti-hero">
-        <h1 className="ti-title">Thu Cũ <span>Đổi Mới</span> – Lên Đời Trợ Giá</h1>
-        <p className="ti-subtitle">Định giá máy cũ nhanh chóng, trợ giá lên tới 2 triệu đồng khi lên đời máy mới tại E-Tech Market.</p>
+        <h1 className="ti-title">Thu Cũ <span>Giá Cao</span> – Định Giá Nhanh Chóng</h1>
+        <p className="ti-subtitle">Định giá máy cũ chính xác, quy trình thu mua nhanh chóng và giải ngân ngay tại E-Tech Market.</p>
       </div>
       
       <div className="ti-steps-header">

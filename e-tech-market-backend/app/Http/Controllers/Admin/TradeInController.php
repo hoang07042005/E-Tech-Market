@@ -81,6 +81,7 @@ class TradeInController extends Controller
         $data = $request->validate([
             'status' => 'required|in:pending,quoted,approved,rejected,completed',
             'estimated_price' => 'nullable|numeric|min:0',
+            'final_price' => 'nullable|numeric|min:0',
             'admin_note' => 'nullable|string'
         ]);
 

@@ -5,8 +5,12 @@ import 'package:flutter/material.dart';
 import '../../services/products_service.dart';
 import '../../utils/network_utils.dart';
 import '../../utils/translation.dart';
+import 'package:dio/dio.dart';
+import '../../config/dio_client.dart';
+import '../../services/video_service.dart';
+import '../blogs/blog_detail_screen.dart';
+import '../videos/video_detail_screen.dart';
 import '../products/product_detail_screen.dart';
-
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});
 
@@ -41,7 +45,6 @@ class _SearchScreenState extends State<SearchScreen> {
     super.dispose();
   }
 
-  // Hàm xử lý logic tìm kiếm
   Future<void> _performSearch(String query, {bool isTyping = false}) async {
     if (!mounted) return;
     setState(() {
@@ -59,20 +62,73 @@ class _SearchScreenState extends State<SearchScreen> {
       return;
     }
 
-    setState(() {
-      _isLoading = true;
-    });
-
     try {
-      final res = await ProductsService.fetchProducts(
-        search: query,
-        limit: 20,
-      );
-      if (mounted) {
-        setState(() {
-          _searchResults = res['data'] ?? [];
-          _isLoading = false;
-        });
+      if (isTyping) {
+        final queryTerm = Uri.encodeComponent(query.trim());
+        final results = await Future.wait([
+          ProductsService.fetchProducts(search: query, limit: 4).catchError((_) => {'data': []}),
+          DioClient.instance.get('/blog/posts?search=$queryTerm&per_page=2').catchError((_) => Response(requestOptions: RequestOptions(path: ''), data: {'data': []})),
+          DioClient.instance.get('/product-news?search=$queryTerm').catchError((_) => Response(requestOptions: RequestOptions(path: ''), data: {'data': []})),
+          VideoService.fetchVideos(limit: 2).catchError((_) => []),
+        ]);
+        
+        if (mounted) {
+          final productsRes = results[0] as Map<String, dynamic>;
+          final postsRes = (results[1] as Response).data;
+          final newsRes = (results[2] as Response).data;
+          final videosRes = results[3] as List<dynamic>;
+
+          final productsData = productsRes['data'] as List<dynamic>? ?? [];
+          final finalProducts = productsData.take(4).map((p) => {...(p as Map<String, dynamic>), 'type': 'product'}).toList();
+
+          final postsData = postsRes['data'] as List<dynamic>? ?? [];
+          final postsHits = postsData.take(2).map((p) => {
+            'id': p['id'],
+            'name': p['title'],
+            'slug': p['slug'],
+            'main_image_url': p['thumbnail_url'],
+            'type': 'post',
+            'original_data': p,
+          }).toList();
+
+          final newsData = newsRes['data'] as List<dynamic>? ?? [];
+          final newsHits = newsData.take(2).map((n) => {
+            'id': int.tryParse('999${n['id']}') ?? 0,
+            'name': n['title'],
+            'slug': n['slug'],
+            'main_image_url': n['thumbnail_url'] ?? n['thumbnail_path'],
+            'type': 'news',
+            'original_data': n,
+          }).toList();
+
+          final videosHits = videosRes.take(2).map((v) => {
+            'id': int.tryParse('888${v['id']}') ?? 0,
+            'name': v['title'],
+            'slug': v['id'].toString(),
+            'main_image_url': v['thumbnail_url'],
+            'type': 'video',
+            'original_data': v,
+          }).toList();
+
+          setState(() {
+            _searchResults = [...finalProducts, ...postsHits, ...newsHits, ...videosHits];
+            _isLoading = false;
+          });
+        }
+      } else {
+        // When not typing (e.g. submit), only show products like HeaderPage.tsx
+        final res = await ProductsService.fetchProducts(
+          search: query,
+          limit: 20,
+        );
+        if (mounted) {
+          setState(() {
+            _searchResults = (res['data'] as List<dynamic>? ?? [])
+                .map((p) => {...(p as Map<String, dynamic>), 'type': 'product'})
+                .toList();
+            _isLoading = false;
+          });
+        }
       }
     } catch (e) {
       if (mounted) {
@@ -245,23 +301,87 @@ class _SearchScreenState extends State<SearchScreen> {
     }
 
     if (_showSuggestions) {
-      final uniqueNames = _searchResults.map((p) => p['name']?.toString() ?? '').where((n) => n.isNotEmpty).toSet().toList();
-      
-      if (_isLoading && uniqueNames.isEmpty) {
+      if (_isLoading && _searchResults.isEmpty) {
         return const Center(child: CircularProgressIndicator());
       }
       
       return ListView.builder(
-        itemCount: uniqueNames.length,
+        itemCount: _searchResults.length,
         itemBuilder: (context, index) {
-          final name = uniqueNames[index];
+          final item = _searchResults[index];
+          final type = item['type']?.toString() ?? 'product';
+          final name = item['name']?.toString() ?? '';
+          
+          String typeLabel = 'Sản phẩm';
+          Color typeColor = Colors.blue;
+          IconData iconData = Icons.inventory_2_outlined;
+          
+          if (type == 'post') {
+            typeLabel = 'Bài viết';
+            typeColor = Colors.orange;
+            iconData = Icons.article_outlined;
+          } else if (type == 'news') {
+            typeLabel = 'Tin tức';
+            typeColor = Colors.green;
+            iconData = Icons.newspaper_outlined;
+          } else if (type == 'video') {
+            typeLabel = 'Video';
+            typeColor = Colors.red;
+            iconData = Icons.play_circle_outline;
+          }
+          
+          String? imageUrl;
+          if (type == 'product') {
+            imageUrl = _resolveProductImageUrl(item);
+          } else {
+            imageUrl = item['main_image_url']?.toString();
+            if (imageUrl != null && imageUrl.isNotEmpty) {
+              imageUrl = NetworkUtils.fixDeviceUrl(imageUrl);
+            }
+          }
+
+          final fallbackWidget = Container(
+            width: 50,
+            height: 50,
+            decoration: BoxDecoration(
+              color: typeColor.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(6),
+            ),
+            child: Icon(iconData, color: typeColor, size: 20),
+          );
+
           return ListTile(
-            leading: Icon(Icons.history, color: Colors.grey.shade500),
-            title: Text(name),
+            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+            leading: (imageUrl != null && imageUrl.isNotEmpty)
+                ? ClipRRect(
+                    borderRadius: BorderRadius.circular(6),
+                    child: Image.network(
+                      imageUrl,
+                      width: 50,
+                      height: 50,
+                      fit: BoxFit.cover,
+                      errorBuilder: (_, __, ___) => fallbackWidget,
+                    ),
+                  )
+                : fallbackWidget,
+            title: Text(name, maxLines: 2, overflow: TextOverflow.ellipsis),
+            subtitle: Text(typeLabel, style: TextStyle(color: typeColor, fontSize: 12, fontWeight: FontWeight.bold)),
             onTap: () {
-              _searchController.text = name;
               FocusScope.of(context).unfocus();
-              _performSearch(name, isTyping: false);
+              if (type == 'post' || type == 'news') {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => BlogDetailScreen(post: item['original_data'])),
+                );
+              } else if (type == 'video') {
+                final videoId = int.tryParse(item['original_data']['id']?.toString() ?? '0') ?? 0;
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => VideoDetailScreen(videoId: videoId)),
+                );
+              } else {
+                _navigateToProduct(item);
+              }
             },
           );
         },

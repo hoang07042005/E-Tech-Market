@@ -316,7 +316,7 @@ class _TradeInScreenState extends State<TradeInScreen> {
       backgroundColor: theme.colorScheme.surface,
       appBar: widget.showAppBar
           ? AppBar(
-              title: const Text('Thu cũ đổi mới'),
+              title: const Text('Thu cũ giá cao'),
               backgroundColor: theme.colorScheme.surface,
               foregroundColor: theme.colorScheme.onSurface,
             )
@@ -362,8 +362,7 @@ class _TradeInScreenState extends State<TradeInScreen> {
             _buildCategoryCard(theme),
             if (_selectedCategoryId != null) ...[
               const Padding(
-                padding: EdgeInsets.symmetric(vertical: 24),
-                child: Divider(color: Color(0xFFE2E8F0), height: 1),
+                padding: EdgeInsets.symmetric(vertical: 12),
               ),
               _buildDetailsCard(theme),
             ],
@@ -425,7 +424,7 @@ class _TradeInScreenState extends State<TradeInScreen> {
                       Text(
                         titles[index],
                         style: TextStyle(
-                          fontSize: 13,
+                          fontSize: 12,
                           fontWeight: active ? FontWeight.bold : FontWeight.w600,
                           color: active ? const Color(0xFFEA6C00) : Colors.grey.shade600,
                         ),
@@ -583,14 +582,14 @@ class _TradeInScreenState extends State<TradeInScreen> {
             style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold, color: theme.colorScheme.onSurface),
             children: [
               TextSpan(text: 'Thu Cũ '),
-              TextSpan(text: 'Đổi Mới', style: TextStyle(color: Color(0xFFEA6C00))),
-              TextSpan(text: ' – Lên Đời Trợ Giá'),
+              TextSpan(text: 'Giá Cao', style: TextStyle(color: Color(0xFFEA6C00))),
+              TextSpan(text: ' – Định Giá Nhanh Chóng'),
             ],
           ),
         ),
         const SizedBox(height: 12),
         Text(
-          'Định giá máy cũ nhanh chóng, trợ giá lên tới 2 triệu đồng khi lên đời máy mới tại E-Tech Market.',
+          'Định giá máy cũ chính xác, quy trình thu mua nhanh chóng và giải ngân ngay tại E-Tech Market.',
           textAlign: TextAlign.center,
           style: TextStyle(color: theme.colorScheme.onSurface, fontSize: 14, height: 1.5),
         ),

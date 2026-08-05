@@ -6,9 +6,19 @@ class BannerService {
     try {
       final response = await DioClient.instance.get('/banners');
       final body = response.data;
-      if (body is List) return body;
-      if (body is Map && body['data'] is List) return body['data'] as List<dynamic>;
-      return [];
+      
+      List<dynamic> list = [];
+      if (body is List) {
+        list = body;
+      } else if (body is Map && body['data'] is List) {
+        list = body['data'] as List<dynamic>;
+      }
+
+      // Lọc ra các banner có trạng thái is_active
+      return list.where((b) {
+        final isActive = b['is_active'];
+        return isActive == 1 || isActive == true || isActive == '1';
+      }).toList();
     } catch (_) {
       return [];
     }

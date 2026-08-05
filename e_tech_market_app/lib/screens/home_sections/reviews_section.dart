@@ -116,14 +116,13 @@ class _ReviewCard extends StatelessWidget {
     final productName = review['product']?['name']?.toString() ?? '';
     final mediaItems = _extractMediaItems(review['media']);
 
-    return Container(
-      decoration: BoxDecoration(
-        border: Border.all(
-            color: Theme.of(context).colorScheme.outline, width: 0.15),
-        borderRadius: BorderRadius.circular(12),
+    return CustomPaint(
+      painter: _DashedBottomBorderPainter(
+        color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.5),
+        width: 1.0,
       ),
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        padding: const EdgeInsets.fromLTRB(0, 8, 0, 16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -532,4 +531,32 @@ class _ReviewCardSkeleton extends StatelessWidget {
       ),
     );
   }
+}
+
+class _DashedBottomBorderPainter extends CustomPainter {
+  final Color color;
+  final double width;
+
+  _DashedBottomBorderPainter({required this.color, required this.width});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    Paint paint = Paint()
+      ..color = color
+      ..strokeWidth = width
+      ..style = PaintingStyle.stroke;
+
+    double dashWidth = 5, dashSpace = 3, startX = 0;
+    while (startX < size.width) {
+      canvas.drawLine(
+        Offset(startX, size.height),
+        Offset(startX + dashWidth, size.height),
+        paint,
+      );
+      startX += dashWidth + dashSpace;
+    }
+  }
+
+  @override
+  bool shouldRepaint(CustomPainter oldDelegate) => false;
 }

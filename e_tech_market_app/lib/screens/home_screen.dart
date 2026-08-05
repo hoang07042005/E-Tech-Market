@@ -376,6 +376,7 @@ class _HomeScreenState extends State<HomeScreen> {
         BlogService.fetchBlogPosts(perPage: 5),
         VideoService.fetchVideos(limit: 4),
         ReviewsService.fetchReviews(minRating: 5, limit: 6),
+        DioClient.instance.get('/product-news').catchError((_) => null),
       ]);
 
       if (!mounted) return;
@@ -392,7 +393,45 @@ class _HomeScreenState extends State<HomeScreen> {
             .map<int>((item) => (item['product_id'] as num).toInt())
             .toSet();
         final blogResponse = results[5] as Map<String, dynamic>;
-        _latestNews = blogResponse['data'] as List<dynamic>? ?? [];
+        final blogPosts = blogResponse['data'] as List<dynamic>? ?? [];
+        
+        final productNewsResponse = results[8];
+        final productNewsData = (productNewsResponse?.data?['data'] as List<dynamic>? ?? []).map((news) {
+            final id = news['id'] ?? 1;
+            String contentHtml = news['content_html'] ?? '';
+            String excerpt = contentHtml.replaceAll(RegExp(r'<[^>]*>'), '');
+            if (excerpt.length > 120) {
+              excerpt = excerpt.substring(0, 120) + '...';
+            }
+            if (excerpt.isEmpty) excerpt = 'Thông tin mới về sản phẩm';
+
+            return {
+              'id': int.tryParse('999$id') ?? id,
+              'title': news['title'],
+              'slug': news['slug'],
+              'excerpt': excerpt,
+              'thumbnail_url': news['thumbnail_url'] ?? news['thumbnail_path'],
+              'published_at': news['published_at'] ?? news['created_at'],
+              'reading_time': 3,
+              'views': (id * 83) % 400 + 150,
+              'category': {
+                'id': 9999,
+                'name': 'Tin Sản Phẩm',
+                'slug': 'tin-san-pham',
+              },
+              'author': null,
+              'isProductNews': true,
+            };
+        }).toList();
+
+        final allNews = [...blogPosts, ...productNewsData];
+        allNews.sort((a, b) {
+          final dateA = DateTime.tryParse(a['published_at']?.toString() ?? '') ?? DateTime.now();
+          final dateB = DateTime.tryParse(b['published_at']?.toString() ?? '') ?? DateTime.now();
+          return dateB.compareTo(dateA); // Newest first
+        });
+
+        _latestNews = allNews.take(8).toList();
         _homeVideos = (results[6] as List<dynamic>? ?? []);
         _reviews = (results[7] as List<dynamic>? ?? []);
         _currentBannerIndex = 0;
@@ -1015,11 +1054,12 @@ class _HomeScreenState extends State<HomeScreen> {
         curve: Curves.easeOutCubic,
         builder: (context, value, child) {
           return CustomPaint(
-            painter: CurvedTopPainter(
-              position: value,
-              borderColor: const Color.fromARGB(255, 255, 195, 143),
-              backgroundColor: Theme.of(context).colorScheme.surface,
-            ),
+           painter: CurvedTopPainter(
+                position: value,
+                borderColor: const Color.fromARGB(255, 255, 120, 1),
+                width: 1,
+                backgroundColor: Theme.of(context).colorScheme.surface,
+              ),
             child: SizedBox(
               height: 90 + MediaQuery.of(context).padding.bottom,
               child: Padding(
@@ -1047,14 +1087,14 @@ class _HomeScreenState extends State<HomeScreen> {
     final labels = ['Trang chủ', 'Sản phẩm', 'Thu cũ', 'Đơn hàng', 'Tài khoản'];
     final icons = [
       Icons.home_outlined, 
-      Icons.inventory_2_rounded, 
+      Icons.inventory_2_outlined, 
       Icons.swap_horiz_rounded, 
       Icons.receipt_long_outlined, 
       Icons.person_outline_rounded
     ];
     final activeIcons = [
       Icons.home_rounded, 
-      Icons.inventory_2_rounded, 
+      Icons.inventory_2_outlined, 
       Icons.swap_horiz_rounded, 
       Icons.receipt_long_rounded, 
       Icons.person_rounded
@@ -1116,7 +1156,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildChatbotFAB() {
     return Container(
-      margin: const EdgeInsets.only(bottom: 20, right: 8),
+      margin: const EdgeInsets.only(bottom: 10, right: 8),
       child: Stack(
         alignment: Alignment.center,
         children: [
@@ -1182,11 +1222,14 @@ class CurvedTopPainter extends CustomPainter {
   final double position; 
   final Color borderColor;
   final Color backgroundColor;
+  final double width;
+
 
   CurvedTopPainter({
     required this.position,
     required this.borderColor,
     required this.backgroundColor,
+    required this.width,
   });
 
   @override
@@ -1198,7 +1241,7 @@ class CurvedTopPainter extends CustomPainter {
     final borderPaint = Paint()
       ..color = borderColor
       ..style = PaintingStyle.stroke
-      ..strokeWidth = 2.0;
+      ..strokeWidth = width;
 
     final path = Path();
     

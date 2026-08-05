@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'dart:async';
+import 'dart:ui';
 import '../../utils/network_utils.dart';
 import '../../utils/translation.dart';
 
@@ -226,35 +227,43 @@ class _HeroBannerSectionState extends State<HeroBannerSection> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         // Badge E-TECH MARKET
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-          decoration: BoxDecoration(
-            border: Border.all(color: const Color(0xFFF97316), width: 0.5),
-            borderRadius: BorderRadius.circular(20),
-            color: Colors.black54,
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: const [
-              Text(
-                'E-TECH ',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 10,
-                  letterSpacing: 1,
-                ),
+        ClipRRect(
+          borderRadius: BorderRadius.circular(20),
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 8.0, sigmaY: 8.0),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+              decoration: BoxDecoration(
+                border: Border.all(color: const Color(0xFFF97316), width: 0.5),
+                borderRadius: BorderRadius.circular(20),
+                color: Theme.of(context).brightness == Brightness.light
+                    ? Colors.white.withOpacity(0.5)
+                    : Colors.black.withOpacity(0.5),
               ),
-              Text(
-                'MARKET',
-                style: TextStyle(
-                  color: Color(0xFFF97316),
-                  fontWeight: FontWeight.bold,
-                  fontSize: 10,
-                  letterSpacing: 1,
-                ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    'E-TECH ',
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.onSurface,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 10,
+                      letterSpacing: 1,
+                    ),
+                  ),
+                  Text(
+                    'MARKET',
+                    style: TextStyle(
+                      color: Color(0xFFF97316),
+                      fontWeight: FontWeight.bold,
+                      fontSize: 10,
+                      letterSpacing: 1,
+                    ),
+                  ),
+                ],
               ),
-            ],
+            ),
           ),
         ),
         const SizedBox(height: 12),
@@ -266,11 +275,11 @@ class _HeroBannerSectionState extends State<HeroBannerSection> {
               children: [
                 TextSpan(
                   text: '$title1\n',
-                  style: const TextStyle(color: Colors.white),
+                  style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
                 ),
                 TextSpan(
                   text: title2,
-                  style: const TextStyle(color: Color(0xFFF97316)),
+                  style:  TextStyle(color: Color(0xFFF97316)),
                 ),
               ],
             ),
@@ -284,7 +293,7 @@ class _HeroBannerSectionState extends State<HeroBannerSection> {
         // Description
         Text(
           widget.banners[widget.currentBannerIndex]['description'] ?? 'Khám phá thế hệ công nghệ mới với những thiết bị chính hãng, hiệu năng vượt trội.',
-          style: const TextStyle(fontSize: 12, color: Colors.white70, height: 1.4),
+          style:  TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.onSurface, height: 1.4),
           maxLines: 3,
           overflow: TextOverflow.ellipsis,
         ),
@@ -308,22 +317,31 @@ class _HeroBannerSectionState extends State<HeroBannerSection> {
               ),
             ),
             const SizedBox(width: 8),
-            OutlinedButton(
-              onPressed: () {
-                // Navigate to flash sale screen if exists, for now fallback to ShopNow or push directly
-                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Tính năng đang phát triển')));
-              },
-              style: OutlinedButton.styleFrom(
-                foregroundColor: Colors.white,
-                side: const BorderSide(color: Color(0xFFF97316), width: 0.5),
-                backgroundColor: Colors.black45,
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-                minimumSize: const Size(0, 36),
-              ),
-              child: const Text(
-                'XEM ƯU ĐÃI HOT 🎁',
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 9),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(24),
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 8.0, sigmaY: 8.0),
+                child: OutlinedButton(
+                  onPressed: () {
+                    // Navigate to flash sale screen if exists, for now fallback to ShopNow or push directly
+                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Tính năng đang phát triển')));
+                  },
+                  style: OutlinedButton.styleFrom(
+                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    foregroundColor: Theme.of(context).colorScheme.onSurface,
+                    side: BorderSide(color: Theme.of(context).colorScheme.onSurface, width: 0.5),
+                    backgroundColor: Theme.of(context).brightness == Brightness.light
+                        ? Colors.white.withOpacity(0.5)
+                        : Colors.black.withOpacity(0.5),
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+                    minimumSize: const Size(0, 36),
+                  ),
+                  child: const Text(
+                    'XEM ƯU ĐÃI HOT 🎁',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 9),
+                  ),
+                ),
               ),
             ),
           ],
@@ -352,14 +370,14 @@ class _HeroBannerSectionState extends State<HeroBannerSection> {
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
+                Text(
                   'CHẠM ĐẾN TƯƠNG LAI\nTHIẾT BỊ ĐỈNH CAO',
-                  style: TextStyle(fontSize: 22, fontWeight: FontWeight.w700, height: 1.15, color: Colors.white),
+                  style: TextStyle(fontSize: 22, fontWeight: FontWeight.w700, height: 1.15, color: Theme.of(context).colorScheme.onSurface),
                 ),
                 const SizedBox(height: 8),
-                const Text(
+                Text(
                   'Ưu đãi và sản phẩm mới nhất đang chờ bạn khám phá.',
-                  style: TextStyle(fontSize: 12, color: Colors.white70, height: 1.4),
+                  style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.onSurface, height: 1.4),
                 ),
                 const SizedBox(height: 14),
                 ElevatedButton(
@@ -466,8 +484,8 @@ class _HeroBannerMarqueeState extends State<HeroBannerMarquee> with SingleTicker
                 Expanded(
                   child: Text(
                     feature['text'],
-                    style: const TextStyle(
-                      color: Colors.white,
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.onSurface,
                       fontSize: 11,
                       fontWeight: FontWeight.w500,
                       height: 1.3,

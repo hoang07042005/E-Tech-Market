@@ -11,13 +11,14 @@ interface TradeInRequest {
   images: string[] | string;
   status: string;
   estimated_price: string | null;
+  final_price?: string | null;
   admin_note: string | null;
   created_at: string;
-  conditions?: { name: string; type?: string }[];
+  conditions?: { name: string; type?: string; description?: string }[];
   serial_number?: string | null;
 }
 
-const formatCurrency = (value: string | number) => {
+const formatCurrency = (value: string | number | null) => {
   if (!value) return "0 ₫";
   return Number(value).toLocaleString("vi-VN") + " ₫";
 };
@@ -256,7 +257,12 @@ export default function ProfileTradeInHistory() {
                   const thumb    = imgs.length > 0 ? resolveMediaUrl(imgs[0]) : null;
                   const { name, specs } = parseInfoLines(req.machine_info);
                   const statusInfo = STATUS_MAP[req.status] ?? { label: req.status, cls: "gray", filterKey: "" };
-                  const shortSpec  = specs.map(s => s.val).slice(0, 4).join(" • ");
+                  const condNames = req.conditions?.map(c => {
+                    const parts = c.name.split(':');
+                    return parts.length > 1 ? parts.slice(1).join(':').trim() : c.name.trim();
+                  }) || [];
+                  const shortSpec = specs.map(s => s.val).join(" • ");
+                  const condSpec = condNames.join(" • ");
                   const isSelected = selectedReq?.id === req.id;
 
                   return (
@@ -271,7 +277,7 @@ export default function ProfileTradeInHistory() {
                       </div>
 
                       <div className="ptih-card-body">
-                        {/* Row 1: thumb + info */}
+                        {/* Left: thumb + info */}
                         <div className="ptih-card-top-row">
                           <div className="ptih-thumb">
                             {thumb ? (
@@ -289,20 +295,46 @@ export default function ProfileTradeInHistory() {
 
                           <div className="ptih-card-info">
                             <div className="ptih-device-name">{name || req.category?.name || "Thiết bị"}</div>
-                            {shortSpec && <div className="ptih-specs">{shortSpec}</div>}
-                            <div className="ptih-meta-row">
+                            <div className="ptih-specs-list">
+                              {specs.map((s, idx) => (
+                                <div key={idx} className="ptih-spec-item">
+                                  <span className="ptih-spec-key">{s.key}:</span> {s.val}
+                                </div>
+                              ))}
+                            </div>
+                            <div className="ptih-meta-row-auto">
                               <span className="ptih-meta-code">Mã yêu cầu: <strong>#{req.request_code}</strong></span>
                               <span className="ptih-meta-date">Ngày gửi: {dateStr} • {timeStr}</span>
                             </div>
                           </div>
                         </div>
 
+                        {/* Middle: Conditions */}
+                        <div className="ptih-card-mid-row">
+                          {req.conditions && req.conditions.length > 0 ? (
+                            <div className="ptih-condition-cards">
+                              {req.conditions.map((c, idx) => {
+                                const parts = c.name.split(':');
+                                const title = parts.length > 1 ? parts.slice(1).join(':').trim() : c.name.trim();
+                                return (
+                                  <div key={idx} className="ptih-cond-card">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ea580c" strokeWidth="1.5" className="ptih-cond-icon"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                                    <span className="ptih-cond-title">{title}</span>
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          ) : (
+                            <div className="ptih-cond-empty">Chưa có tình trạng</div>
+                          )}
+                        </div>
+
                         {/* Row 2: price + arrow */}
-                        <div className="ptih-card-right">
-                          {req.estimated_price && (
+                        <div className="ptih-card-right ptih-card-right-auto">
+                          {(req.final_price || req.estimated_price) && (
                             <div className="ptih-card-price-wrap">
-                              <span className="ptih-card-price-label">Giá dự kiến</span>
-                              <span className="ptih-card-price-val">{formatCurrency(req.estimated_price)}</span>
+                              <span className="ptih-card-price-label">{req.final_price ? "Giá thu chính thức" : "Giá dự kiến"}</span>
+                              <span className={`ptih-card-price-val ${req.final_price ? 'text-green' : ''}`}>{formatCurrency(req.final_price || req.estimated_price)}</span>
                             </div>
                           )}
                           <span className="ptih-card-arrow">
@@ -461,16 +493,34 @@ export default function ProfileTradeInHistory() {
                   )}
                 </div>
 
-                {/* 4. Giá thu đề xuất */}
+                {/* 4. Giá thu */}
                 <div className="ptih-detail-section">
                   <div className="ptih-section-heading">
                     <span className="ptih-section-icon purple"><IconPrice /></span>
-                    Giá thu đề xuất
+                    Giá thu 
                   </div>
-                  {hasPrice ? (
-                    <div className="ptih-price-box">
-                      <div className="ptih-price-box-label">Giá dự kiến</div>
-                      <div className="ptih-price-box-value">{formatCurrency(selectedReq.estimated_price!)}</div>
+                  {selectedReq.final_price || hasPrice ? (
+                    <div style={{ display: 'flex', gap: '16px', marginTop: '12px' }}>
+                      {selectedReq.final_price && (
+                        <div className="ptih-price-box final" style={{ flex: 1, marginTop: 0 }}>
+                          <div className="ptih-price-box-label">Giá chốt thực tế</div>
+                          <div className="ptih-price-box-value text-green">{formatCurrency(selectedReq.final_price)}</div>
+                        </div>
+                      )}
+                      {hasPrice && (
+                        <div 
+                          className="ptih-price-box" 
+                          style={{ 
+                            flex: 1, 
+                            marginTop: 0,
+                            opacity: selectedReq.final_price ? 0.4 : 1,
+                            textDecoration: selectedReq.final_price ? 'line-through' : 'none'
+                          }}
+                        >
+                          <div className="ptih-price-box-label">Giá dự kiến</div>
+                          <div className="ptih-price-box-value">{formatCurrency(selectedReq.estimated_price!)}</div>
+                        </div>
+                      )}
                     </div>
                   ) : (
                     <p className="ptih-no-image-text">Chưa có giá đề xuất.</p>

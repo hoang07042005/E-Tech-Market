@@ -607,7 +607,7 @@ class _OrderListScreenState extends State<OrderListScreen> {
                           padding: const EdgeInsets.symmetric(horizontal: 10),
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
                         ),
-                        child: Text(Trans.detail, style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
+                        child: Text(Trans.detail, style: TextStyle(color: Colors.white)),
                       )
                     ],
                   ),

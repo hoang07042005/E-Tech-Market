@@ -35,9 +35,9 @@ interface Category {
   name: string;
 }
 
-const formatCurrency = (value: string | number) => {
-  if (!value) return '0 ₫';
-  return Number(value).toLocaleString('vi-VN') + ' ₫';
+const formatCurrency = (value: string | number | null) => {
+  if (!value) return "0 ₫";
+  return Number(value).toLocaleString("vi-VN") + " ₫";
 };
 
 const parseImages = (imgs: any): string[] => {
@@ -85,6 +85,7 @@ const AdminTradeInPage = () => {
   const [viewMode, setViewMode] = useState<'list' | 'detail'>('list');
   const [selectedRequest, setSelectedRequest] = useState<TradeInRequest | null>(null);
   const [quotePrice, setQuotePrice] = useState<string>('');
+  const [finalPrice, setFinalPrice] = useState<string>('');
   const [adminNote, setAdminNote] = useState<string>('');
 
   const [editingCond, setEditingCond] = useState<TradeInCondition | null>(null);
@@ -149,6 +150,7 @@ const AdminTradeInPage = () => {
   const handleOpenModal = (req: TradeInRequest) => {
     setSelectedRequest(req);
     setQuotePrice(req.estimated_price || '');
+    setFinalPrice(req.final_price || '');
     setAdminNote(req.admin_note || '');
     setViewMode('detail');
   };
@@ -159,6 +161,7 @@ const AdminTradeInPage = () => {
       const payload = {
         status: newStatus,
         estimated_price: quotePrice ? parseFloat(quotePrice) : null,
+        final_price: finalPrice ? parseFloat(finalPrice) : null,
         admin_note: adminNote
       };
       const data = await apiFetch<any>(`/admin/trade-in/requests/${selectedRequest.id}/status`, {
@@ -564,20 +567,39 @@ const AdminTradeInPage = () => {
                 <h3>Quyết Định Thu Mua</h3>
               </div>
               <div className="ti-detail-card-body">
-                <div className="ti-input-group">
-                  <label>Mức giá đề xuất (VND)</label>
-                  <div className="ti-price-input-wrap">
-                    <input
-                      type="text"
-                      value={quotePrice ? Number(quotePrice).toLocaleString('vi-VN') : ''}
-                      onChange={e => {
-                        const raw = e.target.value.replace(/\./g, '').replace(/,/g, '').replace(/[^0-9]/g, '');
-                        setQuotePrice(raw);
-                      }}
-                      placeholder="VD: 16.500.000"
-                      className="ti-price-input"
-                    />
-                    <span className="ti-price-suffix">₫</span>
+                <div style={{ display: 'flex', gap: '16px', marginTop: 16 }}>
+                  <div className="ti-input-group" style={{ flex: 1, marginTop: 0 }}>
+                    <label>Giá đề xuất (VND) - Gửi cho khách</label>
+                    <div className="ti-price-input-wrap">
+                      <input
+                        type="text"
+                        value={quotePrice ? Number(quotePrice).toLocaleString('vi-VN') : ''}
+                        onChange={e => {
+                          const raw = e.target.value.replace(/\./g, '').replace(/,/g, '').replace(/[^0-9]/g, '');
+                          setQuotePrice(raw);
+                        }}
+                        placeholder="VD: 16.500.000"
+                        className="ti-price-input"
+                      />
+                      <span className="ti-price-suffix">₫</span>
+                    </div>
+                  </div>
+                  <div className="ti-input-group" style={{ flex: 1, marginTop: 0 }}>
+                    <label>Giá chốt (VND) - Khi mua thực tế</label>
+                    <div className="ti-price-input-wrap">
+                      <input
+                        type="text"
+                        value={finalPrice ? Number(finalPrice).toLocaleString('vi-VN') : ''}
+                        onChange={e => {
+                          const raw = e.target.value.replace(/\./g, '').replace(/,/g, '').replace(/[^0-9]/g, '');
+                          setFinalPrice(raw);
+                        }}
+                        placeholder="Nhập giá chốt chính xác..."
+                        className="ti-price-input final-price"
+                        style={{ borderColor: '#10b981', backgroundColor: '#ecfdf5' }}
+                      />
+                      <span className="ti-price-suffix" style={{ color: '#10b981' }}>₫</span>
+                    </div>
                   </div>
                 </div>
                 <div className="ti-input-group" style={{ marginTop: 16 }}>
@@ -1008,10 +1030,26 @@ const AdminTradeInPage = () => {
                                   </div>
 
                                   <div className="ti-req-col ti-req-col-price">
-                                      <div className="ti-req-label">Giá đề xuất</div>
-                                      <div className={`ti-req-value ${req.estimated_price ? 'text-purple price-bold' : ''}`}>
-                                          {req.estimated_price ? formatCurrency(req.estimated_price) : '—'}
-                                      </div>
+                                      {req.final_price ? (
+                                        <>
+                                          <div className="ti-req-label">Giá chốt thực tế</div>
+                                          <div className="ti-req-value text-green price-bold">
+                                              {formatCurrency(req.final_price)}
+                                          </div>
+                                          {req.estimated_price && (
+                                            <div style={{ fontSize: '11px', color: '#6b7280', marginTop: '2px' }}>
+                                              Dự kiến: <del>{formatCurrency(req.estimated_price)}</del>
+                                            </div>
+                                          )}
+                                        </>
+                                      ) : (
+                                        <>
+                                          <div className="ti-req-label">Giá đề xuất</div>
+                                          <div className={`ti-req-value ${req.estimated_price ? 'text-purple price-bold' : ''}`}>
+                                              {req.estimated_price ? formatCurrency(req.estimated_price) : '—'}
+                                          </div>
+                                        </>
+                                      )}
                                   </div>
 
                                   <div className="ti-req-col ti-req-col-action">

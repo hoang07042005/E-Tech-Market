@@ -205,17 +205,17 @@
   align-items: center;
   gap: 14px;
   padding: 14px 14px 14px 16px;
-  padding-top: 36px;
+  padding-top: 20px;
   box-sizing: border-box;
   width: 100%;
 }
 
-/* Top row: thumb + info (takes remaining space) */
+/* Top row: thumb + info */
 .ptih-card-top-row {
   display: flex;
   align-items: center;
   gap: 14px;
-  flex: 1;
+  flex: 1.2;
   min-width: 0;
 }
 
@@ -249,16 +249,86 @@
 .ptih-card-info {
   flex: 1;
   min-width: 0;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 
 .ptih-device-name {
-  font-size: 14.5px;
-  font-weight: 700;
-  color: #0f172a;
-  margin-bottom: 4px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #1e293b;
+  margin-bottom: 2px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.ptih-specs-list {
+  margin: 8px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.ptih-spec-item {
+  font-size: 13px;
+  color: #64748b;
+}
+
+.ptih-spec-key {
+  color: #475569;
+}
+
+.ptih-meta-row-auto {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+/* Middle Row: Conditions */
+.ptih-card-mid-row {
+  flex: 1.5;
+  padding: 0 16px;
+  border-left: 1px solid #e2e8f0;
+  min-height: 80px;
+  display: flex;
+  align-items: center;
+}
+
+.ptih-condition-cards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.ptih-cond-card {
+  background: #fff7ed;
+  border: 1px solid #fed7aa;
+  border-radius: 6px;
+  padding: 6px 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: max-content;
+}
+
+.ptih-cond-icon {
+  flex-shrink: 0;
+}
+
+.ptih-cond-title {
+  font-size: 11.5px;
+  font-weight: 500;
+  color: #020617;
+  line-height: 1.2;
+}
+
+.ptih-cond-empty {
+  color: #94a3b8;
+  margin: 0;
+  font-size: 13px;
 }
 
 .ptih-specs {
@@ -632,7 +702,7 @@
   margin-bottom: 6px;
 }
 .ptih-price-box-value {
-  font-size: 24px;
+  font-size: 20px;
   font-weight: 800;
   color: #6d28d9;
   letter-spacing: -0.5px;
@@ -838,20 +908,31 @@ html.dark .ptih-no-image-text { color: #64748b; }
     font-size: 12.5px;
   }
 
-  /* Card body: allow wrap so top-row takes full width, card-right goes below */
+  /* Card body: stack everything on mobile */
   .ptih-card-body {
-    flex-wrap: wrap;
+    flex-direction: column;
+    align-items: stretch;
     padding: 10px 12px 12px;
     padding-top: 34px;
-    gap: 0;
-    row-gap: 0;
+    gap: 12px;
   }
 
-  /* top-row spans full width on its own line */
-  .ptih-card-top-row {
+  /* Full width for all columns */
+  .ptih-card-top-row,
+  .ptih-card-mid-row,
+  .ptih-card-right-auto {
     width: 100%;
     flex: none;
-    gap: 10px;
+  }
+
+  .ptih-card-mid-row {
+    border-left: none;
+    padding: 0;
+    min-height: auto;
+  }
+
+  .ptih-card-right-auto {
+    margin-left: 0;
   }
 
   /* Smaller thumbnail */

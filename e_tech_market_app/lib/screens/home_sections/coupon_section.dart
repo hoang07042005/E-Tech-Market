@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 
 import '../../utils/translation.dart';
 
@@ -24,11 +25,11 @@ class CouponSection extends StatefulWidget {
   State<CouponSection> createState() => _CouponSectionState();
 }
 
-class _CouponSectionState extends State<CouponSection> {
+class _CouponSectionState extends State<CouponSection> with SingleTickerProviderStateMixin {
   static const _brandColor = Color(0xFFEF7A45);
 
   final ScrollController _scrollController = ScrollController();
-  Timer? _autoScrollTimer;
+  Ticker? _ticker;
 
   @override
   void initState() {
@@ -47,28 +48,37 @@ class _CouponSectionState extends State<CouponSection> {
 
   @override
   void dispose() {
-    _autoScrollTimer?.cancel();
+    _ticker?.stop();
+    _ticker?.dispose();
     _scrollController.dispose();
     super.dispose();
   }
 
   void _startAutoScroll() {
-    _autoScrollTimer?.cancel();
-    if (!mounted || widget.isLoading || widget.coupons.length <= 1) return;
+    if (!mounted || widget.isLoading || widget.coupons.length <= 1) {
+      _ticker?.stop();
+      return;
+    }
 
-    _autoScrollTimer = Timer.periodic(const Duration(milliseconds: 35), (_) {
-      if (!mounted || !_scrollController.hasClients) return;
+    if (_ticker == null) {
+      _ticker = createTicker((elapsed) {
+        if (!mounted || !_scrollController.hasClients) return;
 
-      final maxOffset = _scrollController.position.maxScrollExtent;
-      if (maxOffset <= 0) return;
+        final maxOffset = _scrollController.position.maxScrollExtent;
+        if (maxOffset <= 0) return;
 
-      final nextOffset = _scrollController.offset + 0.8;
-      if (nextOffset >= maxOffset) {
-        _scrollController.jumpTo(0);
-      } else {
-        _scrollController.jumpTo(nextOffset);
-      }
-    });
+        final nextOffset = _scrollController.offset + 1.0;
+        if (nextOffset >= maxOffset) {
+          _scrollController.jumpTo(0);
+        } else {
+          _scrollController.jumpTo(nextOffset);
+        }
+      });
+    }
+
+    if (!_ticker!.isActive) {
+      _ticker!.start();
+    }
   }
 
   /// Lọc ẩn mã user đã hết lượt (giống web frontend)
@@ -177,7 +187,7 @@ class _CouponSectionState extends State<CouponSection> {
 
   Widget _buildLoadingCoupons() {
     return SizedBox(
-      height: 170,
+      height: 150,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         physics: const NeverScrollableScrollPhysics(),
@@ -199,7 +209,7 @@ class _CouponSectionState extends State<CouponSection> {
     final items = [...visibleCoupons, ...visibleCoupons];
 
     return SizedBox(
-      height: 145,
+      height: 130,
       child: ListView.separated(
         controller: _scrollController,
         scrollDirection: Axis.horizontal,
@@ -312,7 +322,7 @@ class _CouponCard extends StatelessWidget {
                         ),
                       ),
                       Text(
-                        couponType == 'percentage' ? '%' : 'K',
+                        couponType == 'percentage' ? ',00%' : 'K',
                         style: const TextStyle(
                           color: Colors.white,
                           fontSize: 18,
@@ -477,7 +487,7 @@ class _CouponCard extends StatelessWidget {
                     GestureDetector(
                       onTap: onCopy,
                       child: Container(
-                        height: 32,
+                        height: 26,
                         padding: const EdgeInsets.symmetric(horizontal: 10),
                         decoration: BoxDecoration(
                           color: Colors.grey[200],

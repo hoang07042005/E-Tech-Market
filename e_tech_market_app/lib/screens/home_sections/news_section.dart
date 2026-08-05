@@ -17,19 +17,18 @@ class NewsSection extends StatelessWidget {
 
   static const _brandColor = Color(0xFFEF7A45);
 
-  @override
   Widget build(BuildContext context) {
-    final visibleArticles = articles.take(5).cast<Map<String, dynamic>>().toList();
+    final visibleArticles = articles.take(8).cast<Map<String, dynamic>>().toList();
 
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.fromLTRB(20, 24, 20, 30),
+      padding: const EdgeInsets.fromLTRB(20,10,20,10),
       color: Theme.of(context).colorScheme.surface,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Padding(
-            padding: const EdgeInsets.only(bottom: 20),
+            padding: const EdgeInsets.only(bottom: 5),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.end,
@@ -97,7 +96,7 @@ class NewsSection extends StatelessWidget {
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
               itemCount: visibleArticles.length,
-              separatorBuilder: (_, __) => const SizedBox(height: 16),
+              separatorBuilder: (_, __) => const SizedBox(height: 8),
               itemBuilder: (context, index) {
                 final article = visibleArticles[index];
                 return _NewsCard(
@@ -141,6 +140,7 @@ class _NewsCard extends StatelessWidget {
     final categoryName = article['category']?['name']?.toString() ?? '';
     final readingTime = article['reading_time'] as int? ?? 0;
     final publishedAt = _formatDate(article['published_at']?.toString() ?? '');
+    final catColor = _getCategoryColor(categoryName);
 
     return Material(
       color: Colors.transparent,
@@ -156,55 +156,57 @@ class _NewsCard extends StatelessWidget {
             ),
           ),
           child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 5),
+            padding: const EdgeInsets.symmetric(vertical: 0),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                if (imageUrl.isNotEmpty)
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(8),
-                    child: Image.network(
-                      imageUrl,
-                      width: 140,
-                      height: 100,
-                      fit: BoxFit.cover,
-                      errorBuilder: (_, __, ___) => _buildImageFallback(context, 140, 100),
-                    ),
-                  )
-                else
-                  _buildImageFallback(context, 140, 100),
-                const SizedBox(width: 16),
+                Stack(
+                  children: [
+                    if (imageUrl.isNotEmpty)
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(8),
+                        child: Image.network(
+                          imageUrl,
+                          width: 140,
+                          height: 100,
+                          fit: BoxFit.cover,
+                          errorBuilder: (_, __, ___) => _buildImageFallback(context, 140, 100),
+                        ),
+                      )
+                    else
+                      _buildImageFallback(context, 140, 100),
+                    if (categoryName.isNotEmpty)
+                      Positioned(
+                        top: 6,
+                        left: 6,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+                          decoration: BoxDecoration(
+                            color: catColor,
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          child: Text(
+                            categoryName,
+                            style: const TextStyle(
+                              fontSize: 9,
+                              fontWeight: FontWeight.w700,
+                              color: Colors.white,
+                              letterSpacing: 0.3,
+                            ),
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+                const SizedBox(width: 12),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      if (categoryName.isNotEmpty)
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: 8),
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 8,
-                              vertical: 4,
-                            ),
-                            decoration: BoxDecoration(
-                              color: Color(0xFFEF7A45).withValues(alpha: 0.1),
-                              borderRadius: BorderRadius.circular(4),
-                            ),
-                            child: Text(
-                              categoryName,
-                              style: TextStyle(
-                                fontSize: 10,
-                                fontWeight: FontWeight.w700,
-                                color: Color(0xFFEF7A45),
-                                letterSpacing: 0.3,
-                              ),
-                            ),
-                          ),
-                        ),
                       Text(
                         title,
                         style: TextStyle(
-                          fontSize: 15,
+                          fontSize: 13,
                           fontWeight: FontWeight.w800,
                           color: Theme.of(context).colorScheme.onSurface,
                           height: 1.3,
@@ -212,7 +214,7 @@ class _NewsCard extends StatelessWidget {
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                       ),
-                      const SizedBox(height: 6),
+                      const SizedBox(height: 4),
                       Text(
                         excerpt,
                         style: TextStyle(
@@ -223,7 +225,7 @@ class _NewsCard extends StatelessWidget {
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                       ),
-                      const SizedBox(height: 8),
+                      const SizedBox(height: 4),
                       Row(
                         children: [
                           Text(
@@ -251,15 +253,18 @@ class _NewsCard extends StatelessWidget {
                           ],
                         ],
                       ),
-                      const SizedBox(height: 6),
-                      Text(
-                        'Đọc tiếp →',
-                        style: TextStyle(
-                          fontSize: 11,
-                          fontWeight: FontWeight.w700,
-                          color: Color(0xFFEF7A45),
+                      const SizedBox(height: 4),
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: Text(
+                          'Đọc tiếp →',
+                          style: TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w700,
+                            color: Color(0xFFEF7A45),
+                          ),
                         ),
-                      ),
+                      )
                     ],
                   ),
                 ),
@@ -309,6 +314,33 @@ class _NewsCard extends StatelessWidget {
     } catch (_) {
       return '';
     }
+  }
+
+  Color _getCategoryColor(String categoryName) {
+    if (categoryName.isEmpty) return Colors.grey;
+    
+    final lowerName = categoryName.toLowerCase();
+    if (lowerName.contains('đánh giá')) return const Color(0xFFE91E63);
+    if (lowerName.contains('công nghệ')) return const Color(0xFF2196F3);
+    if (lowerName.contains('tư vấn')) return const Color(0xFF4CAF50);
+    if (lowerName.contains('tin tức')) return const Color(0xFFFF9800);
+    if (lowerName.contains('khuyến mãi')) return const Color(0xFFF44336);
+    
+    final colors = const [
+      Color(0xFF9C27B0),
+      Color(0xFF3F51B5),
+      Color(0xFF00BCD4),
+      Color(0xFF009688),
+      Color(0xFFFF5722),
+      Color(0xFF795548),
+      Color(0xFF607D8B),
+    ];
+    
+    int hash = 0;
+    for (int i = 0; i < categoryName.length; i++) {
+      hash = (hash * 31 + categoryName.codeUnitAt(i)) & 0x7FFFFFFF;
+    }
+    return colors[hash % colors.length];
   }
 }
 
