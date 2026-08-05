@@ -26,6 +26,7 @@ import 'videos/video_screen.dart';
 import 'auth/login_screen.dart';
 import 'products/products_screen.dart';
 import 'products/product_detail_screen.dart';
+import 'trande_in/trade_in_screen.dart';
 import 'home_sections/hero_banner_section.dart';
 import 'home_sections/coupon_section.dart';
 import 'home_sections/category_section.dart';
@@ -757,7 +758,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return NewsSection(
       articles: _latestNews,
       isLoading: _newsLoading,
-      onViewAll: () => _onTabSelected(1),
+      onViewAll: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const BlogScreen())),
     );
   }
 
@@ -822,7 +823,7 @@ class _HomeScreenState extends State<HomeScreen> {
           initialCategoryId: _selectedHomeCategoryId,
         );
       case 2:
-        return const BlogScreen();
+        return const TradeInScreen(showAppBar: false);
       case 3:
         return const OrderListScreen();
       case 4:
@@ -859,7 +860,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
     return Scaffold(
       key: _scaffoldKey,
-      appBar: (_selectedIndex == 4 || _selectedIndex == 3)
+      extendBody: true,
+      appBar: (_selectedIndex == 4 || _selectedIndex == 3 || _selectedIndex == 2)
           ? null
           : AppBar(
               backgroundColor: Theme.of(context).colorScheme.surface,
@@ -988,35 +990,126 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ],
             ),
-      body: Container(
-        color: Theme.of(context).colorScheme.surface,
-        padding:
-            (_selectedIndex == 0 || _selectedIndex == 4 || _selectedIndex == 3)
-                ? EdgeInsets.zero
-                : const EdgeInsets.all(20),
-        child: _isUserLoading
-            ? const Center(child: CircularProgressIndicator())
-            : _buildPageBody(),
+      body: MediaQuery.removePadding(
+        context: context,
+        removeBottom: true,
+        child: Container(
+          color: Theme.of(context).colorScheme.surface,
+          padding: _selectedIndex == 1
+              ? EdgeInsets.only(
+                  left: 20,
+                  right: 20,
+                  top: 20,
+                  bottom: 66 + MediaQuery.of(context).padding.bottom,
+                )
+              : EdgeInsets.only(bottom: 66 + MediaQuery.of(context).padding.bottom),
+          child: _isUserLoading
+              ? const Center(child: CircularProgressIndicator())
+              : _buildPageBody(),
+        ),
       ),
       floatingActionButton: _buildChatbotFAB(),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _selectedIndex,
-        onTap: _onTabSelected,
-        selectedItemColor: Color(0xFFEA6C00), // Đổi thành màu cam khi active
-        unselectedItemColor: Theme.of(context).colorScheme.onSurfaceVariant,
-        type: BottomNavigationBarType.fixed,
-        items: [
-          BottomNavigationBarItem(
-              icon: Icon(Icons.home_outlined), label: Trans.home),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.grid_view_outlined), label: Trans.products),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.newspaper_outlined), label: 'Tin tức'),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.receipt_long_outlined), label: Trans.orders),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.person_outlined), label: Trans.account),
-        ],
+      bottomNavigationBar: TweenAnimationBuilder<double>(
+        tween: Tween<double>(end: _selectedIndex.toDouble()),
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeOutCubic,
+        builder: (context, value, child) {
+          return CustomPaint(
+            painter: CurvedTopPainter(
+              position: value,
+              borderColor: const Color.fromARGB(255, 255, 195, 143),
+              backgroundColor: Theme.of(context).colorScheme.surface,
+            ),
+            child: SizedBox(
+              height: 90 + MediaQuery.of(context).padding.bottom,
+              child: Padding(
+                padding: EdgeInsets.only(bottom: MediaQuery.of(context).padding.bottom),
+                child: Row(
+                  children: List.generate(5, (index) => _buildCurvedNavItem(index)),
+                ),
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildCurvedNavItem(int index) {
+    final isSelected = _selectedIndex == index;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    
+    // Better contrast for inactive icons in dark mode
+    final color = isSelected 
+        ? const Color(0xFFEA6C00) 
+        : (isDark ? Colors.white60 : Theme.of(context).colorScheme.onSurfaceVariant);
+    
+    final labels = ['Trang chủ', 'Sản phẩm', 'Thu cũ', 'Đơn hàng', 'Tài khoản'];
+    final icons = [
+      Icons.home_outlined, 
+      Icons.inventory_2_rounded, 
+      Icons.swap_horiz_rounded, 
+      Icons.receipt_long_outlined, 
+      Icons.person_outline_rounded
+    ];
+    final activeIcons = [
+      Icons.home_rounded, 
+      Icons.inventory_2_rounded, 
+      Icons.swap_horiz_rounded, 
+      Icons.receipt_long_rounded, 
+      Icons.person_rounded
+    ];
+
+    return Expanded(
+      child: GestureDetector(
+        onTap: () => _onTabSelected(index),
+        behavior: HitTestBehavior.opaque,
+        child: SizedBox(
+          height: 80,
+          child: Stack(
+            alignment: Alignment.center,
+            clipBehavior: Clip.none,
+            children: [
+              AnimatedPositioned(
+                duration: const Duration(milliseconds: 300),
+                curve: Curves.easeOutCubic,
+                top: isSelected ? 4 : 32,
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 300),
+                  padding: EdgeInsets.all(isSelected ? 15 : 0),
+                  decoration: BoxDecoration(
+                    // Increase opacity in dark mode so it glows nicely instead of looking muddy
+                    color: isSelected 
+                        ? const Color(0xFFEA6C00).withOpacity(isDark ? 0.25 : 0.08) 
+                        : Colors.transparent,
+                    shape: BoxShape.circle,
+                  ),
+                  child: Badge(
+                    isLabelVisible: index == 3 && _cartItemCount > 0, 
+                    label: Text(_cartItemCount.toString(), style: const TextStyle(color: Colors.white, fontSize: 10)),
+                    backgroundColor: const Color(0xFFFF2424),
+                    child: Icon(
+                      isSelected ? activeIcons[index] : icons[index],
+                      color: color,
+                      size: 28,
+                    ),
+                  ),
+                ),
+              ),
+              Positioned(
+                top: 66,
+                child: Text(
+                  labels[index],
+                  style: TextStyle(
+                    color: color,
+                    fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+                    fontSize: 11,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -1082,5 +1175,101 @@ class _HomeScreenState extends State<HomeScreen> {
         ],
       ),
     );
+  }
+}
+
+class CurvedTopPainter extends CustomPainter {
+  final double position; 
+  final Color borderColor;
+  final Color backgroundColor;
+
+  CurvedTopPainter({
+    required this.position,
+    required this.borderColor,
+    required this.backgroundColor,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = backgroundColor
+      ..style = PaintingStyle.fill;
+    
+    final borderPaint = Paint()
+      ..color = borderColor
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 2.0;
+
+    final path = Path();
+    
+    final itemWidth = size.width / 5;
+    final centerX = (position * itemWidth) + (itemWidth / 2);
+    
+    final curveHeight = 24.0; 
+    final wrapRadius = 34.0; // The radius of the curve wrapping the icon
+
+    path.moveTo(0, curveHeight);
+    
+    // Draw flat line to the start of the fillet
+    path.lineTo(centerX - 45, curveHeight);
+    
+    // Left fillet: smoothly transitions from flat line to the circle's trajectory
+    path.cubicTo(
+      centerX - 35, curveHeight, 
+      centerX - 30, 16, 
+      centerX - 24, 10, 
+    );
+    
+    // The perfect circular arc hugging the icon
+    path.arcToPoint(
+      Offset(centerX + 24, 10),
+      radius: Radius.circular(wrapRadius),
+      clockwise: true,
+    );
+    
+    // Right fillet: smoothly transitions back to the flat line
+    path.cubicTo(
+      centerX + 30, 16,
+      centerX + 35, curveHeight,
+      centerX + 45, curveHeight,
+    );
+
+    // Draw flat line to the end
+    path.lineTo(size.width, curveHeight);
+    path.lineTo(size.width, size.height);
+    path.lineTo(0, size.height);
+    path.close();
+
+    canvas.drawShadow(path, Colors.black.withOpacity(0.05), 8, false);
+    canvas.drawPath(path, paint);
+
+    final borderPath = Path();
+    borderPath.moveTo(0, curveHeight);
+    borderPath.lineTo(centerX - 45, curveHeight);
+    borderPath.cubicTo(
+      centerX - 35, curveHeight,
+      centerX - 30, 16,
+      centerX - 24, 10,
+    );
+    borderPath.arcToPoint(
+      Offset(centerX + 24, 10),
+      radius: Radius.circular(wrapRadius),
+      clockwise: true,
+    );
+    borderPath.cubicTo(
+      centerX + 30, 16,
+      centerX + 35, curveHeight,
+      centerX + 45, curveHeight,
+    );
+    borderPath.lineTo(size.width, curveHeight);
+    
+    canvas.drawPath(borderPath, borderPaint);
+  }
+
+  @override
+  bool shouldRepaint(CurvedTopPainter oldDelegate) {
+    return oldDelegate.position != position ||
+           oldDelegate.borderColor != borderColor ||
+           oldDelegate.backgroundColor != backgroundColor;
   }
 }

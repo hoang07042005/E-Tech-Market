@@ -7,8 +7,9 @@ import '../../config/dio_client.dart';
 
 class TradeInScreen extends StatefulWidget {
   final Map<String, dynamic>? user;
+  final bool showAppBar;
 
-  const TradeInScreen({super.key, this.user});
+  const TradeInScreen({super.key, this.user, this.showAppBar = true});
 
   @override
   State<TradeInScreen> createState() => _TradeInScreenState();
@@ -248,49 +249,60 @@ class _TradeInScreenState extends State<TradeInScreen> {
           'Phụ kiện đi kèm: ${_accessoriesCtrl.text.trim().isEmpty ? 'Không rõ' : _accessoriesCtrl.text.trim()}';
 
       formData.fields.add(MapEntry('machine_info', machineInfo));
+
+      for (var i = 0; i < _selectedConditionIds.length; i++) {
+        formData.fields.add(
+            MapEntry('condition_ids[$i]', _selectedConditionIds[i].toString()));
+      }
+
       formData.fields
           .add(MapEntry('customer_name', _customerNameCtrl.text.trim()));
       formData.fields
           .add(MapEntry('customer_phone', _customerPhoneCtrl.text.trim()));
-      formData.fields
-          .add(MapEntry('customer_email', _customerEmailCtrl.text.trim()));
-      formData.fields
-          .add(MapEntry('condition_ids', jsonEncode(_selectedConditionIds)));
+      if (_customerEmailCtrl.text.trim().isNotEmpty) {
+        formData.fields
+            .add(MapEntry('customer_email', _customerEmailCtrl.text.trim()));
+      }
 
-      for (final image in _images) {
+      for (var i = 0; i < _images.length; i++) {
         formData.files.add(MapEntry(
           'images[]',
-          await MultipartFile.fromFile(image.path),
+          await MultipartFile.fromFile(_images[i].path,
+              filename: 'image_$i.jpg'),
         ));
       }
 
       final response =
-          await DioClient.instance.post('/trade-in/requests', data: formData);
+          await DioClient.instance.post('/trade-in/submit', data: formData);
       final data = response.data as Map<String, dynamic>;
+
       if (data['status'] == 'success') {
         setState(() {
-          _successMessage =
-              'Yêu cầu thu cũ đổi mới đã được gửi thành công. Chúng tôi sẽ phản hồi qua email sớm nhất.';
+          _successMessage = 'Gửi yêu cầu thu cũ thành công. Mã yêu cầu: ${data['data']['tracking_code'] ?? ''}';
           _errorMessage = null;
-        });
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Đã gửi yêu cầu thu cũ đổi mới.')),
-          );
-        }
-      } else {
-        setState(() {
-          _errorMessage =
-              data['message']?.toString() ?? 'Gửi yêu cầu thất bại.';
+          _step = 0;
+          _selectedCategoryId = null;
+          _selectedCategorySlug = null;
+          _machineNameCtrl.clear();
+          _phoneStorageCtrl.clear();
+          _phoneColorCtrl.clear();
+          _laptopRamCtrl.clear();
+          _laptopDiskCtrl.clear();
+          _laptopVgaCtrl.clear();
+          _warrantyCtrl.clear();
+          _accessoriesCtrl.clear();
+          _images.clear();
+          _selectedConditionIds.clear();
         });
       }
     } on DioException catch (e) {
-      final msg = e.response?.data is Map && e.response?.data['message'] != null
-          ? e.response!.data['message'].toString()
-          : 'Không thể gửi yêu cầu. Vui lòng thử lại.';
-      setState(() => _errorMessage = msg);
-    } catch (e) {
-      setState(() => _errorMessage = 'Đã xảy ra lỗi không mong muốn.');
+      setState(() {
+        _successMessage = null;
+        _errorMessage =
+            e.response?.data is Map && e.response?.data['message'] != null
+                ? e.response!.data['message'].toString()
+                : 'Có lỗi xảy ra khi gửi yêu cầu.';
+      });
     } finally {
       if (mounted) setState(() => _isSubmitting = false);
     }
@@ -302,11 +314,13 @@ class _TradeInScreenState extends State<TradeInScreen> {
 
     return Scaffold(
       backgroundColor: theme.colorScheme.surface,
-      appBar: AppBar(
-        title: const Text('Thu cũ đổi mới'),
-        backgroundColor: theme.colorScheme.surface,
-        foregroundColor: theme.colorScheme.onSurface,
-      ),
+      appBar: widget.showAppBar
+          ? AppBar(
+              title: const Text('Thu cũ đổi mới'),
+              backgroundColor: theme.colorScheme.surface,
+              foregroundColor: theme.colorScheme.onSurface,
+            )
+          : null,
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(16),
@@ -386,10 +400,10 @@ class _TradeInScreenState extends State<TradeInScreen> {
                   width: 28,
                   height: 28,
                   decoration: BoxDecoration(
-                    color: active ? const Color(0xFFEF233C) : Colors.white,
+                    color: active ? const Color(0xFFEA6C00) : Colors.white,
                     shape: BoxShape.circle,
                     border: Border.all(
-                      color: active ? const Color(0xFFEF233C) : const Color(0xFFE2E8F0),
+                      color: active ? const Color(0xFFEA6C00) : const Color(0xFFE2E8F0),
                       width: 1,
                     ),
                   ),
@@ -397,7 +411,7 @@ class _TradeInScreenState extends State<TradeInScreen> {
                   child: Text(
                     '${index + 1}',
                     style: TextStyle(
-                      color: active ? Colors.white : const Color(0xFFEF233C),
+                      color: active ? Colors.white : const Color(0xFFEA6C00),
                       fontWeight: FontWeight.bold,
                       fontSize: 14,
                     ),
@@ -413,7 +427,7 @@ class _TradeInScreenState extends State<TradeInScreen> {
                         style: TextStyle(
                           fontSize: 13,
                           fontWeight: active ? FontWeight.bold : FontWeight.w600,
-                          color: active ? const Color(0xFFEF233C) : Colors.grey.shade600,
+                          color: active ? const Color(0xFFEA6C00) : Colors.grey.shade600,
                         ),
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
@@ -482,8 +496,8 @@ class _TradeInScreenState extends State<TradeInScreen> {
                   onPressed: () => setState(() => _step = _step - 1),
                   style: OutlinedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 14),
-                    side: const BorderSide(color: Color(0xFFEF233C)),
-                    foregroundColor: const Color(0xFFEF233C),
+                    side: const BorderSide(color: Color(0xFFEA6C00)),
+                    foregroundColor: const Color(0xFFEA6C00),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8))
                   ),
                   child: const Text('Quay lại', style: TextStyle(fontWeight: FontWeight.w600)),
@@ -496,7 +510,7 @@ class _TradeInScreenState extends State<TradeInScreen> {
                   ? ElevatedButton(
                       onPressed: _nextEnabled() ? () => setState(() => _step = _step + 1) : null,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: _nextEnabled() ? const Color(0xFFEF233C) : const Color(0xFFCBD5E1),
+                        backgroundColor: _nextEnabled() ? const Color(0xFFEA6C00) : const Color(0xFFCBD5E1),
                         foregroundColor: Colors.white,
                         elevation: 0,
                         padding: const EdgeInsets.symmetric(vertical: 14),
@@ -514,7 +528,7 @@ class _TradeInScreenState extends State<TradeInScreen> {
                   : ElevatedButton(
                       onPressed: (_isSubmitting || !_isStep1Valid()) ? null : _submitRequest,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFFEF233C),
+                        backgroundColor: const Color(0xFFEA6C00),
                         disabledBackgroundColor: const Color(0xFFCBD5E1),
                         foregroundColor: Colors.white,
                         elevation: 0,
@@ -569,7 +583,7 @@ class _TradeInScreenState extends State<TradeInScreen> {
             style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold, color: theme.colorScheme.onSurface),
             children: [
               TextSpan(text: 'Thu Cũ '),
-              TextSpan(text: 'Đổi Mới', style: TextStyle(color: Color(0xFFEF233C))),
+              TextSpan(text: 'Đổi Mới', style: TextStyle(color: Color(0xFFEA6C00))),
               TextSpan(text: ' – Lên Đời Trợ Giá'),
             ],
           ),
@@ -601,7 +615,7 @@ class _TradeInScreenState extends State<TradeInScreen> {
             children: [
               Container(
                 padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(color: const Color(0xFFEF233C), borderRadius: BorderRadius.circular(8)),
+                decoration: BoxDecoration(color: const Color(0xFFEA6C00), borderRadius: BorderRadius.circular(8)),
                 child: const Icon(Icons.devices, color: Colors.white, size: 20),
               ),
               const SizedBox(width: 12),
@@ -633,9 +647,9 @@ class _TradeInScreenState extends State<TradeInScreen> {
                           color: theme.colorScheme.surface,
                           border: Border.all(
                               width: 0.5,
-                              color: isSelected ? const Color(0xFFEF233C) : theme.colorScheme.outline),
+                              color: isSelected ? const Color(0xFFEA6C00) : theme.colorScheme.outline),
                           borderRadius: BorderRadius.circular(12),
-                          boxShadow: isSelected ? [BoxShadow(color: const Color(0xFFEF233C).withOpacity(0.1), blurRadius: 8, offset: const Offset(0, 4))] : [],
+                          boxShadow: isSelected ? [BoxShadow(color: const Color(0xFFEA6C00).withOpacity(0.1), blurRadius: 8, offset: const Offset(0, 4))] : [],
                         ),
                         child: Column(
                           children: [
@@ -643,7 +657,7 @@ class _TradeInScreenState extends State<TradeInScreen> {
                               category['slug'] == 'laptop'
                                   ? Icons.laptop_mac
                                   : Icons.phone_iphone,
-                              color: isSelected ? const Color(0xFFEF233C) : const Color(0xFF64748B),
+                              color: isSelected ? const Color(0xFFEA6C00) : const Color(0xFF64748B),
                               size: 36,
                             ),
                             const SizedBox(height: 12),
@@ -652,7 +666,7 @@ class _TradeInScreenState extends State<TradeInScreen> {
                                 style: TextStyle(
                                     fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
                                     fontSize: 15,
-                                    color: isSelected ? const Color(0xFFEF233C) : const Color(0xFF475569))),
+                                    color: isSelected ? const Color(0xFFEA6C00) : const Color(0xFF475569))),
                           ],
                         ),
                       ),
@@ -706,7 +720,7 @@ class _TradeInScreenState extends State<TradeInScreen> {
             children: [
               Text('Tải ảnh máy lên ',
                   style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Theme.of(context).colorScheme.onSurface)),
-              const Text('* ', style: TextStyle(color: Color(0xFFEF233C), fontSize: 13)),
+              const Text('* ', style: TextStyle(color: Color(0xFFEA6C00), fontSize: 13)),
               Text('Tối đa 6 ảnh', style: TextStyle(color: Colors.grey.shade500, fontSize: 12, fontWeight: FontWeight.normal)),
             ],
           ),
@@ -825,7 +839,7 @@ class _TradeInScreenState extends State<TradeInScreen> {
             children: [
               Container(
                 padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(color: const Color(0xFFEF233C), borderRadius: BorderRadius.circular(8)),
+                decoration: BoxDecoration(color: const Color(0xFFEA6C00), borderRadius: BorderRadius.circular(8)),
                 child: const Icon(Icons.health_and_safety, color: Colors.white, size: 20),
               ),
               const SizedBox(width: 12),
@@ -919,8 +933,8 @@ class _TradeInScreenState extends State<TradeInScreen> {
                       color: Theme.of(context).colorScheme.surface,
                       borderRadius: BorderRadius.circular(8),
                       border: Border.all(
-                          color: isSelected ? const Color(0xFFEF233C) : Theme.of(context).colorScheme.surface, width: isSelected ? 1.5 : 1),
-                      boxShadow: isSelected ? [BoxShadow(color: const Color(0xFFEF233C).withOpacity(0.05), blurRadius: 4, offset: const Offset(0, 2))] : [],
+                          color: isSelected ? const Color(0xFFEA6C00) : Theme.of(context).colorScheme.surface, width: isSelected ? 1.5 : 1),
+                      boxShadow: isSelected ? [BoxShadow(color: const Color(0xFFEA6C00).withOpacity(0.05), blurRadius: 4, offset: const Offset(0, 2))] : [],
                     ),
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -931,7 +945,7 @@ class _TradeInScreenState extends State<TradeInScreen> {
                           margin: const EdgeInsets.only(top: 2),
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            border: Border.all(color: isSelected ? const Color(0xFFEF233C) : Theme.of(context).colorScheme.onSurface, width: isSelected ? 5 : 1.5),
+                            border: Border.all(color: isSelected ? const Color(0xFFEA6C00) : Theme.of(context).colorScheme.onSurface, width: isSelected ? 5 : 1.5),
                             color: Colors.white,
                           ),
                         ),
@@ -944,7 +958,7 @@ class _TradeInScreenState extends State<TradeInScreen> {
                                   style: TextStyle(
                                       fontWeight: FontWeight.w600,
                                       fontSize: 13.5,
-                                      color: isSelected ? const Color(0xFFEF233C) : Theme.of(context).colorScheme.onSurface)),
+                                      color: isSelected ? const Color(0xFFEA6C00) : Theme.of(context).colorScheme.onSurface)),
                               if ((condition['description'] ?? '').toString().isNotEmpty)
                                 Padding(
                                   padding: const EdgeInsets.only(top: 4),
@@ -985,7 +999,7 @@ class _TradeInScreenState extends State<TradeInScreen> {
             children: [
               Container(
                 padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(color: const Color(0xFFEF233C), borderRadius: BorderRadius.circular(8)),
+                decoration: BoxDecoration(color: const Color(0xFFEA6C00), borderRadius: BorderRadius.circular(8)),
                 child: const Icon(Icons.person, color: Colors.white, size: 20),
               ),
               const SizedBox(width: 12),
@@ -1065,7 +1079,7 @@ class _TradeInScreenState extends State<TradeInScreen> {
           Row(
             children: [
               Text(label, style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Theme.of(context).colorScheme.onSurface)),
-              if (required) const Text(' *', style: TextStyle(color: Color(0xFFEF233C), fontSize: 13)),
+              if (required) const Text(' *', style: TextStyle(color: Color(0xFFEA6C00), fontSize: 13)),
             ],
           ),
           const SizedBox(height: 8),
@@ -1099,7 +1113,7 @@ class _TradeInScreenState extends State<TradeInScreen> {
           step: '01',
           title: 'Khách hàng tạo đơn',
           description: 'Điền đầy đủ thông tin thiết bị, tải ảnh tình trạng máy và gửi yêu cầu định giá trên hệ thống.',
-          color: const Color(0xFFEF233C),
+          color: const Color(0xFFEA6C00),
           icon: Icons.edit_document,
         ),
         _buildProcessStep(
@@ -1222,7 +1236,7 @@ class _TradeInScreenState extends State<TradeInScreen> {
       children: [
         Row(
           children: [
-            const Icon(Icons.shield, color: Color(0xFFEF233C)),
+            const Icon(Icons.shield, color: Color(0xFFEA6C00)),
             const SizedBox(width: 8),
             const Text(
               'CAM KẾT TỪ E-TECH MARKET',
