@@ -1428,9 +1428,17 @@
 }
 
 /* Responsive */
+@media (max-width: 1200px) {
+  .ti-detail-body { grid-template-columns: 1fr 300px; gap: 16px; padding: 16px; }
+}
+
 @media (max-width: 1100px) {
-  .ti-detail-body { grid-template-columns: 1fr; }
+  .ti-detail-body { grid-template-columns: 1fr 260px; gap: 12px; padding: 12px; }
   .ti-detail-right { position: static; }
+}
+
+@media (max-width: 600px) {
+  .ti-detail-body { grid-template-columns: 1fr; }
 }
 
 /* =========================================
@@ -1863,9 +1871,92 @@
   color: #64748b;
 }
 
-@media (max-width: 900px) {
-  .ti-cond-form-grid { grid-template-columns: 1fr 1fr; }
-  .ti-cond-list-header { flex-direction: column; align-items: flex-start; }
+@media (max-width: 1280px) {
+  /* List view: scale down UI text */
+  .ti-admin-layout,
+  .ti-admin-main-container {
+    padding: 0;
+    background: none;
+  }
+
+  .ti-admin-header-title h1 { font-size: 16px; }
+  .ti-admin-header-title p  { font-size: 11px; }
+
+  .ti-tab-btn { padding: 7px 10px; font-size: 11px; }
+
+  .ti-req-icon { width: 28px; height: 28px; }
+  .ti-req-icon svg { width: 16px; height: 16px; }
+
+  .ti-req-code, .ti-req-time, .ti-req-name, .ti-req-phone,
+  .ti-req-cat, .ti-req-specs, .ti-req-subspecs,
+  .ti-req-label, .ti-req-value, .ti-req-badge { font-size: 11px; }
+
+  .ti-req-btn-detail { padding: 4px 8px; font-size: 10px; }
+
+  /* Detail view: keep 2-col layout, scale down fonts/paddings */
+  .ti-detail-body {
+    grid-template-columns: 1fr 240px !important;
+    gap: 10px !important;
+    padding: 10px !important;
+  }
+  .ti-detail-right { position: static; }
+
+  .ti-detail-header { padding: 10px 14px !important; }
+  .ti-detail-title { font-size: 15px !important; }
+  .ti-detail-back-btn { font-size: 11px !important; }
+
+  .ti-detail-card-header { padding: 10px 12px !important; }
+  .ti-detail-card-header h3 { font-size: 12px !important; }
+  .ti-detail-card-body { padding: 10px 12px !important; }
+
+  .ti-info-label { font-size: 10px !important; }
+  .ti-info-value { font-size: 12px !important; }
+  .ti-info-value.bold { font-size: 13px !important; }
+
+  .ti-spec-label, .ti-spec-value,
+  .ti-device-spec, .ti-device-name { font-size: 12px !important; }
+
+  .ti-cond-item { font-size: 11px !important; padding: 8px !important; }
+  .ti-cond-grid { grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)) !important; gap: 6px !important; }
+
+  .ti-autoprice-summary { padding: 10px !important; gap: 6px !important; }
+  .ti-autoprice-row { font-size: 11px !important; }
+  .ti-autoprice-result { padding: 10px !important; gap: 6px !important; }
+  .ti-autoprice-min, .ti-autoprice-max { font-size: 13px !important; }
+  .ti-autoprice-dash { font-size: 11px !important; }
+  .ti-autoprice-apply-btn { font-size: 10px !important; padding: 6px 12px !important; }
+
+  .ti-btn-action { padding: 9px 12px !important; font-size: 12px !important; }
+
+  /* Fix timeline overlap: allow content to wrap without overlapping */
+  .ti-timeline-label { font-size: 11px !important; line-height: 1.3 !important; }
+  .ti-timeline-time { font-size: 10px !important; }
+  .ti-timeline-content { padding-bottom: 14px !important; }
+  .ti-timeline-line { min-height: 20px !important; }
+
+  .ti-pricing-row { gap: 8px !important; }
+  .ti-price-input { font-size: 13px !important; padding: 7px 8px !important; }
+  .ti-input-group > label { font-size: 10px !important; }
+  .ti-action-row button { font-size: 12px !important; padding: 9px !important; }
+
+  .ti-device-thumb { width: 48px !important; height: 40px !important; }
+  .ti-detail-card-icon { width: 28px !important; height: 28px !important; }
+  .ti-detail-card-icon svg { width: 14px !important; height: 14px !important; }
+}
+
+.ti-pricing-row {
+  display: flex;
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.ti-action-row {
+  display: flex;
+  gap: 12px;
+  margin-top: 24px;
+}
+.ti-action-row button {
+  flex: 1;
 }
 
 /* ── Auto Pricing Card ───────────────────────────────────────────────── */
@@ -1960,13 +2051,24 @@
 }
 .ti-autoprice-min,
 .ti-autoprice-max {
-  font-size: 18px;
+  font-size: 13px;
   font-weight: 800;
   color: #fff;
 }
+
+@media (min-width: 1281px) {
+  .ti-autoprice-min,
+  .ti-autoprice-max {
+    font-size: 18px;
+  }
+}
 .ti-autoprice-dash {
-  font-size: 16px;
+  font-size: 12px;
   color: rgba(255,255,255,.7);
+}
+
+@media (min-width: 1281px) {
+  .ti-autoprice-dash { font-size: 16px; }
 }
 .ti-autoprice-apply-btn {
   display: flex;

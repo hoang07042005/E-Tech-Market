@@ -567,7 +567,7 @@ const AdminTradeInPage = () => {
                 <h3>Quyết Định Thu Mua</h3>
               </div>
               <div className="ti-detail-card-body">
-                <div style={{ display: 'flex', gap: '16px', marginTop: 16 }}>
+                <div className="ti-pricing-row">
                   <div className="ti-input-group" style={{ flex: 1, marginTop: 0 }}>
                     <label>Giá đề xuất (VND) - Gửi cho khách</label>
                     <div className="ti-price-input-wrap">
