@@ -27,7 +27,7 @@
   justify-content: space-between;
   gap: 16px;
   position: relative;
-  margin-top: -50px;
+  margin-top: -38px;
 }
 
 .odhTitle,
@@ -426,7 +426,7 @@
   padding: 16px 16px 16px 12px;
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
+  align-items: flex-start;
   justify-content: space-between;
   gap: 8px;
   border-left: 1px solid #f1f5f9;
@@ -443,7 +443,7 @@
   font-weight: 600;
 }
 
-.odRowTotalWrap { text-align: right; }
+.odRowTotalWrap { text-align: left; }
 .odRowTotalLabel {
   font-size: 11px;
   color: #94a3b8;

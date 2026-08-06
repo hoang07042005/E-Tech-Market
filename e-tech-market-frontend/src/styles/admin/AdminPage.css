@@ -6541,6 +6541,8 @@ html.dark
   border: 1px solid #e2e8f0;
   margin-top: 8px;
   line-height: 1.5;
+  white-space: pre-wrap;
+  width: fit-content;
 }
 
 /* Mobile Portrait Overlay */

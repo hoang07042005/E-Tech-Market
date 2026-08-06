@@ -47,6 +47,8 @@ type OrderDetail = {
     id: number
     from_status?: string | null
     to_status: string
+    from_label?: string | null
+    to_label: string
     note?: string | null
     changed_at?: string | null
     changed_by?: { id: number; name: string; avatar_url?: string | null } | null
@@ -139,9 +141,9 @@ function payLabel(raw?: string | null) {
 function statusMeta(status?: string | null) {
   const s = (status || '').toLowerCase()
   if (s === 'pending') return { label: 'Chờ xác nhận', tone: 'wait' as const, step: 1 }
-  if (s === 'processing') return { label: 'Đã xác nhận', tone: 'info' as const, step: 2 }
-  if (s === 'paid') return { label: 'Chuyển bị hàng', tone: 'info' as const, step: 3 }
-  if (s === 'shipped') return { label: 'Đang giao', tone: 'info' as const, step: 4 }
+  if (s === 'processing') return { label: 'Đã xác nhận', tone: 'purple' as const, step: 2 }
+  if (s === 'paid') return { label: 'Chuẩn bị hàng', tone: 'info' as const, step: 3 }
+  if (s === 'shipped') return { label: 'Đang giao', tone: 'teal' as const, step: 4 }
   if (s === 'delivered') return { label: 'Đã giao', tone: 'ok' as const, step: 5 }
   if (s === 'completed') return { label: 'Hoàn thành', tone: 'ok' as const, step: 6 }
   if (s === 'returned') return { label: 'Hoàn trả', tone: 'return' as const, step: 7 }
@@ -152,7 +154,7 @@ function statusMeta(status?: string | null) {
 const ORDER_STATUS_STEPS: Array<{ value: string; label: string; step: number }> = [
   { value: 'pending',    label: 'Chờ xác nhận', step: 1 },
   { value: 'processing', label: 'Đã xác nhận',  step: 2 },
-  { value: 'paid',       label: 'Chuyển bị hàng', step: 3 },
+  { value: 'paid',       label: 'Chuẩn bị hàng', step: 3 },
   { value: 'shipped',    label: 'Đang giao',     step: 4 },
   { value: 'delivered',  label: 'Đã giao',       step: 5 },
   { value: 'completed',  label: 'Hoàn thành',    step: 6 },
@@ -557,34 +559,75 @@ export default function OrderDetailPage() {
 
           <section className="oudCard">
             <div className="oudCardTitle">Lịch sử chuyển đổi trạng thái</div>
-            {!order.status_history?.length ? (
-              <div style={{ fontSize: 12, color: 'var(--et-text-muted)', fontWeight: 700 }}>
-                Chưa có lịch sử.
-              </div>
-            ) : (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                {order.status_history.map((h) => {
-                  const fromLabel = statusMeta(h.from_status || null).label
-                  const toLabel = statusMeta(h.to_status || null).label
-                  const who = h.changed_by?.name ? ` • ${h.changed_by.name}` : ''
-                  return (
-                    <div key={h.id} style={{ padding: 10, border: '1px solid var(--et-border)', borderRadius: 12, background: 'var(--et-surface)' }}>
-                      <div style={{ fontWeight: 900, fontSize: 12, color: 'var(--et-text)' }}>
-                        {fromLabel} → {toLabel}
-                      </div>
-                      <div style={{ marginTop: 4, fontWeight: 700, fontSize: 12, color: 'var(--et-text-muted)' }}>
-                        {fmtDateTimeVi(h.changed_at)}{who}
-                      </div>
-                      {h.note ? (
-                        <div style={{ marginTop: 6, fontWeight: 700, fontSize: 12, color: 'var(--et-text-muted)', whiteSpace: 'pre-wrap' }}>
-                          {h.note}
+            {(() => {
+              const history = [...(order.status_history || [])]
+              
+              if (order.return_request?.status === 'refunded') {
+                history.unshift({
+                  id: 999999,
+                  from_status: 'returned',
+                  from_label: 'Hoàn trả',
+                  to_status: 'completed',
+                  to_label: 'Hoàn thành (hoàn trả)',
+                  changed_at: order.return_request.refunded_at || order.return_request.updated_at || null,
+                  changed_by: null,
+                  note: 'Hoàn tiền thành công'
+                })
+              }
+
+              if (!history.length) {
+                return (
+                  <div style={{ fontSize: 12, color: 'var(--et-text-muted)', fontWeight: 700 }}>
+                    Chưa có lịch sử.
+                  </div>
+                )
+              }
+
+              return (
+                <div className="oudTimeline">
+                  {history.map((h, i) => {
+                    const isLast = i === history.length - 1
+                    const fromLabel = h.from_label || statusMeta(h.from_status || null).label
+                    const toLabel = h.to_label || statusMeta(h.to_status || null).label
+                    
+                    return (
+                      <div key={h.id} className="oudTimelineItem">
+                        <div className="oudTimelineTrack">
+                          <div className="oudTimelineDot" />
+                          {!isLast && <div className="oudTimelineLine" />}
                         </div>
-                      ) : null}
-                    </div>
-                  )
-                })}
-              </div>
-            )}
+                        <div className="oudTimelineContent">
+                          <div className="oudTimelineHeader">
+                            <div className="oudTimelineTitle">
+                              {fromLabel ? (
+                                <>
+                                  <span style={{ color: '#94a3b8' }}>{fromLabel}</span>
+                                  <span style={{ margin: '0 8px', color: '#cbd5e1' }}>→</span>
+                                  <span className={`oudStatusBadge tone-${statusMeta(h.to_status).tone}`}>
+                                    {toLabel}
+                                  </span>
+                                </>
+                              ) : (
+                                <span className={`oudStatusBadge tone-${statusMeta(h.to_status).tone}`}>
+                                  {toLabel}
+                                </span>
+                              )}
+                            </div>
+                            <div className="oudTimelineTime">{fmtDateTimeVi(h.changed_at)}</div>
+                          </div>
+                          {h.changed_by?.name && (
+                            <div className="oudTimelineActor">Bởi: {h.changed_by.name}</div>
+                          )}
+                          {h.note && (
+                            <div className="oudTimelineNote">{h.note}</div>
+                          )}
+                        </div>
+                      </div>
+                    )
+                  })}
+                </div>
+              )
+            })()}
           </section>
         </div>
 
@@ -605,21 +648,36 @@ export default function OrderDetailPage() {
             <div className="oudCardMiniHead">PHƯƠNG THỨC THANH TOÁN</div>
             <div className="oudPayBox">
               <div className="oudPayMethod">{payLabel(order.payment?.method || null)}</div>
-              <div className="oudPaySub">Vui lòng thanh toán khi nhận hàng</div>
-              <label className={`oudPayToggle ${order.payment?.status !== 'paid' ? 'is-clickable' : ''}`}>
-                <input
-                  type="checkbox"
-                  checked={order.payment?.status === 'paid'}
-                  onChange={() => {
-                    if (order.payment?.status !== 'paid') {
-                      // open modal to confirm payment instead of native confirm
-                      setShowConfirmPayment(true)
-                    }
-                  }}
-                  disabled={actionBusy || order.payment?.status === 'paid'}
-                />
-                <span className="oudPayToggleText">Xác nhận đã thanh toán</span>
-              </label>
+              {(order.payment?.method || '').toLowerCase() === 'cod' ? (
+                <>
+                  <div className="oudPaySub">Vui lòng thanh toán khi nhận hàng</div>
+                  <label className={`oudPayToggle ${order.payment?.status !== 'paid' ? 'is-clickable' : ''}`}>
+                    <input
+                      type="checkbox"
+                      checked={order.payment?.status === 'paid'}
+                      onChange={() => {
+                        if (order.payment?.status !== 'paid') {
+                          // open modal to confirm payment instead of native confirm
+                          setShowConfirmPayment(true)
+                        }
+                      }}
+                      disabled={actionBusy || order.payment?.status === 'paid'}
+                    />
+                    <span className="oudPayToggleText">Xác nhận đã thanh toán</span>
+                  </label>
+                </>
+              ) : (
+                <>
+                  <div style={{ marginTop: 10 , fontSize: 13, color: '#64748b' }}>
+                    Mã giao dịch: <span style={{ color: '#334155', fontWeight: 600 }}>{order.payment?.transaction_code || '-'}</span>
+                  </div>
+                  <div style={{ marginTop: 10, fontSize: 13, color: '#64748b' }}>
+                    Trạng thái: <span style={{ color: order.payment?.status === 'paid' ? '#10b981' : order.payment?.status === 'failed' ? '#ef4444' : '#f59e0b', fontWeight: 600 }}>
+                      {order.payment?.status === 'paid' ? 'Đã thanh toán' : order.payment?.status === 'failed' ? 'Thất bại' : 'Chưa thanh toán'}
+                    </span>
+                  </div>
+                </>
+              )}
             </div>
           </section>
 
@@ -666,104 +724,146 @@ export default function OrderDetailPage() {
       </div>
 
       {order.return_request && (
-        <div className={`oudBottomGrid ${hasAdminResponse ? 'twoCol' : ''}`}>
-          <section className={`oudCard ${hasAdminResponse ? '' : 'span2'}`}>
-            <div className="oudCardTitle">Yêu cầu hoàn trả</div>
-              <div style={{ marginTop: 6, fontSize: 12, fontWeight: 800, color: 'var(--et-text)' }}>
-                Trạng thái: {rrStatusLabel(order.return_request.status)}
+        <div className="oudReturnGrid">
+          {/* Left Column */}
+          <section className="oudReturnCard">
+            <div className="oudReturnHeader">
+              <div className="oudReturnHeaderIcon">
+                <IconMailReturn />
               </div>
-              {order.return_request.content ? (
-                <div style={{ marginTop: 8, fontSize: 12, color: 'var(--et-text-muted)', whiteSpace: 'pre-wrap', fontWeight: 650 }}>
-                  {order.return_request.content}
+              <div>
+                <div className="oudReturnHeaderTitle">Yêu cầu hoàn trả</div>
+                <div className="oudReturnHeaderStatus">
+                  Trạng thái: <span style={{ color: order.return_request.status === 'refunded' ? '#10b981' : 'inherit' }}>{rrStatusLabel(order.return_request.status)}</span>
                 </div>
-              ) : null}
-              {Array.isArray(order.return_request.media) && order.return_request.media.length ? (
-                <div style={{ marginTop: 10, display: 'grid', gridTemplateColumns: 'repeat(6, minmax(0, 1fr))', gap: 8 }}>
-                  {order.return_request.media.slice(0, 12).map((m, i) => {
+              </div>
+            </div>
+
+            <div className="oudReturnContentBox">
+              <div className="oudReturnContentHeader">
+                <span className="oudReturnContentIcon"><IconMessage /></span>
+                <div className="oudReturnContentTitle">Nội dung yêu cầu</div>
+              </div>
+              <div className="oudReturnContentText">
+                {order.return_request.content || 'Không có ghi chú.'}
+              </div>
+            </div>
+            <hr className="oudReturnDivider" />
+
+            <div>
+              <div className="oudReturnContentHeader">
+                <span className="oudReturnContentIcon"><IconInfo /></span>
+                <div className="oudReturnContentTitle">Thông tin sản phẩm tham khảo</div>
+              </div>
+              <div className="oudReturnContentText" style={{ marginBottom: 16 }}>
+                {order.items.length > 0 ? (order.items[0].product_name_snapshot || order.items[0].product?.name || 'Sản phẩm hoàn trả') : 'Sản phẩm hoàn trả'}
+              </div>
+              
+              {Array.isArray(order.return_request.media) && order.return_request.media.length > 0 && (
+                <div className="oudReturnMediaGrid">
+                  {order.return_request.media.slice(0, 4).map((m, i) => {
                     const u = resolveUrl(m?.url || null)
                     if (!u) return null
                     const isVideo = (m?.type || '').toString().toLowerCase() === 'video'
-                    return isVideo ? (
-                      <video key={i} src={u} controls style={{ width: '100%', height: 92, objectFit: 'cover', borderRadius: 10, background: '#111827' }} />
-                    ) : (
-                      <button
-                        key={i}
-                        type="button"
-                        onClick={() => openLightbox(u)}
-                        style={{ padding: 0, border: 'none', background: 'transparent', cursor: 'zoom-in' }}
-                        aria-label={`Mở ảnh ${i + 1}`}
-                      >
-                        <img src={u} alt="" style={{ width: '100%', height: 92, objectFit: 'cover', borderRadius: 10, background: '#f3f4f6', display: 'block' }} />
+                    return (
+                      <button key={i} type="button" onClick={() => openLightbox(u)} className="oudReturnMediaBtn">
+                        {isVideo ? (
+                           <video src={u} className="oudReturnMediaImg video" />
+                        ) : (
+                           <img src={u} alt="" className="oudReturnMediaImg" />
+                        )}
                       </button>
                     )
                   })}
                 </div>
-              ) : null}
+              )}
+              <div className="oudReturnMediaHint">* Hình ảnh do khách hàng cung cấp</div>
+            </div>
           </section>
 
-        {hasAdminResponse ? (
-          <section className="oudCard">
-            <div className="oudCardTitle">Phản hồi từ admin / Hoàn tiền</div>
-            {!order.return_request ? (
-              <div style={{ fontSize: 12, color: 'var(--et-text-muted)', fontWeight: 700 }}>
-                Chưa có phản hồi.
+          {/* Right Column */}
+          <section className="oudReturnCard">
+            <div className="oudReturnHeader">
+              <div className="oudReturnHeaderIcon">
+                <IconHeadset />
               </div>
-            ) : (
-              <>
-                {order.return_request.admin_note ? (
-                  <div style={{ marginTop: 6, fontSize: 12, color: 'var(--et-text-muted)', whiteSpace: 'pre-wrap' }}>
-                    <span style={{ fontWeight: 900 }}>Phản hồi admin:</span> {order.return_request.admin_note}
+              <div className="oudReturnHeaderTitle">Phản hồi từ admin / Hoàn tiền</div>
+            </div>
+
+            <div className="oudReturnContentBox no-margin">
+              <div className="oudReturnContentHeader">
+                <span className="oudReturnContentIcon mt-2"><IconAdminUser /></span>
+                <div className="oudReturnContentTitle">
+                  Phản hồi admin: <span>{order.return_request.admin_note || 'Admin chưa phản hồi.'}</span>
+                </div>
+              </div>
+              
+              <hr className="oudReturnDividerDashed" />
+              
+              <div className="oudReturnContentHeader" style={{ marginBottom: 16 }}>
+                <span className="oudReturnContentIcon"><IconReceipt /></span>
+                <div className="oudReturnContentTitle">Chứng từ hoàn tiền</div>
+              </div>
+              
+              <div className="oudReturnReceiptGrid">
+                {Array.isArray(order.return_request.refund_proof) && order.return_request.refund_proof.length > 0 ? (
+                  <div style={{ width: 140, flexShrink: 0 }}>
+                    {order.return_request.refund_proof.slice(0, 1).map((m, i) => {
+                      const u = resolveUrl(m?.url || null)
+                      if (!u) return null
+                      const isVideo = (m?.type || '').toString().toLowerCase() === 'video'
+                      return (
+                         <button key={i} type="button" onClick={() => openLightbox(u)} className="oudReturnMediaBtn">
+                           {isVideo ? (
+                             <video src={u} className="oudReturnMediaImg portrait video" />
+                           ) : (
+                             <img src={u} alt="" className="oudReturnMediaImg portrait" />
+                           )}
+                         </button>
+                      )
+                    })}
                   </div>
                 ) : (
-                  <div style={{ marginTop: 6, fontSize: 12, color: 'var(--et-text-muted)', fontWeight: 700 }}>
-                    Admin chưa phản hồi.
+                  <div className="oudReturnReceiptEmpty">
+                    Chưa có
                   </div>
                 )}
-
-                {Array.isArray(order.return_request.refund_proof) && order.return_request.refund_proof.length ? (
-                  <div style={{ marginTop: 10 }}>
-                    <div style={{ fontWeight: 900, fontSize: 12 }}>Chứng từ hoàn tiền</div>
-                    <div style={{ marginTop: 8, display: 'grid', gridTemplateColumns: 'repeat(6, minmax(0, 1fr))', gap: 8 }}>
-                      {order.return_request.refund_proof.slice(0, 12).map((m, i) => {
-                        const u = resolveUrl(m?.url || null)
-                        if (!u) return null
-                        const isVideo = (m?.type || '').toString().toLowerCase() === 'video'
-                        return isVideo ? (
-                          <video key={i} src={u} controls style={{ width: '100%', height: 92, objectFit: 'cover', borderRadius: 10, background: '#111827' }} />
-                        ) : (
-                            <button
-                              key={i}
-                              type="button"
-                              onClick={() => openLightbox(u)}
-                              style={{ padding: 0, border: 'none', background: 'transparent', cursor: 'zoom-in' }}
-                              aria-label={`Mở ảnh ${i + 1}`}
-                            >
-                              <img src={u} alt="" style={{ width: '100%', height: 92, objectFit: 'cover', borderRadius: 10, background: '#f3f4f6', display: 'block' }} />
-                            </button>
-                        )
-                      })}
+                
+                <div className="oudReturnReceiptDetails">
+                  <div className="oudReturnReceiptRow">
+                    <div className="oudReturnReceiptLabel">Phương thức hoàn tiền</div>
+                    <div className="oudReturnReceiptValue">{order.payment?.method === 'vnpay' ? 'VNPAY' : 'Ví E-Tech Market'}</div>
+                  </div>
+                  <div className="oudReturnReceiptRow">
+                    <div className="oudReturnReceiptLabel">Số tiền hoàn</div>
+                    <div className="oudReturnReceiptValue green">{fmtVnd(Number(order.total_amount) || 0)} đ</div>
+                  </div>
+                  <div className="oudReturnReceiptRow">
+                    <div className="oudReturnReceiptLabel">Thời gian hoàn</div>
+                    <div className="oudReturnReceiptValue">
+                      {order.return_request.refunded_at ? fmtDateTimeVi(order.return_request.refunded_at) : '—'}
                     </div>
                   </div>
-                ) : null}
+                </div>
+              </div>
+            </div>
 
-                {(order.return_request.status || '').toString().toLowerCase() === 'refunded' ? (
-                  <div style={{ marginTop: 12 }}>
-                    {order.return_request.customer_confirmed_at ? (
-                      <div style={{ fontSize: 12, fontWeight: 800, color: '#15803d' }}>
-                        Bạn đã xác nhận đã nhận tiền hoàn.
-                      </div>
-                    ) : (
-                      <button type="button" className="oudBtn primary" disabled={actionBusy} onClick={() => void onConfirmRefundReceived()}>
-                        Xác nhận đã nhận tiền hoàn
-                      </button>
-                    )}
+            {(order.return_request.status || '').toString().toLowerCase() === 'refunded' && (
+              <div style={{ marginTop: 16 }}>
+                {order.return_request.customer_confirmed_at ? (
+                  <div className="oudReturnSuccessBox">
+                    <span style={{ display: 'flex' }}><IconCheckCircle /></span>
+                    <span className="oudReturnSuccessText">Bạn đã xác nhận đã nhận tiền hoàn.</span>
                   </div>
-                ) : null}
-              </>
+                ) : (
+                  <button type="button" className="oudBtn primary" style={{ width: '100%', marginTop: 8 }} disabled={actionBusy} onClick={() => void onConfirmRefundReceived()}>
+                    Xác nhận đã nhận tiền hoàn
+                  </button>
+                )}
+              </div>
             )}
           </section>
-        ) : null}
-      </div>
+        </div>
       )}
 
       {showReturnForm ? (
@@ -896,3 +996,11 @@ export default function OrderDetailPage() {
 
 
 function IconPin() {return (<svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 22s7-4.5 7-12a7 7 0 1 0-14 0c0 7.5 7 12 7 12Z" stroke="currentColor" strokeWidth="1.8" /><path d="M12 12.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z" stroke="currentColor" strokeWidth="1.8" /></svg>)}
+function IconMailReturn() { return <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>; }
+function IconMessage() { return <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>; }
+function IconBox() { return <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>; }
+function IconCheckCircle() { return <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#10b981" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>; }
+function IconInfo() { return <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>; }
+function IconHeadset() { return <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 18v-6a9 9 0 0 1 18 0v6"></path><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"></path></svg>; }
+function IconAdminUser() { return <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>; }
+function IconReceipt() { return <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>; }

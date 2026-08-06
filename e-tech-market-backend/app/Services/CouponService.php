@@ -131,10 +131,17 @@ class CouponService
         $coupon = Coupon::where('code', $code)->first();
 
         if (! $coupon) {
-            throw new \Exception('Mã không tồn tại.', 404);
+            throw new \Exception('Mã giảm giá không tồn tại.', 404);
         }
-        if (! $coupon->isValidNow()) {
-            throw new \Exception('Mã đã hết hạn hoặc chưa được kích hoạt.', 400);
+        if (!$coupon->is_active) {
+            throw new \Exception('Mã giảm giá chưa được kích hoạt hoặc đã bị khóa.', 400);
+        }
+        $now = now();
+        if ($coupon->start_at && $now->lt($coupon->start_at)) {
+            throw new \Exception('Mã giảm giá chưa đến thời gian sử dụng.', 400);
+        }
+        if ($coupon->end_at && $now->gt($coupon->end_at)) {
+            throw new \Exception('Mã giảm giá đã hết hạn.', 400);
         }
         if ($user->savedCoupons()->where('coupon_id', $coupon->id)->exists()) {
             throw new \Exception('Bạn đã lưu mã này rồi.', 400);
@@ -156,8 +163,8 @@ class CouponService
         if (! $coupon) {
             throw new \Exception('Mã giảm giá không tồn tại.', 404);
         }
-        if (! $coupon->isValidNow()) {
-            throw new \Exception('Mã giảm giá đã hết hạn hoặc chưa được kích hoạt.', 400);
+        if (!$coupon->is_active) {
+            throw new \Exception('Mã giảm giá chưa được kích hoạt hoặc đã bị khóa.', 400);
         }
         $calcBase = $orderAmount;
 
@@ -195,9 +202,9 @@ class CouponService
                     $validSubtotal += $price * $qty;
                 }
             }
-            
             if ($validSubtotal == 0) {
-                throw new \Exception('Giỏ hàng không có sản phẩm nào thuộc danh mục áp dụng của mã này.', 400);
+                $categoryNames = $coupon->categories->pluck('name')->implode(', ');
+                throw new \Exception('Mã giảm giá này chỉ áp dụng cho sản phẩm thuộc các danh mục: ' . $categoryNames, 400);
             }
             
             $calcBase = $validSubtotal;
@@ -206,6 +213,15 @@ class CouponService
         if ($coupon->min_order_amount && $calcBase < $coupon->min_order_amount) {
             throw new \Exception('Giá trị sản phẩm hợp lệ chưa đạt tối thiểu '.number_format((float) $coupon->min_order_amount, 0, ',', '.').'đ', 400);
         }
+
+        $now = now();
+        if ($coupon->start_at && $now->lt($coupon->start_at)) {
+            throw new \Exception('Mã giảm giá chưa đến thời gian sử dụng.', 400);
+        }
+        if ($coupon->end_at && $now->gt($coupon->end_at)) {
+            throw new \Exception('Mã giảm giá đã hết hạn.', 400);
+        }
+
         if ($coupon->max_uses && $coupon->usages_count >= $coupon->max_uses) {
             throw new \Exception('Mã giảm giá đã hết lượt sử dụng.', 400);
         }

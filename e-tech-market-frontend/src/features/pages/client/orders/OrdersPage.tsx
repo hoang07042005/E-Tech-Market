@@ -277,7 +277,8 @@ export default function OrdersPage() {
         const imgs   = getItemImages(o.items)
         const names  = getItemNames(o.items)
         const itemCount = o.items?.length ?? 0
-        const payMethod = (o as any).payment_method || 'Chuyển khoản'
+        const pm = (o as any).payment?.method || (o as any).payment_method
+        const payMethod = pm === 'cod' ? 'Thanh toán khi nhận hàng' : pm === 'vnpay' ? ' VNPay' : pm === 'momo' ? 'Ví MoMo' : 'Chuyển khoản'
         const estDelivery = (o as any).estimated_delivery || null
 
         return (
