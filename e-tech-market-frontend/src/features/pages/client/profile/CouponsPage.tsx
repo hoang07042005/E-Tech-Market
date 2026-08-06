@@ -17,6 +17,7 @@ type CouponPublic = {
   user_usage_count?: number
   max_uses: number | null
   usages_count?: number
+  categories?: { id: number; name: string }[]
 }
 
 function formatVnd(n: number) {
@@ -215,7 +216,9 @@ export default function CouponsPage() {
               <div className="cpTicketRightMain">
                 <div className="cpTicketInfoCol">
                   <div className="cpTicketType">
-                    {c.coupon_type === 'percentage' ? 'Cho mọi sản phẩm' : 'Phụ kiện'}
+                    {c.categories && c.categories.length > 0 
+                      ? `Áp dụng cho: ${c.categories.map((cat: any) => cat.name).join(', ')}` 
+                      : 'Cho mọi sản phẩm'}
                   </div>
                   <div className="cpTicketCodeRow">
                     <span className="cpTicketCodeText">{c.code}</span>

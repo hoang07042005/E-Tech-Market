@@ -13,6 +13,7 @@ class CouponService
     public function getAdminCoupons(int $limit = 20)
     {
         return Coupon::query()
+            ->with(['categories'])
             ->withCount('usages')
             ->orderBy('created_at', 'desc')
             ->paginate($limit);
@@ -23,7 +24,11 @@ class CouponService
      */
     public function createCoupon(array $data): Coupon
     {
-        return Coupon::create($data);
+        $coupon = Coupon::create($data);
+        if (isset($data['category_ids'])) {
+            $coupon->categories()->sync($data['category_ids']);
+        }
+        return $coupon;
     }
 
     /**
@@ -32,6 +37,9 @@ class CouponService
     public function updateCoupon(Coupon $coupon, array $data): Coupon
     {
         $coupon->update($data);
+        if (array_key_exists('category_ids', $data)) {
+            $coupon->categories()->sync($data['category_ids']);
+        }
         return $coupon;
     }
 
@@ -49,7 +57,7 @@ class CouponService
     public function getAvailableCoupons(?int $userId, bool $excludeSaved)
     {
         $now = Carbon::now();
-        $coupons = Coupon::with(['usages', 'savedByUsers'])
+        $coupons = Coupon::with(['usages', 'savedByUsers', 'categories'])
             ->withCount('usages')
             ->where('is_active', true)
             ->where(function ($query) use ($now) {
@@ -92,7 +100,7 @@ class CouponService
     {
         $now = Carbon::now();
         $coupons = $user->savedCoupons()
-            ->with(['usages'])
+            ->with(['usages', 'categories'])
             ->withCount('usages')
             ->where('is_active', true)
             ->where(function ($query) use ($now) {
@@ -138,9 +146,9 @@ class CouponService
     /**
      * Apply a coupon and calculate discount.
      */
-    public function applyCoupon(string $code, float $orderAmount, ?int $userId): array
+    public function applyCoupon(string $code, float $orderAmount, ?int $userId, array $items = []): array
     {
-        $coupon = Coupon::with(['usages'])
+        $coupon = Coupon::with(['usages', 'categories'])
             ->withCount('usages')
             ->where('code', $code)
             ->first();
@@ -151,8 +159,52 @@ class CouponService
         if (! $coupon->isValidNow()) {
             throw new \Exception('Mã giảm giá đã hết hạn hoặc chưa được kích hoạt.', 400);
         }
-        if ($coupon->min_order_amount && $orderAmount < $coupon->min_order_amount) {
-            throw new \Exception('Đơn hàng tối thiểu để áp dụng mã này là '.number_format((float) $coupon->min_order_amount, 0, ',', '.').'đ', 400);
+        $calcBase = $orderAmount;
+
+        if ($coupon->categories->isNotEmpty()) {
+            if (empty($items) && $userId) {
+                $cart = \App\Models\Cart::where('user_id', $userId)->first();
+                if ($cart) {
+                    $cartItems = \App\Models\CartItem::where('cart_id', $cart->id)->get();
+                    foreach ($cartItems as $it) {
+                        $items[] = [
+                            'product_id' => $it->product_id,
+                            'quantity' => $it->quantity,
+                            'unit_price' => $it->unit_price
+                        ];
+                    }
+                }
+            }
+
+            if (empty($items)) {
+                throw new \Exception('Cần có thông tin sản phẩm để kiểm tra mã giảm giá này.', 400);
+            }
+
+            $categoryIds = $coupon->categories->pluck('id')->toArray();
+            
+            $validSubtotal = 0;
+            $productIds = collect($items)->pluck('product_id')->filter()->unique()->toArray();
+            $products = \App\Models\Product::whereIn('id', $productIds)->get()->keyBy('id');
+
+            foreach ($items as $it) {
+                if (!isset($it['product_id'])) continue;
+                $product = $products->get($it['product_id']);
+                if ($product && in_array($product->category_id, $categoryIds)) {
+                    $qty = (int)($it['quantity'] ?? 1);
+                    $price = (float)($it['unit_price'] ?? 0);
+                    $validSubtotal += $price * $qty;
+                }
+            }
+            
+            if ($validSubtotal == 0) {
+                throw new \Exception('Giỏ hàng không có sản phẩm nào thuộc danh mục áp dụng của mã này.', 400);
+            }
+            
+            $calcBase = $validSubtotal;
+        }
+
+        if ($coupon->min_order_amount && $calcBase < $coupon->min_order_amount) {
+            throw new \Exception('Giá trị sản phẩm hợp lệ chưa đạt tối thiểu '.number_format((float) $coupon->min_order_amount, 0, ',', '.').'đ', 400);
         }
         if ($coupon->max_uses && $coupon->usages_count >= $coupon->max_uses) {
             throw new \Exception('Mã giảm giá đã hết lượt sử dụng.', 400);
@@ -167,13 +219,13 @@ class CouponService
 
         $discountAmount = 0;
         if ($coupon->coupon_type === 'percentage') {
-            $discountAmount = ($orderAmount * $coupon->value) / 100;
+            $discountAmount = ($calcBase * $coupon->value) / 100;
         } else {
             $discountAmount = $coupon->value;
         }
 
-        if ($discountAmount > $orderAmount) {
-            $discountAmount = $orderAmount;
+        if ($discountAmount > $calcBase) {
+            $discountAmount = $calcBase;
         }
 
         return [

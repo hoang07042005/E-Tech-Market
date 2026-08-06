@@ -26,6 +26,8 @@ class UpdateCouponRequest extends FormRequest
             'max_uses' => 'nullable|integer|min:1',
             'max_uses_per_user' => 'nullable|integer|min:1',
             'is_active' => 'boolean',
+            'category_ids' => 'nullable|array',
+            'category_ids.*' => 'exists:categories,id',
         ];
     }
 }

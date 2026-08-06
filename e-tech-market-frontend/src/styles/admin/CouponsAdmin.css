@@ -349,7 +349,7 @@
 }
 
 .adminModalBody {
-  padding: 28px;
+  padding: 28px 28px 10px 28px;
 }
 
 .formRow {
@@ -362,9 +362,20 @@
 }
 
 .adminFormGroup {
-  margin-bottom: 20px;
+  margin-bottom: 10px;
   display: flex;
   flex-direction: column;
+}
+
+.adminCategoryScroll {
+  max-height: 150px;
+  overflow-y: auto;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE/Edge */
+}
+
+.adminCategoryScroll::-webkit-scrollbar {
+  display: none; /* Chrome/Safari/Opera */
 }
 
 .adminFormGroup label {
@@ -418,9 +429,7 @@
   display: flex;
   justify-content: flex-end;
   gap: 12px;
-  border-top: 1px solid #e2e8f0;
-  padding-top: 20px;
-  margin-top: 10px;
+
 }
 
 .modalBtnCancel {
@@ -766,4 +775,4 @@
     padding: 6px 12px;
     font-size: 12px;
   }
-}
+}

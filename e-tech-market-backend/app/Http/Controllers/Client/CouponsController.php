@@ -49,14 +49,19 @@ class CouponsController extends Controller
         $request->validate([
             'code' => 'required|string',
             'order_amount' => 'required|numeric|min:0',
+            'items' => 'sometimes|array',
+            'items.*.product_id' => 'required_with:items|integer',
+            'items.*.quantity' => 'required_with:items|integer',
+            'items.*.unit_price' => 'required_with:items|numeric',
         ]);
 
         $code = $request->input('code');
         $orderAmount = $request->input('order_amount');
+        $items = $request->input('items', []);
         $userId = $request->user('sanctum') ? $request->user('sanctum')->id : null;
 
         try {
-            $result = $this->couponService->applyCoupon($code, $orderAmount, $userId);
+            $result = $this->couponService->applyCoupon($code, $orderAmount, $userId, $items);
             return response()->json($result);
         } catch (\Exception $e) {
             $code = $e->getCode() ?: 400;

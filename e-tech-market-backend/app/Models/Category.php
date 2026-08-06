@@ -59,6 +59,11 @@ class Category extends Model
         return $this->children()->with('childrenRecursive')->where('is_active', true)->orderBy('sort_order');
     }
 
+    public function coupons(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
+    {
+        return $this->belongsToMany(Coupon::class, 'category_coupon');
+    }
+
     public function products(): HasMany
     {
         return $this->hasMany(Product::class, 'category_id');

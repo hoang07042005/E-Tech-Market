@@ -131,15 +131,29 @@ class OrderService
             $discount = 0;
             $coupon = null;
             if (! empty($data['coupon_code'])) {
-                $coupon = Coupon::query()->lockForUpdate()->where('code', $data['coupon_code'])->first();
+                $coupon = Coupon::with(['categories'])->lockForUpdate()->where('code', $data['coupon_code'])->first();
                 if (! $coupon || ! $coupon->isValidNow()) {
                     throw ValidationException::withMessages(['coupon_code' => 'Mã giảm giá không hợp lệ hoặc đã hết hạn']);
                 }
 
                 $calcBase = $subtotal;
 
+                if ($coupon->categories->isNotEmpty()) {
+                    $categoryIds = $coupon->categories->pluck('id')->toArray();
+                    $validSubtotal = 0;
+                    foreach ($processedItems as $it) {
+                        if (in_array($it['product']->category_id, $categoryIds)) {
+                            $validSubtotal += (float)$it['unit_price'] * (int)$it['quantity'];
+                        }
+                    }
+                    if ($validSubtotal == 0) {
+                        throw ValidationException::withMessages(['coupon_code' => 'Giỏ hàng không có sản phẩm nào thuộc danh mục áp dụng của mã này']);
+                    }
+                    $calcBase = $validSubtotal;
+                }
+
                 if ($calcBase < (float) $coupon->min_order_amount) {
-                    throw ValidationException::withMessages(['coupon_code' => 'Giá trị đơn hàng chưa đạt tối thiểu để áp dụng mã này']);
+                    throw ValidationException::withMessages(['coupon_code' => 'Giá trị sản phẩm hợp lệ chưa đạt tối thiểu để áp dụng mã này']);
                 }
 
                 $usageCount = CouponUsage::query()->where('coupon_id', $coupon->id)->count();

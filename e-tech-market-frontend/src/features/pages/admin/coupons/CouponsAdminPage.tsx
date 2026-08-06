@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { apiFetch } from '@/configs/api.config'
 import ConfirmModal from '@/components/ConfirmModal'
 import { toast } from '@/utils/toast';
@@ -16,6 +16,8 @@ type Coupon = {
   max_uses_per_user: number | null
   is_active: boolean
   usages_count?: number
+  categories?: { id: number; name: string }[]
+  category_ids?: number[]
 }
 
 export default function CouponsAdminPage() {
@@ -25,6 +27,7 @@ export default function CouponsAdminPage() {
   const [totalPages, setTotalPages] = useState(1)
   const [showModal, setShowModal] = useState(false)
   const [editData, setEditData] = useState<Partial<Coupon> | null>(null)
+  const [categories, setCategories] = useState<{id: number; name: string}[]>([])
   const [showDeleteModal, setShowDeleteModal] = useState(false)
   const [couponToDelete, setCouponToDelete] = useState<Coupon | null>(null)
 
@@ -50,6 +53,16 @@ export default function CouponsAdminPage() {
 
   useEffect(() => {
     fetchCoupons(page)
+    const fetchCategories = async () => {
+      try {
+        const res = await apiFetch<any>('/api/admin/categories?limit=100')
+        const cats = Array.isArray(res?.data) ? res.data : Array.isArray(res) ? res : []
+        setCategories(cats)
+      } catch (err) {
+        console.error(err)
+      }
+    }
+    fetchCategories()
   }, [page])
 
   const handleSave = async (e: React.FormEvent) => {
@@ -97,6 +110,15 @@ export default function CouponsAdminPage() {
       value: '',
       min_order_amount: '',
       is_active: true,
+      category_ids: [],
+    })
+    setShowModal(true)
+  }
+
+  const openEdit = (c: Coupon) => {
+    setEditData({
+      ...c,
+      category_ids: c.categories?.map((cat) => cat.id) || [],
     })
     setShowModal(true)
   }
@@ -268,9 +290,15 @@ export default function CouponsAdminPage() {
               <button className="adminModalClose" onClick={() => setShowModal(false)}>×</button>
             </div>
             <form onSubmit={handleSave} className="adminModalBody">
-              <div className="adminFormGroup">
-                <label>Mã khuyến mãi (Code)</label>
-                <input required type="text" placeholder="VD: NHALAM10, TET2026..." value={editData.code || ''} onChange={e => setEditData({ ...editData, code: e.target.value.toUpperCase() })} />
+              <div className="formRow">
+                <div className="adminFormGroup">
+                  <label>Mã khuyến mãi (Code)</label>
+                  <input required type="text" placeholder="VD: NHALAM10, TET2026..." value={editData.code || ''} onChange={e => setEditData({ ...editData, code: e.target.value.toUpperCase() })} />
+                </div>
+                <div className="adminFormGroup">
+                  <label>Giá trị đơn hàng tối thiểu (đ)</label>
+                  <input type="number" min="0" step="1000" placeholder="0đ (Bỏ trống nếu không yêu cầu)" value={editData.min_order_amount || ''} onChange={e => setEditData({ ...editData, min_order_amount: e.target.value })} />
+                </div>
               </div>
 
               <div className="formRow">
@@ -285,11 +313,6 @@ export default function CouponsAdminPage() {
                   <label>Mức giảm {editData.coupon_type === 'percentage' ? '(%)' : '(đ)'}</label>
                   <input required type="number" min="0" step={editData.coupon_type === 'percentage' ? '1' : '1000'} value={editData.value || ''} onChange={e => setEditData({ ...editData, value: e.target.value })} />
                 </div>
-              </div>
-
-              <div className="adminFormGroup">
-                <label>Giá trị đơn hàng tối thiểu áp dụng (đ)</label>
-                <input type="number" min="0" step="1000" placeholder="0đ (Bỏ trống nếu không yêu cầu)" value={editData.min_order_amount || ''} onChange={e => setEditData({ ...editData, min_order_amount: e.target.value })} />
               </div>
 
               <div className="formRow">
@@ -311,6 +334,29 @@ export default function CouponsAdminPage() {
                 <div className="adminFormGroup">
                   <label>Ngày hết hạn</label>
                   <input type="datetime-local" value={editData.end_at ? editData.end_at.slice(0, 16) : ''} onChange={e => setEditData({ ...editData, end_at: e.target.value || null })} />
+                </div>
+              </div>
+
+              <div className="adminFormGroup">
+                <label>Áp dụng cho danh mục (để trống nếu áp dụng toàn bộ)</label>
+                <div className="adminCategoryScroll" style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginTop: '4px' }}>
+                  {categories.map(cat => {
+                    const isChecked = editData.category_ids?.includes(cat.id)
+                    return (
+                      <label key={cat.id} style={{ display: 'flex', alignItems: 'center', gap: '4px', cursor: 'pointer', background: isChecked ? '#fff7ed' : '#f1f5f9', padding: '6px 10px', borderRadius: '4px', border: `1px solid ${isChecked ? '#ff6b2b' : 'transparent'}`, color: isChecked ? '#ea580c' : '#475569', fontSize: '13px' }}>
+                        <input type="checkbox" style={{ margin: 0 }} checked={isChecked || false} onChange={(e) => {
+                          const checked = e.target.checked
+                          const currentIds = editData.category_ids || []
+                          if (checked) {
+                            setEditData({ ...editData, category_ids: [...currentIds, cat.id] })
+                          } else {
+                            setEditData({ ...editData, category_ids: currentIds.filter(id => id !== cat.id) })
+                          }
+                        }} />
+                        {cat.name}
+                      </label>
+                    )
+                  })}
                 </div>
               </div>
 
