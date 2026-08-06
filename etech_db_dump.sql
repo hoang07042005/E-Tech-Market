@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
-\restrict Qd0jhNObmEVj2IbTpTtu2EfJaEiHfEpt2FojyCFWyS2hr2D8GkInAZSy51LqvT7
+\restrict o62b7obq2DzJGqX3fk5NRcAcsc9IbJG3tEHHbK2fMYFmGB1017jJdEShcjRieLy
 
 -- Dumped from database version 15.18
 -- Dumped by pg_dump version 15.18
@@ -360,6 +360,18 @@ ALTER TABLE public.categories_id_seq OWNER TO postgres;
 
 ALTER SEQUENCE public.categories_id_seq OWNED BY public.categories.id;
 
+
+--
+-- Name: category_coupon; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.category_coupon (
+    category_id bigint NOT NULL,
+    coupon_id bigint NOT NULL
+);
+
+
+ALTER TABLE public.category_coupon OWNER TO postgres;
 
 --
 -- Name: contact_messages; Type: TABLE; Schema: public; Owner: postgres
@@ -2507,11 +2519,11 @@ COPY public.admin_settings (id, key, value, updated_by, created_at, updated_at) 
 --
 
 COPY public.banners (id, title, description, image_url, link_url, is_active, sort_order, created_at, updated_at) FROM stdin;
-6	Thu Cũ Đổi Mới & Lên Đời Trợ Giá	Thu mua điện thoại và laptop cũ với giá cạnh tranh. Định giá nhanh, quy trình minh bạch, hỗ trợ trợ giá hấp dẫn khi nâng cấp lên thiết bị mới chính hãng.	/storage/banners/qiYHWjG0SldpX3xFrizu7Apw07pkqIl4Sh4MjxSW.png	/trade-in	t	4	2026-08-03 13:07:35	2026-08-03 13:11:40
-2	SỐNG THÔNG MINH TRỌN TIỆN ÍCH	Biến ngôi nhà và không gian làm việc trở nên thông minh hơn với hệ sinh thái thiết bị hiện đại, mang đến sự tiện nghi, an toàn và kết nối liền mạch.	/storage/banners/ypvrzlgDONEgCaei0jVSfx5tA3jKbPkluxR4ghmd.png	/products	t	1	2026-05-22 11:07:16	2026-07-27 10:33:32
-3	SỐNG THÔNG MINH TRỌN TIỆN ÍCH	Nâng tầm cuộc sống với các thiết bị công nghệ tiên tiến, giúp tối ưu thời gian, tiết kiệm năng lượng và nâng cao trải nghiệm mỗi ngày.	/storage/banners/JqIplY9G3Rzi27OgDMyCpq6rPykqGU1s99lvfNIa.png	/products	t	2	2026-05-22 11:11:00	2026-07-27 10:39:09
-5	KỶ NGUYÊN AI ĐỘT PHÁ GIẢI PHÁP	Đón đầu xu hướng AI với những sản phẩm công nghệ tích hợp trí tuệ nhân tạo, mang đến hiệu suất vượt trội và giải pháp thông minh cho tương lai.	/storage/banners/J2DZfmRRjrsGH17vgqRLsWw3AAQJcKD9Xq8gnaiv.png	/products	t	3	2026-07-01 15:18:54	2026-07-27 10:55:07
-1	CHẠM ĐẾN TƯƠNG LAI THIẾT BỊ ĐỈNH CAO	Khám phá thế hệ công nghệ mới với những thiết bị chính hãng, hiệu năng vượt trội và thiết kế hiện đại, đáp ứng mọi nhu cầu học tập, làm việc và giải trí.	/storage/banners/W5t61WItsDzAtz5lfzKJPA81TQRAlIF85LBPVAhD.png	/products	t	0	2026-05-22 10:26:43	2026-07-27 11:38:04
+1	CHẠM ĐẾN TƯƠNG LAI THIẾT BỊ ĐỈNH CAO	Khám phá thế hệ công nghệ mới với những thiết bị chính hãng, hiệu năng vượt trội và thiết kế hiện đại, đáp ứng mọi nhu cầu học tập, làm việc và giải trí.	/storage/banners/W5t61WItsDzAtz5lfzKJPA81TQRAlIF85LBPVAhD.png	/products	f	0	2026-05-22 10:26:43	2026-08-05 15:55:09
+3	SỐNG THÔNG MINH TRỌN TIỆN ÍCH	Nâng tầm cuộc sống với các thiết bị công nghệ tiên tiến, giúp tối ưu thời gian, tiết kiệm năng lượng và nâng cao trải nghiệm mỗi ngày.	/storage/banners/JqIplY9G3Rzi27OgDMyCpq6rPykqGU1s99lvfNIa.png	/products	t	1	2026-05-22 11:11:00	2026-08-05 15:55:37
+6	Thu Cũ Đổi Mới & Lên Đời Trợ Giá	Thu mua điện thoại và laptop cũ với giá cạnh tranh. Định giá nhanh, quy trình minh bạch, hỗ trợ trợ giá hấp dẫn khi nâng cấp lên thiết bị mới chính hãng.	/storage/banners/qiYHWjG0SldpX3xFrizu7Apw07pkqIl4Sh4MjxSW.png	/trade-in	t	2	2026-08-03 13:07:35	2026-08-05 15:56:08
+2	SỐNG THÔNG MINH TRỌN TIỆN ÍCH	Biến ngôi nhà và không gian làm việc trở nên thông minh hơn với hệ sinh thái thiết bị hiện đại, mang đến sự tiện nghi, an toàn và kết nối liền mạch.	/storage/banners/ypvrzlgDONEgCaei0jVSfx5tA3jKbPkluxR4ghmd.png	/products	t	3	2026-05-22 11:07:16	2026-08-05 15:56:13
+5	KỶ NGUYÊN AI ĐỘT PHÁ GIẢI PHÁP	Đón đầu xu hướng AI với những sản phẩm công nghệ tích hợp trí tuệ nhân tạo, mang đến hiệu suất vượt trội và giải pháp thông minh cho tương lai.	/storage/banners/J2DZfmRRjrsGH17vgqRLsWw3AAQJcKD9Xq8gnaiv.png	/products	t	4	2026-07-01 15:18:54	2026-08-05 15:56:18
 \.
 
 
@@ -2658,6 +2670,18 @@ COPY public.categories (id, parent_id, name, slug, description, sort_order, is_a
 
 
 --
+-- Data for Name: category_coupon; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.category_coupon (category_id, coupon_id) FROM stdin;
+205	1
+213	1
+210	1
+3	1
+\.
+
+
+--
 -- Data for Name: contact_messages; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
@@ -2681,7 +2705,6 @@ COPY public.coupon_usage (id, coupon_id, user_id, order_id, used_at, discount_am
 --
 
 COPY public.coupons (id, code, coupon_type, value, min_order_amount, start_at, end_at, max_uses, max_uses_per_user, is_active, created_at, updated_at) FROM stdin;
-1	TECH10	percentage	10.00	500000.00	\N	\N	1000	2	t	2026-04-29 08:03:10.923461+00	2026-06-11 16:40:19+00
 121	SDFS1	percentage	10.00	1000000.00	\N	\N	12	3	t	2026-06-12 08:19:32+00	2026-07-20 09:46:57+00
 120	WELCOME100K	fixed	100000.00	1500000.00	\N	\N	100	3	t	2026-06-11 16:52:54+00	2026-07-20 09:47:07+00
 119	SAVE50K	fixed	50000.00	500000.00	\N	\N	50	3	t	2026-06-11 16:52:19+00	2026-07-20 09:47:20+00
@@ -2689,6 +2712,7 @@ COPY public.coupons (id, code, coupon_type, value, min_order_amount, start_at, e
 117	SUMMER15	percentage	15.00	1300000.00	\N	\N	50	3	t	2026-06-11 16:50:22+00	2026-07-20 09:47:37+00
 116	SALE10	percentage	10.00	500000.00	\N	\N	100	3	t	2026-06-01 10:48:10+00	2026-07-20 09:47:46+00
 2	ETECHTEST20	percentage	20.00	3000000.00	\N	\N	50	3	t	2026-05-07 23:38:11+00	2026-07-20 09:47:54+00
+1	TECH10	percentage	10.00	500000.00	2026-08-06 10:46:00+00	2026-08-31 10:47:00+00	1000	2	t	2026-04-29 08:03:10.923461+00	2026-08-06 10:47:07+00
 \.
 
 
@@ -2814,13 +2838,13 @@ COPY public.inventory (id, product_id, location_code, quantity_on_hand, reorder_
 41	46	main	25	10	2026-05-12 08:05:16+00	2026-05-12 08:05:16+00	2026-07-06 13:58:38+00
 119	198	main	81	10	2026-06-22 14:18:33+00	2026-06-22 14:18:33+00	2026-07-06 13:58:38+00
 20	26	main	55	10	2026-06-30 08:48:21+00	2026-05-08 01:59:27+00	2026-07-10 15:56:36+00
-116	196	main	58	10	2026-06-22 11:35:14+00	2026-06-22 11:35:14+00	2026-07-13 13:22:13+00
 121	200	main	85	10	2026-06-22 14:34:56+00	2026-06-22 14:34:56+00	2026-07-13 13:22:13+00
 118	197	main	86	10	2026-06-22 14:03:33+00	2026-06-22 14:03:33+00	2026-07-20 10:45:40+00
 130	209	main	45	10	2026-07-24 13:42:28+00	2026-06-23 15:47:00+00	2026-07-24 13:42:28+00
 120	199	main	81	10	2026-06-22 14:28:21+00	2026-06-22 14:28:21+00	2026-07-28 15:12:46+00
 133	220	main	399	10	2026-07-29 10:24:49+00	2026-07-29 10:24:49+00	2026-07-29 16:29:14+00
-132	211	main	47	10	2026-07-28 10:02:52+00	2026-07-09 15:32:16+00	2026-07-29 16:35:30+00
+132	211	main	46	10	2026-07-28 10:02:52+00	2026-07-09 15:32:16+00	2026-08-06 15:04:32+00
+116	196	main	57	10	2026-06-22 11:35:14+00	2026-06-22 11:35:14+00	2026-08-06 15:49:37+00
 \.
 
 
@@ -3098,6 +3122,8 @@ COPY public.inventory_transactions (id, product_id, inventory_id, location_code,
 344	220	133	main	400	400	sync_from_variants	\N	2026-07-29 10:24:49	2026-07-29 10:24:49
 345	220	133	main	-1	399	order_checkout	\N	2026-07-29 16:29:14	2026-07-29 16:29:14
 346	211	132	main	-1	47	order_checkout	\N	2026-07-29 16:35:30	2026-07-29 16:35:30
+347	211	132	main	-1	46	order_checkout	\N	2026-08-06 15:04:32	2026-08-06 15:04:32
+348	196	116	main	-1	57	order_checkout	\N	2026-08-06 15:49:37	2026-08-06 15:49:37
 \.
 
 
@@ -3193,6 +3219,7 @@ COPY public.migrations (id, migration, batch) FROM stdin;
 70	2026_07_30_140116_drop_exp_columns_from_reviews_table	57
 71	2026_07_31_082821_add_other_types_to_wishlists_table	58
 73	2026_08_03_080058_create_trade_in_tables	59
+74	2026_08_06_112100_create_category_coupon_table	60
 \.
 
 
@@ -3291,12 +3318,17 @@ COPY public.notifications (id, user_id, type, title, body, data, read_at, create
 26	347	trade_in_new	Yêu cầu thu cũ đổi mới mới	Khách hàng Đỗ Việt Hoàng vừa gửi yêu cầu định giá máy cũ (Tên máy: iPhone 17 Pro Max\r\nDung lượng: 1 T\r\nMàu sắc: Cam Vũ Trụ\r\nTình trạng bảo hành: Còn bảo hành hãng\r\nPhụ kiện đi kèm: Sạc, Hộp, Cáp).	{"request_id": 5, "request_code": "TIGSIN7GHI"}	\N	2026-08-04 14:35:12+00	2026-08-04 14:35:12+00
 27	358	trade_in_new	Yêu cầu thu cũ đổi mới mới	Khách hàng Đỗ Việt Hoàng vừa gửi yêu cầu định giá máy cũ (Tên máy: iPhone 17 Pro Max\r\nDung lượng: 1 T\r\nMàu sắc: Cam Vũ Trụ\r\nTình trạng bảo hành: Còn bảo hành hãng\r\nPhụ kiện đi kèm: Sạc, Hộp, Cáp).	{"request_id": 5, "request_code": "TIGSIN7GHI"}	\N	2026-08-04 14:35:12+00	2026-08-04 14:35:12+00
 28	10	trade_in_new	Yêu cầu thu cũ đổi mới mới	Khách hàng Đỗ Việt Hoàng vừa gửi yêu cầu định giá máy cũ (Tên máy: iPhone 17 Pro Max\r\nDung lượng: 1 T\r\nMàu sắc: Cam Vũ Trụ\r\nTình trạng bảo hành: Còn bảo hành hãng\r\nPhụ kiện đi kèm: Sạc, Hộp, Cáp).	{"request_id": 5, "request_code": "TIGSIN7GHI"}	\N	2026-08-04 14:35:12+00	2026-08-04 14:35:12+00
-29	11	trade_in_new	Yêu cầu thu cũ đổi mới mới	Khách hàng Đỗ Việt Hoàng vừa gửi yêu cầu định giá máy cũ (Tên máy: iPhone 17 Pro Max\r\nDung lượng: 1 T\r\nMàu sắc: Cam Vũ Trụ\r\nTình trạng bảo hành: Còn bảo hành hãng\r\nPhụ kiện đi kèm: Sạc, Hộp, Cáp).	{"request_id": 5, "request_code": "TIGSIN7GHI"}	\N	2026-08-04 14:35:12+00	2026-08-04 14:35:12+00
 30	353	trade_in_new	Yêu cầu thu cũ đổi mới mới	Khách hàng Đỗ Việt Hoàng vừa gửi yêu cầu định giá máy cũ (Tên máy: yuh\nRAM: sê\nỔ cứng: dd\nVGA: đ\nTình trạng bảo hành: Còn bảo hành hãng\nPhụ kiện đi kèm: dđ).	{"request_id": 6, "request_code": "TIDUENL8BS"}	\N	2026-08-04 17:12:05+00	2026-08-04 17:12:05+00
 31	347	trade_in_new	Yêu cầu thu cũ đổi mới mới	Khách hàng Đỗ Việt Hoàng vừa gửi yêu cầu định giá máy cũ (Tên máy: yuh\nRAM: sê\nỔ cứng: dd\nVGA: đ\nTình trạng bảo hành: Còn bảo hành hãng\nPhụ kiện đi kèm: dđ).	{"request_id": 6, "request_code": "TIDUENL8BS"}	\N	2026-08-04 17:12:05+00	2026-08-04 17:12:05+00
 32	358	trade_in_new	Yêu cầu thu cũ đổi mới mới	Khách hàng Đỗ Việt Hoàng vừa gửi yêu cầu định giá máy cũ (Tên máy: yuh\nRAM: sê\nỔ cứng: dd\nVGA: đ\nTình trạng bảo hành: Còn bảo hành hãng\nPhụ kiện đi kèm: dđ).	{"request_id": 6, "request_code": "TIDUENL8BS"}	\N	2026-08-04 17:12:05+00	2026-08-04 17:12:05+00
+29	11	trade_in_new	Yêu cầu thu cũ đổi mới mới	Khách hàng Đỗ Việt Hoàng vừa gửi yêu cầu định giá máy cũ (Tên máy: iPhone 17 Pro Max\r\nDung lượng: 1 T\r\nMàu sắc: Cam Vũ Trụ\r\nTình trạng bảo hành: Còn bảo hành hãng\r\nPhụ kiện đi kèm: Sạc, Hộp, Cáp).	{"request_id": 5, "request_code": "TIGSIN7GHI"}	2026-08-05 08:35:01+00	2026-08-04 14:35:12+00	2026-08-05 08:35:01+00
 33	10	trade_in_new	Yêu cầu thu cũ đổi mới mới	Khách hàng Đỗ Việt Hoàng vừa gửi yêu cầu định giá máy cũ (Tên máy: yuh\nRAM: sê\nỔ cứng: dd\nVGA: đ\nTình trạng bảo hành: Còn bảo hành hãng\nPhụ kiện đi kèm: dđ).	{"request_id": 6, "request_code": "TIDUENL8BS"}	\N	2026-08-04 17:12:05+00	2026-08-04 17:12:05+00
-34	11	trade_in_new	Yêu cầu thu cũ đổi mới mới	Khách hàng Đỗ Việt Hoàng vừa gửi yêu cầu định giá máy cũ (Tên máy: yuh\nRAM: sê\nỔ cứng: dd\nVGA: đ\nTình trạng bảo hành: Còn bảo hành hãng\nPhụ kiện đi kèm: dđ).	{"request_id": 6, "request_code": "TIDUENL8BS"}	\N	2026-08-04 17:12:05+00	2026-08-04 17:12:05+00
+34	11	trade_in_new	Yêu cầu thu cũ đổi mới mới	Khách hàng Đỗ Việt Hoàng vừa gửi yêu cầu định giá máy cũ (Tên máy: yuh\nRAM: sê\nỔ cứng: dd\nVGA: đ\nTình trạng bảo hành: Còn bảo hành hãng\nPhụ kiện đi kèm: dđ).	{"request_id": 6, "request_code": "TIDUENL8BS"}	2026-08-05 08:35:01+00	2026-08-04 17:12:05+00	2026-08-05 08:35:01+00
+35	353	trade_in_new	Yêu cầu thu cũ đổi mới mới	Khách hàng Trần Văn Nghĩa vừa gửi yêu cầu định giá máy cũ (Tên máy: Redmi Note 15\r\nDung lượng: 128\r\nMàu sắc: đen\r\nTình trạng bảo hành: Hết bảo hành\r\nPhụ kiện đi kèm: sạc, hộp).	{"request_id": 7, "request_code": "TI3AZR7H3A"}	\N	2026-08-05 14:01:13+00	2026-08-05 14:01:13+00
+36	347	trade_in_new	Yêu cầu thu cũ đổi mới mới	Khách hàng Trần Văn Nghĩa vừa gửi yêu cầu định giá máy cũ (Tên máy: Redmi Note 15\r\nDung lượng: 128\r\nMàu sắc: đen\r\nTình trạng bảo hành: Hết bảo hành\r\nPhụ kiện đi kèm: sạc, hộp).	{"request_id": 7, "request_code": "TI3AZR7H3A"}	\N	2026-08-05 14:01:13+00	2026-08-05 14:01:13+00
+37	358	trade_in_new	Yêu cầu thu cũ đổi mới mới	Khách hàng Trần Văn Nghĩa vừa gửi yêu cầu định giá máy cũ (Tên máy: Redmi Note 15\r\nDung lượng: 128\r\nMàu sắc: đen\r\nTình trạng bảo hành: Hết bảo hành\r\nPhụ kiện đi kèm: sạc, hộp).	{"request_id": 7, "request_code": "TI3AZR7H3A"}	\N	2026-08-05 14:01:13+00	2026-08-05 14:01:13+00
+38	10	trade_in_new	Yêu cầu thu cũ đổi mới mới	Khách hàng Trần Văn Nghĩa vừa gửi yêu cầu định giá máy cũ (Tên máy: Redmi Note 15\r\nDung lượng: 128\r\nMàu sắc: đen\r\nTình trạng bảo hành: Hết bảo hành\r\nPhụ kiện đi kèm: sạc, hộp).	{"request_id": 7, "request_code": "TI3AZR7H3A"}	\N	2026-08-05 14:01:13+00	2026-08-05 14:01:13+00
+39	11	trade_in_new	Yêu cầu thu cũ đổi mới mới	Khách hàng Trần Văn Nghĩa vừa gửi yêu cầu định giá máy cũ (Tên máy: Redmi Note 15\r\nDung lượng: 128\r\nMàu sắc: đen\r\nTình trạng bảo hành: Hết bảo hành\r\nPhụ kiện đi kèm: sạc, hộp).	{"request_id": 7, "request_code": "TI3AZR7H3A"}	\N	2026-08-05 14:01:13+00	2026-08-05 14:01:13+00
 \.
 
 
@@ -3343,6 +3375,8 @@ COPY public.order_items (id, order_id, product_id, product_name_snapshot, quanti
 262	311	199	Mainboard ASUS ROG Strix Z890 - Gaming WiFi	1	12000000.00	12000000.00	496
 263	312	220	Samsung Galaxy S25 Plus	1	17900000.00	17900000.00	554
 264	313	211	PC CPS X MSI Gaming Intel i7 Gen 14 Kèm màn hình	1	33990000.00	33990000.00	543
+265	314	211	PC CPS X MSI Gaming Intel i7 Gen 14 Kèm màn hình	1	36990000.00	36990000.00	543
+266	315	196	Card đồ họa NVIDIA GeForce RTX 4090	1	49990000.00	49990000.00	483
 \.
 
 
@@ -3446,6 +3480,15 @@ COPY public.order_status_histories (id, order_id, from_status, to_status, change
 303	312	shipped	delivered	11	\N	2026-07-29 16:36:39+00	2026-07-29 16:36:39+00
 304	312	delivered	completed	363	\N	2026-07-29 16:36:50+00	2026-07-29 16:36:50+00
 305	313	delivered	completed	363	\N	2026-07-29 16:36:59+00	2026-07-29 16:36:59+00
+306	314	pending	processing	11	\N	2026-08-06 15:04:53+00	2026-08-06 15:04:53+00
+307	314	processing	paid	11	\N	2026-08-06 15:04:57+00	2026-08-06 15:04:57+00
+308	314	paid	shipped	11	\N	2026-08-06 15:05:03+00	2026-08-06 15:05:03+00
+309	314	shipped	delivered	11	\N	2026-08-06 15:05:11+00	2026-08-06 15:05:11+00
+310	314	delivered	completed	11	\N	2026-08-06 15:05:33+00	2026-08-06 15:05:33+00
+311	315	pending	processing	11	\N	2026-08-06 15:52:42+00	2026-08-06 15:52:42+00
+312	315	processing	shipped	346	\N	2026-08-06 15:52:54+00	2026-08-06 15:52:54+00
+313	315	shipped	delivered	346	\N	2026-08-06 15:52:57+00	2026-08-06 15:52:57+00
+314	315	delivered	completed	11	\N	2026-08-06 15:53:15+00	2026-08-06 15:53:15+00
 \.
 
 
@@ -3477,6 +3520,8 @@ COPY public.orders (id, order_code, user_id, cart_id, coupon_id, shipping_method
 311	ET-A0E3CD45260728	11	\N	\N	\N	completed	paid	VND	12000000.00	0.00	0.00	12000000.00	Đỗ Việt Hoàng	1234567890	Số 5, Ngõ 2, Kiều Mai, Phường Xuân Phương, Quận Nam Từ LIêm, Thành Phố Hà Nội	\N	\N	\N	\N	2026-07-28 15:12:46+00	2026-07-28 15:13:17+00	112	240	0	0.00	\N
 312	ET-1368BAD3260729	363	\N	\N	25	completed	paid	VND	17900000.00	0.00	0.00	17900000.00	Trần Văn Nghĩa	0987654321	123,123,123,123	\N	\N	\N	\N	2026-07-29 16:29:13+00	2026-07-29 16:36:50+00	118	179	0	0.00	360
 313	ET-4BF48EA9260729	363	\N	\N	25	completed	paid	VND	33990000.00	0.00	0.00	33990000.00	Trần Văn Nghĩa	0987654321	123,123,123,123	\N	\N	\N	\N	2026-07-29 16:35:30+00	2026-07-29 16:36:59+00	118	407	0	0.00	346
+314	ET-6E298BE5260806	11	\N	\N	25	completed	paid	VND	36990000.00	0.00	0.00	36990000.00	Đỗ Việt Hoàng	1234567890	Số 5, Ngõ 2, Kiều Mai, Phường Xuân Phương, Quận Nam Từ LIêm, Thành Phố Hà Nội	\N	\N	\N	\N	2026-08-06 15:04:32+00	2026-08-06 15:05:33+00	113	739	0	0.00	346
+315	ET-0A2EB536260806	11	\N	\N	25	completed	paid	VND	49990000.00	0.00	0.00	49990000.00	Đỗ Việt Hoàng	1234567890	Số 5, Ngõ 2, Kiều Mai, Phường Xuân Phương, Quận Nam Từ LIêm, Thành Phố Hà Nội	\N	\N	\N	\N	2026-08-06 15:49:37+00	2026-08-06 15:53:15+00	113	999	0	0.00	346
 \.
 
 
@@ -3517,6 +3562,8 @@ COPY public.payments (id, order_id, method, amount, currency, transaction_code, 
 216	311	cod	12000000.00	VND	\N	paid	2026-07-28 15:13:14+00	2026-07-28 15:12:46+00	2026-07-28 15:13:14+00
 217	312	cod	17900000.00	VND	\N	paid	2026-07-29 16:36:49+00	2026-07-29 16:29:14+00	2026-07-29 16:36:49+00
 218	313	cod	33990000.00	VND	\N	paid	2026-07-29 16:36:58+00	2026-07-29 16:35:30+00	2026-07-29 16:36:58+00
+219	314	cod	36990000.00	VND	\N	paid	2026-08-06 15:05:28+00	2026-08-06 15:04:32+00	2026-08-06 15:05:28+00
+220	315	momo	49990000.00	VND	4793028851	paid	2026-08-06 15:50:32+00	2026-08-06 15:49:37+00	2026-08-06 15:50:32+00
 \.
 
 
@@ -3549,172 +3596,59 @@ COPY public.personal_access_tokens (id, tokenable_type, tokenable_id, name, toke
 4	App\\Models\\User	5	auth_token	81d9d770cad3374eea3226d65528e368990311601b91ee2a608206933dec4d15	["*"]	2026-04-29 08:54:55	\N	2026-04-29 08:43:11	2026-04-29 08:54:55
 13	App\\Models\\User	6	auth_token	c87260f0d4a4fdfb89ff88e4200c0c7632330fbec1440c00b3d9166999b7dc99	["*"]	\N	\N	2026-05-04 03:33:42	2026-05-04 03:33:42
 5	App\\Models\\User	5	auth_token	fd5fbb663a51fdc07d454337af38fc7976cea40103d6c0507c210f83d66e596f	["*"]	2026-04-29 09:06:02	\N	2026-04-29 08:55:13	2026-04-29 09:06:02
-136	App\\Models\\User	11	auth_token	c2c02781360ac98a7d608bf8eecde5d0b679016259f434853c245952fdfc5595	["*"]	2026-06-10 10:54:23	2026-06-11 10:46:04	2026-06-10 10:46:04	2026-06-10 10:54:23
 14	App\\Models\\User	7	auth_token	24c61764d2bf96b960a2f03cfb7e69089604c864d559faaae92e8b72f96c07e6	["*"]	\N	\N	2026-05-04 03:39:48	2026-05-04 03:39:48
 15	App\\Models\\User	8	auth_token	5d586b48d4ad155aa6dbf271ca9d3af3f453cf2bffbafbc0d3095949675af51d	["*"]	\N	\N	2026-05-04 03:41:10	2026-05-04 03:41:10
 16	App\\Models\\User	9	auth_token	b68b4fa75b2786f7124cbc44891dfd9578978ce5c76a43391437df0e2ed0628b	["*"]	\N	\N	2026-05-04 03:43:28	2026-05-04 03:43:28
-128	App\\Models\\User	11	auth_token	50a6d8d141da3a6c4aa99aa553bbb4ab524b163c48bcb0ecc77a5262ecf938a0	["*"]	2026-06-05 09:58:21	2026-06-06 09:52:00	2026-06-05 09:52:00	2026-06-05 09:58:21
 121	App\\Models\\User	346	auth_token	dda477cafce0c67eddea5d5966cbde12ec79e3525a37b24b4ef38cf0cfd944ab	["*"]	2026-06-04 16:34:32	2026-06-05 16:13:33	2026-06-04 16:13:33	2026-06-04 16:34:32
 123	App\\Models\\User	17	auth_token	e8fd0996e5373369b9342d05dba80d09c098d2bae0712418dd8a59c80cfc64f0	["*"]	2026-06-04 16:35:33	2026-06-05 16:35:32	2026-06-04 16:35:32	2026-06-04 16:35:33
-130	App\\Models\\User	11	auth_token	000504eaa288c7233d0706e3fe1e1f35fa96cc8edd55d19c01d5cbac577779b3	["*"]	2026-06-09 08:40:07	2026-06-09 08:44:27	2026-06-08 08:44:27	2026-06-09 08:40:07
+408	App\\Models\\User	346	Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 Edg/151.0.0.0	13e8d23f6e4cddd875088c771001072662c9812a6adc1421e3fd56a4925106af	["*"]	2026-08-06 16:06:12	2026-08-07 15:15:32	2026-08-06 15:15:32	2026-08-06 16:06:12
 78	App\\Models\\User	342	auth_token	5221061c3a36f79653f1deae33a022ce6fdbe0c4e45c3cf6c9584bd50cc52dce	["*"]	\N	2026-05-20 11:28:24	2026-05-19 11:28:24	2026-05-19 11:28:24
 75	App\\Models\\User	2	auth_token	74b1c8a9e2a680f8e941f3c48029a6d593915d714422d56d06c95033032d65d6	["*"]	2026-05-19 10:49:34	2026-05-20 10:37:00	2026-05-19 10:37:00	2026-05-19 10:49:34
 85	App\\Models\\User	344	auth_token	ed6c2d9525a6f189db0f3011cdd37973788bf13a83feb7bcd7a418a8ab330fbc	["*"]	2026-05-20 10:23:09	2026-05-21 08:40:08	2026-05-20 08:40:08	2026-05-20 10:23:09
 146	App\\Models\\User	346	auth_token	b5e98f80921b72043221ce73a61032368e8536334f0900781a395012941f5649	["*"]	2026-06-11 11:01:17	2026-06-12 11:01:15	2026-06-11 11:01:15	2026-06-11 11:01:17
-125	App\\Models\\User	11	auth_token	0da3a10a135f79efc9369b4041b51e6be1e33877567457f0da056de270160f1c	["*"]	2026-06-05 08:33:40	2026-06-05 16:36:17	2026-06-04 16:36:17	2026-06-05 08:33:40
-132	App\\Models\\User	11	auth_token	738567c7d301c6dce68a1587940a514babff3671aab2ac50cdefe3962878f171	["*"]	2026-06-10 09:20:44	2026-06-10 09:31:07	2026-06-09 09:31:07	2026-06-10 09:20:44
-134	App\\Models\\User	11	auth_token	832e820b01187231235bd1d5ba2a80483273b6795409a1592a6cffce8ad87afb	["*"]	2026-06-10 09:23:40	2026-06-11 08:54:57	2026-06-10 08:54:57	2026-06-10 09:23:40
-138	App\\Models\\User	11	auth_token	5d1844ae4aea2123099278a2c9c28011a9e6ecd95eaec99389a89e6788a17af2	["*"]	2026-06-10 11:08:59	2026-06-11 11:08:54	2026-06-10 11:08:54	2026-06-10 11:08:59
-148	App\\Models\\User	11	auth_token	ddc52d1e253b41136f43cde031a365434513c0ad9d9fa0450f6745efb5e42a2d	["*"]	2026-06-11 11:14:52	2026-06-12 11:14:49	2026-06-11 11:14:49	2026-06-11 11:14:52
-140	App\\Models\\User	11	auth_token	31caedb549500b884a8dfb60c9297664584565752aab3541b113b0e7bbdc5564	["*"]	2026-06-11 10:51:00	2026-06-12 08:50:00	2026-06-11 08:50:00	2026-06-11 10:51:00
-142	App\\Models\\User	11	auth_token	f310666e3f3dfa3c1c551591573bb9e20ebfcf18d91818271eb569d5a7483f29	["*"]	\N	2026-06-12 10:57:39	2026-06-11 10:57:39	2026-06-11 10:57:39
 100	App\\Models\\User	347	auth_token	f188076521ef4d6a535fd5d448f5938e9c1b557473e290b8e9174848eb4c6ea8	["*"]	\N	2026-06-02 14:05:34	2026-06-01 14:05:34	2026-06-01 14:05:34
 101	App\\Models\\User	347	auth_token	47715868f46056b86c4ebd92fa5477d5e08d55386ff0482061ec3721ab9d5e60	["*"]	\N	2026-06-02 14:06:10	2026-06-01 14:06:10	2026-06-01 14:06:10
-152	App\\Models\\User	11	auth_token	fa8e7612b377e44835cd7e84a98bcc98719ad22a9d187740043db343ae1de6d3	["*"]	2026-06-11 15:19:10	2026-06-12 14:03:03	2026-06-11 14:03:03	2026-06-11 15:19:10
-154	App\\Models\\User	11	auth_token	a505bdda43be1e52bd8f08738483b01d32e5e03c83b6ddc36392a3371ab0869c	["*"]	2026-06-12 14:25:58	2026-06-12 16:39:49	2026-06-11 16:39:49	2026-06-12 14:25:58
 156	App\\Models\\User	346	auth_token	bb6e8cb8586bae53edd6acca6b23c6b29fd45f0c2747e19f93343a41b9ab794d	["*"]	2026-06-12 14:32:17	2026-06-13 14:26:59	2026-06-12 14:26:59	2026-06-12 14:32:17
-160	App\\Models\\User	11	auth_token	4efefbe13d339adb6840529d93bbd3109e0df7eb7fd113f315fc6ef4b071289e	["*"]	2026-06-12 15:16:48	2026-06-13 14:53:26	2026-06-12 14:53:26	2026-06-12 15:16:48
-155	App\\Models\\User	11	auth_token	059a1dd93c34ffbd95a11249765cc31969ec28f7da739f91491b6ace230705b6	["*"]	2026-06-12 15:51:32	2026-06-13 08:14:43	2026-06-12 08:14:43	2026-06-12 15:51:32
-129	App\\Models\\User	11	auth_token	cb3b69d15b9c5ae6e289eb00ef54bda8c130453114051872cfa24cb5f62bb7c4	["*"]	2026-06-05 16:41:19	2026-06-06 09:58:46	2026-06-05 09:58:46	2026-06-05 16:41:19
-133	App\\Models\\User	11	auth_token	009b9a4ac91b624971f1ef2b1ac28808598fb883958bb494c32316105f3c58b1	["*"]	2026-06-10 08:54:10	2026-06-10 09:55:04	2026-06-09 09:55:04	2026-06-10 08:54:10
 102	App\\Models\\User	17	auth_token	f5a1e668f753b3b3f7cf8b5028555463f4925b1a9ae9948be07e84993fc36e9d	["*"]	\N	2026-06-02 15:58:47	2026-06-01 15:58:47	2026-06-01 15:58:47
 122	App\\Models\\User	17	auth_token	9f2c1a84a9f6a95aa804f58813fb648103fd5437f5a1c22d2797c071608ab902	["*"]	2026-06-04 16:35:19	2026-06-05 16:35:17	2026-06-04 16:35:17	2026-06-04 16:35:19
 124	App\\Models\\User	17	auth_token	ed1aba4550e784ac905098a9537d33b1b7b94a11599f5368ea3be048a272d190	["*"]	2026-06-04 16:35:48	2026-06-05 16:35:47	2026-06-04 16:35:47	2026-06-04 16:35:48
-172	App\\Models\\User	11	auth_token	917254265cebb92ebde9b7775aab1504ee33fc784df94cff8247b41f42df7a0a	["*"]	\N	2026-06-18 11:47:49	2026-06-17 11:47:49	2026-06-17 11:47:49
-149	App\\Models\\User	11	auth_token	1b585175a507d667b5c49aa11260239d49a6cf6f98ec8f67e9cfb92656f908c6	["*"]	2026-06-11 13:28:19	2026-06-12 11:22:28	2026-06-11 11:22:28	2026-06-11 13:28:19
-113	App\\Models\\User	11	auth_token	6047317b451954c0c19e892632d070f6bf0ad2d7a196892e72f6fa4b65c5f890	["*"]	2026-06-04 15:53:27	2026-06-05 14:16:43	2026-06-04 14:16:43	2026-06-04 15:53:27
 112	App\\Models\\User	347	auth_token	dfa30585a2befb6ffbd208d7f341eeedfaeac5e802b07d9fbe19ee4b5993aee0	["*"]	2026-06-04 14:14:13	2026-06-05 08:47:49	2026-06-04 08:47:49	2026-06-04 14:14:13
-118	App\\Models\\User	11	auth_token	695347bfbf7f268174893f236d17513a0aa091951df5ccf0ee3d568a2803dd9d	["*"]	2026-06-04 16:01:55	2026-06-05 16:01:51	2026-06-04 16:01:51	2026-06-04 16:01:55
-164	App\\Models\\User	11	auth_token	81a3595eeba2d3435cdfe3ac25248bffcaeb89a3fe93ca8ee2c8be8ffb7dea6b	["*"]	2026-06-15 13:12:15	2026-06-16 13:11:43	2026-06-15 13:11:43	2026-06-15 13:12:15
 141	App\\Models\\User	346	auth_token	3ec9fb5f6f9730646da4e0fb60c47650bd949c395b5fda4811252bc9ead87a6b	["*"]	2026-06-11 10:56:33	2026-06-12 10:52:06	2026-06-11 10:52:06	2026-06-11 10:56:33
-153	App\\Models\\User	11	auth_token	3f0587530b77581a2ad5a6028e5d367a4cc35fcea13d9d331b73ce944a649a96	["*"]	2026-06-11 16:39:14	2026-06-12 16:28:18	2026-06-11 16:28:18	2026-06-11 16:39:14
 135	App\\Models\\User	346	auth_token	ac65513f1fb05033d79bc42196e7a73bf91cc5d90de06510d22cc19bda1911b4	["*"]	2026-06-10 10:38:42	2026-06-11 09:26:52	2026-06-10 09:26:52	2026-06-10 10:38:42
 105	App\\Models\\User	347	auth_token	ad11005e8ebbaa764d67aff3a98fe1b4f336dbb5e3a61737bbb4f763336fa76e	["*"]	2026-06-02 09:38:28	2026-06-03 09:35:51	2026-06-02 09:35:51	2026-06-02 09:38:28
 106	App\\Models\\User	347	auth_token	7a22f24202b31d0c1b3c084da0eb3e9f9f7de78e3577d268130babe7de44b5d7	["*"]	\N	2026-06-03 09:38:58	2026-06-02 09:38:58	2026-06-02 09:38:58
-120	App\\Models\\User	11	auth_token	66d0daa61e6ee76e2ebe28d2aa398c205c5f86b3dc2328e911fdb7f5d44c6c1e	["*"]	2026-06-05 15:54:50	2026-06-05 16:02:17	2026-06-04 16:02:17	2026-06-05 15:54:50
-143	App\\Models\\User	11	auth_token	f33e1f8c4abca46267f8def29cc66edcf5a07630448432478ade5185e797f2e9	["*"]	2026-06-11 10:59:30	2026-06-12 10:58:04	2026-06-11 10:58:04	2026-06-11 10:59:30
-145	App\\Models\\User	11	auth_token	38c13a75f9434786b627ccba4c00d5bcb4ce1c83dde63e8d9a64c2ba576258c6	["*"]	2026-06-11 11:00:24	2026-06-12 11:00:22	2026-06-11 11:00:22	2026-06-11 11:00:24
-127	App\\Models\\User	11	auth_token	479c5140c4eae24a3e5b88b9ec6ca708f2c550199b304535e984eeb55d26b086	["*"]	2026-06-05 09:36:44	2026-06-06 08:35:32	2026-06-05 08:35:32	2026-06-05 09:36:44
-137	App\\Models\\User	11	auth_token	3a952bfaa629cb91d8dfb6e126114acdfe9469ed9c9db0f9ceea037fd2f4a353	["*"]	2026-06-11 08:49:22	2026-06-11 11:00:05	2026-06-10 11:00:05	2026-06-11 08:49:22
-139	App\\Models\\User	11	auth_token	f1452e0c792a387828032fa276445586d848a5727b90fdc495667ea72eeb8b37	["*"]	2026-06-11 11:00:41	2026-06-11 11:08:59	2026-06-10 11:08:59	2026-06-11 11:00:41
-131	App\\Models\\User	11	auth_token	0678a2b8e549d869664a5ac45261e64e8e32bf1f0dd667ca282bd534bffdb924	["*"]	2026-06-09 08:51:32	2026-06-09 08:55:19	2026-06-08 08:55:19	2026-06-09 08:51:32
-163	App\\Models\\User	11	auth_token	5788ccb055032e3969ba3fdd071afd1f319649807e32baba3a920790de02ae71	["*"]	2026-06-15 16:45:04	2026-06-16 08:43:41	2026-06-15 08:43:41	2026-06-15 16:45:04
-159	App\\Models\\User	11	auth_token	cd4d095212a4255500585e36f1317751c75d3d25b83edc5e8ea2dc7c65fa21e4	["*"]	2026-06-12 14:50:41	2026-06-13 14:50:39	2026-06-12 14:50:39	2026-06-12 14:50:41
-147	App\\Models\\User	11	auth_token	3ad0efaa97dc668c3a0d546de0a699197d3d8234f8193b4f0a02c20b4bf7bcb7	["*"]	2026-06-11 11:02:07	2026-06-12 11:01:45	2026-06-11 11:01:45	2026-06-11 11:02:07
-166	App\\Models\\User	11	auth_token	f0f147e0f5e39e5e2247561d2bfe5d5a7b36bfbae3e02ef40e89a54369eff08e	["*"]	2026-06-15 15:04:46	2026-06-16 15:04:43	2026-06-15 15:04:43	2026-06-15 15:04:46
-161	App\\Models\\User	11	auth_token	d58b0269a23b94e0594ddd21c5178fa713dd0e2adc2521d7a1f0381c5fcda66c	["*"]	2026-06-15 08:41:49	2026-06-16 08:41:33	2026-06-15 08:41:33	2026-06-15 08:41:49
-165	App\\Models\\User	11	auth_token	50c7a492555de3133c3b17d466af1bbaa534ede33b978a57aa0818fd03d556a9	["*"]	2026-06-15 15:04:46	2026-06-16 15:04:43	2026-06-15 15:04:43	2026-06-15 15:04:46
-167	App\\Models\\User	11	auth_token	4bc2a23cb345cfff73d4a5667cb262ec9fc0ca27d58968294d9d3d301c873de5	["*"]	2026-06-15 15:04:46	2026-06-16 15:04:43	2026-06-15 15:04:43	2026-06-15 15:04:46
-168	App\\Models\\User	11	auth_token	f4766b1fea8be8a2464fbb6c7cac8f2d4d9ec0a90db41b5d320ddb3862aeec06	["*"]	2026-06-16 14:27:08	2026-06-16 15:04:45	2026-06-15 15:04:45	2026-06-16 14:27:08
-173	App\\Models\\User	11	auth_token	429e5ef59e19c7859972826825614668fe7d55219d09a0217ee19b81ab2607f6	["*"]	\N	2026-06-18 11:47:49	2026-06-17 11:47:49	2026-06-17 11:47:49
-169	App\\Models\\User	11	auth_token	13faef33ce1c621b5a814fbe3f8d7e336185a56c9bba4411c5b89373312b67d0	["*"]	2026-06-16 16:54:06	2026-06-17 08:52:20	2026-06-16 08:52:20	2026-06-16 16:54:06
-175	App\\Models\\User	11	auth_token	174cc00521fec7ef2762da14ca7c0cac368e8aaa64e58d527351710152b172bf	["*"]	\N	2026-06-18 11:47:49	2026-06-17 11:47:49	2026-06-17 11:47:49
-176	App\\Models\\User	11	auth_token	76e4a7069ec5e96d754926fd574b43c25195f1f6f1a0b99f8cfec9950dad181b	["*"]	\N	2026-06-18 11:47:49	2026-06-17 11:47:49	2026-06-17 11:47:49
-181	App\\Models\\User	11	auth_token	963b46451fa7ad7d9d09314d5efdb4aee5843d82456e9549ce5ef67604901ab1	["*"]	\N	2026-06-18 16:39:15	2026-06-17 16:39:15	2026-06-17 16:39:15
-171	App\\Models\\User	11	auth_token	1c8ff227c351123d329ca1db8ae082dce36e6b8a96ca2ac8903241ab64e54056	["*"]	2026-06-17 14:12:47	2026-06-18 11:23:34	2026-06-17 11:23:34	2026-06-17 14:12:47
-177	App\\Models\\User	11	auth_token	d9fc0f3316fb9eeff52f4b9b3941bd31beb496cfd2560c2ce155d9a3d97efc09	["*"]	2026-06-17 13:55:15	2026-06-18 13:55:08	2026-06-17 13:55:08	2026-06-17 13:55:15
-179	App\\Models\\User	11	auth_token	3c9fc086d3c49f1615a9465f44f2e0b4298d822568e960cdefb19756da0c28f7	["*"]	2026-06-18 08:20:13	2026-06-18 14:31:46	2026-06-17 14:31:46	2026-06-18 08:20:13
-182	App\\Models\\User	11	auth_token	9d1ffdeea55f0de25826ce585fd21c9f98832a5dd5b786600c99e92c7b826ad3	["*"]	\N	2026-06-18 16:39:15	2026-06-17 16:39:15	2026-06-17 16:39:15
-183	App\\Models\\User	11	auth_token	f7c67825d02c76a6e5f276c4d1262e2c3f8d6478712383d0c2b867c83e8da935	["*"]	\N	2026-06-19 08:21:46	2026-06-18 08:21:46	2026-06-18 08:21:46
-184	App\\Models\\User	11	auth_token	068f93411579860c532893e83092ec203d49eda7dd870f6e0dd08ca3ff73aff6	["*"]	\N	2026-06-19 08:22:51	2026-06-18 08:22:51	2026-06-18 08:22:51
 185	App\\Models\\User	350	auth_token	6f3062ae137d3f6217e68d9aa90e6688bb9a5d3172e7e714422eeb323ceac13d	["*"]	\N	2026-06-19 08:25:30	2026-06-18 08:25:30	2026-06-18 08:25:30
-186	App\\Models\\User	11	auth_token	29945b9d002c2e7bd8b663876355b622ef31265184a3c2d6847a117820f3a815	["*"]	\N	2026-06-19 08:59:55	2026-06-18 08:59:55	2026-06-18 08:59:55
-196	App\\Models\\User	11	auth	7152a13277f417a51b795158fa17e5cda863de2d6dbeb49dcb4eb62c9ef75d2b	["*"]	2026-06-18 11:47:44	2026-06-19 11:42:11	2026-06-18 11:42:11	2026-06-18 11:47:44
-199	App\\Models\\User	11	auth	c3a3817607712f3e5c5e2fb07705d0689460f30d1cb969886fc7e1586e1652f3	["*"]	2026-06-18 12:18:33	2026-06-19 12:15:33	2026-06-18 12:15:33	2026-06-18 12:18:33
-202	App\\Models\\User	11	auth	7e026111a679faadda36a235cd357a81a0b42f068e3f49ba55dec7fc92027486	["*"]	\N	2026-06-19 12:18:39	2026-06-18 12:18:39	2026-06-18 12:18:39
-201	App\\Models\\User	11	auth	102aa72e0853b2acba12e28ae3233f83b619e7daefbe3abaf7eee88e319b0e63	["*"]	2026-06-18 12:18:41	2026-06-19 12:18:39	2026-06-18 12:18:39	2026-06-18 12:18:41
-217	App\\Models\\User	11	auth	2b6e9ee6d3b338b87ca0f06a27ea5b2e2bc49d84bf522ab63eb599b1af9d44d0	["*"]	2026-06-19 09:29:29	2026-06-19 14:08:55	2026-06-18 14:08:55	2026-06-19 09:29:29
-200	App\\Models\\User	11	auth	9323b50324943e06b4cea3921084adfb3b7ca48b402af224f5f3e64c5118f4f8	["*"]	2026-06-18 12:18:52	2026-06-19 12:18:39	2026-06-18 12:18:39	2026-06-18 12:18:52
-191	App\\Models\\User	11	auth_token	cb00ddb82626d6fa468e011366c80eecbb2b2b2af79e89a3932fb27acbbd92f3	["*"]	2026-06-18 11:20:15	2026-06-19 11:06:00	2026-06-18 11:06:00	2026-06-18 11:20:15
-192	App\\Models\\User	11	auth	64ab2ce92e401b3c11d2f22bea081685fc07c5859b5dea30d574e2b4d7b4825d	["*"]	\N	2026-06-19 11:26:23	2026-06-18 11:26:23	2026-06-18 11:26:23
-193	App\\Models\\User	11	auth	d372fadb61d4d63d0f231006cb9553a484d4ddba30652ea4f850b6cbc8b2125c	["*"]	\N	2026-06-19 11:26:36	2026-06-18 11:26:36	2026-06-18 11:26:36
-194	App\\Models\\User	11	auth	9de869327a29a43dc2334c5c4011f956976d97a9246549edb50124d75dfcdecd	["*"]	2026-06-18 11:34:50	2026-06-19 11:34:35	2026-06-18 11:34:35	2026-06-18 11:34:50
-187	App\\Models\\User	11	auth_token	b66f38a8ef47fa6d90b7ad175b3f6566060319d4722336a7150402d5a7b17aa0	["*"]	\N	2026-06-19 09:23:41	2026-06-18 09:23:41	2026-06-18 09:23:41
-203	App\\Models\\User	11	auth	844cbe217c4162f5374d90e1d11f6a1dd905996d71f79bff575fa9407852f0a4	["*"]	2026-06-18 12:22:11	2026-06-19 12:19:09	2026-06-18 12:19:09	2026-06-18 12:22:11
-235	App\\Models\\User	11	auth	52521896b34b85ac674757495d55eefbd99e8e9b9cd27510828ebc7a59216085	["*"]	2026-06-22 13:30:46	2026-06-23 08:22:23	2026-06-22 08:22:23	2026-06-22 13:30:46
-197	App\\Models\\User	11	auth	6ceca1a8a65cd0b8b2f5ab0c56ef3789b1c078fdcbf1cf76b211d4fbc793ae19	["*"]	2026-06-18 12:13:49	2026-06-19 11:47:51	2026-06-18 11:47:51	2026-06-18 12:13:49
-195	App\\Models\\User	11	auth	069fbb426a1d1cbdda7c413fcbd1266267820d7bfbede11adc50e09d42a3e9f2	["*"]	2026-06-18 11:40:34	2026-06-19 11:40:27	2026-06-18 11:40:27	2026-06-18 11:40:34
-180	App\\Models\\User	11	auth_token	c8984e55cca1ef0f33214a7c60cbd99f2286ccbe762d8ea66be282d4e154c704	["*"]	2026-06-18 11:04:50	2026-06-18 16:39:15	2026-06-17 16:39:15	2026-06-18 11:04:50
-188	App\\Models\\User	11	auth_token	c97aea858dd1deab237a2fae9fb08b1045d08da5308eed28bf157e012d0fdb1b	["*"]	\N	2026-06-19 11:04:59	2026-06-18 11:04:59	2026-06-18 11:04:59
-198	App\\Models\\User	11	auth	5fd8c8ce78526e852894c905b0ecb3cb7134bd784d71403af46055616aaa2f9e	["*"]	2026-06-18 12:14:17	2026-06-19 12:14:04	2026-06-18 12:14:04	2026-06-18 12:14:17
-206	App\\Models\\User	11	auth	83dbe5aca2950fa0c8e11b5a2e4032dc0a4f8d4d12da69c28fb3ae0f86937794	["*"]	2026-06-18 13:11:57	2026-06-19 12:31:25	2026-06-18 12:31:25	2026-06-18 13:11:57
-208	App\\Models\\User	11	auth	7100d34fbb1741fb8ee98033d4a6bd895dac796f367fad1bfb540299f4fb1933	["*"]	2026-06-18 13:12:17	2026-06-19 13:12:15	2026-06-18 13:12:15	2026-06-18 13:12:17
-215	App\\Models\\User	11	auth	b3d6b7ee60c2105be83b2d5e3eaa8b91af7b5f196e7454abc6fe928438f9fff1	["*"]	2026-06-18 14:05:28	2026-06-19 13:56:52	2026-06-18 13:56:52	2026-06-18 14:05:28
-205	App\\Models\\User	11	auth	4acbe626c0d061639f20fad93d992684d2c310ef105eeab901ad625f6ffab550	["*"]	2026-06-18 12:30:38	2026-06-19 12:26:25	2026-06-18 12:26:25	2026-06-18 12:30:38
-239	App\\Models\\User	11	auth	96cf87d22f43168186f5e188431abacc2aee22651d040d2709cccef51add9c57	["*"]	2026-06-22 09:38:13	2026-06-23 09:38:02	2026-06-22 09:38:03	2026-06-22 09:38:13
-225	App\\Models\\User	11	auth	319ced8c3fee580d515260551b5e010cc59dcbc53a3fa98cef6c5c7be86f3537	["*"]	2026-06-19 15:34:43	2026-06-20 10:44:46	2026-06-19 10:44:46	2026-06-19 15:34:43
-210	App\\Models\\User	11	auth	2c638f08d966a469059aef0fec4c02e96e1c41231c03410dca97f76a7b17cedd	["*"]	2026-06-18 13:19:57	2026-06-19 13:17:37	2026-06-18 13:17:37	2026-06-18 13:19:57
-223	App\\Models\\User	11	auth	14bbd8dbc73e6b63569a8e1a2ffa18149069aee5c37f25ef36350a2b9656e3fd	["*"]	2026-06-19 15:20:23	2026-06-19 16:14:15	2026-06-18 16:14:15	2026-06-19 15:20:23
+410	App\\Models\\User	346	PostmanRuntime/7.56.0	3dc13c0bd5a9c65e815d8296c40ad50c118dd0e69c155d993f180dde45cd6e61	["*"]	2026-08-06 15:40:12	2026-08-07 15:39:56	2026-08-06 15:39:56	2026-08-06 15:40:12
 222	App\\Models\\User	346	auth	e3c4ab226f9121cb853c4a8ac5f636e1065856f75f6fee38463884557a16ee95	["*"]	2026-06-18 16:05:01	2026-06-19 16:04:55	2026-06-18 16:04:55	2026-06-18 16:05:01
 227	App\\Models\\User	346	auth	4b0c138d5a723636cdf1c55080787441216a1dea42efe04933cea624fb30c561	["*"]	2026-06-19 15:11:09	2026-06-20 13:59:22	2026-06-19 13:59:22	2026-06-19 15:11:09
 226	App\\Models\\User	353	auth	ef0ed857e4297cdacf5c87a594d3bc3d013e1d37990efb6d20519545dc0c943e	["*"]	2026-06-19 11:40:35	2026-06-20 10:46:29	2026-06-19 10:46:29	2026-06-19 11:40:35
-229	App\\Models\\User	11	auth	053ae53958ce90d6047261f005841e29082411b36765e447b203378069454691	["*"]	\N	2026-06-20 15:36:26	2026-06-19 15:36:27	2026-06-19 15:36:27
-230	App\\Models\\User	11	auth	94ede568666e960e59cc487c19acc2f90850e67989feba1c0bf6b4ee8e723f81	["*"]	\N	2026-06-20 15:40:08	2026-06-19 15:40:08	2026-06-19 15:40:08
-228	App\\Models\\User	11	auth	e0ca970b6849fc623f38e5e39faa79352d4369adeb2541cd76e4a148d6d6d477	["*"]	2026-06-19 15:22:19	2026-06-20 15:21:39	2026-06-19 15:21:39	2026-06-19 15:22:19
-234	App\\Models\\User	11	auth	dde5ead24bfaf4d284453fa92ebbbeeb4e87bc9af437604ce139894e666d4e98	["*"]	2026-06-22 08:25:31	2026-06-23 08:13:48	2026-06-22 08:13:48	2026-06-22 08:25:31
-231	App\\Models\\User	11	auth	b7e3031d8ba2f4bd43b5493bc0faa293f12e1488478e3c7db6b91e920ed77601	["*"]	2026-06-19 15:50:32	2026-06-20 15:42:15	2026-06-19 15:42:15	2026-06-19 15:50:32
-232	App\\Models\\User	11	auth	40b5a7ce3b74e385ba75e383717447939ad90bd6c7f2a2b41ef8f4261270256e	["*"]	\N	2026-06-23 08:07:11	2026-06-22 08:07:11	2026-06-22 08:07:11
-233	App\\Models\\User	11	auth	602aa8314ff0a2bfbc64997cfc728e1afde3336d612cfa444b77b08ca6e7da23	["*"]	\N	2026-06-23 08:07:45	2026-06-22 08:07:45	2026-06-22 08:07:45
 238	App\\Models\\User	353	auth	c4fe73469e06a373905aa53636285a84483f00d80e48a0a436dfebbc495f0e0e	["*"]	2026-06-22 09:37:20	2026-06-23 09:24:26	2026-06-22 09:24:26	2026-06-22 09:37:20
 236	App\\Models\\User	353	auth	37dc7909ef9aea08cf2b98c8802d080d80da81ebf39e12c665e2f8365d24a1d1	["*"]	2026-06-22 11:49:30	2026-06-23 08:36:10	2026-06-22 08:36:10	2026-06-22 11:49:30
-237	App\\Models\\User	11	auth	13274a64e79ad71b2af5596f2a1c282058930f6304ca7de3390a96b68bd8caee	["*"]	2026-06-22 09:24:02	2026-06-23 09:15:53	2026-06-22 09:15:53	2026-06-22 09:24:02
 240	App\\Models\\User	353	auth	e80f1d14ce870939f3da3d3eafd84cae4ac9c2b9e6b1caacf14f3ce5adf66e4a	["*"]	2026-06-22 14:58:19	2026-06-23 09:39:03	2026-06-22 09:39:03	2026-06-22 14:58:19
 245	App\\Models\\User	346	auth	ed904fe25d7c51e276eb82a249cffd28a99e609b2e3d0329195257ff9d180e01	["*"]	2026-06-22 15:25:51	2026-06-23 15:22:26	2026-06-22 15:22:26	2026-06-22 15:25:51
 261	App\\Models\\User	346	auth	03af7ec3877259768ebcd2985014ccf90a80ad10b2d41036955ddb98de15e025	["*"]	2026-06-29 16:22:15	2026-06-30 14:54:14	2026-06-29 14:54:14	2026-06-29 16:22:15
-248	App\\Models\\User	11	auth	2801b798b5c22df66ba87e2ed614df3a397c6ba141dc132e690406c64d01f7ee	["*"]	2026-06-23 15:22:21	2026-06-24 15:22:19	2026-06-23 15:22:19	2026-06-23 15:22:21
-265	App\\Models\\User	11	auth	45c354e6e6608c3d2e363b1679cd468a07f2f9b535b5356a9d5787e0570a3da2	["*"]	2026-06-30 08:26:23	2026-07-01 08:26:18	2026-06-30 08:26:18	2026-06-30 08:26:23
 270	App\\Models\\User	354	auth	01299b1f66183a9f066696b2039330785c756e79de30cf52f3291cae729f3336	["*"]	2026-06-30 09:29:13	2026-07-01 08:58:28	2026-06-30 08:58:28	2026-06-30 09:29:13
-274	App\\Models\\User	11	auth	bbdae9d01e7d0c1506d9c07423a4c25df0945baa57b6b06aaa20f8313991c197	["*"]	2026-06-30 11:00:19	2026-07-01 10:27:27	2026-06-30 10:27:27	2026-06-30 11:00:19
 273	App\\Models\\User	354	auth	6a96e15d71610f5e185fa7806c3f9b3efda9a778d67ca68578e0e30e6438d1ad	["*"]	2026-06-30 11:12:00	2026-07-01 09:38:49	2026-06-30 09:38:49	2026-06-30 11:12:00
 267	App\\Models\\User	354	auth	8f9b54d1f4b1de8e861c28ca909a41d46d6bad753b15c4a74336d66653e80ab6	["*"]	2026-06-30 09:24:39	2026-07-01 08:35:32	2026-06-30 08:35:32	2026-06-30 09:24:39
 251	App\\Models\\User	346	auth	f224326242d332ad8041cf007411e1b58b5ecf2b346dc5d1703afa77f2f200dc	["*"]	2026-06-24 11:18:55	2026-06-25 11:18:38	2026-06-24 11:18:38	2026-06-24 11:18:55
-242	App\\Models\\User	11	auth	02ede08fa1706c02d1c00f2da7928cd22df5081b81a3d43b414d1b7e15e404c6	["*"]	2026-06-23 14:38:07	2026-06-23 14:58:41	2026-06-22 14:58:41	2026-06-23 14:38:07
-257	App\\Models\\User	11	auth	d7a2f9538d9f4d4cefcda31ff0fe7a000ba55c6f1cea0a71dfaddba2ea41accf	["*"]	2026-06-29 17:29:06	2026-06-30 08:07:58	2026-06-29 08:07:58	2026-06-29 17:29:06
 246	App\\Models\\User	353	auth	37093899c9ff5e3d9ef13daab0f8ee4ce622817ef871697383fbc337df7a8dc7	["*"]	2026-06-22 17:11:24	2026-06-23 17:10:43	2026-06-22 17:10:43	2026-06-22 17:11:24
-254	App\\Models\\User	11	auth	9cea5407ab6f9b431b69e6b12176bf8f53e470adadf779b543e80754d13207cb	["*"]	2026-06-25 16:07:56	2026-06-26 15:39:02	2026-06-25 15:39:02	2026-06-25 16:07:56
-271	App\\Models\\User	11	auth	f699b6d3d7709c5292755919ca655b924cbcbab632d21b0d9d8ed631b9c7bd53	["*"]	2026-06-30 09:30:00	2026-07-01 09:25:12	2026-06-30 09:25:12	2026-06-30 09:30:00
-255	App\\Models\\User	11	auth	9a6764c6eb62055a74dd9e125b11247fe02923a10ba30f9b0f63be33a6e88012	["*"]	2026-06-25 16:13:50	2026-06-26 16:07:59	2026-06-25 16:07:59	2026-06-25 16:13:50
-262	App\\Models\\User	11	auth	85b5bea2c7e5918960b508ddf97bfac2dadd6b3e34e10a3042c2e4852aeaad1d	["*"]	2026-06-29 17:29:18	2026-06-30 17:29:09	2026-06-29 17:29:09	2026-06-29 17:29:18
-253	App\\Models\\User	11	auth	3edb2d6fe663f4cdc1a018361e082359943c22af81a8c1b489e7972d40a155aa	["*"]	2026-06-25 15:52:37	2026-06-25 16:08:45	2026-06-24 16:08:45	2026-06-25 15:52:37
-256	App\\Models\\User	11	auth	42000d4367249842ebc7c46457ade5d28393a21b95209af4d16f86816456682d	["*"]	2026-06-26 11:05:02	2026-06-26 16:13:52	2026-06-25 16:13:52	2026-06-26 11:05:02
-244	App\\Models\\User	11	auth	a6d9cb6a056bf0b5ea42551b1946fd90be232e4d1769f8a1afd05a20058b2718	["*"]	2026-06-23 15:22:09	2026-06-23 15:22:14	2026-06-22 15:22:14	2026-06-23 15:22:09
-247	App\\Models\\User	11	auth	636a3513ae958d7a02d09c0b42c19bdfd9105b294ab9ccc8ecbaf5e18b2fe0fe	["*"]	2026-06-23 09:51:15	2026-06-24 08:06:30	2026-06-23 08:06:30	2026-06-23 09:51:15
-252	App\\Models\\User	11	auth	e99f6d46137b9808726ec0566c7cd89b532dceec714cb93e78df989265d57891	["*"]	2026-06-25 14:32:29	2026-06-25 15:29:23	2026-06-24 15:29:23	2026-06-25 14:32:29
-258	App\\Models\\User	11	auth	66bdac06ee6efafed7f76f5418479fafe120fcfecae65765eb7a0bac0fc3e7ba	["*"]	2026-06-30 08:15:53	2026-06-30 08:22:41	2026-06-29 08:22:41	2026-06-30 08:15:53
 272	App\\Models\\User	354	auth	380e9ec6d51ac17cfbb0ee836e4a5ec3c3b551dd96b39cf65c8b6eeeb48e94ef	["*"]	2026-06-30 09:44:01	2026-07-01 09:30:55	2026-06-30 09:30:55	2026-06-30 09:44:01
-269	App\\Models\\User	11	auth	23338e175e8c09fd25e92bd058af273bbbfa9efc9fd5072800bf6a8174c3f186	["*"]	2026-06-30 10:10:49	2026-07-01 08:39:41	2026-06-30 08:39:41	2026-06-30 10:10:49
-294	App\\Models\\User	11	auth	6f1fd4ccff6923e9c5b4f4bde88846d59607fa6ecca9b11f131b21c540295c40	["*"]	2026-07-06 16:38:06	2026-07-07 11:24:16	2026-07-06 11:24:16	2026-07-06 16:38:06
-284	App\\Models\\User	11	auth	c0a15f8ea1f060d04cb05b5fd9065afa4374bfec9c6fc2ea9c13bd8038eb4516	["*"]	2026-07-03 13:23:23	2026-07-04 13:22:48	2026-07-03 13:22:48	2026-07-03 13:23:23
 316	App\\Models\\User	350	auth	091f5a922fd754a7bf6e945d2c47e690f34130f8643996e1be4bfc1e5ed8bf8f	["*"]	\N	2026-07-11 14:18:50	2026-07-10 14:18:50	2026-07-10 14:18:50
 281	App\\Models\\User	346	auth	9d7747c6a11beebae64a04d69e501e15fbbfd0ad130f39f56e2acdee06869c9e	["*"]	2026-07-02 12:01:43	2026-07-03 09:22:30	2026-07-02 09:22:30	2026-07-02 12:01:43
-278	App\\Models\\User	11	auth	48d512fa11a72ef32c1b695b3ce09603232f919a49470a028ce3164ba83cbfab	["*"]	2026-07-01 17:05:41	2026-07-02 17:01:28	2026-07-01 17:01:28	2026-07-01 17:05:41
 292	App\\Models\\User	346	auth	0d2e1f98e53518516bc649468f1228061f4530b8ee1154c9978e668f0a427966	["*"]	2026-07-06 10:58:30	2026-07-07 10:58:23	2026-07-06 10:58:23	2026-07-06 10:58:30
-303	App\\Models\\User	11	auth	32e25dda9603cd5845d38be829524973033532e2db4d37dacba3f28267502fe6	["*"]	2026-07-07 09:40:31	2026-07-08 09:40:29	2026-07-07 09:40:29	2026-07-07 09:40:31
-304	App\\Models\\User	11	auth	8249c0355086f6da9304efbb5a98f79464c9232d8da54e094de8d080dddb8569	["*"]	2026-07-07 09:54:15	2026-07-08 09:42:34	2026-07-07 09:42:34	2026-07-07 09:54:15
 285	App\\Models\\User	346	auth	418a23075371722ee2267bf72e6aa28b749220bab17ecf11f47f1dbdb0ec1725	["*"]	2026-07-03 15:28:49	2026-07-04 13:57:28	2026-07-03 13:57:28	2026-07-03 15:28:49
 283	App\\Models\\User	353	auth	76164a55ef6bafada8926142fa1f4c71a2d15c8d1e0413ce166ad6eafb33782a	["*"]	2026-07-03 13:21:57	2026-07-04 08:29:36	2026-07-03 08:29:36	2026-07-03 13:21:57
-298	App\\Models\\User	11	test	0dd74e3f1067327f0cc1fae0da82fcb9948674a3a460908b6d186a1d6220e3da	["*"]	2026-07-07 09:03:00	\N	2026-07-07 08:30:07	2026-07-07 09:03:00
-307	App\\Models\\User	11	auth	5bba4dcafa29a215b19dda73cad121b41448fde9b72c3ab4d9e3c227a846a8d4	["*"]	2026-07-09 08:02:51	2026-07-09 08:03:33	2026-07-08 08:03:33	2026-07-09 08:02:51
-301	App\\Models\\User	11	auth	c05c0e98e4c8866bac7b51f80b1e63cf6264d4dc7f050d860f8ae6c39d285164	["*"]	2026-07-07 09:39:21	2026-07-08 09:39:18	2026-07-07 09:39:18	2026-07-07 09:39:21
 296	App\\Models\\User	346	auth	218ad1a87fe70ce57cdf52f77b6a5730333399e5f60c6d8d2632bf73f16ad292	["*"]	2026-07-06 16:12:11	2026-07-07 14:59:19	2026-07-06 14:59:19	2026-07-06 16:12:11
 297	App\\Models\\User	353	auth	73ea0828363ca5332011ed1c4bb13e3f9c3959e07f476f3e6cc8e5658c507e22	["*"]	2026-07-07 08:58:17	2026-07-07 17:04:28	2026-07-06 17:04:28	2026-07-07 08:58:17
 293	App\\Models\\User	346	auth	9882654ea91426860c1f6d9ebf651f81c0c662b58038fc26ed80c23ad82d3320	["*"]	2026-07-06 11:12:36	2026-07-07 11:06:53	2026-07-06 11:06:53	2026-07-06 11:12:36
-302	App\\Models\\User	11	auth	7fbf464f75a0a4f7a405010ddd3d038a4fdc842eca2f1d86a528408dc23d5dca	["*"]	2026-07-07 09:39:48	2026-07-08 09:39:45	2026-07-07 09:39:45	2026-07-07 09:39:48
-286	App\\Models\\User	11	auth	d2769004c97e8e68ff666b0bc6464fe3cc01afafc3c1d3cf57350cc9ef22a1bf	["*"]	2026-07-07 09:30:03	2026-07-07 09:37:21	2026-07-06 09:37:21	2026-07-07 09:30:03
-306	App\\Models\\User	11	auth	fdf3318292e074c9b50bfcd1773086625de2b87dcee651daa79c739f589d6aaf	["*"]	2026-07-07 14:57:18	2026-07-08 14:24:46	2026-07-07 14:24:46	2026-07-07 14:57:18
-308	App\\Models\\User	11	auth	791c7ba6cb993469dc82dcb70d5e8a90a4cd8588647810b0ea92dc5a78e774a3	["*"]	2026-07-08 10:36:14	2026-07-09 08:21:52	2026-07-08 08:21:52	2026-07-08 10:36:14
 299	App\\Models\\User	353	auth	4a1e80d29d809fb62999b92ab321ce72914512b109c3aac320df4906797483f9	["*"]	2026-07-07 14:24:09	2026-07-08 08:58:41	2026-07-07 08:58:41	2026-07-07 14:24:09
-310	App\\Models\\User	11	auth	ad259d642a22cff4ee0c25dfb9545328ffffa0beb805c6db678f6f324244b49b	["*"]	2026-07-09 17:27:19	2026-07-10 08:03:55	2026-07-09 08:03:55	2026-07-09 17:27:19
 314	App\\Models\\User	355	auth	c2cc497d8e0db46d23d6d5b45e262314213b8904f91a851c0acebd07f76d11b0	["*"]	\N	2026-07-11 14:16:49	2026-07-10 14:16:49	2026-07-10 14:16:49
-312	App\\Models\\User	11	auth	afb85aa8e9631d5141a6e1cb1f93e3f3b9c7be5f4935b4bbdb8b1fce27c7c0d5	["*"]	2026-07-10 13:53:52	2026-07-11 13:41:03	2026-07-10 13:41:03	2026-07-10 13:53:52
 313	App\\Models\\User	346	auth	2b61d05502b1624e7d68040b84f6228c94046ad4bbd3924eaae2ec0f19f5cd76	["*"]	2026-07-10 13:57:36	2026-07-11 13:54:25	2026-07-10 13:54:25	2026-07-10 13:57:36
 317	App\\Models\\User	350	auth	9eba394bc02afbfafbf1e56523226714c20914486ba644124996745563c530be	["*"]	\N	2026-07-11 14:20:32	2026-07-10 14:20:32	2026-07-10 14:20:32
 318	App\\Models\\User	350	auth	4db78d252318a8e7c6c55df2c4c116d23c5fb3f0d882cd70d692a759a230c4ed	["*"]	\N	2026-07-11 14:21:37	2026-07-10 14:21:37	2026-07-10 14:21:37
 319	App\\Models\\User	345	auth	a015779e592bde4d9e3616ba992a9bfc66196016ee5e585c07e925e7309a5a65	["*"]	\N	2026-07-11 14:23:26	2026-07-10 14:23:26	2026-07-10 14:23:26
 320	App\\Models\\User	356	auth	e8d14ade5613cfea69a95c5668492e3accc12ff17273764e27a7f7faa787770e	["*"]	\N	2026-07-11 14:26:54	2026-07-10 14:26:54	2026-07-10 14:26:54
 331	App\\Models\\User	346	auth	6913d0726bcb366349d86407972766cbf3dd47aeb159d290d04eb48323f21f22	["*"]	2026-07-10 16:27:12	2026-07-11 16:27:04	2026-07-10 16:27:04	2026-07-10 16:27:12
-337	App\\Models\\User	11	auth	d123ec034ee2f828a21bb69a192fc88d795d88a26db4cc34c81321d89860ff38	["*"]	2026-07-13 13:18:33	2026-07-14 13:15:58	2026-07-13 13:15:58	2026-07-13 13:18:33
-315	App\\Models\\User	11	auth	6ed747ff96133f947f78baca9a959984b2166a043a71af1108d96fbfc9d4c152	["*"]	2026-07-10 14:28:33	2026-07-11 14:18:02	2026-07-10 14:18:02	2026-07-10 14:28:33
 321	App\\Models\\User	357	auth	31cf9ad89843b63e90f693ee82207e28478be45e5f6ad0f891a9f0b09337b420	["*"]	\N	2026-07-11 14:37:31	2026-07-10 14:37:31	2026-07-10 14:37:31
 322	App\\Models\\User	344	auth	56087f6f2beb718c7f278dbd392545dca1cd457647ebab351f05bb499529c5a0	["*"]	\N	2026-07-11 14:41:26	2026-07-10 14:41:26	2026-07-10 14:41:26
 323	App\\Models\\User	18	auth	6da980f4dc1a8641be2e5adfc1968e371865c5482dfcf39dfd20dc59193d6172	["*"]	\N	2026-07-11 14:43:06	2026-07-10 14:43:06	2026-07-10 14:43:06
@@ -3724,44 +3658,27 @@ COPY public.personal_access_tokens (id, tokenable_type, tokenable_id, name, toke
 328	App\\Models\\User	357	auth	a127909921fa45c5664c9b0ea3e47b7a03ca5bc361e47598f4d3d16a01b071e9	["*"]	2026-07-10 16:24:51	2026-07-11 16:24:44	2026-07-10 16:24:44	2026-07-10 16:24:51
 329	App\\Models\\User	357	auth	e187eb22db9e1813bd8256a9dcdc4a110bc476e36a85be6b36c4d04ef4ecc052	["*"]	2026-07-10 16:25:01	2026-07-11 16:24:55	2026-07-10 16:24:55	2026-07-10 16:25:01
 333	App\\Models\\User	350	auth	ad33509445deb03d6eb1d619714479b93e2faf3e43e4084218cbbd67f914d040	["*"]	2026-07-10 16:31:52	2026-07-11 16:31:44	2026-07-10 16:31:44	2026-07-10 16:31:52
-326	App\\Models\\User	11	auth	6dd472af5aba99bf457e0aa601bef442b0be3e0a1fc88bb166b488980a680b8d	["*"]	2026-07-10 16:51:42	2026-07-11 15:17:16	2026-07-10 15:17:16	2026-07-10 16:51:42
 330	App\\Models\\User	357	auth	6553521c53472f7fdb966c63f10bebf8acd628baf637cfc171d1607e95d28e56	["*"]	2026-07-10 16:26:38	2026-07-11 16:25:23	2026-07-10 16:25:23	2026-07-10 16:26:38
-341	App\\Models\\User	11	auth	fa780fcb4c98c53b2ef9d79c37a5154ad4b60f6a8fbbe642b6b1d36145ef6442	["*"]	2026-07-20 11:19:22	2026-07-21 09:44:36	2026-07-20 09:44:36	2026-07-20 11:19:22
-338	App\\Models\\User	11	auth	b51fb515ea92c6a255525da96da52dac46c33f5ede9d919d79de3136f066cbe0	["*"]	2026-07-13 16:00:00	2026-07-14 13:19:45	2026-07-13 13:19:45	2026-07-13 16:00:00
 376	App\\Models\\User	363	auth	7ba402b6b0fcc262d90a9814e98c65d3616d46897ecaf733b919fbd8d1287715	["*"]	2026-07-29 16:56:37	2026-07-30 16:23:15	2026-07-29 16:23:15	2026-07-29 16:56:37
-359	App\\Models\\User	11	auth	1baf5e4be1b0eb1f65e6cb33875ea2d2129c9713ed793b08a97e40bd2045954b	["*"]	2026-07-29 15:13:22	2026-07-30 11:16:12	2026-07-29 11:16:12	2026-07-29 15:13:22
 366	App\\Models\\User	363	auth	970d0189d6249622e443061d2c7f18f0224ee477e7ba41dc18ec9ed194094fd5	["*"]	2026-07-29 13:57:16	2026-07-30 13:54:58	2026-07-29 13:54:58	2026-07-29 13:57:16
 354	App\\Models\\User	10	auth	028aaa96e8dccca7c654c7f5cd2778eaba5891fa7bb8b176ddb2d51865b764d1	["*"]	2026-07-28 13:30:45	2026-07-29 11:26:56	2026-07-28 11:26:56	2026-07-28 13:30:45
-352	App\\Models\\User	11	auth	d62e388c60fe4b277cabc9662584632e98193f01962051b3256c2a0278e292a5	["*"]	\N	2026-07-29 11:08:03	2026-07-28 11:08:03	2026-07-28 11:08:03
 385	App\\Models\\User	363	auth	be2bbaa899484c7a455426253ff7b4664d0d757eb9788a545000cf4ce03caea2	["*"]	2026-08-03 16:18:23	2026-08-04 15:59:02	2026-08-03 15:59:02	2026-08-03 16:18:23
-344	App\\Models\\User	11	auth	73ad7fbb56120e058aa70934e5802aad6038b068346df18f6ad66f217560a693	["*"]	2026-07-24 16:09:01	2026-07-25 14:03:28	2026-07-24 14:03:28	2026-07-24 16:09:01
 347	App\\Models\\User	346	auth	2ee468922abe00775b2b1e5f8ec7dabe85052d31a02a497c07ccde26c3489290	["*"]	2026-07-24 16:09:07	2026-07-25 16:08:04	2026-07-24 16:08:04	2026-07-24 16:09:07
-368	App\\Models\\User	11	auth	276af5465ecb7dfd7e811cb07660c2ba2009957efdcb64383d444cde16a3e22e	["*"]	2026-07-29 14:46:09	2026-07-30 14:10:58	2026-07-29 14:10:58	2026-07-29 14:46:09
-375	App\\Models\\User	11	auth	932762c0549c285bccd7589d19a6981823acc674e77df3285fe3139ce08b9917	["*"]	2026-07-29 16:22:54	2026-07-30 16:09:37	2026-07-29 16:09:37	2026-07-29 16:22:54
 358	App\\Models\\User	363	auth	f3535176377dcc5bc88b0a4705291de294eef2a0d8289506fd3e0458f5cc0279	["*"]	2026-07-29 11:16:13	2026-07-30 11:15:56	2026-07-29 11:15:56	2026-07-29 11:16:13
-351	App\\Models\\User	11	auth	bfa210cb5b0ce6a6f3882e543ba3a92d130d027c4758c92b67821b4ac9fc6f3c	["*"]	2026-07-27 17:10:13	2026-07-28 16:47:13	2026-07-27 16:47:13	2026-07-27 17:10:13
 360	App\\Models\\User	363	auth	ac8799159a029580201942c4ab0f06eaf7ed928b6b858f1c15c44c68b8ee204a	["*"]	2026-07-29 12:51:44	2026-07-30 11:16:41	2026-07-29 11:16:41	2026-07-29 12:51:44
 364	App\\Models\\User	363	auth	5f2ce287a702a0ba4c72a51dadd8c60cb1f232c645e881c70db4ef85a5820bcd	["*"]	2026-07-29 14:55:00	2026-07-30 13:51:27	2026-07-29 13:51:27	2026-07-29 14:55:00
-369	App\\Models\\User	11	auth	7cf7d804bf023c9c7ee62b94ca0f0993445aec4e98a769e0af3fed73f9beb75d	["*"]	2026-07-29 15:19:52	2026-07-30 15:19:47	2026-07-29 15:19:47	2026-07-29 15:19:52
-382	App\\Models\\User	11	auth	358321c61f185411999cc2498fd2de8a868f7b53dbd49e16084ec0b15477eca8	["*"]	2026-07-31 15:50:01	2026-08-01 15:31:12	2026-07-31 15:31:12	2026-07-31 15:50:01
-367	App\\Models\\User	11	auth	9e5ef80fb67e779c985730fb988b45c4c40354b52dc87cb5ce091e1cf05e83aa	["*"]	\N	2026-07-30 14:02:40	2026-07-29 14:02:40	2026-07-29 14:02:40
 365	App\\Models\\User	363	auth	c7a95c7fee96a05fda9cf91609cfd062e8198c10435a000d4c33ff71f9cf4be4	["*"]	\N	2026-07-30 13:51:49	2026-07-29 13:51:49	2026-07-29 13:51:49
-383	App\\Models\\User	11	auth	07fbdc20eb258a4e1ef439436944617db6e7d2940cd523970047845dd6840a2c	["*"]	\N	2026-08-01 16:12:02	2026-07-31 16:12:02	2026-07-31 16:12:02
 371	App\\Models\\User	363	auth	930ddcc268682c13e43079e660fb19fe187ccb16e88e0dad09a6eb5508f4c3a5	["*"]	2026-07-29 15:32:25	2026-07-30 15:28:50	2026-07-29 15:28:50	2026-07-29 15:32:25
-377	App\\Models\\User	11	auth	561f34b40990d66e062d0a4b2cf0edcc3e45725452012bca1ce11e9453088680	["*"]	2026-07-30 15:17:59	2026-07-30 16:35:43	2026-07-29 16:35:43	2026-07-30 15:17:59
-362	App\\Models\\User	11	auth	eb64a55350dc25ae78ece7ff205e9913201ff8229e91e97317ab22e846a7e2ed	["*"]	\N	2026-07-30 13:39:36	2026-07-29 13:39:36	2026-07-29 13:39:36
 374	App\\Models\\User	363	auth	a8bf60ac06c89a4241dc4b66f3c485f198cced2fcc6e4370f0ac31738f4d6fb9	["*"]	2026-07-29 16:08:05	2026-07-30 15:57:44	2026-07-29 15:57:44	2026-07-29 16:08:05
-379	App\\Models\\User	11	auth	d3973966bfe4e2bf870ba3cf5568faed71af4703a00e11c549f9b112b043f67f	["*"]	2026-07-31 15:13:59	2026-07-31 15:18:01	2026-07-30 15:18:01	2026-07-31 15:13:59
-380	App\\Models\\User	11	auth	7016ce445689d000a81255a81808bbcaf073813695680c7d24ca110eaad95d7b	["*"]	\N	2026-07-31 15:40:36	2026-07-30 15:40:36	2026-07-30 15:40:36
 372	App\\Models\\User	363	auth	36a0ce863195bc02feb62ba15cc5bdf6d9fb2d194a2b7cd508de3eeeaa599db1	["*"]	2026-07-29 15:39:28	2026-07-30 15:34:10	2026-07-29 15:34:10	2026-07-29 15:39:28
-378	App\\Models\\User	11	auth	0a017b73e00b5967e5b214377edd2fb957bcb588b9ff63f05f5fedc952d000b5	["*"]	2026-07-30 14:39:37	2026-07-30 17:03:04	2026-07-29 17:03:04	2026-07-30 14:39:37
-381	App\\Models\\User	11	auth	4b9342531f80f9755782f513165600bf3facbe072f3ee1d5cf533027d3609f5b	["*"]	2026-07-31 11:14:09	2026-08-01 09:01:56	2026-07-31 09:01:56	2026-07-31 11:14:09
-384	App\\Models\\User	11	auth	4e7dcadf8b79e96e8b87fa7b2b511f2f60e3f0f391e6d83473b817a064249510	["*"]	2026-08-03 17:17:52	2026-08-04 08:04:55	2026-08-03 08:04:55	2026-08-03 17:17:52
 386	App\\Models\\User	363	auth	c126abc8086b662455e20711b0e2a887867a1bfa84f8bad11aefacaa34e35992	["*"]	2026-08-03 17:25:03	2026-08-04 16:33:19	2026-08-03 16:33:19	2026-08-03 17:25:03
 393	App\\Models\\User	346	auth	4110662187f5407819765ca9ad4141d9c17ea3aebafadb2ad631bea3d3ad06ed	["*"]	2026-08-04 10:17:14	2026-08-05 10:16:17	2026-08-04 10:16:17	2026-08-04 10:17:14
-396	App\\Models\\User	11	auth	ce5909bb103647279c9dedbc7eb2cb62e0361bc26c59e3ffe5a5babeb58c58d1	["*"]	2026-08-04 11:01:06	2026-08-05 11:01:00	2026-08-04 11:01:00	2026-08-04 11:01:06
-398	App\\Models\\User	11	auth	c3ae3a4272754fdcaa5a1c0340ecddb5bc8af8c785edf803fa7e2952074df716	["*"]	2026-08-04 17:12:05	2026-08-05 15:19:45	2026-08-04 15:19:45	2026-08-04 17:12:05
-397	App\\Models\\User	11	auth	ca6d25e206677677988b6957da2f27dff556642e9d5326c565119dad6ab88c6d	["*"]	2026-08-04 17:12:13	2026-08-05 11:02:25	2026-08-04 11:02:25	2026-08-04 17:12:13
+400	App\\Models\\User	363	auth	7717eb1b6c8f1881d50552edd68125452e1a06ac524e856f80749e6e82bab8e2	["*"]	2026-08-05 16:48:08	2026-08-06 13:32:19	2026-08-05 13:32:19	2026-08-05 16:48:08
+401	App\\Models\\User	363	auth	70ee64f1307111d97df75635e1078fbdca9bf8458daa69b52db134fe9ce10253	["*"]	2026-08-05 15:26:29	2026-08-06 13:37:29	2026-08-05 13:37:29	2026-08-05 15:26:29
+405	App\\Models\\User	11	auth	c46af746149b89c116d35155c0bffea82be3f3f60fa6779192551a7295aa35da	["*"]	2026-08-06 16:08:17	2026-08-07 08:13:03	2026-08-06 08:13:03	2026-08-06 16:08:17
+407	App\\Models\\User	11	E-Tech App • Dart/3.6 (dart:io)	5d53cace40292405827bd92305fc110a9278111242531ad721c252d23a488e09	["*"]	2026-08-06 10:04:43	2026-08-07 09:51:25	2026-08-06 09:51:25	2026-08-06 10:04:43
+403	App\\Models\\User	11	auth	9bcc912e633889e4ec58fbe4ea0631d5c70da5a1cc9cc2264963e0960bb19a49	["*"]	2026-08-05 17:30:02	2026-08-06 17:25:36	2026-08-05 17:25:36	2026-08-05 17:30:02
+402	App\\Models\\User	11	auth	28c9338e7c9111dbe48ebf8a10c4395787251497762b756013c3f735e7485afc	["*"]	2026-08-06 09:50:33	2026-08-06 15:26:56	2026-08-05 15:26:56	2026-08-06 09:50:33
 \.
 
 
@@ -3790,6 +3707,8 @@ COPY public.point_history (id, user_id, order_id, points_changed, action_type, d
 20	11	311	240	EARN	Tích điểm từ đơn hàng #ET-A0E3CD45260728	2026-07-28 15:13:17	2026-07-28 15:13:17
 21	363	312	179	EARN	Tích điểm từ đơn hàng #ET-1368BAD3260729	2026-07-29 16:36:50	2026-07-29 16:36:50
 22	363	313	407	EARN	Tích điểm từ đơn hàng #ET-4BF48EA9260729	2026-07-29 16:36:59	2026-07-29 16:36:59
+23	11	314	739	EARN	Tích điểm từ đơn hàng #ET-6E298BE5260806	2026-08-06 15:05:33	2026-08-06 15:05:33
+24	11	315	999	EARN	Tích điểm từ đơn hàng #ET-0A2EB536260806	2026-08-06 15:53:15	2026-08-06 15:53:15
 \.
 
 
@@ -5872,7 +5791,6 @@ COPY public.product_variants (id, product_id, variant_name, color, configuration
 210	23	iPhone 17 Pro Max Cam 256GB	Cam Vũ Trụ	A19 Pro 256GB	IPH-23-69FAE13C-5	30990000.00	19	/storage/variants/zaRCbt4JflmDMcOOMINyN7f34ad2ToROO4Ppi8k8.jpg	t	2026-05-06 06:35:40	2026-07-01 13:57:34	\N	\N	\N	\N	\N
 35	9	Tím 128GB	Tím	128GB	IPH-9-69F95471-13	21990000.00	48	/storage/variants/RY6URi3M4Pj7eEZ79fpZPrZr92hw7knEbZUoxCt8.webp	t	2026-05-05 02:22:41	2026-07-01 14:34:50	\N	\N	\N	\N	\N
 331	48	Xiaomi Water Flosser 2	Trñng	200ml-2200mAh	M?�Y-48-6A02EBBE-1	780000.00	17	\N	t	2026-05-12 15:58:38	2026-06-01 10:26:34	\N	\N	\N	\N	\N
-483	196	RTX 4090 Founders Edition	Đen - Bạc	24GB GDDR6X, 384-bit, Boost 2.52 GHz, 16384 CUDA cores	NVI-196-6A38BB82-1	49990000.00	19	http://localhost:8000/storage/variants/N2ZIB4AL6tfMjc44JU3D7mUtC8dzhOr2mQW2B2TY.png	t	2026-06-22 11:35:14	2026-07-13 13:22:13	\N	\N	\N	\N	\N
 491	197	ROG THOR 1200W Platinum II	Đen - Bạc	Chuẩn 80 Plus Platinum, quạt ROG, dây bọc lưới, OLED hiển thị	NGU-197-6A38DE45-3	9990000.00	29	http://localhost:8000/storage/variants/nxg9iCZHKfTh8eOnWF13zwdYhqyYxKaNMTm1mwIx.png	t	2026-06-22 14:03:33	2026-07-20 10:44:50	\N	\N	\N	\N	\N
 490	197	ROG THOR 1000W Platinum II	Đen	Chuẩn 80 Plus Platinum, quạt 135mm, màn hình OLED hiển thị công suất	NGU-197-6A38DE45-2	7990000.00	28	http://localhost:8000/storage/variants/fNHzmeACR8DiFZv6okV0lcGPPY12TZpSTtOfJXF8.png	t	2026-06-22 14:03:33	2026-07-20 10:45:40	\N	\N	\N	\N	\N
 509	204	ROG Strix UltraSpeed RGB White	Trắng - RGB	HDMI 2.1, hí trí 8K@60Hz, d?y bchh l?íchi 2m	Cơ�P-204-6A3A3E65-2	720000.00	30	http://localhost:8000/storage/variants/6R0Zzja5soPsBEiCFW2gD4EtpXHRVTQWC50P1hj2.png	t	2026-06-23 15:05:57	2026-07-01 10:25:14	\N	\N	\N	\N	\N
@@ -5977,9 +5895,10 @@ COPY public.product_variants (id, product_id, variant_name, color, configuration
 554	220	S25 Plus 256GB - xanh navy	Xanh navy	256GB	SAM-220-6A697281-7	19990000.00	49	http://localhost:8000/storage/variants/ZmPGnoPN3F7gZzyjnrKTEhANYwpZnBdqolFIpdrM.png	t	2026-07-29 10:24:49	2026-07-29 16:29:14	\N	fixed	990000.00	2026-07-29 10:36:00	2026-08-20 10:36:00
 548	220	S25 Plus 512GB - xanh da trời	Xanh da trời	512GB	SAM-220-6A697281-1	22090000.00	50	http://localhost:8000/storage/variants/Uqlne0Gk0G70sj0oDwEKE39AOk2xlQjWLpcHRRRv.webp	t	2026-07-29 10:24:49	2026-07-29 10:29:09	\N	\N	\N	\N	\N
 521	209	Brother HL-L2321D	Xám	In laser trắng đen, A4, 30 trang/phút, Duplex tự động, USB 2.0, khay giấy 250 tờ	M?�Y-209-6A3A4804-1	2990000.00	45	http://localhost:8000/storage/variants/JTMXKC7aaMULFRhlsa9tasv0jMJH5EQCg5JSalCu.jpg	t	2026-06-23 15:47:00	2026-07-24 13:42:28	\N	fixed	300000.00	2026-07-08 22:11:00	2026-07-31 10:12:00
-543	211	PC CPS X MSI Gaming i7 14700F / 16GB RAM / 500GB SSD / RTX 5060 / Màn hình 24 inch	Đen - Đèn LED RGB	Intel Core i7 14700F, RAM 16GB DDR5 6000Mhz, SSD 500GB PCIe Gen4, VGA MSI RTX 5060 8GB, Màn hình MSI MAG 245PF X24 24"	PC -211-6A4F5C90-1	36990000.00	47	http://localhost:8000/storage/variants/0WkgE6nm8ZrAVUTPC7HLZsvv67hPlnzskHCOiCk6.webp	t	2026-07-09 15:32:16	2026-07-29 16:35:30	\N	fixed	400000.00	2026-07-09 01:32:00	2026-07-31 01:32:00
+543	211	PC CPS X MSI Gaming i7 14700F / 16GB RAM / 500GB SSD / RTX 5060 / Màn hình 24 inch	Đen - Đèn LED RGB	Intel Core i7 14700F, RAM 16GB DDR5 6000Mhz, SSD 500GB PCIe Gen4, VGA MSI RTX 5060 8GB, Màn hình MSI MAG 245PF X24 24"	PC -211-6A4F5C90-1	36990000.00	46	http://localhost:8000/storage/variants/0WkgE6nm8ZrAVUTPC7HLZsvv67hPlnzskHCOiCk6.webp	t	2026-07-09 15:32:16	2026-08-06 15:04:32	\N	fixed	400000.00	2026-07-09 01:32:00	2026-07-31 01:32:00
 302	30	Logitech G304 Trắng	Trắng	HERO 12K, Wireless 2.4GHz	CHU-30-6A02A9E8-1	725000.00	30	http://localhost:8000/storage/variants/fQ5sCUupAuCAdF7C3RXO5C2QNEXL4HHq9W6epsSa.webp	t	2026-05-12 11:17:44	2026-07-24 14:33:10	\N	\N	\N	\N	\N
 549	220	S25 Plus 512GB - xám bạc	Xám bạc	512GB	SAM-220-6A697281-2	22090000.00	50	http://localhost:8000/storage/variants/WZQvBnJwRHVShqtNNSBN6nGMIVBwE3PgnSL7BdLY.png	t	2026-07-29 10:24:49	2026-07-29 10:29:09	\N	\N	\N	\N	\N
+483	196	RTX 4090 Founders Edition	Đen - Bạc	24GB GDDR6X, 384-bit, Boost 2.52 GHz, 16384 CUDA cores	NVI-196-6A38BB82-1	49990000.00	18	http://localhost:8000/storage/variants/N2ZIB4AL6tfMjc44JU3D7mUtC8dzhOr2mQW2B2TY.png	t	2026-06-22 11:35:14	2026-08-06 15:49:37	\N	\N	\N	\N	\N
 550	220	S25 Plus 512GB - xanh navy	Xanh navy	512GB	SAM-220-6A697281-3	22090000.00	50	http://localhost:8000/storage/variants/ofJAxr83RSZ3ug4xlSGMKK5JQuVuhL2QgLythR07.png	t	2026-07-29 10:24:49	2026-07-29 10:29:09	\N	\N	\N	\N	\N
 551	220	S25 Plus 512GB - xanh lá	Xanh lá	512GB	SAM-220-6A697281-4	22090000.00	50	http://localhost:8000/storage/variants/rBoflGlVRmOhxpjxqw4Lx2xp67MBW3hHE1hODEGi.png	t	2026-07-29 10:24:49	2026-07-29 10:29:09	\N	\N	\N	\N	\N
 555	220	S25 Plus 256GB - Xanh lá	Xanh lá	256GB	SAM-220-6A697281-8	19990000.00	50	http://localhost:8000/storage/variants/9UEdEO3aiX9jDYcAWp3od8sEmBOSEcD3bpRSSWIm.png	t	2026-07-29 10:24:49	2026-07-29 10:36:37	\N	fixed	990000.00	2026-07-29 10:35:00	2026-08-20 10:35:00
@@ -6450,6 +6369,10 @@ COPY public.trade_in_request_conditions (trade_in_request_id, trade_in_condition
 5	60
 5	69
 6	14
+7	4
+7	51
+7	80
+7	104
 \.
 
 
@@ -6463,7 +6386,8 @@ COPY public.trade_in_requests (id, request_code, user_id, category_id, machine_i
 3	TIITP8CQ4Z	\N	2	Tên máy: Iphone 14 pro max\r\nDung lượng: 256GB\r\nMàu sắc: Màu Xám\r\nTình trạng bảo hành: Hết bảo hành\r\nPhụ kiện đi kèm: Sạc, Hộp	["\\/storage\\/trade-in\\/012tjRNPkVWJ1i85ogYwovQggKPTHj5k2GR5h66p.webp"]	Trần Văn Nghĩa	0987654321	nghia123@etech.com	\N	\N	rejected	\N	2026-08-03 16:05:39+00	2026-08-04 13:26:46+00
 4	TIQ9M3CYO4	363	3	Tên máy: ASUS TUF Gaming F15\r\nRAM: 16GB\r\nỔ cứng: 512GB\r\nVGA: NVIDIA GTX 1650 → RTX 4070\r\nTình trạng bảo hành: Còn bảo hành hãng\r\nPhụ kiện đi kèm: Sạc, Hộp đày đủ	["\\/storage\\/trade-in\\/KCy3DsgEMkYSo8OsOSMbujop524VFmAleZKHXPww.webp","\\/storage\\/trade-in\\/v6fCe4gCnjs3uIUBdFtXYtNClDSI7sRGXZddSLWl.png","\\/storage\\/trade-in\\/sWxyggg1XmJBOcWbHWiDqjOhSUnJuKVP42GVkKhv.webp","\\/storage\\/trade-in\\/kXJjNezcGYJg8ZlKqfVmmHw0jAI3E2SkykiSkf4V.webp","\\/storage\\/trade-in\\/FY4aLm3A2wCn2ApHvMCgl1dxJgwppiVajayntRm9.webp"]	Trần Văn Nghĩa	0987654321	nghia123@etech.com	14800000.00	\N	completed	Chào anh Trần Văn Nghĩa,\n\nSau khi kiểm tra tình trạng thiết bị ASUS TUF Gaming F15 (RAM 16GB, SSD 512GB, VGA NVIDIA GTX 1650), đội ngũ kỹ thuật ghi nhận:\n\nBàn phím có một số phím không hoạt động.\nLoa bị rè, chất lượng âm thanh không ổn định.\nMáy đã từng sửa chữa hoặc thay thế linh kiện.\n\nDựa trên cấu hình và tình trạng thực tế của thiết bị, chúng tôi đề xuất thu mua với mức giá 14.800.000 VNĐ.\n\nBáo giá có hiệu lực trong vòng 03 ngày kể từ ngày gửi. Nếu anh đồng ý, vui lòng phản hồi để chúng tôi tiến hành các bước thu mua tiếp theo.\n\nXin cảm ơn anh đã sử dụng dịch vụ.	2026-08-03 16:16:29+00	2026-08-03 16:53:37+00
 5	TIGSIN7GHI	11	2	Tên máy: iPhone 17 Pro Max\r\nDung lượng: 1 T\r\nMàu sắc: Cam Vũ Trụ\r\nTình trạng bảo hành: Còn bảo hành hãng\r\nPhụ kiện đi kèm: Sạc, Hộp, Cáp	["\\/storage\\/trade-in\\/XtswsVVlgdAdZPZJ2BbwHUjPS0cTXeUkQKRGI4pg.png","\\/storage\\/trade-in\\/UNeDbiNBAI9Kt7oyk8oEnlAEmqfzvHvz4YzkMC8A.png","\\/storage\\/trade-in\\/4jQ1aVqsT4XS3YFQqIHa5CVxhelQj21Xz343uA4m.png","\\/storage\\/trade-in\\/zzzB6cPHHl8U6yZ4So73iHZnSeFhdPzKwghpLugG.jpg","\\/storage\\/trade-in\\/yBGv4dS1Jt6qxXKE8w8UPER6Zq5hJgNlcDixS7IK.png"]	Đỗ Việt Hoàng	1234567890	doviethoang@gmail.com	\N	\N	rejected	Yêu cầu thu mua đã được xem xét. Thiết bị có các lỗi nghiêm trọng gồm:\n\nVỡ màn hình và chảy mực nặng.\nVỡ kính camera.\nVỡ mặt lưng.\nTrầy xước nhiều.\n\nSau khi đánh giá, thiết bị không đáp ứng tiêu chuẩn thu mua của hệ thống do chi phí khắc phục quá cao và rủi ro chất lượng sau sửa chữa. Vì vậy, yêu cầu thu mua đã bị từ chối. Cảm ơn Quý khách đã sử dụng dịch vụ.	2026-08-04 14:35:12+00	2026-08-04 14:37:37+00
-6	TIDUENL8BS	11	3	Tên máy: yuh\nRAM: sê\nỔ cứng: dd\nVGA: đ\nTình trạng bảo hành: Còn bảo hành hãng\nPhụ kiện đi kèm: dđ	["\\/storage\\/trade-in\\/NtCDQRcSCQW3EdlOiVw9gRtwXJ9YqsHvJbG4dpAa.jpg"]	Đỗ Việt Hoàng	1234567890	doviethoang@gmail.com	\N	\N	pending	\N	2026-08-04 17:12:05+00	2026-08-04 17:12:05+00
+6	TIDUENL8BS	11	3	Tên máy: yuh\nRAM: sê\nỔ cứng: dd\nVGA: đ\nTình trạng bảo hành: Còn bảo hành hãng\nPhụ kiện đi kèm: dđ	["\\/storage\\/trade-in\\/NtCDQRcSCQW3EdlOiVw9gRtwXJ9YqsHvJbG4dpAa.jpg"]	Đỗ Việt Hoàng	1234567890	doviethoang@gmail.com	\N	\N	rejected	test app	2026-08-04 17:12:05+00	2026-08-04 17:23:57+00
+7	TI3AZR7H3A	363	2	Tên máy: Redmi Note 15\r\nDung lượng: 128\r\nMàu sắc: đen\r\nTình trạng bảo hành: Hết bảo hành\r\nPhụ kiện đi kèm: sạc, hộp	["\\/storage\\/trade-in\\/ZBunHwfJEcWdzx7joTFdIwmFdcuHp263y2LotH16.webp"]	Trần Văn Nghĩa	0987654321	nghia123@etech.com	3400000.00	3100000.00	completed	Chào Quý khách,\n\nSau khi kiểm tra thông tin và đánh giá tình trạng thực tế của thiết bị, chúng tôi ghi nhận:\n\nMáy hoạt động ổn định, không phát hiện lỗi chức năng.\nNgoại hình đạt khoảng 95%, có một số vết xước nhẹ trên khung và mặt lưng.\nKhay SIM có dấu hiệu trầy xước do quá trình sử dụng.\nMàn hình đã được thay bằng linh kiện thay thế, không còn là màn hình theo máy.\n\nDựa trên các yếu tố trên, chúng tôi đã điều chỉnh mức giá thu mua phù hợp với tình trạng hiện tại của thiết bị.\n\nNếu Quý khách đồng ý với mức giá được đề xuất, vui lòng xác nhận để chúng tôi tiến hành các bước thu mua tiếp theo. Trường hợp không đồng ý, Quý khách có thể từ chối yêu cầu và chúng tôi sẽ hủy giao dịch mà không phát sinh bất kỳ chi phí nào.\n\nXin cảm ơn Quý khách đã sử dụng dịch vụ của E-Tech Market.	2026-08-05 14:01:13+00	2026-08-05 14:05:31+00
 \.
 
 
@@ -6478,6 +6402,7 @@ COPY public.transactions (id, payment_id, provider, provider_transaction_id, amo
 73	202	vnpay	15616549	37570000.00	VND	success	{"vnp_Amount": "3757000000", "vnp_TxnRef": "ET-1F9D3A18260710", "vnp_PayDate": "20260710155741", "vnp_TmnCode": "MCLYG8VX", "vnp_BankCode": "NCB", "vnp_CardType": "ATM", "vnp_OrderInfo": "Thanh toan don ET-1F9D3A18260710", "vnp_BankTranNo": "VNP15616549", "vnp_ResponseCode": "00", "vnp_TransactionNo": "15616549", "vnp_TransactionStatus": "00"}	2026-07-10 08:57:21.706323+00
 74	208	vnpay	15627535	7990000.00	VND	success	{"vnp_Amount": "799000000", "vnp_TxnRef": "ET-86AE21C6260720", "vnp_PayDate": "20260720104636", "vnp_TmnCode": "MCLYG8VX", "vnp_BankCode": "NCB", "vnp_CardType": "ATM", "vnp_OrderInfo": "Thanh toan don ET-86AE21C6260720", "vnp_BankTranNo": "VNP15627535", "vnp_ResponseCode": "00", "vnp_TransactionNo": "15627535", "vnp_TransactionStatus": "00"}	2026-07-20 03:46:17.175929+00
 75	211	vnpay	15627555	33990000.00	VND	success	{"vnp_Amount": "3399000000", "vnp_TxnRef": "ET-4966EFD6260720", "vnp_PayDate": "20260720111115", "vnp_TmnCode": "MCLYG8VX", "vnp_BankCode": "NCB", "vnp_CardType": "ATM", "vnp_OrderInfo": "Thanh toan don ET-4966EFD6260720", "vnp_BankTranNo": "VNP15627555", "vnp_ResponseCode": "00", "vnp_TransactionNo": "15627555", "vnp_TransactionStatus": "00"}	2026-07-20 04:10:55.848986+00
+78	220	momo	4793028851	49990000.00	VND	success	{"amount": "49990000", "message": "Successful.", "orderId": "ET-0A2EB536260806__4fe0df0b-235c-45b4-a1f8-38742bbdc389", "payType": "napas", "transId": "4793028851", "extraData": "eyJvcmRlcl9jb2RlIjoiRVQtMEEyRUI1MzYyNjA4MDYiLCJvcmRlcl9pZCI6MzE1fQ==", "orderInfo": "Thanh toán đơn ET-0A2EB536260806", "orderType": "momo_wallet", "profileId": "C97DC182102EEEC2DBD12271849C20830C1351D0", "requestId": "170992e3-13b9-4a85-84e0-ea70a89bf3ed", "signature": "45e43c40273a7a70c66476ae349ea1a51bef7a73d5e01988b0efa1a9599ff1ae", "resultCode": "0", "partnerCode": "MOMO", "responseTime": "1786006231265"}	2026-08-06 08:50:32.408291+00
 \.
 
 
@@ -6495,6 +6420,11 @@ COPY public.user_coupons (id, user_id, coupon_id, created_at, updated_at) FROM s
 7	10	119	2026-07-28 11:28:15	2026-07-28 11:28:15
 8	10	118	2026-07-28 11:28:20	2026-07-28 11:28:20
 9	11	120	2026-07-31 10:58:21	2026-07-31 10:58:21
+10	11	121	2026-08-06 10:31:12	2026-08-06 10:31:12
+11	11	119	2026-08-06 10:31:18	2026-08-06 10:31:18
+12	11	118	2026-08-06 10:31:20	2026-08-06 10:31:20
+13	11	117	2026-08-06 10:32:00	2026-08-06 10:32:00
+14	11	1	2026-08-06 10:32:02	2026-08-06 10:32:02
 \.
 
 
@@ -6518,8 +6448,8 @@ COPY public.users (id, name, email, password, phone, address_line, province, dis
 361	Nguyễn Văn A	test@example.com	$2y$12$aDn9bbuMIfAQ19pGWnpmmutuXI9mYFpCpxLSCL9d0SD5TAbLixmpK	0123456787	12 Nguyễn Văn A	Hà Nội	Cầu Giấy	Dịch Vọng	t	2026-07-24 13:39:55+00	\N	2026-07-24 13:39:55+00	2026-07-29 11:12:50+00	\N	\N	500	0.00	\N	\N	f	\N	t
 362	Trần Thị B	customer@etech.com	$2y$12$RV6K5F3eBl4ILEDjaJ9M/.bONxePAyN94sfAEjqrwqw1XNwABpW8.	0901000002	56 Trần Phú	Hồ Chí Minh	Quận 1	Phường Bến Nghé	t	2026-07-24 13:39:55+00	\N	2026-07-24 13:39:55+00	2026-07-29 11:12:50+00	\N	\N	0	0.00	\N	\N	f	\N	t
 10	E-TECH MARKET	e_tech_market@gmail.com	$2y$12$kyJv3Ab5NxnG3vdRGERkTuvSIXcr/yxzv/VSdTAc.h.cmjuRdrMq2	1234567890	123	123	123	123	t	\N	pFxzbtRQblYjc6gnn1TsHcppYU7nIhXsZXcegr9Auu0URisQBtRGsgAebvt1	2026-05-03 20:47:01+00	2026-07-29 11:12:50+00	\N	http://nginx:8000/storage/avatars/mDUg5foUH0qYWvG9PCnujm2Q0d5qWA57IrIkQDLN.png	725	81628000.00	3	\N	f	\N	t
-11	Đỗ Việt Hoàng	doviethoang@gmail.com	$2y$12$HLzWuy3aXGq2XiZYhHu6WeYygw0NhpswnCjFHkrzNojtBa88gJjri	1234567890	Số 5, Ngõ 2, Kiều Mai	Thành Phố Hà Nội	Quận Nam Từ LIêm	Phường Xuân Phương	t	\N	wfvcetBndAWs4QKjPuFAs0N0XOeh02bILKHEf6lJhFzdEBi3mKW6IXnuvrLw	2026-05-04 23:18:01+00	2026-07-29 11:12:50+00	\N	http://localhost:8000/storage/avatars/hEe0GJE5XwMY09by9Vbwr5HrXez9gxWpdwIgBbWL.png	1983	246959000.00	4	\N	f	\N	t
 363	Trần Văn Nghĩa	nghia123@etech.com	$2y$12$SPiZaxprdxeBE5PmlX942O1FKBqMQ4dScyrVoC/OVGgE5FSmxE9/i	0987654321	\N	\N	\N	\N	t	\N	\N	2026-07-29 11:15:56+00	2026-07-29 16:36:59+00	\N	http://nginx:8000/storage/avatars/5jG8A9QMztaYVj5XU9QJZsNfatHgW0PpruleTcnC.jpg	586	51890000.00	3	\N	f	\N	t
+11	Đỗ Việt Hoàng	doviethoang@gmail.com	$2y$12$HLzWuy3aXGq2XiZYhHu6WeYygw0NhpswnCjFHkrzNojtBa88gJjri	1234567890	Số 5, Ngõ 2, Kiều Mai	Thành Phố Hà Nội	Quận Nam Từ LIêm	Phường Xuân Phương	t	\N	wfvcetBndAWs4QKjPuFAs0N0XOeh02bILKHEf6lJhFzdEBi3mKW6IXnuvrLw	2026-05-04 23:18:01+00	2026-08-06 15:53:15+00	\N	http://localhost:8000/storage/avatars/hEe0GJE5XwMY09by9Vbwr5HrXez9gxWpdwIgBbWL.png	3721	333939000.00	4	\N	f	\N	t
 \.
 
 
@@ -6614,7 +6544,7 @@ SELECT pg_catalog.setval('public.blog_posts_id_seq', 47, true);
 -- Name: cart_items_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.cart_items_id_seq', 186, true);
+SELECT pg_catalog.setval('public.cart_items_id_seq', 188, true);
 
 
 --
@@ -6684,14 +6614,14 @@ SELECT pg_catalog.setval('public.inventory_id_seq', 133, true);
 -- Name: inventory_transactions_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.inventory_transactions_id_seq', 346, true);
+SELECT pg_catalog.setval('public.inventory_transactions_id_seq', 348, true);
 
 
 --
 -- Name: jobs_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.jobs_id_seq', 615, true);
+SELECT pg_catalog.setval('public.jobs_id_seq', 640, true);
 
 
 --
@@ -6705,7 +6635,7 @@ SELECT pg_catalog.setval('public.membership_ranks_id_seq', 4, true);
 -- Name: migrations_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.migrations_id_seq', 73, true);
+SELECT pg_catalog.setval('public.migrations_id_seq', 74, true);
 
 
 --
@@ -6719,14 +6649,14 @@ SELECT pg_catalog.setval('public.newsletter_subscriptions_id_seq', 33, true);
 -- Name: notifications_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.notifications_id_seq', 34, true);
+SELECT pg_catalog.setval('public.notifications_id_seq', 39, true);
 
 
 --
 -- Name: order_items_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.order_items_id_seq', 264, true);
+SELECT pg_catalog.setval('public.order_items_id_seq', 266, true);
 
 
 --
@@ -6740,21 +6670,21 @@ SELECT pg_catalog.setval('public.order_return_requests_id_seq', 5, true);
 -- Name: order_status_histories_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.order_status_histories_id_seq', 305, true);
+SELECT pg_catalog.setval('public.order_status_histories_id_seq', 314, true);
 
 
 --
 -- Name: orders_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.orders_id_seq', 313, true);
+SELECT pg_catalog.setval('public.orders_id_seq', 315, true);
 
 
 --
 -- Name: payments_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.payments_id_seq', 218, true);
+SELECT pg_catalog.setval('public.payments_id_seq', 220, true);
 
 
 --
@@ -6768,14 +6698,14 @@ SELECT pg_catalog.setval('public.permissions_id_seq', 18, true);
 -- Name: personal_access_tokens_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.personal_access_tokens_id_seq', 398, true);
+SELECT pg_catalog.setval('public.personal_access_tokens_id_seq', 410, true);
 
 
 --
 -- Name: point_history_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.point_history_id_seq', 22, true);
+SELECT pg_catalog.setval('public.point_history_id_seq', 24, true);
 
 
 --
@@ -6873,21 +6803,21 @@ SELECT pg_catalog.setval('public.trade_in_conditions_id_seq', 271, true);
 -- Name: trade_in_requests_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.trade_in_requests_id_seq', 6, true);
+SELECT pg_catalog.setval('public.trade_in_requests_id_seq', 7, true);
 
 
 --
 -- Name: transactions_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.transactions_id_seq', 77, true);
+SELECT pg_catalog.setval('public.transactions_id_seq', 78, true);
 
 
 --
 -- Name: user_coupons_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.user_coupons_id_seq', 9, true);
+SELECT pg_catalog.setval('public.user_coupons_id_seq', 14, true);
 
 
 --
@@ -7020,6 +6950,14 @@ ALTER TABLE ONLY public.categories
 
 ALTER TABLE ONLY public.categories
     ADD CONSTRAINT categories_slug_key UNIQUE (slug);
+
+
+--
+-- Name: category_coupon category_coupon_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.category_coupon
+    ADD CONSTRAINT category_coupon_pkey PRIMARY KEY (category_id, coupon_id);
 
 
 --
@@ -8026,6 +7964,22 @@ ALTER TABLE ONLY public.categories
 
 
 --
+-- Name: category_coupon category_coupon_category_id_foreign; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.category_coupon
+    ADD CONSTRAINT category_coupon_category_id_foreign FOREIGN KEY (category_id) REFERENCES public.categories(id) ON DELETE CASCADE;
+
+
+--
+-- Name: category_coupon category_coupon_coupon_id_foreign; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.category_coupon
+    ADD CONSTRAINT category_coupon_coupon_id_foreign FOREIGN KEY (coupon_id) REFERENCES public.coupons(id) ON DELETE CASCADE;
+
+
+--
 -- Name: contact_messages contact_messages_handled_by_user_id_forei; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -8516,5 +8470,5 @@ REVOKE USAGE ON SCHEMA public FROM PUBLIC;
 -- PostgreSQL database dump complete
 --
 
-\unrestrict Qd0jhNObmEVj2IbTpTtu2EfJaEiHfEpt2FojyCFWyS2hr2D8GkInAZSy51LqvT7
+\unrestrict o62b7obq2DzJGqX3fk5NRcAcsc9IbJG3tEHHbK2fMYFmGB1017jJdEShcjRieLy
 
