@@ -83,6 +83,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/me/avatar', [AuthController::class, 'updateAvatar']);
     Route::patch('/me/password', [AuthController::class, 'changePassword'])->middleware('throttle:5,1');
     Route::get('/me/sessions', [AuthController::class, 'sessions']);
+    Route::delete('/me/sessions', [AuthController::class, 'revokeAllSessions']);
+    Route::delete('/me/sessions/{id}', [AuthController::class, 'revokeSession']);
     Route::post('/auth/logout', [AuthController::class, 'logout']);
     Route::delete('/me', [AuthController::class, 'deleteAccount']);
 

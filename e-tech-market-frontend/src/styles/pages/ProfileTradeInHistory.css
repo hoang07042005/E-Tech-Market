@@ -168,8 +168,7 @@
 /* ── Card ── */
 .ptih-card {
   background: #fff;
-  border: 1.5px solid #e2e8f0;
-  border-radius: 5px;
+  border-bottom: 1.5px dashed #ff5b09;
   cursor: pointer;
   transition: box-shadow 0.2s, border-color 0.2s;
   overflow: hidden;
@@ -350,7 +349,7 @@
   color: #475569;
 }
 .ptih-meta-code strong {
-  color: #334155;
+  color: #fa1616;
   font-weight: 600;
 }
 .ptih-meta-date {
@@ -955,9 +954,6 @@ html.dark .ptih-no-image-text { color: #64748b; }
     width: 100%;
     min-width: unset;
     flex-shrink: unset;
-    margin-top: 10px;
-    padding-top: 10px;
-    border-top: 1px dashed #e2e8f0;
   }
   .ptih-card-price-wrap { text-align: left; }
   .ptih-card-price-label { font-size: 11px; }

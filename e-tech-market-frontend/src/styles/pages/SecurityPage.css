@@ -1,378 +1,516 @@
 .secRoot {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 20px;
 }
 
-.secTopCard {
-  border: 1px solid var(--et-border);
-  background: #fff;
-  border-radius: 5px;
-  padding: 16px 18px;
+/* =========================================
+   OVERVIEW HEADER & GRID
+   ========================================= */
+.secHeader {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
-
-.secTopTitle {
-  font-weight: 600;
-  font-size: 14px;
+.secMainTitle {
+  font-weight: 700;
+  font-size: 16px;
   color: #0f172a;
-  margin-bottom: 6px;
+}
+.secMainDesc {
+  color: #64748b;
+  font-size: 13px;
+  font-weight: 500;
 }
 
-.secTopDesc {
-  color: var(--et-text-muted);
+.secOverviewGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+.secOverviewCard {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 12px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+}
+.secOverviewIconWrap {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.secOverviewIconWrap.green { background: #dcfce7; color: #16a34a; }
+.secOverviewIconWrap.blue { background: #e0f2fe; color: #0284c7; }
+.secOverviewIconWrap.orange { background: #ffedd5; color: #ea580c; }
+.secOverviewIconWrap.purple { background: #f3e8ff; color: #9333ea; }
+
+.secOverviewText {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.secOverviewTextTitle {
+  font-size: 11px;
   font-weight: 600;
-  font-size: 12.5px;
-  line-height: 1.6;
+  color: #0f172a;
+}
+.secOverviewTextMain {
+  font-size: 14px;
+  font-weight: 700;
+}
+.secOverviewTextMain.green { color: #16a34a; }
+.secOverviewTextMain.blue { color: #0284c7; }
+.secOverviewTextMain.orange { color: #ea580c; }
+.secOverviewTextMain.purple { color: #9333ea; }
+
+.secOverviewTextSub {
+  font-size: 11px;
+  color: #64748b;
+}
+
+/* =========================================
+   TWO COLUMN GRID (PASSWORD & 2FA)
+   ========================================= */
+.secTwoCol {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
 }
 
 .secSectionCard {
-  border: 1px solid var(--et-border);
-  border-radius: 5px;
-  padding: 30px 30px;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+  display: flex;
+  flex-direction: column;
 }
 
 .secSectionHead {
   display: flex;
-  justify-content: space-between;
   align-items: flex-start;
   gap: 12px;
+  margin-bottom: 20px;
 }
-
-.secSectionHeadLeft {
+.secSectionHeadRight {
   display: flex;
+  justify-content: space-between;
   align-items: flex-start;
-  gap: 10px;
-}
-
-.secSectionTitle {
-  font-weight: 600;
-  font-size: 13px;
-  letter-spacing: -.01em;
-  color: #0f172a;
-}
-
-.secSectionSub {
-  color: var(--et-text-muted);
-  font-weight: 600;
-  font-size: 12.5px;
-  line-height: 1.6;
+  margin-bottom: 20px;
 }
 
 .secIconOrange {
-  color: var(--et-primary-hover);
-  background: rgba(249, 115, 22, .10);
-  border: 1px solid rgba(249, 115, 22, .20);
-  width: 36px;
-  height: 36px;
-  border-radius: 12px;
+  color: #f97316;
+  background: #fff;
+  width: 24px;
+  height: 24px;
   display: flex;
   align-items: center;
   justify-content: center;
-  flex: 0 0 auto;
+  flex-shrink: 0;
 }
 
-.secFormGrid {
-  margin-top: 12px;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
+.secSectionTitle {
+  font-weight: 700;
+  font-size: 14px;
+  color: #0f172a;
+}
+.secSectionSub {
+  color: #64748b;
+  font-weight: 500;
+  font-size: 12px;
+  margin-top: 2px;
 }
 
-.secField {
+/* Forms */
+.secFormCol {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 12px;
+  flex: 1;
 }
 
-.secField label {
+.secInputWrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+.secInputWrap .input-icon {
+  position: absolute;
+  left: 14px;
+  color: #94a3b8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.secInputWrap .input-label-left {
+  position: absolute;
+  left: 40px;
+  font-size: 13px;
+  color: #475569;
+  font-weight: 500;
+  pointer-events: none;
+}
+.secInputWrap input {
+  width: 100%;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 12px 14px 12px 180px;
+  font-size: 13px;
+  outline: none;
+  color: #0f172a;
+  transition: border-color 0.2s;
+}
+.secInputWrap input:focus {
+  border-color: #f97316;
+}
+.secInputWrap input::placeholder {
+  color: #cbd5e1;
+}
+
+.secBtnRow {
+  margin-top: 24px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.secPrimaryBtn {
+  background: #f97316;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.secPrimaryBtn:hover:enabled {
+  background: #ea580c;
+}
+.secPrimaryBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* 2FA Card specifics */
+.sec2faStatusBox {
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: 8px;
+  padding: 14px 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+.sec2faStatusBox.off {
+  background: #fff7ed;
+  border-color: #fed7aa;
+}
+.sec2faStatusLeft {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+.sec2faStatusIcon {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #dcfce7;
+  color: #16a34a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.sec2faStatusBox.off .sec2faStatusIcon {
+  background: #ffedd5;
+  color: #ea580c;
+}
+.sec2faStatusTextTitle {
+  font-weight: 700;
+  font-size: 13px;
+  color: #16a34a;
+}
+.sec2faStatusBox.off .sec2faStatusTextTitle {
+  color: #ea580c;
+}
+.sec2faStatusTextSub {
+  font-size: 12px;
+  color: #15803d;
+  margin-top: 2px;
+}
+.sec2faStatusBox.off .sec2faStatusTextSub {
+  color: #c2410c;
+}
+
+.secMethodTitle {
+  font-size: 12px;
+  color: #64748b;
+  margin-bottom: 8px;
+}
+.secMethodBox {
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #475569;
+  background: #f8fafc;
+  margin-bottom: 24px;
+}
+
+.sec2faFooterText {
+  font-size: 12px;
+  color: #64748b;
+}
+
+.secOutlineOrangeBtn {
+  background: #fff;
+  color: #f97316;
+  border: 1px solid #f97316;
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.secOutlineOrangeBtn:hover {
+  background: #fff7ed;
+}
+
+.sec2faBottomRow {
+  margin-top: auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* =========================================
+   SESSION MANAGEMENT
+   ========================================= */
+.secSessionTopBtn {
+  background: #fff;
+  border: 1px solid #f97316;
+  color: #f97316;
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.secSessionTopBtn:hover { background: #fff7ed; }
+
+.secSessionsList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.secSessionRow {
+  display: grid;
+  grid-template-columns: 1fr 100px 180px 90px;
+  align-items: center;
+  padding: 16px 20px;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  background: #fff;
+}
+.secSessionRow.current {
+  background: #fff7ed;
+  border-color: #fed7aa;
+}
+.secSessionRowLeft {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+.secSessionDeviceIcon {
+  color: #64748b;
+}
+.secSessionRow.current .secSessionDeviceIcon {
+  color: #f97316;
+}
+.secSessionDeviceName {
+  font-weight: 700;
+  font-size: 13px;
+  color: #0f172a;
+  display: flex;
+  align-items: center;
+}
+.secSessionCurrentTag {
+  color: #f97316;
+  font-size: 10px;
+  font-weight: 600;
+  background: #ffedd5;
+  padding: 2px 8px;
+  border-radius: 999px;
+  margin-left: 8px;
+}
+.secSessionLoc {
+  font-size: 12px;
+  color: #64748b;
+  margin-top: 4px;
+}
+.secSessionTagCol {
+  display: flex;
+  justify-content: center;
+}
+.secSessionStatusTag {
+  color: #f97316;
   font-size: 11px;
   font-weight: 600;
-  letter-spacing: .12em;
-  text-transform: uppercase;
-  color: var(--et-text-muted);
+  background: #fff7ed;
+  padding: 4px 12px;
+  border-radius: 9999px;
+  text-align: center;
 }
-
-.secField input {
-  border: 1px solid rgba(15, 23, 42, .008);
-  background: #e0e1e263;
-  border-radius: 5px;
-  padding: 12px 14px;
+.secSessionTimeCol {
+  font-size: 11px;
+  color: #64748b;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.secSessionActionCol {
+  display: flex;
+  justify-content: flex-end;
+}
+.secSessionLogoutBtn {
+  border: 1px solid #fecaca;
+  color: #ef4444;
+  background: #fff;
+  font-size: 11px;
   font-weight: 600;
-  outline: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.secSessionLogoutBtn:hover {
+  background: #fef2f2;
+}
+.secSessionMenuBtn {
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  cursor: pointer;
+  padding: 4px;
 }
 
-.secField input:focus {
-  border-color: rgba(249, 115, 22, .55);
-  box-shadow: 0 0 0 3px rgba(249, 115, 22, .14);
+.secSessionsMore {
+  margin-top: 12px;
+  text-align: center;
+}
+.secSessionsMoreBtn {
+  background: transparent;
+  border: none;
+  color: #f97316;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
 }
 
+/* =========================================
+   DANGER ZONE
+   ========================================= */
+.secDangerZone {
+  border-color: #fecaca;
+}
+.secDangerTitle {
+  font-weight: 700;
+  font-size: 14px;
+  color: #0f172a;
+}
+.secDangerIcon {
+  color: #ef4444;
+}
+
+.secDangerTopBtn {
+  border: 1px solid #ef4444;
+  color: #ef4444;
+  background: #fff;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.secDangerTopBtn:hover { background: #fef2f2; }
+
+.secDangerList {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 24px;
+}
+.secDangerRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.secDangerRowIcon {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #fef2f2;
+  color: #ef4444;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.secDangerRowTextTitle {
+  font-size: 13px;
+  font-weight: 600;
+  color: #0f172a;
+}
+.secDangerRowTextSub {
+  font-size: 12px;
+  color: #64748b;
+  margin-top: 2px;
+}
+
+
+/* Messages */
 .secInlineError {
   margin-top: 12px;
   color: #b91c1c;
   background: rgba(239, 68, 68, .06);
   border: 1px solid rgba(239, 68, 68, .22);
-  border-radius: 12px;
+  border-radius: 8px;
   padding: 10px 12px;
-  font-weight: 600;
+  font-size: 13px;
+  font-weight: 500;
 }
-
 .secInlineSuccess {
   margin-top: 12px;
   color: #166534;
   background: rgba(34, 197, 94, .10);
   border: 1px solid rgba(34, 197, 94, .22);
-  border-radius: 12px;
+  border-radius: 8px;
   padding: 10px 12px;
-  font-weight: 600;
+  font-size: 13px;
+  font-weight: 500;
 }
 
-.secBtnRow {
-  margin-top: 14px;
-  display: flex;
-  justify-content: right;
-}
-
-.secPrimaryBtn {
-  border: none;
-  background: var(--et-primary);
-  color: #fff;
-  font-weight: 600;
-  padding: 12px 16px;
-  border-radius: 12px;
-  cursor: pointer;
-  min-width: 150px;
-}
-
-.secPrimaryBtn:disabled {
-  opacity: .6;
-  cursor: not-allowed;
-}
-
-.secPrimaryBtn:hover:enabled {
-  background: var(--et-primary-hover);
-}
-
-.secSwitchHead {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 12px;
-}
-
-.sec2faBody {
-  margin-top: 12px;
-}
-
-.sec2faText {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.sec2faBadge {
-  color: #166534;
-  background: rgba(34, 197, 94, .12);
-  border: 1px solid rgba(34, 197, 94, .25);
-  padding: 6px 10px;
-  border-radius: 999px;
-  font-weight: 600;
-  font-size: 11px;
-  letter-spacing: .06em;
-  text-transform: uppercase;
-  width: fit-content;
-}
-
-.sec2faBadgeOff {
-  color: #9a3412;
-  background: rgba(249, 115, 22, .12);
-  border-color: rgba(249, 115, 22, .25);
-}
-
-.sec2faHint {
-  color: var(--et-text-muted);
-  font-weight: 600;
-  font-size: 12.5px;
-  line-height: 1.6;
-}
-
-.secBackupBlock {
-  margin-top: 14px;
-  border-top: 1px dashed rgba(249, 115, 22, .25);
-  padding-top: 12px;
-}
-
-.secBackupTitle {
-  font-weight: 600;
-  font-size: 12.5px;
-  margin-bottom: 10px;
-}
-
-.secBackupGrid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 10px;
-}
-
-.secBackupCode {
-  background: #f8fafc;
-  border: 1px solid rgba(15, 23, 42, .08);
-  border-radius: 12px;
-  padding: 10px 12px;
-  font-weight: 600;
-  color: #0f172a;
-  font-size: 12px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.secSessionHead {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 12px;
-}
-
-.secSessionsGrid {
-  margin-top: 12px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.secSessionCard {
-  border: 1px solid rgba(15, 23, 42, .08);
-  border-radius: 14px;
-  padding: 12px 12px;
-  background: #fff;
-}
-
-.secSessionCard.current {
-  border-color: rgba(249, 115, 22, .35);
-  box-shadow: 0 0 0 3px rgba(249, 115, 22, .10);
-}
-
-.secSessionTop {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 12px;
-}
-
-.secSessionDevice {
-  font-weight: 600;
-  color: #0f172a;
-}
-
-.secSessionMeta {
-  color: var(--et-text-muted);
-  font-weight: 600;
-  font-size: 12.5px;
-  margin-top: 4px;
-}
-
-.secSessionLoc {
-  color: var(--et-text-muted);
-  font-weight: 600;
-  font-size: 12px;
-  margin-top: 4px;
-}
-
-.secRevokeBtn {
-  border: 1px solid rgba(15, 23, 42, .10);
-  background: #fff;
-  width: 32px;
-  height: 32px;
-  border-radius: 10px;
-  cursor: pointer;
-  color: #dc2626;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.secRevokeBtn:hover {
-  border-color: rgba(220, 38, 38, .25);
-  background: rgba(220, 38, 38, .06);
-}
-
-.secSessionBottom {
-  margin-top: 10px;
-  display: flex;
-  gap: 10px;
-  align-items: center;
-  flex-wrap: wrap;
-}
-
-.secChip {
-  border: 1px solid rgba(15, 23, 42, .10);
-  background: #f8fafc;
-  color: #0f172a;
-  border-radius: 999px;
-  padding: 6px 10px;
-  font-weight: 600;
-  font-size: 11px;
-}
-
-.secChipOn {
-  border-color: rgba(249, 115, 22, .28);
-  color: var(--et-primary-hover);
-  background: rgba(249, 115, 22, .10);
-}
-
-.secEmpty {
-  padding: 16px 0;
-  color: var(--et-text-muted);
-  font-weight: 600;
-  text-align: center;
-}
-
-.secDangerZone {
-  border-color: rgba(239, 68, 68, .22);
-  background: #fff;
-}
-
-.secDangerTitle {
-  font-weight: 600;
-  color: #b91c1c;
-  letter-spacing: -.01em;
-}
-
-.secDangerOutlineBtn {
-  border: 1px solid rgba(239, 68, 68, .35);
-  background: #fff;
-  color: #ef4444;
-  font-weight: 600;
-  padding: 10px 12px;
-  border-radius: 12px;
-  cursor: pointer;
-  white-space: nowrap;
-}
-
-.secDangerOutlineBtn:disabled {
-  opacity: .55;
-  cursor: not-allowed;
-}
-
-.secDangerOutlineBtn:hover:enabled {
-  background: rgba(239, 68, 68, .06);
-}
-
-@media (max-width: 980px) {
-  .secFormGrid {
-    grid-template-columns: 1fr
-  }
-
-  .secBackupGrid {
-    grid-template-columns: 1fr
-  }
-
-  .secSessionHead {
-    flex-direction: column;
-    align-items: stretch
-  }
-}
-
+/* Modals etc... keep as is or minimal */
 .secModalOverlay {
   position: fixed;
   inset: 0;
@@ -384,74 +522,51 @@
   justify-content: center;
   padding: 16px;
 }
-
 .secModalContent {
   background: #fff;
   border-radius: 16px;
   width: 100%;
   max-width: 440px;
   padding: 24px;
-  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1);
   display: flex;
   flex-direction: column;
   gap: 16px;
 }
+.secModalTitle { font-weight: 700; font-size: 18px; color: #0f172a; }
+.secModalDesc { color: #64748b; font-size: 14px; line-height: 1.5; }
+.secModalActions { display: flex; justify-content: flex-end; gap: 12px; margin-top: 8px; }
+.secModalBtnCancel { background: #f1f5f9; color: #334155; border: none; padding: 10px 16px; border-radius: 8px; font-weight: 600; cursor: pointer; }
+.secModalBtnDanger { background: #ef4444; color: #fff; border: none; padding: 10px 16px; border-radius: 8px; font-weight: 600; cursor: pointer; }
 
-.secModalTitle {
-  font-weight: 700;
-  font-size: 18px;
-  color: #0f172a;
+/* Responsive */
+@media (max-width: 980px) {
+  .secOverviewGrid { grid-template-columns: 1fr 1fr; }
+  .secTwoCol { grid-template-columns: 1fr; }
+  .secSessionStatusCol { flex-direction: column; gap: 8px; align-items: flex-end; }
 }
-
-.secModalDesc {
-  color: var(--et-text-muted);
-  font-weight: 500;
-  font-size: 14px;
-  line-height: 1.5;
-}
-
-.secModalDesc strong {
-  color: #ef4444;
-}
-
-.secModalActions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 12px;
-  margin-top: 8px;
-}
-
-.secModalBtnCancel {
-  background: #f1f5f9;
-  color: #334155;
-  border: none;
-  padding: 10px 16px;
-  border-radius: 8px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.15s ease;
-}
-
-.secModalBtnCancel:hover {
-  background: #e2e8f0;
-}
-
-.secModalBtnDanger {
-  background: #ef4444;
-  color: #fff;
-  border: none;
-  padding: 10px 16px;
-  border-radius: 8px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.15s ease;
-}
-
-.secModalBtnDanger:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-.secModalBtnDanger:hover:enabled {
-  background: #dc2626;
+@media (max-width: 500px) {
+  .secOverviewGrid { grid-template-columns: 1fr 1fr; }
+  .secOutlineOrangeBtn {
+    width: 145px;
+    padding: 10px 12px;
+  }
+  .secSessionRow {
+    grid-template-columns: 1fr;
+    padding: 10px 12px;
+  }
+  .secSessionDeviceName{
+    font-size: 13px;
+  }
+  .secSessionLoc{
+    font-size: 12px;
+  }
+  .secSessionStatusTag{
+    font-size: 12px;
+    padding: 4px 12px;
+  }
+  .secSessionLogoutBtn{
+    font-size: 12px;
+    padding: 6px 12px;
+  }
 }

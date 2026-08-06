@@ -27,7 +27,14 @@ class AuthController extends Controller
     private function createTokenResponse(Request $r, User $user, int $minutes = 60 * 24): array
     {
         $expiresAt = Carbon::now()->addMinutes($minutes);
-        $token = $user->createToken('auth', ['*'], $expiresAt)->plainTextToken;
+        $tokenName = substr($r->userAgent() ?? 'Unknown Device', 0, 255);
+        
+        $isMobileClient = $r->header('X-Client-Platform') === 'mobile';
+        if ($isMobileClient) {
+            $tokenName = 'E-Tech App • ' . $tokenName;
+        }
+
+        $token = $user->createToken($tokenName, ['*'], $expiresAt)->plainTextToken;
 
         // Determine cookie settings based on environment
         $appUrl = config('app.url', '');
@@ -289,6 +296,28 @@ class AuthController extends Controller
         });
 
         return response()->json(["data"=>$data]);
+    }
+
+    public function revokeSession(Request $r, $id)
+    {
+        $user = $r->user();
+        if(!$user instanceof User) {
+            return response()->json(["message"=>"Unauthorized"], 401);
+        }
+
+        $user->tokens()->where('id', $id)->delete();
+        return response()->json(["message" => "Session revoked"]);
+    }
+
+    public function revokeAllSessions(Request $r)
+    {
+        $user = $r->user();
+        if(!$user instanceof User) {
+            return response()->json(["message"=>"Unauthorized"], 401);
+        }
+
+        $user->tokens()->delete();
+        return response()->json(["message" => "All sessions revoked"]);
     }
 
     public function deleteAccount(Request $r)
