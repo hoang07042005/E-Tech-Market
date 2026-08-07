@@ -176,7 +176,7 @@
 .wlCardRemove {
   position: absolute;
   top: 12px;
-  right: 12px;
+  left: 12px;
   width: 36px;
   height: 36px;
   border-radius: 50%;
@@ -186,7 +186,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #94a3b8;
+  color: #fa1d1d;
   cursor: pointer;
   transition: all .2s;
   z-index: 2;
@@ -333,6 +333,8 @@
   font-size: 15px;
   font-weight: 600;
   text-decoration: none;
+  width: 320px;
+  
 }
 
 @media (max-width: 980px) {
@@ -391,7 +393,9 @@
   .wlMobileFilterWrap {
     display: flex;
     margin-bottom: 20px;
+    justify-content: right;
   }
+
 
   .wlSidebar {
     position: fixed;
@@ -452,7 +456,8 @@
     font-size: 13px;
     margin-bottom: 4px;
   }
-  
+   
+
   .wlCardDesc {
     font-size: 11px;
     margin-bottom: 12px;
@@ -513,4 +518,12 @@
   color: #f91616;
   border-bottom-color: #f91616;
   font-weight: 600;
+}
+
+@media (max-width: 480px) {
+ .wlTabsContainer{
+    margin-bottom: 10px;
+  }
+
+  
 }

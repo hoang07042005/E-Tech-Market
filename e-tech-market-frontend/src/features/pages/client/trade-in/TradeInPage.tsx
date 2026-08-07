@@ -240,7 +240,7 @@ const TradeInPage = () => {
           <div className="ti-content-grid">
             
             {/* Column 1: Info */}
-            <div className="ti-column">
+            <div className={`ti-column ${step === 1 ? 'ti-mobile-active' : 'ti-mobile-hidden'}`}>
               <div className="ti-col-header">
                 <div className="ti-col-icon">
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="4" y="4" width="16" height="16" rx="2" ry="2"></rect><rect x="9" y="9" width="6" height="6"></rect><line x1="9" y1="1" x2="9" y2="4"></line><line x1="15" y1="1" x2="15" y2="4"></line><line x1="9" y1="20" x2="9" y2="23"></line><line x1="15" y1="20" x2="15" y2="23"></line><line x1="20" y1="9" x2="23" y2="9"></line><line x1="20" y1="14" x2="23" y2="14"></line><line x1="1" y1="9" x2="4" y2="9"></line><line x1="1" y1="14" x2="4" y2="14"></line></svg>
@@ -370,7 +370,7 @@ const TradeInPage = () => {
             </div>
 
             {/* Column 2: Conditions */}
-            <div className={`ti-column ${step < 2 ? 'ti-disabled-column' : ''}`}>
+            <div className={`ti-column ${step < 2 ? 'ti-disabled-column' : ''} ${step === 2 ? 'ti-mobile-active' : 'ti-mobile-hidden'}`}>
               <div className="ti-col-header">
                 <div className="ti-col-icon">
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
@@ -489,7 +489,7 @@ const TradeInPage = () => {
             </div>
 
             {/* Column 3: Contact */}
-            <div className={`ti-column ${step < 3 ? 'ti-disabled-column' : ''}`}>
+            <div className={`ti-column ${step < 3 ? 'ti-disabled-column' : ''} ${step === 3 ? 'ti-mobile-active' : 'ti-mobile-hidden'}`}>
               <div className="ti-col-header">
                 <div className="ti-col-icon">
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>

@@ -922,6 +922,12 @@
   .ppMainGrid {
     grid-template-columns: 1fr
   }
+  .ppPageNew {
+        padding: 10px 0 30px;
+  }
+  .ppPagination{
+    padding: 0;
+  }
 
   .ppContainer {
     padding: 0 20px
@@ -1021,7 +1027,7 @@
     border: 1px solid #e2e8f0;
     border-radius: 8px;
     color: #475569;
-    font-size: 12px;
+    font-size: 16px;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.2s ease;

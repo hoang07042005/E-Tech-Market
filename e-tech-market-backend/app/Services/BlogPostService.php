@@ -178,8 +178,13 @@ class BlogPostService
                 });
             }
 
-            $p = $query->orderBy('published_at', 'desc')
-                ->paginate($perPage);
+            if (!empty($filters['sort']) && $filters['sort'] === 'views') {
+                $query->orderBy('views', 'desc')->orderBy('published_at', 'desc');
+            } else {
+                $query->orderBy('published_at', 'desc');
+            }
+
+            $p = $query->paginate($perPage);
 
             $p->getCollection()->transform(fn (BlogPost $post) => $this->decoratePost($post));
 

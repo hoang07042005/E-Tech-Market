@@ -161,8 +161,8 @@
 }
 .blogCardTag {
   position: absolute;
-  top: 16px;
-  left: 16px;
+  top: 10px;
+  right: 10px;
   background: #0ea5e9;
   color: #fff;
   padding: 4px 12px;

@@ -68,6 +68,10 @@ export default function BlogPostDetailPage() {
   const [commentContent, setCommentContent] = useState("");
   const [commentSubmitting, setCommentSubmitting] = useState(false);
   const [commentMessage, setCommentMessage] = useState<string | null>(null);
+  
+  const [relatedPosts, setRelatedPosts] = useState<BlogPost[]>([]);
+  const [popularPosts, setPopularPosts] = useState<BlogPost[]>([]);
+
   // ?? Auth is via httpOnly cookie - check user in localStorage instead of token
   const storedUser: StoredUser | null = (() => {
     if (typeof window === "undefined") return null;
@@ -96,12 +100,27 @@ export default function BlogPostDetailPage() {
             ...res,
             comments: res.comments ?? [],
           });
+
+          if (res.category?.id) {
+            apiFetch<{data: BlogPost[]}>(`/api/blog/posts?category_id=${res.category.id}&per_page=5`)
+              .then(relRes => {
+                if (active) setRelatedPosts(relRes.data.filter(p => p.id !== res.id).slice(0, 4));
+              })
+              .catch(console.error);
+          }
         }
       })
       .catch(console.error)
       .finally(() => {
         if (active) setLoading(false);
       });
+
+    apiFetch<{data: BlogPost[]}>(`/api/blog/posts?sort=views&per_page=5`)
+      .then(popRes => {
+        if (active) setPopularPosts(popRes.data.filter(p => p.slug !== slug).slice(0, 4));
+      })
+      .catch(console.error);
+
     return () => {
       active = false;
     };
@@ -376,6 +395,44 @@ export default function BlogPostDetailPage() {
           </div>
 
           <aside className="postSidebar">
+            {relatedPosts.length > 0 && (
+              <div className="postSidebarWidget">
+                <h3 className="postWidgetTitle">Bài viết liên quan</h3>
+                <div className="sidebarPostList">
+                  {relatedPosts.map(rp => (
+                    <Link to={`/blog/posts/${rp.slug}`} key={rp.id} className="sidebarPostItem">
+                      <div className="sidebarPostImg">
+                        <img src={resolveImageUrl(rp.thumbnail_url)} alt={rp.title} />
+                      </div>
+                      <div className="sidebarPostInfo">
+                        <h4 className="sidebarPostItemTitle" title={rp.title}>{rp.title}</h4>
+                        <span className="sidebarPostDate">{new Date(rp.published_at).toLocaleDateString("vi-VN")}</span>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {popularPosts.length > 0 && (
+              <div className="postSidebarWidget">
+                <h3 className="postWidgetTitle">Xem nhiều nhất</h3>
+                <div className="sidebarPostList">
+                  {popularPosts.map(rp => (
+                    <Link to={`/blog/posts/${rp.slug}`} key={rp.id} className="sidebarPostItem">
+                      <div className="sidebarPostImg">
+                        <img src={resolveImageUrl(rp.thumbnail_url)} alt={rp.title} />
+                      </div>
+                      <div className="sidebarPostInfo">
+                        <h4 className="sidebarPostItemTitle" title={rp.title}>{rp.title}</h4>
+                        <span className="sidebarPostDate">{rp.views || 0} lượt xem</span>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            )}
+
             <div className="postSidebarWidget blogNewsletter">
               <div className="blogNewsletterIcon">
                 <svg
@@ -397,24 +454,6 @@ export default function BlogPostDetailPage() {
                 Cập nhật tin công nghệ mới nhất hàng tuần.
               </p>
               <button className="blogNewsletterBtn">Đăng ký ngay</button>
-            </div>
-
-            <div className="postSidebarWidget">
-              <h3 className="postWidgetTitle">Chuyên mục</h3>
-              <div className="postTagCloud">
-                <Link to="/blog" className="postTag">
-                  Công nghệ
-                </Link>
-                <Link to="/blog" className="postTag">
-                  Đánh giá
-                </Link>
-                <Link to="/blog" className="postTag">
-                  Mẹo hay
-                </Link>
-                <Link to="/blog" className="postTag">
-                  Xu hướng
-                </Link>
-              </div>
             </div>
           </aside>
         </div>

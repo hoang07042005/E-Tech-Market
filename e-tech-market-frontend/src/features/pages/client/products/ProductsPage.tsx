@@ -1088,7 +1088,7 @@ export default function ProductsPage() {
                         <line x1="9" y1="8" x2="15" y2="8"></line>
                         <line x1="17" y1="16" x2="23" y2="16"></line>
                       </svg>
-                      <span>BỘ LỌC</span>
+                      <span>Bộ lọc</span>
                     </button>
                     <button
                       type="button"

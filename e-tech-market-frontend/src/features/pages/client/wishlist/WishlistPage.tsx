@@ -68,8 +68,7 @@ function WishlistCard({
                 e.preventDefault()
                 onRemove(item.id)
               }}
-              style={{ position: 'absolute', top: 12, right: 12, zIndex: 10, width: '32px', height: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'white', borderRadius: '50%', boxShadow: '0 2px 8px rgba(0,0,0,0.1)', border: 'none', cursor: 'pointer' }}
-            >
+             >
               <TrashIcon />
             </button>
           }
@@ -354,10 +353,27 @@ export default function WishlistPage() {
                 onClick={() => setShowMobileFilters(true)}
                 aria-label="Danh mục"
               >
-                <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-                  <path d="M1 2.33333C1 1.96514 1.29848 1.66666 1.66667 1.66666H12.3333C12.7015 1.66666 13 1.96514 13 2.33333V3.53526C13 3.86475 12.822 4.16858 12.5298 4.3411L8.66667 6.62313V10.3333C8.66667 10.5516 8.56381 10.7566 8.39052 10.8866L6.39052 12.3866C5.97544 12.6979 5.33333 12.4018 5.33333 11.8333V6.62313L1.47017 4.3411C1.17804 4.16858 1 3.86475 1 3.53526V2.33333Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-                Bộ lọc danh mục
+                <svg
+                        width="14"
+                        height="14"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <line x1="4" y1="21" x2="4" y2="14"></line>
+                        <line x1="4" y1="10" x2="4" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="12"></line>
+                        <line x1="12" y1="8" x2="12" y2="3"></line>
+                        <line x1="20" y1="21" x2="20" y2="16"></line>
+                        <line x1="20" y1="12" x2="20" y2="3"></line>
+                        <line x1="1" y1="14" x2="7" y2="14"></line>
+                        <line x1="9" y1="8" x2="15" y2="8"></line>
+                        <line x1="17" y1="16" x2="23" y2="16"></line>
+                      </svg>
+                Bộ lọc
               </button>
             </div>
             
