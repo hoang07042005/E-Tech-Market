@@ -6,56 +6,16 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\UserResource;
 use App\Http\Resources\MembershipRankResource;
 use App\Models\User;
-use Carbon\Carbon;
+use App\Services\AuthService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Cookie;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\ValidationException;
-use Laravel\Sanctum\PersonalAccessToken;
-use Spatie\Permission\Models\Role;
 
 class AuthController extends Controller
 {
-    /**
-     * Create a new token for the user and set as httpOnly cookie.
-     * In production (web): only cookie (no token in body) to prevent XSS theft.
-     * In dev (web): token in body for Bearer auth convenience.
-     * Mobile app (Flutter, no cookie jar): ALWAYS gets the token in body,
-     * regardless of environment — it has no way to read the httpOnly cookie,
-     * so hiding the token there would silently break login/refresh on prod.
-     */
-    private function createTokenResponse(Request $r, User $user, int $minutes = 60 * 24): array
+    protected AuthService $authService;
+
+    public function __construct(AuthService $authService)
     {
-        $expiresAt = Carbon::now()->addMinutes($minutes);
-        $tokenName = substr($r->userAgent() ?? 'Unknown Device', 0, 255);
-        
-        $isMobileClient = $r->header('X-Client-Platform') === 'mobile';
-        if ($isMobileClient) {
-            $tokenName = 'E-Tech App • ' . $tokenName;
-        }
-
-        $token = $user->createToken($tokenName, ['*'], $expiresAt)->plainTextToken;
-
-        // Determine cookie settings based on environment
-        $appUrl = config('app.url', '');
-        $isHttps = str_starts_with($appUrl, 'https://');
-        $isProduction = app()->isProduction();
-        $secure = $isHttps || $isProduction;
-
-        // SameSite: 'none' requires Secure (HTTPS) - else omit for dev
-        // laravel default cookie sameSite is 'lax' which blocks cross-site POST
-        $sameSite = $secure ? 'none' : null;
-
-        $cookie = Cookie::make('sanctum_token', $token, $minutes, '/', null, $secure, true, false, $sameSite);
-
-        // Mobile client (Flutter) can't use the cookie at all -> always give it the token.
-        $isMobileClient = $r->header('X-Client-Platform') === 'mobile';
-
-        // In production (web only): only return token via httpOnly cookie (token not in body)
-        // In dev (web) or mobile (any env): return token in body for Bearer auth
-        $tokenInBody = ($secure && !$isMobileClient) ? null : $token;
-
-        return [$tokenInBody, $cookie];
+        $this->authService = $authService;
     }
 
     public function login(Request $r)
@@ -69,50 +29,18 @@ class AuthController extends Controller
             "password.required" => "Vui lòng nhập mật khẩu."
         ]);
 
-        $u = User::where("email",$r->email)->first();
+        $result = $this->authService->login($r, $r->only(['email', 'password']), $r->input('otp'));
 
-        if(!$u) {
-            throw ValidationException::withMessages(["email"=>["Sai mật khẩu hoặc email không tồn tại."]]);
+        if ($result['requires_2fa']) {
+            return response()->json(['message' => $result['message'], 'requires_2fa' => true], 403);
         }
 
-        if ($u->is_locked || is_null($u->password)) {
-            throw ValidationException::withMessages(["email"=>["Tài khoản của bạn đang trong trạng thái yêu cầu đặt lại mật khẩu. Vui lòng kiểm tra email để nhận liên kết thiết lập mật khẩu mới."]]);
+        $data = ['user' => new UserResource($result['user'])];
+        if ($result['token'] !== null) {
+            $data['token'] = $result['token'];
         }
 
-        if(!Hash::check($r->password,$u->password)) {
-            throw ValidationException::withMessages(["email"=>["Sai mật khẩu hoặc email không tồn tại."]]);
-        }
-
-        if(!$u->is_active) {
-            throw ValidationException::withMessages(["email"=>["Tài khoản của bạn đã bị vô hiệu hóa."]]);
-        }
-
-        if ($u->google2fa_enabled) {
-            if (!$r->filled('otp')) {
-                return response()->json(['message' => '2FA authentication required.', 'requires_2fa' => true], 403);
-            }
-            $google2fa = new \PragmaRX\Google2FAQRCode\Google2FA();
-            if (!$google2fa->verifyKey($u->google2fa_secret, $r->otp)) {
-                throw ValidationException::withMessages(["otp" => ["Mã 2FA không chính xác."]]);
-            }
-        }
-
-        if ($r->hasSession()) {
-            $r->session()->regenerate();
-            \Illuminate\Support\Facades\Auth::guard('web')->login($u);
-        }
-
-        [$token, $cookie] = $this->createTokenResponse($r, $u);
-        $u->load(['roles', 'membershipRank']);
-
-        // In production: token ONLY in httpOnly cookie (not in body) - prevents XSS theft
-        // In dev: token in body for Bearer auth convenience
-        $data = ['user' => new UserResource($u)];
-        if ($token !== null) {
-            $data['token'] = $token;
-        }
-
-        return response()->json($data)->withCookie($cookie);
+        return response()->json($data)->withCookie($result['cookie']);
     }
 
     public function register(Request $r)
@@ -135,56 +63,24 @@ class AuthController extends Controller
             "phone.required" => "Vui lòng nhập số điện thoại."
         ]);
 
-        $u = User::create([
-            "name"=>$r->name,
-            "email"=>$r->email,
-            "phone"=>$r->phone,
-            "password"=>Hash::make($r->password),
-            "is_active"=>true,
-            "rank_id"=>1,
-            "total_spent"=>0
-        ]);
+        $result = $this->authService->register($r, $r->all());
 
-        // Assign default role 'customer' to the newly created user
-        $customerRole = Role::firstOrCreate(['name' => 'customer', 'guard_name' => 'web']);
-        $u->assignRole($customerRole);
-
-        if ($r->hasSession()) {
-            $r->session()->regenerate();
-            \Illuminate\Support\Facades\Auth::guard('web')->login($u);
+        $data = ['user' => new UserResource($result['user'])];
+        if ($result['token'] !== null) {
+            $data['token'] = $result['token'];
         }
 
-        [$token, $cookie] = $this->createTokenResponse($r, $u);
-        $u->load(['roles', 'membershipRank']);
-
-        // In production: token ONLY in httpOnly cookie (not in body) - prevents XSS theft
-        // In dev: token in body for Bearer auth convenience
-        $data = ['user' => new UserResource($u)];
-        if ($token !== null) {
-            $data['token'] = $token;
-        }
-
-        return response()->json($data, 201)->withCookie($cookie);
+        return response()->json($data, 201)->withCookie($result['cookie']);
     }
 
     public function logout(Request $r)
     {
         $user = $r->user();
-        if($user instanceof User) {
-            $current = $user->currentAccessToken();
-            if($current instanceof PersonalAccessToken) {
-                $current->delete();
-            }
+        if(!$user instanceof User) {
+            return response()->json(["message"=>"Unauthorized"], 401);
         }
 
-        if ($r->hasSession()) {
-            \Illuminate\Support\Facades\Auth::guard('web')->logout();
-            $r->session()->invalidate();
-            $r->session()->regenerateToken();
-        }
-
-        // Clear the cookie
-        $cookie = Cookie::forget('sanctum_token');
+        $cookie = $this->authService->logout($r, $user);
 
         return response()->json(["message"=>"Logged out"])->withCookie($cookie);
     }
@@ -192,10 +88,6 @@ class AuthController extends Controller
     public function me(Request $r)
     {
         $user = $r->user();
-        \Illuminate\Support\Facades\Log::debug("[me] User: " . ($user ? $user->email : 'null'));
-        \Illuminate\Support\Facades\Log::debug("[me] Token: " . ($r->bearerToken() ? $r->bearerToken() : 'null'));
-        \Illuminate\Support\Facades\Log::debug("[me] Cookie: " . ($r->cookie('sanctum_token') ? 'present' : 'null'));
-
         if(!$user instanceof User) {
             return response()->json(["message"=>"Unauthorized"], 401);
         }
@@ -221,10 +113,9 @@ class AuthController extends Controller
             "ward"=>"nullable|string|max:100"
         ]);
 
-        $user->fill(array_filter($data))->save();
-        $user->load(['roles', 'membershipRank']);
+        $updatedUser = $this->authService->updateProfile($user, $data);
 
-        return response()->json(["user"=>new UserResource($user)]);
+        return response()->json(["user"=>new UserResource($updatedUser)]);
     }
 
     public function updateAvatar(Request $r)
@@ -238,12 +129,9 @@ class AuthController extends Controller
             "file"=>"required|image|mimes:jpeg,png,jpg,webp|max:4096"
         ]);
 
-        $path = $data['file']->store('avatars', 'public');
-        $user->avatar_url = asset('storage/'.$path);
-        $user->save();
-        $user->load(['roles', 'membershipRank']);
+        $updatedUser = $this->authService->updateAvatar($user, $data['file']);
 
-        return response()->json(["user"=>new UserResource($user)]);
+        return response()->json(["user"=>new UserResource($updatedUser)]);
     }
 
     public function changePassword(Request $r)
@@ -262,20 +150,7 @@ class AuthController extends Controller
             "new_password.required" => "Vui lòng nhập mật khẩu mới."
         ]);
 
-        if(!Hash::check($data['current_password'], $user->password)) {
-            throw ValidationException::withMessages(["current_password"=>["Mật khẩu hiện tại không đúng."]]);
-        }
-
-        if(Hash::check($data['new_password'], $user->password)) {
-            throw ValidationException::withMessages(["new_password"=>["Mật khẩu mới không được trùng với mật khẩu hiện tại."]]);
-        }
-
-        $user->password = Hash::make($data['new_password']);
-        $user->save();
-
-        // Revoke other tokens but keep current
-        $current = $user->currentAccessToken();
-        $user->tokens()->where('id', '!=', $current instanceof PersonalAccessToken ? $current->id : 0)->delete();
+        $this->authService->changePassword($user, $data['current_password'], $data['new_password']);
 
         return response()->json(["message"=>"Password changed"]);
     }
@@ -336,27 +211,7 @@ class AuthController extends Controller
             "password"=>"required|string"
         ]);
 
-        if(!Hash::check($data['password'], $user->password)) {
-            throw ValidationException::withMessages(["password"=>["Password incorrect"]]);
-        }
-
-        // Delete user's orders and related data
-        \Illuminate\Support\Facades\DB::table('orders')->where('user_id', $user->id)->delete();
-        \Illuminate\Support\Facades\DB::table('reviews')->where('user_id', $user->id)->delete();
-        \Illuminate\Support\Facades\DB::table('wishlists')->where('user_id', $user->id)->delete();
-        \Illuminate\Support\Facades\DB::table('carts')->where('user_id', $user->id)->delete();
-        \Illuminate\Support\Facades\DB::table('point_history')->where('user_id', $user->id)->delete();
-
-        // Soft delete - deactivate
-        $user->is_active = false;
-        $user->email = $user->email.'_deleted_'.$user->id.'_'.time();
-        $user->phone = null;
-        $user->avatar_url = null;
-        $user->save();
-
-        // Revoke all tokens
-        $user->tokens()->delete();
-        $user->delete();
+        $this->authService->deleteAccount($user, $data['password']);
 
         return response()->json(["message"=>"Account deleted"]);
     }
@@ -367,92 +222,20 @@ class AuthController extends Controller
             'access_token' => 'required|string',
         ]);
 
-        // Gọi Google API để lấy thông tin user từ access_token
         try {
-            $googleResponse = \Illuminate\Support\Facades\Http::withToken($r->access_token)
-                ->get('https://www.googleapis.com/oauth2/v3/userinfo');
-
-            if (!$googleResponse->successful()) {
-                return response()->json([
-                    'message' => 'Google token không hợp lệ hoặc đã hết hạn.',
-                ], 401);
-            }
-
-            $googleUser = $googleResponse->json();
+            $result = $this->authService->googleLogin($r, $r->access_token);
         } catch (\Exception $e) {
-            \Illuminate\Support\Facades\Log::error('[googleLogin] Google API error: ' . $e->getMessage());
-            return response()->json(['message' => 'Không thể xác thực với Google.'], 500);
+            $code = $e->getMessage() === 'Không lấy được email từ Google.' ? 422 : ($e->getMessage() === 'Tài khoản đã bị vô hiệu hóa.' ? 403 : 401);
+            if ($e->getMessage() === 'Không thể xác thực với Google.') $code = 500;
+            return response()->json(['message' => $e->getMessage()], $code);
         }
 
-        $email = $googleUser['email'] ?? null;
-        $name  = $googleUser['name'] ?? ($googleUser['given_name'] ?? 'Google User');
-        $googleId = $googleUser['sub'] ?? null;
-        $avatarUrl = $googleUser['picture'] ?? null;
-
-        if (!$email || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            return response()->json(['message' => 'Không lấy được email từ Google.'], 422);
+        $data = ['user' => new UserResource($result['user'])];
+        if ($result['token'] !== null) {
+            $data['token'] = $result['token'];
         }
 
-        // Tìm hoặc tạo user theo email
-        $user = User::where('email', $email)->first();
-
-        if ($user) {
-            // Cập nhật google_id và avatar nếu chưa có
-            if (!$user->is_active) {
-                return response()->json(['message' => 'Tài khoản đã bị vô hiệu hóa.'], 403);
-            }
-            $dirty = false;
-            if (!$user->google_id && $googleId) {
-                $user->google_id = $googleId;
-                $dirty = true;
-            }
-            if (!$user->avatar_url && $avatarUrl) {
-                $user->avatar_url = $avatarUrl;
-                $dirty = true;
-            }
-            if ($dirty) {
-                $user->save();
-            }
-        } else {
-            // Tạo user mới từ Google
-            $user = User::create([
-                'name'         => $name,
-                'email'        => $email,
-                'password'     => Hash::make(\Illuminate\Support\Str::random(32)),
-                'google_id'    => $googleId,
-                'avatar_url'   => $avatarUrl,
-                'is_active'    => true,
-                'rank_id'      => 1,
-                'total_spent'  => 0,
-            ]);
-
-            $customerRole = Role::firstOrCreate(['name' => 'customer', 'guard_name' => 'web']);
-            $user->assignRole($customerRole);
-        }
-
-        if ($r->hasSession()) {
-            $r->session()->regenerate();
-            \Illuminate\Support\Facades\Auth::guard('web')->login($user);
-        }
-
-        [$token, $cookie] = $this->createTokenResponse($r, $user);
-
-        \Illuminate\Support\Facades\Log::debug('[googleLogin] token generated', [
-            'email' => $email ?? null,
-            'google_id' => $googleId ?? null,
-            'token_present' => $token !== null,
-            'cookie_name' => $cookie->getName(),
-            'cookie_secure' => $cookie->isSecure(),
-        ]);
-
-        $user->load(['roles', 'membershipRank']);
-
-        $data = ['user' => new UserResource($user)];
-        if ($token !== null) {
-            $data['token'] = $token;
-        }
-
-        return response()->json($data)->withCookie($cookie);
+        return response()->json($data)->withCookie($result['cookie']);
     }
 
     public function loyalty(Request $r)
@@ -462,7 +245,6 @@ class AuthController extends Controller
             return response()->json(["message"=>"Unauthorized"], 401);
         }
 
-        // Refresh user data to get latest rank and total_spent
         $user = User::with('membershipRank')->find($user->id);
 
         $nextRank = \App\Models\MembershipRank::query()
@@ -491,14 +273,10 @@ class AuthController extends Controller
             'token' => 'required|string',
         ]);
 
-        $user = User::where('email', $request->email)->first();
-
-        if (!$user || $user->reset_token !== hash('sha256', $request->token)) {
-            return response()->json(['message' => 'Liên kết không hợp lệ.'], 400);
-        }
-
-        if (Carbon::now()->isAfter($user->reset_token_expires_at)) {
-            return response()->json(['message' => 'Liên kết đặt lại mật khẩu đã hết hạn (quá 15 phút). Vui lòng gửi lại yêu cầu hỗ trợ.'], 400);
+        try {
+            $this->authService->validateLockedResetToken($request->email, $request->token);
+        } catch (\Exception $e) {
+            return response()->json(['message' => $e->getMessage()], $e->getCode() ?: 400);
         }
 
         return response()->json(['message' => 'Token hợp lệ.']);
@@ -515,36 +293,17 @@ class AuthController extends Controller
             'password.confirmed' => 'Xác nhận mật khẩu không khớp.',
         ]);
 
-        $user = User::where('email', $request->email)->first();
-
-        if (!$user || $user->reset_token !== hash('sha256', $request->token)) {
-            return response()->json(['message' => 'Liên kết không hợp lệ.'], 400);
+        try {
+            $result = $this->authService->resetLockedPassword($request, $request->email, $request->token, $request->password);
+        } catch (\Exception $e) {
+            return response()->json(['message' => $e->getMessage()], $e->getCode() ?: 400);
         }
 
-        if (Carbon::now()->isAfter($user->reset_token_expires_at)) {
-            return response()->json(['message' => 'Liên kết đặt lại mật khẩu đã hết hạn (quá 15 phút). Vui lòng gửi lại yêu cầu hỗ trợ.'], 400);
+        $data = ['user' => new UserResource($result['user']), 'message' => 'Đặt lại mật khẩu thành công.'];
+        if ($result['token'] !== null) {
+            $data['token'] = $result['token'];
         }
 
-        $user->password = Hash::make($request->password);
-        $user->reset_token = null;
-        $user->reset_token_expires_at = null;
-        // User was already unlocked by unlock endpoint, but just to be sure:
-        $user->is_locked = false; 
-        $user->save();
-
-        if ($request->hasSession()) {
-            $request->session()->regenerate();
-            \Illuminate\Support\Facades\Auth::guard('web')->login($user);
-        }
-
-        [$token, $cookie] = $this->createTokenResponse($request, $user);
-        $user->load(['roles', 'membershipRank']);
-
-        $data = ['user' => new UserResource($user), 'message' => 'Đặt lại mật khẩu thành công.'];
-        if ($token !== null) {
-            $data['token'] = $token;
-        }
-
-        return response()->json($data)->withCookie($cookie);
+        return response()->json($data)->withCookie($result['cookie']);
     }
 }

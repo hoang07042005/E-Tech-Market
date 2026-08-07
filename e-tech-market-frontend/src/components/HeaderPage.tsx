@@ -38,7 +38,7 @@ const NAV_LABEL: Record<NavKey, string> = {
   Home: "Trang chủ",
   Product: "Sản phẩm",
   Accessory: "Linh kiện",
-  TradeIn: "Thu cũ & đổi mới",
+  TradeIn: "Thu cũ",
   Blog: "Tin tức",
   Contact: "Liên hệ",
   About: "Giới thiệu",
