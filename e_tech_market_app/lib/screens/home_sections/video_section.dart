@@ -12,7 +12,7 @@ class VideoSection extends StatelessWidget {
 
   const VideoSection({
     super.key,
-    required this.videos, 
+    required this.videos,
     required this.isLoading,
     required this.onViewAll,
   });
@@ -25,69 +25,72 @@ class VideoSection extends StatelessWidget {
 
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.fromLTRB(20, 24, 0, 30), // Bỏ padding phải để danh sách trượt tự nhiên ra mép
+      padding: const EdgeInsets.fromLTRB(
+          20, 24, 0, 30), // Bỏ padding phải để danh sách trượt tự nhiên ra mép
       color: Theme.of(context).colorScheme.surface,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-            Padding(
-              padding: const EdgeInsets.only(bottom: 20, right: 20),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          Trans.reviewSection,
-                          style: TextStyle(
-                            fontSize: 11,
-                            fontWeight: FontWeight.w700,
-                            color: _brandColor,
-                            letterSpacing: 1.2,
-                          ),
+          Padding(
+            padding: const EdgeInsets.only(bottom: 20, right: 20),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        Trans.reviewSection,
+                        style: TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w700,
+                          color: _brandColor,
+                          letterSpacing: 1.2,
                         ),
-                        const SizedBox(height: 8),
-                        Text(
-                          Trans.featuredVideo,
-                          style: TextStyle(
-                            fontSize: 25,
-                            fontWeight: FontWeight.w800,
-                            color: Theme.of(context).colorScheme.onSurface,
-                            height: 1.1,
-                          ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        Trans.featuredVideo,
+                        style: TextStyle(
+                          fontSize: 25,
+                          fontWeight: FontWeight.w800,
+                          color: Theme.of(context).colorScheme.onSurface,
+                          height: 1.1,
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
-                  TextButton(
-                    onPressed: onViewAll,
-                    style: TextButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                      minimumSize: Size.zero,
-                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          Trans.viewAll,
-                          style: TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w600,
-                            color: _brandColor,
-                          ),
-                        ),
-                        SizedBox(width: 4),
-                        Icon(Icons.arrow_forward_ios, size: 12, color: _brandColor),
-                      ],
-                    ),
+                ),
+                TextButton(
+                  onPressed: onViewAll,
+                  style: TextButton.styleFrom(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    minimumSize: Size.zero,
+                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                   ),
-                ],
-              ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        Trans.viewAll,
+                        style: TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                          color: _brandColor,
+                        ),
+                      ),
+                      SizedBox(width: 4),
+                      Icon(Icons.arrow_forward_ios,
+                          size: 12, color: _brandColor),
+                    ],
+                  ),
+                ),
+              ],
             ),
+          ),
           if (isLoading)
             _buildSkeletonGrid()
           else if (visibleVideos.isEmpty)
@@ -96,7 +99,9 @@ class VideoSection extends StatelessWidget {
               child: Text(
                 Trans.noVideosYet,
                 textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 14, color: Theme.of(context).colorScheme.onSurfaceVariant),
+                style: TextStyle(
+                    fontSize: 14,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant),
               ),
             )
           else
@@ -121,7 +126,8 @@ class VideoSection extends StatelessWidget {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (_) => VideoDetailScreen(videoId: videoId),
+                              builder: (_) =>
+                                  VideoDetailScreen(videoId: videoId),
                             ),
                           );
                         }
@@ -169,8 +175,10 @@ class _VideoCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final title = video['title']?.toString() ?? 'Video giới thiệu';
 
-    final thumbnail = NetworkUtils.fixDeviceUrl(video['thumbnail_url']?.toString() ?? 
-        video['product']?['main_image_url']?.toString() ?? '');
+    final thumbnail = NetworkUtils.fixDeviceUrl(
+        video['thumbnail_url']?.toString() ??
+            video['product']?['main_image_url']?.toString() ??
+            '');
     final productName = video['product']?['name']?.toString() ?? '';
 
     return SizedBox(
@@ -222,7 +230,10 @@ class _VideoCard extends StatelessWidget {
                             width: 56,
                             height: 56,
                             decoration: BoxDecoration(
-                              color: Theme.of(context).colorScheme.surface.withValues(alpha: 0.9),
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .surface
+                                  .withValues(alpha: 0.9),
                               borderRadius: BorderRadius.circular(50),
                             ),
                             child: Center(
@@ -239,64 +250,64 @@ class _VideoCard extends StatelessWidget {
                   ),
                 ),
               ),
-            const SizedBox(height: 12),
-            Text(
-              title,
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w700,
-                color: Theme.of(context).colorScheme.onSurface,
-                height: 1.3,
-              ),
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-            ),
-            // Loại bỏ dòng miêu tả để card gọn và tập trung vào tiêu đề hơn
-            if (productName.isNotEmpty) ...[
-              const SizedBox(height: 8),
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 8,
-                  vertical: 6,
+              const SizedBox(height: 12),
+              Text(
+                title,
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w700,
+                  color: Theme.of(context).colorScheme.onSurface,
+                  height: 1.3,
                 ),
-                decoration: BoxDecoration(
-                  color: Color(0xFFEF7A45).withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(6),
-                  border: Border.all(
-                    color: Color(0xFFEF7A45).withValues(alpha: 0.2),
-                    width: 1,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+              // Loại bỏ dòng miêu tả để card gọn và tập trung vào tiêu đề hơn
+              if (productName.isNotEmpty) ...[
+                const SizedBox(height: 8),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 6,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Color(0xFFEF7A45).withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(6),
+                    border: Border.all(
+                      color: Color(0xFFEF7A45).withValues(alpha: 0.2),
+                      width: 1,
+                    ),
+                  ),
+                  child: Row(
+                    children: [
+                      const Icon(
+                        Icons.link_outlined,
+                        size: 12,
+                        color: Color(0xFFEF7A45),
+                      ),
+                      const SizedBox(width: 6),
+                      Expanded(
+                        child: Text(
+                          productName,
+                          style: TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w600,
+                            color: Color(0xFFEF7A45),
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-                child: Row(
-                  children: [
-                    const Icon(
-                      Icons.link_outlined,
-                      size: 12,
-                      color: Color(0xFFEF7A45),
-                    ),
-                    const SizedBox(width: 6),
-                    Expanded(
-                      child: Text(
-                        productName,
-                        style: TextStyle(
-                          fontSize: 11,
-                          fontWeight: FontWeight.w600,
-                          color: Color(0xFFEF7A45),
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+              ],
             ],
-          ],
+          ),
         ),
       ),
-    ),
-  );
-}
+    );
+  }
 }
 
 class _VideoCardSkeleton extends StatelessWidget {

@@ -77,7 +77,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
   // Hàm dịch trạng thái linh hoạt, phân biệt giữa trạng thái đơn hàng và trạng thái thanh toán
   String _statusLabel(String status, {bool isPaymentStatus = false}) {
     final s = status.toLowerCase().trim();
-    
+
     // Xử lý riêng cho trạng thái thanh toán
     if (isPaymentStatus) {
       if (s == 'paid') return 'Đã thanh toán';
@@ -95,10 +95,10 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
     if (s == 'completed') return Trans.statusCompleted ?? 'Hoàn thành';
     if (s == 'returned') return Trans.statusReturned ?? 'Hoàn trả';
     if (s == 'cancelled') return Trans.statusCancelled ?? 'Đã hủy';
-    
+
     if (s == 'approved') return 'Đã chấp thuận';
     if (s == 'rejected') return 'Từ chối';
-    
+
     return status.isEmpty ? '—' : status;
   }
 
@@ -109,8 +109,12 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
   }
 
   String _resolveOrderItemImageUrl(dynamic item) {
-    final product = item is Map<String, dynamic> ? item['product'] as Map<String, dynamic>? : null;
-    final variant = item is Map<String, dynamic> ? item['variant'] as Map<String, dynamic>? : null;
+    final product = item is Map<String, dynamic>
+        ? item['product'] as Map<String, dynamic>?
+        : null;
+    final variant = item is Map<String, dynamic>
+        ? item['variant'] as Map<String, dynamic>?
+        : null;
     final candidates = <String?>[
       variant?['image_url']?.toString(),
       product?['main_image_url']?.toString(),
@@ -152,7 +156,8 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
     }
   }
 
-  Future<void> _performAction(Future<Map<String, dynamic>> Function() action) async {
+  Future<void> _performAction(
+      Future<Map<String, dynamic>> Function() action) async {
     setState(() {
       _actionBusy = true;
       _actionError = null;
@@ -182,26 +187,29 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
 
   Future<void> _onConfirmPayment() async {
     if (_order == null) return;
-    await _performAction(() => OrderService.confirmPayment(_order!['id'] as int));
+    await _performAction(
+        () => OrderService.confirmPayment(_order!['id'] as int));
   }
 
   Future<void> _onConfirmReceived() async {
     if (_order == null) return;
-    await _performAction(() => OrderService.confirmReceived(_order!['id'] as int));
+    await _performAction(
+        () => OrderService.confirmReceived(_order!['id'] as int));
   }
 
   Future<void> _onSubmitReturnRequest() async {
     if (_order == null) return;
     await _performAction(() => OrderService.requestReturn(
-      _order!['id'] as int,
-      _returnContent,
-      _returnMedia.map((f) => File(f.path)).toList(),
-    ));
+          _order!['id'] as int,
+          _returnContent,
+          _returnMedia.map((f) => File(f.path)).toList(),
+        ));
   }
 
   Future<void> _onConfirmRefundReceived() async {
     if (_order == null) return;
-    await _performAction(() => OrderService.confirmRefundReceived(_order!['id'] as int));
+    await _performAction(
+        () => OrderService.confirmRefundReceived(_order!['id'] as int));
   }
 
   @override
@@ -212,8 +220,11 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          order != null ? '#${order['order_code'] ?? order['id']}' : 'Chi tiết đơn hàng',
-          style: TextStyle(color: colorScheme.onSurface, fontWeight: FontWeight.bold),
+          order != null
+              ? '#${order['order_code'] ?? order['id']}'
+              : 'Chi tiết đơn hàng',
+          style: TextStyle(
+              color: colorScheme.onSurface, fontWeight: FontWeight.bold),
         ),
         backgroundColor: colorScheme.surface,
         foregroundColor: colorScheme.onSurface,
@@ -222,11 +233,17 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
       body: Container(
         color: colorScheme.surface,
         child: _loading
-            ? const Center(child: CircularProgressIndicator(color: Color(0xFFF26522)))
+            ? const Center(
+                child: CircularProgressIndicator(color: Color(0xFFF26522)))
             : _error != null
-                ? Center(child: Text(_error!, style: TextStyle(color: colorScheme.error)))
+                ? Center(
+                    child: Text(_error!,
+                        style: TextStyle(color: colorScheme.error)))
                 : order == null
-                    ? Center(child: Text(Trans.orderNotFound ?? 'Không tìm thấy đơn hàng', style: TextStyle(color: colorScheme.onSurface)))
+                    ? Center(
+                        child: Text(
+                            Trans.orderNotFound ?? 'Không tìm thấy đơn hàng',
+                            style: TextStyle(color: colorScheme.onSurface)))
                     : _buildContent(order),
       ),
     );
@@ -257,7 +274,8 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
             ),
             child: Text(
               _actionError!,
-              style: TextStyle(color: Theme.of(context).colorScheme.onErrorContainer),
+              style: TextStyle(
+                  color: Theme.of(context).colorScheme.onErrorContainer),
             ),
           ),
           const SizedBox(height: 12),
@@ -275,17 +293,24 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
     );
   }
 
-  Widget _buildStatusCard(Color statusColor, String statusLabel, Map<String, dynamic> order) {
+  Widget _buildStatusCard(
+      Color statusColor, String statusLabel, Map<String, dynamic> order) {
     final colorScheme = Theme.of(context).colorScheme;
     final status = (order['status'] ?? '').toString().toLowerCase();
 
     int currentStep = 1;
-    if (status == 'processing') currentStep = 2;
-    else if (status == 'paid') currentStep = 3;
-    else if (status == 'shipped') currentStep = 4;
-    else if (status == 'delivered') currentStep = 5;
-    else if (status == 'completed') currentStep = 6;
-    else if (status == 'returned') currentStep = 7;
+    if (status == 'processing')
+      currentStep = 2;
+    else if (status == 'paid')
+      currentStep = 3;
+    else if (status == 'shipped')
+      currentStep = 4;
+    else if (status == 'delivered')
+      currentStep = 5;
+    else if (status == 'completed')
+      currentStep = 6;
+    else if (status == 'returned')
+      currentStep = 7;
     else if (status == 'cancelled') currentStep = 0;
 
     final hasReturnRequest = order['return_request'] != null;
@@ -307,7 +332,8 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: Icon(Icons.local_shipping_outlined, color: statusColor, size: 28),
+                child: Icon(Icons.local_shipping_outlined,
+                    color: statusColor, size: 28),
               ),
               const SizedBox(width: 16),
               Expanded(
@@ -335,16 +361,20 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
               ),
             ],
           ),
-          if (status != 'cancelled' && status != 'completed' && status != 'returned') ...[
+          if (status != 'cancelled' &&
+              status != 'completed' &&
+              status != 'returned') ...[
             const SizedBox(height: 16),
-            _buildOrderStepsTracker(currentStep: currentStep, hasReturnRequest: hasReturnRequest),
+            _buildOrderStepsTracker(
+                currentStep: currentStep, hasReturnRequest: hasReturnRequest),
           ],
         ],
       ),
     );
   }
 
-  Widget _buildOrderStepsTracker({required int currentStep, bool hasReturnRequest = false}) {
+  Widget _buildOrderStepsTracker(
+      {required int currentStep, bool hasReturnRequest = false}) {
     final List<Map<String, dynamic>> baseSteps = [
       {'value': 'pending', 'label': 'Chờ XN', 'step': 1},
       {'value': 'processing', 'label': 'Đã XN', 'step': 2},
@@ -380,7 +410,11 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                   children: [
                     Expanded(
                       child: Divider(
-                        color: index == 0 ? Colors.transparent : (isDone ? activeStepColor : const Color(0xFFE2E8F0)),
+                        color: index == 0
+                            ? Colors.transparent
+                            : (isDone
+                                ? activeStepColor
+                                : const Color(0xFFE2E8F0)),
                         thickness: 2.2,
                       ),
                     ),
@@ -388,26 +422,41 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                       width: 22,
                       height: 22,
                       decoration: BoxDecoration(
-                        color: isActive ? activeStepColor : (isDone ? activeStepColor.withValues(alpha: 0.12) : Colors.white),
-                        border: Border.all(color: isDone ? activeStepColor : const Color(0xFFCBD5E1), width: 2),
+                        color: isActive
+                            ? activeStepColor
+                            : (isDone
+                                ? activeStepColor.withValues(alpha: 0.12)
+                                : Colors.white),
+                        border: Border.all(
+                            color: isDone
+                                ? activeStepColor
+                                : const Color(0xFFCBD5E1),
+                            width: 2),
                         shape: BoxShape.circle,
                       ),
                       child: Center(
                         child: isDone && !isActive
-                            ? const Icon(Icons.check, size: 12, color: activeStepColor)
+                            ? const Icon(Icons.check,
+                                size: 12, color: activeStepColor)
                             : Text(
                                 '${index + 1}',
                                 style: TextStyle(
                                   fontSize: 10,
                                   fontWeight: FontWeight.bold,
-                                  color: isActive ? Colors.white : const Color(0xFF64748B),
+                                  color: isActive
+                                      ? Colors.white
+                                      : const Color(0xFF64748B),
                                 ),
                               ),
                       ),
                     ),
                     Expanded(
                       child: Divider(
-                        color: index == stepsList.length - 1 ? Colors.transparent : (currentStep > sStep ? activeStepColor : const Color(0xFFE2E8F0)),
+                        color: index == stepsList.length - 1
+                            ? Colors.transparent
+                            : (currentStep > sStep
+                                ? activeStepColor
+                                : const Color(0xFFE2E8F0)),
                         thickness: 2.2,
                       ),
                     ),
@@ -482,13 +531,19 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
 
   Widget _buildProductItem(dynamic item) {
     final colorScheme = Theme.of(context).colorScheme;
-    final product = item is Map<String, dynamic> ? item['product'] as Map<String, dynamic>? : null;
-    final name = (product?['name'] ?? item['product_name_snapshot'] ?? 'Sản phẩm').toString();
+    final product = item is Map<String, dynamic>
+        ? item['product'] as Map<String, dynamic>?
+        : null;
+    final name =
+        (product?['name'] ?? item['product_name_snapshot'] ?? 'Sản phẩm')
+            .toString();
     final imageUrl = _resolveOrderItemImageUrl(item);
     final quantity = item['quantity']?.toString() ?? '1';
     final total = _formatMoney(item['total_price'] ?? item['price'] ?? 0);
 
-    final variant = item is Map<String, dynamic> ? item['variant'] as Map<String, dynamic>? : null;
+    final variant = item is Map<String, dynamic>
+        ? item['variant'] as Map<String, dynamic>?
+        : null;
     String? variantLabel;
     if (variant != null) {
       final parts = [
@@ -520,9 +575,13 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                       width: 56,
                       height: 56,
                       fit: BoxFit.cover,
-                      errorBuilder: (_, __, ___) => const Icon(Icons.image_rounded, color: Color(0xFF94A3B8), size: 20),
+                      errorBuilder: (_, __, ___) => const Icon(
+                          Icons.image_rounded,
+                          color: Color(0xFF94A3B8),
+                          size: 20),
                     )
-                  : const Icon(Icons.image_rounded, color: Color(0xFF94A3B8), size: 20),
+                  : const Icon(Icons.image_rounded,
+                      color: Color(0xFF94A3B8), size: 20),
             ),
           ),
           const SizedBox(width: 12),
@@ -557,7 +616,10 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                 const SizedBox(height: 4),
                 Text(
                   'SL: $quantity × ${total}₫',
-                  style: const TextStyle(color: Color(0xFF64748B), fontSize: 12, fontWeight: FontWeight.w500),
+                  style: const TextStyle(
+                      color: Color(0xFF64748B),
+                      fontSize: 12,
+                      fontWeight: FontWeight.w500),
                 ),
               ],
             ),
@@ -581,14 +643,19 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
       final user = order['user'];
       if (user is Map) {
         if (customerName == '—') customerName = user['name']?.toString() ?? '—';
-        if (customerEmail == '—') customerEmail = user['email']?.toString() ?? '—';
+        if (customerEmail == '—')
+          customerEmail = user['email']?.toString() ?? '—';
       }
     }
     if (customerName == '—') {
-      customerName = order['customer_name']?.toString() ?? order['user_name']?.toString() ?? '—';
+      customerName = order['customer_name']?.toString() ??
+          order['user_name']?.toString() ??
+          '—';
     }
     if (customerEmail == '—') {
-      customerEmail = order['customer_email']?.toString() ?? order['user_email']?.toString() ?? '—';
+      customerEmail = order['customer_email']?.toString() ??
+          order['user_email']?.toString() ??
+          '—';
     }
     if (customerName == '—' && _currentUser != null) {
       customerName = _currentUser!['name']?.toString() ?? '—';
@@ -604,7 +671,10 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
       order['shipping_ward'],
       order['shipping_district'],
       order['shipping_province'],
-    ].where((e) => e != null && e.toString().trim().isNotEmpty).map((e) => e.toString().trim()).toList();
+    ]
+        .where((e) => e != null && e.toString().trim().isNotEmpty)
+        .map((e) => e.toString().trim())
+        .toList();
     final address = parts.isEmpty ? '—' : parts.join(', ');
 
     return Container(
@@ -615,7 +685,8 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
         border: Border.all(color: colorScheme.outline, width: 0.15),
       ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start, // Sửa lỗi cú pháp gõ nhầm tại đây
+        crossAxisAlignment:
+            CrossAxisAlignment.start, // Sửa lỗi cú pháp gõ nhầm tại đây
         children: [
           Text(
             "Thông tin khách hàng",
@@ -626,14 +697,16 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
             ),
           ),
           const Divider(height: 16, color: Color(0xFFF1F5F9)),
-          _buildInfoRow(Trans.customerNameLabel ?? 'Tên khách hàng', customerName),
+          _buildInfoRow(
+              Trans.customerNameLabel ?? 'Tên khách hàng', customerName),
           _buildInfoRow(Trans.customerEmailLabel ?? 'Email', customerEmail),
           const Divider(height: 16, color: Color(0xFFF1F5F9)),
           _buildInfoRow(Trans.receiverNameLabel ?? 'Người nhận', name),
           const SizedBox(height: 8),
           _buildInfoRow(Trans.phone ?? 'Số điện thoại', phone),
           const SizedBox(height: 8),
-          _buildInfoRow(Trans.shippingAddressLabel ?? 'Địa chỉ giao hàng', address),
+          _buildInfoRow(
+              Trans.shippingAddressLabel ?? 'Địa chỉ giao hàng', address),
         ],
       ),
     );
@@ -647,10 +720,17 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
         children: [
           SizedBox(
             width: 110,
-            child: Text(label, style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 13)),
+            child: Text(label,
+                style: TextStyle(
+                    color: Theme.of(context).colorScheme.onSurface,
+                    fontSize: 13)),
           ),
           Expanded(
-            child: Text(value, style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13, color: Theme.of(context).colorScheme.onSurface)),
+            child: Text(value,
+                style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 13,
+                    color: Theme.of(context).colorScheme.onSurface)),
           ),
         ],
       ),
@@ -696,16 +776,17 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
           _buildAmountRow('Phí vận chuyển', '$shipping₫'),
           if (discount != '0')
             _buildAmountRow(
-              (order['coupon_code'] != null && order['coupon_code'].toString().isNotEmpty) 
-                  ? 'Mã giảm giá (${order['coupon_code']})' 
+              (order['coupon_code'] != null &&
+                      order['coupon_code'].toString().isNotEmpty)
+                  ? 'Mã giảm giá (${order['coupon_code']})'
                   : 'Giảm giá',
-              '-$discount₫', 
+              '-$discount₫',
               isDiscount: true,
             ),
           if (pointsDiscount != '0')
             _buildAmountRow(
               'Giảm giá (Điểm thưởng)',
-              '-$pointsDiscount₫', 
+              '-$pointsDiscount₫',
               isDiscount: true,
             ),
           Padding(
@@ -717,11 +798,15 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(Trans.paymentMethod ?? 'Phương thức thanh toán', style: TextStyle(color: colorScheme.onSurface, fontSize: 13)),
+              Text(Trans.paymentMethod ?? 'Phương thức thanh toán',
+                  style: TextStyle(color: colorScheme.onSurface, fontSize: 13)),
               Flexible(
                 child: Text(
                   _payLabel(method),
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: colorScheme.onSurface),
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 13,
+                      color: colorScheme.onSurface),
                   textAlign: TextAlign.end,
                 ),
               ),
@@ -732,12 +817,17 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('Trạng thái', style: TextStyle(color: colorScheme.onSurface, fontSize: 13)),
+                Text('Trạng thái',
+                    style:
+                        TextStyle(color: colorScheme.onSurface, fontSize: 13)),
                 Flexible(
                   child: Text(
                     // Gọi hàm xử lý riêng cho trạng thái thanh toán bằng cờ isPaymentStatus: true
-                    _statusLabel(status, isPaymentStatus: true), 
-                    style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13, color: colorScheme.onSurface), 
+                    _statusLabel(status, isPaymentStatus: true),
+                    style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 13,
+                        color: colorScheme.onSurface),
                     textAlign: TextAlign.end,
                   ),
                 ),
@@ -749,9 +839,16 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('Mã giao dịch', style: TextStyle(color: colorScheme.onSurface, fontSize: 13)),
+                Text('Mã giao dịch',
+                    style:
+                        TextStyle(color: colorScheme.onSurface, fontSize: 13)),
                 Flexible(
-                  child: Text(transactionCode, style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13, color: colorScheme.onSurface), textAlign: TextAlign.end),
+                  child: Text(transactionCode,
+                      style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 13,
+                          color: colorScheme.onSurface),
+                      textAlign: TextAlign.end),
                 ),
               ],
             ),
@@ -761,9 +858,16 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('Thời gian', style: TextStyle(color: colorScheme.onSurface, fontSize: 13)),
+                Text('Thời gian',
+                    style:
+                        TextStyle(color: colorScheme.onSurface, fontSize: 13)),
                 Flexible(
-                  child: Text(paidAt, style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13, color: colorScheme.onSurface), textAlign: TextAlign.end),
+                  child: Text(paidAt,
+                      style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 13,
+                          color: colorScheme.onSurface),
+                      textAlign: TextAlign.end),
                 ),
               ],
             ),
@@ -773,7 +877,8 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
     );
   }
 
-  Widget _buildAmountRow(String label, String value, {bool isDiscount = false, bool isTotal = false}) {
+  Widget _buildAmountRow(String label, String value,
+      {bool isDiscount = false, bool isTotal = false}) {
     final colorScheme = Theme.of(context).colorScheme;
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -791,7 +896,9 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
           style: TextStyle(
             fontSize: isTotal ? 15 : 13,
             fontWeight: isTotal ? FontWeight.bold : FontWeight.w500,
-            color: isDiscount ? Colors.green : (isTotal ? const Color(0xFFFF2424) : colorScheme.onSurface),
+            color: isDiscount
+                ? Colors.green
+                : (isTotal ? const Color(0xFFFF2424) : colorScheme.onSurface),
           ),
         ),
       ],
@@ -801,11 +908,15 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
   Widget _buildActions(Map<String, dynamic> order) {
     final colorScheme = Theme.of(context).colorScheme;
     final status = (order['status'] ?? '').toString().toLowerCase();
-    final paymentMethod = (order['payment']?['method'] ?? '').toString().toLowerCase();
-    final paymentStatus = (order['payment']?['status'] ?? '').toString().toLowerCase();
+    final paymentMethod =
+        (order['payment']?['method'] ?? '').toString().toLowerCase();
+    final paymentStatus =
+        (order['payment']?['status'] ?? '').toString().toLowerCase();
     final returnRequest = order['return_request'];
     final hasReturnRequest = returnRequest != null;
-    final isRefundConfirmed = hasReturnRequest && returnRequest['customer_confirmed_at'] != null && returnRequest['customer_confirmed_at'].toString().isNotEmpty;
+    final isRefundConfirmed = hasReturnRequest &&
+        returnRequest['customer_confirmed_at'] != null &&
+        returnRequest['customer_confirmed_at'].toString().isNotEmpty;
     final isCancelled = status == 'cancelled';
     final isCompleted = status == 'completed';
 
@@ -822,33 +933,42 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
             ),
             child: Row(
               children: [
-                Icon(Icons.cancel_outlined, color: colorScheme.onErrorContainer),
+                Icon(Icons.cancel_outlined,
+                    color: colorScheme.onErrorContainer),
                 const SizedBox(width: 8),
-                Text(Trans.orderCancelled ?? 'Đơn hàng đã hủy', style: TextStyle(color: colorScheme.onErrorContainer)),
+                Text(Trans.orderCancelled ?? 'Đơn hàng đã hủy',
+                    style: TextStyle(color: colorScheme.onErrorContainer)),
               ],
             ),
           ),
         ],
         if (paymentMethod == 'cod' && paymentStatus != 'paid') ...[
-          _buildActionButton('Xác nhận thanh toán', Colors.green, _onConfirmPayment),
+          _buildActionButton(
+              'Xác nhận thanh toán', Colors.green, _onConfirmPayment),
           const SizedBox(height: 8),
         ],
         if (status == 'delivered') ...[
-          _buildActionButton('Xác nhận đã nhận hàng', Colors.green, _onConfirmReceived),
+          _buildActionButton(
+              'Xác nhận đã nhận hàng', Colors.green, _onConfirmReceived),
           const SizedBox(height: 8),
         ],
         if (hasReturnRequest && status == 'returned' && !isRefundConfirmed) ...[
-          _buildActionButton('Xác nhận đã hoàn tiền', Colors.green, _onConfirmRefundReceived),
+          _buildActionButton(
+              'Xác nhận đã hoàn tiền', Colors.green, _onConfirmRefundReceived),
           const SizedBox(height: 8),
         ],
-        if (status == 'pending' || status == 'processing' || status == 'paid') ...[
-          _buildActionButton('Hủy đơn hàng', colorScheme.error, _onCancelOrder, isDestructive: true),
+        if (status == 'pending' ||
+            status == 'processing' ||
+            status == 'paid') ...[
+          _buildActionButton('Hủy đơn hàng', colorScheme.error, _onCancelOrder,
+              isDestructive: true),
         ],
       ],
     );
   }
 
-  Widget _buildActionButton(String label, Color color, VoidCallback onPressed, {bool isDestructive = false}) {
+  Widget _buildActionButton(String label, Color color, VoidCallback onPressed,
+      {bool isDestructive = false}) {
     final colorScheme = Theme.of(context).colorScheme;
     return SizedBox(
       width: double.infinity,
@@ -858,17 +978,24 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
           backgroundColor: isDestructive ? colorScheme.error : color,
           foregroundColor: Colors.white,
           padding: const EdgeInsets.symmetric(vertical: 14),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         ),
         child: _actionBusy
-            ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+            ? const SizedBox(
+                width: 20,
+                height: 20,
+                child: CircularProgressIndicator(
+                    strokeWidth: 2, color: Colors.white))
             : Text(label, style: const TextStyle(fontWeight: FontWeight.bold)),
       ),
     );
   }
 
   String _resolveMediaUrl(dynamic m) {
-    final url = (m is Map) ? (m['url'] ?? m['image_url'] ?? m['image'])?.toString() : null;
+    final url = (m is Map)
+        ? (m['url'] ?? m['image_url'] ?? m['image'])?.toString()
+        : null;
     return url != null ? NetworkUtils.fixDeviceUrl(url) : '';
   }
 
@@ -902,7 +1029,8 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
             children: [
               Row(
                 children: [
-                  const Icon(Icons.undo_outlined, color: Colors.green, size: 22),
+                  const Icon(Icons.undo_outlined,
+                      color: Colors.green, size: 22),
                   const SizedBox(width: 8),
                   Text(
                     Trans.returnRequest ?? 'Yêu cầu trả hàng',
@@ -915,21 +1043,37 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                 ],
               ),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                decoration: BoxDecoration(color: chipColor.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(999)),
-                child: Text(_statusLabel(status), style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: chipColor)),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                decoration: BoxDecoration(
+                    color: chipColor.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(999)),
+                child: Text(_statusLabel(status),
+                    style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                        color: chipColor)),
               ),
             ],
           ),
           const SizedBox(height: 16),
           if (displayContent.trim().isNotEmpty) ...[
-            Text('Lý do / Nội dung:', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: colorScheme.onSurface)),
+            Text('Lý do / Nội dung:',
+                style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 13,
+                    color: colorScheme.onSurface)),
             const SizedBox(height: 4),
-            Text(displayContent, style: TextStyle(fontSize: 14, color: colorScheme.onSurface)),
+            Text(displayContent,
+                style: TextStyle(fontSize: 14, color: colorScheme.onSurface)),
             const SizedBox(height: 12),
           ],
           if (media.isNotEmpty) ...[
-            Text(Trans.images ?? 'Hình ảnh', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: colorScheme.onSurface)),
+            Text(Trans.images ?? 'Hình ảnh',
+                style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 13,
+                    color: colorScheme.onSurface)),
             const SizedBox(height: 8),
             Wrap(
               spacing: 8,
@@ -939,8 +1083,15 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                 if (u.isEmpty) return const SizedBox.shrink();
                 return ClipRRect(
                   borderRadius: BorderRadius.circular(8),
-                  child: Image.network(u, width: 76, height: 76, fit: BoxFit.cover, errorBuilder: (c, e, s) {
-                    return const SizedBox(width: 76, height: 76, child: Icon(Icons.broken_image_rounded, color: Colors.grey));
+                  child: Image.network(u,
+                      width: 76,
+                      height: 76,
+                      fit: BoxFit.cover, errorBuilder: (c, e, s) {
+                    return const SizedBox(
+                        width: 76,
+                        height: 76,
+                        child: Icon(Icons.broken_image_rounded,
+                            color: Colors.grey));
                   }),
                 );
               }).toList(),
@@ -948,7 +1099,11 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
             const SizedBox(height: 12),
           ],
           if (adminNote.trim().isNotEmpty) ...[
-            Text('Phản hồi từ Admin:', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Colors.red)),
+            Text('Phản hồi từ Admin:',
+                style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 13,
+                    color: Colors.red)),
             const SizedBox(height: 4),
             Container(
               width: double.infinity,
@@ -960,13 +1115,20 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
               ),
               child: Text(
                 adminNote,
-                style: TextStyle(fontSize: 13, color: colorScheme.onSurface, fontStyle: FontStyle.italic),
+                style: TextStyle(
+                    fontSize: 13,
+                    color: colorScheme.onSurface,
+                    fontStyle: FontStyle.italic),
               ),
             ),
             const SizedBox(height: 12),
           ],
           if (refundProof.isNotEmpty) ...[
-            Text(Trans.refundProof ?? 'Minh chứng hoàn tiền', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: colorScheme.onSurface)),
+            Text(Trans.refundProof ?? 'Minh chứng hoàn tiền',
+                style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 13,
+                    color: colorScheme.onSurface)),
             const SizedBox(height: 8),
             Wrap(
               spacing: 8,
@@ -976,8 +1138,15 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                 if (u.isEmpty) return const SizedBox.shrink();
                 return ClipRRect(
                   borderRadius: BorderRadius.circular(8),
-                  child: Image.network(u, width: 76, height: 76, fit: BoxFit.cover, errorBuilder: (c, e, s) {
-                    return const SizedBox(width: 76, height: 76, child: Icon(Icons.broken_image_rounded, color: Colors.grey));
+                  child: Image.network(u,
+                      width: 76,
+                      height: 76,
+                      fit: BoxFit.cover, errorBuilder: (c, e, s) {
+                    return const SizedBox(
+                        width: 76,
+                        height: 76,
+                        child: Icon(Icons.broken_image_rounded,
+                            color: Colors.grey));
                   }),
                 );
               }).toList(),
@@ -1021,17 +1190,26 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                   color: colorScheme.surface,
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: Text('${history.length} lần', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: colorScheme.onSurface)),
+                child: Text('${history.length} lần',
+                    style: TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.bold,
+                        color: colorScheme.onSurface)),
               ),
             ],
           ),
           const SizedBox(height: 12),
           ...history.map<Widget>((entry) {
-            final fromLabel = entry['from_label']?.toString() ?? entry['from_status']?.toString() ?? '—';
-            final toLabel = entry['to_label']?.toString() ?? entry['to_status']?.toString() ?? '—';
+            final fromLabel = entry['from_label']?.toString() ??
+                entry['from_status']?.toString() ??
+                '—';
+            final toLabel = entry['to_label']?.toString() ??
+                entry['to_status']?.toString() ??
+                '—';
             final changedAt = entry['changed_at']?.toString() ?? '';
             final note = entry['note']?.toString() ?? '';
-            final changedByName = entry['changed_by']?['name']?.toString() ?? 'Hệ thống';
+            final changedByName =
+                entry['changed_by']?['name']?.toString() ?? 'Hệ thống';
 
             return Container(
               margin: const EdgeInsets.only(bottom: 8),
@@ -1050,16 +1228,26 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                       children: [
                         Text(
                           '${_statusLabel(fromLabel)}  ➔  ${_statusLabel(toLabel)}',
-                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: colorScheme.onSurface),
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 13,
+                              color: colorScheme.onSurface),
                         ),
                         const SizedBox(height: 4),
                         Text(
                           '${_formatDateTime(changedAt)} • $changedByName',
-                          style: TextStyle(fontSize: 11, color: colorScheme.onSurface, fontWeight: FontWeight.w500),
+                          style: TextStyle(
+                              fontSize: 11,
+                              color: colorScheme.onSurface,
+                              fontWeight: FontWeight.w500),
                         ),
                         if (note.trim().isNotEmpty) ...[
                           const SizedBox(height: 6),
-                          Text('Ghi chú: $note', style: TextStyle(fontSize: 12, color: const Color(0xFF475569), fontStyle: FontStyle.italic)),
+                          Text('Ghi chú: $note',
+                              style: TextStyle(
+                                  fontSize: 12,
+                                  color: const Color(0xFF475569),
+                                  fontStyle: FontStyle.italic)),
                         ],
                       ],
                     ),

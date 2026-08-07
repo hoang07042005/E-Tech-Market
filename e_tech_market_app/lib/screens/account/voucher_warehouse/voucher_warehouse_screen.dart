@@ -44,46 +44,65 @@ class _VoucherWarehouseScreenState extends State<VoucherWarehouseScreen> {
   }
 
   String _formatVnd(dynamic n) {
-    final val = n is num ? n.toDouble() : double.tryParse(n?.toString() ?? '') ?? 0.0;
+    final val =
+        n is num ? n.toDouble() : double.tryParse(n?.toString() ?? '') ?? 0.0;
     final str = val.round().toString();
-    return str.replaceAllMapped(RegExp(r"\B(?=(\d{3})+(?!\d))"), (m) => '.') + 'đ';
+    return str.replaceAllMapped(RegExp(r"\B(?=(\d{3})+(?!\d))"), (m) => '.') +
+        'đ';
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.surface, // Nền tối huyền ảo sang trọng đồng bộ với Card voucher trong ảnh mẫu
+      backgroundColor: Theme.of(context)
+          .colorScheme
+          .surface, // Nền tối huyền ảo sang trọng đồng bộ với Card voucher trong ảnh mẫu
       appBar: AppBar(
-        title: Text(Trans.voucherWarehouse, style:  TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: Theme.of(context).colorScheme.onSurface)),
+        title: Text(Trans.voucherWarehouse,
+            style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 18,
+                color: Theme.of(context).colorScheme.onSurface)),
         backgroundColor: Theme.of(context).colorScheme.surface,
         foregroundColor: Theme.of(context).colorScheme.onSurface,
         elevation: 0,
-        iconTheme:  IconThemeData(color: Theme.of(context).colorScheme.onSurface),
+        iconTheme:
+            IconThemeData(color: Theme.of(context).colorScheme.onSurface),
       ),
       body: _loading
-          ? const Center(child: CircularProgressIndicator(color: const Color(0xFFF26522)))
+          ? const Center(
+              child: CircularProgressIndicator(color: const Color(0xFFF26522)))
           : _error != null
-              ? Center(child: Text(_error!, style: const TextStyle(color: Colors.red)))
+              ? Center(
+                  child:
+                      Text(_error!, style: const TextStyle(color: Colors.red)))
               : _vouchers.isEmpty
                   ? Center(
                       child: Container(
                         padding: const EdgeInsets.all(24),
-                        decoration: BoxDecoration(color: const Color(0xFF1F2937), borderRadius: BorderRadius.circular(16)),
-                        child: Text(Trans.noCouponYet, style: const TextStyle(color: Colors.white70)),
+                        decoration: BoxDecoration(
+                            color: const Color(0xFF1F2937),
+                            borderRadius: BorderRadius.circular(16)),
+                        child: Text(Trans.noCouponYet,
+                            style: const TextStyle(color: Colors.white70)),
                       ),
                     )
                   : RefreshIndicator(
                       color: const Color(0xFFEF7A45),
                       onRefresh: _loadVouchers,
                       child: ListView.builder(
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 12),
                         itemCount: _vouchers.length,
                         itemBuilder: (context, index) {
                           final c = _vouchers[index] as Map<String, dynamic>;
                           final code = c['code']?.toString() ?? '-';
-                          final couponType = c['coupon_type']?.toString() ?? 'fixed';
-                          final value = double.tryParse(c['value']?.toString() ?? '0') ?? 0.0;
-                          
+                          final couponType =
+                              c['coupon_type']?.toString() ?? 'fixed';
+                          final value =
+                              double.tryParse(c['value']?.toString() ?? '0') ??
+                                  0.0;
+
                           // Tính lượt còn lại
                           final maxPerUser = c['max_uses_per_user'];
                           final userUsed = c['user_usage_count'] ?? 0;
@@ -93,15 +112,18 @@ class _VoucherWarehouseScreenState extends State<VoucherWarehouseScreen> {
                           int? showRemaining;
                           int? showLimit;
                           if (maxPerUser != null && maxPerUser is num) {
-                            showRemaining = (maxPerUser - (userUsed as num)).toInt();
+                            showRemaining =
+                                (maxPerUser - (userUsed as num)).toInt();
                             showLimit = maxPerUser.toInt();
                           } else if (maxUses != null && maxUses is num) {
-                            showRemaining = (maxUses - (usagesCount as num)).toInt();
+                            showRemaining =
+                                (maxUses - (usagesCount as num)).toInt();
                             showLimit = maxUses.toInt();
                           }
 
                           final subtitle = c['min_order_amount'] != null
-                              ? Trans.minOrderRequiredValue(_formatVnd(c['min_order_amount']))
+                              ? Trans.minOrderRequiredValue(
+                                  _formatVnd(c['min_order_amount']))
                               : Trans.allOrders;
 
                           return Padding(
@@ -114,9 +136,11 @@ class _VoucherWarehouseScreenState extends State<VoucherWarehouseScreen> {
                               showRemaining: showRemaining,
                               showLimit: showLimit,
                               onCopy: () async {
-                                await Clipboard.setData(ClipboardData(text: code));
+                                await Clipboard.setData(
+                                    ClipboardData(text: code));
                                 if (mounted) {
-                                  AppSnackBar.showSuccess(context, Trans.copiedToClipboardMessage(code));
+                                  AppSnackBar.showSuccess(context,
+                                      Trans.copiedToClipboardMessage(code));
                                 }
                               },
                             ),
@@ -151,7 +175,7 @@ class _WarehouseVoucherCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final leftWidth = 110.0;
-    
+
     return CustomPaint(
       painter: _VoucherWarehousePainter(
         leftWidth: leftWidth,
@@ -197,13 +221,16 @@ class _WarehouseVoucherCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 6),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
                     decoration: BoxDecoration(
                       border: Border.all(color: Colors.white.withOpacity(0.5)),
                       borderRadius: BorderRadius.circular(4),
                     ),
                     child: Text(
-                      couponType == 'percentage' ? 'Phiếu ưu đãi' : 'Giảm trực tiếp',
+                      couponType == 'percentage'
+                          ? 'Phiếu ưu đãi'
+                          : 'Giảm trực tiếp',
                       style: const TextStyle(
                         color: Colors.white,
                         fontSize: 10,
@@ -265,11 +292,16 @@ class _WarehouseVoucherCard extends StatelessWidget {
                       ],
                     ),
                     // Progress Bar
-                    if (showRemaining != null && showLimit != null && showLimit! > 0) ...[
+                    if (showRemaining != null &&
+                        showLimit != null &&
+                        showLimit! > 0) ...[
                       const SizedBox(height: 8),
                       Container(
                         height: 1,
-                        color: Theme.of(context).colorScheme.outlineVariant.withOpacity(0.5),
+                        color: Theme.of(context)
+                            .colorScheme
+                            .outlineVariant
+                            .withOpacity(0.5),
                       ),
                       const SizedBox(height: 8),
                       Row(
@@ -309,9 +341,12 @@ class _WarehouseVoucherCard extends StatelessWidget {
                               child: SizedBox(
                                 height: 5,
                                 child: LinearProgressIndicator(
-                                  value: ((showLimit! - showRemaining!) / showLimit!).clamp(0.0, 1.0),
+                                  value: ((showLimit! - showRemaining!) /
+                                          showLimit!)
+                                      .clamp(0.0, 1.0),
                                   backgroundColor: const Color(0xFFFEE2E2),
-                                  valueColor: const AlwaysStoppedAnimation<Color>(
+                                  valueColor:
+                                      const AlwaysStoppedAnimation<Color>(
                                     Color(0xFFFF6B00),
                                   ),
                                 ),
@@ -331,7 +366,8 @@ class _WarehouseVoucherCard extends StatelessWidget {
                         decoration: BoxDecoration(
                           color: Colors.grey[200],
                           borderRadius: BorderRadius.circular(6),
-                          border: Border.all(color: Colors.grey[400]!.withOpacity(0.5)),
+                          border: Border.all(
+                              color: Colors.grey[400]!.withOpacity(0.5)),
                         ),
                         child: Row(
                           children: [
@@ -392,28 +428,36 @@ class _VoucherWarehousePainter extends CustomPainter {
     ticketPath.moveTo(radius, 0);
     // Top edge and divider hole
     ticketPath.lineTo(leftWidth - holeRadius, 0);
-    ticketPath.arcToPoint(Offset(leftWidth + holeRadius, 0), radius: const Radius.circular(holeRadius), clockwise: false);
+    ticketPath.arcToPoint(Offset(leftWidth + holeRadius, 0),
+        radius: const Radius.circular(holeRadius), clockwise: false);
     ticketPath.lineTo(size.width - radius, 0);
     // Top right corner
-    ticketPath.arcToPoint(Offset(size.width, radius), radius: const Radius.circular(radius), clockwise: true);
+    ticketPath.arcToPoint(Offset(size.width, radius),
+        radius: const Radius.circular(radius), clockwise: true);
     // Right edge and big hole
     ticketPath.lineTo(size.width, size.height * 0.5 - bigHoleRadius);
-    ticketPath.arcToPoint(Offset(size.width, size.height * 0.5 + bigHoleRadius), radius: const Radius.circular(bigHoleRadius), clockwise: false);
+    ticketPath.arcToPoint(Offset(size.width, size.height * 0.5 + bigHoleRadius),
+        radius: const Radius.circular(bigHoleRadius), clockwise: false);
     ticketPath.lineTo(size.width, size.height - radius);
     // Bottom right corner
-    ticketPath.arcToPoint(Offset(size.width - radius, size.height), radius: const Radius.circular(radius), clockwise: true);
+    ticketPath.arcToPoint(Offset(size.width - radius, size.height),
+        radius: const Radius.circular(radius), clockwise: true);
     // Bottom edge and divider hole
     ticketPath.lineTo(leftWidth + holeRadius, size.height);
-    ticketPath.arcToPoint(Offset(leftWidth - holeRadius, size.height), radius: const Radius.circular(holeRadius), clockwise: false);
+    ticketPath.arcToPoint(Offset(leftWidth - holeRadius, size.height),
+        radius: const Radius.circular(holeRadius), clockwise: false);
     ticketPath.lineTo(radius, size.height);
     // Bottom left corner
-    ticketPath.arcToPoint(Offset(0, size.height - radius), radius: const Radius.circular(radius), clockwise: true);
+    ticketPath.arcToPoint(Offset(0, size.height - radius),
+        radius: const Radius.circular(radius), clockwise: true);
     // Left edge and big hole
     ticketPath.lineTo(0, size.height * 0.5 + bigHoleRadius);
-    ticketPath.arcToPoint(Offset(0, size.height * 0.5 - bigHoleRadius), radius: const Radius.circular(bigHoleRadius), clockwise: false); 
+    ticketPath.arcToPoint(Offset(0, size.height * 0.5 - bigHoleRadius),
+        radius: const Radius.circular(bigHoleRadius), clockwise: false);
     ticketPath.lineTo(0, radius);
     // Top left corner
-    ticketPath.arcToPoint(const Offset(radius, 0), radius: const Radius.circular(radius), clockwise: true);
+    ticketPath.arcToPoint(const Offset(radius, 0),
+        radius: const Radius.circular(radius), clockwise: true);
     ticketPath.close();
 
     canvas.drawShadow(ticketPath, Colors.black.withOpacity(0.06), 8.0, false);
@@ -422,15 +466,20 @@ class _VoucherWarehousePainter extends CustomPainter {
     final lPath = Path();
     lPath.moveTo(radius, 0);
     lPath.lineTo(leftWidth - holeRadius, 0);
-    lPath.arcToPoint(Offset(leftWidth, holeRadius), radius: const Radius.circular(holeRadius), clockwise: false);
+    lPath.arcToPoint(Offset(leftWidth, holeRadius),
+        radius: const Radius.circular(holeRadius), clockwise: false);
     lPath.lineTo(leftWidth, size.height - holeRadius);
-    lPath.arcToPoint(Offset(leftWidth - holeRadius, size.height), radius: const Radius.circular(holeRadius), clockwise: false);
+    lPath.arcToPoint(Offset(leftWidth - holeRadius, size.height),
+        radius: const Radius.circular(holeRadius), clockwise: false);
     lPath.lineTo(radius, size.height);
-    lPath.arcToPoint(Offset(0, size.height - radius), radius: const Radius.circular(radius), clockwise: true);
+    lPath.arcToPoint(Offset(0, size.height - radius),
+        radius: const Radius.circular(radius), clockwise: true);
     lPath.lineTo(0, size.height * 0.5 + bigHoleRadius);
-    lPath.arcToPoint(Offset(0, size.height * 0.5 - bigHoleRadius), radius: const Radius.circular(bigHoleRadius), clockwise: false);
+    lPath.arcToPoint(Offset(0, size.height * 0.5 - bigHoleRadius),
+        radius: const Radius.circular(bigHoleRadius), clockwise: false);
     lPath.lineTo(0, radius);
-    lPath.arcToPoint(const Offset(radius, 0), radius: const Radius.circular(radius), clockwise: true);
+    lPath.arcToPoint(const Offset(radius, 0),
+        radius: const Radius.circular(radius), clockwise: true);
     lPath.close();
 
     final leftGradient = const LinearGradient(
@@ -438,21 +487,26 @@ class _VoucherWarehousePainter extends CustomPainter {
       begin: Alignment.topLeft,
       end: Alignment.bottomRight,
     ).createShader(Rect.fromLTWH(0, 0, leftWidth, size.height));
-    
+
     canvas.drawPath(lPath, Paint()..shader = leftGradient);
 
     // Right Path
     final rPath = Path();
     rPath.moveTo(leftWidth, holeRadius);
-    rPath.arcToPoint(Offset(leftWidth + holeRadius, 0), radius: const Radius.circular(holeRadius), clockwise: false);
+    rPath.arcToPoint(Offset(leftWidth + holeRadius, 0),
+        radius: const Radius.circular(holeRadius), clockwise: false);
     rPath.lineTo(size.width - radius, 0);
-    rPath.arcToPoint(Offset(size.width, radius), radius: const Radius.circular(radius), clockwise: true);
+    rPath.arcToPoint(Offset(size.width, radius),
+        radius: const Radius.circular(radius), clockwise: true);
     rPath.lineTo(size.width, size.height * 0.5 - holeRadius);
-    rPath.arcToPoint(Offset(size.width, size.height * 0.5 + holeRadius), radius: const Radius.circular(holeRadius), clockwise: false);
+    rPath.arcToPoint(Offset(size.width, size.height * 0.5 + holeRadius),
+        radius: const Radius.circular(holeRadius), clockwise: false);
     rPath.lineTo(size.width, size.height - radius);
-    rPath.arcToPoint(Offset(size.width - radius, size.height), radius: const Radius.circular(radius), clockwise: true);
+    rPath.arcToPoint(Offset(size.width - radius, size.height),
+        radius: const Radius.circular(radius), clockwise: true);
     rPath.lineTo(leftWidth + holeRadius, size.height);
-    rPath.arcToPoint(Offset(leftWidth, size.height - holeRadius), radius: const Radius.circular(holeRadius), clockwise: false);
+    rPath.arcToPoint(Offset(leftWidth, size.height - holeRadius),
+        radius: const Radius.circular(holeRadius), clockwise: false);
     rPath.lineTo(leftWidth, holeRadius);
     rPath.close();
 
@@ -460,8 +514,9 @@ class _VoucherWarehousePainter extends CustomPainter {
       colors: [Color(0xFFFFC1A5), Color(0xFFF9EAE4)],
       begin: Alignment.topLeft,
       end: Alignment.bottomRight,
-    ).createShader(Rect.fromLTWH(leftWidth, 0, size.width - leftWidth, size.height));
-    
+    ).createShader(
+        Rect.fromLTWH(leftWidth, 0, size.width - leftWidth, size.height));
+
     canvas.drawPath(rPath, Paint()..shader = rightGradient);
 
     // Draw dashed line
@@ -470,9 +525,10 @@ class _VoucherWarehousePainter extends CustomPainter {
     final dashPaint = Paint()
       ..color = const Color(0xFFE5E5E5)
       ..strokeWidth = 1.0;
-      
+
     while (startY < size.height - holeRadius - 4) {
-      canvas.drawLine(Offset(leftWidth, startY), Offset(leftWidth, startY + dashWidth), dashPaint);
+      canvas.drawLine(Offset(leftWidth, startY),
+          Offset(leftWidth, startY + dashWidth), dashPaint);
       startY += dashWidth + dashSpace;
     }
   }

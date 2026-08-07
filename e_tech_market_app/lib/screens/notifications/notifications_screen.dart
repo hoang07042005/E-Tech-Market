@@ -30,7 +30,8 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     });
 
     try {
-      final response = await NotificationService.fetchNotifications(page: 1, perPage: 50);
+      final response =
+          await NotificationService.fetchNotifications(page: 1, perPage: 50);
       setState(() {
         _notifications = response['data'] ?? [];
         _unreadCount = response['unread'] ?? 0;
@@ -78,13 +79,25 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     final ti = (title ?? '').toLowerCase();
     final b = (body ?? '').toLowerCase();
 
-    if (t.contains('blog') || t.contains('post') || ti.contains('tin tức') || ti.contains('bài viết')) {
+    if (t.contains('blog') ||
+        t.contains('post') ||
+        ti.contains('tin tức') ||
+        ti.contains('bài viết')) {
       return Icons.article_outlined;
     }
-    if (t.contains('order') || t.contains('return') || ti.contains('đơn hàng') || ti.contains('vận chuyển') || ti.contains('thanh toán')) {
+    if (t.contains('order') ||
+        t.contains('return') ||
+        ti.contains('đơn hàng') ||
+        ti.contains('vận chuyển') ||
+        ti.contains('thanh toán')) {
       return Icons.local_shipping_outlined;
     }
-    if (t.contains('warning') || t.contains('alert') || ti.contains('tồn kho') || ti.contains('cảnh báo') || b.contains('hết hàng') || b.contains('sắp hết')) {
+    if (t.contains('warning') ||
+        t.contains('alert') ||
+        ti.contains('tồn kho') ||
+        ti.contains('cảnh báo') ||
+        b.contains('hết hàng') ||
+        b.contains('sắp hết')) {
       return Icons.warning_amber_rounded;
     }
     return Icons.notifications_none;
@@ -126,19 +139,28 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                     child: Container(
                       padding: const EdgeInsets.all(8),
                       decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.onSurface.withOpacity(0.05),
+                        color: Theme.of(context)
+                            .colorScheme
+                            .onSurface
+                            .withOpacity(0.05),
                         shape: BoxShape.circle,
                       ),
-                      child: Icon(Icons.arrow_back, color: Theme.of(context).colorScheme.onSurface, size: 22),
+                      child: Icon(Icons.arrow_back,
+                          color: Theme.of(context).colorScheme.onSurface,
+                          size: 22),
                     ),
                   ),
                   if (_unreadCount > 0)
                     TextButton.icon(
                       onPressed: _markAllAsRead,
-                      icon: Icon(Icons.done_all, size: 18, color: Theme.of(context).colorScheme.primary),
+                      icon: Icon(Icons.done_all,
+                          size: 18,
+                          color: Theme.of(context).colorScheme.primary),
                       label: Text(
                         'Đánh dấu đã đọc',
-                        style: TextStyle(color: Theme.of(context).colorScheme.primary, fontWeight: FontWeight.w600),
+                        style: TextStyle(
+                            color: Theme.of(context).colorScheme.primary,
+                            fontWeight: FontWeight.w600),
                       ),
                     ),
                 ],
@@ -162,7 +184,10 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                     'Xem tất cả các tin tức công nghệ, cảnh báo kho và cập nhật đơn hàng của bạn.',
                     style: TextStyle(
                       fontSize: 14,
-                      color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                      color: Theme.of(context)
+                          .colorScheme
+                          .onSurface
+                          .withOpacity(0.6),
                       height: 1.5,
                     ),
                   ),
@@ -177,11 +202,14 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                   const SizedBox(width: 24),
                   _buildTab('Chưa đọc', 'unread', _unreadCount),
                   const SizedBox(width: 24),
-                  _buildTab('Đã đọc', 'read', _notifications.length - _unreadCount),
+                  _buildTab(
+                      'Đã đọc', 'read', _notifications.length - _unreadCount),
                 ],
               ),
             ),
-            Divider(height: 1, color: Theme.of(context).colorScheme.outline.withOpacity(0.4)),
+            Divider(
+                height: 1,
+                color: Theme.of(context).colorScheme.outline.withOpacity(0.4)),
             Expanded(
               child: _isLoading
                   ? const Center(child: CircularProgressIndicator())
@@ -192,7 +220,8 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                           : ListView.separated(
                               padding: const EdgeInsets.all(20),
                               itemCount: _filteredNotifications.length,
-                              separatorBuilder: (_, __) => const SizedBox(height: 16),
+                              separatorBuilder: (_, __) =>
+                                  const SizedBox(height: 16),
                               itemBuilder: (context, index) {
                                 final notif = _filteredNotifications[index];
                                 return _buildNotificationCard(notif);
@@ -208,7 +237,8 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
   Widget _buildTab(String label, String value, int count) {
     final isSelected = _filter == value;
     final primaryColor = const Color(0xFFF26522);
-    final unselectedColor = Theme.of(context).colorScheme.onSurface.withOpacity(0.6);
+    final unselectedColor =
+        Theme.of(context).colorScheme.onSurface.withOpacity(0.6);
 
     return GestureDetector(
       onTap: () => setState(() => _filter = value),
@@ -236,7 +266,9 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
               decoration: BoxDecoration(
-                color: isSelected ? primaryColor.withOpacity(0.15) : Theme.of(context).colorScheme.onSurface.withOpacity(0.1),
+                color: isSelected
+                    ? primaryColor.withOpacity(0.15)
+                    : Theme.of(context).colorScheme.onSurface.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Text(
@@ -259,13 +291,18 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.notifications_off_outlined, size: 64, color: Theme.of(context).colorScheme.onSurface.withOpacity(0.2)),
+          Icon(Icons.notifications_off_outlined,
+              size: 64,
+              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.2)),
           const SizedBox(height: 16),
           Text(
             _filter == 'unread'
                 ? 'Bạn không có thông báo chưa đọc nào.'
                 : 'Bạn chưa có thông báo nào.',
-            style: TextStyle(fontSize: 15, color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6)),
+            style: TextStyle(
+                fontSize: 15,
+                color:
+                    Theme.of(context).colorScheme.onSurface.withOpacity(0.6)),
             textAlign: TextAlign.center,
           ),
         ],
@@ -278,18 +315,19 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     final title = notif['title']?.toString() ?? 'Thông báo';
     final body = notif['body']?.toString() ?? '';
     final createdAt = _formatDateTime(notif['created_at']?.toString());
-    
+
     final iconData = _getIconData(notif['type']?.toString(), title, body);
     final iconColor = _getIconColor(notif['type']?.toString(), title, body);
     final isExpanded = _expandedIds.contains(notif['id']);
-    
+
     final onSurfaceColor = Theme.of(context).colorScheme.onSurface;
 
     return Container(
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(6),
-        border: Border.all(color: Theme.of(context).colorScheme.outline.withOpacity(0.3)),
+        border: Border.all(
+            color: Theme.of(context).colorScheme.outline.withOpacity(0.3)),
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(6),
@@ -344,18 +382,28 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                                     children: [
                                       Text(
                                         createdAt,
-                                        style: TextStyle(fontSize: 12, color: onSurfaceColor.withOpacity(0.5)),
+                                        style: TextStyle(
+                                            fontSize: 12,
+                                            color: onSurfaceColor
+                                                .withOpacity(0.5)),
                                       ),
                                       const SizedBox(width: 8),
                                       Container(
-                                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 8, vertical: 2),
                                         decoration: BoxDecoration(
-                                          color: onSurfaceColor.withOpacity(0.1),
-                                          borderRadius: BorderRadius.circular(12),
+                                          color:
+                                              onSurfaceColor.withOpacity(0.1),
+                                          borderRadius:
+                                              BorderRadius.circular(12),
                                         ),
                                         child: Text(
                                           isRead ? 'Đã đọc' : 'Chưa đọc',
-                                          style: TextStyle(fontSize: 10, fontWeight: FontWeight.w600, color: onSurfaceColor.withOpacity(0.6)),
+                                          style: TextStyle(
+                                              fontSize: 10,
+                                              fontWeight: FontWeight.w600,
+                                              color: onSurfaceColor
+                                                  .withOpacity(0.6)),
                                         ),
                                       ),
                                     ],
@@ -365,14 +413,21 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                             ),
                             const SizedBox(width: 8),
                             Icon(
-                              isExpanded ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down,
+                              isExpanded
+                                  ? Icons.keyboard_arrow_up
+                                  : Icons.keyboard_arrow_down,
                               color: onSurfaceColor.withOpacity(0.5),
                             ),
                           ],
                         ),
                         if (isExpanded) ...[
                           const SizedBox(height: 16),
-                          Divider(height: 1, color: Theme.of(context).colorScheme.outline.withOpacity(0.4)),
+                          Divider(
+                              height: 1,
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .outline
+                                  .withOpacity(0.4)),
                           const SizedBox(height: 16),
                           Text(
                             body,

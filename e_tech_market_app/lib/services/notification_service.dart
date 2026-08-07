@@ -2,9 +2,11 @@ import 'package:dio/dio.dart';
 import '../../config/dio_client.dart';
 
 class NotificationService {
-  static Future<Map<String, dynamic>> fetchNotifications({int page = 1, int perPage = 20}) async {
+  static Future<Map<String, dynamic>> fetchNotifications(
+      {int page = 1, int perPage = 20}) async {
     try {
-      final response = await DioClient.instance.get('/notifications', queryParameters: {
+      final response =
+          await DioClient.instance.get('/notifications', queryParameters: {
         'page': page,
         'per_page': perPage,
       });

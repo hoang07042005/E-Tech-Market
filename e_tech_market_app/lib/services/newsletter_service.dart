@@ -15,7 +15,8 @@ class NewsletterService {
     } on DioException catch (e) {
       if (e.response?.data is Map) {
         final data = e.response!.data as Map<String, dynamic>;
-        throw Exception(data['message']?.toString() ?? 'Đăng ký newsletter thất bại.');
+        throw Exception(
+            data['message']?.toString() ?? 'Đăng ký newsletter thất bại.');
       }
       throw Exception('Lỗi mạng khi đăng ký newsletter.');
     }

@@ -394,40 +394,46 @@ class _HomeScreenState extends State<HomeScreen> {
             .toSet();
         final blogResponse = results[5] as Map<String, dynamic>;
         final blogPosts = blogResponse['data'] as List<dynamic>? ?? [];
-        
-        final productNewsResponse = results[8];
-        final productNewsData = (productNewsResponse?.data?['data'] as List<dynamic>? ?? []).map((news) {
-            final id = news['id'] ?? 1;
-            String contentHtml = news['content_html'] ?? '';
-            String excerpt = contentHtml.replaceAll(RegExp(r'<[^>]*>'), '');
-            if (excerpt.length > 120) {
-              excerpt = excerpt.substring(0, 120) + '...';
-            }
-            if (excerpt.isEmpty) excerpt = 'Thông tin mới về sản phẩm';
 
-            return {
-              'id': int.tryParse('999$id') ?? id,
-              'title': news['title'],
-              'slug': news['slug'],
-              'excerpt': excerpt,
-              'thumbnail_url': news['thumbnail_url'] ?? news['thumbnail_path'],
-              'published_at': news['published_at'] ?? news['created_at'],
-              'reading_time': 3,
-              'views': (id * 83) % 400 + 150,
-              'category': {
-                'id': 9999,
-                'name': 'Tin Sản Phẩm',
-                'slug': 'tin-san-pham',
-              },
-              'author': null,
-              'isProductNews': true,
-            };
+        final productNewsResponse = results[8];
+        final productNewsData =
+            (productNewsResponse?.data?['data'] as List<dynamic>? ?? [])
+                .map((news) {
+          final id = news['id'] ?? 1;
+          String contentHtml = news['content_html'] ?? '';
+          String excerpt = contentHtml.replaceAll(RegExp(r'<[^>]*>'), '');
+          if (excerpt.length > 120) {
+            excerpt = excerpt.substring(0, 120) + '...';
+          }
+          if (excerpt.isEmpty) excerpt = 'Thông tin mới về sản phẩm';
+
+          return {
+            'id': int.tryParse('999$id') ?? id,
+            'title': news['title'],
+            'slug': news['slug'],
+            'excerpt': excerpt,
+            'thumbnail_url': news['thumbnail_url'] ?? news['thumbnail_path'],
+            'published_at': news['published_at'] ?? news['created_at'],
+            'reading_time': 3,
+            'views': (id * 83) % 400 + 150,
+            'category': {
+              'id': 9999,
+              'name': 'Tin Sản Phẩm',
+              'slug': 'tin-san-pham',
+            },
+            'author': null,
+            'isProductNews': true,
+          };
         }).toList();
 
         final allNews = [...blogPosts, ...productNewsData];
         allNews.sort((a, b) {
-          final dateA = DateTime.tryParse(a['published_at']?.toString() ?? '') ?? DateTime.now();
-          final dateB = DateTime.tryParse(b['published_at']?.toString() ?? '') ?? DateTime.now();
+          final dateA =
+              DateTime.tryParse(a['published_at']?.toString() ?? '') ??
+                  DateTime.now();
+          final dateB =
+              DateTime.tryParse(b['published_at']?.toString() ?? '') ??
+                  DateTime.now();
           return dateB.compareTo(dateA); // Newest first
         });
 
@@ -797,7 +803,8 @@ class _HomeScreenState extends State<HomeScreen> {
     return NewsSection(
       articles: _latestNews,
       isLoading: _newsLoading,
-      onViewAll: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const BlogScreen())),
+      onViewAll: () => Navigator.push(
+          context, MaterialPageRoute(builder: (_) => const BlogScreen())),
     );
   }
 
@@ -870,9 +877,9 @@ class _HomeScreenState extends State<HomeScreen> {
           user: _user,
           onLogout: _logout,
           onLogin: () {
-            Navigator.push(
-              context, MaterialPageRoute(builder: (_) => const LoginScreen())
-            ).then((_) => _loadUser());
+            Navigator.push(context,
+                    MaterialPageRoute(builder: (_) => const LoginScreen()))
+                .then((_) => _loadUser());
           },
         );
       default:
@@ -906,7 +913,9 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       key: _scaffoldKey,
       extendBody: true,
-      appBar: (_selectedIndex == 4 || _selectedIndex == 3 || _selectedIndex == 2)
+      appBar: (_selectedIndex == 4 ||
+              _selectedIndex == 3 ||
+              _selectedIndex == 2)
           ? null
           : AppBar(
               backgroundColor: Theme.of(context).colorScheme.surface,
@@ -939,7 +948,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 IconButton(
                   visualDensity: VisualDensity.compact,
                   padding: EdgeInsets.zero,
-                  constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
+                  constraints:
+                      const BoxConstraints(minWidth: 36, minHeight: 36),
                   icon: Badge(
                     isLabelVisible: _unreadNotifCount > 0,
                     label: Text(
@@ -955,12 +965,14 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   onPressed: () {
                     if (_user == null) {
-                      AppDialogs.showLoginRequiredDialog(context, onLoginSuccess: _loadUser);
+                      AppDialogs.showLoginRequiredDialog(context,
+                          onLoginSuccess: _loadUser);
                       return;
                     }
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => const NotificationsScreen()),
+                      MaterialPageRoute(
+                          builder: (context) => const NotificationsScreen()),
                     ).then((_) => _loadNotifications());
                   },
                   tooltip: Trans.notifications,
@@ -969,24 +981,27 @@ class _HomeScreenState extends State<HomeScreen> {
                 IconButton(
                   visualDensity: VisualDensity.compact,
                   padding: EdgeInsets.zero,
-                  constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
+                  constraints:
+                      const BoxConstraints(minWidth: 36, minHeight: 36),
                   icon: Badge(
                     isLabelVisible: _cartItemCount > 0,
                     label: Text(
                       _cartItemCount.toString(),
-                      style: const TextStyle(color: Colors.white), 
+                      style: const TextStyle(color: Colors.white),
                     ),
                     backgroundColor: const Color(0xFFFF2424),
                     child: const Icon(Icons.shopping_cart_outlined),
                   ),
                   onPressed: () {
                     if (_user == null) {
-                      AppDialogs.showLoginRequiredDialog(context, onLoginSuccess: _loadUser);
+                      AppDialogs.showLoginRequiredDialog(context,
+                          onLoginSuccess: _loadUser);
                       return;
                     }
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => const CartScreen()),
+                      MaterialPageRoute(
+                          builder: (context) => const CartScreen()),
                     ).then((_) => _loadCartCount());
                   },
                   tooltip: Trans.cart,
@@ -1047,7 +1062,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   top: 20,
                   bottom: 66 + MediaQuery.of(context).padding.bottom,
                 )
-              : EdgeInsets.only(bottom: 66 + MediaQuery.of(context).padding.bottom),
+              : EdgeInsets.only(
+                  bottom: 66 + MediaQuery.of(context).padding.bottom),
           child: _isUserLoading
               ? const Center(child: CircularProgressIndicator())
               : _buildPageBody(),
@@ -1060,18 +1076,20 @@ class _HomeScreenState extends State<HomeScreen> {
         curve: Curves.easeOutCubic,
         builder: (context, value, child) {
           return CustomPaint(
-           painter: CurvedTopPainter(
-                position: value,
-                borderColor: const Color.fromARGB(255, 255, 120, 1),
-                width: 1,
-                backgroundColor: Theme.of(context).colorScheme.surface,
-              ),
+            painter: CurvedTopPainter(
+              position: value,
+              borderColor: const Color.fromARGB(255, 255, 120, 1),
+              width: 1,
+              backgroundColor: Theme.of(context).colorScheme.surface,
+            ),
             child: SizedBox(
               height: 90 + MediaQuery.of(context).padding.bottom,
               child: Padding(
-                padding: EdgeInsets.only(bottom: MediaQuery.of(context).padding.bottom),
+                padding: EdgeInsets.only(
+                    bottom: MediaQuery.of(context).padding.bottom),
                 child: Row(
-                  children: List.generate(5, (index) => _buildCurvedNavItem(index)),
+                  children:
+                      List.generate(5, (index) => _buildCurvedNavItem(index)),
                 ),
               ),
             ),
@@ -1084,25 +1102,27 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _buildCurvedNavItem(int index) {
     final isSelected = _selectedIndex == index;
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    
+
     // Better contrast for inactive icons in dark mode
-    final color = isSelected 
-        ? const Color(0xFFEA6C00) 
-        : (isDark ? Colors.white60 : Theme.of(context).colorScheme.onSurfaceVariant);
-    
+    final color = isSelected
+        ? const Color(0xFFEA6C00)
+        : (isDark
+            ? Colors.white60
+            : Theme.of(context).colorScheme.onSurfaceVariant);
+
     final labels = ['Trang chủ', 'Sản phẩm', 'Thu cũ', 'Đơn hàng', 'Tài khoản'];
     final icons = [
-      Icons.home_outlined, 
-      Icons.inventory_2_outlined, 
-      Icons.swap_horiz_rounded, 
-      Icons.receipt_long_outlined, 
+      Icons.home_outlined,
+      Icons.inventory_2_outlined,
+      Icons.swap_horiz_rounded,
+      Icons.receipt_long_outlined,
       Icons.person_outline_rounded
     ];
     final activeIcons = [
-      Icons.home_rounded, 
-      Icons.inventory_2_outlined, 
-      Icons.swap_horiz_rounded, 
-      Icons.receipt_long_rounded, 
+      Icons.home_rounded,
+      Icons.inventory_2_outlined,
+      Icons.swap_horiz_rounded,
+      Icons.receipt_long_rounded,
       Icons.person_rounded
     ];
 
@@ -1125,14 +1145,17 @@ class _HomeScreenState extends State<HomeScreen> {
                   padding: EdgeInsets.all(isSelected ? 15 : 0),
                   decoration: BoxDecoration(
                     // Increase opacity in dark mode so it glows nicely instead of looking muddy
-                    color: isSelected 
-                        ? const Color(0xFFEA6C00).withOpacity(isDark ? 0.25 : 0.08) 
+                    color: isSelected
+                        ? const Color(0xFFEA6C00)
+                            .withOpacity(isDark ? 0.25 : 0.08)
                         : Colors.transparent,
                     shape: BoxShape.circle,
                   ),
                   child: Badge(
-                    isLabelVisible: index == 3 && _cartItemCount > 0, 
-                    label: Text(_cartItemCount.toString(), style: const TextStyle(color: Colors.white, fontSize: 10)),
+                    isLabelVisible: index == 3 && _cartItemCount > 0,
+                    label: Text(_cartItemCount.toString(),
+                        style:
+                            const TextStyle(color: Colors.white, fontSize: 10)),
                     backgroundColor: const Color(0xFFFF2424),
                     child: Icon(
                       isSelected ? activeIcons[index] : icons[index],
@@ -1225,11 +1248,10 @@ class _HomeScreenState extends State<HomeScreen> {
 }
 
 class CurvedTopPainter extends CustomPainter {
-  final double position; 
+  final double position;
   final Color borderColor;
   final Color backgroundColor;
   final double width;
-
 
   CurvedTopPainter({
     required this.position,
@@ -1243,44 +1265,50 @@ class CurvedTopPainter extends CustomPainter {
     final paint = Paint()
       ..color = backgroundColor
       ..style = PaintingStyle.fill;
-    
+
     final borderPaint = Paint()
       ..color = borderColor
       ..style = PaintingStyle.stroke
       ..strokeWidth = width;
 
     final path = Path();
-    
+
     final itemWidth = size.width / 5;
     final centerX = (position * itemWidth) + (itemWidth / 2);
-    
-    final curveHeight = 24.0; 
+
+    final curveHeight = 24.0;
     final wrapRadius = 34.0; // The radius of the curve wrapping the icon
 
     path.moveTo(0, curveHeight);
-    
+
     // Draw flat line to the start of the fillet
     path.lineTo(centerX - 45, curveHeight);
-    
+
     // Left fillet: smoothly transitions from flat line to the circle's trajectory
     path.cubicTo(
-      centerX - 35, curveHeight, 
-      centerX - 30, 16, 
-      centerX - 24, 10, 
+      centerX - 35,
+      curveHeight,
+      centerX - 30,
+      16,
+      centerX - 24,
+      10,
     );
-    
+
     // The perfect circular arc hugging the icon
     path.arcToPoint(
       Offset(centerX + 24, 10),
       radius: Radius.circular(wrapRadius),
       clockwise: true,
     );
-    
+
     // Right fillet: smoothly transitions back to the flat line
     path.cubicTo(
-      centerX + 30, 16,
-      centerX + 35, curveHeight,
-      centerX + 45, curveHeight,
+      centerX + 30,
+      16,
+      centerX + 35,
+      curveHeight,
+      centerX + 45,
+      curveHeight,
     );
 
     // Draw flat line to the end
@@ -1296,9 +1324,12 @@ class CurvedTopPainter extends CustomPainter {
     borderPath.moveTo(0, curveHeight);
     borderPath.lineTo(centerX - 45, curveHeight);
     borderPath.cubicTo(
-      centerX - 35, curveHeight,
-      centerX - 30, 16,
-      centerX - 24, 10,
+      centerX - 35,
+      curveHeight,
+      centerX - 30,
+      16,
+      centerX - 24,
+      10,
     );
     borderPath.arcToPoint(
       Offset(centerX + 24, 10),
@@ -1306,19 +1337,22 @@ class CurvedTopPainter extends CustomPainter {
       clockwise: true,
     );
     borderPath.cubicTo(
-      centerX + 30, 16,
-      centerX + 35, curveHeight,
-      centerX + 45, curveHeight,
+      centerX + 30,
+      16,
+      centerX + 35,
+      curveHeight,
+      centerX + 45,
+      curveHeight,
     );
     borderPath.lineTo(size.width, curveHeight);
-    
+
     canvas.drawPath(borderPath, borderPaint);
   }
 
   @override
   bool shouldRepaint(CurvedTopPainter oldDelegate) {
     return oldDelegate.position != position ||
-           oldDelegate.borderColor != borderColor ||
-           oldDelegate.backgroundColor != backgroundColor;
+        oldDelegate.borderColor != borderColor ||
+        oldDelegate.backgroundColor != backgroundColor;
   }
 }

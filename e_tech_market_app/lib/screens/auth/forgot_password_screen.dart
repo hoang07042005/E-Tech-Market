@@ -90,7 +90,8 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                   const SizedBox(height: 12),
                   Text(
                     Trans.forgotPasswordSubtitle,
-                    style: TextStyle(color: Colors.black54, fontSize: 14, height: 1.5),
+                    style: TextStyle(
+                        color: Colors.black54, fontSize: 14, height: 1.5),
                   ),
                   const SizedBox(height: 32),
                   if (_success) ...[
@@ -103,11 +104,15 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                       ),
                       child: Column(
                         children: [
-                          const Icon(Icons.check_circle, color: Color(0xFF059669), size: 48),
+                          const Icon(Icons.check_circle,
+                              color: Color(0xFF059669), size: 48),
                           const SizedBox(height: 12),
                           Text(
                             Trans.emailSentSuccess,
-                            style: TextStyle(color: Color(0xFF065F46), fontWeight: FontWeight.bold, fontSize: 16),
+                            style: TextStyle(
+                                color: Color(0xFF065F46),
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16),
                           ),
                           const SizedBox(height: 8),
                           Text(
@@ -123,7 +128,8 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                       onPressed: () {
                         Navigator.of(context).pushReplacement(
                           MaterialPageRoute(
-                            builder: (_) => ResetPasswordScreen(email: _emailController.text.trim()),
+                            builder: (_) => ResetPasswordScreen(
+                                email: _emailController.text.trim()),
                           ),
                         );
                       },
@@ -131,10 +137,13 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                         backgroundColor: accent,
                         foregroundColor: Colors.white,
                         padding: const EdgeInsets.symmetric(vertical: 16),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(14)),
                         elevation: 0,
                       ),
-                      child: Text(Trans.enterVerificationCode, style: TextStyle(letterSpacing: 2, fontWeight: FontWeight.w700)),
+                      child: Text(Trans.enterVerificationCode,
+                          style: TextStyle(
+                              letterSpacing: 2, fontWeight: FontWeight.w700)),
                     ),
                     const SizedBox(height: 12),
                     OutlinedButton(
@@ -143,9 +152,11 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                         side: const BorderSide(color: accent),
                         foregroundColor: accent,
                         padding: const EdgeInsets.symmetric(vertical: 16),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(14)),
                       ),
-                      child: Text(Trans.backToLogin, style: TextStyle(fontWeight: FontWeight.w700)),
+                      child: Text(Trans.backToLogin,
+                          style: TextStyle(fontWeight: FontWeight.w700)),
                     ),
                   ] else ...[
                     Form(
@@ -153,24 +164,33 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
-                          Text(Trans.email, style: TextStyle(color: Color(0xFF7C6B61), fontSize: 13)),
+                          Text(Trans.email,
+                              style: TextStyle(
+                                  color: Color(0xFF7C6B61), fontSize: 13)),
                           TextFormField(
                             style: TextStyle(color: Colors.black),
                             controller: _emailController,
                             keyboardType: TextInputType.emailAddress,
-                            decoration: _inputDecoration('nguyenvana@gmail.com'),
+                            decoration:
+                                _inputDecoration('nguyenvana@gmail.com'),
                             validator: (value) {
-                              if (value == null || value.trim().isEmpty) return Trans.pleaseEnterEmail;
-                              if (!value.contains('@')) return Trans.invalidEmailFormat;
+                              if (value == null || value.trim().isEmpty)
+                                return Trans.pleaseEnterEmail;
+                              if (!value.contains('@'))
+                                return Trans.invalidEmailFormat;
                               return null;
                             },
                           ),
                           const SizedBox(height: 24),
                           if (_error != null) ...[
                             Container(
-                              decoration: BoxDecoration(color: const Color(0xFFFEE2E2), borderRadius: BorderRadius.circular(12)),
+                              decoration: BoxDecoration(
+                                  color: const Color(0xFFFEE2E2),
+                                  borderRadius: BorderRadius.circular(12)),
                               padding: const EdgeInsets.all(12),
-                              child: Text(_error!, style: const TextStyle(color: Color(0xFFB91C1C))),
+                              child: Text(_error!,
+                                  style: const TextStyle(
+                                      color: Color(0xFFB91C1C))),
                             ),
                             const SizedBox(height: 24),
                           ],
@@ -180,19 +200,33 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                               backgroundColor: const Color(0xFFF26522),
                               foregroundColor: accent,
                               padding: const EdgeInsets.symmetric(vertical: 16),
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(14)),
                               elevation: 0,
                             ),
                             child: _isLoading
                                 ? Row(
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
-                                      SizedBox(height: 18, width: 18, child: CircularProgressIndicator(color: Color(0xFFFFFFFF), strokeWidth: 2)),
+                                      SizedBox(
+                                          height: 18,
+                                          width: 18,
+                                          child: CircularProgressIndicator(
+                                              color: Color(0xFFFFFFFF),
+                                              strokeWidth: 2)),
                                       const SizedBox(width: 8),
-                                      Text('ĐANG GỬI...', style: TextStyle(letterSpacing: 1, fontWeight: FontWeight.w700, color: Color(0xFFFFFFFF))),
+                                      Text('ĐANG GỬI...',
+                                          style: TextStyle(
+                                              letterSpacing: 1,
+                                              fontWeight: FontWeight.w700,
+                                              color: Color(0xFFFFFFFF))),
                                     ],
                                   )
-                                : Text(Trans.sendRequest, style: TextStyle(letterSpacing: 2, fontWeight: FontWeight.w700, color: Color(0xFFFFFFFF))),
+                                : Text(Trans.sendRequest,
+                                    style: TextStyle(
+                                        letterSpacing: 2,
+                                        fontWeight: FontWeight.w700,
+                                        color: Color(0xFFFFFFFF))),
                           ),
                         ],
                       ),

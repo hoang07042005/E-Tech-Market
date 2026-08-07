@@ -326,7 +326,6 @@ class _ReviewCard extends StatelessWidget {
     return int.tryParse(value.toString());
   }
 
-
   List<_ReviewMediaItem> _extractMediaItems(dynamic raw) {
     if (raw is! List) return const [];
     final items = <_ReviewMediaItem>[];

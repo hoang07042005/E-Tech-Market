@@ -92,7 +92,10 @@ class TabbedProductSection extends StatelessWidget {
                       selectedColor: _brandColor,
                       backgroundColor: Theme.of(context).colorScheme.surface,
                       side: BorderSide(
-                        color: selected ? _brandColor : Theme.of(context).colorScheme.outline, width: 0.15,
+                        color: selected
+                            ? _brandColor
+                            : Theme.of(context).colorScheme.outline,
+                        width: 0.15,
                       ),
                       onSelected: onTabSelected == null
                           ? null
@@ -112,7 +115,9 @@ class TabbedProductSection extends StatelessWidget {
               child: Text(
                 'Chưa có sản phẩm nổi bật.',
                 textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 14, color: Theme.of(context).colorScheme.onSurfaceVariant),
+                style: TextStyle(
+                    fontSize: 14,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant),
               ),
             )
           else
@@ -151,10 +156,12 @@ class TabbedProductSection extends StatelessWidget {
         return Wrap(
           spacing: 12,
           runSpacing: 12,
-          children: List.generate(4, (_) => SizedBox(
-            width: itemWidth,
-            child: const _TabbedProductSkeleton(),
-          )),
+          children: List.generate(
+              4,
+              (_) => SizedBox(
+                    width: itemWidth,
+                    child: const _TabbedProductSkeleton(),
+                  )),
         );
       },
     );
@@ -182,16 +189,17 @@ class _TabbedProductCard extends StatelessWidget {
     // Đồng bộ cách lấy trường mô tả giống như product_section
     final description = product['description']?.toString().trim();
     final shortDescription = product['short_description']?.toString().trim();
-    final excerpt =
-        description != null && description.isNotEmpty
-            ? description
-            : shortDescription != null && shortDescription.isNotEmpty
-                ? shortDescription
-                : Trans.defaultProductExcerpt;
+    final excerpt = description != null && description.isNotEmpty
+        ? description
+        : shortDescription != null && shortDescription.isNotEmpty
+            ? shortDescription
+            : Trans.defaultProductExcerpt;
     final imageUrl = _resolveProductImageUrl(product);
     final displayPrice = _getDisplayPrice(product);
-    final displayPriceMax = _hasMultiplePrices(product) ? _getMaxDisplayPrice(product) : null;
-    final displayOldPrice = _hasMultiplePrices(product) ? null : _getDisplayOldPrice(product);
+    final displayPriceMax =
+        _hasMultiplePrices(product) ? _getMaxDisplayPrice(product) : null;
+    final displayOldPrice =
+        _hasMultiplePrices(product) ? null : _getDisplayOldPrice(product);
     final showDiscountBadge = _showDiscountBadge(product);
 
     return Material(
@@ -202,7 +210,8 @@ class _TabbedProductCard extends StatelessWidget {
         onTap: onTap,
         child: Container(
           decoration: BoxDecoration(
-            border: Border.all(color: Theme.of(context).colorScheme.outline, width: 0.15),
+            border: Border.all(
+                color: Theme.of(context).colorScheme.outline, width: 0.15),
             borderRadius: BorderRadius.circular(12),
           ),
           child: Column(
@@ -217,15 +226,17 @@ class _TabbedProductCard extends StatelessWidget {
                     Positioned.fill(
                       child: Container(
                         decoration: BoxDecoration(
-                          borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
+                          borderRadius: const BorderRadius.vertical(
+                              top: Radius.circular(12)),
                         ),
-                        clipBehavior: Clip.antiAlias, 
+                        clipBehavior: Clip.antiAlias,
                         child: imageUrl.isEmpty
                             ? _buildFallback(context)
                             : Image.network(
                                 imageUrl,
                                 fit: BoxFit.cover,
-                                errorBuilder: (_, __, ___) => _buildFallback(context),
+                                errorBuilder: (_, __, ___) =>
+                                    _buildFallback(context),
                               ),
                       ),
                     ),
@@ -242,7 +253,11 @@ class _TabbedProductCard extends StatelessWidget {
                             padding: const EdgeInsets.all(6),
                             child: Icon(
                               isWished ? Icons.favorite : Icons.favorite_border,
-                              color: isWished ? _brandColor : Theme.of(context).colorScheme.onSurfaceVariant,
+                              color: isWished
+                                  ? _brandColor
+                                  : Theme.of(context)
+                                      .colorScheme
+                                      .onSurfaceVariant,
                               size: 16,
                             ),
                           ),
@@ -252,7 +267,7 @@ class _TabbedProductCard extends StatelessWidget {
                   ],
                 ),
               ),
-              
+
               // 2. Phần thông tin sản phẩm: Cập nhật theo giao diện product_section
               Padding(
                 padding: const EdgeInsets.all(10),
@@ -304,20 +319,26 @@ class _TabbedProductCard extends StatelessWidget {
                               fontWeight: FontWeight.w800,
                             ),
                           ),
-                        if (displayOldPrice != null && displayOldPrice > displayPrice && showDiscountBadge)
+                        if (displayOldPrice != null &&
+                            displayOldPrice > displayPrice &&
+                            showDiscountBadge)
                           Text(
                             '${_formatPrice(displayOldPrice)} đ',
                             style: TextStyle(
-                              color: Theme.of(context).colorScheme.onSurfaceVariant,
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .onSurfaceVariant,
                               fontSize: 10,
                               decoration: TextDecoration.lineThrough,
-                              decorationColor: Theme.of(context).colorScheme.onSurfaceVariant,
+                              decorationColor: Theme.of(context)
+                                  .colorScheme
+                                  .onSurfaceVariant,
                             ),
                           ),
                       ],
                     ),
                     const SizedBox(height: 2),
-                    
+
                     // Phần mô tả ngắn và Nút giỏ hàng hình tròn (Copy từ product_section)
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.center,
@@ -326,7 +347,9 @@ class _TabbedProductCard extends StatelessWidget {
                           child: Text(
                             excerpt,
                             style: TextStyle(
-                              color: Theme.of(context).colorScheme.onSurfaceVariant,
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .onSurfaceVariant,
                               fontSize: 10,
                               height: 1.35,
                             ),
@@ -362,13 +385,15 @@ class _TabbedProductCard extends StatelessWidget {
 
   String _resolveProductImageUrl(Map<String, dynamic> product) {
     final mainImage = product['main_image_url']?.toString().trim();
-    if (mainImage != null && mainImage.isNotEmpty) return NetworkUtils.fixDeviceUrl(mainImage);
+    if (mainImage != null && mainImage.isNotEmpty)
+      return NetworkUtils.fixDeviceUrl(mainImage);
 
     final variants = product['variants'] as List<dynamic>?;
     if (variants != null) {
       for (final variant in variants) {
         final image = variant['image_url']?.toString().trim();
-        if (image != null && image.isNotEmpty) return NetworkUtils.fixDeviceUrl(image);
+        if (image != null && image.isNotEmpty)
+          return NetworkUtils.fixDeviceUrl(image);
       }
     }
 
@@ -377,7 +402,8 @@ class _TabbedProductCard extends StatelessWidget {
       for (final image in images) {
         final url = image['image_url']?.toString().trim() ??
             image['url']?.toString().trim();
-        if (url != null && url.isNotEmpty) return NetworkUtils.fixDeviceUrl(url);
+        if (url != null && url.isNotEmpty)
+          return NetworkUtils.fixDeviceUrl(url);
       }
     }
 
@@ -389,8 +415,10 @@ class _TabbedProductCard extends StatelessWidget {
     if (variants != null && variants.isNotEmpty) {
       final sortedVariants = List<dynamic>.from(variants);
       sortedVariants.sort((a, b) {
-        final aPrice = double.tryParse(a['effective_price']?.toString() ?? '0') ?? 0;
-        final bPrice = double.tryParse(b['effective_price']?.toString() ?? '0') ?? 0;
+        final aPrice =
+            double.tryParse(a['effective_price']?.toString() ?? '0') ?? 0;
+        final bPrice =
+            double.tryParse(b['effective_price']?.toString() ?? '0') ?? 0;
         return aPrice.compareTo(bPrice);
       });
       return double.tryParse(
@@ -405,12 +433,18 @@ class _TabbedProductCard extends StatelessWidget {
     if (variants != null && variants.length > 1) {
       final sortedVariants = List.from(variants);
       sortedVariants.sort((a, b) {
-        final aPrice = double.tryParse(a['effective_price']?.toString() ?? '0') ?? 0;
-        final bPrice = double.tryParse(b['effective_price']?.toString() ?? '0') ?? 0;
+        final aPrice =
+            double.tryParse(a['effective_price']?.toString() ?? '0') ?? 0;
+        final bPrice =
+            double.tryParse(b['effective_price']?.toString() ?? '0') ?? 0;
         return aPrice.compareTo(bPrice);
       });
-      final lowest = double.tryParse(sortedVariants.first['effective_price']?.toString() ?? '0') ?? 0.0;
-      final highest = double.tryParse(sortedVariants.last['effective_price']?.toString() ?? '0') ?? 0.0;
+      final lowest = double.tryParse(
+              sortedVariants.first['effective_price']?.toString() ?? '0') ??
+          0.0;
+      final highest = double.tryParse(
+              sortedVariants.last['effective_price']?.toString() ?? '0') ??
+          0.0;
       return lowest != highest;
     }
     return false;
@@ -421,11 +455,15 @@ class _TabbedProductCard extends StatelessWidget {
     if (variants != null && variants.isNotEmpty) {
       final sortedVariants = List.from(variants);
       sortedVariants.sort((a, b) {
-        final aPrice = double.tryParse(a['effective_price']?.toString() ?? '0') ?? 0;
-        final bPrice = double.tryParse(b['effective_price']?.toString() ?? '0') ?? 0;
+        final aPrice =
+            double.tryParse(a['effective_price']?.toString() ?? '0') ?? 0;
+        final bPrice =
+            double.tryParse(b['effective_price']?.toString() ?? '0') ?? 0;
         return aPrice.compareTo(bPrice);
       });
-      return double.tryParse(sortedVariants.last['effective_price']?.toString() ?? '0') ?? 0.0;
+      return double.tryParse(
+              sortedVariants.last['effective_price']?.toString() ?? '0') ??
+          0.0;
     }
     return null;
   }
@@ -433,8 +471,11 @@ class _TabbedProductCard extends StatelessWidget {
   bool _showDiscountBadge(Map<String, dynamic> product) {
     final variants = product['variants'] as List<dynamic>?;
     if (variants == null || variants.length != 1) return false;
-    final originalPrice = double.tryParse(variants[0]['price']?.toString() ?? '0') ?? 0.0;
-    final finalPrice = double.tryParse(variants[0]['effective_price']?.toString() ?? '0') ?? 0.0;
+    final originalPrice =
+        double.tryParse(variants[0]['price']?.toString() ?? '0') ?? 0.0;
+    final finalPrice =
+        double.tryParse(variants[0]['effective_price']?.toString() ?? '0') ??
+            0.0;
     return finalPrice < originalPrice;
   }
 
@@ -443,12 +484,18 @@ class _TabbedProductCard extends StatelessWidget {
     if (variants != null && variants.isNotEmpty) {
       final sortedVariants = List<dynamic>.from(variants);
       sortedVariants.sort((a, b) {
-        final aPrice = double.tryParse(a['effective_price']?.toString() ?? '0') ?? 0;
-        final bPrice = double.tryParse(b['effective_price']?.toString() ?? '0') ?? 0;
+        final aPrice =
+            double.tryParse(a['effective_price']?.toString() ?? '0') ?? 0;
+        final bPrice =
+            double.tryParse(b['effective_price']?.toString() ?? '0') ?? 0;
         return aPrice.compareTo(bPrice);
       });
-      final originalPrice = double.tryParse(sortedVariants.first['price']?.toString() ?? '0') ?? 0;
-      final finalPrice = double.tryParse(sortedVariants.first['effective_price']?.toString() ?? '0') ?? 0;
+      final originalPrice =
+          double.tryParse(sortedVariants.first['price']?.toString() ?? '0') ??
+              0;
+      final finalPrice = double.tryParse(
+              sortedVariants.first['effective_price']?.toString() ?? '0') ??
+          0;
       return originalPrice > finalPrice ? originalPrice : null;
     }
     return null;
@@ -491,8 +538,9 @@ class _CircleActionButton extends StatelessWidget {
           height: 30,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            border: backgroundColor == null 
-                ? Border.all(color: Theme.of(context).colorScheme.outline, width: 0.15)
+            border: backgroundColor == null
+                ? Border.all(
+                    color: Theme.of(context).colorScheme.outline, width: 0.15)
                 : null,
           ),
           child: Icon(icon, size: 15, color: color),
@@ -511,7 +559,8 @@ class _TabbedProductSkeleton extends StatelessWidget {
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Theme.of(context).colorScheme.outline, width: 0.15),
+        border: Border.all(
+            color: Theme.of(context).colorScheme.outline, width: 0.15),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -531,7 +580,7 @@ class _TabbedProductSkeleton extends StatelessWidget {
                 const _TabbedSkeletonLine(widthFactor: 0.4),
                 const SizedBox(height: 12),
                 Row(
-                  children:  [
+                  children: [
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,

@@ -20,7 +20,8 @@ class AdminDashboardProvider extends ChangeNotifier {
 
     try {
       final responses = await Future.wait([
-        DioClient.instance.get('/admin/dashboard/stats?range=month&resolution=day'),
+        DioClient.instance
+            .get('/admin/dashboard/stats?range=month&resolution=day'),
         DioClient.instance.get('/admin/settings'),
       ]);
 
@@ -28,7 +29,7 @@ class AdminDashboardProvider extends ChangeNotifier {
         final resData = responses[0].data;
         _dashboardData = resData['data'] ?? resData;
       }
-      
+
       if (responses[1].statusCode == 200) {
         _settingsData = responses[1].data as Map<String, dynamic>;
       }

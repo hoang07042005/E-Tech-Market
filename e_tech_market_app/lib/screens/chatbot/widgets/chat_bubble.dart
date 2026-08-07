@@ -101,8 +101,7 @@ class ChatBubble extends StatelessWidget {
               backgroundImage: avatarUrl != null && avatarUrl!.isNotEmpty
                   ? NetworkImage(avatarUrl!)
                   : null,
-              onBackgroundImageError:
-                  avatarUrl != null ? (_, __) {} : null,
+              onBackgroundImageError: avatarUrl != null ? (_, __) {} : null,
               child: avatarUrl == null || avatarUrl!.isEmpty
                   ? const Icon(Icons.person, color: Colors.white, size: 18)
                   : null,

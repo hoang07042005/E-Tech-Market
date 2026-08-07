@@ -20,7 +20,9 @@ class _LoyaltyCardState extends State<LoyaltyCard> {
 
   String _formatCurrency(dynamic value) {
     if (value == null) return '0';
-    final n = value is num ? value.toDouble() : double.tryParse(value.toString()) ?? 0.0;
+    final n = value is num
+        ? value.toDouble()
+        : double.tryParse(value.toString()) ?? 0.0;
     return n
         .toStringAsFixed(0)
         .replaceAllMapped(RegExp(r'(\d)(?=(\d{3})+(?!\d))'), (m) => '${m[1]}.');
@@ -60,8 +62,10 @@ class _LoyaltyCardState extends State<LoyaltyCard> {
             ),
             TextButton.icon(
               onPressed: () => _confirmCancel(context),
-              icon: const Icon(Icons.cancel_outlined, color: Colors.redAccent, size: 20),
-              label: const Text('Hủy hội viên', style: TextStyle(color: Colors.redAccent)),
+              icon: const Icon(Icons.cancel_outlined,
+                  color: Colors.redAccent, size: 20),
+              label: const Text('Hủy hội viên',
+                  style: TextStyle(color: Colors.redAccent)),
             ),
           ],
         ),
@@ -77,7 +81,8 @@ class _LoyaltyCardState extends State<LoyaltyCard> {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(16),
         boxShadow: const [
-          BoxShadow(color: Colors.black26, blurRadius: 10, offset: Offset(0, 5)),
+          BoxShadow(
+              color: Colors.black26, blurRadius: 10, offset: Offset(0, 5)),
         ],
       ),
       child: ClipRRect(
@@ -88,7 +93,8 @@ class _LoyaltyCardState extends State<LoyaltyCard> {
             Positioned.fill(
               child: Opacity(
                 opacity: 0.5,
-                child: Image.asset('assets/images/screen1.png', fit: BoxFit.cover),
+                child:
+                    Image.asset('assets/images/screen1.png', fit: BoxFit.cover),
               ),
             ),
             // Gradient overlay
@@ -139,7 +145,8 @@ class _LoyaltyCardState extends State<LoyaltyCard> {
                       ),
                       // Points badge
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 10, vertical: 4),
                         decoration: BoxDecoration(
                           color: Colors.white.withOpacity(0.1),
                           borderRadius: BorderRadius.circular(8),
@@ -161,7 +168,8 @@ class _LoyaltyCardState extends State<LoyaltyCard> {
                             const SizedBox(width: 4),
                             const Text(
                               'Điểm',
-                              style: TextStyle(color: Color(0xFFFFE16D), fontSize: 10),
+                              style: TextStyle(
+                                  color: Color(0xFFFFE16D), fontSize: 10),
                             ),
                           ],
                         ),
@@ -195,7 +203,8 @@ class _LoyaltyCardState extends State<LoyaltyCard> {
                     children: [
                       const Text(
                         'Chi tiêu tích lũy: ',
-                        style: TextStyle(color: Color(0xFFD0C6AB), fontSize: 13),
+                        style:
+                            TextStyle(color: Color(0xFFD0C6AB), fontSize: 13),
                       ),
                       Text(
                         '${_formatCurrency(widget.loyaltyData['total_spent'])} đ',
@@ -236,7 +245,8 @@ class _LoyaltyCardState extends State<LoyaltyCard> {
                               child: Text(
                                 'Chúc mừng! Bạn đang ở hạng thẻ cao nhất.',
                                 style: TextStyle(
-                                  color: const Color(0xFFD0C6AB).withOpacity(0.8),
+                                  color:
+                                      const Color(0xFFD0C6AB).withOpacity(0.8),
                                   fontSize: 12,
                                 ),
                               ),
@@ -248,9 +258,11 @@ class _LoyaltyCardState extends State<LoyaltyCard> {
                   else
                     Builder(builder: (context) {
                       final minSpend = _parseDouble(nextRank['min_spend']);
-                      final progress =
-                          minSpend > 0 ? (totalSpent / minSpend).clamp(0.0, 1.0) : 1.0;
-                      final remaining = (minSpend - totalSpent).clamp(0.0, double.infinity);
+                      final progress = minSpend > 0
+                          ? (totalSpent / minSpend).clamp(0.0, 1.0)
+                          : 1.0;
+                      final remaining =
+                          (minSpend - totalSpent).clamp(0.0, double.infinity);
 
                       return Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -271,7 +283,10 @@ class _LoyaltyCardState extends State<LoyaltyCard> {
                                   height: 6,
                                   decoration: BoxDecoration(
                                     gradient: const LinearGradient(
-                                      colors: [Color(0xFFE9C400), Color(0xFFFFE16D)],
+                                      colors: [
+                                        Color(0xFFE9C400),
+                                        Color(0xFFFFE16D)
+                                      ],
                                     ),
                                     borderRadius: BorderRadius.circular(3),
                                   ),
@@ -285,7 +300,8 @@ class _LoyaltyCardState extends State<LoyaltyCard> {
                             children: [
                               Text(
                                 'Tiến trình hạng ${nextRank['rank_name'] ?? ''}',
-                                style: const TextStyle(color: Color(0xFFD0C6AB), fontSize: 12),
+                                style: const TextStyle(
+                                    color: Color(0xFFD0C6AB), fontSize: 12),
                               ),
                               Text(
                                 'Cần thêm ${_formatCurrency(remaining)} đ',
@@ -330,7 +346,8 @@ class _LoyaltyCardState extends State<LoyaltyCard> {
           if (history.isEmpty)
             Text(
               'Chưa có lịch sử giao dịch.',
-              style: TextStyle(color: Colors.grey[500], fontStyle: FontStyle.italic),
+              style: TextStyle(
+                  color: Colors.grey[500], fontStyle: FontStyle.italic),
             )
           else
             ListView.separated(
@@ -349,7 +366,8 @@ class _LoyaltyCardState extends State<LoyaltyCard> {
                 if (item['created_at'] != null) {
                   try {
                     final dt = DateTime.parse(item['created_at'].toString());
-                    dateStr = DateFormat('dd/MM/yyyy HH:mm').format(dt.toLocal());
+                    dateStr =
+                        DateFormat('dd/MM/yyyy HH:mm').format(dt.toLocal());
                   } catch (_) {}
                 }
 
@@ -361,11 +379,14 @@ class _LoyaltyCardState extends State<LoyaltyCard> {
                         width: 36,
                         height: 36,
                         decoration: BoxDecoration(
-                          color: (isPositive ? Colors.green : Colors.red).withOpacity(0.1),
+                          color: (isPositive ? Colors.green : Colors.red)
+                              .withOpacity(0.1),
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Icon(
-                          isPositive ? Icons.add_circle_outline : Icons.remove_circle_outline,
+                          isPositive
+                              ? Icons.add_circle_outline
+                              : Icons.remove_circle_outline,
                           color: color,
                           size: 20,
                         ),
@@ -376,14 +397,17 @@ class _LoyaltyCardState extends State<LoyaltyCard> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              item['description']?.toString() ?? 'Giao dịch điểm',
-                              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+                              item['description']?.toString() ??
+                                  'Giao dịch điểm',
+                              style: const TextStyle(
+                                  fontSize: 14, fontWeight: FontWeight.w500),
                             ),
                             if (dateStr.isNotEmpty) ...[
                               const SizedBox(height: 2),
                               Text(
                                 dateStr,
-                                style: TextStyle(fontSize: 12, color: Colors.grey[500]),
+                                style: TextStyle(
+                                    fontSize: 12, color: Colors.grey[500]),
                               ),
                             ],
                           ],

@@ -45,7 +45,7 @@ class FutureSection extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 26,
                   fontWeight: FontWeight.w800,
-                    color: Theme.of(context).colorScheme.onSurface,
+                  color: Theme.of(context).colorScheme.onSurface,
                   height: 1.1,
                 ),
               ),
@@ -54,7 +54,7 @@ class FutureSection extends StatelessWidget {
                 'Chúng tôi không chỉ bán thiết bị điện tử — chúng tôi chọn lọc những công cụ thúc đẩy sự tiến bộ. Quy trình tuyển chọn dựa trên kiểm định kỹ thuật khắt khe để mỗi sản phẩm đạt tiêu chuẩn “Chất lượng không thỏa hiệp”.',
                 style: TextStyle(
                   fontSize: 14,
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
                   height: 1.7,
                 ),
               ),
@@ -85,8 +85,8 @@ class FutureSection extends StatelessWidget {
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(5),
                     child: SizedBox(
-                    //   width: 240,
-                    //   height: 240,
+                      //   width: 240,
+                      //   height: 240,
                       child: Image.asset(
                         'assets/images/unnamed.png',
                         fit: BoxFit.cover,
@@ -106,7 +106,8 @@ class FutureSection extends StatelessWidget {
                       color: _brandColor.withValues(alpha: 0.15),
                       borderRadius: BorderRadius.circular(5),
                     ),
-                    child: const Icon(Icons.memory, color: _brandColor, size: 34),
+                    child:
+                        const Icon(Icons.memory, color: _brandColor, size: 34),
                   ),
                 ),
               ],
@@ -149,7 +150,7 @@ class _StatPill extends StatelessWidget {
         decoration: BoxDecoration(
           color: Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(18),
-            border: Border.all(color: Theme.of(context).colorScheme.outline),
+          border: Border.all(color: Theme.of(context).colorScheme.outline),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withValues(alpha: 0.03),
@@ -162,16 +163,16 @@ class _StatPill extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(value,
-              style: TextStyle(
+                style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.w800,
-                    color: Theme.of(context).colorScheme.onSurface,
+                  color: Theme.of(context).colorScheme.onSurface,
                 )),
             const SizedBox(height: 4),
             Text(label,
-              style: TextStyle(
+                style: TextStyle(
                   fontSize: 10,
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
                   fontWeight: FontWeight.w600,
                   letterSpacing: 0.3,
                 )),

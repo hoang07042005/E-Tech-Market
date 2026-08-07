@@ -216,9 +216,7 @@ class OrderStatusCard extends StatelessWidget {
               fontSize: 12,
               fontWeight: valueBold ? FontWeight.w700 : FontWeight.w500,
               color: valueColor ??
-                  (isDark
-                      ? const Color(0xFFE2E8F0)
-                      : const Color(0xFF1E293B)),
+                  (isDark ? const Color(0xFFE2E8F0) : const Color(0xFF1E293B)),
             ),
             textAlign: TextAlign.right,
           ),

@@ -12,7 +12,8 @@ class WishlistService {
 
   static Future<List<dynamic>> fetchWishlist({String type = 'product'}) async {
     try {
-      final response = await DioClient.instance.get('/wishlist', queryParameters: {'type': type});
+      final response = await DioClient.instance
+          .get('/wishlist', queryParameters: {'type': type});
       final data = response.data;
       if (data is List) return data;
       return [];
@@ -22,7 +23,8 @@ class WishlistService {
     }
   }
 
-  static Future<String?> toggleWishlist(int id, {String type = 'product'}) async {
+  static Future<String?> toggleWishlist(int id,
+      {String type = 'product'}) async {
     try {
       final response = await DioClient.instance.post(
         '/wishlist/toggle',
@@ -39,7 +41,8 @@ class WishlistService {
       }
       if (e.response?.data is Map) {
         final data = e.response!.data as Map<String, dynamic>;
-        throw Exception(data['message']?.toString() ?? 'Không thể cập nhật yêu thích.');
+        throw Exception(
+            data['message']?.toString() ?? 'Không thể cập nhật yêu thích.');
       }
       throw Exception('Không thể cập nhật yêu thích.');
     }
@@ -55,13 +58,14 @@ class WishlistService {
     _wishlistIds[type] = list.map((item) => _toInt(item[idField])).toSet();
   }
 
-  static bool isFavorite(int id, {String type = 'product'}) => _wishlistIds[type]?.contains(id) ?? false;
+  static bool isFavorite(int id, {String type = 'product'}) =>
+      _wishlistIds[type]?.contains(id) ?? false;
 
   static Future<void> toggleFavorite(int id, {String type = 'product'}) async {
     if (!_wishlistIds.containsKey(type)) {
       _wishlistIds[type] = {};
     }
-    
+
     final wasFavorite = _wishlistIds[type]!.contains(id);
     // Optimistic update
     if (wasFavorite) {

@@ -6,7 +6,7 @@ class BannerService {
     try {
       final response = await DioClient.instance.get('/banners');
       final body = response.data;
-      
+
       List<dynamic> list = [];
       if (body is List) {
         list = body;

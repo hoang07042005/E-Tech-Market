@@ -4,7 +4,8 @@ import '../screens/auth/login_screen.dart';
 class AppDialogs {
   AppDialogs._();
 
-  static void showLoginRequiredDialog(BuildContext context, {VoidCallback? onLoginSuccess}) {
+  static void showLoginRequiredDialog(BuildContext context,
+      {VoidCallback? onLoginSuccess}) {
     showDialog<void>(
       context: context,
       builder: (BuildContext dialogContext) {

@@ -105,7 +105,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       final cart = await CartService.fetchCart();
       final payAvail = await CheckoutService.fetchPaymentConfig();
       final shipData = await CheckoutService.fetchShippingConfig();
-      
+
       Map<String, dynamic>? loyaltyData;
       if (_hasAuth) {
         loyaltyData = await CheckoutService.fetchLoyaltyData();
@@ -188,42 +188,46 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   double get _discountAmount => _toDouble(_appliedCoupon?['discount_amount']);
 
   double get _pointsDiscountAmount => _pointsToUse * 500.0;
-  
+
   int get _maxPointsAllowed {
-    final baseForPoints = (_totalPrice - _discountAmount + _shippingFee).clamp(0, double.infinity);
+    final baseForPoints = (_totalPrice - _discountAmount + _shippingFee)
+        .clamp(0, double.infinity);
     return (baseForPoints * 0.20 / 500).floor();
   }
 
   double get _grandTotal =>
-      (_totalPrice - _discountAmount + _shippingFee - _pointsDiscountAmount).clamp(0, double.infinity);
+      (_totalPrice - _discountAmount + _shippingFee - _pointsDiscountAmount)
+          .clamp(0, double.infinity);
 
   void _applyPoints() {
     final points = int.tryParse(_pointsCtrl.text.trim()) ?? 0;
-    final currentPoints = (_loyaltyData?['current_points'] as num?)?.toInt() ?? 0;
+    final currentPoints =
+        (_loyaltyData?['current_points'] as num?)?.toInt() ?? 0;
     final maxAllowed = _maxPointsAllowed;
-    
+
     if (points <= 0) {
       AppSnackBar.showError(context, 'Số điểm không hợp lệ');
       return;
     }
-    
+
     if (points > currentPoints) {
       AppSnackBar.showError(context, 'Bạn không đủ điểm');
       return;
     }
-    
+
     if (points > maxAllowed) {
-      AppSnackBar.showError(context, 'Chỉ được dùng tối đa $maxAllowed điểm cho đơn hàng này');
+      AppSnackBar.showError(
+          context, 'Chỉ được dùng tối đa $maxAllowed điểm cho đơn hàng này');
       return;
     }
-    
+
     setState(() {
       _pointsToUse = points;
       _pointsCtrl.clear();
       FocusScope.of(context).unfocus();
     });
   }
-  
+
   void _removePoints() {
     setState(() {
       _pointsToUse = 0;
@@ -1204,7 +1208,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
           _summaryRow(Trans.discount, '-${_formatCurrency(_discountAmount)}',
               valueColor: const Color(0xFF16A34A)),
         if (_pointsToUse > 0)
-          _summaryRow('Giảm giá (Điểm thưởng)', '-${_formatCurrency(_pointsDiscountAmount)}',
+          _summaryRow('Giảm giá (Điểm thưởng)',
+              '-${_formatCurrency(_pointsDiscountAmount)}',
               valueColor: const Color(0xFF16A34A)),
         const SizedBox(height: 16),
         if (_hasAuth && _loyaltyData != null && _loyaltyData!.containsKey('id'))
@@ -1214,7 +1219,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
             decoration: BoxDecoration(
               color: Theme.of(context).colorScheme.surface,
               borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: Theme.of(context).colorScheme.outline, width: 0.15),
+              border: Border.all(
+                  color: Theme.of(context).colorScheme.outline, width: 0.15),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -1222,8 +1228,10 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text('Điểm thưởng: ${_loyaltyData!['current_points'] ?? 0}', style: const TextStyle(fontWeight: FontWeight.bold)),
-                    const Text('1 điểm = 500đ', style: TextStyle(color: Colors.orange, fontSize: 13)),
+                    Text('Điểm thưởng: ${_loyaltyData!['current_points'] ?? 0}',
+                        style: const TextStyle(fontWeight: FontWeight.bold)),
+                    const Text('1 điểm = 500đ',
+                        style: TextStyle(color: Colors.orange, fontSize: 13)),
                   ],
                 ),
                 const SizedBox(height: 12),
@@ -1237,10 +1245,18 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                           keyboardType: TextInputType.number,
                           decoration: InputDecoration(
                             hintText: 'Số điểm muốn dùng',
-                            hintStyle: const TextStyle(color: Colors.grey, fontSize: 14),
-                            contentPadding: const EdgeInsets.symmetric(horizontal: 16),
-                            border: OutlineInputBorder(borderRadius: BorderRadius.circular(6), borderSide: BorderSide(color: Colors.grey.shade300)),
-                            enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(6), borderSide: BorderSide(color: Colors.grey.shade300)),
+                            hintStyle: const TextStyle(
+                                color: Colors.grey, fontSize: 14),
+                            contentPadding:
+                                const EdgeInsets.symmetric(horizontal: 16),
+                            border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(6),
+                                borderSide:
+                                    BorderSide(color: Colors.grey.shade300)),
+                            enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(6),
+                                borderSide:
+                                    BorderSide(color: Colors.grey.shade300)),
                           ),
                         ),
                       ),
@@ -1254,9 +1270,11 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                           backgroundColor: const Color(0xFFFFEDD5),
                           foregroundColor: const Color(0xFFF26522),
                           elevation: 0,
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(6)),
                         ),
-                        child: const Text('Áp dụng', style: TextStyle(fontWeight: FontWeight.bold)),
+                        child: const Text('Áp dụng',
+                            style: TextStyle(fontWeight: FontWeight.bold)),
                       ),
                     ),
                   ],
@@ -1266,16 +1284,24 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text('Đã dùng $_pointsToUse điểm (-${_formatCurrency(_pointsDiscountAmount)})', style: const TextStyle(color: Color(0xFF16A34A), fontSize: 13)),
+                      Text(
+                          'Đã dùng $_pointsToUse điểm (-${_formatCurrency(_pointsDiscountAmount)})',
+                          style: const TextStyle(
+                              color: Color(0xFF16A34A), fontSize: 13)),
                       InkWell(
                         onTap: _removePoints,
-                        child: const Text('Hủy', style: TextStyle(color: Colors.red, fontSize: 13, decoration: TextDecoration.underline)),
+                        child: const Text('Hủy',
+                            style: TextStyle(
+                                color: Colors.red,
+                                fontSize: 13,
+                                decoration: TextDecoration.underline)),
                       ),
                     ],
                   ),
                 ],
                 const SizedBox(height: 4),
-                Text('(Tối đa dùng $_maxPointsAllowed điểm cho đơn hàng này)', style: const TextStyle(color: Colors.grey, fontSize: 12)),
+                Text('(Tối đa dùng $_maxPointsAllowed điểm cho đơn hàng này)',
+                    style: const TextStyle(color: Colors.grey, fontSize: 12)),
               ],
             ),
           )
@@ -1290,23 +1316,32 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
             ),
             child: Row(
               children: [
-                const Icon(Icons.info_outline, color: Color(0xFF2563EB), size: 20),
+                const Icon(Icons.info_outline,
+                    color: Color(0xFF2563EB), size: 20),
                 const SizedBox(width: 8),
                 Expanded(
                   child: RichText(
                     text: TextSpan(
-                      style: const TextStyle(fontSize: 13, color: Colors.black87, height: 1.4),
+                      style: const TextStyle(
+                          fontSize: 13, color: Colors.black87, height: 1.4),
                       children: [
                         const TextSpan(text: 'Bạn chưa có thẻ hội viên! Hãy '),
                         TextSpan(
                           text: 'đăng ký ngay',
-                          style: const TextStyle(color: Color(0xFF2563EB), decoration: TextDecoration.underline, fontWeight: FontWeight.bold),
+                          style: const TextStyle(
+                              color: Color(0xFF2563EB),
+                              decoration: TextDecoration.underline,
+                              fontWeight: FontWeight.bold),
                           recognizer: TapGestureRecognizer()
                             ..onTap = () {
-                              Navigator.push(context, MaterialPageRoute(builder: (_) => const LoyaltyScreen()));
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (_) => const LoyaltyScreen()));
                             },
                         ),
-                        const TextSpan(text: ' để tích lũy và sử dụng điểm thưởng.'),
+                        const TextSpan(
+                            text: ' để tích lũy và sử dụng điểm thưởng.'),
                       ],
                     ),
                   ),
@@ -1325,22 +1360,28 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
             ),
             child: Row(
               children: [
-                const Icon(Icons.info_outline, color: Color(0xFF2563EB), size: 20),
+                const Icon(Icons.info_outline,
+                    color: Color(0xFF2563EB), size: 20),
                 const SizedBox(width: 8),
                 Expanded(
                   child: RichText(
                     text: TextSpan(
-                      style: const TextStyle(fontSize: 13, color: Colors.black87, height: 1.4),
+                      style: const TextStyle(
+                          fontSize: 13, color: Colors.black87, height: 1.4),
                       children: [
                         TextSpan(
                           text: 'Đăng nhập & Đăng ký hội viên',
-                          style: const TextStyle(color: Color(0xFF2563EB), decoration: TextDecoration.underline, fontWeight: FontWeight.bold),
+                          style: const TextStyle(
+                              color: Color(0xFF2563EB),
+                              decoration: TextDecoration.underline,
+                              fontWeight: FontWeight.bold),
                           recognizer: TapGestureRecognizer()
                             ..onTap = () {
                               Navigator.pushNamed(context, '/login');
                             },
                         ),
-                        const TextSpan(text: ' ngay để tích lũy và sử dụng điểm thưởng.'),
+                        const TextSpan(
+                            text: ' ngay để tích lũy và sử dụng điểm thưởng.'),
                       ],
                     ),
                   ),

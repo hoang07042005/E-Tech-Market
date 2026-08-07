@@ -25,8 +25,10 @@ class PaymentResultScreen extends StatelessWidget {
         actions: [
           IconButton(
             icon: Icon(
-              Icons.close, 
-              color: Theme.of(context).colorScheme.onSurface, // Tự động đổi màu theo Sáng/Tối
+              Icons.close,
+              color: Theme.of(context)
+                  .colorScheme
+                  .onSurface, // Tự động đổi màu theo Sáng/Tối
             ),
             onPressed: () {
               if (isSuccess) {
@@ -67,7 +69,7 @@ class PaymentResultScreen extends StatelessWidget {
                 },
               ),
               const SizedBox(height: 32),
-              
+
               // Title
               Text(
                 isSuccess ? 'Thanh toán thành công!' : 'Thanh toán thất bại',
@@ -81,7 +83,7 @@ class PaymentResultScreen extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 16),
-              
+
               // Subtitle
               Text(
                 isSuccess
@@ -95,7 +97,7 @@ class PaymentResultScreen extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 32),
-              
+
               // Order Code Box
               Container(
                 width: double.infinity,
@@ -104,8 +106,10 @@ class PaymentResultScreen extends StatelessWidget {
                   color: Theme.of(context).colorScheme.surface,
                   borderRadius: BorderRadius.circular(16),
                   border: Border.all(
-                    color: Theme.of(context).colorScheme.onSurface.withOpacity(0.1)
-                  ),
+                      color: Theme.of(context)
+                          .colorScheme
+                          .onSurface
+                          .withOpacity(0.1)),
                 ),
                 child: Column(
                   children: [
@@ -129,7 +133,7 @@ class PaymentResultScreen extends StatelessWidget {
                 ),
               ),
               const Spacer(),
-              
+
               // Action Button
               SizedBox(
                 width: double.infinity,

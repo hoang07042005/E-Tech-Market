@@ -7,7 +7,8 @@ class PurchasedProductsWidget extends StatefulWidget {
   const PurchasedProductsWidget({super.key});
 
   @override
-  State<PurchasedProductsWidget> createState() => _PurchasedProductsWidgetState();
+  State<PurchasedProductsWidget> createState() =>
+      _PurchasedProductsWidgetState();
 }
 
 class _PurchasedProductsWidgetState extends State<PurchasedProductsWidget> {
@@ -54,22 +55,28 @@ class _PurchasedProductsWidgetState extends State<PurchasedProductsWidget> {
 
             final product = item['product'] as Map<String, dynamic>?;
             final productId = product?['id'] ?? item['product_id'];
-            final productName =
-                (product?['name'] ?? item['product_name_snapshot'] ?? 'Sản phẩm').toString();
+            final productName = (product?['name'] ??
+                    item['product_name_snapshot'] ??
+                    'Sản phẩm')
+                .toString();
 
             final imageUrl = _resolveOrderItemImageUrl(item);
-            
-            final variant = item['variant'] as Map<String, dynamic>? ?? <String, dynamic>{};
+
+            final variant =
+                item['variant'] as Map<String, dynamic>? ?? <String, dynamic>{};
             final variantId = item['variant_id'];
             String? variantLabel;
-            final direct = (variant['variant_name'] ?? variant['name'])?.toString();
+            final direct =
+                (variant['variant_name'] ?? variant['name'])?.toString();
             if (direct != null && direct.trim().isNotEmpty) {
               variantLabel = direct.trim();
             } else {
               final parts = [
                 variant['color']?.toString(),
                 (variant['configuration'] ?? variant['storage'])?.toString(),
-              ].where((part) => part != null && part.trim().isNotEmpty).toList();
+              ]
+                  .where((part) => part != null && part.trim().isNotEmpty)
+                  .toList();
               final label = parts.join(' · ');
               variantLabel = label.isEmpty ? null : label;
             }
@@ -79,9 +86,11 @@ class _PurchasedProductsWidgetState extends State<PurchasedProductsWidget> {
                 : 'name:${productName.toLowerCase()}_var:${variantId?.toString() ?? '0'}';
 
             final qty = (item['quantity'] ?? 1);
-            final qtyNum = qty is num ? qty.toInt() : int.tryParse(qty.toString()) ?? 1;
+            final qtyNum =
+                qty is num ? qty.toInt() : int.tryParse(qty.toString()) ?? 1;
 
-            final moneyValue = item['total_price'] ?? item['price'] ?? item['unit_price'] ?? 0;
+            final moneyValue =
+                item['total_price'] ?? item['price'] ?? item['unit_price'] ?? 0;
             final amount = moneyValue is num
                 ? moneyValue.toDouble()
                 : double.tryParse(moneyValue.toString()) ?? 0.0;
@@ -133,7 +142,9 @@ class _PurchasedProductsWidgetState extends State<PurchasedProductsWidget> {
   }
 
   String _resolveOrderItemImageUrl(dynamic item) {
-    final product = item is Map<String, dynamic> ? item['product'] as Map<String, dynamic>? : null;
+    final product = item is Map<String, dynamic>
+        ? item['product'] as Map<String, dynamic>?
+        : null;
     final candidates = <String?>[
       product?['main_image_url']?.toString(),
       product?['image_url']?.toString(),
@@ -180,7 +191,11 @@ class _PurchasedProductsWidgetState extends State<PurchasedProductsWidget> {
           child: Column(
             children: [
               Icon(Icons.shopping_bag_outlined,
-                  size: 48, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.4)),
+                  size: 48,
+                  color: Theme.of(context)
+                      .colorScheme
+                      .onSurface
+                      .withValues(alpha: 0.4)),
               const SizedBox(height: 12),
               const Text(
                 'Bạn chưa mua sản phẩm nào.',
@@ -200,7 +215,10 @@ class _PurchasedProductsWidgetState extends State<PurchasedProductsWidget> {
             padding: const EdgeInsets.only(bottom: 12),
             child: Text(
               'Sản phẩm đã mua',
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+              style: Theme.of(context)
+                  .textTheme
+                  .titleMedium
+                  ?.copyWith(fontWeight: FontWeight.bold),
             ),
           ),
           ..._products.take(20).map((p) => _buildProductRow(context, p)),
@@ -292,13 +310,13 @@ class _PurchasedProductsWidgetState extends State<PurchasedProductsWidget> {
               ],
             ),
           ),
-        //   Text(
-        //     '${total}đ',
-        //     style: TextStyle(
-        //       fontWeight: FontWeight.bold,
-        //       color: Theme.of(context).colorScheme.primary,
-        //     ),
-        //   ),
+          //   Text(
+          //     '${total}đ',
+          //     style: TextStyle(
+          //       fontWeight: FontWeight.bold,
+          //       color: Theme.of(context).colorScheme.primary,
+          //     ),
+          //   ),
         ],
       ),
     );
@@ -324,4 +342,3 @@ class _PurchasedProduct {
   int quantity;
   double totalAmount;
 }
-

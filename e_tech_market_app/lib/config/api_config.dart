@@ -33,7 +33,8 @@ class ApiConfig {
     if (deviceIp != null) {
       final subnet = _getSubnet(deviceIp);
       if (subnet != null) {
-        print('[ApiConfig] 📡 Bắt đầu scan subnet $subnet.x (thiết bị: $deviceIp)');
+        print(
+            '[ApiConfig] 📡 Bắt đầu scan subnet $subnet.x (thiết bị: $deviceIp)');
 
         // Ưu tiên scan các IP thường dùng của máy tính trong LAN trước
         final priorityIps = _buildPriorityList(subnet, deviceIp);
@@ -66,8 +67,29 @@ class ApiConfig {
     }
 
     // Các IP hay dùng cho máy tính trong LAN
-    priority.addAll([2, 3, 4, 5, 10, 100, 101, 102, 103, 104, 105,
-                     150, 200, 201, 202, 203, 210, 220, 230, 240, 250]);
+    priority.addAll([
+      2,
+      3,
+      4,
+      5,
+      10,
+      100,
+      101,
+      102,
+      103,
+      104,
+      105,
+      150,
+      200,
+      201,
+      202,
+      203,
+      210,
+      220,
+      230,
+      240,
+      250
+    ]);
     priority.remove(myLast); // Không scan IP của chính mình
 
     return priority.map((i) => '$subnet.$i').toList();
@@ -147,14 +169,15 @@ class ApiConfig {
     try {
       final s = await Socket.connect(ip, _backendPort, timeout: timeout);
       s.destroy();
-      
+
       // Xác minh thêm bằng HTTP request để tránh nhận diện nhầm thiết bị khác
       final client = HttpClient();
       client.connectionTimeout = timeout;
-      final request = await client.getUrl(Uri.parse('http://$ip:$_backendPort/'));
+      final request =
+          await client.getUrl(Uri.parse('http://$ip:$_backendPort/'));
       final response = await request.close().timeout(timeout);
       client.close();
-      
+
       if (response.statusCode >= 200) {
         return ip;
       }

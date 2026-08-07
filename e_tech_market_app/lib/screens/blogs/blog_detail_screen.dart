@@ -42,7 +42,11 @@ class _TrustAllImageState extends State<_TrustAllImage> {
 
   Future<void> _load() async {
     if (widget.url.isEmpty) {
-      if (mounted) setState(() { _failed = true; _loading = false; });
+      if (mounted)
+        setState(() {
+          _failed = true;
+          _loading = false;
+        });
       return;
     }
     try {
@@ -57,13 +61,25 @@ class _TrustAllImageState extends State<_TrustAllImage> {
         await for (final chunk in res) {
           chunks.addAll(chunk);
         }
-        if (mounted) setState(() { _bytes = Uint8List.fromList(chunks); _loading = false; });
+        if (mounted)
+          setState(() {
+            _bytes = Uint8List.fromList(chunks);
+            _loading = false;
+          });
       } else {
-        if (mounted) setState(() { _failed = true; _loading = false; });
+        if (mounted)
+          setState(() {
+            _failed = true;
+            _loading = false;
+          });
       }
       client.close(force: true);
     } catch (_) {
-      if (mounted) setState(() { _failed = true; _loading = false; });
+      if (mounted)
+        setState(() {
+          _failed = true;
+          _loading = false;
+        });
     }
   }
 
@@ -74,7 +90,8 @@ class _TrustAllImageState extends State<_TrustAllImage> {
         width: widget.width ?? double.infinity,
         height: widget.height ?? 200,
         child: const Center(
-          child: CircularProgressIndicator(strokeWidth: 2, color: Color(0xFFF26522)),
+          child: CircularProgressIndicator(
+              strokeWidth: 2, color: Color(0xFFF26522)),
         ),
       );
     }
@@ -88,7 +105,8 @@ class _TrustAllImageState extends State<_TrustAllImage> {
           width: widget.width ?? double.infinity,
           height: widget.height ?? 200,
           color: Colors.grey[200],
-          child: const Icon(Icons.image_not_supported, size: 48, color: Colors.grey),
+          child: const Icon(Icons.image_not_supported,
+              size: 48, color: Colors.grey),
         ),
       );
     }
@@ -144,7 +162,9 @@ class _BlogDetailScreenState extends State<BlogDetailScreen> {
     final slug = post['slug'];
     if (slug == null) return;
 
-    setState(() { isSubmitting = true; });
+    setState(() {
+      isSubmitting = true;
+    });
 
     try {
       final newComment = await BlogService.addComment(slug, text);
@@ -157,10 +177,13 @@ class _BlogDetailScreenState extends State<BlogDetailScreen> {
       }
     } catch (e) {
       if (mounted) {
-        AppSnackBar.showError(context, e.toString().replaceFirst('Exception: ', ''));
+        AppSnackBar.showError(
+            context, e.toString().replaceFirst('Exception: ', ''));
       }
     } finally {
-      setState(() { isSubmitting = false; });
+      setState(() {
+        isSubmitting = false;
+      });
     }
   }
 
@@ -176,7 +199,8 @@ class _BlogDetailScreenState extends State<BlogDetailScreen> {
           RegExp(r'src="([^"]*)"', caseSensitive: false),
           (m) {
             final raw = m.group(1) ?? '';
-            if (raw.trim().startsWith('data:') || raw.trim().isEmpty) return m.group(0)!;
+            if (raw.trim().startsWith('data:') || raw.trim().isEmpty)
+              return m.group(0)!;
             return 'src="${NetworkUtils.fixDeviceUrl(raw.trim())}"';
           },
         );
@@ -185,7 +209,8 @@ class _BlogDetailScreenState extends State<BlogDetailScreen> {
           RegExp(r"src='([^']*)'", caseSensitive: false),
           (m) {
             final raw = m.group(1) ?? '';
-            if (raw.trim().startsWith('data:') || raw.trim().isEmpty) return m.group(0)!;
+            if (raw.trim().startsWith('data:') || raw.trim().isEmpty)
+              return m.group(0)!;
             return 'src="${NetworkUtils.fixDeviceUrl(raw.trim())}"';
           },
         );
@@ -259,7 +284,8 @@ class _BlogDetailScreenState extends State<BlogDetailScreen> {
                 children: [
                   // ── Category badge
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                     decoration: BoxDecoration(
                       color: Theme.of(context).colorScheme.primaryContainer,
                       borderRadius: BorderRadius.circular(6),
@@ -305,7 +331,9 @@ class _BlogDetailScreenState extends State<BlogDetailScreen> {
                           child: Text(
                             authorName.isNotEmpty ? authorName[0] : 'E',
                             style: TextStyle(
-                              color: Theme.of(context).colorScheme.onPrimaryContainer,
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .onPrimaryContainer,
                               fontWeight: FontWeight.w700,
                               fontSize: 14,
                             ),
@@ -328,7 +356,9 @@ class _BlogDetailScreenState extends State<BlogDetailScreen> {
                             _formatDate(createdAt),
                             style: TextStyle(
                               fontSize: 11,
-                              color: Theme.of(context).colorScheme.onSurfaceVariant,
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .onSurfaceVariant,
                             ),
                           ),
                         ],
@@ -340,14 +370,16 @@ class _BlogDetailScreenState extends State<BlogDetailScreen> {
                   // ── Meta: reading time + views
                   Row(
                     children: [
-                      _buildMetaItem(Trans.readingTimeLabel(readingTime), context),
+                      _buildMetaItem(
+                          Trans.readingTimeLabel(readingTime), context),
                       const SizedBox(width: 16),
                       _buildMetaItem(Trans.viewsLabel(views), context),
                     ],
                   ),
                   const SizedBox(height: 24),
 
-                  Container(height: 1, color: Theme.of(context).colorScheme.outline),
+                  Container(
+                      height: 1, color: Theme.of(context).colorScheme.outline),
                   const SizedBox(height: 24),
 
                   // ── Excerpt
@@ -355,10 +387,16 @@ class _BlogDetailScreenState extends State<BlogDetailScreen> {
                     Container(
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.primaryContainer.withAlpha(13),
+                        color: Theme.of(context)
+                            .colorScheme
+                            .primaryContainer
+                            .withAlpha(13),
                         borderRadius: BorderRadius.circular(8),
                         border: Border.all(
-                          color: Theme.of(context).colorScheme.primary.withAlpha(51),
+                          color: Theme.of(context)
+                              .colorScheme
+                              .primary
+                              .withAlpha(51),
                         ),
                       ),
                       child: Text(
@@ -376,60 +414,71 @@ class _BlogDetailScreenState extends State<BlogDetailScreen> {
 
                   // ── HTML content với custom image rendering (bypass SSL)
                   SizedBox(
-                  width: double.infinity,
-                  child: Html(
-                    data: processedHtml,
-                    style: {
-                      'body': Style(
-                        margin: Margins.zero,
-                        padding: HtmlPaddings.zero,
-                        fontSize: FontSize(15),
-                        lineHeight: const LineHeight(1.8),
-                        color: Theme.of(context).colorScheme.onSurface,
-                      ),
-                      'p': Style(margin: Margins.only(bottom: 12)),
-                      'h1': Style(fontSize: FontSize(22), fontWeight: FontWeight.bold),
-                      'h2': Style(fontSize: FontSize(19), fontWeight: FontWeight.bold),
-                      'h3': Style(fontSize: FontSize(16), fontWeight: FontWeight.bold),
-                      'img': Style(
-                        width: Width(100, Unit.percent),
-                        margin: Margins.only(top: 8, bottom: 8),
-                      ),
-                      'table': Style(
-                        backgroundColor: Theme.of(context).colorScheme.surfaceContainerLow,
-                        border: Border.all(color: Theme.of(context).colorScheme.outline),
-                      ),
-                      'th': Style(
-                        padding: HtmlPaddings.all(6),
-                        backgroundColor: Theme.of(context).colorScheme.surfaceContainerLow,
-                      ),
-                      'td': Style(
-                        padding: HtmlPaddings.all(6),
-                        border: Border.all(color: Theme.of(context).colorScheme.outline),
-                      ),
-                    },
-                    extensions: [
-                      // Override <img> rendering → dùng _TrustAllImage (bypass SSL cert)
-                      TagExtension(
-                        tagsToExtend: {'img'},
-                        builder: (extensionContext) {
-                          final src = extensionContext.attributes['src'] ?? '';
-                          if (src.isEmpty) return const SizedBox.shrink();
-                          return Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 6),
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(6),
-                              child: _TrustAllImage(
-                                url: src,
-                                width: double.infinity,
-                                fit: BoxFit.contain,
+                    width: double.infinity,
+                    child: Html(
+                      data: processedHtml,
+                      style: {
+                        'body': Style(
+                          margin: Margins.zero,
+                          padding: HtmlPaddings.zero,
+                          fontSize: FontSize(15),
+                          lineHeight: const LineHeight(1.8),
+                          color: Theme.of(context).colorScheme.onSurface,
+                        ),
+                        'p': Style(margin: Margins.only(bottom: 12)),
+                        'h1': Style(
+                            fontSize: FontSize(22),
+                            fontWeight: FontWeight.bold),
+                        'h2': Style(
+                            fontSize: FontSize(19),
+                            fontWeight: FontWeight.bold),
+                        'h3': Style(
+                            fontSize: FontSize(16),
+                            fontWeight: FontWeight.bold),
+                        'img': Style(
+                          width: Width(100, Unit.percent),
+                          margin: Margins.only(top: 8, bottom: 8),
+                        ),
+                        'table': Style(
+                          backgroundColor:
+                              Theme.of(context).colorScheme.surfaceContainerLow,
+                          border: Border.all(
+                              color: Theme.of(context).colorScheme.outline),
+                        ),
+                        'th': Style(
+                          padding: HtmlPaddings.all(6),
+                          backgroundColor:
+                              Theme.of(context).colorScheme.surfaceContainerLow,
+                        ),
+                        'td': Style(
+                          padding: HtmlPaddings.all(6),
+                          border: Border.all(
+                              color: Theme.of(context).colorScheme.outline),
+                        ),
+                      },
+                      extensions: [
+                        // Override <img> rendering → dùng _TrustAllImage (bypass SSL cert)
+                        TagExtension(
+                          tagsToExtend: {'img'},
+                          builder: (extensionContext) {
+                            final src =
+                                extensionContext.attributes['src'] ?? '';
+                            if (src.isEmpty) return const SizedBox.shrink();
+                            return Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 6),
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(6),
+                                child: _TrustAllImage(
+                                  url: src,
+                                  width: double.infinity,
+                                  fit: BoxFit.contain,
+                                ),
                               ),
-                            ),
-                          );
-                        },
-                      ),
-                    ],
-                  ), // Html
+                            );
+                          },
+                        ),
+                      ],
+                    ), // Html
                   ), // SizedBox
 
                   const SizedBox(height: 32),
@@ -439,7 +488,8 @@ class _BlogDetailScreenState extends State<BlogDetailScreen> {
                   // ── Comments
                   Text(
                     'Bình luận (${comments.length})',
-                    style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    style: const TextStyle(
+                        fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 16),
                   _buildCommentForm(),
@@ -466,7 +516,10 @@ class _BlogDetailScreenState extends State<BlogDetailScreen> {
             hintText: 'Viết bình luận của bạn...',
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
             filled: true,
-            fillColor: Theme.of(context).colorScheme.surfaceContainerHighest.withAlpha(50),
+            fillColor: Theme.of(context)
+                .colorScheme
+                .surfaceContainerHighest
+                .withAlpha(50),
           ),
         ),
         const SizedBox(height: 12),
@@ -476,13 +529,15 @@ class _BlogDetailScreenState extends State<BlogDetailScreen> {
             padding: const EdgeInsets.symmetric(vertical: 12),
             backgroundColor: Theme.of(context).colorScheme.primary,
             foregroundColor: Theme.of(context).colorScheme.onPrimary,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
           ),
           child: isSubmitting
               ? const SizedBox(
                   width: 20,
                   height: 20,
-                  child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                  child: CircularProgressIndicator(
+                      strokeWidth: 2, color: Colors.white),
                 )
               : const Text('Gửi bình luận'),
         ),
@@ -497,7 +552,8 @@ class _BlogDetailScreenState extends State<BlogDetailScreen> {
         alignment: Alignment.center,
         child: Text(
           'Chưa có bình luận nào. Hãy là người đầu tiên!',
-          style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant),
+          style:
+              TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant),
         ),
       );
     }
@@ -539,11 +595,16 @@ class _BlogDetailScreenState extends State<BlogDetailScreen> {
                       children: [
                         Text(
                           author,
-                          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                          style: const TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 14),
                         ),
                         Text(
                           date,
-                          style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.onSurfaceVariant),
+                          style: TextStyle(
+                              fontSize: 12,
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .onSurfaceVariant),
                         ),
                       ],
                     ),

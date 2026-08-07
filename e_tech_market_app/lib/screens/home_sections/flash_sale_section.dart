@@ -54,14 +54,16 @@ class _FlashSaleSectionState extends State<FlashSaleSection> {
       if (data is List) {
         _allSales = data.whereType<Map<String, dynamic>>().toList();
         final now = DateTime.now().millisecondsSinceEpoch;
-        
+
         for (int i = 0; i < _allSales.length; i++) {
           final sale = _allSales[i];
-          final startStr = (sale['start_at'] ?? '').toString().replaceAll(' ', 'T');
+          final startStr =
+              (sale['start_at'] ?? '').toString().replaceAll(' ', 'T');
           final endStr = (sale['end_at'] ?? '').toString().replaceAll(' ', 'T');
-          final start = DateTime.tryParse(startStr)?.millisecondsSinceEpoch ?? 0;
+          final start =
+              DateTime.tryParse(startStr)?.millisecondsSinceEpoch ?? 0;
           final end = DateTime.tryParse(endStr)?.millisecondsSinceEpoch ?? 0;
-          
+
           if (now >= start && now <= end) {
             _currentSaleIndex = i;
             _flashSale = sale;
@@ -92,8 +94,10 @@ class _FlashSaleSectionState extends State<FlashSaleSection> {
     if (_flashSale == null) return;
 
     final now = DateTime.now().millisecondsSinceEpoch;
-    final startStr = (_flashSale!['start_at'] ?? '').toString().replaceAll(' ', 'T');
-    final endStr = (_flashSale!['end_at'] ?? '').toString().replaceAll(' ', 'T');
+    final startStr =
+        (_flashSale!['start_at'] ?? '').toString().replaceAll(' ', 'T');
+    final endStr =
+        (_flashSale!['end_at'] ?? '').toString().replaceAll(' ', 'T');
 
     final start = DateTime.tryParse(startStr)?.millisecondsSinceEpoch ?? 0;
     final end = DateTime.tryParse(endStr)?.millisecondsSinceEpoch ?? 0;
@@ -109,7 +113,8 @@ class _FlashSaleSectionState extends State<FlashSaleSection> {
       if (!mounted || _flashSale == null) return;
 
       final now = DateTime.now().millisecondsSinceEpoch;
-      final endStr = (_flashSale!['end_at'] ?? '').toString().replaceAll(' ', 'T');
+      final endStr =
+          (_flashSale!['end_at'] ?? '').toString().replaceAll(' ', 'T');
       final end = DateTime.tryParse(endStr)?.millisecondsSinceEpoch ?? 0;
       final diff = end - now;
 
@@ -141,7 +146,8 @@ class _FlashSaleSectionState extends State<FlashSaleSection> {
           _tickCount = 0;
           final allItems = (_flashSale?['items'] as List<dynamic>?)
                   ?.where((item) => item != null && item['product'] != null)
-                  .toList() ?? [];
+                  .toList() ??
+              [];
           if (allItems.isNotEmpty) {
             _startIndex = (_startIndex + 5) % allItems.length;
           }
@@ -203,11 +209,15 @@ class _FlashSaleSectionState extends State<FlashSaleSection> {
             children: [
               Row(
                 children: [
-                  const Icon(Icons.flash_on, color: Color(0xFFFF2424), size: 28),
+                  const Icon(Icons.flash_on,
+                      color: Color(0xFFFF2424), size: 28),
                   const SizedBox(width: 6),
                   Text(
                     'FLASH SALE',
-                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18, letterSpacing: 0.5),
+                    style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
+                        letterSpacing: 0.5),
                   ),
                 ],
               ),
@@ -221,7 +231,8 @@ class _FlashSaleSectionState extends State<FlashSaleSection> {
                   children: [
                     Text(Trans.viewAll, style: TextStyle(fontSize: 14)),
                     const SizedBox(width: 4),
-                    Icon(Icons.arrow_forward, size: 16, color: Color(0xFFFF2424)),
+                    Icon(Icons.arrow_forward,
+                        size: 16, color: Color(0xFFFF2424)),
                   ],
                 ),
               ),
@@ -236,7 +247,7 @@ class _FlashSaleSectionState extends State<FlashSaleSection> {
 
   Widget _buildCountdown() {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.center, 
+      mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Text(
           'CHƯƠNG TRÌNH KẾT THÚC SAU : ',
@@ -252,7 +263,7 @@ class _FlashSaleSectionState extends State<FlashSaleSection> {
           decoration: BoxDecoration(
             color: const Color(0xFFFF2424),
             borderRadius: BorderRadius.circular(12),
-          ), 
+          ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -307,7 +318,8 @@ class _FlashSaleSectionState extends State<FlashSaleSection> {
         padding: const EdgeInsets.symmetric(horizontal: 16),
         itemCount: items.length,
         itemBuilder: (context, index) {
-          final Map<String, dynamic> item = items[index] as Map<String, dynamic>;
+          final Map<String, dynamic> item =
+              items[index] as Map<String, dynamic>;
           return _FlashSaleCard(
             item: item,
             onTap: () {
@@ -349,15 +361,15 @@ class _FlashSaleCard extends StatelessWidget {
             ? NetworkUtils.fixDeviceUrl(product['main_image_url'].toString())
             : '';
 
-    final flashSalePrice = double.tryParse(item['flash_sale_price']?.toString() ?? '0') ?? 0;
+    final flashSalePrice =
+        double.tryParse(item['flash_sale_price']?.toString() ?? '0') ?? 0;
     final originalPrice = variant != null
         ? double.tryParse(variant['price']?.toString() ?? '0') ?? 0
         : 0.0;
 
-    final discountPercent =
-        originalPrice > flashSalePrice && originalPrice > 0
-            ? ((1 - flashSalePrice / originalPrice) * 100).round()
-            : 0;
+    final discountPercent = originalPrice > flashSalePrice && originalPrice > 0
+        ? ((1 - flashSalePrice / originalPrice) * 100).round()
+        : 0;
 
     final soldQuantity = (item['sold_quantity'] as num?)?.toInt() ?? 0;
     final quantityLimit = (item['quantity_limit'] as num?)?.toInt() ?? 100;
@@ -369,12 +381,13 @@ class _FlashSaleCard extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        width: 155, 
+        width: 155,
         margin: const EdgeInsets.symmetric(horizontal: 6, vertical: 8),
         decoration: BoxDecoration(
           color: Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: Theme.of(context).colorScheme.outline, width: 0.15),
+          border: Border.all(
+              color: Theme.of(context).colorScheme.outline, width: 0.15),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withOpacity(0.05),
@@ -392,7 +405,8 @@ class _FlashSaleCard extends StatelessWidget {
                 AspectRatio(
                   aspectRatio: 1,
                   child: ClipRRect(
-                    borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
+                    borderRadius:
+                        const BorderRadius.vertical(top: Radius.circular(12)),
                     child: imageUrl.isNotEmpty
                         ? Image.network(
                             imageUrl,
@@ -407,10 +421,12 @@ class _FlashSaleCard extends StatelessWidget {
                     top: 8,
                     left: 8,
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 6, vertical: 3),
                       decoration: BoxDecoration(
                         color: const Color(0xFFFF2424),
-                        borderRadius: BorderRadius.circular(6), // Bo góc nhẹ cho Tag
+                        borderRadius:
+                            BorderRadius.circular(6), // Bo góc nhẹ cho Tag
                       ),
                       child: Text(
                         '-$discountPercent%',
@@ -424,14 +440,16 @@ class _FlashSaleCard extends StatelessWidget {
                   ),
               ],
             ),
-            
+
             // 2. Khu vực thông tin sản phẩm
             Expanded(
               child: Padding(
-                padding: const EdgeInsets.all(10), // Tăng padding lên 10 cho thoáng
+                padding:
+                    const EdgeInsets.all(10), // Tăng padding lên 10 cho thoáng
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween, // Đẩy progress bar xuống đáy card
+                  mainAxisAlignment: MainAxisAlignment
+                      .spaceBetween, // Đẩy progress bar xuống đáy card
                   children: [
                     // Tên sản phẩm
                     Text(
@@ -445,21 +463,24 @@ class _FlashSaleCard extends StatelessWidget {
                         height: 1.3,
                       ),
                     ),
-                    
+
                     // Giá tiền và Progress Bar gom vào cụm dưới
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
                           '${_formatPrice(flashSalePrice)}đ',
-                            style: TextStyle(
-                              fontSize: 15, // Tăng size giá để làm điểm nhấn thị giác
-                              fontWeight: FontWeight.w900, // Tăng độ đậm lên mức cao nhất
-                              color: Color(0xFFFF2424),
-                            ),
+                          style: TextStyle(
+                            fontSize:
+                                15, // Tăng size giá để làm điểm nhấn thị giác
+                            fontWeight:
+                                FontWeight.w900, // Tăng độ đậm lên mức cao nhất
+                            color: Color(0xFFFF2424),
                           ),
+                        ),
                         const SizedBox(height: 8),
-                        _buildProgressBar(context, progressPercent, isHot, soldQuantity),
+                        _buildProgressBar(
+                            context, progressPercent, isHot, soldQuantity),
                       ],
                     ),
                   ],
@@ -476,12 +497,14 @@ class _FlashSaleCard extends StatelessWidget {
     return Container(
       color: Colors.grey[100],
       child: const Center(
-        child: Icon(Icons.image_not_supported_outlined, color: Colors.grey, size: 30),
+        child: Icon(Icons.image_not_supported_outlined,
+            color: Colors.grey, size: 30),
       ),
     );
   }
 
-  Widget _buildProgressBar(BuildContext context, double percent, bool isHot, int sold) {
+  Widget _buildProgressBar(
+      BuildContext context, double percent, bool isHot, int sold) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -494,11 +517,15 @@ class _FlashSaleCard extends StatelessWidget {
           ),
           child: FractionallySizedBox(
             alignment: Alignment.centerLeft,
-            widthFactor: percent / 100 == 0 ? 0.05 : percent / 100, // Nếu vừa mở bán vẫn cho một chút màu sinh động
+            widthFactor: percent / 100 == 0
+                ? 0.05
+                : percent /
+                    100, // Nếu vừa mở bán vẫn cho một chút màu sinh động
             child: Container(
               decoration: BoxDecoration(
-                gradient: LinearGradient( // Dùng Gradient nhìn cao cấp hơn màu bệt
-                  colors: isHot 
+                gradient: LinearGradient(
+                  // Dùng Gradient nhìn cao cấp hơn màu bệt
+                  colors: isHot
                       ? [const Color(0xFFFF2424), const Color(0xFFFF6B6B)]
                       : [const Color(0xFFFF7A45), const Color(0xFFFFBB96)],
                 ),

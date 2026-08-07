@@ -15,7 +15,6 @@ class ProductSection extends StatelessWidget {
 
   const ProductSection({
     super.key,
-    
     required this.products,
     required this.wishedProductIds,
     required this.isLoading,
@@ -49,7 +48,7 @@ class ProductSection extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 22,
                     fontWeight: FontWeight.w800,
-                      color: Theme.of(context).colorScheme.onSurface,
+                    color: Theme.of(context).colorScheme.onSurface,
                     height: 1.15,
                   ),
                 ),
@@ -71,7 +70,9 @@ class ProductSection extends StatelessWidget {
               child: Text(
                 Trans.noFeaturedProducts,
                 textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 14, color: Theme.of(context).colorScheme.onSurfaceVariant),
+                style: TextStyle(
+                    fontSize: 14,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant),
               ),
             )
           else
@@ -94,7 +95,8 @@ class ProductSection extends StatelessWidget {
                     isWished: wishedProductIds.contains(productId),
                     onTap: (variantId) {
                       if (variantId != null) {
-                        final modifiedProduct = Map<String, dynamic>.from(product);
+                        final modifiedProduct =
+                            Map<String, dynamic>.from(product);
                         modifiedProduct['_selected_variant_id'] = variantId;
                         onProductSelected(modifiedProduct);
                       } else {
@@ -178,12 +180,11 @@ class ProductCardWidget extends StatelessWidget {
     final brand = product['brand']?.toString().trim();
     final description = product['description']?.toString().trim();
     final shortDescription = product['short_description']?.toString().trim();
-    final excerpt =
-        description != null && description.isNotEmpty
-            ? description
-            : shortDescription != null && shortDescription.isNotEmpty
-                ? shortDescription
-                : Trans.defaultProductExcerpt;
+    final excerpt = description != null && description.isNotEmpty
+        ? description
+        : shortDescription != null && shortDescription.isNotEmpty
+            ? shortDescription
+            : Trans.defaultProductExcerpt;
     final rating =
         double.tryParse(product['avg_rating']?.toString() ?? '0') ?? 0;
     final ratingCount = (product['reviews_count'] as num?)?.toInt() ?? 0;
@@ -195,12 +196,21 @@ class ProductCardWidget extends StatelessWidget {
       final now = DateTime.now();
       for (var item in flashSaleItems) {
         if (item['flash_sale'] != null) {
-          final start = DateTime.tryParse(item['flash_sale']['start_at']?.toString().replaceAll(' ', 'T') ?? '');
-          final end = DateTime.tryParse(item['flash_sale']['end_at']?.toString().replaceAll(' ', 'T') ?? '');
-          if (start != null && end != null && now.isAfter(start) && now.isBefore(end)) {
+          final start = DateTime.tryParse(
+              item['flash_sale']['start_at']?.toString().replaceAll(' ', 'T') ??
+                  '');
+          final end = DateTime.tryParse(
+              item['flash_sale']['end_at']?.toString().replaceAll(' ', 'T') ??
+                  '');
+          if (start != null &&
+              end != null &&
+              now.isAfter(start) &&
+              now.isBefore(end)) {
             final quantityLimit = (item['quantity_limit'] as num?)?.toInt();
             final soldQuantity = (item['sold_quantity'] as num?)?.toInt() ?? 0;
-            final isSoldOut = quantityLimit != null && quantityLimit > 0 && soldQuantity >= quantityLimit;
+            final isSoldOut = quantityLimit != null &&
+                quantityLimit > 0 &&
+                soldQuantity >= quantityLimit;
             if (!isSoldOut) {
               flashSaleItem = item as Map<String, dynamic>?;
               break;
@@ -218,7 +228,8 @@ class ProductCardWidget extends StatelessWidget {
     int discountPercent = 0;
 
     final variants = product['variants'] as List<dynamic>? ?? [];
-    final activeVariants = variants.where((v) => v['is_active'] != false).toList();
+    final activeVariants =
+        variants.where((v) => v['is_active'] != false).toList();
     final isSingleVariant = activeVariants.length == 1;
 
     Map<String, dynamic>? selectedVariant;
@@ -226,8 +237,10 @@ class ProductCardWidget extends StatelessWidget {
     if (activeVariants.isNotEmpty) {
       final sorted = List.from(activeVariants);
       sorted.sort((a, b) {
-        final aPrice = double.tryParse(a['effective_price']?.toString() ?? '0') ?? 0;
-        final bPrice = double.tryParse(b['effective_price']?.toString() ?? '0') ?? 0;
+        final aPrice =
+            double.tryParse(a['effective_price']?.toString() ?? '0') ?? 0;
+        final bPrice =
+            double.tryParse(b['effective_price']?.toString() ?? '0') ?? 0;
         return aPrice.compareTo(bPrice);
       });
 
@@ -235,25 +248,35 @@ class ProductCardWidget extends StatelessWidget {
       final highest = sorted.last;
       selectedVariant = lowest;
 
-      displayPrice = double.tryParse(lowest['effective_price']?.toString() ?? '0') ?? 0;
-      final priceMax = double.tryParse(highest['effective_price']?.toString() ?? '0') ?? 0;
-      double originalPrice = double.tryParse(lowest['price']?.toString() ?? '0') ?? 0;
+      displayPrice =
+          double.tryParse(lowest['effective_price']?.toString() ?? '0') ?? 0;
+      final priceMax =
+          double.tryParse(highest['effective_price']?.toString() ?? '0') ?? 0;
+      double originalPrice =
+          double.tryParse(lowest['price']?.toString() ?? '0') ?? 0;
 
       bool hasMultiplePrices = displayPrice != priceMax;
       showDiscountBadge = isSingleVariant;
 
       if (isFlashSale) {
         if (flashSaleItem!['variant_id'] != null) {
-          final int flashVariantId = int.tryParse(flashSaleItem!['variant_id'].toString()) ?? 0;
+          final int flashVariantId =
+              int.tryParse(flashSaleItem!['variant_id'].toString()) ?? 0;
           if (flashVariantId > 0) {
-             final flashVariant = activeVariants.firstWhere((v) => v['id'] == flashVariantId, orElse: () => lowest);
-             if (flashVariant != lowest) {
-               selectedVariant = flashVariant;
-               originalPrice = double.tryParse(flashVariant['price']?.toString() ?? '0') ?? 0;
-             }
+            final flashVariant = activeVariants.firstWhere(
+                (v) => v['id'] == flashVariantId,
+                orElse: () => lowest);
+            if (flashVariant != lowest) {
+              selectedVariant = flashVariant;
+              originalPrice =
+                  double.tryParse(flashVariant['price']?.toString() ?? '0') ??
+                      0;
+            }
           }
         }
-        displayPrice = double.tryParse(flashSaleItem['flash_sale_price']?.toString() ?? '0') ?? 0;
+        displayPrice = double.tryParse(
+                flashSaleItem['flash_sale_price']?.toString() ?? '0') ??
+            0;
         hasMultiplePrices = false;
         showDiscountBadge = true;
       }
@@ -261,30 +284,39 @@ class ProductCardWidget extends StatelessWidget {
       final hasDiscount = displayPrice < originalPrice && showDiscountBadge;
       displayPriceMax = hasMultiplePrices ? priceMax : null;
       displayOldPrice = hasDiscount ? originalPrice : null;
-      discountPercent = hasDiscount ? ((1 - displayPrice / originalPrice) * 100).round() : 0;
+      discountPercent =
+          hasDiscount ? ((1 - displayPrice / originalPrice) * 100).round() : 0;
     } else {
-      final originalPrice = double.tryParse(product['price']?.toString() ?? '0') ?? 0;
+      final originalPrice =
+          double.tryParse(product['price']?.toString() ?? '0') ?? 0;
       displayPrice = originalPrice;
       if (product['discount_price'] != null) {
-         displayPrice = double.tryParse(product['discount_price']?.toString() ?? '0') ?? originalPrice;
+        displayPrice =
+            double.tryParse(product['discount_price']?.toString() ?? '0') ??
+                originalPrice;
       }
       showDiscountBadge = true;
-      
+
       if (isFlashSale) {
-        displayPrice = double.tryParse(flashSaleItem!['flash_sale_price']?.toString() ?? '0') ?? 0;
+        displayPrice = double.tryParse(
+                flashSaleItem!['flash_sale_price']?.toString() ?? '0') ??
+            0;
       }
 
       final hasDiscount = displayPrice < originalPrice && showDiscountBadge;
       displayOldPrice = hasDiscount ? originalPrice : null;
-      discountPercent = hasDiscount ? ((1 - displayPrice / originalPrice) * 100).round() : 0;
+      discountPercent =
+          hasDiscount ? ((1 - displayPrice / originalPrice) * 100).round() : 0;
     }
 
-    final imageUrl = _resolveProductImageUrl(product, selectedVariant: selectedVariant);
+    final imageUrl =
+        _resolveProductImageUrl(product, selectedVariant: selectedVariant);
     final selectedVariantId = selectedVariant?['id']?.toString();
 
     int? totalStock;
     if (variants.isNotEmpty) {
-      totalStock = variants.fold<int>(0, (sum, v) => sum + ((v['stock_quantity'] as num?)?.toInt() ?? 0));
+      totalStock = variants.fold<int>(
+          0, (sum, v) => sum + ((v['stock_quantity'] as num?)?.toInt() ?? 0));
     } else {
       totalStock = (product['stock_quantity'] as num?)?.toInt();
     }
@@ -297,30 +329,35 @@ class ProductCardWidget extends StatelessWidget {
         onTap: () => onTap(selectedVariantId),
         child: Container(
           decoration: BoxDecoration(
-            border: Border.all(color: Theme.of(context).colorScheme.outline, width: 0.05),
+            border: Border.all(
+                color: Theme.of(context).colorScheme.outline, width: 0.05),
             borderRadius: BorderRadius.circular(12),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
-            mainAxisSize: MainAxisSize.min, // <-- Giúp viền Container co khít theo nội dung bên trong
+            mainAxisSize: MainAxisSize
+                .min, // <-- Giúp viền Container co khít theo nội dung bên trong
             children: [
               // --- PHẦN 1: CỐ ĐỊNH TỈ LỆ ẢNH ĐỂ ĐỀU NHAU ---
               AspectRatio(
-                aspectRatio: 1, // Ảnh vuông tỉ lệ 1:1, giúp các sản phẩm thẳng hàng phần ảnh
+                aspectRatio:
+                    1, // Ảnh vuông tỉ lệ 1:1, giúp các sản phẩm thẳng hàng phần ảnh
                 child: Stack(
                   children: [
                     Positioned.fill(
                       child: Container(
                         decoration: BoxDecoration(
-                          borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
+                          borderRadius: const BorderRadius.vertical(
+                              top: Radius.circular(12)),
                         ),
-                        clipBehavior: Clip.antiAlias, 
+                        clipBehavior: Clip.antiAlias,
                         child: imageUrl.isEmpty
                             ? _buildImageFallback()
                             : Image.network(
                                 imageUrl,
                                 fit: BoxFit.cover,
-                                errorBuilder: (_, __, ___) => _buildImageFallback(),
+                                errorBuilder: (_, __, ___) =>
+                                    _buildImageFallback(),
                               ),
                       ),
                     ),
@@ -338,13 +375,18 @@ class ProductCardWidget extends StatelessWidget {
                         top: 8,
                         right: 8,
                         child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 8, vertical: 4),
                           decoration: BoxDecoration(
-                            color: (showDiscountBadge && discountPercent > 0) ? Colors.red : _brandColor,
+                            color: (showDiscountBadge && discountPercent > 0)
+                                ? Colors.red
+                                : _brandColor,
                             borderRadius: BorderRadius.circular(3),
                           ),
                           child: Text(
-                            (showDiscountBadge && discountPercent > 0) ? '-$discountPercent%' : Trans.newBadge,
+                            (showDiscountBadge && discountPercent > 0)
+                                ? '-$discountPercent%'
+                                : Trans.newBadge,
                             style: const TextStyle(
                                 color: Colors.white,
                                 fontSize: 10,
@@ -352,7 +394,8 @@ class ProductCardWidget extends StatelessWidget {
                           ),
                         ),
                       ),
-                    if (flashSaleItem != null && flashSaleItem['flash_sale'] != null)
+                    if (flashSaleItem != null &&
+                        flashSaleItem['flash_sale'] != null)
                       Positioned(
                         bottom: 0,
                         left: 0,
@@ -365,7 +408,7 @@ class ProductCardWidget extends StatelessWidget {
                   ],
                 ),
               ),
-              
+
               // --- PHẦN 2: THÔNG TIN TỰ CO GIÃN THEO CHỮ (BỎ EXPANDED) ---
               Padding(
                 padding: const EdgeInsets.all(10),
@@ -377,10 +420,14 @@ class ProductCardWidget extends StatelessWidget {
                       children: [
                         Expanded(
                           child: Text(
-                            (brand == null || brand.isEmpty ? Trans.brandDefault : brand)
+                            (brand == null || brand.isEmpty
+                                    ? Trans.brandDefault
+                                    : brand)
                                 .toUpperCase(),
                             style: TextStyle(
-                              color: Theme.of(context).colorScheme.onSurfaceVariant,
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .onSurfaceVariant,
                               fontSize: 10,
                               fontWeight: FontWeight.w800,
                               letterSpacing: 0.5,
@@ -404,7 +451,7 @@ class ProductCardWidget extends StatelessWidget {
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
-                    const SizedBox(height:2),
+                    const SizedBox(height: 2),
                     FittedBox(
                       fit: BoxFit.scaleDown,
                       alignment: Alignment.centerLeft,
@@ -436,13 +483,18 @@ class ProductCardWidget extends StatelessWidget {
                                   fontSize: 12,
                                   fontWeight: FontWeight.bold),
                             ),
-                          if (displayOldPrice != null && displayOldPrice > displayPrice && showDiscountBadge)
+                          if (displayOldPrice != null &&
+                              displayOldPrice > displayPrice &&
+                              showDiscountBadge)
                             Padding(
-                              padding: const EdgeInsets.only(left: 6, bottom: 1),
+                              padding:
+                                  const EdgeInsets.only(left: 6, bottom: 1),
                               child: Text(
                                 '${_formatPrice(displayOldPrice)} đ',
                                 style: TextStyle(
-                                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .onSurfaceVariant,
                                     fontSize: 10,
                                     decoration: TextDecoration.lineThrough),
                               ),
@@ -451,13 +503,17 @@ class ProductCardWidget extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 6),
-                    if (flashSaleItem != null && flashSaleItem['flash_sale'] != null)
+                    if (flashSaleItem != null &&
+                        flashSaleItem['flash_sale'] != null)
                       Padding(
                         padding: const EdgeInsets.only(bottom: 4),
                         child: StockBar(
                           isFlashSale: true,
-                          flashSaleSold: (flashSaleItem['sold_quantity'] as num?)?.toInt(),
-                          flashSaleLimit: (flashSaleItem['quantity_limit'] as num?)?.toInt(),
+                          flashSaleSold:
+                              (flashSaleItem['sold_quantity'] as num?)?.toInt(),
+                          flashSaleLimit:
+                              (flashSaleItem['quantity_limit'] as num?)
+                                  ?.toInt(),
                         ),
                       )
                     else if (totalStock != null)
@@ -468,7 +524,7 @@ class ProductCardWidget extends StatelessWidget {
                           normalStock: totalStock,
                         ),
                       ),
-                    
+
                     // Phần mô tả ngắn và Nút giỏ hàng tự động co giãn ngang hàng
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.center,
@@ -477,7 +533,9 @@ class ProductCardWidget extends StatelessWidget {
                           child: Text(
                             excerpt,
                             style: TextStyle(
-                                color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .onSurfaceVariant,
                                 fontSize: 11,
                                 height: 1.35),
                             maxLines: 3,
@@ -504,8 +562,6 @@ class ProductCardWidget extends StatelessWidget {
   }
 
   // Các hàm hỗ trợ bên dưới giữ nguyên...
-  
- 
 
   Widget _buildImageFallback() {
     return Center(
@@ -513,7 +569,8 @@ class ProductCardWidget extends StatelessWidget {
             size: 48, color: Colors.grey.shade300));
   }
 
-  String _resolveProductImageUrl(Map<String, dynamic> product, {Map<String, dynamic>? selectedVariant}) {
+  String _resolveProductImageUrl(Map<String, dynamic> product,
+      {Map<String, dynamic>? selectedVariant}) {
     if (selectedVariant != null) {
       final variantImageUrl = selectedVariant['image_url']?.toString().trim();
       if (variantImageUrl != null && variantImageUrl.isNotEmpty) {
@@ -530,7 +587,8 @@ class ProductCardWidget extends StatelessWidget {
     if (variants != null) {
       for (final variant in variants) {
         final image = variant['image_url']?.toString().trim();
-        if (image != null && image.isNotEmpty) return NetworkUtils.fixDeviceUrl(image);
+        if (image != null && image.isNotEmpty)
+          return NetworkUtils.fixDeviceUrl(image);
       }
     }
 
@@ -539,7 +597,8 @@ class ProductCardWidget extends StatelessWidget {
       for (final image in images) {
         final url = image['image_url']?.toString().trim() ??
             image['url']?.toString().trim();
-        if (url != null && url.isNotEmpty) return NetworkUtils.fixDeviceUrl(url);
+        if (url != null && url.isNotEmpty)
+          return NetworkUtils.fixDeviceUrl(url);
       }
     }
 
@@ -587,8 +646,9 @@ class _CircleActionButton extends StatelessWidget {
           height: 30,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            border: backgroundColor == null 
-                ? Border.all(color: Theme.of(context).colorScheme.outline, width: 0.15)
+            border: backgroundColor == null
+                ? Border.all(
+                    color: Theme.of(context).colorScheme.outline, width: 0.15)
                 : null,
           ),
           child: Icon(icon, size: 15, color: color),
@@ -622,7 +682,7 @@ class _RatingStars extends StatelessWidget {
         const SizedBox(width: 2),
         Text(
           rating > 0 ? rating.toStringAsFixed(1) : '($count)',
-            style: TextStyle(
+          style: TextStyle(
               fontSize: 9,
               color: Theme.of(context).colorScheme.onSurfaceVariant,
               fontWeight: FontWeight.w700),
@@ -641,11 +701,15 @@ class ProductSkeletonWidget extends StatelessWidget {
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: Theme.of(context).colorScheme.outline),
+        border: Border.all(color: Theme.of(context).colorScheme.outline),
       ),
       child: Column(
         children: [
-            Expanded(flex: 8, child: Container(color: Theme.of(context).colorScheme.surfaceContainerHighest)),
+          Expanded(
+              flex: 8,
+              child: Container(
+                  color:
+                      Theme.of(context).colorScheme.surfaceContainerHighest)),
           Expanded(
             flex: 9,
             child: Padding(
@@ -683,7 +747,7 @@ class _SkeletonLine extends StatelessWidget {
       child: Container(
         height: height,
         decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.surfaceContainerLow,
+          color: Theme.of(context).colorScheme.surfaceContainerLow,
           borderRadius: BorderRadius.circular(4),
         ),
       ),

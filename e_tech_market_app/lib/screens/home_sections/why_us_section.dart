@@ -18,7 +18,7 @@ class WhyUsSection extends StatelessWidget {
         children: [
           // --- PHẦN TIÊU ĐỀ MỚI ĐƯỢC THÊM VÀO ---
           Text(
-            'Tại sao chọn chúng tôi?', 
+            'Tại sao chọn chúng tôi?',
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 20,
@@ -27,16 +27,17 @@ class WhyUsSection extends StatelessWidget {
               height: 1.2,
             ),
           ),
-          const SizedBox(height: 24), // Khoảng cách giữa tiêu đề và danh sách bên dưới
-          
+          const SizedBox(
+              height: 24), // Khoảng cách giữa tiêu đề và danh sách bên dưới
+
           // Sử dụng LayoutBuilder + Wrap thay vì GridView cố định tỉ lệ 1.0 để chống tràn chữ
           LayoutBuilder(
             builder: (context, constraints) {
               // Trừ đi khoảng cách giữa 2 cột (16px) rồi chia đôi
               final itemWidth = (constraints.maxWidth - 16) / 2;
-              
+
               return Wrap(
-                spacing: 16,    // Khoảng cách ngang giữa 2 cột
+                spacing: 16, // Khoảng cách ngang giữa 2 cột
                 runSpacing: 24, // Khoảng cách dọc giữa các hàng
                 children: [
                   SizedBox(
@@ -95,9 +96,11 @@ class _WhyUsItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
-      mainAxisAlignment: MainAxisAlignment.start, // Đổi thành start để các item thẳng hàng từ trên xuống
+      mainAxisAlignment: MainAxisAlignment
+          .start, // Đổi thành start để các item thẳng hàng từ trên xuống
       crossAxisAlignment: CrossAxisAlignment.center,
-      mainAxisSize: MainAxisSize.min, // Tự co kích thước theo nội dung bên trong
+      mainAxisSize:
+          MainAxisSize.min, // Tự co kích thước theo nội dung bên trong
       children: [
         Container(
           width: 56,

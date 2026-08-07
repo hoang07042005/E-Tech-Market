@@ -39,7 +39,7 @@ class _PaymentWebViewScreenState extends State<PaymentWebViewScreen> {
           final uri = Uri.tryParse(request.url);
           if (uri != null &&
               (uri.path.contains('/payments/vnpay/return') ||
-               uri.path.contains('/payments/momo/return'))) {
+                  uri.path.contains('/payments/momo/return'))) {
             Navigator.pop(context, request.url);
             return NavigationDecision.prevent;
           }

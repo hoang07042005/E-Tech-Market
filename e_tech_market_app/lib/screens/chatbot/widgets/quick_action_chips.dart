@@ -54,9 +54,8 @@ class QuickActionChips extends StatelessWidget {
               style: TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w600,
-                color: isDark
-                    ? const Color(0xFF94A3B8)
-                    : const Color(0xFF64748B),
+                color:
+                    isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B),
               ),
             ),
           ),
@@ -72,8 +71,8 @@ class QuickActionChips extends StatelessWidget {
                   borderRadius: BorderRadius.circular(20),
                   child: AnimatedContainer(
                     duration: const Duration(milliseconds: 200),
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 14, vertical: 8),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                     decoration: BoxDecoration(
                       color: color.withValues(alpha: isDark ? 0.15 : 0.08),
                       borderRadius: BorderRadius.circular(20),

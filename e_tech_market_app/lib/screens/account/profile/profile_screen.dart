@@ -68,7 +68,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
             onPressed: () async {
               final result = await Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => EditProfileScreen(user: _user!)),
+                MaterialPageRoute(
+                    builder: (context) => EditProfileScreen(user: _user!)),
               );
               if (result == true) {
                 _loadUser(); // reload if updated
@@ -99,7 +100,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     color: Colors.white,
                     shape: BoxShape.circle,
                     boxShadow: [
-                      BoxShadow(color: Colors.black12, blurRadius: 10, offset: Offset(0, 4)),
+                      BoxShadow(
+                          color: Colors.black12,
+                          blurRadius: 10,
+                          offset: Offset(0, 4)),
                     ],
                   ),
                   child: Container(
@@ -118,7 +122,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 return Center(
                                   child: Text(
                                     _getAvatarInitial(),
-                                    style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 36),
+                                    style: const TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 36),
                                   ),
                                 );
                               },
@@ -126,7 +133,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           : Center(
                               child: Text(
                                 _getAvatarInitial(),
-                                style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 36),
+                                style: const TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 36),
                               ),
                             ),
                     ),
@@ -158,7 +168,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ],
       ),
       padding: const EdgeInsets.all(20),
-      child: SingleChildScrollView(          
+      child: SingleChildScrollView(
         child: Column(
           children: [
             _buildInfoRow(Trans.fullName, _user!['name'] ?? '—'),
@@ -193,17 +203,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
       children: [
         SizedBox(
           width: 100,
-          child: Text(label, style: TextStyle(color: theme.colorScheme.onSurface.withValues(alpha: 0.6), fontSize: 14)),
+          child: Text(label,
+              style: TextStyle(
+                  color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
+                  fontSize: 14)),
         ),
         Expanded(
           child: Text(
             value,
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: theme.colorScheme.onSurface),
+            style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 15,
+                color: theme.colorScheme.onSurface),
           ),
         ),
       ],
     );
   }
 }
-
-

@@ -25,7 +25,8 @@ class CouponSection extends StatefulWidget {
   State<CouponSection> createState() => _CouponSectionState();
 }
 
-class _CouponSectionState extends State<CouponSection> with SingleTickerProviderStateMixin {
+class _CouponSectionState extends State<CouponSection>
+    with SingleTickerProviderStateMixin {
   static const _brandColor = Color(0xFFEF7A45);
 
   final ScrollController _scrollController = ScrollController();
@@ -88,7 +89,10 @@ class _CouponSectionState extends State<CouponSection> with SingleTickerProvider
       // Giống web: chỉ lọc khi max_uses_per_user có giá trị và user đã dùng hết lượt
       final maxPerUser = c['max_uses_per_user'];
       final userUsed = c['user_usage_count'] ?? 0;
-      if (maxPerUser != null && maxPerUser is num && maxPerUser > 0 && userUsed is num) {
+      if (maxPerUser != null &&
+          maxPerUser is num &&
+          maxPerUser > 0 &&
+          userUsed is num) {
         if (userUsed >= maxPerUser) return false;
       }
       return true;
@@ -120,13 +124,14 @@ class _CouponSectionState extends State<CouponSection> with SingleTickerProvider
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        const Icon(Icons.card_giftcard, color: Color(0xFFFF2424), size: 28),
-                        const SizedBox(width: 6), 
-                        Expanded( 
+                        const Icon(Icons.card_giftcard,
+                            color: Color(0xFFFF2424), size: 28),
+                        const SizedBox(width: 6),
+                        Expanded(
                           child: Text(
                             'Ưu đãi dành cho bạn',
                             style: TextStyle(
-                              fontSize: 18, 
+                              fontSize: 18,
                               fontWeight: FontWeight.w700,
                               color: Theme.of(context).colorScheme.onSurface,
                               letterSpacing: -0.3,
@@ -135,11 +140,11 @@ class _CouponSectionState extends State<CouponSection> with SingleTickerProvider
                         ),
                       ],
                     ),
-                    const SizedBox(height: 4), 
+                    const SizedBox(height: 4),
                     Text(
                       'Chạm vào mã để sao chép nhanh',
                       style: TextStyle(
-                        fontSize: 15, 
+                        fontSize: 15,
                         color: Theme.of(context).colorScheme.onSurfaceVariant,
                       ),
                     ),
@@ -170,7 +175,7 @@ class _CouponSectionState extends State<CouponSection> with SingleTickerProvider
               child: Text(
                 widget.error!,
                 style: const TextStyle(
-                  color: Colors.redAccent, 
+                  color: Colors.redAccent,
                   fontWeight: FontWeight.w500,
                   fontSize: 12,
                 ),
@@ -287,7 +292,7 @@ class _CouponCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final leftWidth = 110.0;
-    
+
     return CustomPaint(
       painter: _VoucherPainter(
         leftWidth: leftWidth,
@@ -303,7 +308,6 @@ class _CouponCard extends StatelessWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                 
                   const SizedBox(height: 2),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -333,13 +337,16 @@ class _CouponCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 6),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
                     decoration: BoxDecoration(
                       border: Border.all(color: Colors.white.withOpacity(0.5)),
                       borderRadius: BorderRadius.circular(4),
                     ),
                     child: Text(
-                      couponType == 'percentage' ? 'Phiếu ưu đãi' : 'Giảm trực tiếp',
+                      couponType == 'percentage'
+                          ? 'Phiếu ưu đãi'
+                          : 'Giảm trực tiếp',
                       style: const TextStyle(
                         color: Colors.white,
                         fontSize: 10,
@@ -411,7 +418,8 @@ class _CouponCard extends StatelessWidget {
                                 : const Color(0xFFFF6B00),
                             disabledForegroundColor: const Color(0xFF9CA3AF),
                             disabledBackgroundColor: const Color(0xFFF3F4F6),
-                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 10, vertical: 4),
                             minimumSize: Size.zero,
                             tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                             shape: RoundedRectangleBorder(
@@ -420,17 +428,23 @@ class _CouponCard extends StatelessWidget {
                           ),
                           child: Text(
                             isSaved ? 'Đã lưu' : 'Lưu',
-                            style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w700),
+                            style: const TextStyle(
+                                fontSize: 11, fontWeight: FontWeight.w700),
                           ),
                         ),
                       ],
                     ),
                     // Progress Bar
-                    if (showRemaining != null && showLimit != null && showLimit! > 0) ...[
+                    if (showRemaining != null &&
+                        showLimit != null &&
+                        showLimit! > 0) ...[
                       const SizedBox(height: 8),
                       Container(
                         height: 1,
-                        color: Theme.of(context).colorScheme.outlineVariant.withOpacity(0.5),
+                        color: Theme.of(context)
+                            .colorScheme
+                            .outlineVariant
+                            .withOpacity(0.5),
                       ),
                       const SizedBox(height: 8),
                       Row(
@@ -470,7 +484,9 @@ class _CouponCard extends StatelessWidget {
                               child: SizedBox(
                                 height: 5,
                                 child: LinearProgressIndicator(
-                                  value: ((showLimit! - showRemaining!) / showLimit!).clamp(0.0, 1.0),
+                                  value: ((showLimit! - showRemaining!) /
+                                          showLimit!)
+                                      .clamp(0.0, 1.0),
                                   backgroundColor: const Color(0xFFFEE2E2),
                                   valueColor: AlwaysStoppedAnimation<Color>(
                                     const Color(0xFFFF6B00),
@@ -492,7 +508,8 @@ class _CouponCard extends StatelessWidget {
                         decoration: BoxDecoration(
                           color: Colors.grey[200],
                           borderRadius: BorderRadius.circular(6),
-                          border: Border.all(color: Colors.grey[400]!.withOpacity(0.5)),
+                          border: Border.all(
+                              color: Colors.grey[400]!.withOpacity(0.5)),
                         ),
                         child: Row(
                           children: [
@@ -542,34 +559,42 @@ class _VoucherPainter extends CustomPainter {
     final double radius = 12.0;
     final double holeRadius = 6.0;
     final double bigHoleRadius = 8.0;
-    
+
     // Draw right part shadow
     final ticketPath = Path();
     ticketPath.moveTo(radius, 0);
     // Top edge and divider hole
     ticketPath.lineTo(leftWidth - holeRadius, 0);
-    ticketPath.arcToPoint(Offset(leftWidth + holeRadius, 0), radius: Radius.circular(holeRadius), clockwise: false);
+    ticketPath.arcToPoint(Offset(leftWidth + holeRadius, 0),
+        radius: Radius.circular(holeRadius), clockwise: false);
     ticketPath.lineTo(size.width - radius, 0);
     // Top right corner
-    ticketPath.arcToPoint(Offset(size.width, radius), radius: Radius.circular(radius), clockwise: true);
+    ticketPath.arcToPoint(Offset(size.width, radius),
+        radius: Radius.circular(radius), clockwise: true);
     // Right edge and hole
     ticketPath.lineTo(size.width, size.height * 0.5 - holeRadius);
-    ticketPath.arcToPoint(Offset(size.width, size.height * 0.5 + holeRadius), radius: Radius.circular(holeRadius), clockwise: false);
+    ticketPath.arcToPoint(Offset(size.width, size.height * 0.5 + holeRadius),
+        radius: Radius.circular(holeRadius), clockwise: false);
     ticketPath.lineTo(size.width, size.height - radius);
     // Bottom right corner
-    ticketPath.arcToPoint(Offset(size.width - radius, size.height), radius: Radius.circular(radius), clockwise: true);
+    ticketPath.arcToPoint(Offset(size.width - radius, size.height),
+        radius: Radius.circular(radius), clockwise: true);
     // Bottom edge and divider hole
     ticketPath.lineTo(leftWidth + holeRadius, size.height);
-    ticketPath.arcToPoint(Offset(leftWidth - holeRadius, size.height), radius: Radius.circular(holeRadius), clockwise: false);
+    ticketPath.arcToPoint(Offset(leftWidth - holeRadius, size.height),
+        radius: Radius.circular(holeRadius), clockwise: false);
     ticketPath.lineTo(radius, size.height);
     // Bottom left corner
-    ticketPath.arcToPoint(Offset(0, size.height - radius), radius: Radius.circular(radius), clockwise: true);
+    ticketPath.arcToPoint(Offset(0, size.height - radius),
+        radius: Radius.circular(radius), clockwise: true);
     // Left edge and big hole
     ticketPath.lineTo(0, size.height * 0.5 + bigHoleRadius);
-    ticketPath.arcToPoint(Offset(0, size.height * 0.5 - bigHoleRadius), radius: Radius.circular(bigHoleRadius), clockwise: false); 
+    ticketPath.arcToPoint(Offset(0, size.height * 0.5 - bigHoleRadius),
+        radius: Radius.circular(bigHoleRadius), clockwise: false);
     ticketPath.lineTo(0, radius);
     // Top left corner
-    ticketPath.arcToPoint(Offset(radius, 0), radius: Radius.circular(radius), clockwise: true);
+    ticketPath.arcToPoint(Offset(radius, 0),
+        radius: Radius.circular(radius), clockwise: true);
     ticketPath.close();
 
     canvas.drawShadow(ticketPath, Colors.black.withOpacity(0.06), 8.0, false);
@@ -578,15 +603,20 @@ class _VoucherPainter extends CustomPainter {
     final lPath = Path();
     lPath.moveTo(radius, 0);
     lPath.lineTo(leftWidth - holeRadius, 0);
-    lPath.arcToPoint(Offset(leftWidth, holeRadius), radius: Radius.circular(holeRadius), clockwise: false);
+    lPath.arcToPoint(Offset(leftWidth, holeRadius),
+        radius: Radius.circular(holeRadius), clockwise: false);
     lPath.lineTo(leftWidth, size.height - holeRadius);
-    lPath.arcToPoint(Offset(leftWidth - holeRadius, size.height), radius: Radius.circular(holeRadius), clockwise: false);
+    lPath.arcToPoint(Offset(leftWidth - holeRadius, size.height),
+        radius: Radius.circular(holeRadius), clockwise: false);
     lPath.lineTo(radius, size.height);
-    lPath.arcToPoint(Offset(0, size.height - radius), radius: Radius.circular(radius), clockwise: true);
+    lPath.arcToPoint(Offset(0, size.height - radius),
+        radius: Radius.circular(radius), clockwise: true);
     lPath.lineTo(0, size.height * 0.5 + bigHoleRadius);
-    lPath.arcToPoint(Offset(0, size.height * 0.5 - bigHoleRadius), radius: Radius.circular(bigHoleRadius), clockwise: false);
+    lPath.arcToPoint(Offset(0, size.height * 0.5 - bigHoleRadius),
+        radius: Radius.circular(bigHoleRadius), clockwise: false);
     lPath.lineTo(0, radius);
-    lPath.arcToPoint(Offset(radius, 0), radius: Radius.circular(radius), clockwise: true);
+    lPath.arcToPoint(Offset(radius, 0),
+        radius: Radius.circular(radius), clockwise: true);
     lPath.close();
 
     final leftGradient = LinearGradient(
@@ -594,21 +624,26 @@ class _VoucherPainter extends CustomPainter {
       begin: Alignment.topLeft,
       end: Alignment.bottomRight,
     ).createShader(Rect.fromLTWH(0, 0, leftWidth, size.height));
-    
+
     canvas.drawPath(lPath, Paint()..shader = leftGradient);
 
     // Right Path
     final rPath = Path();
     rPath.moveTo(leftWidth, holeRadius);
-    rPath.arcToPoint(Offset(leftWidth + holeRadius, 0), radius: Radius.circular(holeRadius), clockwise: false);
+    rPath.arcToPoint(Offset(leftWidth + holeRadius, 0),
+        radius: Radius.circular(holeRadius), clockwise: false);
     rPath.lineTo(size.width - radius, 0);
-    rPath.arcToPoint(Offset(size.width, radius), radius: Radius.circular(radius), clockwise: true);
+    rPath.arcToPoint(Offset(size.width, radius),
+        radius: Radius.circular(radius), clockwise: true);
     rPath.lineTo(size.width, size.height * 0.5 - holeRadius);
-    rPath.arcToPoint(Offset(size.width, size.height * 0.5 + holeRadius), radius: Radius.circular(holeRadius), clockwise: false);
+    rPath.arcToPoint(Offset(size.width, size.height * 0.5 + holeRadius),
+        radius: Radius.circular(holeRadius), clockwise: false);
     rPath.lineTo(size.width, size.height - radius);
-    rPath.arcToPoint(Offset(size.width - radius, size.height), radius: Radius.circular(radius), clockwise: true);
+    rPath.arcToPoint(Offset(size.width - radius, size.height),
+        radius: Radius.circular(radius), clockwise: true);
     rPath.lineTo(leftWidth + holeRadius, size.height);
-    rPath.arcToPoint(Offset(leftWidth, size.height - holeRadius), radius: Radius.circular(holeRadius), clockwise: false);
+    rPath.arcToPoint(Offset(leftWidth, size.height - holeRadius),
+        radius: Radius.circular(holeRadius), clockwise: false);
     rPath.lineTo(leftWidth, holeRadius);
     rPath.close();
 
@@ -616,8 +651,9 @@ class _VoucherPainter extends CustomPainter {
       colors: const [Color(0xFFFFC1A5), Color(0xFFF9EAE4)],
       begin: Alignment.topLeft,
       end: Alignment.bottomRight,
-    ).createShader(Rect.fromLTWH(leftWidth, 0, size.width - leftWidth, size.height));
-    
+    ).createShader(
+        Rect.fromLTWH(leftWidth, 0, size.width - leftWidth, size.height));
+
     canvas.drawPath(rPath, Paint()..shader = rightGradient);
 
     // Draw dashed line
@@ -626,9 +662,10 @@ class _VoucherPainter extends CustomPainter {
     final dashPaint = Paint()
       ..color = const Color(0xFFE5E5E5)
       ..strokeWidth = 1.0;
-      
+
     while (startY < size.height - holeRadius - 4) {
-      canvas.drawLine(Offset(leftWidth, startY), Offset(leftWidth, startY + dashWidth), dashPaint);
+      canvas.drawLine(Offset(leftWidth, startY),
+          Offset(leftWidth, startY + dashWidth), dashPaint);
       startY += dashWidth + dashSpace;
     }
   }

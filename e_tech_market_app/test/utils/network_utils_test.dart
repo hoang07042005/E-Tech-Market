@@ -12,7 +12,9 @@ void main() {
         expect(NetworkUtils.fixDeviceUrl(''), '');
       });
 
-      test('adds base URL prefix for whitespace-only (trimmed to empty then built)', () {
+      test(
+          'adds base URL prefix for whitespace-only (trimmed to empty then built)',
+          () {
         // Whitespace is trimmed, then base URL is prepended
         final result = NetworkUtils.fixDeviceUrl('   ');
         expect(result.isNotEmpty, true);

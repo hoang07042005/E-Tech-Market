@@ -95,7 +95,8 @@ class _ProductCard extends StatelessWidget {
     final name = product['name']?.toString() ?? 'Sản phẩm';
     final brand = product['brand']?.toString() ?? '';
     final price = double.tryParse(product['price']?.toString() ?? '0') ?? 0;
-    final originalPrice = double.tryParse(product['original_price']?.toString() ?? '');
+    final originalPrice =
+        double.tryParse(product['original_price']?.toString() ?? '');
     final imageUrl = product['main_image_url']?.toString();
 
     final formatter = NumberFormat('#,###', 'vi_VN');
@@ -114,9 +115,7 @@ class _ProductCard extends StatelessWidget {
           color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
           borderRadius: BorderRadius.circular(14),
           border: Border.all(
-            color: isDark
-                ? const Color(0xFF333333)
-                : const Color(0xFFE2E8F0),
+            color: isDark ? const Color(0xFF333333) : const Color(0xFFE2E8F0),
           ),
           boxShadow: [
             BoxShadow(
@@ -136,15 +135,13 @@ class _ProductCard extends StatelessWidget {
               child: Container(
                 height: 100,
                 width: double.infinity,
-                color: isDark
-                    ? const Color(0xFF2D2D2D)
-                    : const Color(0xFFF8FAFC),
+                color:
+                    isDark ? const Color(0xFF2D2D2D) : const Color(0xFFF8FAFC),
                 child: resolvedImage != null
                     ? Image.network(
                         resolvedImage,
                         fit: BoxFit.contain,
-                        errorBuilder: (_, __, ___) =>
-                            const _PlaceholderIcon(),
+                        errorBuilder: (_, __, ___) => const _PlaceholderIcon(),
                       )
                     : const _PlaceholderIcon(),
               ),
@@ -190,13 +187,19 @@ class _ProductCard extends StatelessWidget {
                       Row(
                         children: [
                           ...List.generate(5, (i) {
-                            final rating = double.tryParse(product['avg_rating'].toString()) ?? 0;
+                            final rating = double.tryParse(
+                                    product['avg_rating'].toString()) ??
+                                0;
                             if (i < rating.floor()) {
-                              return const Icon(Icons.star_rounded, size: 12, color: Color(0xFFFBBF24));
+                              return const Icon(Icons.star_rounded,
+                                  size: 12, color: Color(0xFFFBBF24));
                             } else if (i < rating.ceil() && rating % 1 >= 0.5) {
-                              return const Icon(Icons.star_half_rounded, size: 12, color: Color(0xFFFBBF24));
+                              return const Icon(Icons.star_half_rounded,
+                                  size: 12, color: Color(0xFFFBBF24));
                             } else {
-                              return Icon(Icons.star_outline_rounded, size: 12, color: Colors.grey.withValues(alpha: 0.4));
+                              return Icon(Icons.star_outline_rounded,
+                                  size: 12,
+                                  color: Colors.grey.withValues(alpha: 0.4));
                             }
                           }),
                           const SizedBox(width: 4),
@@ -213,7 +216,9 @@ class _ProductCard extends StatelessWidget {
                             '(${product['reviews_count'] ?? 0})',
                             style: TextStyle(
                               fontSize: 9,
-                              color: isDark ? const Color(0xFF888888) : const Color(0xFF94A3B8),
+                              color: isDark
+                                  ? const Color(0xFF888888)
+                                  : const Color(0xFF94A3B8),
                             ),
                           ),
                         ],

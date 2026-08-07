@@ -84,7 +84,9 @@ class CategorySection extends StatelessWidget {
             Padding(
               padding: EdgeInsets.symmetric(vertical: 24),
               child: Text('Chưa có danh mục nào.',
-                  style: TextStyle(fontSize: 14, color: Theme.of(context).colorScheme.onSurfaceVariant)),
+                  style: TextStyle(
+                      fontSize: 14,
+                      color: Theme.of(context).colorScheme.onSurfaceVariant)),
             )
           else
             _buildCategoryGrid(visibleCategories),

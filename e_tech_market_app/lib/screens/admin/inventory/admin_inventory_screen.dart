@@ -30,7 +30,7 @@ class _AdminInventoryScreenState extends State<AdminInventoryScreen> {
     setState(() => _isLoading = true);
     try {
       final response = await ProductsService.fetchProducts(limit: 100);
-      int threshold = 10; 
+      int threshold = 10;
 
       if (mounted) {
         final List<dynamic> products = response['data'] ?? [];
@@ -38,7 +38,7 @@ class _AdminInventoryScreenState extends State<AdminInventoryScreen> {
 
         for (var p in products) {
           final List<dynamic> variants = p['variants'] ?? [];
-          
+
           if (variants.isEmpty) {
             flatInventory.add({
               'id': p['id'],
@@ -47,12 +47,16 @@ class _AdminInventoryScreenState extends State<AdminInventoryScreen> {
               'variant_name': null,
               'sku': p['sku'],
               'price': p['price']?.toString(),
-              'stock_quantity': p['stock_quantity'] != null ? int.tryParse(p['stock_quantity'].toString()) : null,
+              'stock_quantity': p['stock_quantity'] != null
+                  ? int.tryParse(p['stock_quantity'].toString())
+                  : null,
               'main_image_url': p['main_image_url'],
             });
           } else {
             for (var v in variants) {
-              final String? variantImage = v['image_url'] ?? v['variant_image_url'] ?? p['main_image_url'];
+              final String? variantImage = v['image_url'] ??
+                  v['variant_image_url'] ??
+                  p['main_image_url'];
 
               flatInventory.add({
                 'id': v['id'],
@@ -61,8 +65,10 @@ class _AdminInventoryScreenState extends State<AdminInventoryScreen> {
                 'variant_name': v['variant_name'] ?? '',
                 'sku': v['sku'] ?? p['sku'],
                 'price': v['price']?.toString() ?? p['price']?.toString(),
-                'stock_quantity': v['stock_quantity'] != null ? int.tryParse(v['stock_quantity'].toString()) : null,
-                'main_image_url': variantImage, 
+                'stock_quantity': v['stock_quantity'] != null
+                    ? int.tryParse(v['stock_quantity'].toString())
+                    : null,
+                'main_image_url': variantImage,
               });
             }
           }
@@ -85,13 +91,14 @@ class _AdminInventoryScreenState extends State<AdminInventoryScreen> {
   Future<void> _restockItem(int id, bool isVariant, int amount) async {
     try {
       await ProductsService.restock(
-        id: id, 
-        isVariant: isVariant, 
+        id: id,
+        isVariant: isVariant,
         amount: amount,
       );
 
       if (mounted) {
-        AppSnackBar.showSuccess(context, 'Đã cập nhật số lượng tồn kho thành công!');
+        AppSnackBar.showSuccess(
+            context, 'Đã cập nhật số lượng tồn kho thành công!');
         _loadInventory();
       }
     } catch (e) {
@@ -125,11 +132,11 @@ class _AdminInventoryScreenState extends State<AdminInventoryScreen> {
       final productName = (item['product_name'] ?? '').toLowerCase();
       final variantName = (item['variant_name'] ?? '').toLowerCase();
       final sku = (item['sku'] ?? '').toLowerCase();
-      
-      final matchesSearch = productName.contains(_searchQuery.toLowerCase()) || 
-                            variantName.contains(_searchQuery.toLowerCase()) ||
-                            sku.contains(_searchQuery.toLowerCase());
-      
+
+      final matchesSearch = productName.contains(_searchQuery.toLowerCase()) ||
+          variantName.contains(_searchQuery.toLowerCase()) ||
+          sku.contains(_searchQuery.toLowerCase());
+
       final stock = (item['stock_quantity'] ?? 0) as int;
       if (_filterStatus == 'low') {
         return matchesSearch && stock > 0 && stock <= _lowStockThreshold;
@@ -164,12 +171,18 @@ class _AdminInventoryScreenState extends State<AdminInventoryScreen> {
                 style: const TextStyle(fontSize: 16),
                 decoration: InputDecoration(
                   hintText: 'Tìm theo tên, biến thể hoặc SKU...',
-                  hintStyle: TextStyle(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5)),
+                  hintStyle: TextStyle(
+                      color: Theme.of(context)
+                          .colorScheme
+                          .onSurface
+                          .withValues(alpha: 0.5)),
                   border: InputBorder.none,
                 ),
                 onChanged: (value) => setState(() => _searchQuery = value),
               )
-            : Text(Trans.inventoryManagement, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+            : Text(Trans.inventoryManagement,
+                style:
+                    const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
         backgroundColor: Theme.of(context).colorScheme.surface,
         foregroundColor: Theme.of(context).colorScheme.onSurface,
         elevation: 0,
@@ -198,7 +211,10 @@ class _AdminInventoryScreenState extends State<AdminInventoryScreen> {
           child: Container(
             width: double.infinity,
             decoration: BoxDecoration(
-              border: Border(bottom: BorderSide(color: Theme.of(context).colorScheme.outline, width: 0.2)),
+              border: Border(
+                  bottom: BorderSide(
+                      color: Theme.of(context).colorScheme.outline,
+                      width: 0.2)),
             ),
             child: SingleChildScrollView(
               scrollDirection: Axis.horizontal,
@@ -216,15 +232,17 @@ class _AdminInventoryScreenState extends State<AdminInventoryScreen> {
       body: Column(
         children: [
           Expanded(
-            child: _isLoading 
-              ? const Center(child: CircularProgressIndicator(color: Color(0xFFF26522)))
-              : _filteredItems.isEmpty 
-                ? _buildEmptyState()
-                : ListView.builder(
-                    padding: const EdgeInsets.all(16),
-                    itemCount: _filteredItems.length,
-                    itemBuilder: (context, index) => _buildInventoryCard(_filteredItems[index]),
-                  ),
+            child: _isLoading
+                ? const Center(
+                    child: CircularProgressIndicator(color: Color(0xFFF26522)))
+                : _filteredItems.isEmpty
+                    ? _buildEmptyState()
+                    : ListView.builder(
+                        padding: const EdgeInsets.all(16),
+                        itemCount: _filteredItems.length,
+                        itemBuilder: (context, index) =>
+                            _buildInventoryCard(_filteredItems[index]),
+                      ),
           ),
         ],
       ),
@@ -256,18 +274,26 @@ class _AdminInventoryScreenState extends State<AdminInventoryScreen> {
               style: TextStyle(
                 fontSize: 14,
                 fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
-                color: isSelected ? const Color(0xFFF26522) : Theme.of(context).colorScheme.onSurface,
+                color: isSelected
+                    ? const Color(0xFFF26522)
+                    : Theme.of(context).colorScheme.onSurface,
               ),
             ),
             const SizedBox(width: 6),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
               decoration: BoxDecoration(
-                color: isSelected 
-                    ? const Color(0xFFF26522).withOpacity(0.15) 
-                    : (value == 'out' && count > 0 
-                        ? Theme.of(context).colorScheme.error.withValues(alpha: 0.1) 
-                        : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.1)),
+                color: isSelected
+                    ? const Color(0xFFF26522).withOpacity(0.15)
+                    : (value == 'out' && count > 0
+                        ? Theme.of(context)
+                            .colorScheme
+                            .error
+                            .withValues(alpha: 0.1)
+                        : Theme.of(context)
+                            .colorScheme
+                            .onSurface
+                            .withValues(alpha: 0.1)),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Text(
@@ -275,10 +301,10 @@ class _AdminInventoryScreenState extends State<AdminInventoryScreen> {
                 style: TextStyle(
                   fontSize: 11,
                   fontWeight: FontWeight.bold,
-                  color: isSelected 
-                      ? const Color(0xFFF26522) 
-                      : (value == 'out' && count > 0 
-                          ? Theme.of(context).colorScheme.error 
+                  color: isSelected
+                      ? const Color(0xFFF26522)
+                      : (value == 'out' && count > 0
+                          ? Theme.of(context).colorScheme.error
                           : Theme.of(context).colorScheme.onSurface),
                 ),
               ),
@@ -291,7 +317,9 @@ class _AdminInventoryScreenState extends State<AdminInventoryScreen> {
 
   Widget _buildInventoryCard(Map<String, dynamic> item) {
     final stock = (item['stock_quantity'] ?? 0) as int;
-    final imageUrl = item['main_image_url'] != null ? NetworkUtils.fixDeviceUrl(item['main_image_url']) : '';
+    final imageUrl = item['main_image_url'] != null
+        ? NetworkUtils.fixDeviceUrl(item['main_image_url'])
+        : '';
     final hasVariant = item['variant_name'] != null;
 
     return Container(
@@ -300,7 +328,10 @@ class _AdminInventoryScreenState extends State<AdminInventoryScreen> {
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: Theme.of(context).colorScheme.outline, width: 0.15,),
+        border: Border.all(
+          color: Theme.of(context).colorScheme.outline,
+          width: 0.15,
+        ),
         boxShadow: [
           BoxShadow(
             color: Theme.of(context).colorScheme.onSurface.withOpacity(0.02),
@@ -318,9 +349,10 @@ class _AdminInventoryScreenState extends State<AdminInventoryScreen> {
               width: 80,
               height: 80,
               color: Theme.of(context).colorScheme.surface,
-              child: imageUrl.isEmpty 
-                ? Icon(Icons.image_not_supported_outlined, color: Theme.of(context).colorScheme.onSurface, size: 30) 
-                : Image.network(imageUrl, fit: BoxFit.contain),
+              child: imageUrl.isEmpty
+                  ? Icon(Icons.image_not_supported_outlined,
+                      color: Theme.of(context).colorScheme.onSurface, size: 30)
+                  : Image.network(imageUrl, fit: BoxFit.contain),
             ),
           ),
           const SizedBox(width: 16),
@@ -330,30 +362,42 @@ class _AdminInventoryScreenState extends State<AdminInventoryScreen> {
               children: [
                 Text(
                   item['product_name'] ?? 'Không tên',
-                  style: TextStyle(fontWeight: FontWeight.w700, fontSize: 15, color: Theme.of(context).colorScheme.onSurface),
+                  style: TextStyle(
+                      fontWeight: FontWeight.w700,
+                      fontSize: 15,
+                      color: Theme.of(context).colorScheme.onSurface),
                 ),
                 if (hasVariant) ...[
                   const SizedBox(height: 2),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                     decoration: BoxDecoration(
                       color: Theme.of(context).colorScheme.surface,
                       borderRadius: BorderRadius.circular(6),
                     ),
                     child: Text(
                       'Phân loại: ${item['variant_name']}',
-                      style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.onSurface, fontWeight: FontWeight.w500),
+                      style: TextStyle(
+                          fontSize: 12,
+                          color: Theme.of(context).colorScheme.onSurface,
+                          fontWeight: FontWeight.w500),
                     ),
                   ),
                 ],
                 const SizedBox(height: 6),
                 Row(
                   children: [
-                    Icon(Icons.qr_code_rounded, size: 14, color: Theme.of(context).colorScheme.onSurface),
+                    Icon(Icons.qr_code_rounded,
+                        size: 14,
+                        color: Theme.of(context).colorScheme.onSurface),
                     const SizedBox(width: 4),
                     Text(
                       item['sku'] ?? 'Chưa cấu hình SKU',
-                      style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.onSurface, fontFamily: 'monospace'),
+                      style: TextStyle(
+                          fontSize: 12,
+                          color: Theme.of(context).colorScheme.onSurface,
+                          fontFamily: 'monospace'),
                     ),
                   ],
                 ),
@@ -362,18 +406,23 @@ class _AdminInventoryScreenState extends State<AdminInventoryScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 8, vertical: 4),
                       decoration: BoxDecoration(
                         color: _getStatusColor(stock).withOpacity(0.12),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Text(
                         '${_getStatusText(stock)}: $stock',
-                        style: TextStyle(color: _getStatusColor(stock), fontWeight: FontWeight.bold, fontSize: 12),
+                        style: TextStyle(
+                            color: _getStatusColor(stock),
+                            fontWeight: FontWeight.bold,
+                            fontSize: 12),
                       ),
                     ),
                     IconButton(
-                      icon: const Icon(Icons.add_box_rounded, color: Color(0xFFF26522)),
+                      icon: const Icon(Icons.add_box_rounded,
+                          color: Color(0xFFF26522)),
                       onPressed: () => _showRestockBottomSheet(item),
                     ),
                   ],
@@ -391,7 +440,7 @@ class _AdminInventoryScreenState extends State<AdminInventoryScreen> {
 
     showModalBottomSheet(
       context: context,
-      isScrollControlled: true, 
+      isScrollControlled: true,
       backgroundColor: Theme.of(context).colorScheme.surface,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(12)),
@@ -418,14 +467,20 @@ class _AdminInventoryScreenState extends State<AdminInventoryScreen> {
                   ),
                 ),
               ),
-             Text(
+              Text(
                 'Nhập thêm hàng kho',
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: Theme.of(context).colorScheme.onSurface),
+                style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18,
+                    color: Theme.of(context).colorScheme.onSurface),
               ),
               const SizedBox(height: 4),
               Text(
                 '${item['product_name']}${item['variant_name'] != null ? " (${item['variant_name']})" : ""}',
-                style: TextStyle(fontSize: 13, color: Theme.of(context).colorScheme.onSurface, fontWeight: FontWeight.normal),
+                style: TextStyle(
+                    fontSize: 13,
+                    color: Theme.of(context).colorScheme.onSurface,
+                    fontWeight: FontWeight.normal),
               ),
               const SizedBox(height: 24),
               TextField(
@@ -435,15 +490,21 @@ class _AdminInventoryScreenState extends State<AdminInventoryScreen> {
                 decoration: InputDecoration(
                   labelText: 'Số lượng thêm vào',
                   hintText: 'Ví dụ: 10, 20, 50...',
-                  labelStyle:  TextStyle(color: Theme.of(context).colorScheme.onSurface),
-                  floatingLabelStyle: TextStyle(color: Theme.of(context).colorScheme.onSurface),
+                  labelStyle:
+                      TextStyle(color: Theme.of(context).colorScheme.onSurface),
+                  floatingLabelStyle:
+                      TextStyle(color: Theme.of(context).colorScheme.onSurface),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
-                    borderSide:  BorderSide(color: Theme.of(context).colorScheme.onSurface, width: 2),
+                    borderSide: BorderSide(
+                        color: Theme.of(context).colorScheme.onSurface,
+                        width: 2),
                   ),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(color: Theme.of(context).colorScheme.onSurface, width: 1),
+                    borderSide: BorderSide(
+                        color: Theme.of(context).colorScheme.onSurface,
+                        width: 1),
                   ),
                 ),
               ),
@@ -453,7 +514,10 @@ class _AdminInventoryScreenState extends State<AdminInventoryScreen> {
                 children: [
                   TextButton(
                     onPressed: () => Navigator.pop(ctx),
-                    child: Text(Trans.cancel, style: const TextStyle(color: Color(0xFF64748B), fontWeight: FontWeight.w600)),
+                    child: Text(Trans.cancel,
+                        style: const TextStyle(
+                            color: Color(0xFF64748B),
+                            fontWeight: FontWeight.w600)),
                   ),
                   const SizedBox(width: 12),
                   Expanded(
@@ -461,7 +525,8 @@ class _AdminInventoryScreenState extends State<AdminInventoryScreen> {
                       onPressed: () {
                         final int? amount = int.tryParse(amountController.text);
                         if (amount == null || amount <= 0) {
-                          AppSnackBar.showError(context, 'Số lượng nhập không hợp lệ');
+                          AppSnackBar.showError(
+                              context, 'Số lượng nhập không hợp lệ');
                           return;
                         }
                         Navigator.pop(ctx);
@@ -469,11 +534,16 @@ class _AdminInventoryScreenState extends State<AdminInventoryScreen> {
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFFF26522),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12)),
                         padding: const EdgeInsets.symmetric(vertical: 14),
                         elevation: 0,
                       ),
-                      child: Text(Trans.confirm, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 15)),
+                      child: Text(Trans.confirm,
+                          style: const TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 15)),
                     ),
                   ),
                 ],
@@ -487,7 +557,8 @@ class _AdminInventoryScreenState extends State<AdminInventoryScreen> {
 
   Widget _buildEmptyState() {
     return Center(
-      child: Text(Trans.noProductOrVariant, style: TextStyle(color: Colors.grey.shade500)),
+      child: Text(Trans.noProductOrVariant,
+          style: TextStyle(color: Colors.grey.shade500)),
     );
   }
 }

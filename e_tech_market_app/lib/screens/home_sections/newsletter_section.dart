@@ -93,11 +93,16 @@ class _NewsletterSectionState extends State<NewsletterSection> {
                 // Form
                 Container(
                   decoration: BoxDecoration(
-                    border: Border.all(color: Theme.of(context).colorScheme.outline, width: 0.15),
+                    border: Border.all(
+                        color: Theme.of(context).colorScheme.outline,
+                        width: 0.15),
                     borderRadius: BorderRadius.circular(12),
                     boxShadow: [
                       BoxShadow(
-                        color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.04),
+                        color: Theme.of(context)
+                            .colorScheme
+                            .onSurface
+                            .withValues(alpha: 0.04),
                         blurRadius: 20,
                         offset: const Offset(0, 4),
                       ),
@@ -114,7 +119,10 @@ class _NewsletterSectionState extends State<NewsletterSection> {
                           decoration: InputDecoration(
                             hintText: 'ĐỊA CHỈ EMAIL',
                             hintStyle: TextStyle(
-                              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.4),
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .onSurface
+                                  .withValues(alpha: 0.4),
                               fontWeight: FontWeight.w600,
                               letterSpacing: 0.05,
                             ),
@@ -171,7 +179,9 @@ class _NewsletterSectionState extends State<NewsletterSection> {
                                           .textTheme
                                           .labelLarge
                                           ?.copyWith(
-                                            color: Theme.of(context).colorScheme.surface,
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .surface,
                                             fontWeight: FontWeight.w700,
                                             letterSpacing: 0.05,
                                           ),

@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
 import '../../../config/dio_client.dart';
+
 const Color _accent = Color(0xFFF97316);
 
 class PaymentSecurityPolicyScreen extends StatefulWidget {
   const PaymentSecurityPolicyScreen({super.key});
-@override
-  State<PaymentSecurityPolicyScreen> createState() => _PaymentSecurityPolicyScreenState();
+  @override
+  State<PaymentSecurityPolicyScreen> createState() =>
+      _PaymentSecurityPolicyScreenState();
 }
 
-class _PaymentSecurityPolicyScreenState extends State<PaymentSecurityPolicyScreen> {
-Map<String, dynamic>? _storeContact;
+class _PaymentSecurityPolicyScreenState
+    extends State<PaymentSecurityPolicyScreen> {
+  Map<String, dynamic>? _storeContact;
 
   @override
   void initState() {
@@ -32,7 +35,8 @@ Map<String, dynamic>? _storeContact;
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Chính sách bảo mật thanh toán',  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+        title: const Text('Chính sách bảo mật thanh toán',
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
         backgroundColor: Theme.of(context).colorScheme.surface,
         foregroundColor: Theme.of(context).colorScheme.onSurface,
         elevation: 0,
@@ -55,47 +59,62 @@ Map<String, dynamic>? _storeContact;
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const SizedBox(height: 6),
-                      Text('Chính sách bảo mật thanh toán', style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.onSurface)),
+                      Text('Chính sách bảo mật thanh toán',
+                          style: TextStyle(
+                              fontSize: 22,
+                              fontWeight: FontWeight.bold,
+                              color: Theme.of(context).colorScheme.onSurface)),
                       const SizedBox(height: 6),
-                      Text('Cập nhật lần cuối: 25 tháng 5, 2026', style: TextStyle(fontSize: 13, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7))),
+                      Text('Cập nhật lần cuối: 25 tháng 5, 2026',
+                          style: TextStyle(
+                              fontSize: 13,
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .onSurface
+                                  .withValues(alpha: 0.7))),
                       const SizedBox(height: 12),
                     ],
                   ),
                 ),
-
                 const SizedBox(height: 18),
-
                 _Section(
                   number: '1.',
                   title: 'Cam kết bảo mật',
                   children: [
-                    const Text('Tại E-Tech Market Official, chúng tôi nỗ lực trong mọi tình huống để quyền lợi của quý khách luôn được giữ an toàn. Chúng tôi cam kết không chia sẻ thông tin thanh toán của khách hàng cho bất kỳ bên thứ ba nào, ngoại trừ các đối tác thanh toán được cấp phép.'),
+                    const Text(
+                        'Tại E-Tech Market Official, chúng tôi nỗ lực trong mọi tình huống để quyền lợi của quý khách luôn được giữ an toàn. Chúng tôi cam kết không chia sẻ thông tin thanh toán của khách hàng cho bất kỳ bên thứ ba nào, ngoại trừ các đối tác thanh toán được cấp phép.'),
                     const SizedBox(height: 8),
-                    const Text('Mọi giao dịch đều được mã hóa và bảo vệ bằng các tiêu chuẩn bảo mật cao nhất hiện nay.'),
+                    const Text(
+                        'Mọi giao dịch đều được mã hóa và bảo vệ bằng các tiêu chuẩn bảo mật cao nhất hiện nay.'),
                   ],
                 ),
-
                 const SizedBox(height: 12),
-
                 _Section(
                   number: '2.',
                   title: 'Phương thức thanh toán an toàn',
                   children: [
-                    _PaymentBox(title: 'Cổng thanh toán Momo', description: 'Mã hóa đa lớp, xác thực OTP, bảo vệ tuyệt đối thông tin tài khoản.'),
+                    _PaymentBox(
+                        title: 'Cổng thanh toán Momo',
+                        description:
+                            'Mã hóa đa lớp, xác thực OTP, bảo vệ tuyệt đối thông tin tài khoản.'),
                     const SizedBox(height: 10),
-                    _PaymentBox(title: 'Tiêu chuẩn 3D Secure', description: 'Áp dụng cho thẻ Visa/Master/JCB. Xác thực chủ thẻ qua OTP hoặc Smart OTP.'),
+                    _PaymentBox(
+                        title: 'Tiêu chuẩn 3D Secure',
+                        description:
+                            'Áp dụng cho thẻ Visa/Master/JCB. Xác thực chủ thẻ qua OTP hoặc Smart OTP.'),
                     const SizedBox(height: 10),
-                    const Text('Đối tác thanh toán uy tín: Momo · VNPAY · Banking/InternetBanking', style: TextStyle(color: Color(0xFF6B7280))),
+                    const Text(
+                        'Đối tác thanh toán uy tín: Momo · VNPAY · Banking/InternetBanking',
+                        style: TextStyle(color: Color(0xFF6B7280))),
                   ],
                 ),
-
                 const SizedBox(height: 12),
-
                 _Section(
                   number: '3.',
                   title: 'Thu thập và Xử lý thông tin',
                   children: [
-                    const Text('Trong quá trình thanh toán, chúng tôi chỉ thu thập các thông tin sau:'),
+                    const Text(
+                        'Trong quá trình thanh toán, chúng tôi chỉ thu thập các thông tin sau:'),
                     const SizedBox(height: 8),
                     const _BulletList(items: [
                       'Họ tên chủ thẻ/thông tin tài khoản ví điện tử',
@@ -103,12 +122,12 @@ Map<String, dynamic>? _storeContact;
                       'Chi tiết giao dịch (mã đơn hàng, số tiền, thời gian...)',
                     ]),
                     const SizedBox(height: 10),
-                    const _AlertBox(text: 'Lưu ý: E-Tech Market không lưu trữ thông tin thẻ (số thẻ, CVV/CVC) của khách hàng trên hệ thống. Mọi dữ liệu nhạy cảm được xử lý trực tiếp qua cổng thanh toán bảo mật của đối tác.'),
+                    const _AlertBox(
+                        text:
+                            'Lưu ý: E-Tech Market không lưu trữ thông tin thẻ (số thẻ, CVV/CVC) của khách hàng trên hệ thống. Mọi dữ liệu nhạy cảm được xử lý trực tiếp qua cổng thanh toán bảo mật của đối tác.'),
                   ],
                 ),
-
                 const SizedBox(height: 12),
-
                 _Section(
                   number: '4.',
                   title: 'Quyền và Trách nhiệm của khách hàng',
@@ -120,12 +139,23 @@ Map<String, dynamic>? _storeContact;
                     ]),
                     const SizedBox(height: 12),
                     _ContactBox(
-                      hotline: _storeContact?['contact_phone']?.toString().trim().isNotEmpty == true ? _storeContact!['contact_phone'] : '1900 8888',
-                      email: _storeContact?['contact_email']?.toString().trim().isNotEmpty == true ? _storeContact!['contact_email'] : 'support@etechmarket.vn',
+                      hotline: _storeContact?['contact_phone']
+                                  ?.toString()
+                                  .trim()
+                                  .isNotEmpty ==
+                              true
+                          ? _storeContact!['contact_phone']
+                          : '1900 8888',
+                      email: _storeContact?['contact_email']
+                                  ?.toString()
+                                  .trim()
+                                  .isNotEmpty ==
+                              true
+                          ? _storeContact!['contact_email']
+                          : 'support@etechmarket.vn',
                     ),
                   ],
                 ),
-
                 const SizedBox(height: 28),
               ],
             ),
@@ -141,7 +171,8 @@ class _Section extends StatelessWidget {
   final String title;
   final List<Widget> children;
 
-  const _Section({required this.number, required this.title, required this.children});
+  const _Section(
+      {required this.number, required this.title, required this.children});
 
   @override
   Widget build(BuildContext context) {
@@ -154,16 +185,25 @@ class _Section extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
+                color: Theme.of(context)
+                    .colorScheme
+                    .primary
+                    .withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(999),
               ),
-              child: Text(number, style: TextStyle(color: Theme.of(context).colorScheme.primary, fontWeight: FontWeight.bold)),
+              child: Text(number,
+                  style: TextStyle(
+                      color: Theme.of(context).colorScheme.primary,
+                      fontWeight: FontWeight.bold)),
             ),
             const SizedBox(width: 10),
             Expanded(
               child: Text(
                 title,
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700, color: Theme.of(context).colorScheme.onSurface),
+                style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w700,
+                    color: Theme.of(context).colorScheme.onSurface),
               ),
             ),
           ],
@@ -171,7 +211,8 @@ class _Section extends StatelessWidget {
         const SizedBox(height: 10),
         Container(
           padding: const EdgeInsets.all(12),
-          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: children),
+          child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start, children: children),
         ),
       ],
     );
@@ -195,7 +236,9 @@ class _PaymentBox extends StatelessWidget {
         border: Border.all(color: const Color(0xFFFDE68A)),
       ),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Text(title, style: const TextStyle(fontWeight: FontWeight.w700, color: Color(0xFF92400E))),
+        Text(title,
+            style: const TextStyle(
+                fontWeight: FontWeight.w700, color: Color(0xFF92400E))),
         const SizedBox(height: 8),
         Text(description, style: const TextStyle(color: Color(0xFF92400E))),
       ]),
@@ -210,13 +253,17 @@ class _BulletList extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: items.map((t) => Padding(
-        padding: const EdgeInsets.only(bottom: 6),
-        child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          const Text('• ', style: TextStyle(fontSize: 18)),
-          Expanded(child: Text(t)),
-        ]),
-      )).toList(),
+      children: items
+          .map((t) => Padding(
+                padding: const EdgeInsets.only(bottom: 6),
+                child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text('• ', style: TextStyle(fontSize: 18)),
+                      Expanded(child: Text(t)),
+                    ]),
+              ))
+          .toList(),
     );
   }
 }
@@ -254,13 +301,20 @@ class _ContactBox extends StatelessWidget {
         border: Border.all(color: const Color(0xFFE6EEF2)),
       ),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        const Text('Liên hệ hỗ trợ an ninh', style: TextStyle(fontWeight: FontWeight.w700)),
+        const Text('Liên hệ hỗ trợ an ninh',
+            style: TextStyle(fontWeight: FontWeight.w700)),
         const SizedBox(height: 8),
-        const Text('Hotline bảo mật', style: TextStyle(color: Color(0xFF6B7280), fontSize: 12)),
-        Text(hotline, style: const TextStyle(fontWeight: FontWeight.w700, color: Color(0xFFF97316))),
+        const Text('Hotline bảo mật',
+            style: TextStyle(color: Color(0xFF6B7280), fontSize: 12)),
+        Text(hotline,
+            style: const TextStyle(
+                fontWeight: FontWeight.w700, color: Color(0xFFF97316))),
         const SizedBox(height: 8),
-        const Text('Email Chuyên Trách', style: TextStyle(color: Color(0xFF6B7280), fontSize: 12)),
-        Text(email, style: const TextStyle(fontWeight: FontWeight.w700, color: Color(0xFF1F2937))),
+        const Text('Email Chuyên Trách',
+            style: TextStyle(color: Color(0xFF6B7280), fontSize: 12)),
+        Text(email,
+            style: const TextStyle(
+                fontWeight: FontWeight.w700, color: Color(0xFF1F2937))),
       ]),
     );
   }

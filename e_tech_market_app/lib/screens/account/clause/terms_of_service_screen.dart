@@ -84,14 +84,18 @@ class _TermsOfServiceScreenState extends State<TermsOfServiceScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 12, vertical: 6),
                         decoration: BoxDecoration(
                           color: _accent.withOpacity(0.12),
                           borderRadius: BorderRadius.circular(999),
                         ),
                         child: Text(
                           'ĐIỀU KHOẢN & DỊCH VỤ',
-                          style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: _accent),
+                          style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                              color: _accent),
                         ),
                       ),
                       const SizedBox(height: 18),
@@ -104,15 +108,28 @@ class _TermsOfServiceScreenState extends State<TermsOfServiceScreen> {
                             height: 1.05,
                           ),
                           children: [
-                            TextSpan(text: 'Điều khoản ', style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
-                            TextSpan(text: 'Dịch vụ', style: TextStyle(color: _accent)),
+                            TextSpan(
+                                text: 'Điều khoản ',
+                                style: TextStyle(
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .onSurface)),
+                            TextSpan(
+                                text: 'Dịch vụ',
+                                style: TextStyle(color: _accent)),
                           ],
                         ),
                       ),
                       const SizedBox(height: 14),
                       Text(
                         'E-TECH MARKET cung cấp dịch vụ mua sắm trực tuyến với quy định rõ ràng, minh bạch và bảo vệ quyền lợi khách hàng. Vui lòng đọc kỹ trước khi sử dụng.',
-                        style: TextStyle(fontSize: 15, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7), height: 1.75),
+                        style: TextStyle(
+                            fontSize: 15,
+                            color: Theme.of(context)
+                                .colorScheme
+                                .onSurface
+                                .withValues(alpha: 0.7),
+                            height: 1.75),
                       ),
                       const SizedBox(height: 20),
                       ClipRRect(
@@ -124,7 +141,8 @@ class _TermsOfServiceScreenState extends State<TermsOfServiceScreen> {
                               width: double.infinity,
                               decoration: BoxDecoration(
                                 image: DecorationImage(
-                                  image: NetworkImage(TermsOfServiceScreen._bannerImageUrl),
+                                  image: NetworkImage(
+                                      TermsOfServiceScreen._bannerImageUrl),
                                   fit: BoxFit.cover,
                                 ),
                                 color: Theme.of(context).colorScheme.surface,
@@ -134,7 +152,10 @@ class _TermsOfServiceScreenState extends State<TermsOfServiceScreen> {
                               height: 180,
                               decoration: BoxDecoration(
                                 gradient: LinearGradient(
-                                  colors: [Colors.black.withOpacity(0.22), Colors.black.withOpacity(0.03)],
+                                  colors: [
+                                    Colors.black.withOpacity(0.22),
+                                    Colors.black.withOpacity(0.03)
+                                  ],
                                   begin: Alignment.topCenter,
                                   end: Alignment.bottomCenter,
                                 ),
@@ -144,14 +165,18 @@ class _TermsOfServiceScreenState extends State<TermsOfServiceScreen> {
                               left: 16,
                               bottom: 16,
                               child: Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 12, vertical: 7),
                                 decoration: BoxDecoration(
                                   color: Colors.white.withOpacity(0.9),
                                   borderRadius: BorderRadius.circular(999),
                                 ),
                                 child: Text(
                                   'PREMIUM HIGH TECH GEAR · E-TECH MARKET',
-                                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: _accent),
+                                  style: TextStyle(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.bold,
+                                      color: _accent),
                                 ),
                               ),
                             ),
@@ -163,11 +188,11 @@ class _TermsOfServiceScreenState extends State<TermsOfServiceScreen> {
                 ),
                 const SizedBox(height: 24),
                 Container(
-                //   decoration: BoxDecoration(
-                //     color: Colors.white,
-                //     borderRadius: BorderRadius.circular(20),
-                //     border: Border.all(color: const Color(0xFFE5E7EB)),
-                //   ),
+                  //   decoration: BoxDecoration(
+                  //     color: Colors.white,
+                  //     borderRadius: BorderRadius.circular(20),
+                  //     border: Border.all(color: const Color(0xFFE5E7EB)),
+                  //   ),
                   child: Column(
                     children: _navItems.asMap().entries.map((entry) {
                       final index = entry.key;
@@ -178,13 +203,18 @@ class _TermsOfServiceScreenState extends State<TermsOfServiceScreen> {
                             onTap: () => _scrollToSection(index),
                             child: Container(
                               width: double.infinity,
-                              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 16, vertical: 16),
                               child: Text(
                                 entry.value,
                                 style: TextStyle(
                                   fontSize: 14,
-                                  fontWeight: isActive ? FontWeight.w700 : FontWeight.w500,
-                                  color: isActive ? _accent : const Color(0xFF475569),
+                                  fontWeight: isActive
+                                      ? FontWeight.w700
+                                      : FontWeight.w500,
+                                  color: isActive
+                                      ? _accent
+                                      : const Color(0xFF475569),
                                 ),
                               ),
                             ),
@@ -212,12 +242,14 @@ class _TermsOfServiceScreenState extends State<TermsOfServiceScreen> {
                     _IconCard(
                       icon: Icons.check_circle,
                       title: 'Tính chính xác của thông tin',
-                      description: 'Thông tin đăng ký, địa chỉ giao hàng và liên hệ cần trung thực. Sai lệch có thể ảnh hưởng đến xử lý đơn hàng và bảo hành.',
+                      description:
+                          'Thông tin đăng ký, địa chỉ giao hàng và liên hệ cần trung thực. Sai lệch có thể ảnh hưởng đến xử lý đơn hàng và bảo hành.',
                     ),
                     _IconCard(
                       icon: Icons.lock,
                       title: 'Tiêu chuẩn bảo mật',
-                      description: 'Bạn chịu trách nhiệm bảo mật phiên đăng nhập, mật khẩu và thông tin xác thực, không chia sẻ cho bên thứ ba.',
+                      description:
+                          'Bạn chịu trách nhiệm bảo mật phiên đăng nhập, mật khẩu và thông tin xác thực, không chia sẻ cho bên thứ ba.',
                     ),
                   ],
                 ),
@@ -228,7 +260,8 @@ class _TermsOfServiceScreenState extends State<TermsOfServiceScreen> {
                   sectionKey: _sectionKeys[2],
                   children: const [
                     _QuotePanel(
-                      quote: 'Sự chính xác là nền tảng của bản sắc thương hiệu chúng tôi.',
+                      quote:
+                          'Sự chính xác là nền tảng của bản sắc thương hiệu chúng tôi.',
                     ),
                   ],
                 ),
@@ -264,19 +297,34 @@ class _TermsOfServiceScreenState extends State<TermsOfServiceScreen> {
       key: sectionKey,
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        border: Border(top: BorderSide(color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.5), width: 1)),
+        border: Border(
+            top: BorderSide(
+                color: Theme.of(context)
+                    .colorScheme
+                    .primary
+                    .withValues(alpha: 0.5),
+                width: 1)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             heading,
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.onSurface),
+            style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Theme.of(context).colorScheme.onSurface),
           ),
           const SizedBox(height: 12),
           Text(
             description,
-            style: TextStyle(fontSize: 15, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7), height: 1.75),
+            style: TextStyle(
+                fontSize: 15,
+                color: Theme.of(context)
+                    .colorScheme
+                    .onSurface
+                    .withValues(alpha: 0.7),
+                height: 1.75),
           ),
           if (children.isNotEmpty) ...[
             const SizedBox(height: 18),
@@ -293,7 +341,8 @@ class _IconCard extends StatelessWidget {
   final String title;
   final String description;
 
-  const _IconCard({required this.icon, required this.title, required this.description});
+  const _IconCard(
+      {required this.icon, required this.title, required this.description});
 
   @override
   Widget build(BuildContext context) {
@@ -307,19 +356,32 @@ class _IconCard extends StatelessWidget {
             width: 44,
             height: 44,
             decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.5),
+              color:
+                  Theme.of(context).colorScheme.primary.withValues(alpha: 0.5),
               borderRadius: BorderRadius.circular(12),
             ),
-            child: Icon(icon, size: 22, color: Theme.of(context).colorScheme.primary),
+            child: Icon(icon,
+                size: 22, color: Theme.of(context).colorScheme.primary),
           ),
           const SizedBox(width: 14),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(title, style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.onSurface)),
+                Text(title,
+                    style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).colorScheme.onSurface)),
                 const SizedBox(height: 8),
-                Text(description, style: TextStyle(fontSize: 14, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7), height: 1.7)),
+                Text(description,
+                    style: TextStyle(
+                        fontSize: 14,
+                        color: Theme.of(context)
+                            .colorScheme
+                            .onSurface
+                            .withValues(alpha: 0.7),
+                        height: 1.7)),
               ],
             ),
           ),
@@ -339,10 +401,13 @@ class _QuotePanel extends StatelessWidget {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(18),
-
       child: Text(
         quote,
-        style: const TextStyle(fontSize: 15, color: Color(0xFF92400E), height: 1.9, fontStyle: FontStyle.italic),
+        style: const TextStyle(
+            fontSize: 15,
+            color: Color(0xFF92400E),
+            height: 1.9,
+            fontStyle: FontStyle.italic),
       ),
     );
   }
@@ -368,13 +433,17 @@ class _RiskCard extends StatelessWidget {
               color: Theme.of(context).colorScheme.error.withValues(alpha: 0.5),
               borderRadius: BorderRadius.circular(12),
             ),
-            child: Icon(Icons.close, size: 20, color: Theme.of(context).colorScheme.error),
+            child: Icon(Icons.close,
+                size: 20, color: Theme.of(context).colorScheme.error),
           ),
           const SizedBox(width: 14),
           Expanded(
             child: Text(
               title,
-              style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: Theme.of(context).colorScheme.onSurface),
+              style: TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w600,
+                  color: Theme.of(context).colorScheme.onSurface),
             ),
           ),
         ],

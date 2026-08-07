@@ -77,8 +77,10 @@ class _BlogScreenState extends State<BlogScreen> {
 
       final allPosts = [...blogPosts, ...productNews];
       allPosts.sort((a, b) {
-        final dateA = DateTime.tryParse(a['published_at']?.toString() ?? '') ?? DateTime.now();
-        final dateB = DateTime.tryParse(b['published_at']?.toString() ?? '') ?? DateTime.now();
+        final dateA = DateTime.tryParse(a['published_at']?.toString() ?? '') ??
+            DateTime.now();
+        final dateB = DateTime.tryParse(b['published_at']?.toString() ?? '') ??
+            DateTime.now();
         return dateB.compareTo(dateA); // Newest first
       });
 
@@ -106,10 +108,10 @@ class _BlogScreenState extends State<BlogScreen> {
 
   List<dynamic> get _trendingPosts {
     final sorted = [..._allPosts]..sort((a, b) {
-      final aViews = (a['views'] as num?)?.toInt() ?? 0;
-      final bViews = (b['views'] as num?)?.toInt() ?? 0;
-      return bViews.compareTo(aViews);
-    });
+        final aViews = (a['views'] as num?)?.toInt() ?? 0;
+        final bViews = (b['views'] as num?)?.toInt() ?? 0;
+        return bViews.compareTo(aViews);
+      });
     return sorted.take(3).toList();
   }
 
@@ -211,13 +213,15 @@ class _BlogScreenState extends State<BlogScreen> {
         child: Column(
           children: [
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
               child: Row(
                 children: [
                   CircleAvatar(
                     backgroundColor: Colors.black.withOpacity(0.1),
                     child: IconButton(
-                      icon: Icon(Icons.arrow_back, color: Theme.of(context).colorScheme.onSurface),
+                      icon: Icon(Icons.arrow_back,
+                          color: Theme.of(context).colorScheme.onSurface),
                       onPressed: () => Navigator.pop(context),
                     ),
                   ),
@@ -238,76 +242,78 @@ class _BlogScreenState extends State<BlogScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-            // Hero Section
-            if (featuredPost != null && _activeFilter == 'all')
-              _buildHeroSection(featuredPost),
+                    // Hero Section
+                    if (featuredPost != null && _activeFilter == 'all')
+                      _buildHeroSection(featuredPost),
 
-            // Filters
-            _buildFiltersSection(),
+                    // Filters
+                    _buildFiltersSection(),
 
-            // Main Content
-            Padding(
-              padding: const EdgeInsets.symmetric( vertical: 16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Section Title
-                  // Blog Posts Grid
-                  if (_filteredPosts.isEmpty)
-                    Center(
-                      child: Padding(
-                        padding: const EdgeInsets.all(32),
-                        child: Column(
-                          children: [
-                            const Icon(Icons.article_outlined,
-                                size: 64, color: Colors.grey),
-                            const SizedBox(height: 16),
-                            Text(Trans.noArticles,
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .bodyLarge
-                                    ?.copyWith(color: Colors.grey)),
-                          ],
-                        ),
+                    // Main Content
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Section Title
+                          // Blog Posts Grid
+                          if (_filteredPosts.isEmpty)
+                            Center(
+                              child: Padding(
+                                padding: const EdgeInsets.all(32),
+                                child: Column(
+                                  children: [
+                                    const Icon(Icons.article_outlined,
+                                        size: 64, color: Colors.grey),
+                                    const SizedBox(height: 16),
+                                    Text(Trans.noArticles,
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .bodyLarge
+                                            ?.copyWith(color: Colors.grey)),
+                                  ],
+                                ),
+                              ),
+                            )
+                          else
+                            ListView.separated(
+                              shrinkWrap: true,
+                              physics: const NeverScrollableScrollPhysics(),
+                              itemCount: _filteredPosts.length,
+                              separatorBuilder: (_, __) =>
+                                  const SizedBox(height: 12),
+                              itemBuilder: (context, index) =>
+                                  _buildBlogCard(_filteredPosts[index]),
+                            ),
+                        ],
                       ),
-                    )
-                  else
-                    ListView.separated(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemCount: _filteredPosts.length,
-                      separatorBuilder: (_, __) => const SizedBox(height: 12),
-                      itemBuilder: (context, index) =>
-                          _buildBlogCard(_filteredPosts[index]),
                     ),
-                ],
-              ),
-            ),
 
-            // Sidebar
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
-              child: Column(
-                children: [
-                  // Trending Posts
-                  if (_trendingPosts.isNotEmpty) ...[
-                    const SizedBox(height: 16),
-                    _buildTrendingSection(),
+                    // Sidebar
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 8, vertical: 12),
+                      child: Column(
+                        children: [
+                          // Trending Posts
+                          if (_trendingPosts.isNotEmpty) ...[
+                            const SizedBox(height: 16),
+                            _buildTrendingSection(),
+                          ],
+
+                          // Categories
+                          if (_categories.isNotEmpty) ...[
+                            const SizedBox(height: 16),
+                            _buildCategoriesSection(),
+                          ],
+                        ],
+                      ),
+                    ),
+
+                    const SizedBox(height: 20),
                   ],
-
-                  // Categories
-                  if (_categories.isNotEmpty) ...[
-                    const SizedBox(height: 16),
-                    _buildCategoriesSection(),
-                  ],
-                ],
+                ),
               ),
-            ),
-
-            const SizedBox(height: 20),
-          ],
-        ),
-      ),
             ),
           ],
         ),
@@ -334,7 +340,7 @@ class _BlogScreenState extends State<BlogScreen> {
         );
       },
       child: Container(
-        margin: const EdgeInsets.symmetric( vertical: 16),
+        margin: const EdgeInsets.symmetric(vertical: 16),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(12),
         ),
@@ -503,9 +509,7 @@ class _BlogScreenState extends State<BlogScreen> {
           style: TextStyle(
             fontSize: 15,
             fontWeight: isActive ? FontWeight.bold : FontWeight.w500,
-            color: isActive
-                ? const Color(0xFFF26522)
-                : const Color(0xFF555555),
+            color: isActive ? const Color(0xFFF26522) : const Color(0xFF555555),
           ),
         ),
       ),
@@ -591,7 +595,8 @@ class _BlogScreenState extends State<BlogScreen> {
                         Text(
                           _formatDate(createdAt),
                           style: TextStyle(
-                            color: Theme.of(context).colorScheme.onSurfaceVariant,
+                            color:
+                                Theme.of(context).colorScheme.onSurfaceVariant,
                             fontSize: 11,
                             fontWeight: FontWeight.w500,
                           ),
@@ -660,7 +665,8 @@ class _BlogScreenState extends State<BlogScreen> {
         ..._trendingPosts.asMap().entries.map((entry) {
           final post = entry.value;
           final views = (post['views'] as num?)?.toInt() ?? 0;
-          final imageUrl = NetworkUtils.fixDeviceUrl(post['thumbnail_url'] ?? '');
+          final imageUrl =
+              NetworkUtils.fixDeviceUrl(post['thumbnail_url'] ?? '');
           final title = post['title'] ?? '';
 
           return GestureDetector(
@@ -711,7 +717,8 @@ class _BlogScreenState extends State<BlogScreen> {
                           Trans.views(views),
                           style: TextStyle(
                             fontSize: 11,
-                            color: Theme.of(context).colorScheme.onSurfaceVariant,
+                            color:
+                                Theme.of(context).colorScheme.onSurfaceVariant,
                           ),
                         ),
                       ],
@@ -796,7 +803,7 @@ class _BlogScreenState extends State<BlogScreen> {
 
   Color _getCategoryColor(String categoryName) {
     if (categoryName.isEmpty) return Colors.grey;
-    
+
     // Explicit mappings for common categories to ensure distinct colors
     final lowerName = categoryName.toLowerCase();
     if (lowerName.contains('đánh giá')) return const Color(0xFFE91E63); // Pink
@@ -804,7 +811,7 @@ class _BlogScreenState extends State<BlogScreen> {
     if (lowerName.contains('tư vấn')) return const Color(0xFF4CAF50); // Green
     if (lowerName.contains('tin tức')) return const Color(0xFFFF9800); // Orange
     if (lowerName.contains('khuyến mãi')) return const Color(0xFFF44336); // Red
-    
+
     final colors = [
       const Color(0xFF9C27B0), // Purple
       const Color(0xFF3F51B5), // Indigo
@@ -814,7 +821,7 @@ class _BlogScreenState extends State<BlogScreen> {
       const Color(0xFF795548), // Brown
       const Color(0xFF607D8B), // Blue Grey
     ];
-    
+
     // Improved hash to reduce collisions
     int hash = 0;
     for (int i = 0; i < categoryName.length; i++) {

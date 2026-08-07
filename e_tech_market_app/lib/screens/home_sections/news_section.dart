@@ -18,11 +18,12 @@ class NewsSection extends StatelessWidget {
   static const _brandColor = Color(0xFFEF7A45);
 
   Widget build(BuildContext context) {
-    final visibleArticles = articles.take(8).cast<Map<String, dynamic>>().toList();
+    final visibleArticles =
+        articles.take(8).cast<Map<String, dynamic>>().toList();
 
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.fromLTRB(20,10,20,10),
+      padding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
       color: Theme.of(context).colorScheme.surface,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -73,7 +74,8 @@ class NewsSection extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(width: 4),
-                      Icon(Icons.arrow_forward_ios, size: 12, color: _brandColor),
+                      Icon(Icons.arrow_forward_ios,
+                          size: 12, color: _brandColor),
                     ],
                   ),
                 ),
@@ -88,7 +90,9 @@ class NewsSection extends StatelessWidget {
               child: Text(
                 'Chưa có bài viết nào.',
                 textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 14, color: Theme.of(context).colorScheme.onSurfaceVariant),
+                style: TextStyle(
+                    fontSize: 14,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant),
               ),
             )
           else
@@ -102,7 +106,8 @@ class NewsSection extends StatelessWidget {
                 return _NewsCard(
                   article: article,
                   onTap: () {
-                    AppSnackBar.showInfo(context, 'Mở bài viết: ${article['title'] ?? 'Không có tiêu đề'}');
+                    AppSnackBar.showInfo(context,
+                        'Mở bài viết: ${article['title'] ?? 'Không có tiêu đề'}');
                   },
                 );
               },
@@ -136,7 +141,8 @@ class _NewsCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final title = article['title']?.toString() ?? '';
     final excerpt = article['excerpt']?.toString() ?? '';
-    final imageUrl = NetworkUtils.fixDeviceUrl(article['thumbnail_url']?.toString() ?? '');
+    final imageUrl =
+        NetworkUtils.fixDeviceUrl(article['thumbnail_url']?.toString() ?? '');
     final categoryName = article['category']?['name']?.toString() ?? '';
     final readingTime = article['reading_time'] as int? ?? 0;
     final publishedAt = _formatDate(article['published_at']?.toString() ?? '');
@@ -170,7 +176,8 @@ class _NewsCard extends StatelessWidget {
                           width: 140,
                           height: 100,
                           fit: BoxFit.cover,
-                          errorBuilder: (_, __, ___) => _buildImageFallback(context, 140, 100),
+                          errorBuilder: (_, __, ___) =>
+                              _buildImageFallback(context, 140, 100),
                         ),
                       )
                     else
@@ -180,7 +187,8 @@ class _NewsCard extends StatelessWidget {
                         top: 6,
                         left: 6,
                         child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 6, vertical: 3),
                           decoration: BoxDecoration(
                             color: catColor,
                             borderRadius: BorderRadius.circular(4),
@@ -232,7 +240,9 @@ class _NewsCard extends StatelessWidget {
                             publishedAt,
                             style: TextStyle(
                               fontSize: 11,
-                              color: Theme.of(context).colorScheme.onSurfaceVariant,
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .onSurfaceVariant,
                             ),
                           ),
                           if (readingTime > 0) ...[
@@ -240,14 +250,18 @@ class _NewsCard extends StatelessWidget {
                               ' • ',
                               style: TextStyle(
                                 fontSize: 11,
-                                color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .onSurfaceVariant,
                               ),
                             ),
                             Text(
                               '$readingTime phút đọc',
                               style: TextStyle(
                                 fontSize: 11,
-                                color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .onSurfaceVariant,
                               ),
                             ),
                           ],
@@ -276,7 +290,8 @@ class _NewsCard extends StatelessWidget {
     );
   }
 
-  Widget _buildImageFallback(BuildContext context, double width, double height) {
+  Widget _buildImageFallback(
+      BuildContext context, double width, double height) {
     return Container(
       width: width,
       height: height,
@@ -318,14 +333,14 @@ class _NewsCard extends StatelessWidget {
 
   Color _getCategoryColor(String categoryName) {
     if (categoryName.isEmpty) return Colors.grey;
-    
+
     final lowerName = categoryName.toLowerCase();
     if (lowerName.contains('đánh giá')) return const Color(0xFFE91E63);
     if (lowerName.contains('công nghệ')) return const Color(0xFF2196F3);
     if (lowerName.contains('tư vấn')) return const Color(0xFF4CAF50);
     if (lowerName.contains('tin tức')) return const Color(0xFFFF9800);
     if (lowerName.contains('khuyến mãi')) return const Color(0xFFF44336);
-    
+
     final colors = const [
       Color(0xFF9C27B0),
       Color(0xFF3F51B5),
@@ -335,7 +350,7 @@ class _NewsCard extends StatelessWidget {
       Color(0xFF795548),
       Color(0xFF607D8B),
     ];
-    
+
     int hash = 0;
     for (int i = 0; i < categoryName.length; i++) {
       hash = (hash * 31 + categoryName.codeUnitAt(i)) & 0x7FFFFFFF;

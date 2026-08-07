@@ -43,7 +43,8 @@ class CartItem {
     final image = _imageFrom(variant['image_url'] ?? product['main_image_url']);
 
     final color = variant['color']?.toString().trim();
-    final config = (variant['configuration'] ?? variant['storage'])?.toString().trim();
+    final config =
+        (variant['configuration'] ?? variant['storage'])?.toString().trim();
 
     return CartItem(
       id: _toInt(json['id']),
@@ -55,7 +56,8 @@ class CartItem {
       variantColor: (color != null && color.isNotEmpty) ? color : null,
       variantConfig: (config != null && config.isNotEmpty) ? config : null,
       imageUrl: image.isEmpty ? null : image,
-      unitPrice: _toDouble(json['unit_price'] ?? variant['effective_price'] ?? product['price']),
+      unitPrice: _toDouble(
+          json['unit_price'] ?? variant['effective_price'] ?? product['price']),
       quantity: _toInt(json['quantity']).clamp(1, 999),
     );
   }
@@ -98,9 +100,7 @@ class CartState {
   }
 }
 
-
 class CartService {
-
   static Future<CartState> fetchCart() async {
     await _requireToken();
     final response = await _send(() => DioClient.instance.get('/cart'));
@@ -150,7 +150,8 @@ class CartService {
     return CartState.fromJson(response.data as Map<String, dynamic>);
   }
 
-  static Future<CartState> removeItems(List<CartItem> items, {CartState? currentCart}) async {
+  static Future<CartState> removeItems(List<CartItem> items,
+      {CartState? currentCart}) async {
     var next = currentCart ?? CartState.empty();
     for (final item in List<CartItem>.from(items)) {
       next = await removeItem(productId: item.productId);
@@ -173,18 +174,25 @@ class CartService {
   static Future<Response> _send(Future<Response> Function() request) async {
     try {
       final response = await request();
-      if (response.statusCode != null && response.statusCode! >= 200 && response.statusCode! < 300) {
+      if (response.statusCode != null &&
+          response.statusCode! >= 200 &&
+          response.statusCode! < 300) {
         return response;
       }
-      final body = response.data is Map ? response.data as Map<String, dynamic> : <String, dynamic>{};
+      final body = response.data is Map
+          ? response.data as Map<String, dynamic>
+          : <String, dynamic>{};
       final message = body['message']?.toString() ?? _findFirstError(body);
       throw Exception(message ?? 'Khong the cap nhat gio hang.');
     } on DioException catch (e) {
-      if (e.type == DioExceptionType.connectionTimeout || e.type == DioExceptionType.receiveTimeout) {
+      if (e.type == DioExceptionType.connectionTimeout ||
+          e.type == DioExceptionType.receiveTimeout) {
         throw Exception('Ket noi gio hang qua cham. Vui long thu lai.');
       }
       if (e.response != null) {
-        final body = e.response!.data is Map ? e.response!.data as Map<String, dynamic> : <String, dynamic>{};
+        final body = e.response!.data is Map
+            ? e.response!.data as Map<String, dynamic>
+            : <String, dynamic>{};
         final message = body['message']?.toString() ?? _findFirstError(body);
         throw Exception(message ?? 'Loi he thong.');
       }
@@ -202,8 +210,13 @@ class CartService {
     return null;
   }
 
-  static Future<void> addToCart(int productId, int quantity, {int? variantId, double? price}) async {
-    await addItem(productId: productId, quantity: quantity, variantId: variantId, price: price);
+  static Future<void> addToCart(int productId, int quantity,
+      {int? variantId, double? price}) async {
+    await addItem(
+        productId: productId,
+        quantity: quantity,
+        variantId: variantId,
+        price: price);
   }
 }
 

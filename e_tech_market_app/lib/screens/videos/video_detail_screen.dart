@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
@@ -23,14 +22,11 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
   WebViewController? _webViewController;
   YoutubePlayerController? _ytController;
 
-
   @override
   void initState() {
     super.initState();
     _fetchData();
   }
-
-
 
   Future<void> _fetchData() async {
     setState(() {
@@ -55,7 +51,8 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
           return;
         }
 
-        final recs = list.where((v) => v['id'] != widget.videoId).take(5).toList();
+        final recs =
+            list.where((v) => v['id'] != widget.videoId).take(5).toList();
 
         final rawUrl = videoObj['video_url']?.toString() ?? '';
 
@@ -95,15 +92,18 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
     if (shortMatch != null) return shortMatch.group(1);
 
     // Handle youtube.com/watch?v=ID
-    final watchMatch = RegExp(r'youtube\.com/watch\?.*v=([a-zA-Z0-9_-]{11})').firstMatch(url);
+    final watchMatch =
+        RegExp(r'youtube\.com/watch\?.*v=([a-zA-Z0-9_-]{11})').firstMatch(url);
     if (watchMatch != null) return watchMatch.group(1);
 
     // Handle youtube.com/embed/ID
-    final embedMatch = RegExp(r'youtube\.com/embed/([a-zA-Z0-9_-]{11})').firstMatch(url);
+    final embedMatch =
+        RegExp(r'youtube\.com/embed/([a-zA-Z0-9_-]{11})').firstMatch(url);
     if (embedMatch != null) return embedMatch.group(1);
 
     // Handle youtube.com/v/ID
-    final vMatch = RegExp(r'youtube\.com/v/([a-zA-Z0-9_-]{11})').firstMatch(url);
+    final vMatch =
+        RegExp(r'youtube\.com/v/([a-zA-Z0-9_-]{11})').firstMatch(url);
     if (vMatch != null) return vMatch.group(1);
 
     return null;
@@ -224,14 +224,19 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
   Widget _buildProductCard(Map<String, dynamic> prod) {
     final name = prod['name']?.toString() ?? '';
     final slug = prod['slug']?.toString() ?? '';
-    final imageUrl = NetworkUtils.fixDeviceUrl(prod['main_image_url']?.toString() ?? '');
-    
+    final imageUrl =
+        NetworkUtils.fixDeviceUrl(prod['main_image_url']?.toString() ?? '');
+
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: Theme.of(context).colorScheme.outlineVariant.withValues(alpha: 0.4)),
+        border: Border.all(
+            color: Theme.of(context)
+                .colorScheme
+                .outlineVariant
+                .withValues(alpha: 0.4)),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.02),
@@ -265,7 +270,8 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
                     width: 64,
                     height: 64,
                     color: const Color(0xFFF1F5F9),
-                    child: const Icon(Icons.image, color: Colors.grey, size: 24),
+                    child:
+                        const Icon(Icons.image, color: Colors.grey, size: 24),
                   ),
                 ),
               ),
@@ -284,7 +290,6 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
-                    
                   ],
                 ),
               ),
@@ -305,21 +310,29 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
   Widget build(BuildContext context) {
     if (_isLoading) {
       return Scaffold(
-        appBar: AppBar(backgroundColor: Colors.white, foregroundColor: Colors.black, elevation: 1),
-        body: const Center(child: CircularProgressIndicator(color: const Color(0xFFF26522))),
+        appBar: AppBar(
+            backgroundColor: Colors.white,
+            foregroundColor: Colors.black,
+            elevation: 1),
+        body: const Center(
+            child: CircularProgressIndicator(color: const Color(0xFFF26522))),
       );
     }
 
     if (_error != null || _video == null) {
       return Scaffold(
-        appBar: AppBar(backgroundColor: Colors.white, foregroundColor: Colors.black, elevation: 1),
+        appBar: AppBar(
+            backgroundColor: Colors.white,
+            foregroundColor: Colors.black,
+            elevation: 1),
         body: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const Icon(Icons.error_outline, color: Colors.red, size: 48),
               const SizedBox(height: 16),
-              Text(_error ?? Trans.videoUnknownError, style: const TextStyle(fontSize: 16)),
+              Text(_error ?? Trans.videoUnknownError,
+                  style: const TextStyle(fontSize: 16)),
               const SizedBox(height: 16),
               ElevatedButton(
                 onPressed: () => Navigator.pop(context),
@@ -336,13 +349,15 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
     final products = _video!['products'] as List<dynamic>?;
     String? desc = _video!['description']?.toString();
     if (desc == null || desc.isEmpty) {
-      desc = product?['short_description']?.toString() ?? Trans.videoDescriptionDefault;
+      desc = product?['short_description']?.toString() ??
+          Trans.videoDescriptionDefault;
     }
 
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
       appBar: AppBar(
-        title: Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+        title: Text(title,
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
         backgroundColor: Theme.of(context).colorScheme.surface,
         foregroundColor: Theme.of(context).colorScheme.onSurface,
         elevation: 0,
@@ -354,7 +369,9 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
             // Video Player
             SizedBox(
               width: double.infinity,
-              height: _ytController != null ? null : MediaQuery.of(context).size.height * 0.45,
+              height: _ytController != null
+                  ? null
+                  : MediaQuery.of(context).size.height * 0.45,
               child: _ytController != null
                   ? YoutubePlayer(
                       controller: _ytController!,
@@ -375,18 +392,20 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
                                 fit: BoxFit.cover,
                                 width: double.infinity,
                                 height: double.infinity,
-                                errorBuilder: (_, __, ___) => const Center(child: Icon(Icons.videocam, color: Colors.white54, size: 64)),
+                                errorBuilder: (_, __, ___) => const Center(
+                                    child: Icon(Icons.videocam,
+                                        color: Colors.white54, size: 64)),
                               ),
                               Container(color: Colors.black45),
                               const Positioned.fill(
-                                child: Center(child: Icon(Icons.play_circle_fill, color: Colors.white, size: 72)),
+                                child: Center(
+                                    child: Icon(Icons.play_circle_fill,
+                                        color: Colors.white, size: 72)),
                               ),
                             ],
                           ),
                         ),
             ),
-
-
 
             // Video Info
             Container(
@@ -398,12 +417,17 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
                   Row(
                     children: [
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 10, vertical: 4),
                         decoration: BoxDecoration(
                           color: const Color(0xFFEF4444).withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(20),
                         ),
-                        child: Text(Trans.videoBroadcast, style: const TextStyle(color: Color(0xFFEF4444), fontWeight: FontWeight.bold, fontSize: 12)),
+                        child: Text(Trans.videoBroadcast,
+                            style: const TextStyle(
+                                color: Color(0xFFEF4444),
+                                fontWeight: FontWeight.bold,
+                                fontSize: 12)),
                       ),
                     ],
                   ),
@@ -411,13 +435,21 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
                     padding: EdgeInsets.symmetric(vertical: 16),
                     child: Divider(height: 1, color: Color(0xFFE2E8F0)),
                   ),
-                  Text(Trans.videoDescriptionLabel, style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.onSurface)),
+                  Text(Trans.videoDescriptionLabel,
+                      style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold,
+                          color: Theme.of(context).colorScheme.onSurface)),
                   const SizedBox(height: 8),
-                  Text(desc, style: TextStyle(fontSize: 13, color: Theme.of(context).colorScheme.onSurface, height: 1.5)),
+                  Text(desc,
+                      style: TextStyle(
+                          fontSize: 13,
+                          color: Theme.of(context).colorScheme.onSurface,
+                          height: 1.5)),
                 ],
               ),
             ),
-            
+
             const SizedBox(height: 12),
 
             // Linked Product(s)
@@ -437,7 +469,8 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
                     ),
                     const SizedBox(height: 12),
                     if (products != null && products.isNotEmpty)
-                      ...products.map((p) => _buildProductCard(Map<String, dynamic>.from(p)))
+                      ...products.map((p) =>
+                          _buildProductCard(Map<String, dynamic>.from(p)))
                     else if (product != null)
                       _buildProductCard(product),
                   ],
@@ -450,7 +483,11 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
                 decoration: BoxDecoration(
                   color: Theme.of(context).colorScheme.surface,
                   borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Theme.of(context).colorScheme.outlineVariant.withValues(alpha: 0.4)),
+                  border: Border.all(
+                      color: Theme.of(context)
+                          .colorScheme
+                          .outlineVariant
+                          .withValues(alpha: 0.4)),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -480,24 +517,31 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
               const SizedBox(height: 24),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Text(Trans.suggestedVideos, style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.onSurface)),
+                child: Text(Trans.suggestedVideos,
+                    style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).colorScheme.onSurface)),
               ),
               const SizedBox(height: 12),
               ListView.separated(
                 physics: const NeverScrollableScrollPhysics(),
                 shrinkWrap: true,
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 itemCount: _recommendations.length,
                 separatorBuilder: (_, __) => const SizedBox(height: 16),
                 itemBuilder: (context, index) {
                   final rec = _recommendations[index];
                   final recProduct = rec['product'] as Map<String, dynamic>?;
-                  
+
                   return GestureDetector(
                     onTap: () {
                       Navigator.pushReplacement(
                         context,
-                        MaterialPageRoute(builder: (_) => VideoDetailScreen(videoId: rec['id'])),
+                        MaterialPageRoute(
+                            builder: (_) =>
+                                VideoDetailScreen(videoId: rec['id'])),
                       );
                     },
                     child: Row(
@@ -512,13 +556,20 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
                                 width: 120,
                                 height: 72,
                                 fit: BoxFit.cover,
-                                errorBuilder: (_, __, ___) => Container(width: 120, height: 72, color: const Color(0xFFF1F5F9)),
+                                errorBuilder: (_, __, ___) => Container(
+                                    width: 120,
+                                    height: 72,
+                                    color: const Color(0xFFF1F5F9)),
                               ),
                               Container(
-                                width: 120, height: 72, color: Colors.black26,
+                                width: 120,
+                                height: 72,
+                                color: Colors.black26,
                               ),
                               const Positioned.fill(
-                                child: Center(child: Icon(Icons.play_arrow, color: Colors.white, size: 28)),
+                                child: Center(
+                                    child: Icon(Icons.play_arrow,
+                                        color: Colors.white, size: 28)),
                               )
                             ],
                           ),
@@ -529,22 +580,35 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                rec['title']?.toString() ?? Trans.videoSuggested,
+                                rec['title']?.toString() ??
+                                    Trans.videoSuggested,
                                 maxLines: 2,
                                 overflow: TextOverflow.ellipsis,
-                                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Theme.of(context).colorScheme.onSurface),
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 13,
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .onSurface),
                               ),
                               const SizedBox(height: 4),
                               Text(
-                                (rec['description']?.toString() ?? Trans.updatingDescription).replaceAll(RegExp(r'<[^>]*>|&[^;]+;'), ''),
+                                (rec['description']?.toString() ??
+                                        Trans.updatingDescription)
+                                    .replaceAll(RegExp(r'<[^>]*>|&[^;]+;'), ''),
                                 maxLines: 2,
                                 overflow: TextOverflow.ellipsis,
-                                style: TextStyle(fontSize: 11, color: Theme.of(context).colorScheme.onSurface, height: 1.3),
+                                style: TextStyle(
+                                    fontSize: 11,
+                                    color:
+                                        Theme.of(context).colorScheme.onSurface,
+                                    height: 1.3),
                               ),
                               if (recProduct != null) ...[
                                 const SizedBox(height: 6),
                                 Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 6, vertical: 2),
                                   decoration: BoxDecoration(
                                     color: const Color(0xFFF1F5F9),
                                     borderRadius: BorderRadius.circular(4),
@@ -553,7 +617,8 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
                                     '📦 ${recProduct['name']}',
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
-                                    style: const TextStyle(fontSize: 10, color: Color(0xFF475569)),
+                                    style: const TextStyle(
+                                        fontSize: 10, color: Color(0xFF475569)),
                                   ),
                                 )
                               ]
@@ -572,6 +637,7 @@ class _VideoDetailScreenState extends State<VideoDetailScreen> {
       ),
     );
   }
+
   @override
   void dispose() {
     _ytController?.dispose();

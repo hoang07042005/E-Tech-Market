@@ -25,15 +25,19 @@ class ProductsService {
     if (search != null && search.isNotEmpty) queryParams['search'] = search;
     if (sort != null && sort.isNotEmpty) queryParams['sort'] = sort;
     if (order != null && order.isNotEmpty) queryParams['order'] = order;
-    if (minPrice != null) queryParams['min_price'] = minPrice.toStringAsFixed(0);
-    if (maxPrice != null) queryParams['max_price'] = maxPrice.toStringAsFixed(0);
-    if (categoryId != null && categoryId.isNotEmpty) queryParams['category_id'] = categoryId;
+    if (minPrice != null)
+      queryParams['min_price'] = minPrice.toStringAsFixed(0);
+    if (maxPrice != null)
+      queryParams['max_price'] = maxPrice.toStringAsFixed(0);
+    if (categoryId != null && categoryId.isNotEmpty)
+      queryParams['category_id'] = categoryId;
     if (brand != null && brand.isNotEmpty) queryParams['brand'] = brand;
     if (isFeatured != null) queryParams['is_featured'] = isFeatured;
 
     try {
       final stopwatch = Stopwatch()..start();
-      final response = await DioClient.instance.get('/products', queryParameters: queryParams);
+      final response = await DioClient.instance
+          .get('/products', queryParameters: queryParams);
       debugPrint('API /products took ${stopwatch.elapsedMilliseconds}ms');
       stopwatch.stop();
       return response.data as Map<String, dynamic>;
@@ -93,7 +97,8 @@ class ProductsService {
         '/products/$slug/shop-qna',
         data: {
           'question': question,
-          if (guestName != null && guestName.trim().isNotEmpty) 'guest_name': guestName.trim(),
+          if (guestName != null && guestName.trim().isNotEmpty)
+            'guest_name': guestName.trim(),
         },
       );
       final data = response.data;
@@ -103,7 +108,8 @@ class ProductsService {
     }
   }
 
-  static Future<List<dynamic>> fetchCategories({bool orderByReviews = false, int? limit}) async {
+  static Future<List<dynamic>> fetchCategories(
+      {bool orderByReviews = false, int? limit}) async {
     try {
       final queryParams = <String, dynamic>{'type': 'product'};
       if (orderByReviews) {
@@ -112,17 +118,20 @@ class ProductsService {
       if (limit != null) {
         queryParams['limit'] = limit;
       }
-      final response = await DioClient.instance.get('/categories', queryParameters: queryParams);
+      final response = await DioClient.instance
+          .get('/categories', queryParameters: queryParams);
       final data = response.data;
       if (data is List) return data;
-      if (data is Map<String, dynamic> && data['data'] is List) return data['data'];
+      if (data is Map<String, dynamic> && data['data'] is List)
+        return data['data'];
       return [];
     } on DioException catch (e) {
       throw Exception(_extractErrorMessage(e));
     }
   }
 
-  static Future<Map<String, dynamic>> fetchProductNewsBySlug(String slug) async {
+  static Future<Map<String, dynamic>> fetchProductNewsBySlug(
+      String slug) async {
     try {
       final response = await DioClient.instance.get('/product-news/$slug');
       final data = response.data;
@@ -131,7 +140,8 @@ class ProductsService {
       }
       return data is Map<String, dynamic> ? data : {};
     } on DioException catch (e) {
-      throw Exception('Không tải được tin tức sản phẩm: ${_extractErrorMessage(e)}');
+      throw Exception(
+          'Không tải được tin tức sản phẩm: ${_extractErrorMessage(e)}');
     }
   }
 
@@ -156,7 +166,8 @@ class ProductsService {
             : null,
       );
       final data = response.data;
-      if (data is Map<String, dynamic> && data['data'] != null) return data['data'];
+      if (data is Map<String, dynamic> && data['data'] != null)
+        return data['data'];
       return data is Map<String, dynamic> ? data : {};
     } on DioException catch (e) {
       throw Exception(_extractErrorMessage(e));
@@ -166,9 +177,11 @@ class ProductsService {
   static String _extractErrorMessage(DioException e) {
     if (e.response?.data is Map) {
       final data = e.response!.data as Map<String, dynamic>;
-      return data['message']?.toString() ?? 'Có lỗi xảy ra, vui lòng thử lại sau.';
+      return data['message']?.toString() ??
+          'Có lỗi xảy ra, vui lòng thử lại sau.';
     }
-    if (e.type == DioExceptionType.connectionTimeout || e.type == DioExceptionType.receiveTimeout) {
+    if (e.type == DioExceptionType.connectionTimeout ||
+        e.type == DioExceptionType.receiveTimeout) {
       return 'Kết nối quá thời gian, vui lòng thử lại.';
     }
     return 'Không thể kết nối máy chủ.';

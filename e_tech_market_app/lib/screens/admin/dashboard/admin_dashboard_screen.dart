@@ -938,8 +938,7 @@ class _AdminDashboardView extends StatelessWidget {
                   provider: provider,
                   method: 'cod',
                   title: 'COD (Thanh toán khi nhận)',
-                  desc:
-                      'Thanh toán tiền mặt khi nhận hàng hoặc tại cửa hàng.',
+                  desc: 'Thanh toán tiền mặt khi nhận hàng hoặc tại cửa hàng.',
                   imagePath: 'assets/images/COD.png',
                   enabled: codEnabled,
                 ),
@@ -1000,7 +999,6 @@ class _AdminDashboardView extends StatelessWidget {
           width: 74,
           height: 74,
           padding: const EdgeInsets.all(0),
-          
           child: Image.asset(imagePath, fit: BoxFit.contain),
         ),
         onChanged: (val) async {
@@ -1009,7 +1007,8 @@ class _AdminDashboardView extends StatelessWidget {
             if (context.mounted) {
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
-                  content: Text('Cập nhật trạng thái cổng thanh toán thành công',
+                  content: Text(
+                      'Cập nhật trạng thái cổng thanh toán thành công',
                       style: TextStyle(color: Colors.white)),
                   backgroundColor: Colors.green,
                 ),

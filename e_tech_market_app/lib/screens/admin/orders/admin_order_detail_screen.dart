@@ -7,7 +7,6 @@ import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import '../../../utils/translation.dart';
 
-
 class AdminOrderDetailScreen extends StatefulWidget {
   final int orderId;
   const AdminOrderDetailScreen({super.key, required this.orderId});
@@ -30,7 +29,6 @@ class _AdminOrderDetailScreenState extends State<AdminOrderDetailScreen> {
   final ImagePicker _picker = ImagePicker();
   List<XFile> _refundProofFiles = [];
 
-
   @override
   void initState() {
     super.initState();
@@ -44,10 +42,14 @@ class _AdminOrderDetailScreenState extends State<AdminOrderDetailScreen> {
   }
 
   Future<void> _loadDetail() async {
-    setState(() { _isLoading = true; _error = null; });
+    setState(() {
+      _isLoading = true;
+      _error = null;
+    });
     try {
-      final data = await AdminOrdersService.fetchAdminOrderDetail(widget.orderId);
-      
+      final data =
+          await AdminOrdersService.fetchAdminOrderDetail(widget.orderId);
+
       // DÒNG IN LOG KIỂM TRA: Hãy copy kết quả in ra ở tab Run/Console của VS Code/Android Studio
       print("===== DỮ LIỆU THÔ TỪ BACKEND GỬI VỀ CHÍNH XÁC LÀ: =====");
       print(data.toString());
@@ -59,7 +61,10 @@ class _AdminOrderDetailScreenState extends State<AdminOrderDetailScreen> {
         _isLoading = false;
       });
     } catch (e) {
-      setState(() { _error = e.toString(); _isLoading = false; });
+      setState(() {
+        _error = e.toString();
+        _isLoading = false;
+      });
     }
   }
 
@@ -67,9 +72,10 @@ class _AdminOrderDetailScreenState extends State<AdminOrderDetailScreen> {
     if (_selectedStatus == _detail?['status']) return;
     setState(() => _isSavingStatus = true);
     try {
-      await AdminOrdersService.updateAdminOrder(widget.orderId, status: _selectedStatus);
+      await AdminOrdersService.updateAdminOrder(widget.orderId,
+          status: _selectedStatus);
       _showSnackBar(Trans.updateStatusSuccess, Colors.green);
-      await _loadDetail(); 
+      await _loadDetail();
       setState(() => _isSavingStatus = false);
     } catch (e) {
       setState(() => _isSavingStatus = false);
@@ -79,7 +85,10 @@ class _AdminOrderDetailScreenState extends State<AdminOrderDetailScreen> {
 
   void _showSnackBar(String msg, Color color) {
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(msg), backgroundColor: color, behavior: SnackBarBehavior.floating),
+      SnackBar(
+          content: Text(msg),
+          backgroundColor: color,
+          behavior: SnackBarBehavior.floating),
     );
   }
 
@@ -93,7 +102,9 @@ class _AdminOrderDetailScreenState extends State<AdminOrderDetailScreen> {
 
     if ((path == null || path.isEmpty) && item['product'] is Map) {
       final p = item['product'] as Map;
-      path = p['main_image_url']?.toString() ?? p['image_url']?.toString() ?? p['image']?.toString();
+      path = p['main_image_url']?.toString() ??
+          p['image_url']?.toString() ??
+          p['image']?.toString();
     }
 
     return _resolveUrl(path);
@@ -102,7 +113,7 @@ class _AdminOrderDetailScreenState extends State<AdminOrderDetailScreen> {
   List<DropdownMenuItem<String>> _buildDropdownItems() {
     final currentStatus = _detail?['status'] ?? 'pending';
     final currentStep = _detail?['status_step'] ?? 1;
-    
+
     final List<Map<String, dynamic>> allOptions = [
       {'value': 'pending', 'label': 'Chờ xác nhận', 'step': 1},
       {'value': 'processing', 'label': 'Đã xác nhận', 'step': 2},
@@ -120,24 +131,33 @@ class _AdminOrderDetailScreenState extends State<AdminOrderDetailScreen> {
       final lbl = opt['label'] as String;
       final step = opt['step'] as int;
 
-      if ((val == 'completed' || val == 'returned' || val == 'cancelled') && currentStatus != val) {
-        continue; 
+      if ((val == 'completed' || val == 'returned' || val == 'cancelled') &&
+          currentStatus != val) {
+        continue;
       }
-      if (val != 'cancelled' && step > 0 && currentStep > 0 && step < currentStep) {
-        continue; 
+      if (val != 'cancelled' &&
+          step > 0 &&
+          currentStep > 0 &&
+          step < currentStep) {
+        continue;
       }
 
       menuItems.add(DropdownMenuItem<String>(
         value: val,
-        child: Text(lbl, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500)),
+        child: Text(lbl,
+            style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500)),
       ));
     }
 
     if (!menuItems.any((item) => item.value == currentStatus)) {
-      menuItems.insert(0, DropdownMenuItem<String>(
-        value: currentStatus,
-        child: Text(_detail?['status_label'] ?? currentStatus, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold)),
-      ));
+      menuItems.insert(
+          0,
+          DropdownMenuItem<String>(
+            value: currentStatus,
+            child: Text(_detail?['status_label'] ?? currentStatus,
+                style:
+                    const TextStyle(fontSize: 13, fontWeight: FontWeight.bold)),
+          ));
     }
     return menuItems;
   }
@@ -158,18 +178,24 @@ class _AdminOrderDetailScreenState extends State<AdminOrderDetailScreen> {
       return Container(
         margin: const EdgeInsets.symmetric(vertical: 8),
         padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(color: Colors.red.withOpacity(0.06), borderRadius: BorderRadius.circular(8)),
+        decoration: BoxDecoration(
+            color: Colors.red.withOpacity(0.06),
+            borderRadius: BorderRadius.circular(8)),
         child: Row(
           children: [
             const Icon(Icons.cancel_rounded, color: Colors.red, size: 18),
             const SizedBox(width: 8),
-            Text(Trans.orderCancelled, style: const TextStyle(color: Colors.red, fontWeight: FontWeight.bold, fontSize: 13)),
+            Text(Trans.orderCancelled,
+                style: const TextStyle(
+                    color: Colors.red,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 13)),
           ],
         ),
       );
     }
 
-    const Color activeStepColor = Color(0xFF10B981); 
+    const Color activeStepColor = Color(0xFF10B981);
 
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 8),
@@ -192,7 +218,11 @@ class _AdminOrderDetailScreenState extends State<AdminOrderDetailScreen> {
                   children: [
                     Expanded(
                       child: Divider(
-                        color: index == 0 ? Colors.transparent : (isDone ? activeStepColor : const Color(0xFFE2E8F0)), 
+                        color: index == 0
+                            ? Colors.transparent
+                            : (isDone
+                                ? activeStepColor
+                                : const Color(0xFFE2E8F0)),
                         thickness: 2.2,
                       ),
                     ),
@@ -200,26 +230,41 @@ class _AdminOrderDetailScreenState extends State<AdminOrderDetailScreen> {
                       width: 22,
                       height: 22,
                       decoration: BoxDecoration(
-                        color: isActive ? activeStepColor : (isDone ? activeStepColor.withOpacity(0.12) : Colors.white),
-                        border: Border.all(color: isDone ? activeStepColor : const Color(0xFFCBD5E1), width: 2),
+                        color: isActive
+                            ? activeStepColor
+                            : (isDone
+                                ? activeStepColor.withOpacity(0.12)
+                                : Colors.white),
+                        border: Border.all(
+                            color: isDone
+                                ? activeStepColor
+                                : const Color(0xFFCBD5E1),
+                            width: 2),
                         shape: BoxShape.circle,
                       ),
                       child: Center(
                         child: isDone && !isActive
-                            ? const Icon(Icons.check, size: 12, color: activeStepColor)
+                            ? const Icon(Icons.check,
+                                size: 12, color: activeStepColor)
                             : Text(
                                 '${index + 1}',
                                 style: TextStyle(
-                                  fontSize: 10, 
-                                  fontWeight: FontWeight.bold, 
-                                  color: isActive ? Colors.white : const Color(0xFF64748B),
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.bold,
+                                  color: isActive
+                                      ? Colors.white
+                                      : const Color(0xFF64748B),
                                 ),
                               ),
                       ),
                     ),
                     Expanded(
                       child: Divider(
-                        color: index == stepsList.length - 1 ? Colors.transparent : (currentStep > sStep ? activeStepColor : const Color(0xFFE2E8F0)), 
+                        color: index == stepsList.length - 1
+                            ? Colors.transparent
+                            : (currentStep > sStep
+                                ? activeStepColor
+                                : const Color(0xFFE2E8F0)),
                         thickness: 2.2,
                       ),
                     ),
@@ -229,8 +274,8 @@ class _AdminOrderDetailScreenState extends State<AdminOrderDetailScreen> {
                 Text(
                   sLabel,
                   style: TextStyle(
-                    fontSize: 10, 
-                    fontWeight: isActive ? FontWeight.bold : FontWeight.w500, 
+                    fontSize: 10,
+                    fontWeight: isActive ? FontWeight.bold : FontWeight.w500,
                     color: isActive ? activeStepColor : const Color(0xFF64748B),
                   ),
                   textAlign: TextAlign.center,
@@ -259,7 +304,9 @@ class _AdminOrderDetailScreenState extends State<AdminOrderDetailScreen> {
   }
 
   String _resolveOrderMediaUrl(dynamic m) {
-    final url = (m is Map) ? (m['url'] ?? m['image_url'] ?? m['image'])?.toString() : null;
+    final url = (m is Map)
+        ? (m['url'] ?? m['image_url'] ?? m['image'])?.toString()
+        : null;
     return _resolveUrl(url);
   }
 
@@ -321,7 +368,11 @@ class _AdminOrderDetailScreenState extends State<AdminOrderDetailScreen> {
         title: Trans.returnRequest,
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 16),
-          child: Center(child: Text(Trans.noReturnRequest, style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 13))),
+          child: Center(
+              child: Text(Trans.noReturnRequest,
+                  style: TextStyle(
+                      color: Theme.of(context).colorScheme.onSurface,
+                      fontSize: 13))),
         ),
       );
     }
@@ -339,8 +390,12 @@ class _AdminOrderDetailScreenState extends State<AdminOrderDetailScreen> {
       title: Trans.returnRequest,
       trailing: Container(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-        decoration: BoxDecoration(color: chipColor.withOpacity(0.12), borderRadius: BorderRadius.circular(999)),
-        child: Text(status, style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: chipColor)),
+        decoration: BoxDecoration(
+            color: chipColor.withOpacity(0.12),
+            borderRadius: BorderRadius.circular(999)),
+        child: Text(status,
+            style: TextStyle(
+                fontSize: 11, fontWeight: FontWeight.bold, color: chipColor)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -348,12 +403,18 @@ class _AdminOrderDetailScreenState extends State<AdminOrderDetailScreen> {
           if (content.trim().isNotEmpty)
             Padding(
               padding: const EdgeInsets.only(bottom: 10),
-              child: Text(content, style: TextStyle(fontSize: 13, color: Theme.of(context).colorScheme.onSurface)),
+              child: Text(content,
+                  style: TextStyle(
+                      fontSize: 13,
+                      color: Theme.of(context).colorScheme.onSurface)),
             ),
-
           if (media.isNotEmpty) ...[
             const SizedBox(height: 6),
-            Text(Trans.images, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Color(0xFF0F172A))),
+            Text(Trans.images,
+                style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 13,
+                    color: Color(0xFF0F172A))),
             const SizedBox(height: 8),
             Wrap(
               spacing: 8,
@@ -363,17 +424,27 @@ class _AdminOrderDetailScreenState extends State<AdminOrderDetailScreen> {
                 if (u.isEmpty) return const SizedBox.shrink();
                 return ClipRRect(
                   borderRadius: BorderRadius.circular(8),
-                  child: Image.network(u, width: 76, height: 76, fit: BoxFit.cover, errorBuilder: (c, e, s) {
-                    return const SizedBox(width: 76, height: 76, child: Icon(Icons.broken_image_rounded, color: Color(0xFF94A3B8)));
+                  child: Image.network(u,
+                      width: 76,
+                      height: 76,
+                      fit: BoxFit.cover, errorBuilder: (c, e, s) {
+                    return const SizedBox(
+                        width: 76,
+                        height: 76,
+                        child: Icon(Icons.broken_image_rounded,
+                            color: Color(0xFF94A3B8)));
                   }),
                 );
               }).toList(),
             ),
           ],
-
           if (refundProof.isNotEmpty) ...[
             const SizedBox(height: 10),
-            Text(Trans.refundProof, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Color(0xFF0F172A))),
+            Text(Trans.refundProof,
+                style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 13,
+                    color: Color(0xFF0F172A))),
             const SizedBox(height: 8),
             Wrap(
               spacing: 8,
@@ -383,14 +454,20 @@ class _AdminOrderDetailScreenState extends State<AdminOrderDetailScreen> {
                 if (u.isEmpty) return const SizedBox.shrink();
                 return ClipRRect(
                   borderRadius: BorderRadius.circular(8),
-                  child: Image.network(u, width: 76, height: 76, fit: BoxFit.cover, errorBuilder: (c, e, s) {
-                    return const SizedBox(width: 76, height: 76, child: Icon(Icons.broken_image_rounded, color: Color(0xFF94A3B8)));
+                  child: Image.network(u,
+                      width: 76,
+                      height: 76,
+                      fit: BoxFit.cover, errorBuilder: (c, e, s) {
+                    return const SizedBox(
+                        width: 76,
+                        height: 76,
+                        child: Icon(Icons.broken_image_rounded,
+                            color: Color(0xFF94A3B8)));
                   }),
                 );
               }).toList(),
             ),
           ],
-
           if (adminNote.trim().isNotEmpty) ...[
             const SizedBox(height: 10),
             Container(
@@ -403,11 +480,13 @@ class _AdminOrderDetailScreenState extends State<AdminOrderDetailScreen> {
               ),
               child: Text(
                 Trans.savedReply(adminNote),
-                style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.onSurface, fontWeight: FontWeight.w500),
+                style: TextStyle(
+                    fontSize: 12,
+                    color: Theme.of(context).colorScheme.onSurface,
+                    fontWeight: FontWeight.w500),
               ),
             ),
           ],
-
           const SizedBox(height: 12),
           _buildReturnRequestActions(rr, status: status),
         ],
@@ -415,7 +494,8 @@ class _AdminOrderDetailScreenState extends State<AdminOrderDetailScreen> {
     );
   }
 
-  Widget _buildReturnRequestActions(Map<String, dynamic> rr, {required String status}) {
+  Widget _buildReturnRequestActions(Map<String, dynamic> rr,
+      {required String status}) {
     final isPending = status == 'pending';
     final isApproved = status == 'approved';
     final isTerminal = status == 'refunded' || status == 'rejected';
@@ -428,8 +508,11 @@ class _AdminOrderDetailScreenState extends State<AdminOrderDetailScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Text(
-          'Ghi chú / Lý do phản hồi từ Admin:', 
-          style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Color(0xFF475569)),
+          'Ghi chú / Lý do phản hồi từ Admin:',
+          style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+              color: Color(0xFF475569)),
         ),
         const SizedBox(height: 6),
         TextField(
@@ -437,7 +520,9 @@ class _AdminOrderDetailScreenState extends State<AdminOrderDetailScreen> {
           maxLines: 2,
           style: const TextStyle(fontSize: 13),
           decoration: InputDecoration(
-            hintText: isPending ? 'Nhập lý do phản hồi (nếu từ chối hoặc cần lưu ý)...' : 'Nhập ghi chú minh chứng hoàn tiền...',
+            hintText: isPending
+                ? 'Nhập lý do phản hồi (nếu từ chối hoặc cần lưu ý)...'
+                : 'Nhập ghi chú minh chứng hoàn tiền...',
             hintStyle: const TextStyle(color: Color(0xFF94A3B8), fontSize: 13),
             contentPadding: const EdgeInsets.all(10),
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
@@ -448,7 +533,6 @@ class _AdminOrderDetailScreenState extends State<AdminOrderDetailScreen> {
           ),
         ),
         const SizedBox(height: 12),
-
         if (isPending)
           Row(
             children: [
@@ -461,12 +545,12 @@ class _AdminOrderDetailScreenState extends State<AdminOrderDetailScreen> {
                           try {
                             final textNote = _noteController.text.trim();
                             await AdminOrdersService.processOrderReturn(
-                              widget.orderId, 
+                              widget.orderId,
                               'approve',
                               adminNote: textNote.isNotEmpty ? textNote : null,
                             );
                             _showSnackBar('Phê duyệt thành công', Colors.green);
-                            _noteController.clear(); 
+                            _noteController.clear();
                             await _loadDetail();
                           } catch (e) {
                             _showSnackBar('Lỗi: ${e.toString()}', Colors.red);
@@ -475,9 +559,10 @@ class _AdminOrderDetailScreenState extends State<AdminOrderDetailScreen> {
                           }
                         },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF3B82F6), 
-                    foregroundColor: Colors.white, 
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                    backgroundColor: const Color(0xFF3B82F6),
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8)),
                   ),
                   child: const Text('Phê duyệt'),
                 ),
@@ -492,8 +577,8 @@ class _AdminOrderDetailScreenState extends State<AdminOrderDetailScreen> {
                           try {
                             final textNote = _noteController.text.trim();
                             await AdminOrdersService.processOrderReturn(
-                              widget.orderId, 
-                              'reject', 
+                              widget.orderId,
+                              'reject',
                               adminNote: textNote.isNotEmpty ? textNote : null,
                             );
                             _showSnackBar('Từ chối thành công', Colors.green);
@@ -506,16 +591,16 @@ class _AdminOrderDetailScreenState extends State<AdminOrderDetailScreen> {
                           }
                         },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFFE11D48), 
-                    foregroundColor: Colors.white, 
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                    backgroundColor: const Color(0xFFE11D48),
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8)),
                   ),
                   child: const Text('Từ chối'),
                 ),
               ),
             ],
           ),
-
         if (isApproved) ...[
           Row(
             children: [
@@ -525,12 +610,14 @@ class _AdminOrderDetailScreenState extends State<AdminOrderDetailScreen> {
                       ? null
                       : () async {
                           try {
-                            final picked = await _picker.pickMultiImage(imageQuality: 80);
+                            final picked =
+                                await _picker.pickMultiImage(imageQuality: 80);
                             if (picked != null && picked.isNotEmpty) {
                               setState(() => _refundProofFiles = picked);
                             }
                           } catch (e) {
-                            _showSnackBar('Lỗi chọn ảnh: ${e.toString()}', Colors.red);
+                            _showSnackBar(
+                                'Lỗi chọn ảnh: ${e.toString()}', Colors.red);
                           }
                         },
                   icon: const Icon(Icons.upload_file_rounded),
@@ -556,7 +643,8 @@ class _AdminOrderDetailScreenState extends State<AdminOrderDetailScreen> {
                       return const SizedBox(
                         width: 76,
                         height: 76,
-                        child: Icon(Icons.broken_image_rounded, color: Color(0xFF94A3B8)),
+                        child: Icon(Icons.broken_image_rounded,
+                            color: Color(0xFF94A3B8)),
                       );
                     },
                   ),
@@ -574,7 +662,8 @@ class _AdminOrderDetailScreenState extends State<AdminOrderDetailScreen> {
                       setState(() => _isSavingStatus = true);
                       try {
                         final textNote = _noteController.text.trim();
-                        final proofPaths = _refundProofFiles.map((e) => e.path).toList();
+                        final proofPaths =
+                            _refundProofFiles.map((e) => e.path).toList();
 
                         await AdminOrdersService.processOrderReturn(
                           widget.orderId,
@@ -583,7 +672,8 @@ class _AdminOrderDetailScreenState extends State<AdminOrderDetailScreen> {
                           refundProofPaths: proofPaths,
                         );
 
-                        _showSnackBar('Xác nhận hoàn tiền thành công', Colors.green);
+                        _showSnackBar(
+                            'Xác nhận hoàn tiền thành công', Colors.green);
                         _noteController.clear();
                         setState(() => _refundProofFiles = []);
                         await _loadDetail();
@@ -596,13 +686,13 @@ class _AdminOrderDetailScreenState extends State<AdminOrderDetailScreen> {
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF10B981),
                 foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8)),
               ),
               child: const Text('Xác nhận đã hoàn tiền'),
             ),
           ),
         ],
-
       ],
     );
   }
@@ -613,13 +703,23 @@ class _AdminOrderDetailScreenState extends State<AdminOrderDetailScreen> {
       title: Trans.statusHistory,
       trailing: Container(
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-        decoration: BoxDecoration(color: Theme.of(context).colorScheme.surface, borderRadius: BorderRadius.circular(12)),
-        child: Text('${history.length} lần', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.onSurface)),
+        decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.surface,
+            borderRadius: BorderRadius.circular(12)),
+        child: Text('${history.length} lần',
+            style: TextStyle(
+                fontSize: 11,
+                fontWeight: FontWeight.bold,
+                color: Theme.of(context).colorScheme.onSurface)),
       ),
       child: history.isEmpty
           ? Padding(
               padding: const EdgeInsets.symmetric(vertical: 16),
-              child: Center(child: Text('Chưa ghi nhận lịch sử biến động.', style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 13))),
+              child: Center(
+                  child: Text('Chưa ghi nhận lịch sử biến động.',
+                      style: TextStyle(
+                          color: Theme.of(context).colorScheme.onSurface,
+                          fontSize: 13))),
             )
           : Column(
               children: history.map((h) {
@@ -644,15 +744,29 @@ class _AdminOrderDetailScreenState extends State<AdminOrderDetailScreen> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('$fromLabel  ➔  $toLabel', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Theme.of(context).colorScheme.onSurface)),
+                            Text('$fromLabel  ➔  $toLabel',
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 13,
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .onSurface)),
                             const SizedBox(height: 4),
                             Text(
                               '${AdminOrdersService.formatViTime(changedAt)} • $changedBy',
-                              style: TextStyle(fontSize: 11, color: Theme.of(context).colorScheme.onSurface, fontWeight: FontWeight.w500),
+                              style: TextStyle(
+                                  fontSize: 11,
+                                  color:
+                                      Theme.of(context).colorScheme.onSurface,
+                                  fontWeight: FontWeight.w500),
                             ),
                             if (note.toString().trim().isNotEmpty) ...[
                               const SizedBox(height: 6),
-                              Text('${Trans.noteWithColon} $note', style: const TextStyle(fontSize: 12, color: Color(0xFF475569), fontStyle: FontStyle.italic)),
+                              Text('${Trans.noteWithColon} $note',
+                                  style: const TextStyle(
+                                      fontSize: 12,
+                                      color: Color(0xFF475569),
+                                      fontStyle: FontStyle.italic)),
                             ],
                           ],
                         ),
@@ -678,14 +792,19 @@ class _AdminOrderDetailScreenState extends State<AdminOrderDetailScreen> {
         foregroundColor: Theme.of(context).colorScheme.onSurface,
         centerTitle: true,
         title: Text(
-          _detail?['order_code'] != null ? '${Trans.orders} #${_detail!['order_code']}' : Trans.orderDetailAdmin,
+          _detail?['order_code'] != null
+              ? '${Trans.orders} #${_detail!['order_code']}'
+              : Trans.orderDetailAdmin,
           style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
         ),
       ),
       body: _isLoading
-          ? const Center(child: CircularProgressIndicator(color: Color(0xFF4F46E5)))
+          ? const Center(
+              child: CircularProgressIndicator(color: Color(0xFF4F46E5)))
           : _error != null
-              ? Center(child: Text(_error!, style: const TextStyle(color: Colors.red)))
+              ? Center(
+                  child:
+                      Text(_error!, style: const TextStyle(color: Colors.red)))
               : SingleChildScrollView(
                   physics: const BouncingScrollPhysics(),
                   padding: const EdgeInsets.all(14),
@@ -704,12 +823,21 @@ class _AdminOrderDetailScreenState extends State<AdminOrderDetailScreen> {
                                   child: DropdownButtonFormField<String>(
                                     value: _selectedStatus,
                                     items: _buildDropdownItems(),
-                                    onChanged: (v) => setState(() => _selectedStatus = v ?? 'pending'),
+                                    onChanged: (v) => setState(
+                                        () => _selectedStatus = v ?? 'pending'),
                                     decoration: InputDecoration(
                                       isDense: true,
-                                      contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 11),
-                                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-                                      enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: const BorderSide(color: Color(0xFFE2E8F0))),
+                                      contentPadding:
+                                          const EdgeInsets.symmetric(
+                                              horizontal: 12, vertical: 11),
+                                      border: OutlineInputBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(8)),
+                                      enabledBorder: OutlineInputBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(8),
+                                          borderSide: const BorderSide(
+                                              color: Color(0xFFE2E8F0))),
                                     ),
                                   ),
                                 ),
@@ -717,15 +845,20 @@ class _AdminOrderDetailScreenState extends State<AdminOrderDetailScreen> {
                                 SizedBox(
                                   height: 40,
                                   child: ElevatedButton(
-                                    onPressed: _isSavingStatus ? null : _saveStatus,
+                                    onPressed:
+                                        _isSavingStatus ? null : _saveStatus,
                                     style: ElevatedButton.styleFrom(
                                       backgroundColor: const Color(0xFF4F46E5),
                                       foregroundColor: Colors.white,
-                                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                                      shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(8)),
                                       elevation: 0,
-                                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 16),
                                     ),
-                                    child: Text(_isSavingStatus ? 'Lưu…' : 'Cập nhật'),
+                                    child: Text(
+                                        _isSavingStatus ? 'Lưu…' : 'Cập nhật'),
                                   ),
                                 )
                               ],
@@ -734,34 +867,43 @@ class _AdminOrderDetailScreenState extends State<AdminOrderDetailScreen> {
                         ),
                       ),
                       const SizedBox(height: 12),
-
                       _buildSectionCard(
                         title: Trans.customerInfo,
                         child: Column(
                           children: [
-                            _buildInfoRow(Trans.customerNameLabel, _resolveCustomerName(_detail)),
-                            _buildInfoRow(Trans.customerEmailLabel, _resolveCustomerEmail(_detail)),
+                            _buildInfoRow(Trans.customerNameLabel,
+                                _resolveCustomerName(_detail)),
+                            _buildInfoRow(Trans.customerEmailLabel,
+                                _resolveCustomerEmail(_detail)),
                             const Divider(height: 16, color: Color(0xFFF1F5F9)),
-                            _buildInfoRow(Trans.receiverNameLabel, _resolveShippingName(_detail)),
-                            _buildInfoRow(Trans.phone, _resolveShippingPhone(_detail)),
-                            _buildInfoRow(Trans.shippingAddressLabel, _resolveShippingAddress(_detail)),
+                            _buildInfoRow(Trans.receiverNameLabel,
+                                _resolveShippingName(_detail)),
+                            _buildInfoRow(
+                                Trans.phone, _resolveShippingPhone(_detail)),
+                            _buildInfoRow(Trans.shippingAddressLabel,
+                                _resolveShippingAddress(_detail)),
                           ],
                         ),
                       ),
                       const SizedBox(height: 12),
-
                       _buildSectionCard(
                         title: '${Trans.productList} (${items.length})',
                         child: Column(
                           children: items.map((item) {
                             final imgUrl = _getResolvedProductImage(item);
-                            final variantColor = item['variant_color']?.toString();
-                            final variantConfig = item['variant_config']?.toString();
+                            final variantColor =
+                                item['variant_color']?.toString();
+                            final variantConfig =
+                                item['variant_config']?.toString();
                             String? variantLabel;
-                            final vParts = [variantColor, variantConfig].where((p) => p != null && p.trim().isNotEmpty).toList();
-                            if (vParts.isNotEmpty) variantLabel = vParts.join(' - ');
+                            final vParts = [variantColor, variantConfig]
+                                .where((p) => p != null && p.trim().isNotEmpty)
+                                .toList();
+                            if (vParts.isNotEmpty)
+                              variantLabel = vParts.join(' - ');
                             return Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 8.0),
+                              padding:
+                                  const EdgeInsets.symmetric(vertical: 8.0),
                               child: Row(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
@@ -772,50 +914,73 @@ class _AdminOrderDetailScreenState extends State<AdminOrderDetailScreen> {
                                       height: 56,
                                       decoration: BoxDecoration(
                                         color: const Color(0xFFF1F5F9),
-                                        border: Border.all(color: const Color(0xFFE2E8F0)),
+                                        border: Border.all(
+                                            color: const Color(0xFFE2E8F0)),
                                       ),
                                       child: imgUrl.isNotEmpty
                                           ? Image.network(
                                               imgUrl,
                                               fit: BoxFit.cover,
-                                              errorBuilder: (context, error, stackTrace) {
-                                                return const Icon(Icons.broken_image_rounded, color: Color(0xFF94A3B8), size: 20);
+                                              errorBuilder:
+                                                  (context, error, stackTrace) {
+                                                return const Icon(
+                                                    Icons.broken_image_rounded,
+                                                    color: Color(0xFF94A3B8),
+                                                    size: 20);
                                               },
                                             )
-                                          : const Icon(Icons.image_rounded, color: Color(0xFF94A3B8), size: 20),
+                                          : const Icon(Icons.image_rounded,
+                                              color: Color(0xFF94A3B8),
+                                              size: 20),
                                     ),
                                   ),
                                   const SizedBox(width: 12),
                                   Expanded(
                                     child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
                                         Text(
-                                          item['name'] ?? Trans.noProductName, 
-                                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Theme.of(context).colorScheme.onSurface), 
-                                          maxLines: 2, 
+                                          item['name'] ?? Trans.noProductName,
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 13,
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .onSurface),
+                                          maxLines: 2,
                                           overflow: TextOverflow.ellipsis,
                                         ),
                                         if (variantLabel != null)
                                           Padding(
-                                            padding: const EdgeInsets.only(top: 2),
+                                            padding:
+                                                const EdgeInsets.only(top: 2),
                                             child: Text(
                                               variantLabel,
-                                              style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Theme.of(context).colorScheme.onSurface),
-                                              maxLines: 1, overflow: TextOverflow.ellipsis,
+                                              style: TextStyle(
+                                                  fontSize: 12,
+                                                  fontWeight: FontWeight.w600,
+                                                  color: Theme.of(context)
+                                                      .colorScheme
+                                                      .onSurface),
+                                              maxLines: 1,
+                                              overflow: TextOverflow.ellipsis,
                                             ),
                                           ),
                                         const SizedBox(height: 4),
                                         Text(
-                                          'SL: ${item['quantity']}  ×  ${AdminOrdersService.formatVnd(item['unit_price'] ?? 0)}₫', 
-                                          style: const TextStyle(color: Color(0xFF64748B), fontSize: 12, fontWeight: FontWeight.w500),
+                                          'SL: ${item['quantity']}  ×  ${AdminOrdersService.formatVnd(item['unit_price'] ?? 0)}₫',
+                                          style: const TextStyle(
+                                              color: Color(0xFF64748B),
+                                              fontSize: 12,
+                                              fontWeight: FontWeight.w500),
                                         ),
                                       ],
                                     ),
                                   ),
                                   // const SizedBox(width: 8),
                                   // Text(
-                                  //   '${AdminOrdersService.formatVnd(item['total_price'] ?? 0)}₫', 
+                                  //   '${AdminOrdersService.formatVnd(item['total_price'] ?? 0)}₫',
                                   //   style: TextStyle(fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.onSurface, fontSize: 13),
                                   // ),
                                 ],
@@ -825,37 +990,52 @@ class _AdminOrderDetailScreenState extends State<AdminOrderDetailScreen> {
                         ),
                       ),
                       const SizedBox(height: 12),
-
                       _buildSectionCard(
                         title: Trans.paymentCost,
                         child: Column(
                           children: [
-                            _buildAmountRow('Tạm tính', amounts['subtotal'] ?? 0),
-                            _buildAmountRow('Phí vận chuyển', amounts['shipping_fee'] ?? 0),
+                            _buildAmountRow(
+                                'Tạm tính', amounts['subtotal'] ?? 0),
+                            _buildAmountRow(
+                                'Phí vận chuyển', amounts['shipping_fee'] ?? 0),
                             if ((amounts['discount'] ?? 0) > 0)
                               _buildAmountRow(
-                                (_detail?['coupon_code'] != null && _detail!['coupon_code'].toString().isNotEmpty) 
-                                    ? 'Mã giảm giá (${_detail!['coupon_code']})' 
-                                    : 'Giảm giá', 
-                                amounts['discount'] ?? 0, 
+                                (_detail?['coupon_code'] != null &&
+                                        _detail!['coupon_code']
+                                            .toString()
+                                            .isNotEmpty)
+                                    ? 'Mã giảm giá (${_detail!['coupon_code']})'
+                                    : 'Giảm giá',
+                                amounts['discount'] ?? 0,
                                 isDiscount: true,
                               ),
                             if ((amounts['points_discount'] ?? 0) > 0)
                               _buildAmountRow(
-                                'Giảm giá (Điểm thưởng)', 
-                                amounts['points_discount'] ?? 0, 
+                                'Giảm giá (Điểm thưởng)',
+                                amounts['points_discount'] ?? 0,
                                 isDiscount: true,
                               ),
                             const Divider(height: 16, color: Color(0xFFF1F5F9)),
-                            _buildAmountRow('Thành tiền', amounts['total'] ?? 0, isTotal: true),
+                            _buildAmountRow('Thành tiền', amounts['total'] ?? 0,
+                                isTotal: true),
                             const SizedBox(height: 6),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Text(Trans.paymentMethod, style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 13)),
+                                Text(Trans.paymentMethod,
+                                    style: TextStyle(
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .onSurface,
+                                        fontSize: 13)),
                                 Text(
-                                  _resolvePaymentMethod(_detail), 
-                                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Theme.of(context).colorScheme.onSurface),
+                                  _resolvePaymentMethod(_detail),
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 13,
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .onSurface),
                                 ),
                               ],
                             )
@@ -863,10 +1043,8 @@ class _AdminOrderDetailScreenState extends State<AdminOrderDetailScreen> {
                         ),
                       ),
                       const SizedBox(height: 12),
-
                       _buildReturnRequestSection(),
                       const SizedBox(height: 12),
-
                       _buildStatusHistorySection(),
                     ],
                   ),
@@ -874,26 +1052,35 @@ class _AdminOrderDetailScreenState extends State<AdminOrderDetailScreen> {
     );
   }
 
-  Widget _buildSectionCard({required String title, required Widget child, Widget? trailing}) {
+  Widget _buildSectionCard(
+      {required String title, required Widget child, Widget? trailing}) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface, 
-        borderRadius: BorderRadius.circular(12), 
-        border: Border.all(color: Theme.of(context).colorScheme.outline, width: 0.15),
+        color: Theme.of(context).colorScheme.surface,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+            color: Theme.of(context).colorScheme.outline, width: 0.15),
       ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start, 
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(title, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: Theme.of(context).colorScheme.onSurface)),
+              Text(title,
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14,
+                      color: Theme.of(context).colorScheme.onSurface)),
               if (trailing != null) trailing,
             ],
           ),
-          Padding(padding: EdgeInsets.symmetric(vertical: 6), child: Divider(height: 1, color: Theme.of(context).colorScheme.onSurface)),
+          Padding(
+              padding: EdgeInsets.symmetric(vertical: 6),
+              child: Divider(
+                  height: 1, color: Theme.of(context).colorScheme.onSurface)),
           child
         ],
       ),
@@ -906,26 +1093,47 @@ class _AdminOrderDetailScreenState extends State<AdminOrderDetailScreen> {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(width: 110, child: Text(label, style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 13))),
-          Expanded(child: Text(value, style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13, color: Theme.of(context).colorScheme.onSurface))),
+          SizedBox(
+              width: 110,
+              child: Text(label,
+                  style: TextStyle(
+                      color: Theme.of(context).colorScheme.onSurface,
+                      fontSize: 13))),
+          Expanded(
+              child: Text(value,
+                  style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 13,
+                      color: Theme.of(context).colorScheme.onSurface))),
         ],
       ),
     );
   }
 
-  Widget _buildAmountRow(String label, num val, {bool isDiscount = false, bool isTotal = false}) {
+  Widget _buildAmountRow(String label, num val,
+      {bool isDiscount = false, bool isTotal = false}) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4.0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(label, style: TextStyle(fontSize: isTotal ? 14 : 13, fontWeight: isTotal ? FontWeight.bold : FontWeight.normal, color: isTotal ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.onSurface)),
+          Text(label,
+              style: TextStyle(
+                  fontSize: isTotal ? 14 : 13,
+                  fontWeight: isTotal ? FontWeight.bold : FontWeight.normal,
+                  color: isTotal
+                      ? Theme.of(context).colorScheme.primary
+                      : Theme.of(context).colorScheme.onSurface)),
           Text(
             '${isDiscount ? "-" : ""}${AdminOrdersService.formatVnd(val)}₫',
             style: TextStyle(
               fontSize: isTotal ? 15 : 13,
               fontWeight: isTotal ? FontWeight.bold : FontWeight.w600,
-              color: isDiscount ? Colors.red : (isTotal ? Color(0xFFFF2424) : Theme.of(context).colorScheme.onSurface),
+              color: isDiscount
+                  ? Colors.red
+                  : (isTotal
+                      ? Color(0xFFFF2424)
+                      : Theme.of(context).colorScheme.onSurface),
             ),
           )
         ],

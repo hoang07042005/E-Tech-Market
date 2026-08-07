@@ -25,15 +25,20 @@ class AdminOrdersService {
     if (dateFrom?.isNotEmpty ?? false) params['date_from'] = dateFrom!;
     if (dateTo?.isNotEmpty ?? false) params['date_to'] = dateTo!;
     if (status != null && status != 'all') params['status'] = status;
-    if (paymentMethod != null && paymentMethod != 'all') params['payment_method'] = paymentMethod;
-    if (paymentStatus != null && paymentStatus != 'all') params['payment_status'] = paymentStatus;
-    if (returnRequests?.isNotEmpty ?? false) params['return_requests'] = returnRequests!;
+    if (paymentMethod != null && paymentMethod != 'all')
+      params['payment_method'] = paymentMethod;
+    if (paymentStatus != null && paymentStatus != 'all')
+      params['payment_status'] = paymentStatus;
+    if (returnRequests?.isNotEmpty ?? false)
+      params['return_requests'] = returnRequests!;
 
     try {
-      final response = await DioClient.instance.get('/admin/orders', queryParameters: params);
+      final response = await DioClient.instance
+          .get('/admin/orders', queryParameters: params);
       return response.data as Map<String, dynamic>;
     } on DioException catch (e) {
-      throw Exception('Lỗi tải đơn hàng: ${e.response?.statusCode ?? 'unknown'}');
+      throw Exception(
+          'Lỗi tải đơn hàng: ${e.response?.statusCode ?? 'unknown'}');
     }
   }
 
@@ -46,7 +51,8 @@ class AdminOrdersService {
       }
       return {};
     } on DioException catch (e) {
-      throw Exception('Lỗi tải chi tiết đơn: ${e.response?.statusCode ?? 'unknown'}');
+      throw Exception(
+          'Lỗi tải chi tiết đơn: ${e.response?.statusCode ?? 'unknown'}');
     }
   }
 
@@ -65,7 +71,8 @@ class AdminOrdersService {
       }
       return {};
     } on DioException catch (e) {
-      throw Exception('Lỗi cập nhật trạng thái: ${e.response?.statusCode ?? 'unknown'}');
+      throw Exception(
+          'Lỗi cập nhật trạng thái: ${e.response?.statusCode ?? 'unknown'}');
     }
   }
 
@@ -85,7 +92,8 @@ class AdminOrdersService {
       if (refundProofPaths != null && refundProofPaths.isNotEmpty) {
         final formData = FormData.fromMap({
           'action': action,
-          if (adminNote != null && adminNote.isNotEmpty) 'admin_note': adminNote,
+          if (adminNote != null && adminNote.isNotEmpty)
+            'admin_note': adminNote,
         });
         for (final path in refundProofPaths) {
           formData.files.add(MapEntry(
@@ -93,7 +101,8 @@ class AdminOrdersService {
             await MultipartFile.fromFile(path),
           ));
         }
-        final response = await DioClient.instance.post(endpoint, data: formData);
+        final response =
+            await DioClient.instance.post(endpoint, data: formData);
         final data = response.data;
         if (data is Map<String, dynamic>) return data['data'] ?? data;
         return {};
@@ -108,7 +117,8 @@ class AdminOrdersService {
       if (data is Map<String, dynamic>) return data['data'] ?? data;
       return {};
     } on DioException catch (e) {
-      throw Exception('Lỗi xử lý hoàn trả ($action): ${e.response?.statusCode ?? 'unknown'}');
+      throw Exception(
+          'Lỗi xử lý hoàn trả ($action): ${e.response?.statusCode ?? 'unknown'}');
     }
   }
 

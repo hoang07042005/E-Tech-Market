@@ -278,7 +278,8 @@ class _TradeInScreenState extends State<TradeInScreen> {
 
       if (data['status'] == 'success') {
         setState(() {
-          _successMessage = 'Gửi yêu cầu thu cũ thành công. Mã yêu cầu: ${data['data']['tracking_code'] ?? ''}';
+          _successMessage =
+              'Gửi yêu cầu thu cũ thành công. Mã yêu cầu: ${data['data']['tracking_code'] ?? ''}';
           _errorMessage = null;
           _step = 0;
           _selectedCategoryId = null;
@@ -383,7 +384,7 @@ class _TradeInScreenState extends State<TradeInScreen> {
     //   'Chọn tình trạng hiện tại',
     //   'Nhận kết quả định giá'
     // ];
-    
+
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: List.generate(5, (i) {
@@ -402,7 +403,9 @@ class _TradeInScreenState extends State<TradeInScreen> {
                     color: active ? const Color(0xFFEA6C00) : Colors.white,
                     shape: BoxShape.circle,
                     border: Border.all(
-                      color: active ? const Color(0xFFEA6C00) : const Color(0xFFE2E8F0),
+                      color: active
+                          ? const Color(0xFFEA6C00)
+                          : const Color(0xFFE2E8F0),
                       width: 1,
                     ),
                   ),
@@ -425,8 +428,11 @@ class _TradeInScreenState extends State<TradeInScreen> {
                         titles[index],
                         style: TextStyle(
                           fontSize: 12,
-                          fontWeight: active ? FontWeight.bold : FontWeight.w600,
-                          color: active ? const Color(0xFFEA6C00) : Colors.grey.shade600,
+                          fontWeight:
+                              active ? FontWeight.bold : FontWeight.w600,
+                          color: active
+                              ? const Color(0xFFEA6C00)
+                              : Colors.grey.shade600,
                         ),
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
@@ -454,7 +460,8 @@ class _TradeInScreenState extends State<TradeInScreen> {
             child: Container(
               height: 2,
               margin: const EdgeInsets.only(top: 15, left: 4, right: 4),
-              color: completed ? const Color(0xFFE2E8F0) : const Color(0xFFE2E8F0),
+              color:
+                  completed ? const Color(0xFFE2E8F0) : const Color(0xFFE2E8F0),
             ),
           );
         }
@@ -494,12 +501,13 @@ class _TradeInScreenState extends State<TradeInScreen> {
                 child: OutlinedButton(
                   onPressed: () => setState(() => _step = _step - 1),
                   style: OutlinedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 14),
-                    side: const BorderSide(color: Color(0xFFEA6C00)),
-                    foregroundColor: const Color(0xFFEA6C00),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8))
-                  ),
-                  child: const Text('Quay lại', style: TextStyle(fontWeight: FontWeight.w600)),
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      side: const BorderSide(color: Color(0xFFEA6C00)),
+                      foregroundColor: const Color(0xFFEA6C00),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8))),
+                  child: const Text('Quay lại',
+                      style: TextStyle(fontWeight: FontWeight.w600)),
                 ),
               ),
             if (_step > 0) const SizedBox(width: 12),
@@ -507,44 +515,55 @@ class _TradeInScreenState extends State<TradeInScreen> {
               flex: 2,
               child: _step < 2
                   ? ElevatedButton(
-                      onPressed: _nextEnabled() ? () => setState(() => _step = _step + 1) : null,
+                      onPressed: _nextEnabled()
+                          ? () => setState(() => _step = _step + 1)
+                          : null,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: _nextEnabled() ? const Color(0xFFEA6C00) : const Color(0xFFCBD5E1),
-                        foregroundColor: Colors.white,
-                        elevation: 0,
-                        padding: const EdgeInsets.symmetric(vertical: 14),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8))
-                      ),
+                          backgroundColor: _nextEnabled()
+                              ? const Color(0xFFEA6C00)
+                              : const Color(0xFFCBD5E1),
+                          foregroundColor: Colors.white,
+                          elevation: 0,
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8))),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: const [
-                          Text('Tiếp tục', style: TextStyle(fontWeight: FontWeight.w600)),
+                          Text('Tiếp tục',
+                              style: TextStyle(fontWeight: FontWeight.w600)),
                           SizedBox(width: 8),
-                          Icon(Icons.arrow_forward, size: 18, color: Colors.white),
+                          Icon(Icons.arrow_forward,
+                              size: 18, color: Colors.white),
                         ],
                       ),
                     )
                   : ElevatedButton(
-                      onPressed: (_isSubmitting || !_isStep1Valid()) ? null : _submitRequest,
+                      onPressed: (_isSubmitting || !_isStep1Valid())
+                          ? null
+                          : _submitRequest,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFFEA6C00),
-                        disabledBackgroundColor: const Color(0xFFCBD5E1),
-                        foregroundColor: Colors.white,
-                        elevation: 0,
-                        padding: const EdgeInsets.symmetric(vertical: 14),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8))
-                      ),
+                          backgroundColor: const Color(0xFFEA6C00),
+                          disabledBackgroundColor: const Color(0xFFCBD5E1),
+                          foregroundColor: Colors.white,
+                          elevation: 0,
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8))),
                       child: _isSubmitting
                           ? const SizedBox(
                               width: 20,
                               height: 20,
-                              child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+                              child: CircularProgressIndicator(
+                                  color: Colors.white, strokeWidth: 2))
                           : Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: const [
                                 Icon(Icons.send, size: 18, color: Colors.white),
                                 SizedBox(width: 8),
-                                Text('Gửi yêu cầu thu cũ', style: TextStyle(fontWeight: FontWeight.w600)),
+                                Text('Gửi yêu cầu thu cũ',
+                                    style:
+                                        TextStyle(fontWeight: FontWeight.w600)),
                               ],
                             ),
                     ),
@@ -557,7 +576,8 @@ class _TradeInScreenState extends State<TradeInScreen> {
           children: [
             Icon(Icons.shield_outlined, size: 16, color: Colors.grey.shade500),
             const SizedBox(width: 6),
-            Text('Thông tin của bạn được bảo mật tuyệt đối', style: TextStyle(color: Colors.grey.shade500, fontSize: 13))
+            Text('Thông tin của bạn được bảo mật tuyệt đối',
+                style: TextStyle(color: Colors.grey.shade500, fontSize: 13))
           ],
         ),
         const SizedBox(height: 30),
@@ -578,11 +598,15 @@ class _TradeInScreenState extends State<TradeInScreen> {
         const SizedBox(height: 10),
         RichText(
           textAlign: TextAlign.center,
-          text:  TextSpan(
-            style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold, color: theme.colorScheme.onSurface),
+          text: TextSpan(
+            style: TextStyle(
+                fontSize: 25,
+                fontWeight: FontWeight.bold,
+                color: theme.colorScheme.onSurface),
             children: [
               TextSpan(text: 'Thu Cũ '),
-              TextSpan(text: 'Giá Cao', style: TextStyle(color: Color(0xFFEA6C00))),
+              TextSpan(
+                  text: 'Giá Cao', style: TextStyle(color: Color(0xFFEA6C00))),
               TextSpan(text: ' – Định Giá Nhanh Chóng'),
             ],
           ),
@@ -591,7 +615,8 @@ class _TradeInScreenState extends State<TradeInScreen> {
         Text(
           'Định giá máy cũ chính xác, quy trình thu mua nhanh chóng và giải ngân ngay tại E-Tech Market.',
           textAlign: TextAlign.center,
-          style: TextStyle(color: theme.colorScheme.onSurface, fontSize: 14, height: 1.5),
+          style: TextStyle(
+              color: theme.colorScheme.onSurface, fontSize: 14, height: 1.5),
         ),
         const SizedBox(height: 24),
       ],
@@ -610,70 +635,91 @@ class _TradeInScreenState extends State<TradeInScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                  color: const Color(0xFFEA6C00),
+                  borderRadius: BorderRadius.circular(8)),
+              child: const Icon(Icons.devices, color: Colors.white, size: 20),
+            ),
+            const SizedBox(width: 12),
+            Text('Chọn loại thiết bị',
+                style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: theme.colorScheme.onSurface)),
+          ],
+        ),
+        const SizedBox(height: 20),
+        if (_isLoading)
+          const Center(child: CircularProgressIndicator())
+        else if (_categories.isEmpty)
+          const Padding(
+            padding: EdgeInsets.symmetric(vertical: 16),
+            child: Text('Hiện chưa có loại thiết bị để hiển thị.'),
+          )
+        else
           Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(color: const Color(0xFFEA6C00), borderRadius: BorderRadius.circular(8)),
-                child: const Icon(Icons.devices, color: Colors.white, size: 20),
-              ),
-              const SizedBox(width: 12),
-              Text('Chọn loại thiết bị',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: theme.colorScheme.onSurface)),
-            ],
-          ),
-          const SizedBox(height: 20),
-          if (_isLoading)
-            const Center(child: CircularProgressIndicator())
-          else if (_categories.isEmpty)
-            const Padding(
-              padding: EdgeInsets.symmetric(vertical: 16),
-              child: Text('Hiện chưa có loại thiết bị để hiển thị.'),
-            )
-          else
-            Row(
-              children: _categories.map((category) {
-                final isSelected = _selectedCategoryId == category['id'];
-                return Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 6),
-                    child: InkWell(
-                      onTap: () => _selectCategory(category['id'] as int),
-                      borderRadius: BorderRadius.circular(12),
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(vertical: 24),
-                        decoration: BoxDecoration(
-                          color: theme.colorScheme.surface,
-                          border: Border.all(
-                              width: 0.5,
-                              color: isSelected ? const Color(0xFFEA6C00) : theme.colorScheme.outline),
-                          borderRadius: BorderRadius.circular(12),
-                          boxShadow: isSelected ? [BoxShadow(color: const Color(0xFFEA6C00).withOpacity(0.1), blurRadius: 8, offset: const Offset(0, 4))] : [],
-                        ),
-                        child: Column(
-                          children: [
-                            Icon(
-                              category['slug'] == 'laptop'
-                                  ? Icons.laptop_mac
-                                  : Icons.phone_iphone,
-                              color: isSelected ? const Color(0xFFEA6C00) : const Color(0xFF64748B),
-                              size: 36,
-                            ),
-                            const SizedBox(height: 12),
-                            Text(category['name'] ?? '',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                    fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
-                                    fontSize: 15,
-                                    color: isSelected ? const Color(0xFFEA6C00) : const Color(0xFF475569))),
-                          ],
-                        ),
+            children: _categories.map((category) {
+              final isSelected = _selectedCategoryId == category['id'];
+              return Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 6),
+                  child: InkWell(
+                    onTap: () => _selectCategory(category['id'] as int),
+                    borderRadius: BorderRadius.circular(12),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(vertical: 24),
+                      decoration: BoxDecoration(
+                        color: theme.colorScheme.surface,
+                        border: Border.all(
+                            width: 0.5,
+                            color: isSelected
+                                ? const Color(0xFFEA6C00)
+                                : theme.colorScheme.outline),
+                        borderRadius: BorderRadius.circular(12),
+                        boxShadow: isSelected
+                            ? [
+                                BoxShadow(
+                                    color: const Color(0xFFEA6C00)
+                                        .withOpacity(0.1),
+                                    blurRadius: 8,
+                                    offset: const Offset(0, 4))
+                              ]
+                            : [],
+                      ),
+                      child: Column(
+                        children: [
+                          Icon(
+                            category['slug'] == 'laptop'
+                                ? Icons.laptop_mac
+                                : Icons.phone_iphone,
+                            color: isSelected
+                                ? const Color(0xFFEA6C00)
+                                : const Color(0xFF64748B),
+                            size: 36,
+                          ),
+                          const SizedBox(height: 12),
+                          Text(category['name'] ?? '',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                  fontWeight: isSelected
+                                      ? FontWeight.bold
+                                      : FontWeight.w500,
+                                  fontSize: 15,
+                                  color: isSelected
+                                      ? const Color(0xFFEA6C00)
+                                      : const Color(0xFF475569))),
+                        ],
                       ),
                     ),
                   ),
-                );
-              }).toList(),
-            ),
+                ),
+              );
+            }).toList(),
+          ),
       ],
     );
   }
@@ -682,133 +728,197 @@ class _TradeInScreenState extends State<TradeInScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-          Text('Thông tin chi tiết thiết bị',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: theme.colorScheme.onSurface)),
-          const SizedBox(height: 20),
-          _buildTextField('Tên máy', _machineNameCtrl, _selectedCategorySlug == 'dien-thoai' ? 'VD: iPhone 13 Pro Max...' : 'VD: MacBook Air M2 2022', required: true),
-          
-          if (_selectedCategorySlug == 'dien-thoai') ...[
-            Row(
-              children: [
-                Expanded(child: _buildTextField('Dung lượng lưu trữ', _phoneStorageCtrl, 'VD: 256GB...', required: true)),
-                const SizedBox(width: 12),
-                Expanded(child: _buildTextField('Màu sắc', _phoneColorCtrl, 'VD: Xanh dương...', required: true)),
-              ],
-            )
-          ] else if (_selectedCategorySlug == 'laptop') ...[
-            Row(
-              children: [
-                Expanded(child: _buildTextField('Dung lượng RAM', _laptopRamCtrl, 'VD: 8GB, 16GB...', required: true)),
-                const SizedBox(width: 12),
-                Expanded(child: _buildTextField('Ổ cứng', _laptopDiskCtrl, 'VD: 512GB SSD...', required: true)),
-              ],
-            ),
-            _buildTextField('Card màn hình (nếu có)', _laptopVgaCtrl, 'VD: NVIDIA RTX 3050...'),
-          ],
-          
+        Text('Thông tin chi tiết thiết bị',
+            style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: theme.colorScheme.onSurface)),
+        const SizedBox(height: 20),
+        _buildTextField(
+            'Tên máy',
+            _machineNameCtrl,
+            _selectedCategorySlug == 'dien-thoai'
+                ? 'VD: iPhone 13 Pro Max...'
+                : 'VD: MacBook Air M2 2022',
+            required: true),
+        if (_selectedCategorySlug == 'dien-thoai') ...[
           Row(
             children: [
-              Expanded(child: _buildDropdownField('Tình trạng bảo hành', _warrantyCtrl, ['Còn bảo hành hãng', 'Hết bảo hành'])),
+              Expanded(
+                  child: _buildTextField(
+                      'Dung lượng lưu trữ', _phoneStorageCtrl, 'VD: 256GB...',
+                      required: true)),
               const SizedBox(width: 12),
-              Expanded(child: _buildTextField('Phụ kiện đi kèm', _accessoriesCtrl, 'VD: Sạc, cáp, hộp...')),
+              Expanded(
+                  child: _buildTextField(
+                      'Màu sắc', _phoneColorCtrl, 'VD: Xanh dương...',
+                      required: true)),
             ],
-          ),
-          
-          const SizedBox(height: 4),
+          )
+        ] else if (_selectedCategorySlug == 'laptop') ...[
           Row(
             children: [
-              Text('Tải ảnh máy lên ',
-                  style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Theme.of(context).colorScheme.onSurface)),
-              const Text('* ', style: TextStyle(color: Color(0xFFEA6C00), fontSize: 13)),
-              Text('Tối đa 6 ảnh', style: TextStyle(color: Colors.grey.shade500, fontSize: 12, fontWeight: FontWeight.normal)),
+              Expanded(
+                  child: _buildTextField(
+                      'Dung lượng RAM', _laptopRamCtrl, 'VD: 8GB, 16GB...',
+                      required: true)),
+              const SizedBox(width: 12),
+              Expanded(
+                  child: _buildTextField(
+                      'Ổ cứng', _laptopDiskCtrl, 'VD: 512GB SSD...',
+                      required: true)),
             ],
           ),
-          const SizedBox(height: 8),
-          InkWell(
-            onTap: _images.length >= 6 ? null : _pickImages,
-            borderRadius: BorderRadius.circular(8),
-            child: Container(
-              width: double.infinity,
-              padding: const EdgeInsets.symmetric(vertical: 30),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: Theme.of(context).colorScheme.onSurface, width:0.5),
-                color: Theme.of(context).colorScheme.surface,
-              ),
-              child: Column(
-                children: [
-                  Icon(Icons.upload_file, size: 28, color: Theme.of(context).colorScheme.onSurface),
-                  const SizedBox(height: 12),
-                  Text('Chạm để tải ảnh lên', style: TextStyle(fontWeight: FontWeight.w500, color: Theme.of(context).colorScheme.onSurface, fontSize: 14)),
-                  const SizedBox(height: 4),
-                  Text('Hỗ trợ: JPG, PNG, WEBP (tối đa 10MB/ảnh)', style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.onSurface)),
-                ],
-              ),
+          _buildTextField('Card màn hình (nếu có)', _laptopVgaCtrl,
+              'VD: NVIDIA RTX 3050...'),
+        ],
+        Row(
+          children: [
+            Expanded(
+                child: _buildDropdownField('Tình trạng bảo hành', _warrantyCtrl,
+                    ['Còn bảo hành hãng', 'Hết bảo hành'])),
+            const SizedBox(width: 12),
+            Expanded(
+                child: _buildTextField('Phụ kiện đi kèm', _accessoriesCtrl,
+                    'VD: Sạc, cáp, hộp...')),
+          ],
+        ),
+        const SizedBox(height: 4),
+        Row(
+          children: [
+            Text('Tải ảnh máy lên ',
+                style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                    color: Theme.of(context).colorScheme.onSurface)),
+            const Text('* ',
+                style: TextStyle(color: Color(0xFFEA6C00), fontSize: 13)),
+            Text('Tối đa 6 ảnh',
+                style: TextStyle(
+                    color: Colors.grey.shade500,
+                    fontSize: 12,
+                    fontWeight: FontWeight.normal)),
+          ],
+        ),
+        const SizedBox(height: 8),
+        InkWell(
+          onTap: _images.length >= 6 ? null : _pickImages,
+          borderRadius: BorderRadius.circular(8),
+          child: Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(vertical: 30),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(
+                  color: Theme.of(context).colorScheme.onSurface, width: 0.5),
+              color: Theme.of(context).colorScheme.surface,
+            ),
+            child: Column(
+              children: [
+                Icon(Icons.upload_file,
+                    size: 28, color: Theme.of(context).colorScheme.onSurface),
+                const SizedBox(height: 12),
+                Text('Chạm để tải ảnh lên',
+                    style: TextStyle(
+                        fontWeight: FontWeight.w500,
+                        color: Theme.of(context).colorScheme.onSurface,
+                        fontSize: 14)),
+                const SizedBox(height: 4),
+                Text('Hỗ trợ: JPG, PNG, WEBP (tối đa 10MB/ảnh)',
+                    style: TextStyle(
+                        fontSize: 12,
+                        color: Theme.of(context).colorScheme.onSurface)),
+              ],
             ),
           ),
-          const SizedBox(height: 16),
-          if (_images.isNotEmpty)
-            Wrap(
-              spacing: 12,
-              runSpacing: 12,
-              children: List.generate(_images.length, (index) {
-                return Stack(
-                  children: [
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(8),
-                      child: Image.file(
-                        _images[index],
-                        width: 80,
-                        height: 80,
-                        fit: BoxFit.cover,
+        ),
+        const SizedBox(height: 16),
+        if (_images.isNotEmpty)
+          Wrap(
+            spacing: 12,
+            runSpacing: 12,
+            children: List.generate(_images.length, (index) {
+              return Stack(
+                children: [
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(8),
+                    child: Image.file(
+                      _images[index],
+                      width: 80,
+                      height: 80,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                  Positioned(
+                    top: 4,
+                    right: 4,
+                    child: GestureDetector(
+                      onTap: () => _removeImage(index),
+                      child: Container(
+                        padding: const EdgeInsets.all(4),
+                        decoration: BoxDecoration(
+                            color: Colors.black.withOpacity(0.6),
+                            shape: BoxShape.circle),
+                        child: const Icon(Icons.close,
+                            color: Colors.white, size: 14),
                       ),
                     ),
-                    Positioned(
-                      top: 4,
-                      right: 4,
-                      child: GestureDetector(
-                        onTap: () => _removeImage(index),
-                        child: Container(
-                          padding: const EdgeInsets.all(4),
-                          decoration: BoxDecoration(color: Colors.black.withOpacity(0.6), shape: BoxShape.circle),
-                          child: const Icon(Icons.close, color: Colors.white, size: 14),
-                        ),
-                      ),
-                    ),
-                  ],
-                );
-              }),
-            ),
+                  ),
+                ],
+              );
+            }),
+          ),
       ],
     );
   }
-  
-  Widget _buildDropdownField(String label, TextEditingController controller, List<String> options) {
+
+  Widget _buildDropdownField(
+      String label, TextEditingController controller, List<String> options) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(label, style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Theme.of(context).colorScheme.onSurface)),
+          Text(label,
+              style: TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                  color: Theme.of(context).colorScheme.onSurface)),
           const SizedBox(height: 8),
           DropdownButtonFormField<String>(
             value: controller.text.isNotEmpty ? controller.text : null,
             isExpanded: true,
             decoration: InputDecoration(
               hintText: 'Chọn tình trạng',
-              hintStyle: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 14),
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: BorderSide(color: Theme.of(context).colorScheme.onSurface, width:0.5)),
-              enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: BorderSide(color: Theme.of(context).colorScheme.onSurface, width:0.5)),
-              focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: BorderSide(color: Theme.of(context).colorScheme.onSurface, width:0.5)),
-              contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+              hintStyle: TextStyle(
+                  color: Theme.of(context).colorScheme.onSurface, fontSize: 14),
+              border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: BorderSide(
+                      color: Theme.of(context).colorScheme.onSurface,
+                      width: 0.5)),
+              enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: BorderSide(
+                      color: Theme.of(context).colorScheme.onSurface,
+                      width: 0.5)),
+              focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: BorderSide(
+                      color: Theme.of(context).colorScheme.onSurface,
+                      width: 0.5)),
+              contentPadding:
+                  const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
               isDense: true,
             ),
             items: options.map((String value) {
               return DropdownMenuItem<String>(
                 value: value,
                 child: Text(
-                  value, 
-                  style: TextStyle(fontSize: 14, color: Theme.of(context).colorScheme.onSurface),
+                  value,
+                  style: TextStyle(
+                      fontSize: 14,
+                      color: Theme.of(context).colorScheme.onSurface),
                   overflow: TextOverflow.ellipsis,
                 ),
               );
@@ -828,7 +938,6 @@ class _TradeInScreenState extends State<TradeInScreen> {
     return Container(
       decoration: BoxDecoration(
         color: theme.colorScheme.surface,
-       
       ),
       padding: const EdgeInsets.all(20),
       child: Column(
@@ -838,43 +947,54 @@ class _TradeInScreenState extends State<TradeInScreen> {
             children: [
               Container(
                 padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(color: const Color(0xFFEA6C00), borderRadius: BorderRadius.circular(8)),
-                child: const Icon(Icons.health_and_safety, color: Colors.white, size: 20),
+                decoration: BoxDecoration(
+                    color: const Color(0xFFEA6C00),
+                    borderRadius: BorderRadius.circular(8)),
+                child: const Icon(Icons.health_and_safety,
+                    color: Colors.white, size: 20),
               ),
               const SizedBox(width: 12),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text('Tình trạng máy',
-                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: theme.colorScheme.onSurface)),
+                      style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: theme.colorScheme.onSurface)),
                   const SizedBox(height: 2),
                   Text('Vui lòng chọn tình trạng hiện tại của máy',
-                      style: TextStyle(color: theme.colorScheme.onSurface, fontSize: 12)),
+                      style: TextStyle(
+                          color: theme.colorScheme.onSurface, fontSize: 12)),
                 ],
               ),
             ],
           ),
           const SizedBox(height: 20),
           if (_isLoadingConditions)
-            const Center(child: Padding(padding: EdgeInsets.all(20), child: CircularProgressIndicator()))
+            const Center(
+                child: Padding(
+                    padding: EdgeInsets.all(20),
+                    child: CircularProgressIndicator()))
           else if (_conditions.isEmpty)
-            const Text('Vui lòng chọn loại thiết bị trước.', style: TextStyle(color: Color(0xFF64748B)))
+            const Text('Vui lòng chọn loại thiết bị trước.',
+                style: TextStyle(color: Color(0xFF64748B)))
           else
             _buildConditionGroups(),
         ],
       ),
     );
   }
-  
+
   Widget _buildConditionGroups() {
     final Map<String, List<Map<String, dynamic>>> groups = {
-        'Ngoại hình': [],
-        'Màn hình & Kính': [],
-        'Pin & Sạc': [],
-        'Camera & Âm thanh': [],
-        'Chức năng & Kết nối': [],
-        'Phần cứng & Sửa chữa': [],
-        'Khác': []
+      'Ngoại hình': [],
+      'Màn hình & Kính': [],
+      'Pin & Sạc': [],
+      'Camera & Âm thanh': [],
+      'Chức năng & Kết nối': [],
+      'Phần cứng & Sửa chữa': [],
+      'Khác': []
     };
 
     final seen = <String>{};
@@ -884,28 +1004,87 @@ class _TradeInScreenState extends State<TradeInScreen> {
       if (seen.contains(key)) continue;
       seen.add(key);
 
-      if (key.contains('màn hình') || key.contains('hiển thị') || key.contains('cảm ứng') || key.contains('ám') || key.contains('sọc') || key.contains('mực') || key.contains('điểm chết') || key.contains('lưu ảnh') || key.contains('chấm sáng') || key.contains('hở sáng') || key.contains('bụi trong màn') || key.contains('true tone') || key.contains('ép kính') || (key.contains('kính') && !key.contains('camera'))) {
-          groups['Màn hình & Kính']!.add(c);
-      } else if (key.contains('pin') || key.contains('sạc') || key.contains('cổng')) {
-          groups['Pin & Sạc']!.add(c);
-      } else if (key.contains('camera') || key.contains('loa') || key.contains('mic') || key.contains('âm thanh') || key.contains('flash') || key.contains('đốm') || key.contains('chụp')) {
-          groups['Camera & Âm thanh']!.add(c);
-      } else if (key.contains('rung') || key.contains('face id') || key.contains('touch id') || key.contains('vân tay') || key.contains('nút') || key.contains('wifi') || key.contains('bluetooth') || key.contains('gps') || key.contains('nfc') || key.contains('esim') || key.contains('sóng') || key.contains('5g') || key.contains('cảm biến') || key.contains('la bàn') || key.contains('gia tốc') || key.contains('con quay') || key.contains('nhận sim')) {
-          groups['Chức năng & Kết nối']!.add(c);
-      } else if (key.contains('main') || key.contains('ic') || key.contains('sửa chữa') || key.contains('tháo máy') || key.contains('nước') || key.contains('oxy hóa') || key.contains('nguồn') || key.contains('treo logo') || key.contains('chống nước')) {
-          groups['Phần cứng & Sửa chữa']!.add(c);
-      } else if (key.contains('mới') || key.contains('đẹp') || key.contains('khá') || key.contains('trầy') || key.contains('xước') || key.contains('tróc') || key.contains('cấn') || key.contains('móp') || key.contains('cong') || key.contains('vỏ') || key.contains('khung') || key.contains('lưng') || key.contains('logo') || key.contains('ốc') || key.contains('sim')) {
-          groups['Ngoại hình']!.add(c);
+      if (key.contains('màn hình') ||
+          key.contains('hiển thị') ||
+          key.contains('cảm ứng') ||
+          key.contains('ám') ||
+          key.contains('sọc') ||
+          key.contains('mực') ||
+          key.contains('điểm chết') ||
+          key.contains('lưu ảnh') ||
+          key.contains('chấm sáng') ||
+          key.contains('hở sáng') ||
+          key.contains('bụi trong màn') ||
+          key.contains('true tone') ||
+          key.contains('ép kính') ||
+          (key.contains('kính') && !key.contains('camera'))) {
+        groups['Màn hình & Kính']!.add(c);
+      } else if (key.contains('pin') ||
+          key.contains('sạc') ||
+          key.contains('cổng')) {
+        groups['Pin & Sạc']!.add(c);
+      } else if (key.contains('camera') ||
+          key.contains('loa') ||
+          key.contains('mic') ||
+          key.contains('âm thanh') ||
+          key.contains('flash') ||
+          key.contains('đốm') ||
+          key.contains('chụp')) {
+        groups['Camera & Âm thanh']!.add(c);
+      } else if (key.contains('rung') ||
+          key.contains('face id') ||
+          key.contains('touch id') ||
+          key.contains('vân tay') ||
+          key.contains('nút') ||
+          key.contains('wifi') ||
+          key.contains('bluetooth') ||
+          key.contains('gps') ||
+          key.contains('nfc') ||
+          key.contains('esim') ||
+          key.contains('sóng') ||
+          key.contains('5g') ||
+          key.contains('cảm biến') ||
+          key.contains('la bàn') ||
+          key.contains('gia tốc') ||
+          key.contains('con quay') ||
+          key.contains('nhận sim')) {
+        groups['Chức năng & Kết nối']!.add(c);
+      } else if (key.contains('main') ||
+          key.contains('ic') ||
+          key.contains('sửa chữa') ||
+          key.contains('tháo máy') ||
+          key.contains('nước') ||
+          key.contains('oxy hóa') ||
+          key.contains('nguồn') ||
+          key.contains('treo logo') ||
+          key.contains('chống nước')) {
+        groups['Phần cứng & Sửa chữa']!.add(c);
+      } else if (key.contains('mới') ||
+          key.contains('đẹp') ||
+          key.contains('khá') ||
+          key.contains('trầy') ||
+          key.contains('xước') ||
+          key.contains('tróc') ||
+          key.contains('cấn') ||
+          key.contains('móp') ||
+          key.contains('cong') ||
+          key.contains('vỏ') ||
+          key.contains('khung') ||
+          key.contains('lưng') ||
+          key.contains('logo') ||
+          key.contains('ốc') ||
+          key.contains('sim')) {
+        groups['Ngoại hình']!.add(c);
       } else {
-          groups['Khác']!.add(c);
+        groups['Khác']!.add(c);
       }
     }
-    
+
     List<Widget> columnChildren = [];
-    
+
     for (final entry in groups.entries) {
       if (entry.value.isEmpty) continue;
-      
+
       columnChildren.add(
         Padding(
           padding: const EdgeInsets.only(bottom: 24),
@@ -914,26 +1093,48 @@ class _TradeInScreenState extends State<TradeInScreen> {
             children: [
               Row(
                 children: [
-                  Container(width: 4, height: 16, decoration: BoxDecoration(color: Theme.of(context).colorScheme.primary, borderRadius: BorderRadius.circular(4))),
+                  Container(
+                      width: 4,
+                      height: 16,
+                      decoration: BoxDecoration(
+                          color: Theme.of(context).colorScheme.primary,
+                          borderRadius: BorderRadius.circular(4))),
                   const SizedBox(width: 8),
-                  Text(entry.key, style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.onSurface)),
+                  Text(entry.key,
+                      style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                          color: Theme.of(context).colorScheme.onSurface)),
                 ],
               ),
               const Divider(color: Color(0xFFE2E8F0), height: 24),
               ...entry.value.map((condition) {
-                final isSelected = _selectedConditionIds.contains(condition['id']);
+                final isSelected =
+                    _selectedConditionIds.contains(condition['id']);
                 return InkWell(
                   onTap: () => _toggleCondition(condition['id'] as int),
                   borderRadius: BorderRadius.circular(8),
                   child: Container(
                     margin: const EdgeInsets.only(bottom: 8),
-                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 14, vertical: 14),
                     decoration: BoxDecoration(
                       color: Theme.of(context).colorScheme.surface,
                       borderRadius: BorderRadius.circular(8),
                       border: Border.all(
-                          color: isSelected ? const Color(0xFFEA6C00) : Theme.of(context).colorScheme.surface, width: isSelected ? 1.5 : 1),
-                      boxShadow: isSelected ? [BoxShadow(color: const Color(0xFFEA6C00).withOpacity(0.05), blurRadius: 4, offset: const Offset(0, 2))] : [],
+                          color: isSelected
+                              ? const Color(0xFFEA6C00)
+                              : Theme.of(context).colorScheme.surface,
+                          width: isSelected ? 1.5 : 1),
+                      boxShadow: isSelected
+                          ? [
+                              BoxShadow(
+                                  color:
+                                      const Color(0xFFEA6C00).withOpacity(0.05),
+                                  blurRadius: 4,
+                                  offset: const Offset(0, 2))
+                            ]
+                          : [],
                     ),
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -944,7 +1145,11 @@ class _TradeInScreenState extends State<TradeInScreen> {
                           margin: const EdgeInsets.only(top: 2),
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            border: Border.all(color: isSelected ? const Color(0xFFEA6C00) : Theme.of(context).colorScheme.onSurface, width: isSelected ? 5 : 1.5),
+                            border: Border.all(
+                                color: isSelected
+                                    ? const Color(0xFFEA6C00)
+                                    : Theme.of(context).colorScheme.onSurface,
+                                width: isSelected ? 5 : 1.5),
                             color: Colors.white,
                           ),
                         ),
@@ -957,12 +1162,22 @@ class _TradeInScreenState extends State<TradeInScreen> {
                                   style: TextStyle(
                                       fontWeight: FontWeight.w600,
                                       fontSize: 13.5,
-                                      color: isSelected ? const Color(0xFFEA6C00) : Theme.of(context).colorScheme.onSurface)),
-                              if ((condition['description'] ?? '').toString().isNotEmpty)
+                                      color: isSelected
+                                          ? const Color(0xFFEA6C00)
+                                          : Theme.of(context)
+                                              .colorScheme
+                                              .onSurface)),
+                              if ((condition['description'] ?? '')
+                                  .toString()
+                                  .isNotEmpty)
                                 Padding(
                                   padding: const EdgeInsets.only(top: 4),
                                   child: Text(condition['description'] ?? '',
-                                      style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.onSurface)),
+                                      style: TextStyle(
+                                          fontSize: 12,
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .onSurface)),
                                 ),
                             ],
                           ),
@@ -977,7 +1192,7 @@ class _TradeInScreenState extends State<TradeInScreen> {
         ),
       );
     }
-    
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: columnChildren,
@@ -988,7 +1203,6 @@ class _TradeInScreenState extends State<TradeInScreen> {
     return Container(
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
-       
       ),
       padding: const EdgeInsets.all(20),
       child: Column(
@@ -998,7 +1212,9 @@ class _TradeInScreenState extends State<TradeInScreen> {
             children: [
               Container(
                 padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(color: const Color(0xFFEA6C00), borderRadius: BorderRadius.circular(8)),
+                decoration: BoxDecoration(
+                    color: const Color(0xFFEA6C00),
+                    borderRadius: BorderRadius.circular(8)),
                 child: const Icon(Icons.person, color: Colors.white, size: 20),
               ),
               const SizedBox(width: 12),
@@ -1006,27 +1222,35 @@ class _TradeInScreenState extends State<TradeInScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text('Thông tin liên hệ',
-                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.onSurface)),
+                      style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Theme.of(context).colorScheme.onSurface)),
                   const SizedBox(height: 2),
                   Text('Nhận kết quả định giá qua email và điện thoại',
-                      style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 12)),
+                      style: TextStyle(
+                          color: Theme.of(context).colorScheme.onSurface,
+                          fontSize: 12)),
                 ],
               ),
             ],
           ),
           const SizedBox(height: 24),
-          _buildTextField('Họ và tên', _customerNameCtrl, 'Nhập họ và tên của bạn', required: true),
-          _buildTextField('Số điện thoại', _customerPhoneCtrl, 'Nhập số điện thoại liên hệ', required: true),
-          _buildTextField('Email', _customerEmailCtrl, 'Nhập địa chỉ email', required: true),
-          
+          _buildTextField(
+              'Họ và tên', _customerNameCtrl, 'Nhập họ và tên của bạn',
+              required: true),
+          _buildTextField(
+              'Số điện thoại', _customerPhoneCtrl, 'Nhập số điện thoại liên hệ',
+              required: true),
+          _buildTextField('Email', _customerEmailCtrl, 'Nhập địa chỉ email',
+              required: true),
           const SizedBox(height: 8),
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: const Color(0xFFF8FAFC),
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: const Color(0xFFE2E8F0))
-            ),
+                color: const Color(0xFFF8FAFC),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: const Color(0xFFE2E8F0))),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -1034,13 +1258,20 @@ class _TradeInScreenState extends State<TradeInScreen> {
                   children: const [
                     Icon(Icons.security, color: Color(0xFF10B981), size: 18),
                     SizedBox(width: 8),
-                    Text('Cam kết bảo mật thông tin', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: Color(0xFF1E293B))),
+                    Text('Cam kết bảo mật thông tin',
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
+                            color: Color(0xFF1E293B))),
                   ],
                 ),
                 const SizedBox(height: 8),
-                const Text('E-Tech Market cam kết bảo mật tuyệt đối thông tin cá nhân của bạn và chỉ sử dụng để liên hệ về kết quả định giá.', style: TextStyle(fontSize: 12, color: Color(0xFF475569))),
+                const Text(
+                    'E-Tech Market cam kết bảo mật tuyệt đối thông tin cá nhân của bạn và chỉ sử dụng để liên hệ về kết quả định giá.',
+                    style: TextStyle(fontSize: 12, color: Color(0xFF475569))),
                 const SizedBox(height: 12),
-                _buildSecurityLine('Thông tin của bạn được mã hóa và bảo vệ an toàn'),
+                _buildSecurityLine(
+                    'Thông tin của bạn được mã hóa và bảo vệ an toàn'),
                 _buildSecurityLine('Không chia sẻ thông tin cho bên thứ ba'),
                 _buildSecurityLine('Chỉ liên hệ khi có kết quả định giá'),
               ],
@@ -1050,7 +1281,7 @@ class _TradeInScreenState extends State<TradeInScreen> {
       ),
     );
   }
-  
+
   Widget _buildSecurityLine(String text) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 8),
@@ -1059,7 +1290,10 @@ class _TradeInScreenState extends State<TradeInScreen> {
         children: [
           const Icon(Icons.check, size: 16, color: Color(0xFF10B981)),
           const SizedBox(width: 8),
-          Expanded(child: Text(text, style: const TextStyle(fontSize: 12, color: Color(0xFF475569)))),
+          Expanded(
+              child: Text(text,
+                  style:
+                      const TextStyle(fontSize: 12, color: Color(0xFF475569)))),
         ],
       ),
     );
@@ -1069,7 +1303,9 @@ class _TradeInScreenState extends State<TradeInScreen> {
     return const SizedBox.shrink(); // Combined into Navigation Bar
   }
 
-  Widget _buildTextField(String label, TextEditingController controller, String hint, {bool required = false}) {
+  Widget _buildTextField(
+      String label, TextEditingController controller, String hint,
+      {bool required = false}) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 16),
       child: Column(
@@ -1077,8 +1313,14 @@ class _TradeInScreenState extends State<TradeInScreen> {
         children: [
           Row(
             children: [
-              Text(label, style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Theme.of(context).colorScheme.onSurface)),
-              if (required) const Text(' *', style: TextStyle(color: Color(0xFFEA6C00), fontSize: 13)),
+              Text(label,
+                  style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      color: Theme.of(context).colorScheme.onSurface)),
+              if (required)
+                const Text(' *',
+                    style: TextStyle(color: Color(0xFFEA6C00), fontSize: 13)),
             ],
           ),
           const SizedBox(height: 8),
@@ -1086,11 +1328,25 @@ class _TradeInScreenState extends State<TradeInScreen> {
             controller: controller,
             decoration: InputDecoration(
               hintText: hint,
-              hintStyle: const TextStyle(color: Color(0xFF94A3B8), fontSize: 14),
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: BorderSide(color: Theme.of(context).colorScheme.onSurface, width:0.5)),
-              enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: BorderSide(color: Theme.of(context).colorScheme.onSurface, width:0.5)),
-              focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: BorderSide(color: Theme.of(context).colorScheme.onSurface, width:0.5)),
-              contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+              hintStyle:
+                  const TextStyle(color: Color(0xFF94A3B8), fontSize: 14),
+              border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: BorderSide(
+                      color: Theme.of(context).colorScheme.onSurface,
+                      width: 0.5)),
+              enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: BorderSide(
+                      color: Theme.of(context).colorScheme.onSurface,
+                      width: 0.5)),
+              focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: BorderSide(
+                      color: Theme.of(context).colorScheme.onSurface,
+                      width: 0.5)),
+              contentPadding:
+                  const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
               isDense: true,
             ),
           ),
@@ -1111,35 +1367,40 @@ class _TradeInScreenState extends State<TradeInScreen> {
         _buildProcessStep(
           step: '01',
           title: 'Khách hàng tạo đơn',
-          description: 'Điền đầy đủ thông tin thiết bị, tải ảnh tình trạng máy và gửi yêu cầu định giá trên hệ thống.',
+          description:
+              'Điền đầy đủ thông tin thiết bị, tải ảnh tình trạng máy và gửi yêu cầu định giá trên hệ thống.',
           color: const Color(0xFFEA6C00),
           icon: Icons.edit_document,
         ),
         _buildProcessStep(
           step: '02',
           title: 'Tiếp nhận dữ liệu',
-          description: 'Hệ thống và chuyên viên sẽ ghi nhận yêu cầu, tiến hành kiểm tra tính hợp lệ của các thông tin được cung cấp.',
+          description:
+              'Hệ thống và chuyên viên sẽ ghi nhận yêu cầu, tiến hành kiểm tra tính hợp lệ của các thông tin được cung cấp.',
           color: const Color(0xFFEAB308),
           icon: Icons.data_usage,
         ),
         _buildProcessStep(
           step: '03',
           title: 'Định giá chuẩn xác',
-          description: 'Thiết bị được đánh giá minh bạch dựa trên tình trạng thực tế để đưa ra mức giá thu mua cạnh tranh nhất.',
+          description:
+              'Thiết bị được đánh giá minh bạch dựa trên tình trạng thực tế để đưa ra mức giá thu mua cạnh tranh nhất.',
           color: const Color(0xFF22C55E),
           icon: Icons.price_check,
         ),
         _buildProcessStep(
           step: '04',
           title: 'Phê duyệt yêu cầu',
-          description: 'Đơn yêu cầu được xét duyệt nhanh chóng. Mọi quyết định đồng ý hay từ chối đều đi kèm lý do rõ ràng.',
+          description:
+              'Đơn yêu cầu được xét duyệt nhanh chóng. Mọi quyết định đồng ý hay từ chối đều đi kèm lý do rõ ràng.',
           color: const Color(0xFF3B82F6),
           icon: Icons.check_circle,
         ),
         _buildProcessStep(
           step: '05',
           title: 'Nhận kết quả qua Email',
-          description: 'Nhận ngay thông báo kết quả thẩm định, mức giá chính thức và hướng dẫn các bước tiếp theo qua email của bạn.',
+          description:
+              'Nhận ngay thông báo kết quả thẩm định, mức giá chính thức và hướng dẫn các bước tiếp theo qua email của bạn.',
           color: const Color(0xFFA855F7),
           icon: Icons.email,
           isLast: true,
@@ -1215,7 +1476,10 @@ class _TradeInScreenState extends State<TradeInScreen> {
                   Text(
                     description,
                     style: TextStyle(
-                      color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+                      color: Theme.of(context)
+                          .colorScheme
+                          .onSurface
+                          .withOpacity(0.7),
                       fontSize: 13,
                       height: 1.4,
                     ),
@@ -1248,12 +1512,18 @@ class _TradeInScreenState extends State<TradeInScreen> {
           spacing: 12,
           runSpacing: 12,
           children: [
-            _buildCommitmentItem('Thông tin bảo mật', 'Bảo mật tuyệt đối thông tin cá nhân và thiết bị.', Icons.lock),
-            _buildCommitmentItem('Định giá minh bạch', 'Định giá đúng giá trị thật của thiết bị.', Icons.visibility),
-            _buildCommitmentItem('Không ép giá', 'Nói không với ép giá, mua bán rõ ràng.', Icons.handshake),
-            _buildCommitmentItem('Xử lý nhanh chóng', 'Tiếp nhận và phản hồi trong 30 phút.', Icons.speed),
-            _buildCommitmentItem('Hỗ trợ tận tâm', 'Đội ngũ tư vấn nhiệt tình, hỗ trợ 24/7.', Icons.support_agent),
-            _buildCommitmentItem('Thu cũ đổi mới', 'Trợ giá hấp dẫn khi lên đời sản phẩm.', Icons.autorenew),
+            _buildCommitmentItem('Thông tin bảo mật',
+                'Bảo mật tuyệt đối thông tin cá nhân và thiết bị.', Icons.lock),
+            _buildCommitmentItem('Định giá minh bạch',
+                'Định giá đúng giá trị thật của thiết bị.', Icons.visibility),
+            _buildCommitmentItem('Không ép giá',
+                'Nói không với ép giá, mua bán rõ ràng.', Icons.handshake),
+            _buildCommitmentItem('Xử lý nhanh chóng',
+                'Tiếp nhận và phản hồi trong 30 phút.', Icons.speed),
+            _buildCommitmentItem('Hỗ trợ tận tâm',
+                'Đội ngũ tư vấn nhiệt tình, hỗ trợ 24/7.', Icons.support_agent),
+            _buildCommitmentItem('Thu cũ đổi mới',
+                'Trợ giá hấp dẫn khi lên đời sản phẩm.', Icons.autorenew),
           ],
         ),
       ],
@@ -1268,16 +1538,25 @@ class _TradeInScreenState extends State<TradeInScreen> {
         decoration: BoxDecoration(
           color: Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: Theme.of(context).colorScheme.outline, width: 0.5),
+          border: Border.all(
+              color: Theme.of(context).colorScheme.outline, width: 0.5),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Icon(icon, color: Colors.orange, size: 24),
             const SizedBox(height: 8),
-            Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+            Text(title,
+                style:
+                    const TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
             const SizedBox(height: 4),
-            Text(desc, style: TextStyle(fontSize: 11, color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7))),
+            Text(desc,
+                style: TextStyle(
+                    fontSize: 11,
+                    color: Theme.of(context)
+                        .colorScheme
+                        .onSurface
+                        .withOpacity(0.7))),
           ],
         ),
       );
@@ -1308,9 +1587,12 @@ class _TradeInScreenState extends State<TradeInScreen> {
           ),
           child: Column(
             children: [
-              _buildNoteItem('Thông tin bạn cung cấp càng chi tiết, việc định giá càng chính xác.'),
-              _buildNoteItem('Thiết bị phải thuộc quyền sở hữu hợp pháp của bạn.'),
-              _buildNoteItem('Chúng tôi có quyền từ chối thu mua nếu thiết bị không đủ điều kiện.'),
+              _buildNoteItem(
+                  'Thông tin bạn cung cấp càng chi tiết, việc định giá càng chính xác.'),
+              _buildNoteItem(
+                  'Thiết bị phải thuộc quyền sở hữu hợp pháp của bạn.'),
+              _buildNoteItem(
+                  'Chúng tôi có quyền từ chối thu mua nếu thiết bị không đủ điều kiện.'),
               _buildNoteItem('Mọi thông tin của bạn được bảo mật tuyệt đối.'),
             ],
           ),
@@ -1338,4 +1620,3 @@ class _TradeInScreenState extends State<TradeInScreen> {
     );
   }
 }
-

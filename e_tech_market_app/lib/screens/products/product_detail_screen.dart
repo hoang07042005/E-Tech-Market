@@ -20,7 +20,6 @@ import '../../utils/app_snackbar.dart';
 import '../../utils/translation.dart';
 import 'product_new_detail_screen.dart';
 
-
 String formatCurrency(double value) {
   return value.toStringAsFixed(0).replaceAllMapped(
         RegExp(r'(\d)(?=(\d{3})+(?!\d))'),
@@ -42,7 +41,6 @@ String _imageFrom(dynamic value) {
   final raw = value?.toString().trim() ?? '';
   return raw.isEmpty ? '' : NetworkUtils.fixDeviceUrl(raw);
 }
-
 
 String _timeAgoVi(String value) {
   final date = DateTime.tryParse(value);
@@ -457,7 +455,9 @@ class FlashSaleItem {
       variantId: json['variant_id'] == null ? null : _toInt(json['variant_id']),
       flashSalePrice: _toDouble(json['flash_sale_price']),
       soldQuantity: _toInt(json['sold_quantity']),
-      quantityLimit: json['quantity_limit'] == null ? null : _toInt(json['quantity_limit']),
+      quantityLimit: json['quantity_limit'] == null
+          ? null
+          : _toInt(json['quantity_limit']),
       flashSale: FlashSale.fromJson(saleJson),
     );
   }
@@ -542,13 +542,14 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   Future<void> _checkAuthAndLoyalty() async {
     final token = await const FlutterSecureStorage().read(key: 'auth_token');
     if (token != null && token.isNotEmpty) {
-       _isLoggedIn = true;
-       try {
-         final meRes = await DioClient.instance.get('/me');
-         final user = meRes.data is Map ? (meRes.data['user'] ?? meRes.data) : {};
-         _isLoyaltyMember = user['is_loyalty_member'] == true;
-       } catch (_) {}
-       if (mounted) setState(() {});
+      _isLoggedIn = true;
+      try {
+        final meRes = await DioClient.instance.get('/me');
+        final user =
+            meRes.data is Map ? (meRes.data['user'] ?? meRes.data) : {};
+        _isLoyaltyMember = user['is_loyalty_member'] == true;
+      } catch (_) {}
+      if (mounted) setState(() {});
     }
   }
 
@@ -568,7 +569,6 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
       wishSet = Set<int>.from(_wishlistIds);
     });
   }
-
 
   Future<void> _loadProduct() async {
     setState(() {
@@ -863,9 +863,12 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
       final start = item.flashSale.startAt;
       final end = item.flashSale.endAt;
       if (now.isAfter(start) && now.isBefore(end)) {
-        final isSoldOut = item.quantityLimit != null && item.quantityLimit! > 0 && item.soldQuantity >= item.quantityLimit!;
+        final isSoldOut = item.quantityLimit != null &&
+            item.quantityLimit! > 0 &&
+            item.soldQuantity >= item.quantityLimit!;
         // Nếu variant_id null → áp dụng cho tất cả variant; nếu có → chỉ đúng variant
-        if (!isSoldOut && (item.variantId == null || item.variantId == selectedVariant?.id)) {
+        if (!isSoldOut &&
+            (item.variantId == null || item.variantId == selectedVariant?.id)) {
           return item;
         }
       }
@@ -1048,13 +1051,30 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                         crossAxisAlignment: CrossAxisAlignment.baseline,
                         textBaseline: TextBaseline.alphabetic,
                         children: [
-                          Text('Câu hỏi thường gặp', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.onSurface)),
+                          Text('Câu hỏi thường gặp',
+                              style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  color:
+                                      Theme.of(context).colorScheme.onSurface)),
                           const SizedBox(width: 8),
-                          Text('VỀ SẢN PHẨM', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Theme.of(context).colorScheme.onSurfaceVariant)),
+                          Text('VỀ SẢN PHẨM',
+                              style: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600,
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .onSurfaceVariant)),
                         ],
                       ),
                       const SizedBox(height: 6),
-                      Text('Các gợi ý được cửa hàng soạn trước — xem chung cho mọi phiên bản.', style: TextStyle(fontSize: 13, color: Theme.of(context).colorScheme.onSurfaceVariant)),
+                      Text(
+                          'Các gợi ý được cửa hàng soạn trước — xem chung cho mọi phiên bản.',
+                          style: TextStyle(
+                              fontSize: 13,
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .onSurfaceVariant)),
                       const SizedBox(height: 16),
                       Column(
                         children: visibleFaqs.map(_buildFaqItem).toList(),
@@ -1106,32 +1126,34 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   Widget _buildGallery(Product current, List<ProductImage> images) {
     // Xây dựng danh sách URL ảnh đầy đủ và loại bỏ trùng lặp bằng Set
     final allImageUrlsSet = <String>{};
-    
+
     // 1. Thêm ảnh chính của sản phẩm (nếu có)
     if ((current.mainImageUrl ?? '').isNotEmpty) {
       allImageUrlsSet.add(NetworkUtils.fixDeviceUrl(current.mainImageUrl!));
     }
-    
+
     // 2. Thêm ảnh từ thư viện (gallery)
     for (final img in images) {
       if (img.imageUrl.isNotEmpty) {
         allImageUrlsSet.add(NetworkUtils.fixDeviceUrl(img.imageUrl));
       }
     }
-    
+
     // 3. Thêm ảnh từ các biến thể (variants)
     for (final v in current.variants) {
       if ((v.imageUrl ?? '').isNotEmpty) {
         allImageUrlsSet.add(NetworkUtils.fixDeviceUrl(v.imageUrl!));
       }
     }
-    
+
     final allImageUrls = allImageUrlsSet.toList();
 
     final mainUrl = (selectedImg ?? '').isNotEmpty
         ? selectedImg!
         : (allImageUrls.isNotEmpty ? allImageUrls.first : '');
-    final mainIndex = allImageUrls.indexOf(mainUrl).clamp(0, allImageUrls.length > 0 ? allImageUrls.length - 1 : 0);
+    final mainIndex = allImageUrls
+        .indexOf(mainUrl)
+        .clamp(0, allImageUrls.length > 0 ? allImageUrls.length - 1 : 0);
 
     if (_galleryPageController.hasClients) {
       final currentPage = _galleryPageController.page?.round() ?? 0;
@@ -1178,10 +1200,12 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                                   backgroundColor: Colors.black,
                                   appBar: AppBar(
                                     backgroundColor: Colors.transparent,
-                                    iconTheme: const IconThemeData(color: Colors.white),
+                                    iconTheme: const IconThemeData(
+                                        color: Colors.white),
                                   ),
                                   body: PageView.builder(
-                                    controller: PageController(initialPage: index),
+                                    controller:
+                                        PageController(initialPage: index),
                                     itemCount: allImageUrls.length,
                                     itemBuilder: (context, fsIndex) {
                                       return InteractiveViewer(
@@ -1190,8 +1214,10 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                                         child: Image.network(
                                           allImageUrls[fsIndex],
                                           fit: BoxFit.contain,
-                                          errorBuilder: (_, __, ___) => const Center(
-                                            child: Icon(Icons.broken_image, color: Colors.white, size: 88),
+                                          errorBuilder: (_, __, ___) =>
+                                              const Center(
+                                            child: Icon(Icons.broken_image,
+                                                color: Colors.white, size: 88),
                                           ),
                                         ),
                                       );
@@ -1214,7 +1240,8 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                               errorBuilder: (_, __, ___) => Center(
                                 child: Icon(Icons.computer,
                                     size: 88,
-                                    color: Theme.of(context).colorScheme.outline),
+                                    color:
+                                        Theme.of(context).colorScheme.outline),
                               ),
                             ),
                           ),
@@ -1332,10 +1359,13 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     );
   }
 
-  Widget _buildHeader(Product current, double displayPrice, bool hasFlashSale, Map<String, dynamic> reviewStats) {
+  Widget _buildHeader(Product current, double displayPrice, bool hasFlashSale,
+      Map<String, dynamic> reviewStats) {
     final oldPrice = selectedVariant?.price ?? current.price;
-    final ratingAvg = current.avgRating ?? (reviewStats['avg'] as num?)?.toDouble() ?? 5.0;
-    final reviewCount = current.reviewsCount ?? (reviewStats['total'] as num?)?.toInt() ?? 0;
+    final ratingAvg =
+        current.avgRating ?? (reviewStats['avg'] as num?)?.toDouble() ?? 5.0;
+    final reviewCount =
+        current.reviewsCount ?? (reviewStats['total'] as num?)?.toInt() ?? 0;
     final soldQuantity = current.totalSold ?? 0;
 
     return Padding(
@@ -1486,7 +1516,10 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                                 fontWeight: FontWeight.bold),
                             recognizer: TapGestureRecognizer()
                               ..onTap = () {
-                                Navigator.push(context, MaterialPageRoute(builder: (_) => const LoyaltyScreen()));
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (_) => const LoyaltyScreen()));
                               },
                           ),
                           const TextSpan(text: ' để tích lũy thêm '),
@@ -1715,8 +1748,9 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
             sValue = v.name.trim();
             for (var color in colors) {
               if (sValue.toLowerCase().contains(color.toLowerCase())) {
-                sValue =
-                    sValue.replaceAll(RegExp(color, caseSensitive: false), '').trim();
+                sValue = sValue
+                    .replaceAll(RegExp(color, caseSensitive: false), '')
+                    .trim();
               }
             }
             // Loại bỏ các ký tự thừa như gạch ngang ở đầu/cuối nếu có
@@ -1783,7 +1817,9 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
 
     final activeFs = _getActiveFlashSaleItem();
     int currentStock = selectedVariant?.stockQuantity ?? 0;
-    if (activeFs != null && activeFs.quantityLimit != null && activeFs.quantityLimit! > 0) {
+    if (activeFs != null &&
+        activeFs.quantityLimit != null &&
+        activeFs.quantityLimit! > 0) {
       currentStock = activeFs.quantityLimit! - activeFs.soldQuantity;
     }
     final bool isAvailable = currentStock > 0;
@@ -2111,11 +2147,14 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                       await _addToCart();
                     },
               icon: Icon(
-                  isOutOfStock ? Icons.remove_shopping_cart : Icons.add_shopping_cart,
+                  isOutOfStock
+                      ? Icons.remove_shopping_cart
+                      : Icons.add_shopping_cart,
                   color: isOutOfStock ? Colors.grey[400] : Colors.white),
               label: Text(isOutOfStock ? Trans.outOfStock : Trans.addToCart),
               style: ElevatedButton.styleFrom(
-                backgroundColor: isOutOfStock ? Colors.grey[300] : Color(0xFFFF6A00),
+                backgroundColor:
+                    isOutOfStock ? Colors.grey[300] : Color(0xFFFF6A00),
                 foregroundColor: isOutOfStock ? Colors.grey[600] : Colors.white,
               ),
             ),
@@ -2154,7 +2193,11 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
             ? 'Hỗ trợ tư vấn tương thích linh kiện trước khi mua.'
             : 'Hỗ trợ cài đặt ban đầu, kiểm tra ngoại quan và chức năng trước khi giao.';
     final items = [
-      (Icons.verified_outlined, 'Hàng mới, chính hãng, serial rõ ràng.', Colors.blue),
+      (
+        Icons.verified_outlined,
+        'Hàng mới, chính hãng, serial rõ ràng.',
+        Colors.blue
+      ),
       (
         Icons.shield_outlined,
         'Bảo hành 12 tháng theo chính sách hãng/nhà phân phối.',
@@ -2182,10 +2225,16 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
           return Card(
             elevation: 0,
             margin: EdgeInsets.zero,
-            color: Theme.of(context).colorScheme.surfaceContainerHighest.withOpacity(0.4),
+            color: Theme.of(context)
+                .colorScheme
+                .surfaceContainerHighest
+                .withOpacity(0.4),
             shape: RoundedRectangleBorder(
               side: BorderSide(
-                color: Theme.of(context).colorScheme.outlineVariant.withOpacity(0.5),
+                color: Theme.of(context)
+                    .colorScheme
+                    .outlineVariant
+                    .withOpacity(0.5),
                 width: 1,
               ),
               borderRadius: BorderRadius.circular(16),
@@ -2249,8 +2298,12 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
               children: [
                 // Header của từng nhóm (VD: HỆ ĐIỀU HÀNH)
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                  color: Theme.of(context).colorScheme.surfaceContainerHighest.withOpacity(0.3),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                  color: Theme.of(context)
+                      .colorScheme
+                      .surfaceContainerHighest
+                      .withOpacity(0.3),
                   child: Text(
                     entry.key.toUpperCase(),
                     style: TextStyle(
@@ -2270,7 +2323,8 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                   return Column(
                     children: [
                       Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 14),
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -2279,7 +2333,9 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                               child: Text(
                                 '${spec.specKey ?? ''}:',
                                 style: TextStyle(
-                                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .onSurfaceVariant,
                                   fontSize: 14,
                                   fontWeight: FontWeight.w500,
                                 ),
@@ -2291,7 +2347,8 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                               child: Text(
                                 '${spec.specValue ?? ''}${unit.isEmpty ? '' : ' $unit'}',
                                 style: TextStyle(
-                                  color: Theme.of(context).colorScheme.onSurface,
+                                  color:
+                                      Theme.of(context).colorScheme.onSurface,
                                   fontSize: 14,
                                   fontWeight: FontWeight.w600,
                                 ),
@@ -2305,13 +2362,16 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 16),
                           child: LayoutBuilder(
-                            builder: (BuildContext context, BoxConstraints constraints) {
+                            builder: (BuildContext context,
+                                BoxConstraints constraints) {
                               final boxWidth = constraints.constrainWidth();
                               const dashWidth = 4.0;
                               const dashHeight = 1.0;
-                              final dashCount = (boxWidth / (2 * dashWidth)).floor();
+                              final dashCount =
+                                  (boxWidth / (2 * dashWidth)).floor();
                               return Flex(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 direction: Axis.horizontal,
                                 children: List.generate(dashCount, (_) {
                                   return SizedBox(
@@ -2319,7 +2379,10 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                                     height: dashHeight,
                                     child: DecoratedBox(
                                       decoration: BoxDecoration(
-                                        color: Theme.of(context).colorScheme.outlineVariant.withOpacity(0.4),
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .outlineVariant
+                                            .withOpacity(0.4),
                                       ),
                                     ),
                                   );
@@ -2344,7 +2407,10 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surfaceContainerHighest.withOpacity(0.3),
+        color: Theme.of(context)
+            .colorScheme
+            .surfaceContainerHighest
+            .withOpacity(0.3),
         borderRadius: BorderRadius.circular(8),
       ),
       child: Column(
@@ -2360,12 +2426,19 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                   Expanded(
                     child: Text(
                       faq.question,
-                      style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: Theme.of(context).colorScheme.onSurface),
+                      style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          color: Theme.of(context).colorScheme.onSurface),
                     ),
                   ),
                   const SizedBox(width: 8),
-                  Icon(isOpen ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down,
-                      size: 22, color: Theme.of(context).colorScheme.onSurfaceVariant),
+                  Icon(
+                      isOpen
+                          ? Icons.keyboard_arrow_up
+                          : Icons.keyboard_arrow_down,
+                      size: 22,
+                      color: Theme.of(context).colorScheme.onSurfaceVariant),
                 ],
               ),
             ),
@@ -2418,7 +2491,8 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
               // ),
               // Thay thế widget Text cũ bằng widget Html
               child: Html(
-                data: rich.isNotEmpty ? rich : 'Không có mô tả cho sản phẩm này.',
+                data:
+                    rich.isNotEmpty ? rich : 'Không có mô tả cho sản phẩm này.',
                 style: {
                   // Cấu hình định dạng chung cho toàn bộ văn bản
                   "body": Style(
@@ -2455,7 +2529,10 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
               children: [
                 Text(
                   'Bài viết & Tin tức',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.onSurface),
+                  style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Theme.of(context).colorScheme.onSurface),
                 ),
                 InkWell(
                   onTap: () {
@@ -2511,7 +2588,8 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
               ),
             ],
             border: Border.all(
-              color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.15),
+              color:
+                  Theme.of(context).colorScheme.outline.withValues(alpha: 0.15),
             ),
           ),
           child: Row(
@@ -2527,20 +2605,28 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                   width: 110,
                   child: item.thumbnailUrl == null || item.thumbnailUrl!.isEmpty
                       ? Container(
-                          color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                          color: Theme.of(context)
+                              .colorScheme
+                              .surfaceContainerHighest,
                           child: Icon(Icons.article_outlined,
                               size: 32,
-                              color: Theme.of(context).colorScheme.onSurfaceVariant),
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .onSurfaceVariant),
                         )
                       : Image.network(
                           _resolveImageUrl(item.thumbnailUrl),
                           fit: BoxFit.cover,
                           errorBuilder: (_, __, ___) => Container(
-                            color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                            color: Theme.of(context)
+                                .colorScheme
+                                .surfaceContainerHighest,
                             child: Icon(
                               Icons.broken_image_outlined,
                               size: 32,
-                              color: Theme.of(context).colorScheme.onSurfaceVariant,
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .onSurfaceVariant,
                             ),
                           ),
                         ),
@@ -2550,7 +2636,8 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
               // Content
               Expanded(
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 4),
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 10, horizontal: 4),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -2572,7 +2659,8 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                           "${item.publishedAt!.day.toString().padLeft(2, '0')}/${item.publishedAt!.month.toString().padLeft(2, '0')}/${item.publishedAt!.year}",
                           style: TextStyle(
                             fontSize: 12,
-                            color: Theme.of(context).colorScheme.onSurfaceVariant,
+                            color:
+                                Theme.of(context).colorScheme.onSurfaceVariant,
                           ),
                         )
                       else
@@ -2595,7 +2683,10 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                   child: Icon(
                     Icons.arrow_forward_ios,
                     size: 14,
-                    color: Theme.of(context).colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
+                    color: Theme.of(context)
+                        .colorScheme
+                        .onSurfaceVariant
+                        .withValues(alpha: 0.5),
                   ),
                 ),
               ),
@@ -2613,7 +2704,6 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     // 1. TRẠNG THÁI LƯU TRỮ CHỌN SAO (Mặc định chọn 5 sao)
     int localRating = 5; // Đánh giá chung
 
-
     final TextEditingController localReviewController = TextEditingController();
     bool localIsSubmitting = false;
     final List<XFile> localMediaFiles = []; // Danh sách ảnh/video đã chọn
@@ -2626,8 +2716,6 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
       'Tốt',
       'Tuyệt vời'
     ];
-
-
 
     showModalBottomSheet(
       context: context,
@@ -3295,10 +3383,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     );
   }
 
-
-
   Widget _buildReviewItem(ProductReview review) {
-
     final userName = review.userName ?? 'Người dùng';
     return Container(
       margin: const EdgeInsets.only(bottom: 14),
@@ -3388,7 +3473,6 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
               spacing: 6,
               runSpacing: 6,
               children: [
-
                 if (review.orderId != null)
                   _buildReviewPill('Đã mua hàng', verified: true),
               ],
@@ -4097,5 +4181,4 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
       ),
     );
   }
-
 }

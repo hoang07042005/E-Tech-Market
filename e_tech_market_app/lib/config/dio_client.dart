@@ -55,12 +55,16 @@ class DioClient {
         // response 401 về SAU khi đăng nhập Google vừa xong → tưởng nhầm là
         // token mới cũng bị từ chối và tự động logout).
         if (e.response?.statusCode == 401) {
-          final sentAuthHeader = e.requestOptions.headers['Authorization'] as String?;
+          final sentAuthHeader =
+              e.requestOptions.headers['Authorization'] as String?;
           if (sentAuthHeader != null && sentAuthHeader.isNotEmpty) {
             final currentToken = await AuthService.getToken();
             final currentAuthHeader =
-                (currentToken != null && currentToken.isNotEmpty) ? 'Bearer $currentToken' : null;
-            final isStillSameToken = currentAuthHeader == null || sentAuthHeader == currentAuthHeader;
+                (currentToken != null && currentToken.isNotEmpty)
+                    ? 'Bearer $currentToken'
+                    : null;
+            final isStillSameToken = currentAuthHeader == null ||
+                sentAuthHeader == currentAuthHeader;
             if (isStillSameToken) {
               await AuthService.clearSession();
               DioClient.reset(); // Tạo Dio mới cho lần đăng nhập kế tiếp

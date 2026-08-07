@@ -66,7 +66,8 @@ class _TypingIndicatorState extends State<TypingIndicator>
               ),
               borderRadius: BorderRadius.circular(16),
             ),
-            child: const Icon(Icons.smart_toy_rounded, color: Colors.white, size: 18),
+            child: const Icon(Icons.smart_toy_rounded,
+                color: Colors.white, size: 18),
           ),
           const SizedBox(width: 8),
           // Typing dots
@@ -96,7 +97,9 @@ class _TypingIndicatorState extends State<TypingIndicator>
                           height: 8,
                           decoration: BoxDecoration(
                             color: Color.lerp(
-                              isDark ? const Color(0xFF666666) : const Color(0xFFCBD5E1),
+                              isDark
+                                  ? const Color(0xFF666666)
+                                  : const Color(0xFFCBD5E1),
                               const Color(0xFFF26522),
                               _animations[index].value,
                             ),

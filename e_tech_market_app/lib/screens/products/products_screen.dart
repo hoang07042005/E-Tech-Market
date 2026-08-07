@@ -6,7 +6,6 @@ import '../../utils/network_utils.dart';
 import '../../utils/translation.dart';
 import 'product_detail_screen.dart';
 
-
 class ProductsScreen extends StatefulWidget {
   final int? initialCategoryId;
 
@@ -821,7 +820,8 @@ class _ProductsScreenState extends State<ProductsScreen> {
     return btns;
   }
 
-  String _resolveProductImageUrl(Map<String, dynamic> product, {Map<String, dynamic>? selectedVariant}) {
+  String _resolveProductImageUrl(Map<String, dynamic> product,
+      {Map<String, dynamic>? selectedVariant}) {
     if (selectedVariant != null) {
       final vImg = selectedVariant['image_url']?.toString().trim();
       if (vImg != null && vImg.isNotEmpty) {
@@ -865,8 +865,12 @@ class _ProductsScreenState extends State<ProductsScreen> {
       for (var item in flashSaleItems) {
         final qLimitRaw = item['quantity_limit'];
         final sQtyRaw = item['sold_quantity'];
-        final qLimit = qLimitRaw is num ? qLimitRaw.toInt() : int.tryParse(qLimitRaw?.toString() ?? '');
-        final sQty = sQtyRaw is num ? sQtyRaw.toInt() : (int.tryParse(sQtyRaw?.toString() ?? '') ?? 0);
+        final qLimit = qLimitRaw is num
+            ? qLimitRaw.toInt()
+            : int.tryParse(qLimitRaw?.toString() ?? '');
+        final sQty = sQtyRaw is num
+            ? sQtyRaw.toInt()
+            : (int.tryParse(sQtyRaw?.toString() ?? '') ?? 0);
         final isSoldOut = qLimit != null && qLimit > 0 && sQty >= qLimit;
 
         if (item['flash_sale'] != null && !isSoldOut) {
@@ -894,11 +898,12 @@ class _ProductsScreenState extends State<ProductsScreen> {
 
       final lowest = sorted.first;
       final highest = sorted.last;
-      
+
       Map<String, dynamic> selectedVariant = lowest;
 
-      double finalPrice =
-          double.tryParse(selectedVariant['effective_price']?.toString() ?? '0') ?? 0;
+      double finalPrice = double.tryParse(
+              selectedVariant['effective_price']?.toString() ?? '0') ??
+          0;
       double? priceMax =
           double.tryParse(highest['effective_price']?.toString() ?? '0') ?? 0;
       double originalPrice =
@@ -909,13 +914,18 @@ class _ProductsScreenState extends State<ProductsScreen> {
 
       if (isFlashSale && activeFlashSaleItem != null) {
         if (activeFlashSaleItem['variant_id'] != null) {
-          final int flashVariantId = int.tryParse(activeFlashSaleItem['variant_id'].toString()) ?? 0;
+          final int flashVariantId =
+              int.tryParse(activeFlashSaleItem['variant_id'].toString()) ?? 0;
           if (flashVariantId > 0) {
-             final flashVariant = activeVariants.firstWhere((v) => v['id'] == flashVariantId, orElse: () => lowest);
-             if (flashVariant != lowest) {
-               selectedVariant = flashVariant;
-               originalPrice = double.tryParse(flashVariant['price']?.toString() ?? '0') ?? 0;
-             }
+            final flashVariant = activeVariants.firstWhere(
+                (v) => v['id'] == flashVariantId,
+                orElse: () => lowest);
+            if (flashVariant != lowest) {
+              selectedVariant = flashVariant;
+              originalPrice =
+                  double.tryParse(flashVariant['price']?.toString() ?? '0') ??
+                      0;
+            }
           }
         }
 
@@ -958,7 +968,8 @@ class _ProductsScreenState extends State<ProductsScreen> {
     return DateTime.now().difference(createdAt).inDays <= 10;
   }
 
-  void _navigateToProductDetail(Map<String, dynamic> product, {String? variantId}) {
+  void _navigateToProductDetail(Map<String, dynamic> product,
+      {String? variantId}) {
     final slug = product['slug']?.toString() ?? '';
     if (slug.isEmpty) return;
     Navigator.push(
@@ -992,11 +1003,13 @@ class _ProductsScreenState extends State<ProductsScreen> {
       rating = double.tryParse(product['avg_rating'].toString()) ?? 0;
     }
 
-    final imageUrl = _resolveProductImageUrl(product, selectedVariant: selectedVariant);
+    final imageUrl =
+        _resolveProductImageUrl(product, selectedVariant: selectedVariant);
     final selectedVariantId = selectedVariant?['id']?.toString();
 
     return GestureDetector(
-      onTap: () => _navigateToProductDetail(product, variantId: selectedVariantId),
+      onTap: () =>
+          _navigateToProductDetail(product, variantId: selectedVariantId),
       child: Container(
         decoration: BoxDecoration(
           color: Theme.of(context).colorScheme.surface,
@@ -1250,7 +1263,9 @@ class _ProductsScreenState extends State<ProductsScreen> {
                           child: Text(
                             '${_formatPrice(displayOldPrice)}đ',
                             style: TextStyle(
-                              color: Theme.of(context).colorScheme.onSurfaceVariant,
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .onSurfaceVariant,
                               fontSize: 10,
                               decoration: TextDecoration.lineThrough,
                             ),
@@ -1259,11 +1274,12 @@ class _ProductsScreenState extends State<ProductsScreen> {
                     ],
                   ),
                   const SizedBox(height: 4),
-                  
+
                   // Stock bar
                   Builder(
                     builder: (context) {
-                      if (flashSaleItem != null && flashSaleItem['flash_sale'] != null) {
+                      if (flashSaleItem != null &&
+                          flashSaleItem['flash_sale'] != null) {
                         return Padding(
                           padding: const EdgeInsets.only(bottom: 4),
                           child: _StockBar(
@@ -1273,12 +1289,19 @@ class _ProductsScreenState extends State<ProductsScreen> {
                           ),
                         );
                       } else {
-                        final variants = product['variants'] as List<dynamic>? ?? [];
+                        final variants =
+                            product['variants'] as List<dynamic>? ?? [];
                         int? totalStock;
                         if (variants.isNotEmpty) {
-                          totalStock = variants.fold<int>(0, (sum, v) => sum + ((v['stock_quantity'] as num?)?.toInt() ?? 0));
+                          totalStock = variants.fold<int>(
+                              0,
+                              (sum, v) =>
+                                  sum +
+                                  ((v['stock_quantity'] as num?)?.toInt() ??
+                                      0));
                         } else {
-                          totalStock = (product['stock_quantity'] as num?)?.toInt();
+                          totalStock =
+                              (product['stock_quantity'] as num?)?.toInt();
                         }
                         if (totalStock != null) {
                           return Padding(
@@ -2019,7 +2042,8 @@ class _StockBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (isFlashSale) {
-      if (flashSaleLimit == null || flashSaleLimit == 0) return const SizedBox();
+      if (flashSaleLimit == null || flashSaleLimit == 0)
+        return const SizedBox();
       final sold = flashSaleSold ?? 0;
       final limit = flashSaleLimit!;
       final pct = (sold / limit * 100).clamp(0, 100).toDouble();
@@ -2075,7 +2099,8 @@ class _StockBar extends StatelessWidget {
     } else {
       if (normalStock == null) return const SizedBox();
       final stock = normalStock!;
-      final pct = (stock / 100 * 100).clamp(0, 100).toDouble(); // STOCK_MAX = 100
+      final pct =
+          (stock / 100 * 100).clamp(0, 100).toDouble(); // STOCK_MAX = 100
       final isOut = stock <= 0;
       final isLow = stock > 0 && stock <= 10;
 
@@ -2086,14 +2111,19 @@ class _StockBar extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                isOut 
-                    ? "❌ Hết hàng" 
-                    : isLow 
-                        ? "⚠️ Sắp hết hàng (còn $stock)" 
+                isOut
+                    ? "❌ Hết hàng"
+                    : isLow
+                        ? "⚠️ Sắp hết hàng (còn $stock)"
                         : "Còn $stock sản phẩm",
                 style: TextStyle(
-                  color: isOut ? const Color(0xFF9E9E9E) : isLow ? const Color(0xFFE53E3E) : const Color(0xFFFF4B2B),
-                  fontWeight: (isLow || isOut) ? FontWeight.w700 : FontWeight.w600,
+                  color: isOut
+                      ? const Color(0xFF9E9E9E)
+                      : isLow
+                          ? const Color(0xFFE53E3E)
+                          : const Color(0xFFFF4B2B),
+                  fontWeight:
+                      (isLow || isOut) ? FontWeight.w700 : FontWeight.w600,
                   fontSize: 10,
                 ),
               ),

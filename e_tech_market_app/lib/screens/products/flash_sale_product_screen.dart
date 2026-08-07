@@ -218,7 +218,8 @@ class _FlashSaleProductScreenState extends State<FlashSaleProductScreen> {
       backgroundColor: Color(0xFF121212),
       body: Center(
           child: Column(mainAxisSize: MainAxisSize.min, children: [
-        CircularProgressIndicator(color: const Color(0xFFF26522), strokeWidth: 3),
+        CircularProgressIndicator(
+            color: const Color(0xFFF26522), strokeWidth: 3),
         SizedBox(height: 16),
         Text('\u0110ang t\u1EA3i Flash Sale...',
             style: TextStyle(color: Color(0xFFE4BEB4), fontSize: 14)),
@@ -279,7 +280,7 @@ class _FlashSaleProductScreenState extends State<FlashSaleProductScreen> {
         floating: true,
         snap: true,
         elevation: 0,
-        backgroundColor:  Colors.red,
+        backgroundColor: Colors.red,
         foregroundColor: Theme.of(context).colorScheme.onSurface,
         title: _isSearching
             ? TextField(
@@ -554,7 +555,9 @@ class _FlashSaleProductScreenState extends State<FlashSaleProductScreen> {
                           padding: const EdgeInsets.symmetric(
                               horizontal: 20, vertical: 9),
                           decoration: BoxDecoration(
-                              color: a ? const Color(0xFFFF5722) : Theme.of(context).colorScheme.surface,
+                              color: a
+                                  ? const Color(0xFFFF5722)
+                                  : Theme.of(context).colorScheme.surface,
                               borderRadius: BorderRadius.circular(999),
                               border: Border.all(
                                   color: a
@@ -566,7 +569,9 @@ class _FlashSaleProductScreenState extends State<FlashSaleProductScreen> {
                                   fontWeight: FontWeight.w500,
                                   color: a
                                       ? Colors.white
-                                      : Theme.of(context).colorScheme.onSurface)))));
+                                      : Theme.of(context)
+                                          .colorScheme
+                                          .onSurface)))));
             }).toList())));
   }
 
@@ -582,7 +587,9 @@ class _FlashSaleProductScreenState extends State<FlashSaleProductScreen> {
                       _searchQuery.isNotEmpty
                           ? 'Không tìm thấy sản phẩm nào'
                           : 'Không có sản phẩm',
-                      style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 14)))));
+                      style: TextStyle(
+                          color: Theme.of(context).colorScheme.onSurface,
+                          fontSize: 14)))));
     return SliverPadding(
         padding: const EdgeInsets.symmetric(horizontal: 12),
         sliver: SliverGrid(
@@ -632,134 +639,171 @@ class _FlashSaleProductScreenState extends State<FlashSaleProductScreen> {
                           blurRadius: 6,
                           offset: const Offset(0, 2))
                     ]),
-                child:
-                    Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                  Stack(children: [
-                    AspectRatio(
-                        aspectRatio: 1,
-                        child: ClipRRect(
-                            borderRadius: const BorderRadius.vertical(
-                                top: Radius.circular(5)),
-                            child: Container(
-                                color: Theme.of(context).colorScheme.surface,
-                                padding: const EdgeInsets.all(0),
-                                child: img.isNotEmpty
-                                    ? Image.network(img,
-                                        fit: BoxFit.contain,
-                                        errorBuilder: (_, __, ___) => const Icon(
-                                            Icons.image_not_supported,
-                                            color: Colors.grey,
-                                            size: 40))
-                                    :  Icon(Icons.image_not_supported,
-                                        color: Theme.of(context).colorScheme.surface, size: 40)))),
-                    if (d > 0)
-                      Positioned(
-                          top: 0,
-                          left: 0,
-                          child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 6, vertical: 4),
-                              decoration: const BoxDecoration(
-                                  color: Color(0xFFFF2424),
-                                  borderRadius: BorderRadius.only(
-                                      topLeft: Radius.circular(5),
-                                      bottomRight: Radius.circular(8))),
-                              child: Text('-$d%',
-                                  style: const TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w700)))),
-                    if (isSoldOut)
-                      Positioned.fill(
-                        child: Container(
-                          color: Colors.black.withValues(alpha: 0.5),
-                          alignment: Alignment.center,
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                            decoration: BoxDecoration(
-                              color: Colors.black.withValues(alpha: 0.7),
-                              borderRadius: BorderRadius.circular(4),
-                            ),
-                            child: const Text('ĐÃ BÁN HẾT', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14)),
-                          ),
-                        ),
-                      ),
-                  ]),
-                  Expanded(
-                      child: Padding(
-                          padding: const EdgeInsets.all(8),
-                          child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(nm,
-                                    maxLines: 2,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: TextStyle(
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w600,
-                                        height: 1.3,
-                                        color: Theme.of(context).colorScheme.onSurface)),
-                                // Description
-                                const SizedBox(height: 5),
-                                Text('${_fp(sp)}\u0111',
-                                    style: const TextStyle(
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w700,
-                                        color: Color(0xFFFF5722))),
-                                if (op > 0)
-                                  Text('${_fp(op)}\u0111',
+                child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Stack(children: [
+                        AspectRatio(
+                            aspectRatio: 1,
+                            child: ClipRRect(
+                                borderRadius: const BorderRadius.vertical(
+                                    top: Radius.circular(5)),
+                                child: Container(
+                                    color:
+                                        Theme.of(context).colorScheme.surface,
+                                    padding: const EdgeInsets.all(0),
+                                    child: img.isNotEmpty
+                                        ? Image.network(img,
+                                            fit: BoxFit.contain,
+                                            errorBuilder: (_, __, ___) =>
+                                                const Icon(
+                                                    Icons.image_not_supported,
+                                                    color: Colors.grey,
+                                                    size: 40))
+                                        : Icon(Icons.image_not_supported,
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .surface,
+                                            size: 40)))),
+                        if (d > 0)
+                          Positioned(
+                              top: 0,
+                              left: 0,
+                              child: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 6, vertical: 4),
+                                  decoration: const BoxDecoration(
+                                      color: Color(0xFFFF2424),
+                                      borderRadius: BorderRadius.only(
+                                          topLeft: Radius.circular(5),
+                                          bottomRight: Radius.circular(8))),
+                                  child: Text('-$d%',
                                       style: const TextStyle(
-                                          fontSize: 10,
-                                          color: Color(0xFFD7D7D7),
-                                          decoration: TextDecoration.lineThrough,
-                                          decorationThickness: 2.0,
-                                          decorationColor: Color(0xFFC4C4C4))),
-                                Builder(builder: (_) {
-                                  final desc = p['description']?.toString() ?? '';
-                                  return desc.isNotEmpty
-                                      ? Padding(
-                                          padding: const EdgeInsets.only(top: 4),
-                                          child: Text(desc,
-                                              maxLines: 2,
-                                              overflow: TextOverflow.ellipsis,
-                                              style: TextStyle(
-                                                  fontSize: 11,
-                                                  color: Theme.of(context).colorScheme.onSurface)),
-                                        )
-                                      : const SizedBox.shrink();
-                                }),
-    
-                                const SizedBox(height: 10),
-                                _prog(pct, hot, sold, st),
-                                const SizedBox(height: 10),
-                                Container(
-                                    width: double.infinity,
-                                    padding:
-                                        const EdgeInsets.symmetric(vertical: 8),
-                                    decoration: BoxDecoration(
-                                        color: isSoldOut ? Colors.grey : const Color(0xFFFF5722),
-                                        borderRadius: BorderRadius.circular(5),
-                                        boxShadow: [
-                                          BoxShadow(
-                                              color: (isSoldOut ? Colors.grey : const Color(0xFFFF5722))
-                                                  .withValues(alpha: 0.4),
-                                              blurRadius: 10,
-                                              offset: const Offset(0, 3))
-                                        ]),
-                                    child: Row(
-                                        mainAxisAlignment: MainAxisAlignment.center,
-                                        children: [
-                                          Icon(isSoldOut ? Icons.remove_shopping_cart : Icons.shopping_cart_outlined,
-                                              color: Colors.white, size: 14),
-                                          const SizedBox(width: 4),
-                                          Text(isSoldOut ? 'HẾT HÀNG' : 'MUA NGAY',
-                                              style: const TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.w700)))),
+                        if (isSoldOut)
+                          Positioned.fill(
+                            child: Container(
+                              color: Colors.black.withValues(alpha: 0.5),
+                              alignment: Alignment.center,
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 12, vertical: 6),
+                                decoration: BoxDecoration(
+                                  color: Colors.black.withValues(alpha: 0.7),
+                                  borderRadius: BorderRadius.circular(4),
+                                ),
+                                child: const Text('ĐÃ BÁN HẾT',
+                                    style: TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 14)),
+                              ),
+                            ),
+                          ),
+                      ]),
+                      Expanded(
+                          child: Padding(
+                              padding: const EdgeInsets.all(8),
+                              child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(nm,
+                                        maxLines: 2,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: TextStyle(
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.w600,
+                                            height: 1.3,
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .onSurface)),
+                                    // Description
+                                    const SizedBox(height: 5),
+                                    Text('${_fp(sp)}\u0111',
+                                        style: const TextStyle(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w700,
+                                            color: Color(0xFFFF5722))),
+                                    if (op > 0)
+                                      Text('${_fp(op)}\u0111',
+                                          style: const TextStyle(
+                                              fontSize: 10,
+                                              color: Color(0xFFD7D7D7),
+                                              decoration:
+                                                  TextDecoration.lineThrough,
+                                              decorationThickness: 2.0,
+                                              decorationColor:
+                                                  Color(0xFFC4C4C4))),
+                                    Builder(builder: (_) {
+                                      final desc =
+                                          p['description']?.toString() ?? '';
+                                      return desc.isNotEmpty
+                                          ? Padding(
+                                              padding:
+                                                  const EdgeInsets.only(top: 4),
+                                              child: Text(desc,
+                                                  maxLines: 2,
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                  style: TextStyle(
+                                                      fontSize: 11,
+                                                      color: Theme.of(context)
+                                                          .colorScheme
+                                                          .onSurface)),
+                                            )
+                                          : const SizedBox.shrink();
+                                    }),
+
+                                    const SizedBox(height: 10),
+                                    _prog(pct, hot, sold, st),
+                                    const SizedBox(height: 10),
+                                    Container(
+                                        width: double.infinity,
+                                        padding: const EdgeInsets.symmetric(
+                                            vertical: 8),
+                                        decoration: BoxDecoration(
+                                            color: isSoldOut
+                                                ? Colors.grey
+                                                : const Color(0xFFFF5722),
+                                            borderRadius:
+                                                BorderRadius.circular(5),
+                                            boxShadow: [
+                                              BoxShadow(
+                                                  color: (isSoldOut
+                                                          ? Colors.grey
+                                                          : const Color(
+                                                              0xFFFF5722))
+                                                      .withValues(alpha: 0.4),
+                                                  blurRadius: 10,
+                                                  offset: const Offset(0, 3))
+                                            ]),
+                                        child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: [
+                                              Icon(
+                                                  isSoldOut
+                                                      ? Icons
+                                                          .remove_shopping_cart
+                                                      : Icons
+                                                          .shopping_cart_outlined,
                                                   color: Colors.white,
-                                                  fontSize: 11,
-                                                  fontWeight: FontWeight.w700)),
-                                        ])),
-                              ]))),
-                ]))));
+                                                  size: 14),
+                                              const SizedBox(width: 4),
+                                              Text(
+                                                  isSoldOut
+                                                      ? 'HẾT HÀNG'
+                                                      : 'MUA NGAY',
+                                                  style: const TextStyle(
+                                                      color: Colors.white,
+                                                      fontSize: 11,
+                                                      fontWeight:
+                                                          FontWeight.w700)),
+                                            ])),
+                                  ]))),
+                    ]))));
   }
 
   Widget _prog(double pct, bool hot, int sold, String st) =>

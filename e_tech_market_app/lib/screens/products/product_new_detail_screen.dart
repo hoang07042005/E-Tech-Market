@@ -40,7 +40,8 @@ class _TrustAllImage extends StatefulWidget {
   final double? width;
   final BoxFit fit;
 
-  const _TrustAllImage({required this.url, this.width, this.fit = BoxFit.contain});
+  const _TrustAllImage(
+      {required this.url, this.width, this.fit = BoxFit.contain});
 
   @override
   State<_TrustAllImage> createState() => _TrustAllImageState();
@@ -70,13 +71,25 @@ class _TrustAllImageState extends State<_TrustAllImage> {
         await for (final chunk in res) {
           chunks.addAll(chunk);
         }
-        if (mounted) setState(() { _bytes = Uint8List.fromList(chunks); _loading = false; });
+        if (mounted)
+          setState(() {
+            _bytes = Uint8List.fromList(chunks);
+            _loading = false;
+          });
       } else {
-        if (mounted) setState(() { _failed = true; _loading = false; });
+        if (mounted)
+          setState(() {
+            _failed = true;
+            _loading = false;
+          });
       }
       client.close(force: true);
     } catch (_) {
-      if (mounted) setState(() { _failed = true; _loading = false; });
+      if (mounted)
+        setState(() {
+          _failed = true;
+          _loading = false;
+        });
     }
   }
 
@@ -86,7 +99,9 @@ class _TrustAllImageState extends State<_TrustAllImage> {
       return SizedBox(
         width: widget.width ?? double.infinity,
         height: 160,
-        child: const Center(child: CircularProgressIndicator(strokeWidth: 2, color: Color(0xFFF26522))),
+        child: const Center(
+            child: CircularProgressIndicator(
+                strokeWidth: 2, color: Color(0xFFF26522))),
       );
     }
     if (_failed || _bytes == null) {
@@ -131,11 +146,17 @@ class _ProductNewDetailScreenState extends State<ProductNewDetailScreen> {
   Future<void> _fetchNewsDetail() async {
     try {
       if (!mounted) return;
-      setState(() { _isLoading = true; _error = null; });
+      setState(() {
+        _isLoading = true;
+        _error = null;
+      });
 
       final data = await ProductsService.fetchProductNewsBySlug(widget.slug);
       if (mounted) {
-        setState(() { _news = ProductNews.fromJson(data); _isLoading = false; });
+        setState(() {
+          _news = ProductNews.fromJson(data);
+          _isLoading = false;
+        });
       }
     } catch (e) {
       if (mounted) {
@@ -161,7 +182,8 @@ class _ProductNewDetailScreenState extends State<ProductNewDetailScreen> {
           RegExp(r'src="([^"]*)"', caseSensitive: false),
           (m) {
             final raw = m.group(1) ?? '';
-            if (raw.trim().startsWith('data:') || raw.trim().isEmpty) return m.group(0)!;
+            if (raw.trim().startsWith('data:') || raw.trim().isEmpty)
+              return m.group(0)!;
             return 'src="${_resolveUrl(raw.trim())}"';
           },
         );
@@ -169,7 +191,8 @@ class _ProductNewDetailScreenState extends State<ProductNewDetailScreen> {
           RegExp(r"src='([^']*)'", caseSensitive: false),
           (m) {
             final raw = m.group(1) ?? '';
-            if (raw.trim().startsWith('data:') || raw.trim().isEmpty) return m.group(0)!;
+            if (raw.trim().startsWith('data:') || raw.trim().isEmpty)
+              return m.group(0)!;
             return 'src="${_resolveUrl(raw.trim())}"';
           },
         );
@@ -178,10 +201,13 @@ class _ProductNewDetailScreenState extends State<ProductNewDetailScreen> {
     );
 
     // 2. Loại bỏ các thuộc tính width/height cứng (inline style hoặc attribute) có thể ép chữ thành cột dọc
-    processed = processed.replaceAll(RegExp(r'\bwidth\s*=\s*"[^"]*"', caseSensitive: false), '');
-    processed = processed.replaceAll(RegExp(r"\bwidth\s*=\s*'[^']*'", caseSensitive: false), '');
-    processed = processed.replaceAll(RegExp(r'\bwidth\s*:\s*[^;"]+;?', caseSensitive: false), '');
-    
+    processed = processed.replaceAll(
+        RegExp(r'\bwidth\s*=\s*"[^"]*"', caseSensitive: false), '');
+    processed = processed.replaceAll(
+        RegExp(r"\bwidth\s*=\s*'[^']*'", caseSensitive: false), '');
+    processed = processed.replaceAll(
+        RegExp(r'\bwidth\s*:\s*[^;"]+;?', caseSensitive: false), '');
+
     return processed;
   }
 
@@ -204,7 +230,8 @@ class _ProductNewDetailScreenState extends State<ProductNewDetailScreen> {
         appBar: AppBar(
           elevation: 0,
           backgroundColor: Theme.of(context).colorScheme.surface,
-          iconTheme: IconThemeData(color: Theme.of(context).colorScheme.onSurface),
+          iconTheme:
+              IconThemeData(color: Theme.of(context).colorScheme.onSurface),
         ),
         body: Center(
           child: Padding(
@@ -212,7 +239,8 @@ class _ProductNewDetailScreenState extends State<ProductNewDetailScreen> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(Icons.article_outlined, color: Theme.of(context).colorScheme.outline, size: 64),
+                Icon(Icons.article_outlined,
+                    color: Theme.of(context).colorScheme.outline, size: 64),
                 const SizedBox(height: 16),
                 Text(
                   _error ?? 'Không tìm thấy nội dung tin tức sản phẩm này.',
@@ -228,12 +256,16 @@ class _ProductNewDetailScreenState extends State<ProductNewDetailScreen> {
                   onPressed: () => Navigator.pop(context),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFFF26522),
-                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 24, vertical: 12),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8)),
                   ),
                   child: Text(
                     'Quay lại',
-                    style: TextStyle(color: Theme.of(context).colorScheme.surface, fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                        color: Theme.of(context).colorScheme.surface,
+                        fontWeight: FontWeight.bold),
                   ),
                 ),
               ],
@@ -261,93 +293,101 @@ class _ProductNewDetailScreenState extends State<ProductNewDetailScreen> {
         centerTitle: true,
         backgroundColor: Theme.of(context).colorScheme.surface,
         elevation: 0.5,
-        iconTheme: IconThemeData(color: Theme.of(context).colorScheme.onSurface),
+        iconTheme:
+            IconThemeData(color: Theme.of(context).colorScheme.onSurface),
       ),
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.all(18),
           children: [
-              // ── Tiêu đề
-              Text(
-                news.title,
-                style: TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.w900,
-                  color: Theme.of(context).colorScheme.onSurface,
-                  height: 1.3,
+            // ── Tiêu đề
+            Text(
+              news.title,
+              style: TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.w900,
+                color: Theme.of(context).colorScheme.onSurface,
+                height: 1.3,
+              ),
+            ),
+            const SizedBox(height: 14),
+
+            // ── Thumbnail
+            if (news.thumbnailUrl != null && news.thumbnailUrl!.isNotEmpty) ...[
+              ClipRRect(
+                borderRadius: BorderRadius.circular(14),
+                child: _TrustAllImage(
+                  url: _resolveUrl(news.thumbnailUrl),
+                  width: double.infinity,
+                  fit: BoxFit.cover,
                 ),
               ),
-              const SizedBox(height: 14),
-
-              // ── Thumbnail
-              if (news.thumbnailUrl != null && news.thumbnailUrl!.isNotEmpty) ...[
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(14),
-                  child: _TrustAllImage(
-                    url: _resolveUrl(news.thumbnailUrl),
-                    width: double.infinity,
-                    fit: BoxFit.cover,
-                  ),
-                ),
-                const SizedBox(height: 18),
-              ],
-
-              Divider(color: Theme.of(context).colorScheme.outline, height: 1),
-              const SizedBox(height: 14),
-
-              // ── HTML content với custom image rendering (bypass SSL)
-              Html(
-                data: processedHtml,
-                style: {
-                  'body': Style(
-                    margin: Margins.zero,
-                    padding: HtmlPaddings.zero,
-                    fontSize: FontSize(14.5),
-                    lineHeight: const LineHeight(1.6),
-                    color: Theme.of(context).colorScheme.onSurface,
-                  ),
-                  'h1': Style(fontSize: FontSize(20), fontWeight: FontWeight.bold),
-                  'h2': Style(fontSize: FontSize(18), fontWeight: FontWeight.bold),
-                  'h3': Style(fontSize: FontSize(16), fontWeight: FontWeight.bold),
-                  'p': Style(margin: Margins.only(bottom: 10)),
-                  'img': Style(
-                    margin: Margins.only(top: 8, bottom: 8),
-                  ),
-                  'table': Style(
-                    backgroundColor: Theme.of(context).colorScheme.surfaceContainerLow,
-                    border: Border.all(color: Theme.of(context).colorScheme.outline),
-                  ),
-                  'th': Style(
-                    padding: HtmlPaddings.all(6),
-                    backgroundColor: Theme.of(context).colorScheme.surfaceContainerLow,
-                  ),
-                  'td': Style(
-                    padding: HtmlPaddings.all(6),
-                    border: Border.all(color: Theme.of(context).colorScheme.outline),
-                  ),
-                },
-                extensions: [
-                  // Custom renderer cho <img>: dùng _TrustAllImage thay Image.network
-                  TagExtension(
-                    tagsToExtend: {'img'},
-                    builder: (extensionContext) {
-                      final src = extensionContext.attributes['src'] ?? '';
-                      if (src.isEmpty) return const SizedBox.shrink();
-                      return Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 6),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(8),
-                          child: _TrustAllImage(
-                            url: src,
-                            fit: BoxFit.contain,
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                ],
-              ), // Html
+              const SizedBox(height: 18),
             ],
+
+            Divider(color: Theme.of(context).colorScheme.outline, height: 1),
+            const SizedBox(height: 14),
+
+            // ── HTML content với custom image rendering (bypass SSL)
+            Html(
+              data: processedHtml,
+              style: {
+                'body': Style(
+                  margin: Margins.zero,
+                  padding: HtmlPaddings.zero,
+                  fontSize: FontSize(14.5),
+                  lineHeight: const LineHeight(1.6),
+                  color: Theme.of(context).colorScheme.onSurface,
+                ),
+                'h1':
+                    Style(fontSize: FontSize(20), fontWeight: FontWeight.bold),
+                'h2':
+                    Style(fontSize: FontSize(18), fontWeight: FontWeight.bold),
+                'h3':
+                    Style(fontSize: FontSize(16), fontWeight: FontWeight.bold),
+                'p': Style(margin: Margins.only(bottom: 10)),
+                'img': Style(
+                  margin: Margins.only(top: 8, bottom: 8),
+                ),
+                'table': Style(
+                  backgroundColor:
+                      Theme.of(context).colorScheme.surfaceContainerLow,
+                  border:
+                      Border.all(color: Theme.of(context).colorScheme.outline),
+                ),
+                'th': Style(
+                  padding: HtmlPaddings.all(6),
+                  backgroundColor:
+                      Theme.of(context).colorScheme.surfaceContainerLow,
+                ),
+                'td': Style(
+                  padding: HtmlPaddings.all(6),
+                  border:
+                      Border.all(color: Theme.of(context).colorScheme.outline),
+                ),
+              },
+              extensions: [
+                // Custom renderer cho <img>: dùng _TrustAllImage thay Image.network
+                TagExtension(
+                  tagsToExtend: {'img'},
+                  builder: (extensionContext) {
+                    final src = extensionContext.attributes['src'] ?? '';
+                    if (src.isEmpty) return const SizedBox.shrink();
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 6),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(8),
+                        child: _TrustAllImage(
+                          url: src,
+                          fit: BoxFit.contain,
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ],
+            ), // Html
+          ],
         ), // Close ListView
       ), // Close SafeArea
     ); // Close Scaffold

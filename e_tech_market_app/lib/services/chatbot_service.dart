@@ -44,7 +44,8 @@ class ChatbotService {
 
       return ChatMessage(
         role: 'model',
-        text: data['reply'] as String? ?? 'Xin lỗi, mình không thể trả lời lúc này.',
+        text: data['reply'] as String? ??
+            'Xin lỗi, mình không thể trả lời lúc này.',
         products: (data['products'] as List<dynamic>?)
             ?.map((p) => Map<String, dynamic>.from(p as Map))
             .toList(),

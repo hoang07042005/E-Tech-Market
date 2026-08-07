@@ -59,7 +59,10 @@ class _ChatbotScreenState extends State<ChatbotScreen>
   Future<void> _loadUserAvatar() async {
     final user = await AuthService.getCurrentUser();
     if (user != null && mounted) {
-      final url = user['avatar'] ?? user['avatar_url'] ?? user['profile_image'] ?? user['image'];
+      final url = user['avatar'] ??
+          user['avatar_url'] ??
+          user['profile_image'] ??
+          user['image'];
       if (url != null) {
         setState(() {
           _avatarUrl = NetworkUtils.fixDeviceUrl(url.toString());
@@ -104,9 +107,8 @@ class _ChatbotScreenState extends State<ChatbotScreen>
     _scrollToBottom();
 
     // Build history for context (last 10 messages)
-    final history = _messages
-        .where((m) => m.role == 'user' || m.role == 'model')
-        .toList();
+    final history =
+        _messages.where((m) => m.role == 'user' || m.role == 'model').toList();
     final historyForApi = history
         .skip(history.length > 11 ? history.length - 11 : 0)
         .take(10)
@@ -216,15 +218,18 @@ class _ChatbotScreenState extends State<ChatbotScreen>
                   }
 
                   // Typing indicator
-                  if (_isLoading && index == _messages.length + (_showQuickActions ? 1 : 0) - ((_showQuickActions && !_isLoading) ? 0 : 0)) {
+                  if (_isLoading &&
+                      index ==
+                          _messages.length +
+                              (_showQuickActions ? 1 : 0) -
+                              ((_showQuickActions && !_isLoading) ? 0 : 0)) {
                     // Show typing at end
                   }
 
                   if (index >= _messages.length) {
                     if (_isLoading &&
                         index ==
-                            _messages.length +
-                                (_showQuickActions ? 1 : 0)) {
+                            _messages.length + (_showQuickActions ? 1 : 0)) {
                       return const TypingIndicator();
                     }
                     if (_showQuickActions && index == _messages.length) {
@@ -239,8 +244,7 @@ class _ChatbotScreenState extends State<ChatbotScreen>
                   }
 
                   final msg = _messages[index];
-                  final timeText =
-                      DateFormat('HH:mm').format(msg.timestamp);
+                  final timeText = DateFormat('HH:mm').format(msg.timestamp);
 
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -258,8 +262,7 @@ class _ChatbotScreenState extends State<ChatbotScreen>
                           onProductTap: _onProductTap,
                         ),
                       // Order status card (if any)
-                      if (msg.hasOrder)
-                        OrderStatusCard(order: msg.order!),
+                      if (msg.hasOrder) OrderStatusCard(order: msg.order!),
                       // Coupon badge (if any)
                       if (msg.hasCoupon)
                         _buildCouponBadge(msg.couponCode!, isDark),

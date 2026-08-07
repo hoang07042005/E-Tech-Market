@@ -8,7 +8,8 @@ class ReviewsService {
     int limit = 6,
   }) async {
     try {
-      final response = await DioClient.instance.get('/reviews', queryParameters: {
+      final response =
+          await DioClient.instance.get('/reviews', queryParameters: {
         'min_rating': minRating,
         'limit': limit,
       });
@@ -26,14 +27,12 @@ class ReviewsService {
     required String token,
     required int rating,
     required String comment,
-
     List<String> mediaFiles = const [],
   }) async {
     try {
       final formData = FormData.fromMap({
         'rating': rating,
         'comment': comment,
-
       });
 
       // Thêm từng file media vào FormData dưới key 'media[]'
@@ -61,10 +60,10 @@ class ReviewsService {
     } on DioException catch (e) {
       if (e.response?.data is Map) {
         final data = e.response!.data as Map<String, dynamic>;
-        throw Exception(data['message']?.toString() ?? 'Không gửi được đánh giá.');
+        throw Exception(
+            data['message']?.toString() ?? 'Không gửi được đánh giá.');
       }
       throw Exception('Lỗi kết nối: ${e.message}');
     }
   }
 }
- 

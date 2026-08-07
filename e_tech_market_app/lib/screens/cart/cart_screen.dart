@@ -20,18 +20,20 @@ class _CartScreenState extends State<CartScreen> {
   bool _loading = true;
   bool _updating = false;
   String? _error;
-  
+
   List<dynamic> _suggestedProducts = [];
   bool _suggestedLoading = true;
 
-  List<CartItem> get _selectedItems =>
-      _cart.items.where((item) => _selectedProductIds.contains(item.productId)).toList();
+  List<CartItem> get _selectedItems => _cart.items
+      .where((item) => _selectedProductIds.contains(item.productId))
+      .toList();
 
   double get _selectedTotalPrice =>
       _selectedItems.fold(0.0, (sum, item) => sum + item.lineTotal);
 
   bool get _allSelected =>
-      _cart.items.isNotEmpty && _selectedProductIds.length == _cart.items.length;
+      _cart.items.isNotEmpty &&
+      _selectedProductIds.length == _cart.items.length;
 
   @override
   void initState() {
@@ -50,9 +52,10 @@ class _CartScreenState extends State<CartScreen> {
       final selectedIds = _selectedProductIds.isEmpty
           ? itemIds
           : _selectedProductIds.intersection(itemIds);
-          
+
       // Fetch suggested products
-      final productsRes = await ProductsService.fetchProducts(limit: 50, sort: 'newest');
+      final productsRes =
+          await ProductsService.fetchProducts(limit: 50, sort: 'newest');
       var prods = productsRes['data'] as List<dynamic>? ?? [];
       prods.shuffle();
       if (prods.length > 10) prods = prods.sublist(0, 10);
@@ -154,7 +157,8 @@ class _CartScreenState extends State<CartScreen> {
         ],
       ),
       body: _loading
-          ? const Center(child: CircularProgressIndicator(color: const Color(0xFFF26522)))
+          ? const Center(
+              child: CircularProgressIndicator(color: const Color(0xFFF26522)))
           : _error != null
               ? _buildError()
               : _cart.items.isEmpty
@@ -176,7 +180,7 @@ class _CartScreenState extends State<CartScreen> {
           children: [
             Icon(
               Icons.remove_shopping_cart,
-              size: 64, 
+              size: 64,
               color: Colors.grey.shade400,
             ),
             const SizedBox(height: 12),
@@ -282,9 +286,8 @@ class _CartScreenState extends State<CartScreen> {
                   width: 24,
                   height: 24,
                   decoration: BoxDecoration(
-                    color: _allSelected
-                        ? const Color(0xFFF26522)
-                        : Colors.white,
+                    color:
+                        _allSelected ? const Color(0xFFF26522) : Colors.white,
                     shape: BoxShape.circle,
                     border: Border.all(
                       color: _allSelected
@@ -327,7 +330,6 @@ class _CartScreenState extends State<CartScreen> {
           ),
           const SizedBox(height: 10),
           ..._cart.items.map(_buildCartItem),
-          
           if (!_suggestedLoading) _buildSuggestedProducts(),
         ],
       ),
@@ -352,7 +354,7 @@ class _CartScreenState extends State<CartScreen> {
     Widget buildCard(dynamic product) {
       return ProductCardWidget(
         product: product,
-        isWished: false, 
+        isWished: false,
         onTap: (variantId) {
           Navigator.push(
             context,
@@ -441,7 +443,7 @@ class _CartScreenState extends State<CartScreen> {
 
   Widget _buildCartItem(CartItem item) {
     final selected = _selectedProductIds.contains(item.productId);
-    
+
     // Nút Checkbox
     final Widget checkbox = GestureDetector(
       onTap: _updating
@@ -474,7 +476,8 @@ class _CartScreenState extends State<CartScreen> {
           height: 86,
           color: const Color(0xFFF1F5F9),
           child: item.imageUrl == null
-              ? const Icon(Icons.devices_other, color: Color(0xFF94A3B8), size: 30)
+              ? const Icon(Icons.devices_other,
+                  color: Color(0xFF94A3B8), size: 30)
               : Image.network(
                   item.imageUrl!,
                   fit: BoxFit.cover,
@@ -532,17 +535,21 @@ class _CartScreenState extends State<CartScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    if (item.variantColor != null || item.variantConfig != null || (item.variantLabel ?? '').isNotEmpty)
+                    if (item.variantColor != null ||
+                        item.variantConfig != null ||
+                        (item.variantLabel ?? '').isNotEmpty)
                       Flexible(child: _buildVariantRow(item))
                     else
                       const SizedBox(),
-                    
+
                     // Stepper
                     Container(
                       height: 24,
                       decoration: BoxDecoration(
                         color: Colors.transparent,
-                        border: Border.all(color: Theme.of(context).colorScheme.onSurface, width: 0.5),
+                        border: Border.all(
+                            color: Theme.of(context).colorScheme.onSurface,
+                            width: 0.5),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Row(
@@ -550,17 +557,23 @@ class _CartScreenState extends State<CartScreen> {
                         children: [
                           GestureDetector(
                             onTap: item.quantity > 1 && !_updating
-                                ? () => _runCartAction(() => CartService.updateItemQuantity(
-                                      productId: item.productId,
-                                      quantity: item.quantity - 1,
-                                    ))
+                                ? () => _runCartAction(
+                                    () => CartService.updateItemQuantity(
+                                          productId: item.productId,
+                                          quantity: item.quantity - 1,
+                                        ))
                                 : null,
                             child: Container(
                               width: 24,
                               height: 24,
-                              color: Colors.transparent, // Trong suốt để ăn theo nền trắng của Container ngoài
+                              color: Colors
+                                  .transparent, // Trong suốt để ăn theo nền trắng của Container ngoài
                               alignment: Alignment.center,
-                              child: Icon(Icons.remove, size: 14, color: item.quantity > 1 ? Theme.of(context).colorScheme.onSurface : Colors.grey[300]),
+                              child: Icon(Icons.remove,
+                                  size: 14,
+                                  color: item.quantity > 1
+                                      ? Theme.of(context).colorScheme.onSurface
+                                      : Colors.grey[300]),
                             ),
                           ),
                           Container(width: 1, color: Colors.grey.shade300),
@@ -569,24 +582,30 @@ class _CartScreenState extends State<CartScreen> {
                             child: Center(
                               child: Text(
                                 '${item.quantity}',
-                                style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500),
+                                style: const TextStyle(
+                                    fontSize: 13, fontWeight: FontWeight.w500),
                               ),
                             ),
                           ),
                           Container(width: 1, color: Colors.grey.shade300),
                           GestureDetector(
                             onTap: !_updating
-                                ? () => _runCartAction(() => CartService.updateItemQuantity(
-                                      productId: item.productId,
-                                      quantity: item.quantity + 1,
-                                    ))
+                                ? () => _runCartAction(
+                                    () => CartService.updateItemQuantity(
+                                          productId: item.productId,
+                                          quantity: item.quantity + 1,
+                                        ))
                                 : null,
                             child: Container(
                               width: 24,
                               height: 24,
-                              color: Colors.transparent, // Trong suốt để ăn theo nền trắng của Container ngoài
+                              color: Colors
+                                  .transparent, // Trong suốt để ăn theo nền trắng của Container ngoài
                               alignment: Alignment.center,
-                              child: Icon(Icons.add, size: 14, color: Theme.of(context).colorScheme.onSurface),
+                              child: Icon(Icons.add,
+                                  size: 14,
+                                  color:
+                                      Theme.of(context).colorScheme.onSurface),
                             ),
                           ),
                         ],
@@ -595,7 +614,6 @@ class _CartScreenState extends State<CartScreen> {
                   ],
                 ),
                 const SizedBox(height: 8),
-                
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -611,7 +629,8 @@ class _CartScreenState extends State<CartScreen> {
                       onTap: _updating
                           ? null
                           : () => _runCartAction(
-                                () => CartService.removeItem(productId: item.productId),
+                                () => CartService.removeItem(
+                                    productId: item.productId),
                               ),
                       child: const Icon(
                         Icons.delete_outline,
@@ -635,9 +654,8 @@ class _CartScreenState extends State<CartScreen> {
       if (item.variantConfig != null) item.variantConfig!,
     ];
 
-    final label = parts.isNotEmpty
-        ? parts.join(', ')
-        : (item.variantLabel ?? '');
+    final label =
+        parts.isNotEmpty ? parts.join(', ') : (item.variantLabel ?? '');
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
@@ -653,7 +671,8 @@ class _CartScreenState extends State<CartScreen> {
               label,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
-              style: TextStyle(fontSize: 10, color: Theme.of(context).colorScheme.onSurface),
+              style: TextStyle(
+                  fontSize: 10, color: Theme.of(context).colorScheme.onSurface),
             ),
           ),
         ],
@@ -669,7 +688,9 @@ class _CartScreenState extends State<CartScreen> {
         padding: const EdgeInsets.fromLTRB(16, 10, 16, 12),
         decoration: BoxDecoration(
           color: Theme.of(context).colorScheme.surface,
-          border: Border(top: BorderSide(color: Theme.of(context).colorScheme.outline, width: 0.5)),
+          border: Border(
+              top: BorderSide(
+                  color: Theme.of(context).colorScheme.outline, width: 0.5)),
         ),
         child: Row(
           children: [

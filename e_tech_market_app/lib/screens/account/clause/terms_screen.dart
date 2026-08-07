@@ -16,7 +16,8 @@ class TermsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Các điều khoản',style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18) ),
+        title: const Text('Các điều khoản',
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
         backgroundColor: Theme.of(context).colorScheme.surface,
         foregroundColor: Theme.of(context).colorScheme.onSurface,
         elevation: 1,
@@ -47,18 +48,23 @@ class TermsScreen extends StatelessWidget {
                           color: Theme.of(context).colorScheme.surface,
                           borderRadius: BorderRadius.circular(5),
                         ),
-                        child: const Icon(Icons.gavel, size: 32, color: Color(0xFF92400E)),
+                        child: const Icon(Icons.gavel,
+                            size: 32, color: Color(0xFF92400E)),
                       ),
                       const SizedBox(height: 14),
                       const Text(
                         'Trung tâm Pháp lý',
-                        style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800),
+                        style: TextStyle(
+                            fontSize: 20, fontWeight: FontWeight.w800),
                         textAlign: TextAlign.center,
                       ),
                       const SizedBox(height: 8),
                       const Text(
                         'Minh bạch và toàn là ưu tiên hàng đầu của E-TECH MARKET!',
-                        style: TextStyle(fontSize: 14, color: Color(0xFF92400E), height: 1.5),
+                        style: TextStyle(
+                            fontSize: 14,
+                            color: Color(0xFF92400E),
+                            height: 1.5),
                         textAlign: TextAlign.center,
                       ),
                     ],
@@ -74,7 +80,10 @@ class TermsScreen extends StatelessWidget {
                   title: 'Chính sách bảo mật',
                   iconColor: const Color(0xFF10B981), // Xanh lá
                   iconBgColor: const Color(0xFFECFDF5),
-                  onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const PrivacyPolicyScreen())),
+                  onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (_) => const PrivacyPolicyScreen())),
                 ),
                 const SizedBox(height: 10),
                 _PolicyTile(
@@ -82,7 +91,10 @@ class TermsScreen extends StatelessWidget {
                   title: 'Điều khoản dịch vụ',
                   iconColor: const Color(0xFF3B82F6), // Xanh dương
                   iconBgColor: const Color(0xFFEFF6FF),
-                  onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const TermsOfServiceScreen())),
+                  onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (_) => const TermsOfServiceScreen())),
                 ),
                 const SizedBox(height: 10),
                 _PolicyTile(
@@ -90,7 +102,10 @@ class TermsScreen extends StatelessWidget {
                   title: 'Chính sách bảo mật thanh toán',
                   iconColor: const Color(0xFFF59E0B), // Vàng cam
                   iconBgColor: const Color(0xFFFEF3C7),
-                  onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const PaymentSecurityPolicyScreen())),
+                  onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (_) => const PaymentSecurityPolicyScreen())),
                 ),
                 const SizedBox(height: 24),
 
@@ -102,7 +117,10 @@ class TermsScreen extends StatelessWidget {
                   title: 'Giải quyết khiếu nại',
                   iconColor: const Color(0xFFEF4444), // Đỏ
                   iconBgColor: const Color(0xFFFEF2F2),
-                  onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const ComplaintPolicyScreen())),
+                  onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (_) => const ComplaintPolicyScreen())),
                 ),
                 const SizedBox(height: 10),
                 _PolicyTile(
@@ -110,7 +128,10 @@ class TermsScreen extends StatelessWidget {
                   title: 'Quy định bảo hành 1 đổi 1',
                   iconColor: const Color(0xFF8B5CF6), // Tím
                   iconBgColor: const Color(0xFFF5F3FF),
-                  onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const OneForOnePolicyScreen())),
+                  onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (_) => const OneForOnePolicyScreen())),
                 ),
                 const SizedBox(height: 10),
                 _PolicyTile(
@@ -118,7 +139,10 @@ class TermsScreen extends StatelessWidget {
                   title: 'Chính sách hoàn tiền',
                   iconColor: const Color(0xFFEC4899), // Hồng
                   iconBgColor: const Color(0xFFFDF2F8),
-                  onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const RefundPolicyScreen())),
+                  onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (_) => const RefundPolicyScreen())),
                 ),
                 const SizedBox(height: 24),
               ],
@@ -191,13 +215,17 @@ class _PolicyTile extends StatelessWidget {
                 child: Text(
                   title,
                   style: TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w600,
-                    color: Theme.of(context).colorScheme.onSurface
-                  ),
+                      fontSize: 15,
+                      fontWeight: FontWeight.w600,
+                      color: Theme.of(context).colorScheme.onSurface),
                 ),
               ),
-               Icon(Icons.chevron_right, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5), size: 22),
+              Icon(Icons.chevron_right,
+                  color: Theme.of(context)
+                      .colorScheme
+                      .onSurface
+                      .withValues(alpha: 0.5),
+                  size: 22),
             ],
           ),
         ),

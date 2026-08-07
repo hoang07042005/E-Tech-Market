@@ -163,7 +163,8 @@ class _TradeInHistoryDetailScreenState
     final name = info['name'] as String;
     final specs = info['specs'] as List<Map<String, String>>;
     final hasPrice = _req['estimated_price'] != null;
-    final hasNote = _req['admin_note'] != null && _req['admin_note'].toString().trim().isNotEmpty;
+    final hasNote = _req['admin_note'] != null &&
+        _req['admin_note'].toString().trim().isNotEmpty;
 
     final createdAt = DateTime.tryParse(_req['created_at']?.toString() ?? '');
     final dateStr = createdAt != null
@@ -490,16 +491,21 @@ class _TradeInHistoryDetailScreenState
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _buildSectionHeader(Icons.chat_bubble_outline, 'Ghi chú từ cửa hàng', Colors.orange),
+                    _buildSectionHeader(Icons.chat_bubble_outline,
+                        'Ghi chú từ cửa hàng', Colors.orange),
                     Container(
                       width: double.infinity,
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        border: Border(left: BorderSide(color: Color(0xFF3B82F6), width: 2)),
+                        border: Border(
+                            left:
+                                BorderSide(color: Color(0xFF3B82F6), width: 2)),
                       ),
                       child: Text(
                         _req['admin_note'].toString(),
-                        style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 13),
+                        style: TextStyle(
+                            color: Theme.of(context).colorScheme.onSurface,
+                            fontSize: 13),
                       ),
                     ),
                   ],
@@ -525,11 +531,15 @@ class _TradeInHistoryDetailScreenState
                       ? const SizedBox(
                           width: 20,
                           height: 20,
-                          child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                          child: CircularProgressIndicator(
+                              color: Colors.white, strokeWidth: 2),
                         )
                       : const Text(
                           'Đồng ý mức giá này',
-                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
+                          style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white),
                         ),
                 ),
               ),
@@ -553,8 +563,11 @@ class _TradeInHistoryDetailScreenState
                         text: const TextSpan(
                           style: TextStyle(color: Colors.green, fontSize: 13),
                           children: [
-                            TextSpan(text: 'Bạn đã xác nhận mức giá. Vui lòng '),
-                            TextSpan(text: 'mang máy ra cửa hàng', style: TextStyle(fontWeight: FontWeight.bold)),
+                            TextSpan(
+                                text: 'Bạn đã xác nhận mức giá. Vui lòng '),
+                            TextSpan(
+                                text: 'mang máy ra cửa hàng',
+                                style: TextStyle(fontWeight: FontWeight.bold)),
                             TextSpan(text: ' để hoàn tất thu mua.'),
                           ],
                         ),
@@ -581,7 +594,8 @@ class _TradeInHistoryDetailScreenState
                     Expanded(
                       child: Text(
                         'Giao dịch đã hoàn tất thành công. Cảm ơn bạn đã tin tưởng E-Tech Market!',
-                        style: TextStyle(color: Color(0xFF9A3412), fontSize: 13),
+                        style:
+                            TextStyle(color: Color(0xFF9A3412), fontSize: 13),
                       ),
                     ),
                   ],
@@ -613,7 +627,6 @@ class _TradeInHistoryDetailScreenState
               ),
               const SizedBox(height: 24),
             ],
-
           ],
         ),
       ),

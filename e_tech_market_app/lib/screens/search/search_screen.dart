@@ -11,6 +11,7 @@ import '../../services/video_service.dart';
 import '../blogs/blog_detail_screen.dart';
 import '../videos/video_detail_screen.dart';
 import '../products/product_detail_screen.dart';
+
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});
 
@@ -66,12 +67,20 @@ class _SearchScreenState extends State<SearchScreen> {
       if (isTyping) {
         final queryTerm = Uri.encodeComponent(query.trim());
         final results = await Future.wait([
-          ProductsService.fetchProducts(search: query, limit: 4).catchError((_) => {'data': []}),
-          DioClient.instance.get('/blog/posts?search=$queryTerm&per_page=2').catchError((_) => Response(requestOptions: RequestOptions(path: ''), data: {'data': []})),
-          DioClient.instance.get('/product-news?search=$queryTerm').catchError((_) => Response(requestOptions: RequestOptions(path: ''), data: {'data': []})),
+          ProductsService.fetchProducts(search: query, limit: 4)
+              .catchError((_) => {'data': []}),
+          DioClient.instance
+              .get('/blog/posts?search=$queryTerm&per_page=2')
+              .catchError((_) => Response(
+                  requestOptions: RequestOptions(path: ''),
+                  data: {'data': []})),
+          DioClient.instance.get('/product-news?search=$queryTerm').catchError(
+              (_) => Response(
+                  requestOptions: RequestOptions(path: ''),
+                  data: {'data': []})),
           VideoService.fetchVideos(limit: 2).catchError((_) => []),
         ]);
-        
+
         if (mounted) {
           final productsRes = results[0] as Map<String, dynamic>;
           final postsRes = (results[1] as Response).data;
@@ -79,39 +88,56 @@ class _SearchScreenState extends State<SearchScreen> {
           final videosRes = results[3] as List<dynamic>;
 
           final productsData = productsRes['data'] as List<dynamic>? ?? [];
-          final finalProducts = productsData.take(4).map((p) => {...(p as Map<String, dynamic>), 'type': 'product'}).toList();
+          final finalProducts = productsData
+              .take(4)
+              .map((p) => {...(p as Map<String, dynamic>), 'type': 'product'})
+              .toList();
 
           final postsData = postsRes['data'] as List<dynamic>? ?? [];
-          final postsHits = postsData.take(2).map((p) => {
-            'id': p['id'],
-            'name': p['title'],
-            'slug': p['slug'],
-            'main_image_url': p['thumbnail_url'],
-            'type': 'post',
-            'original_data': p,
-          }).toList();
+          final postsHits = postsData
+              .take(2)
+              .map((p) => {
+                    'id': p['id'],
+                    'name': p['title'],
+                    'slug': p['slug'],
+                    'main_image_url': p['thumbnail_url'],
+                    'type': 'post',
+                    'original_data': p,
+                  })
+              .toList();
 
           final newsData = newsRes['data'] as List<dynamic>? ?? [];
-          final newsHits = newsData.take(2).map((n) => {
-            'id': int.tryParse('999${n['id']}') ?? 0,
-            'name': n['title'],
-            'slug': n['slug'],
-            'main_image_url': n['thumbnail_url'] ?? n['thumbnail_path'],
-            'type': 'news',
-            'original_data': n,
-          }).toList();
+          final newsHits = newsData
+              .take(2)
+              .map((n) => {
+                    'id': int.tryParse('999${n['id']}') ?? 0,
+                    'name': n['title'],
+                    'slug': n['slug'],
+                    'main_image_url': n['thumbnail_url'] ?? n['thumbnail_path'],
+                    'type': 'news',
+                    'original_data': n,
+                  })
+              .toList();
 
-          final videosHits = videosRes.take(2).map((v) => {
-            'id': int.tryParse('888${v['id']}') ?? 0,
-            'name': v['title'],
-            'slug': v['id'].toString(),
-            'main_image_url': v['thumbnail_url'],
-            'type': 'video',
-            'original_data': v,
-          }).toList();
+          final videosHits = videosRes
+              .take(2)
+              .map((v) => {
+                    'id': int.tryParse('888${v['id']}') ?? 0,
+                    'name': v['title'],
+                    'slug': v['id'].toString(),
+                    'main_image_url': v['thumbnail_url'],
+                    'type': 'video',
+                    'original_data': v,
+                  })
+              .toList();
 
           setState(() {
-            _searchResults = [...finalProducts, ...postsHits, ...newsHits, ...videosHits];
+            _searchResults = [
+              ...finalProducts,
+              ...postsHits,
+              ...newsHits,
+              ...videosHits
+            ];
             _isLoading = false;
           });
         }
@@ -222,8 +248,8 @@ class _SearchScreenState extends State<SearchScreen> {
                 fontSize: 15,
               ),
               filled: true,
-              fillColor: Theme.of(context).brightness == Brightness.dark 
-                  ? Colors.grey.shade800 
+              fillColor: Theme.of(context).brightness == Brightness.dark
+                  ? Colors.grey.shade800
                   : Colors.grey.shade200,
               contentPadding: const EdgeInsets.symmetric(horizontal: 16),
               border: OutlineInputBorder(
@@ -278,7 +304,6 @@ class _SearchScreenState extends State<SearchScreen> {
     );
   }
 
-
   Widget _buildBody() {
     // Trạng thái 1: Chưa nhập từ khóa tìm kiếm
     if (_searchQuery.trim().isEmpty) {
@@ -304,18 +329,18 @@ class _SearchScreenState extends State<SearchScreen> {
       if (_isLoading && _searchResults.isEmpty) {
         return const Center(child: CircularProgressIndicator());
       }
-      
+
       return ListView.builder(
         itemCount: _searchResults.length,
         itemBuilder: (context, index) {
           final item = _searchResults[index];
           final type = item['type']?.toString() ?? 'product';
           final name = item['name']?.toString() ?? '';
-          
+
           String typeLabel = 'Sản phẩm';
           Color typeColor = Colors.blue;
           IconData iconData = Icons.inventory_2_outlined;
-          
+
           if (type == 'post') {
             typeLabel = 'Bài viết';
             typeColor = Colors.orange;
@@ -329,7 +354,7 @@ class _SearchScreenState extends State<SearchScreen> {
             typeColor = Colors.red;
             iconData = Icons.play_circle_outline;
           }
-          
+
           String? imageUrl;
           if (type == 'product') {
             imageUrl = _resolveProductImageUrl(item);
@@ -351,7 +376,8 @@ class _SearchScreenState extends State<SearchScreen> {
           );
 
           return ListTile(
-            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+            contentPadding:
+                const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
             leading: (imageUrl != null && imageUrl.isNotEmpty)
                 ? ClipRRect(
                     borderRadius: BorderRadius.circular(6),
@@ -365,19 +391,28 @@ class _SearchScreenState extends State<SearchScreen> {
                   )
                 : fallbackWidget,
             title: Text(name, maxLines: 2, overflow: TextOverflow.ellipsis),
-            subtitle: Text(typeLabel, style: TextStyle(color: typeColor, fontSize: 12, fontWeight: FontWeight.bold)),
+            subtitle: Text(typeLabel,
+                style: TextStyle(
+                    color: typeColor,
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold)),
             onTap: () {
               FocusScope.of(context).unfocus();
               if (type == 'post' || type == 'news') {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (_) => BlogDetailScreen(post: item['original_data'])),
+                  MaterialPageRoute(
+                      builder: (_) =>
+                          BlogDetailScreen(post: item['original_data'])),
                 );
               } else if (type == 'video') {
-                final videoId = int.tryParse(item['original_data']['id']?.toString() ?? '0') ?? 0;
+                final videoId = int.tryParse(
+                        item['original_data']['id']?.toString() ?? '0') ??
+                    0;
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (_) => VideoDetailScreen(videoId: videoId)),
+                  MaterialPageRoute(
+                      builder: (_) => VideoDetailScreen(videoId: videoId)),
                 );
               } else {
                 _navigateToProduct(item);
@@ -433,10 +468,11 @@ class _SearchScreenState extends State<SearchScreen> {
             final variants = p['variants'] as List<dynamic>?;
             if (variants != null && variants.isNotEmpty) {
               for (var v in variants) {
-                final Map<String, dynamic> virtualProduct = Map<String, dynamic>.from(p);
+                final Map<String, dynamic> virtualProduct =
+                    Map<String, dynamic>.from(p);
                 final color = v['color'];
                 final config = v['configuration'];
-                
+
                 String colorName = '';
                 if (color is Map) {
                   colorName = color['name']?.toString() ?? '';
@@ -445,7 +481,7 @@ class _SearchScreenState extends State<SearchScreen> {
                 } else {
                   colorName = v['color_name']?.toString() ?? '';
                 }
-                
+
                 String configName = '';
                 if (config is Map) {
                   configName = config['name']?.toString() ?? '';
@@ -454,7 +490,7 @@ class _SearchScreenState extends State<SearchScreen> {
                 } else {
                   configName = v['configuration_name']?.toString() ?? '';
                 }
-                
+
                 virtualProduct['name'] = p['name'] ?? '';
                 final parts = <String>[];
                 if (colorName != null && colorName.toString().isNotEmpty) {
@@ -466,12 +502,12 @@ class _SearchScreenState extends State<SearchScreen> {
                 if (parts.isNotEmpty) {
                   virtualProduct['variant_label'] = parts.join(' - ');
                 }
-                
+
                 final imageUrl = v['image_url']?.toString();
                 if (imageUrl != null && imageUrl.isNotEmpty) {
                   virtualProduct['main_image_url'] = imageUrl;
                 }
-                
+
                 virtualProduct['variants'] = [v];
                 flattenedResults.add(virtualProduct);
               }
@@ -569,8 +605,6 @@ class _SearchScreenState extends State<SearchScreen> {
     );
   }
 
-
-
   final Set<int> _wishSet = {};
 
   void _toggleWishlist(int productId) async {
@@ -583,11 +617,12 @@ class _SearchScreenState extends State<SearchScreen> {
     });
   }
 
-
-Widget _buildProductCard(Map<String, dynamic> product) {
+  Widget _buildProductCard(Map<String, dynamic> product) {
     final displayPrice = _getDisplayPrice(product);
-    final displayPriceMax = _hasMultiplePrices(product) ? _getMaxDisplayPrice(product) : null;
-    final displayOldPrice = _hasMultiplePrices(product) ? null : _getDisplayOldPrice(product);
+    final displayPriceMax =
+        _hasMultiplePrices(product) ? _getMaxDisplayPrice(product) : null;
+    final displayOldPrice =
+        _hasMultiplePrices(product) ? null : _getDisplayOldPrice(product);
     final showDiscountBadge = _showDiscountBadge(product);
     final discountPercent = _getDiscountPercent(product);
     final isNew = _isNewWithinTenDays(product['created_at']);
@@ -616,7 +651,8 @@ Widget _buildProductCard(Map<String, dynamic> product) {
               offset: const Offset(0, 4),
             ),
           ],
-          border: Border.all(color: Theme.of(context).colorScheme.outline, width: 0.15),
+          border: Border.all(
+              color: Theme.of(context).colorScheme.outline, width: 0.15),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -634,7 +670,8 @@ Widget _buildProductCard(Map<String, dynamic> product) {
                     child: imageUrl.isEmpty
                         ? Center(
                             child: Icon(Icons.computer,
-                                size: 48, color: Theme.of(context).colorScheme.outline))
+                                size: 48,
+                                color: Theme.of(context).colorScheme.outline))
                         : Image.network(
                             imageUrl,
                             width: double.infinity,
@@ -644,12 +681,13 @@ Widget _buildProductCard(Map<String, dynamic> product) {
                             loadingBuilder: (context, child, loadingProgress) {
                               if (loadingProgress == null) return child;
                               return Center(
-                                  child:
-                                      CircularProgressIndicator(strokeWidth: 2));
+                                  child: CircularProgressIndicator(
+                                      strokeWidth: 2));
                             },
                             errorBuilder: (_, __, ___) => Center(
                               child: Icon(Icons.computer,
-                                  size: 48, color: Theme.of(context).colorScheme.outline),
+                                  size: 48,
+                                  color: Theme.of(context).colorScheme.outline),
                             ),
                           ),
                   ),
@@ -666,7 +704,9 @@ Widget _buildProductCard(Map<String, dynamic> product) {
                       child: Icon(
                         isLiked ? Icons.favorite : Icons.favorite_border,
                         size: 15,
-                        color: isLiked ? Colors.red : Theme.of(context).colorScheme.onSurfaceVariant,
+                        color: isLiked
+                            ? Colors.red
+                            : Theme.of(context).colorScheme.onSurfaceVariant,
                       ),
                     ),
                   ),
@@ -682,7 +722,8 @@ Widget _buildProductCard(Map<String, dynamic> product) {
                       if (showDiscountBadge && discountPercent > 0)
                         Container(
                           margin: const EdgeInsets.only(right: 3),
-                          padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 5, vertical: 2),
                           decoration: BoxDecoration(
                             color: Colors.red,
                             borderRadius: BorderRadius.circular(3),
@@ -701,7 +742,8 @@ Widget _buildProductCard(Map<String, dynamic> product) {
                       if (isNew)
                         Container(
                           margin: const EdgeInsets.only(right: 3),
-                          padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 5, vertical: 2),
                           decoration: BoxDecoration(
                             color: Colors.green,
                             borderRadius: BorderRadius.circular(3),
@@ -719,7 +761,8 @@ Widget _buildProductCard(Map<String, dynamic> product) {
                       // Badge NỔI BẬT (last)
                       if (isFeatured)
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 5, vertical: 2),
                           decoration: BoxDecoration(
                             color: Colors.amber.shade700,
                             borderRadius: BorderRadius.circular(3),
@@ -753,7 +796,9 @@ Widget _buildProductCard(Map<String, dynamic> product) {
                         child: Text(
                           brand.toString().toUpperCase(),
                           style: TextStyle(
-                              color: Theme.of(context).colorScheme.onSurfaceVariant,
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .onSurfaceVariant,
                               fontSize: 10,
                               fontWeight: FontWeight.bold,
                               letterSpacing: 0.5),
@@ -772,14 +817,17 @@ Widget _buildProductCard(Map<String, dynamic> product) {
                                   size: 10, color: Colors.amber);
                             } else {
                               return Icon(Icons.star,
-                                  size: 10, color: Theme.of(context).colorScheme.outline);
+                                  size: 10,
+                                  color: Theme.of(context).colorScheme.outline);
                             }
                           }),
                           const SizedBox(width: 2),
                           Text(
                             '(${product['reviews_count'] ?? 0})',
                             style: TextStyle(
-                              color: Theme.of(context).colorScheme.onSurfaceVariant,
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .onSurfaceVariant,
                               fontSize: 9,
                             ),
                           ),
@@ -850,98 +898,107 @@ Widget _buildProductCard(Map<String, dynamic> product) {
                   ],
                   const SizedBox(height: 4),
                   // Description (3 lines) with Add button at bottom right
-LayoutBuilder(
-  builder: (context, constraints) {
-    final fullText = product['short_description'] ?? product['description'] ?? '';
-    final textStyle = TextStyle(
-      color: Theme.of(context).colorScheme.onSurfaceVariant,
-      fontSize: 11,
-      height: 1.3,
-    );
+                  LayoutBuilder(
+                    builder: (context, constraints) {
+                      final fullText = product['short_description'] ??
+                          product['description'] ??
+                          '';
+                      final textStyle = TextStyle(
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        fontSize: 11,
+                        height: 1.3,
+                      );
 
-    // 1. Đo kích thước để kiểm tra xem chữ có dài quá 1 dòng không
-    final textPainter = TextPainter(
-      text: TextSpan(text: fullText, style: textStyle),
-      maxLines: 1,
-      textDirection: TextDirection.ltr,
-    )..layout(maxWidth: constraints.maxWidth);
+                      // 1. Đo kích thước để kiểm tra xem chữ có dài quá 1 dòng không
+                      final textPainter = TextPainter(
+                        text: TextSpan(text: fullText, style: textStyle),
+                        maxLines: 1,
+                        textDirection: TextDirection.ltr,
+                      )..layout(maxWidth: constraints.maxWidth);
 
-    // Kiểm tra trạng thái vượt quá 1 dòng
-    final isMultiLine = textPainter.didExceedMaxLines;
+                      // Kiểm tra trạng thái vượt quá 1 dòng
+                      final isMultiLine = textPainter.didExceedMaxLines;
 
-    // Định nghĩa nhanh cấu trúc Nút Bấm Giỏ Hàng để dùng chung cho cả 2 trường hợp
-    final cartButton = GestureDetector(
-      onTap: () => _navigateToProduct(product),
-      child: Container(
-        width: 32,
-        height: 32,
-        decoration: BoxDecoration(
-          color: const Color(0xFFF26522),
-          borderRadius: BorderRadius.circular(16),
-        ),
-        child: const Icon(
-          Icons.arrow_forward_rounded,
-          size: 18,
-          color: Colors.white,
-        ),
-      ),
-    );
+                      // Định nghĩa nhanh cấu trúc Nút Bấm Giỏ Hàng để dùng chung cho cả 2 trường hợp
+                      final cartButton = GestureDetector(
+                        onTap: () => _navigateToProduct(product),
+                        child: Container(
+                          width: 32,
+                          height: 32,
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFF26522),
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          child: const Icon(
+                            Icons.arrow_forward_rounded,
+                            size: 18,
+                            color: Colors.white,
+                          ),
+                        ),
+                      );
 
-    // TRƯỜNG HỢP A: Văn bản ngắn (Chỉ có 1 dòng)
-    if (!isMultiLine) {
-      return Row(
-        children: [
-          Expanded(
-            child: Text(
-              fullText,
-              style: textStyle,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ),
-          const SizedBox(width: 8),
-          cartButton,
-        ],
-      );
-    }
+                      // TRƯỜNG HỢP A: Văn bản ngắn (Chỉ có 1 dòng)
+                      if (!isMultiLine) {
+                        return Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                fullText,
+                                style: textStyle,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            cartButton,
+                          ],
+                        );
+                      }
 
-    // TRƯỜNG HỢP B: Văn bản dài nhiều dòng (Dòng 1 full width, dòng 2-3 né nút bấm)
-    final firstLineEndIndex = textPainter.getPositionForOffset(Offset(constraints.maxWidth, 0)).offset;
-    final firstLineText = fullText.substring(0, firstLineEndIndex);
-    final remainingText = fullText.substring(firstLineEndIndex);
+                      // TRƯỜNG HỢP B: Văn bản dài nhiều dòng (Dòng 1 full width, dòng 2-3 né nút bấm)
+                      final firstLineEndIndex = textPainter
+                          .getPositionForOffset(Offset(constraints.maxWidth, 0))
+                          .offset;
+                      final firstLineText =
+                          fullText.substring(0, firstLineEndIndex);
+                      final remainingText =
+                          fullText.substring(firstLineEndIndex);
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        // Dòng 1: Luôn hiển thị Full Width tuyệt đối
-        Text(
-          firstLineText,
-          style: textStyle,
-          maxLines: 1,
-        ),
-        // Dòng 2 & 3: Tự động chừa 40px bên phải để né nút bấm giỏ hàng
-        Stack(
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(right: 40), // 32px nút + 8px khoảng cách an toàn
-              child: Text(
-                remainingText,
-                style: textStyle,
-                maxLines: 2, // Giới hạn đúng 3 dòng tổng cộng (1 dòng trên + 2 dòng dưới)
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-            Positioned(
-              right: 0,
-              bottom: 0,
-              child: cartButton,
-            ),
-          ],
-        ),
-      ],
-    );
-  },
-)
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Dòng 1: Luôn hiển thị Full Width tuyệt đối
+                          Text(
+                            firstLineText,
+                            style: textStyle,
+                            maxLines: 1,
+                          ),
+                          // Dòng 2 & 3: Tự động chừa 40px bên phải để né nút bấm giỏ hàng
+                          Stack(
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.only(
+                                    right:
+                                        40), // 32px nút + 8px khoảng cách an toàn
+                                child: Text(
+                                  remainingText,
+                                  style: textStyle,
+                                  maxLines:
+                                      2, // Giới hạn đúng 3 dòng tổng cộng (1 dòng trên + 2 dòng dưới)
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                              Positioned(
+                                right: 0,
+                                bottom: 0,
+                                child: cartButton,
+                              ),
+                            ],
+                          ),
+                        ],
+                      );
+                    },
+                  )
                 ],
               ),
             ),
@@ -951,7 +1008,7 @@ LayoutBuilder(
     );
   }
 
-bool _hasMultiplePrices(Map<String, dynamic> product) {
+  bool _hasMultiplePrices(Map<String, dynamic> product) {
     final variants = product['variants'] as List<dynamic>?;
     if (variants != null && variants.length > 1) {
       final sortedVariants = List.from(variants);
@@ -965,17 +1022,17 @@ bool _hasMultiplePrices(Map<String, dynamic> product) {
       final lowest = double.tryParse(
               sortedVariants[0]['effective_price']?.toString() ?? '0') ??
           0.0;
-      final highest = double.tryParse(
-              sortedVariants[sortedVariants.length - 1]['effective_price']
+      final highest = double.tryParse(sortedVariants[sortedVariants.length - 1]
+                      ['effective_price']
                   ?.toString() ??
-                  '0') ??
+              '0') ??
           0.0;
       return lowest != highest;
     }
     return false;
   }
 
-double? _getMaxDisplayPrice(Map<String, dynamic> product) {
+  double? _getMaxDisplayPrice(Map<String, dynamic> product) {
     final variants = product['variants'] as List<dynamic>?;
     if (variants != null && variants.isNotEmpty) {
       final sortedVariants = List.from(variants);
@@ -986,16 +1043,16 @@ double? _getMaxDisplayPrice(Map<String, dynamic> product) {
             double.tryParse(b['effective_price']?.toString() ?? '0') ?? 0;
         return aPrice.compareTo(bPrice);
       });
-      return double.tryParse(
-              sortedVariants[sortedVariants.length - 1]['effective_price']
+      return double.tryParse(sortedVariants[sortedVariants.length - 1]
+                      ['effective_price']
                   ?.toString() ??
-                  '0') ??
+              '0') ??
           0.0;
     }
     return null;
   }
 
-double? _getDisplayOldPrice(Map<String, dynamic> product) {
+  double? _getDisplayOldPrice(Map<String, dynamic> product) {
     final variants = product['variants'] as List<dynamic>?;
     if (variants != null && variants.isNotEmpty) {
       final sortedVariants = List.from(variants);
@@ -1016,7 +1073,7 @@ double? _getDisplayOldPrice(Map<String, dynamic> product) {
     return null;
   }
 
-bool _showDiscountBadge(Map<String, dynamic> product) {
+  bool _showDiscountBadge(Map<String, dynamic> product) {
     // Only show discount badge when there's exactly 1 variant
     final variants = product['variants'] as List<dynamic>?;
     if (variants == null || variants.length != 1) return false;
@@ -1024,18 +1081,19 @@ bool _showDiscountBadge(Map<String, dynamic> product) {
     final originalPrice =
         double.tryParse(variants[0]['price']?.toString() ?? '0') ?? 0.0;
     final finalPrice =
-        double.tryParse(variants[0]['effective_price']?.toString() ?? '0') ?? 0.0;
+        double.tryParse(variants[0]['effective_price']?.toString() ?? '0') ??
+            0.0;
     return finalPrice < originalPrice;
   }
 
-int _getDiscountPercent(Map<String, dynamic> product) {
+  int _getDiscountPercent(Map<String, dynamic> product) {
     final oldP = _getDisplayOldPrice(product);
     if (oldP == null) return 0;
     final newP = _getDisplayPrice(product);
     return ((1 - newP / oldP) * 100).round();
   }
 
-bool _isNewWithinTenDays(String? createdAtStr) {
+  bool _isNewWithinTenDays(String? createdAtStr) {
     if (createdAtStr == null) return false;
     final createdAt = DateTime.tryParse(createdAtStr);
     if (createdAt == null) return false;

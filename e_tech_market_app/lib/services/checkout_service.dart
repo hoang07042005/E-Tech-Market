@@ -109,10 +109,14 @@ class PaymentAvailability {
 
   bool isAvailable(String method) {
     switch (method) {
-      case 'cod': return cod;
-      case 'vnpay': return vnpay;
-      case 'momo': return momo;
-      default: return false;
+      case 'cod':
+        return cod;
+      case 'vnpay':
+        return vnpay;
+      case 'momo':
+        return momo;
+      default:
+        return false;
     }
   }
 }
@@ -126,7 +130,8 @@ class CheckoutService {
   static Future<PaymentAvailability> fetchPaymentConfig() async {
     try {
       final response = await DioClient.instance.get('/store/payments');
-      return PaymentAvailability.fromJson(response.data as Map<String, dynamic>);
+      return PaymentAvailability.fromJson(
+          response.data as Map<String, dynamic>);
     } catch (_) {
       return const PaymentAvailability();
     }
@@ -169,7 +174,8 @@ class CheckoutService {
     int? pointsUsed,
   }) async {
     try {
-      final response = await DioClient.instance.post('/orders/from-items', data: {
+      final response =
+          await DioClient.instance.post('/orders/from-items', data: {
         'shipping_name': shippingName,
         'shipping_phone': shippingPhone,
         'shipping_address_line': shippingAddress,
@@ -204,7 +210,8 @@ class CheckoutService {
       final body = paymentMethod == 'momo'
           ? {'request_type': 'payWithMethod', 'order_id': orderId}
           : {'order_id': orderId};
-      final response = await DioClient.instance.post('/payments/$paymentMethod/create', data: body);
+      final response = await DioClient.instance
+          .post('/payments/$paymentMethod/create', data: body);
       final data = response.data as Map<String, dynamic>;
       return data['pay_url']?.toString() ?? '';
     } on DioException catch (e) {
@@ -215,12 +222,12 @@ class CheckoutService {
   static String _extractErrorMessage(DioException e) {
     if (e.response?.data is Map) {
       final data = e.response!.data as Map<String, dynamic>;
-      return data['message']?.toString() ?? 'Có lỗi xảy ra, vui lòng thử lại sau.';
+      return data['message']?.toString() ??
+          'Có lỗi xảy ra, vui lòng thử lại sau.';
     }
     return 'Có lỗi xảy ra, vui lòng thử lại sau.';
   }
 }
-
 
 double _toDouble(dynamic value) {
   if (value is num) return value.toDouble();

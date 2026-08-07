@@ -17,10 +17,16 @@ class WishlistScreen extends StatefulWidget {
   State<WishlistScreen> createState() => _WishlistScreenState();
 }
 
-class _WishlistScreenState extends State<WishlistScreen> with SingleTickerProviderStateMixin {
+class _WishlistScreenState extends State<WishlistScreen>
+    with SingleTickerProviderStateMixin {
   late TabController _tabController;
   final List<String> _tabs = const ['product', 'blog', 'video', 'news'];
-  final Map<String, int> _counts = {'product': 0, 'blog': 0, 'video': 0, 'news': 0};
+  final Map<String, int> _counts = {
+    'product': 0,
+    'blog': 0,
+    'video': 0,
+    'news': 0
+  };
 
   @override
   void initState() {
@@ -58,7 +64,8 @@ class _WishlistScreenState extends State<WishlistScreen> with SingleTickerProvid
         backgroundColor: Theme.of(context).colorScheme.surface,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Theme.of(context).colorScheme.onSurface),
+          icon: Icon(Icons.arrow_back,
+              color: Theme.of(context).colorScheme.onSurface),
           onPressed: () => Navigator.maybePop(context),
         ),
       ),
@@ -81,14 +88,19 @@ class _WishlistScreenState extends State<WishlistScreen> with SingleTickerProvid
                 const SizedBox(height: 8),
                 RichText(
                   text: TextSpan(
-                    style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 14),
+                    style: TextStyle(
+                        color: Theme.of(context).colorScheme.onSurface,
+                        fontSize: 14),
                     children: [
                       const TextSpan(text: 'Bạn có '),
                       TextSpan(
                         text: '$currentCount',
-                        style: TextStyle(fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.onSurface),
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Theme.of(context).colorScheme.onSurface),
                       ),
-                      const TextSpan(text: ' mục được lưu trong danh sách này.'),
+                      const TextSpan(
+                          text: ' mục được lưu trong danh sách này.'),
                     ],
                   ),
                 ),
@@ -107,7 +119,8 @@ class _WishlistScreenState extends State<WishlistScreen> with SingleTickerProvid
             unselectedLabelColor: Theme.of(context).colorScheme.onSurface,
             indicatorColor: const Color(0xFFEF4444),
             indicatorWeight: 2,
-            labelStyle: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+            labelStyle:
+                const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
             tabs: const [
               Tab(text: 'Sản phẩm'),
               Tab(text: 'Bài viết'),
@@ -118,10 +131,12 @@ class _WishlistScreenState extends State<WishlistScreen> with SingleTickerProvid
           Expanded(
             child: TabBarView(
               controller: _tabController,
-              children: _tabs.map((type) => WishlistTabView(
-                type: type, 
-                onCountChanged: (count) => _updateCount(type, count),
-              )).toList(),
+              children: _tabs
+                  .map((type) => WishlistTabView(
+                        type: type,
+                        onCountChanged: (count) => _updateCount(type, count),
+                      ))
+                  .toList(),
             ),
           ),
         ],
@@ -133,7 +148,8 @@ class _WishlistScreenState extends State<WishlistScreen> with SingleTickerProvid
 class WishlistTabView extends StatefulWidget {
   final String type;
   final Function(int) onCountChanged;
-  const WishlistTabView({super.key, required this.type, required this.onCountChanged});
+  const WishlistTabView(
+      {super.key, required this.type, required this.onCountChanged});
 
   @override
   State<WishlistTabView> createState() => _WishlistTabViewState();
@@ -169,9 +185,11 @@ class _WishlistTabViewState extends State<WishlistTabView> {
   Future<void> _removeWishlist(int id) async {
     final originalIndex = _wishlistItems.indexWhere((item) {
       if (widget.type == 'product') return item['product']?['id'] == id;
-      if (widget.type == 'blog') return (item['blog_post'] ?? item['blogPost'])?['id'] == id;
+      if (widget.type == 'blog')
+        return (item['blog_post'] ?? item['blogPost'])?['id'] == id;
       if (widget.type == 'video') return item['video']?['id'] == id;
-      if (widget.type == 'news') return (item['product_news'] ?? item['productNews'])?['id'] == id;
+      if (widget.type == 'news')
+        return (item['product_news'] ?? item['productNews'])?['id'] == id;
       return false;
     });
 
@@ -194,13 +212,19 @@ class _WishlistTabViewState extends State<WishlistTabView> {
   }
 
   Future<void> _clearAll() async {
-    final ids = _wishlistItems.map((item) {
-      if (widget.type == 'product') return item['product']?['id'] as int?;
-      if (widget.type == 'blog') return (item['blog_post'] ?? item['blogPost'])?['id'] as int?;
-      if (widget.type == 'video') return item['video']?['id'] as int?;
-      if (widget.type == 'news') return (item['product_news'] ?? item['productNews'])?['id'] as int?;
-      return null;
-    }).where((id) => id != null).cast<int>().toList();
+    final ids = _wishlistItems
+        .map((item) {
+          if (widget.type == 'product') return item['product']?['id'] as int?;
+          if (widget.type == 'blog')
+            return (item['blog_post'] ?? item['blogPost'])?['id'] as int?;
+          if (widget.type == 'video') return item['video']?['id'] as int?;
+          if (widget.type == 'news')
+            return (item['product_news'] ?? item['productNews'])?['id'] as int?;
+          return null;
+        })
+        .where((id) => id != null)
+        .cast<int>()
+        .toList();
 
     setState(() => _wishlistItems.clear());
     widget.onCountChanged(0);
@@ -217,14 +241,18 @@ class _WishlistTabViewState extends State<WishlistTabView> {
         title: Text(Trans.deleteAllConfirmTitle),
         content: Text(Trans.deleteAllConfirmMessage),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: Text(Trans.cancel)),
+          TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text(Trans.cancel)),
           ElevatedButton(
             onPressed: () {
               Navigator.pop(context);
               _clearAll();
             },
-            style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFEF4444)),
-            child: Text(Trans.delete, style: const TextStyle(color: Colors.white)),
+            style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFFEF4444)),
+            child:
+                Text(Trans.delete, style: const TextStyle(color: Colors.white)),
           ),
         ],
       ),
@@ -232,13 +260,18 @@ class _WishlistTabViewState extends State<WishlistTabView> {
   }
 
   List<dynamic> get _filteredItems {
-    if (widget.type != 'product' || _selectedCatId == 'all') return _wishlistItems;
+    if (widget.type != 'product' || _selectedCatId == 'all')
+      return _wishlistItems;
     if (_selectedCatId == 'other') {
-      return _wishlistItems.where((i) => i['product']?['category']?['id'] == null).toList();
+      return _wishlistItems
+          .where((i) => i['product']?['category']?['id'] == null)
+          .toList();
     }
     final catId = int.tryParse(_selectedCatId);
     if (catId == null) return _wishlistItems;
-    return _wishlistItems.where((i) => i['product']?['category']?['id'] == catId).toList();
+    return _wishlistItems
+        .where((i) => i['product']?['category']?['id'] == catId)
+        .toList();
   }
 
   List<Map<String, dynamic>> get _categoryFacets {
@@ -255,7 +288,8 @@ class _WishlistTabViewState extends State<WishlistTabView> {
         map[catId] = {'id': catId, 'name': name, 'count': 1};
       }
     }
-    final facets = map.values.toList()..sort((a, b) => (a['name'] as String).compareTo(b['name'] as String));
+    final facets = map.values.toList()
+      ..sort((a, b) => (a['name'] as String).compareTo(b['name'] as String));
     return [
       {'id': 'all', 'name': 'Tất cả', 'count': _wishlistItems.length},
       ...facets
@@ -264,132 +298,162 @@ class _WishlistTabViewState extends State<WishlistTabView> {
 
   void _showFilterSheet() {
     showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (context) {
-        return Container(
-          padding: const EdgeInsets.only(top: 16, bottom: 24),
-          height: MediaQuery.of(context).size.height * 0.7,
-          decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.surface,
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(16))
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text('PHÂN LOẠI', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: Colors.grey)),
-                    GestureDetector(
-                      onTap: () => Navigator.pop(context),
-                      child: Container(
-                        padding: const EdgeInsets.all(4),
-                        decoration: BoxDecoration(
-                          color: Theme.of(context).colorScheme.surfaceVariant, 
-                          shape: BoxShape.circle
-                        ),
-                        child: Icon(Icons.close, size: 20, color: Theme.of(context).colorScheme.onSurface),
-                      )
-                    )
-                  ],
-                ),
-              ),
-              const SizedBox(height: 16),
-              Expanded(
-                child: ListView.separated(
-                  itemCount: _categoryFacets.length,
-                  separatorBuilder: (_, __) => const SizedBox(height: 8),
+        context: context,
+        isScrollControlled: true,
+        backgroundColor: Colors.transparent,
+        builder: (context) {
+          return Container(
+            padding: const EdgeInsets.only(top: 16, bottom: 24),
+            height: MediaQuery.of(context).size.height * 0.7,
+            decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.surface,
+                borderRadius:
+                    const BorderRadius.vertical(top: Radius.circular(16))),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
-                  itemBuilder: (context, index) {
-                    final facet = _categoryFacets[index];
-                    final isSelected = _selectedCatId == facet['id'];
-                    return InkWell(
-                      onTap: () {
-                        setState(() => _selectedCatId = facet['id']);
-                        Navigator.pop(context);
-                      },
-                      borderRadius: BorderRadius.circular(8),
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                        decoration: BoxDecoration(
-                          color: isSelected ? const Color(0xFFEA580C).withOpacity(0.1) : Colors.transparent,
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              facet['name'],
-                              style: TextStyle(
-                                color: isSelected ? const Color(0xFFEA580C) : Theme.of(context).colorScheme.onSurface,
-                                fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
-                              ),
-                            ),
-                            Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                              decoration: BoxDecoration(
-                                color: isSelected ? Theme.of(context).colorScheme.surface : Theme.of(context).colorScheme.surfaceVariant,
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: Text(
-                                '${facet['count']}',
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text('PHÂN LOẠI',
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14,
+                              color: Colors.grey)),
+                      GestureDetector(
+                          onTap: () => Navigator.pop(context),
+                          child: Container(
+                            padding: const EdgeInsets.all(4),
+                            decoration: BoxDecoration(
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .surfaceVariant,
+                                shape: BoxShape.circle),
+                            child: Icon(Icons.close,
+                                size: 20,
+                                color: Theme.of(context).colorScheme.onSurface),
+                          ))
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Expanded(
+                  child: ListView.separated(
+                    itemCount: _categoryFacets.length,
+                    separatorBuilder: (_, __) => const SizedBox(height: 8),
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    itemBuilder: (context, index) {
+                      final facet = _categoryFacets[index];
+                      final isSelected = _selectedCatId == facet['id'];
+                      return InkWell(
+                        onTap: () {
+                          setState(() => _selectedCatId = facet['id']);
+                          Navigator.pop(context);
+                        },
+                        borderRadius: BorderRadius.circular(8),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 16, vertical: 12),
+                          decoration: BoxDecoration(
+                            color: isSelected
+                                ? const Color(0xFFEA580C).withOpacity(0.1)
+                                : Colors.transparent,
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                facet['name'],
                                 style: TextStyle(
-                                  color: isSelected ? const Color(0xFFEA580C) : Theme.of(context).colorScheme.onSurfaceVariant,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 12,
+                                  color: isSelected
+                                      ? const Color(0xFFEA580C)
+                                      : Theme.of(context).colorScheme.onSurface,
+                                  fontWeight: isSelected
+                                      ? FontWeight.bold
+                                      : FontWeight.w500,
                                 ),
                               ),
-                            ),
-                          ],
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 8, vertical: 2),
+                                decoration: BoxDecoration(
+                                  color: isSelected
+                                      ? Theme.of(context).colorScheme.surface
+                                      : Theme.of(context)
+                                          .colorScheme
+                                          .surfaceVariant,
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: Text(
+                                  '${facet['count']}',
+                                  style: TextStyle(
+                                    color: isSelected
+                                        ? const Color(0xFFEA580C)
+                                        : Theme.of(context)
+                                            .colorScheme
+                                            .onSurfaceVariant,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 12,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                    );
-                  },
+                      );
+                    },
+                  ),
                 ),
-              ),
-              const SizedBox(height: 16),
-              Container(
-                 margin: const EdgeInsets.symmetric(horizontal: 16),
-                 padding: const EdgeInsets.all(16),
-                 decoration: BoxDecoration(
-                   color: Theme.of(context).brightness == Brightness.dark ? const Color(0xFF334155) : const Color(0xFF1E293B),
-                   borderRadius: BorderRadius.circular(12)
-                 ),
-                 child: Column(
-                   crossAxisAlignment: CrossAxisAlignment.start,
-                   children: [
-                     const Text('Ưu đãi hôm nay', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
-                     const SizedBox(height: 4),
-                     const Text('Giảm thêm 500k khi mua từ 2 sản phẩm yêu thích.', style: TextStyle(color: Colors.white70, fontSize: 13)),
-                     const SizedBox(height: 12),
-                     ElevatedButton(
-                       onPressed: () => Navigator.pop(context),
-                       style: ElevatedButton.styleFrom(
-                         backgroundColor: Colors.white,
-                         foregroundColor: const Color(0xFF1E293B),
-                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                         minimumSize: const Size(120, 36)
-                       ),
-                       child: const Text('Xem chi tiết', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
-                     )
-                   ]
-                 )
-              )
-            ],
-          ),
-        );
-      }
-    );
+                const SizedBox(height: 16),
+                Container(
+                    margin: const EdgeInsets.symmetric(horizontal: 16),
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? const Color(0xFF334155)
+                            : const Color(0xFF1E293B),
+                        borderRadius: BorderRadius.circular(12)),
+                    child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text('Ưu đãi hôm nay',
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16)),
+                          const SizedBox(height: 4),
+                          const Text(
+                              'Giảm thêm 500k khi mua từ 2 sản phẩm yêu thích.',
+                              style: TextStyle(
+                                  color: Colors.white70, fontSize: 13)),
+                          const SizedBox(height: 12),
+                          ElevatedButton(
+                            onPressed: () => Navigator.pop(context),
+                            style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.white,
+                                foregroundColor: const Color(0xFF1E293B),
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(20)),
+                                minimumSize: const Size(120, 36)),
+                            child: const Text('Xem chi tiết',
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold, fontSize: 13)),
+                          )
+                        ]))
+              ],
+            ),
+          );
+        });
   }
 
   @override
   Widget build(BuildContext context) {
     if (_isLoading) {
-      return const Center(child: CircularProgressIndicator(color: Color(0xFFEA580C)));
+      return const Center(
+          child: CircularProgressIndicator(color: Color(0xFFEA580C)));
     }
     if (_wishlistItems.isEmpty) {
       return _buildEmptyState();
@@ -409,21 +473,28 @@ class _WishlistTabViewState extends State<WishlistTabView> {
                   OutlinedButton.icon(
                     onPressed: _showFilterSheet,
                     style: OutlinedButton.styleFrom(
-                      foregroundColor: Theme.of(context).colorScheme.onSurface,
-                      side: BorderSide(color: Theme.of(context).colorScheme.outlineVariant),
-                      backgroundColor: Theme.of(context).colorScheme.surface,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8)
-                    ),
-                    icon: const Icon(Icons.filter_alt_outlined, size: 18, color: Color(0xFFEA580C)),
-                    label: const Text('Bộ lọc danh mục', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
+                        foregroundColor:
+                            Theme.of(context).colorScheme.onSurface,
+                        side: BorderSide(
+                            color:
+                                Theme.of(context).colorScheme.outlineVariant),
+                        backgroundColor: Theme.of(context).colorScheme.surface,
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8)),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 12, vertical: 8)),
+                    icon: const Icon(Icons.filter_alt_outlined,
+                        size: 18, color: Color(0xFFEA580C)),
+                    label: const Text('Bộ lọc danh mục',
+                        style: TextStyle(
+                            fontSize: 13, fontWeight: FontWeight.w600)),
                   )
                 else
                   const SizedBox.shrink(),
-                
                 IconButton(
                   onPressed: _showClearAllConfirm,
-                  icon: const Icon(Icons.delete_outline, color: Color(0xFFEF4444)),
+                  icon: const Icon(Icons.delete_outline,
+                      color: Color(0xFFEF4444)),
                   tooltip: 'Xóa tất cả',
                 )
               ],
@@ -436,7 +507,8 @@ class _WishlistTabViewState extends State<WishlistTabView> {
             child: Center(
               child: Text(
                 'Không có mục nào trong danh mục này.',
-                style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant),
+                style: TextStyle(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant),
               ),
             ),
           )
@@ -452,12 +524,15 @@ class _WishlistTabViewState extends State<WishlistTabView> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.favorite_border, size: 80, color: Theme.of(context).colorScheme.surfaceVariant),
+          Icon(Icons.favorite_border,
+              size: 80, color: Theme.of(context).colorScheme.surfaceVariant),
           const SizedBox(height: 16),
           Text(
             Trans.noProductsWishlist,
             textAlign: TextAlign.center,
-            style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant, fontSize: 15),
+            style: TextStyle(
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+                fontSize: 15),
           ),
           const SizedBox(height: 24),
           ElevatedButton(
@@ -472,9 +547,11 @@ class _WishlistTabViewState extends State<WishlistTabView> {
               backgroundColor: const Color(0xFFEA580C),
               foregroundColor: Colors.white,
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8)),
             ),
-            child: Text(Trans.continueShoppingButton, style: const TextStyle(fontWeight: FontWeight.bold)),
+            child: Text(Trans.continueShoppingButton,
+                style: const TextStyle(fontWeight: FontWeight.bold)),
           ),
         ],
       ),
@@ -536,13 +613,14 @@ class _WishlistTabViewState extends State<WishlistTabView> {
             crossAxisCount: 2,
             mainAxisSpacing: 16,
             crossAxisSpacing: 16,
-            childAspectRatio: 0.65, 
+            childAspectRatio: 0.65,
           ),
           delegate: SliverChildBuilderDelegate(
             (context, index) {
               final post = widget.type == 'blog'
                   ? (items[index]['blog_post'] ?? items[index]['blogPost'])
-                  : (items[index]['product_news'] ?? items[index]['productNews']);
+                  : (items[index]['product_news'] ??
+                      items[index]['productNews']);
               if (post == null) return const SizedBox.shrink();
               return _buildBlogCard(post);
             },
@@ -550,7 +628,8 @@ class _WishlistTabViewState extends State<WishlistTabView> {
           ),
         ),
       );
-    } else { // video
+    } else {
+      // video
       return SliverPadding(
         padding: const EdgeInsets.symmetric(horizontal: 16),
         sliver: SliverGrid(
@@ -579,22 +658,37 @@ class _WishlistTabViewState extends State<WishlistTabView> {
     final brand = product['brand']?.toString().trim();
     final description = product['description']?.toString().trim();
     final shortDescription = product['short_description']?.toString().trim();
-    final excerpt = description != null && description.isNotEmpty ? description : (shortDescription != null && shortDescription.isNotEmpty ? shortDescription : Trans.defaultProductExcerpt);
-    final rating = double.tryParse(product['avg_rating']?.toString() ?? '0') ?? 0;
+    final excerpt = description != null && description.isNotEmpty
+        ? description
+        : (shortDescription != null && shortDescription.isNotEmpty
+            ? shortDescription
+            : Trans.defaultProductExcerpt);
+    final rating =
+        double.tryParse(product['avg_rating']?.toString() ?? '0') ?? 0;
     final isNew = product['is_new'] == true;
 
     Map<String, dynamic>? flashSaleItem;
-    final flashSaleItems = product['flash_sale_items'] ?? product['flashSaleItems'];
+    final flashSaleItems =
+        product['flash_sale_items'] ?? product['flashSaleItems'];
     if (flashSaleItems != null && (flashSaleItems as List).isNotEmpty) {
       final now = DateTime.now();
       for (var item in flashSaleItems) {
         if (item['flash_sale'] != null) {
-          final start = DateTime.tryParse(item['flash_sale']['start_at']?.toString().replaceAll(' ', 'T') ?? '');
-          final end = DateTime.tryParse(item['flash_sale']['end_at']?.toString().replaceAll(' ', 'T') ?? '');
-          if (start != null && end != null && now.isAfter(start) && now.isBefore(end)) {
+          final start = DateTime.tryParse(
+              item['flash_sale']['start_at']?.toString().replaceAll(' ', 'T') ??
+                  '');
+          final end = DateTime.tryParse(
+              item['flash_sale']['end_at']?.toString().replaceAll(' ', 'T') ??
+                  '');
+          if (start != null &&
+              end != null &&
+              now.isAfter(start) &&
+              now.isBefore(end)) {
             final quantityLimit = (item['quantity_limit'] as num?)?.toInt();
             final soldQuantity = (item['sold_quantity'] as num?)?.toInt() ?? 0;
-            final isSoldOut = quantityLimit != null && quantityLimit > 0 && soldQuantity >= quantityLimit;
+            final isSoldOut = quantityLimit != null &&
+                quantityLimit > 0 &&
+                soldQuantity >= quantityLimit;
             if (!isSoldOut) {
               flashSaleItem = item as Map<String, dynamic>?;
               break;
@@ -612,7 +706,8 @@ class _WishlistTabViewState extends State<WishlistTabView> {
     int discountPercent = 0;
 
     final variants = product['variants'] as List<dynamic>? ?? [];
-    final activeVariants = variants.where((v) => v['is_active'] != false).toList();
+    final activeVariants =
+        variants.where((v) => v['is_active'] != false).toList();
     final isSingleVariant = activeVariants.length == 1;
 
     Map<String, dynamic>? selectedVariant;
@@ -620,8 +715,10 @@ class _WishlistTabViewState extends State<WishlistTabView> {
     if (activeVariants.isNotEmpty) {
       final sorted = List.from(activeVariants);
       sorted.sort((a, b) {
-        final aPrice = double.tryParse(a['effective_price']?.toString() ?? '0') ?? 0;
-        final bPrice = double.tryParse(b['effective_price']?.toString() ?? '0') ?? 0;
+        final aPrice =
+            double.tryParse(a['effective_price']?.toString() ?? '0') ?? 0;
+        final bPrice =
+            double.tryParse(b['effective_price']?.toString() ?? '0') ?? 0;
         return aPrice.compareTo(bPrice);
       });
 
@@ -629,25 +726,35 @@ class _WishlistTabViewState extends State<WishlistTabView> {
       final highest = sorted.last;
       selectedVariant = lowest;
 
-      displayPrice = double.tryParse(lowest['effective_price']?.toString() ?? '0') ?? 0;
-      final priceMax = double.tryParse(highest['effective_price']?.toString() ?? '0') ?? 0;
-      double originalPrice = double.tryParse(lowest['price']?.toString() ?? '0') ?? 0;
+      displayPrice =
+          double.tryParse(lowest['effective_price']?.toString() ?? '0') ?? 0;
+      final priceMax =
+          double.tryParse(highest['effective_price']?.toString() ?? '0') ?? 0;
+      double originalPrice =
+          double.tryParse(lowest['price']?.toString() ?? '0') ?? 0;
 
       bool hasMultiplePrices = displayPrice != priceMax;
       showDiscountBadge = isSingleVariant;
 
       if (isFlashSale) {
         if (flashSaleItem!['variant_id'] != null) {
-          final int flashVariantId = int.tryParse(flashSaleItem['variant_id'].toString()) ?? 0;
+          final int flashVariantId =
+              int.tryParse(flashSaleItem['variant_id'].toString()) ?? 0;
           if (flashVariantId > 0) {
-             final flashVariant = activeVariants.firstWhere((v) => v['id'] == flashVariantId, orElse: () => lowest);
-             if (flashVariant != lowest) {
-               selectedVariant = flashVariant;
-               originalPrice = double.tryParse(flashVariant['price']?.toString() ?? '0') ?? 0;
-             }
+            final flashVariant = activeVariants.firstWhere(
+                (v) => v['id'] == flashVariantId,
+                orElse: () => lowest);
+            if (flashVariant != lowest) {
+              selectedVariant = flashVariant;
+              originalPrice =
+                  double.tryParse(flashVariant['price']?.toString() ?? '0') ??
+                      0;
+            }
           }
         }
-        displayPrice = double.tryParse(flashSaleItem['flash_sale_price']?.toString() ?? '0') ?? 0;
+        displayPrice = double.tryParse(
+                flashSaleItem['flash_sale_price']?.toString() ?? '0') ??
+            0;
         hasMultiplePrices = false;
         showDiscountBadge = true;
       }
@@ -655,29 +762,38 @@ class _WishlistTabViewState extends State<WishlistTabView> {
       final hasDiscount = displayPrice < originalPrice && showDiscountBadge;
       displayPriceMax = hasMultiplePrices ? priceMax : null;
       displayOldPrice = hasDiscount ? originalPrice : null;
-      discountPercent = hasDiscount ? ((1 - displayPrice / originalPrice) * 100).round() : 0;
+      discountPercent =
+          hasDiscount ? ((1 - displayPrice / originalPrice) * 100).round() : 0;
     } else {
-      final originalPrice = double.tryParse(product['price']?.toString() ?? '0') ?? 0;
+      final originalPrice =
+          double.tryParse(product['price']?.toString() ?? '0') ?? 0;
       displayPrice = originalPrice;
       if (product['discount_price'] != null) {
-         displayPrice = double.tryParse(product['discount_price']?.toString() ?? '0') ?? originalPrice;
+        displayPrice =
+            double.tryParse(product['discount_price']?.toString() ?? '0') ??
+                originalPrice;
       }
       showDiscountBadge = true;
-      
+
       if (isFlashSale) {
-        displayPrice = double.tryParse(flashSaleItem!['flash_sale_price']?.toString() ?? '0') ?? 0;
+        displayPrice = double.tryParse(
+                flashSaleItem!['flash_sale_price']?.toString() ?? '0') ??
+            0;
       }
 
       final hasDiscount = displayPrice < originalPrice && showDiscountBadge;
       displayOldPrice = hasDiscount ? originalPrice : null;
-      discountPercent = hasDiscount ? ((1 - displayPrice / originalPrice) * 100).round() : 0;
+      discountPercent =
+          hasDiscount ? ((1 - displayPrice / originalPrice) * 100).round() : 0;
     }
 
-    final imageUrl = _resolveProductImageUrl(product, selectedVariant: selectedVariant);
+    final imageUrl =
+        _resolveProductImageUrl(product, selectedVariant: selectedVariant);
 
     int? totalStock;
     if (variants.isNotEmpty) {
-      totalStock = variants.fold<int>(0, (sum, v) => sum + ((v['stock_quantity'] as num?)?.toInt() ?? 0));
+      totalStock = variants.fold<int>(
+          0, (sum, v) => sum + ((v['stock_quantity'] as num?)?.toInt() ?? 0));
     } else {
       totalStock = (product['stock_quantity'] as num?)?.toInt();
     }
@@ -688,14 +804,18 @@ class _WishlistTabViewState extends State<WishlistTabView> {
       onTap: () {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => ProductDetailScreen(slug: product['slug'] ?? '', variantId: selectedVariant?['id']?.toString())),
+          MaterialPageRoute(
+              builder: (context) => ProductDetailScreen(
+                  slug: product['slug'] ?? '',
+                  variantId: selectedVariant?['id']?.toString())),
         );
       },
       child: Container(
         decoration: BoxDecoration(
           color: Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: Theme.of(context).colorScheme.outlineVariant, width: 1.5),
+          border: Border.all(
+              color: Theme.of(context).colorScheme.outlineVariant, width: 1.5),
         ),
         clipBehavior: Clip.hardEdge,
         child: Column(
@@ -710,11 +830,21 @@ class _WishlistTabViewState extends State<WishlistTabView> {
                   Container(
                     color: Theme.of(context).colorScheme.surface,
                     child: imageUrl.isEmpty
-                        ? Center(child: Icon(Icons.image, color: Theme.of(context).colorScheme.outlineVariant, size: 40))
+                        ? Center(
+                            child: Icon(Icons.image,
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .outlineVariant,
+                                size: 40))
                         : Image.network(
                             imageUrl,
                             fit: BoxFit.cover,
-                            errorBuilder: (_, __, ___) => Center(child: Icon(Icons.image, color: Theme.of(context).colorScheme.outlineVariant, size: 40)),
+                            errorBuilder: (_, __, ___) => Center(
+                                child: Icon(Icons.image,
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .outlineVariant,
+                                    size: 40)),
                           ),
                   ),
                   Positioned(
@@ -727,9 +857,16 @@ class _WishlistTabViewState extends State<WishlistTabView> {
                         decoration: BoxDecoration(
                           color: Theme.of(context).colorScheme.surface,
                           shape: BoxShape.circle,
-                          boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 4)],
+                          boxShadow: [
+                            BoxShadow(
+                                color: Colors.black.withOpacity(0.05),
+                                blurRadius: 4)
+                          ],
                         ),
-                        child: Icon(Icons.delete_outline, color: Theme.of(context).colorScheme.onSurfaceVariant, size: 16),
+                        child: Icon(Icons.delete_outline,
+                            color:
+                                Theme.of(context).colorScheme.onSurfaceVariant,
+                            size: 16),
                       ),
                     ),
                   ),
@@ -738,14 +875,22 @@ class _WishlistTabViewState extends State<WishlistTabView> {
                       top: 8,
                       left: 8,
                       child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 4),
                         decoration: BoxDecoration(
-                          color: (showDiscountBadge && discountPercent > 0) ? Colors.red : const Color(0xFFF26522),
+                          color: (showDiscountBadge && discountPercent > 0)
+                              ? Colors.red
+                              : const Color(0xFFF26522),
                           borderRadius: BorderRadius.circular(3),
                         ),
                         child: Text(
-                          (showDiscountBadge && discountPercent > 0) ? '-$discountPercent%' : Trans.newBadge,
-                          style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.w800),
+                          (showDiscountBadge && discountPercent > 0)
+                              ? '-$discountPercent%'
+                              : Trans.newBadge,
+                          style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 10,
+                              fontWeight: FontWeight.w800),
                         ),
                       ),
                     ),
@@ -772,14 +917,31 @@ class _WishlistTabViewState extends State<WishlistTabView> {
                     children: [
                       Expanded(
                         child: Text(
-                          (brand == null || brand.isEmpty ? Trans.brandDefault : brand).toUpperCase(),
-                          style: TextStyle(fontSize: 10, fontWeight: FontWeight.w800, color: Theme.of(context).colorScheme.onSurfaceVariant, letterSpacing: 0.5),
+                          (brand == null || brand.isEmpty
+                                  ? Trans.brandDefault
+                                  : brand)
+                              .toUpperCase(),
+                          style: TextStyle(
+                              fontSize: 10,
+                              fontWeight: FontWeight.w800,
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .onSurfaceVariant,
+                              letterSpacing: 0.5),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
                       Row(
-                         children: List.generate(5, (i) => Icon(Icons.star, size: 8, color: i < rating ? const Color(0xFFFACC15) : Theme.of(context).colorScheme.surfaceVariant)),
+                        children: List.generate(
+                            5,
+                            (i) => Icon(Icons.star,
+                                size: 8,
+                                color: i < rating
+                                    ? const Color(0xFFFACC15)
+                                    : Theme.of(context)
+                                        .colorScheme
+                                        .surfaceVariant)),
                       )
                     ],
                   ),
@@ -788,7 +950,11 @@ class _WishlistTabViewState extends State<WishlistTabView> {
                     name,
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
-                    style: TextStyle(fontSize: 12, fontWeight: FontWeight.w800, color: Theme.of(context).colorScheme.onSurface, height: 1.25),
+                    style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w800,
+                        color: Theme.of(context).colorScheme.onSurface,
+                        height: 1.25),
                   ),
                   const SizedBox(height: 2),
                   FittedBox(
@@ -801,24 +967,40 @@ class _WishlistTabViewState extends State<WishlistTabView> {
                         if (showDiscountBadge)
                           Text(
                             '${formatter.format(displayPrice)}',
-                            style: const TextStyle(color: Color(0xFFF26522), fontWeight: FontWeight.w800, fontSize: 11),
+                            style: const TextStyle(
+                                color: Color(0xFFF26522),
+                                fontWeight: FontWeight.w800,
+                                fontSize: 11),
                           )
                         else if (displayPriceMax != null)
                           Text(
                             '${formatter.format(displayPrice)} - ${formatter.format(displayPriceMax)}',
-                            style: const TextStyle(color: Color(0xFFF26522), fontWeight: FontWeight.w800, fontSize: 11),
+                            style: const TextStyle(
+                                color: Color(0xFFF26522),
+                                fontWeight: FontWeight.w800,
+                                fontSize: 11),
                           )
                         else
                           Text(
                             '${formatter.format(displayPrice)}',
-                            style: const TextStyle(color: Color(0xFFF26522), fontWeight: FontWeight.w800, fontSize: 11),
+                            style: const TextStyle(
+                                color: Color(0xFFF26522),
+                                fontWeight: FontWeight.w800,
+                                fontSize: 11),
                           ),
-                        if (displayOldPrice != null && displayOldPrice > displayPrice && showDiscountBadge)
+                        if (displayOldPrice != null &&
+                            displayOldPrice > displayPrice &&
+                            showDiscountBadge)
                           Padding(
                             padding: const EdgeInsets.only(left: 6, bottom: 1),
                             child: Text(
                               '${formatter.format(displayOldPrice)}',
-                              style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant, fontSize: 9, decoration: TextDecoration.lineThrough),
+                              style: TextStyle(
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .onSurfaceVariant,
+                                  fontSize: 9,
+                                  decoration: TextDecoration.lineThrough),
                             ),
                           ),
                       ],
@@ -830,8 +1012,10 @@ class _WishlistTabViewState extends State<WishlistTabView> {
                       padding: const EdgeInsets.only(bottom: 4),
                       child: StockBar(
                         isFlashSale: true,
-                        flashSaleSold: (flashSaleItem['sold_quantity'] as num?)?.toInt(),
-                        flashSaleLimit: (flashSaleItem['quantity_limit'] as num?)?.toInt(),
+                        flashSaleSold:
+                            (flashSaleItem['sold_quantity'] as num?)?.toInt(),
+                        flashSaleLimit:
+                            (flashSaleItem['quantity_limit'] as num?)?.toInt(),
                       ),
                     )
                   else if (totalStock != null)
@@ -844,10 +1028,13 @@ class _WishlistTabViewState extends State<WishlistTabView> {
                     ),
                   const SizedBox(height: 2),
                   Text(
-                     excerpt,
-                     maxLines: 3,
-                     overflow: TextOverflow.ellipsis,
-                     style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant, fontSize: 10, height: 1.4),
+                    excerpt,
+                    maxLines: 3,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        fontSize: 10,
+                        height: 1.4),
                   ),
                 ],
               ),
@@ -859,7 +1046,8 @@ class _WishlistTabViewState extends State<WishlistTabView> {
   }
 
   Widget _buildBlogCard(Map<String, dynamic> post) {
-    final imageUrl = NetworkUtils.fixDeviceUrl(post['thumbnail_url'] ?? post['image'] ?? '');
+    final imageUrl =
+        NetworkUtils.fixDeviceUrl(post['thumbnail_url'] ?? post['image'] ?? '');
     final title = post['title'] ?? '';
     final createdAt = post['published_at'] ?? post['created_at'] ?? '';
     final excerpt = post['excerpt'] ?? 'Khám phá bài viết mới...';
@@ -875,7 +1063,8 @@ class _WishlistTabViewState extends State<WishlistTabView> {
         decoration: BoxDecoration(
           color: Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: Theme.of(context).colorScheme.outlineVariant, width: 1.5),
+          border: Border.all(
+              color: Theme.of(context).colorScheme.outlineVariant, width: 1.5),
         ),
         clipBehavior: Clip.hardEdge,
         child: Column(
@@ -891,24 +1080,28 @@ class _WishlistTabViewState extends State<WishlistTabView> {
                   errorBuilder: (_, __, ___) => Container(
                     height: 120,
                     color: Theme.of(context).colorScheme.surfaceVariant,
-                    child: const Icon(Icons.image_not_supported, color: Colors.grey),
+                    child: const Icon(Icons.image_not_supported,
+                        color: Colors.grey),
                   ),
                 ),
                 Positioned(
-                  top: 8,
-                  left: 8,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    decoration: BoxDecoration(
-                       color: widget.type == 'news' ? const Color(0xFFEF4444) : const Color(0xFF3B82F6),
-                       borderRadius: BorderRadius.circular(6)
-                    ),
-                    child: Text(
-                       widget.type == 'news' ? 'TIN SẢN PHẨM' : 'BÀI VIẾT',
-                       style: const TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.bold)
-                    ),
-                  )
-                ),
+                    top: 8,
+                    left: 8,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 8, vertical: 4),
+                      decoration: BoxDecoration(
+                          color: widget.type == 'news'
+                              ? const Color(0xFFEF4444)
+                              : const Color(0xFF3B82F6),
+                          borderRadius: BorderRadius.circular(6)),
+                      child: Text(
+                          widget.type == 'news' ? 'TIN SẢN PHẨM' : 'BÀI VIẾT',
+                          style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 9,
+                              fontWeight: FontWeight.bold)),
+                    )),
                 Positioned(
                   top: 8,
                   right: 8,
@@ -919,9 +1112,15 @@ class _WishlistTabViewState extends State<WishlistTabView> {
                       decoration: BoxDecoration(
                         color: Theme.of(context).colorScheme.surface,
                         shape: BoxShape.circle,
-                        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 4)],
+                        boxShadow: [
+                          BoxShadow(
+                              color: Colors.black.withOpacity(0.05),
+                              blurRadius: 4)
+                        ],
                       ),
-                      child: Icon(Icons.delete_outline, color: Theme.of(context).colorScheme.onSurfaceVariant, size: 16),
+                      child: Icon(Icons.delete_outline,
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                          size: 16),
                     ),
                   ),
                 ),
@@ -933,30 +1132,48 @@ class _WishlistTabViewState extends State<WishlistTabView> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    createdAt.split('T').isNotEmpty ? createdAt.split('T')[0] : '',
-                    style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant, fontSize: 10, fontWeight: FontWeight.w500),
+                    createdAt.split('T').isNotEmpty
+                        ? createdAt.split('T')[0]
+                        : '',
+                    style: TextStyle(
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        fontSize: 10,
+                        fontWeight: FontWeight.w500),
                   ),
                   const SizedBox(height: 6),
                   Text(
                     title,
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
-                    style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.onSurface, height: 1.3),
+                    style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).colorScheme.onSurface,
+                        height: 1.3),
                   ),
                   const SizedBox(height: 6),
                   Text(
                     excerpt,
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
-                    style: TextStyle(fontSize: 11, color: Theme.of(context).colorScheme.onSurfaceVariant, height: 1.4),
+                    style: TextStyle(
+                        fontSize: 11,
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        height: 1.4),
                   ),
                   const SizedBox(height: 12),
                   Row(
-                     children: [
-                        Text('Đọc thêm', style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 11, fontWeight: FontWeight.bold)),
-                        const SizedBox(width: 4),
-                        Icon(Icons.arrow_forward_outlined, size: 12, color: Theme.of(context).colorScheme.onSurface)
-                     ],
+                    children: [
+                      Text('Đọc thêm',
+                          style: TextStyle(
+                              color: Theme.of(context).colorScheme.onSurface,
+                              fontSize: 11,
+                              fontWeight: FontWeight.bold)),
+                      const SizedBox(width: 4),
+                      Icon(Icons.arrow_forward_outlined,
+                          size: 12,
+                          color: Theme.of(context).colorScheme.onSurface)
+                    ],
                   )
                 ],
               ),
@@ -971,21 +1188,28 @@ class _WishlistTabViewState extends State<WishlistTabView> {
     final title = video['title'] ?? '';
     final description = video['description']?.toString().trim();
     final shortDescription = video['short_description']?.toString().trim();
-    final excerpt = description != null && description.isNotEmpty ? description : (shortDescription != null && shortDescription.isNotEmpty ? shortDescription : Trans.defaultProductExcerpt);
-    final imageUrl = NetworkUtils.fixDeviceUrl(video['thumbnail_url'] ?? video['thumbnail'] ?? '');
-    
+    final excerpt = description != null && description.isNotEmpty
+        ? description
+        : (shortDescription != null && shortDescription.isNotEmpty
+            ? shortDescription
+            : Trans.defaultProductExcerpt);
+    final imageUrl = NetworkUtils.fixDeviceUrl(
+        video['thumbnail_url'] ?? video['thumbnail'] ?? '');
+
     return GestureDetector(
       onTap: () {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => VideoDetailScreen(videoId: video['id'])),
+          MaterialPageRoute(
+              builder: (context) => VideoDetailScreen(videoId: video['id'])),
         );
       },
       child: Container(
         decoration: BoxDecoration(
           color: Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: Theme.of(context).colorScheme.outlineVariant, width: 1.5),
+          border: Border.all(
+              color: Theme.of(context).colorScheme.outlineVariant, width: 1.5),
         ),
         clipBehavior: Clip.hardEdge,
         child: Column(
@@ -1005,13 +1229,14 @@ class _WishlistTabViewState extends State<WishlistTabView> {
                   ),
                 ),
                 Container(
-                   height: 120,
-                   width: double.infinity,
-                   color: Colors.black.withOpacity(0.2),
+                  height: 120,
+                  width: double.infinity,
+                  color: Colors.black.withOpacity(0.2),
                 ),
                 const Positioned.fill(
                   child: Center(
-                    child: Icon(Icons.play_circle_fill, color: Color(0xFFEA580C), size: 40),
+                    child: Icon(Icons.play_circle_fill,
+                        color: Color(0xFFEA580C), size: 40),
                   ),
                 ),
                 Positioned(
@@ -1024,62 +1249,88 @@ class _WishlistTabViewState extends State<WishlistTabView> {
                       decoration: BoxDecoration(
                         color: Theme.of(context).colorScheme.surface,
                         shape: BoxShape.circle,
-                        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 4)],
+                        boxShadow: [
+                          BoxShadow(
+                              color: Colors.black.withOpacity(0.05),
+                              blurRadius: 4)
+                        ],
                       ),
-                      child: Icon(Icons.delete_outline, color: Theme.of(context).colorScheme.onSurfaceVariant, size: 16),
+                      child: Icon(Icons.delete_outline,
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                          size: 16),
                     ),
                   ),
                 ),
               ],
             ),
             Padding(
-              padding: const EdgeInsets.all(12),
-              child: Column(
-                 crossAxisAlignment: CrossAxisAlignment.start,
-                 children: [
+                padding: const EdgeInsets.all(12),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
                     Text(
                       title,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
-                      style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13, height: 1.3, color: Theme.of(context).colorScheme.onSurface),
+                      style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 13,
+                          height: 1.3,
+                          color: Theme.of(context).colorScheme.onSurface),
                     ),
                     const SizedBox(height: 8),
                     Text(
                       excerpt,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
-                      style: TextStyle(fontSize: 11, color: Theme.of(context).colorScheme.onSurfaceVariant, height: 1.4),
+                      style: TextStyle(
+                          fontSize: 11,
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                          height: 1.4),
                     ),
                     const SizedBox(height: 12),
                     Container(
-                       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                       decoration: BoxDecoration(
-                          color: Theme.of(context).colorScheme.surface,
-                          borderRadius: BorderRadius.circular(6),
-                          border: Border.all(color: Theme.of(context).colorScheme.outlineVariant)
-                       ),
-                       child: Row(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 10, vertical: 4),
+                        decoration: BoxDecoration(
+                            color: Theme.of(context).colorScheme.surface,
+                            borderRadius: BorderRadius.circular(6),
+                            border: Border.all(
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .outlineVariant)),
+                        child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                             Icon(Icons.link, size: 12, color: Theme.of(context).colorScheme.onSurfaceVariant),
-                             const SizedBox(width: 4),
-                             Text('Video', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.onSurfaceVariant))
+                            Icon(Icons.link,
+                                size: 12,
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .onSurfaceVariant),
+                            const SizedBox(width: 4),
+                            Text('Video',
+                                style: TextStyle(
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.bold,
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .onSurfaceVariant))
                           ],
-                       )
-                    )
-                 ],
-              )
-            ),
+                        ))
+                  ],
+                )),
           ],
         ),
       ),
     );
   }
 
-  String _resolveProductImageUrl(Map<String, dynamic> product, {Map<String, dynamic>? selectedVariant}) {
+  String _resolveProductImageUrl(Map<String, dynamic> product,
+      {Map<String, dynamic>? selectedVariant}) {
     if (selectedVariant != null) {
-       final vImg = selectedVariant['image_url']?.toString().trim();
-       if (vImg != null && vImg.isNotEmpty) return NetworkUtils.fixDeviceUrl(vImg);
+      final vImg = selectedVariant['image_url']?.toString().trim();
+      if (vImg != null && vImg.isNotEmpty)
+        return NetworkUtils.fixDeviceUrl(vImg);
     }
     final rawMainImage = product['main_image_url']?.toString().trim();
     if (rawMainImage != null && rawMainImage.isNotEmpty) {
@@ -1088,7 +1339,8 @@ class _WishlistTabViewState extends State<WishlistTabView> {
     final images = product['images'] as List<dynamic>?;
     if (images != null && images.isNotEmpty) {
       for (var image in images) {
-        final url = image['url']?.toString().trim() ?? image['image_url']?.toString().trim();
+        final url = image['url']?.toString().trim() ??
+            image['image_url']?.toString().trim();
         if (url != null && url.isNotEmpty) {
           return NetworkUtils.fixDeviceUrl(url);
         }

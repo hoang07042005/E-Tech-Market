@@ -117,7 +117,8 @@ class _LoyaltyScreenState extends State<LoyaltyScreen> {
 
   String _fmtMoney(dynamic val) {
     if (val == null) return '0đ';
-    final n = val is num ? val.toDouble() : double.tryParse(val.toString()) ?? 0.0;
+    final n =
+        val is num ? val.toDouble() : double.tryParse(val.toString()) ?? 0.0;
     return '${n.toStringAsFixed(0).replaceAllMapped(RegExp(r'(\d)(?=(\d{3})+(?!\d))'), (m) => '${m[1]}.')}đ';
   }
 
@@ -131,7 +132,8 @@ class _LoyaltyScreenState extends State<LoyaltyScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Thẻ Hội Viên', style: TextStyle(fontWeight: FontWeight.bold)),
+        title: const Text('Thẻ Hội Viên',
+            style: TextStyle(fontWeight: FontWeight.bold)),
         centerTitle: true,
         elevation: 0,
       ),
@@ -170,7 +172,8 @@ class _LoyaltyScreenState extends State<LoyaltyScreen> {
                 ),
               ],
             ),
-            child: const Icon(Icons.card_membership, color: Color(0xFF1E293B), size: 48),
+            child: const Icon(Icons.card_membership,
+                color: Color(0xFF1E293B), size: 48),
           ),
           const SizedBox(height: 28),
           const Text(
@@ -182,11 +185,13 @@ class _LoyaltyScreenState extends State<LoyaltyScreen> {
           Text(
             'Mở khóa hàng ngàn đặc quyền thượng lưu, mua sắm thả ga với mức giá ưu đãi và nhận quà tặng bất ngờ. Đăng ký hoàn toàn miễn phí!',
             textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 14, color: Colors.grey[600], height: 1.5),
+            style:
+                TextStyle(fontSize: 14, color: Colors.grey[600], height: 1.5),
           ),
           const SizedBox(height: 32),
           // Features list
-          ..._features.map((f) => _buildFeatureTile(f['icon'] as IconData, f['title'] as String, f['desc'] as String)),
+          ..._features.map((f) => _buildFeatureTile(f['icon'] as IconData,
+              f['title'] as String, f['desc'] as String)),
           const SizedBox(height: 40),
           SizedBox(
             width: double.infinity,
@@ -197,17 +202,20 @@ class _LoyaltyScreenState extends State<LoyaltyScreen> {
                 backgroundColor: const Color(0xFFE9C400),
                 foregroundColor: const Color(0xFF1E293B),
                 elevation: 0,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(14)),
               ),
               child: _registering
                   ? const SizedBox(
                       width: 22,
                       height: 22,
-                      child: CircularProgressIndicator(strokeWidth: 2, color: Color(0xFF1E293B)),
+                      child: CircularProgressIndicator(
+                          strokeWidth: 2, color: Color(0xFF1E293B)),
                     )
                   : const Text(
                       'Đăng ký ngay - Miễn phí',
-                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                     ),
             ),
           ),
@@ -218,9 +226,21 @@ class _LoyaltyScreenState extends State<LoyaltyScreen> {
   }
 
   static const _features = [
-    {'icon': Icons.star_outline, 'title': 'Tích điểm mỗi đơn hàng', 'desc': 'Nhận điểm thưởng với mỗi giao dịch và đổi lấy ưu đãi hấp dẫn.'},
-    {'icon': Icons.workspace_premium_outlined, 'title': 'Ưu đãi hạng thành viên', 'desc': 'Thăng hạng để nhận quyền lợi ngày càng tốt hơn.'},
-    {'icon': Icons.local_offer_outlined, 'title': 'Voucher độc quyền', 'desc': 'Nhận mã giảm giá và ưu đãi chỉ dành riêng cho hội viên.'},
+    {
+      'icon': Icons.star_outline,
+      'title': 'Tích điểm mỗi đơn hàng',
+      'desc': 'Nhận điểm thưởng với mỗi giao dịch và đổi lấy ưu đãi hấp dẫn.'
+    },
+    {
+      'icon': Icons.workspace_premium_outlined,
+      'title': 'Ưu đãi hạng thành viên',
+      'desc': 'Thăng hạng để nhận quyền lợi ngày càng tốt hơn.'
+    },
+    {
+      'icon': Icons.local_offer_outlined,
+      'title': 'Voucher độc quyền',
+      'desc': 'Nhận mã giảm giá và ưu đãi chỉ dành riêng cho hội viên.'
+    },
   ];
 
   Widget _buildFeatureTile(IconData icon, String title, String desc) {
@@ -243,9 +263,12 @@ class _LoyaltyScreenState extends State<LoyaltyScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+                Text(title,
+                    style: const TextStyle(
+                        fontWeight: FontWeight.bold, fontSize: 15)),
                 const SizedBox(height: 4),
-                Text(desc, style: TextStyle(fontSize: 13, color: Colors.grey[600])),
+                Text(desc,
+                    style: TextStyle(fontSize: 13, color: Colors.grey[600])),
               ],
             ),
           ),
@@ -262,9 +285,13 @@ class _LoyaltyScreenState extends State<LoyaltyScreen> {
 
     final nextRank = data['next_rank'];
     final totalSpent = _parseDouble(data['total_spent']);
-    final minSpend = nextRank != null ? _parseDouble(nextRank['min_spend']) : 0.0;
-    final progress = minSpend > 0 ? (totalSpent / minSpend).clamp(0.0, 1.0) : 1.0;
-    final remaining = nextRank != null ? (minSpend - totalSpent).clamp(0.0, double.infinity) : 0.0;
+    final minSpend =
+        nextRank != null ? _parseDouble(nextRank['min_spend']) : 0.0;
+    final progress =
+        minSpend > 0 ? (totalSpent / minSpend).clamp(0.0, 1.0) : 1.0;
+    final remaining = nextRank != null
+        ? (minSpend - totalSpent).clamp(0.0, double.infinity)
+        : 0.0;
     final rankName = data['membership_rank']?['rank_name']?.toString() ?? '';
     final history = data['point_history'] as List<dynamic>? ?? [];
 
@@ -276,7 +303,8 @@ class _LoyaltyScreenState extends State<LoyaltyScreen> {
           // ══════════════════════════════
           // 1. Thẻ hội viên
           // ══════════════════════════════
-          _buildMemberCard(data, rankName, nextRank, totalSpent, progress, remaining),
+          _buildMemberCard(
+              data, rankName, nextRank, totalSpent, progress, remaining),
           const SizedBox(height: 28),
 
           // ══════════════════════════════
@@ -290,12 +318,16 @@ class _LoyaltyScreenState extends State<LoyaltyScreen> {
           // ══════════════════════════════
           OutlinedButton.icon(
             onPressed: _cancelLoyalty,
-            icon: const Icon(Icons.cancel_outlined, size: 20, color: Colors.red),
-            label: const Text('Hủy thẻ hội viên', style: TextStyle(color: Colors.red, fontWeight: FontWeight.w600)),
+            icon:
+                const Icon(Icons.cancel_outlined, size: 20, color: Colors.red),
+            label: const Text('Hủy thẻ hội viên',
+                style:
+                    TextStyle(color: Colors.red, fontWeight: FontWeight.w600)),
             style: OutlinedButton.styleFrom(
               side: const BorderSide(color: Colors.red),
               padding: const EdgeInsets.symmetric(vertical: 14),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12)),
             ),
           ),
           const SizedBox(height: 32),
@@ -314,222 +346,233 @@ class _LoyaltyScreenState extends State<LoyaltyScreen> {
     double remaining,
   ) {
     return Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10),
-              boxShadow: [
-                BoxShadow(color: Colors.black.withOpacity(0.4), blurRadius: 20, offset: const Offset(0, 8)),
-              ],
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(10),
+        boxShadow: [
+          BoxShadow(
+              color: Colors.black.withOpacity(0.4),
+              blurRadius: 20,
+              offset: const Offset(0, 8)),
+        ],
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(10),
+        child: Stack(
+          children: [
+            // Ảnh nền
+            Positioned.fill(
+              child: Image.asset(
+                'assets/images/screen1.png',
+                fit: BoxFit.cover,
+              ),
             ),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(10),
-              child: Stack(
-                children: [
-                  // Ảnh nền
-                  Positioned.fill(
-                    child: Image.asset(
-                      'assets/images/screen1.png',
-                      fit: BoxFit.cover,
-                    ),
+            // Overlay màu tối mờ lên trên ảnh
+            Positioned.fill(
+              child: Container(
+                decoration: const BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      Color(0xE0111827), // tối đậm bên trái/dưới
+                      Color(0x991E293B), // tối mờ hơn bên phải/trên
+                    ],
+                    begin: Alignment.bottomLeft,
+                    end: Alignment.topRight,
                   ),
-                  // Overlay màu tối mờ lên trên ảnh
-                  Positioned.fill(
-                    child: Container(
-                      decoration: const BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: [
-                            Color(0xE0111827), // tối đậm bên trái/dưới
-                            Color(0x991E293B), // tối mờ hơn bên phải/trên
+                ),
+              ),
+            ),
+            // Nội dung thẻ
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 16, 20, 16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // ── Row 1: Header ──
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Flexible(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: const [
+                            Text(
+                              'E-TECH ECOSYSTEM',
+                              style: TextStyle(
+                                color: Color(0xFFD0C6AB),
+                                fontSize: 10,
+                                fontWeight: FontWeight.w600,
+                                letterSpacing: 1.5,
+                              ),
+                            ),
+                            SizedBox(height: 4),
+                            Text(
+                              'Thẻ Thành Viên E-Tech',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                            ),
                           ],
-                          begin: Alignment.bottomLeft,
-                          end: Alignment.topRight,
                         ),
                       ),
+                      const SizedBox(width: 8),
+                      // Points badge
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 12, vertical: 6),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF1E293B),
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(
+                              color: const Color(0xFFFFE16D).withOpacity(0.3)),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              '${data['current_points']}',
+                              style: const TextStyle(
+                                color: Color(0xFFFFE16D),
+                                fontSize: 15,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(width: 5),
+                            const Text(
+                              'Điểm',
+                              style: TextStyle(
+                                  color: Color(0xFFFFE16D), fontSize: 11),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 24),
+
+                  // ── Row 2: Rank name (lớn, vàng) ──
+                  Text(
+                    rankName.isNotEmpty
+                        ? 'Thành viên ($rankName)'
+                        : 'Thành viên',
+                    style: const TextStyle(
+                      color: Color(0xFFE3B707),
+                      fontSize: 24,
+                      fontWeight: FontWeight.w800,
+                      letterSpacing: 0.5,
                     ),
                   ),
-                  // Nội dung thẻ
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(20, 16, 20, 16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                          // ── Row 1: Header ──
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Flexible(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: const [
-                                    Text(
-                                      'E-TECH ECOSYSTEM',
-                                      style: TextStyle(
-                                        color: Color(0xFFD0C6AB),
-                                        fontSize: 10,
-                                        fontWeight: FontWeight.w600,
-                                        letterSpacing: 1.5,
-                                      ),
-                                    ),
-                                    SizedBox(height: 4),
-                                    Text(
-                                      'Thẻ Thành Viên E-Tech',
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              const SizedBox(width: 8),
-                              // Points badge
-                              Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                                decoration: BoxDecoration(
-                                  color: const Color(0xFF1E293B),
-                                  borderRadius: BorderRadius.circular(10),
-                                  border: Border.all(color: const Color(0xFFFFE16D).withOpacity(0.3)),
-                                ),
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Text(
-                                      '${data['current_points']}',
-                                      style: const TextStyle(
-                                        color: Color(0xFFFFE16D),
-                                        fontSize: 15,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                    const SizedBox(width: 5),
-                                    const Text(
-                                      'Điểm',
-                                      style: TextStyle(color: Color(0xFFFFE16D), fontSize: 11),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 24),
+                  const SizedBox(height: 10),
 
-                          // ── Row 2: Rank name (lớn, vàng) ──
-                          Text(
-                            rankName.isNotEmpty ? 'Thành viên ($rankName)' : 'Thành viên',
-                            style: const TextStyle(
-                              color: Color(0xFFE3B707),
-                              fontSize: 24,
-                              fontWeight: FontWeight.w800,
-                              letterSpacing: 0.5,
+                  // ── Row 3: Chi tiêu ──
+                  Row(
+                    children: [
+                      const Text(
+                        'Chi tiêu tích lũy: ',
+                        style:
+                            TextStyle(color: Color(0xFFD0C6AB), fontSize: 13),
+                      ),
+                      Text(
+                        _fmtMoney(data['total_spent']),
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 20),
+
+                  // ── Row 4: Progress bar + Diamond ──
+                  Stack(
+                    children: [
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Progress bar
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(3),
+                            child: LinearProgressIndicator(
+                              value: progress,
+                              minHeight: 5,
+                              backgroundColor: const Color(0xFF334155),
+                              valueColor: const AlwaysStoppedAnimation<Color>(
+                                  Color(0xFFE9C400)),
                             ),
                           ),
                           const SizedBox(height: 10),
-
-                          // ── Row 3: Chi tiêu ──
-                          Row(
-                            children: [
-                              const Text(
-                                'Chi tiêu tích lũy: ',
-                                style: TextStyle(color: Color(0xFFD0C6AB), fontSize: 13),
-                              ),
-                              Text(
-                                _fmtMoney(data['total_spent']),
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 20),
-
-                          // ── Row 4: Progress bar + Diamond ──
-                          Stack(
-                            children: [
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  // Progress bar
-                                  ClipRRect(
-                                    borderRadius: BorderRadius.circular(3),
-                                    child: LinearProgressIndicator(
-                                      value: progress,
-                                      minHeight: 5,
-                                      backgroundColor: const Color(0xFF334155),
-                                      valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFFE9C400)),
-                                    ),
-                                  ),
-                                  const SizedBox(height: 10),
-                                  // Progress text
-                                  if (nextRank != null)
-                                    Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Flexible(
-                                          child: Text(
-                                            'Tiến trình thăng hạng ${nextRank['rank_name'] ?? ''}',
-                                            style: const TextStyle(color: Color(0xFFD0C6AB), fontSize: 11),
-                                            overflow: TextOverflow.ellipsis,
-                                          ),
-                                        ),
-                                        const SizedBox(width: 8),
-                                        Text(
-                                          'Cần thêm ${_fmtMoney(remaining)}',
-                                          style: const TextStyle(
-                                            color: Color(0xFFE9C400),
-                                            fontSize: 11,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                      ],
-                                    )
-                                  else
-                                    Row(
-                                      children: [
-                                        const Icon(Icons.verified, color: Color(0xFFFFE16D), size: 14),
-                                        const SizedBox(width: 6),
-                                        Text(
-                                          'Bạn đã đạt hạng cao nhất!',
-                                          style: TextStyle(
-                                            color: const Color(0xFFD0C6AB).withOpacity(0.8),
-                                            fontSize: 11,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                ],
-                              ),
-                              // Diamond icon góc phải
-                              Positioned(
-                                right: 0,
-                                bottom: 0,
-                                child: Opacity(
-                                  opacity: 0.5,
-                                  child: Icon(
-                                    Icons.diamond_outlined,
-                                    color: const Color(0xFFFFE16D),
-                                    size: 36,
+                          // Progress text
+                          if (nextRank != null)
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Flexible(
+                                  child: Text(
+                                    'Tiến trình thăng hạng ${nextRank['rank_name'] ?? ''}',
+                                    style: const TextStyle(
+                                        color: Color(0xFFD0C6AB), fontSize: 11),
+                                    overflow: TextOverflow.ellipsis,
                                   ),
                                 ),
-                              ),
-                            ],
-                          ),
+                                const SizedBox(width: 8),
+                                Text(
+                                  'Cần thêm ${_fmtMoney(remaining)}',
+                                  style: const TextStyle(
+                                    color: Color(0xFFE9C400),
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
+                            )
+                          else
+                            Row(
+                              children: [
+                                const Icon(Icons.verified,
+                                    color: Color(0xFFFFE16D), size: 14),
+                                const SizedBox(width: 6),
+                                Text(
+                                  'Bạn đã đạt hạng cao nhất!',
+                                  style: TextStyle(
+                                    color: const Color(0xFFD0C6AB)
+                                        .withOpacity(0.8),
+                                    fontSize: 11,
+                                  ),
+                                ),
+                              ],
+                            ),
                         ],
                       ),
-                    ),
-                  ],
-                ),
+                      // Diamond icon góc phải
+                      Positioned(
+                        right: 0,
+                        bottom: 0,
+                        child: Opacity(
+                          opacity: 0.5,
+                          child: Icon(
+                            Icons.diamond_outlined,
+                            color: const Color(0xFFFFE16D),
+                            size: 36,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
               ),
-            );
+            ),
+          ],
+        ),
+      ),
+    );
   }
-
 
   // 2. Lịch sử điểm
   Widget _buildHistorySection(List<dynamic> history) {
-
     if (history.isEmpty) {
       return Container(
         padding: const EdgeInsets.symmetric(vertical: 32),
@@ -537,7 +580,8 @@ class _LoyaltyScreenState extends State<LoyaltyScreen> {
           children: [
             Icon(Icons.history, size: 48, color: Colors.grey[300]),
             const SizedBox(height: 12),
-            Text('Chưa có lịch sử giao dịch.', style: TextStyle(color: Colors.grey[500], fontSize: 14)),
+            Text('Chưa có lịch sử giao dịch.',
+                style: TextStyle(color: Colors.grey[500], fontSize: 14)),
           ],
         ),
       );
@@ -550,7 +594,8 @@ class _LoyaltyScreenState extends State<LoyaltyScreen> {
           children: [
             const Icon(Icons.history, size: 18, color: Color(0xFFE9C400)),
             const SizedBox(width: 8),
-            const Text('Lịch sử điểm', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+            const Text('Lịch sử điểm',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
           ],
         ),
         const SizedBox(height: 12),
@@ -558,7 +603,8 @@ class _LoyaltyScreenState extends State<LoyaltyScreen> {
           final item = history[index] as Map<String, dynamic>;
           final points = _parseDouble(item['points_changed']).toInt();
           final isPositive = points >= 0;
-          final color = isPositive ? const Color(0xFF10B981) : const Color(0xFFEF4444);
+          final color =
+              isPositive ? const Color(0xFF10B981) : const Color(0xFFEF4444);
           final prefix = isPositive ? '+' : '';
 
           String dateStr = '';
@@ -570,7 +616,8 @@ class _LoyaltyScreenState extends State<LoyaltyScreen> {
           }
 
           return Padding(
-            padding: EdgeInsets.only(bottom: index == history.length - 1 ? 0 : 8),
+            padding:
+                EdgeInsets.only(bottom: index == history.length - 1 ? 0 : 8),
             child: Container(
               padding: const EdgeInsets.all(14),
               decoration: BoxDecoration(
@@ -586,7 +633,9 @@ class _LoyaltyScreenState extends State<LoyaltyScreen> {
                       borderRadius: BorderRadius.circular(10),
                     ),
                     child: Icon(
-                      isPositive ? Icons.add_circle_outline : Icons.remove_circle_outline,
+                      isPositive
+                          ? Icons.add_circle_outline
+                          : Icons.remove_circle_outline,
                       color: color,
                       size: 22,
                     ),
@@ -597,19 +646,28 @@ class _LoyaltyScreenState extends State<LoyaltyScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          item['description']?.toString() ?? (item['action_type'] == 'earn' ? 'Tích lũy điểm' : 'Tiêu điểm'),
-                          style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+                          item['description']?.toString() ??
+                              (item['action_type'] == 'earn'
+                                  ? 'Tích lũy điểm'
+                                  : 'Tiêu điểm'),
+                          style: const TextStyle(
+                              fontWeight: FontWeight.w600, fontSize: 14),
                         ),
                         if (dateStr.isNotEmpty) ...[
                           const SizedBox(height: 3),
-                          Text(dateStr, style: TextStyle(fontSize: 12, color: Colors.grey[500])),
+                          Text(dateStr,
+                              style: TextStyle(
+                                  fontSize: 12, color: Colors.grey[500])),
                         ],
                       ],
                     ),
                   ),
                   Text(
                     '$prefix$points điểm',
-                    style: TextStyle(color: color, fontWeight: FontWeight.bold, fontSize: 15),
+                    style: TextStyle(
+                        color: color,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 15),
                   ),
                 ],
               ),

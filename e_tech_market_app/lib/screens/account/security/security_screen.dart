@@ -19,18 +19,20 @@ class _SecurityScreenState extends State<SecurityScreen> {
   bool _loadingSessions = true;
   String? _error;
   String? _success;
-  
+
   String _currentPassword = '';
   String _newPassword = '';
   String _confirmPassword = '';
-  
+
   bool _obscureCurrent = true;
   bool _obscureNew = true;
   bool _obscureConfirm = true;
 
-  final TextEditingController _currentPasswordController = TextEditingController();
+  final TextEditingController _currentPasswordController =
+      TextEditingController();
   final TextEditingController _newPasswordController = TextEditingController();
-  final TextEditingController _confirmPasswordController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
   List<Map<String, dynamic>> _sessions = [];
 
   final List<String> _backupCodes = const [
@@ -88,7 +90,9 @@ class _SecurityScreenState extends State<SecurityScreen> {
       _success = null;
     });
 
-    if (_currentPassword.trim().isEmpty || _newPassword.trim().isEmpty || _confirmPassword.trim().isEmpty) {
+    if (_currentPassword.trim().isEmpty ||
+        _newPassword.trim().isEmpty ||
+        _confirmPassword.trim().isEmpty) {
       setState(() {
         _error = 'Vui lòng điền đủ các trường mật khẩu.';
       });
@@ -184,13 +188,16 @@ class _SecurityScreenState extends State<SecurityScreen> {
     return Scaffold(
       backgroundColor: theme.colorScheme.surface,
       appBar: AppBar(
-        title: Text(Trans.accountSecurity, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+        title: Text(Trans.accountSecurity,
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
         backgroundColor: theme.colorScheme.surface,
         foregroundColor: theme.colorScheme.onSurface,
         elevation: 0,
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(1),
-          child: Container(color: theme.colorScheme.outlineVariant.withOpacity(0.4), height: 1),
+          child: Container(
+              color: theme.colorScheme.outlineVariant.withOpacity(0.4),
+              height: 1),
         ),
       ),
       body: SafeArea(
@@ -201,11 +208,16 @@ class _SecurityScreenState extends State<SecurityScreen> {
             children: [
               _buildTopCard(),
               const SizedBox(height: 16),
-              
+
               // Thông báo lỗi/thành công tổng quát nếu có
-              if (_success != null) _buildStatusAlert(_success!, const Color(0xFFDDF6E7), const Color(0xFF0F5132), Icons.check_circle_outline),
-              if (_error != null) _buildStatusAlert(_error!, const Color(0xFFF8D7DA), const Color(0xFF842029), Icons.error_outline),
-              if (_success != null || _error != null) const SizedBox(height: 16),
+              if (_success != null)
+                _buildStatusAlert(_success!, const Color(0xFFDDF6E7),
+                    const Color(0xFF0F5132), Icons.check_circle_outline),
+              if (_error != null)
+                _buildStatusAlert(_error!, const Color(0xFFF8D7DA),
+                    const Color(0xFF842029), Icons.error_outline),
+              if (_success != null || _error != null)
+                const SizedBox(height: 16),
 
               _buildPasswordSection(),
               const SizedBox(height: 16),
@@ -225,7 +237,8 @@ class _SecurityScreenState extends State<SecurityScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(Trans.accountSecurity, style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+        Text(Trans.accountSecurity,
+            style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
         const SizedBox(height: 4),
         const Text(
           'Quản lý mật khẩu, bảo mật 2 lớp và giám sát các phiên đăng nhập để giữ tài khoản luôn an toàn.',
@@ -237,14 +250,19 @@ class _SecurityScreenState extends State<SecurityScreen> {
     );
   }
 
-  Widget _buildSectionWrapper({required String title, required String subtitle, required IconData icon, required Widget child}) {
+  Widget _buildSectionWrapper(
+      {required String title,
+      required String subtitle,
+      required IconData icon,
+      required Widget child}) {
     final theme = Theme.of(context);
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: theme.colorScheme.surface,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: theme.colorScheme.outlineVariant.withOpacity(0.5), width: 1),
+        border: Border.all(
+            color: theme.colorScheme.outlineVariant.withOpacity(0.5), width: 1),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -265,9 +283,13 @@ class _SecurityScreenState extends State<SecurityScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(title, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                    Text(title,
+                        style: const TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.bold)),
                     const SizedBox(height: 2),
-                    Text(subtitle, style: const TextStyle(fontSize: 13, color: Colors.grey)),
+                    Text(subtitle,
+                        style:
+                            const TextStyle(fontSize: 13, color: Colors.grey)),
                   ],
                 ),
               ),
@@ -295,7 +317,8 @@ class _SecurityScreenState extends State<SecurityScreen> {
             label: 'Mật khẩu hiện tại',
             obscureText: _obscureCurrent,
             onChanged: (value) => _currentPassword = value,
-            onToggleVisibility: () => setState(() => _obscureCurrent = !_obscureCurrent),
+            onToggleVisibility: () =>
+                setState(() => _obscureCurrent = !_obscureCurrent),
           ),
           const SizedBox(height: 12),
           _buildCustomTextField(
@@ -303,7 +326,8 @@ class _SecurityScreenState extends State<SecurityScreen> {
             label: 'Mật khẩu mới',
             obscureText: _obscureNew,
             onChanged: (value) => _newPassword = value,
-            onToggleVisibility: () => setState(() => _obscureNew = !_obscureNew),
+            onToggleVisibility: () =>
+                setState(() => _obscureNew = !_obscureNew),
           ),
           const SizedBox(height: 12),
           _buildCustomTextField(
@@ -311,7 +335,8 @@ class _SecurityScreenState extends State<SecurityScreen> {
             label: 'Xác nhận mật khẩu mới',
             obscureText: _obscureConfirm,
             onChanged: (value) => _confirmPassword = value,
-            onToggleVisibility: () => setState(() => _obscureConfirm = !_obscureConfirm),
+            onToggleVisibility: () =>
+                setState(() => _obscureConfirm = !_obscureConfirm),
           ),
           const SizedBox(height: 16),
           SizedBox(
@@ -323,15 +348,18 @@ class _SecurityScreenState extends State<SecurityScreen> {
                 backgroundColor: primaryColor,
                 foregroundColor: Colors.white,
                 elevation: 0,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8)),
               ),
               child: _busy
                   ? const SizedBox(
                       width: 20,
                       height: 20,
-                      child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                      child: CircularProgressIndicator(
+                          color: Colors.white, strokeWidth: 2),
                     )
-                  : const Text('Cập nhật mật khẩu', style: TextStyle(fontWeight: FontWeight.bold)),
+                  : const Text('Cập nhật mật khẩu',
+                      style: TextStyle(fontWeight: FontWeight.bold)),
             ),
           ),
         ],
@@ -345,7 +373,8 @@ class _SecurityScreenState extends State<SecurityScreen> {
       builder: (context) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         title: const Text('Tính năng này hiện chưa được phát triển'),
-        content: const Text('Chúng tôi đang trong quá trình triển khai nhằm tăng cường bảo mật cho tài khoản. Vui lòng quay lại trong các bản cập nhật sắp tới.'),
+        content: const Text(
+            'Chúng tôi đang trong quá trình triển khai nhằm tăng cường bảo mật cho tài khoản. Vui lòng quay lại trong các bản cập nhật sắp tới.'),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
@@ -388,7 +417,8 @@ class _SecurityScreenState extends State<SecurityScreen> {
                   const SizedBox(width: 8),
                   Text(
                     _twoFaEnabled ? Trans.twoFAStatusOn : Trans.twoFAStatusOff,
-                    style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+                    style: const TextStyle(
+                        fontWeight: FontWeight.w600, fontSize: 14),
                   ),
                 ],
               ),
@@ -401,12 +431,15 @@ class _SecurityScreenState extends State<SecurityScreen> {
           ),
           if (_twoFaEnabled) ...[
             const SizedBox(height: 16),
-            Text(Trans.backupCode, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
+            Text(Trans.backupCode,
+                style:
+                    const TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
             const SizedBox(height: 8),
             Wrap(
               spacing: 8,
               runSpacing: 8,
-              children: _backupCodes.map((code) => _buildCodeChip(code)).toList(),
+              children:
+                  _backupCodes.map((code) => _buildCodeChip(code)).toList(),
             ),
           ],
         ],
@@ -436,7 +469,8 @@ class _SecurityScreenState extends State<SecurityScreen> {
             if (_sessions.isEmpty)
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 12),
-                child: Text(Trans.noSessions, style: const TextStyle(color: Colors.grey)),
+                child: Text(Trans.noSessions,
+                    style: const TextStyle(color: Colors.grey)),
               )
             else
               ..._sessions.map(_buildSessionCard).toList(),
@@ -450,9 +484,11 @@ class _SecurityScreenState extends State<SecurityScreen> {
                 style: OutlinedButton.styleFrom(
                   foregroundColor: dangerColor,
                   side: BorderSide(color: dangerColor.withOpacity(0.5)),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8)),
                 ),
-                label: Text(Trans.logoutAllDevices, style: const TextStyle(fontWeight: FontWeight.bold)),
+                label: Text(Trans.logoutAllDevices,
+                    style: const TextStyle(fontWeight: FontWeight.bold)),
               ),
             ),
           ],
@@ -471,14 +507,15 @@ class _SecurityScreenState extends State<SecurityScreen> {
       decoration: BoxDecoration(
         color: theme.colorScheme.surfaceVariant.withOpacity(0.3),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: theme.colorScheme.outlineVariant.withOpacity(0.3)),
+        border: Border.all(
+            color: theme.colorScheme.outlineVariant.withOpacity(0.3)),
       ),
       child: Row(
         children: [
           Icon(
-            session['name'].toString().toLowerCase().contains('iphone') || 
-            session['name'].toString().toLowerCase().contains('android') 
-                ? Icons.phone_android_outlined 
+            session['name'].toString().toLowerCase().contains('iphone') ||
+                    session['name'].toString().toLowerCase().contains('android')
+                ? Icons.phone_android_outlined
                 : Icons.computer_outlined,
             color: Colors.grey[600],
             size: 28,
@@ -493,7 +530,8 @@ class _SecurityScreenState extends State<SecurityScreen> {
                     Expanded(
                       child: Text(
                         session['name']?.toString() ?? 'Thiết bị không rõ',
-                        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                        style: const TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 14),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -501,18 +539,27 @@ class _SecurityScreenState extends State<SecurityScreen> {
                     if (isCurrent) const SizedBox(width: 6),
                     if (isCurrent)
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 6, vertical: 2),
                         decoration: BoxDecoration(
                           color: const Color(0xFFD1FAE5),
                           borderRadius: BorderRadius.circular(4),
                         ),
-                        child: Text(Trans.active, style: const TextStyle(color: Color(0xFF0F5132), fontSize: 10, fontWeight: FontWeight.bold)),
+                        child: Text(Trans.active,
+                            style: const TextStyle(
+                                color: Color(0xFF0F5132),
+                                fontSize: 10,
+                                fontWeight: FontWeight.bold)),
                       ),
                   ],
                 ),
                 const SizedBox(height: 4),
-                Text('Đăng nhập: ${_formatDateTime(session['created_at']?.toString())}', style: const TextStyle(color: Colors.grey, fontSize: 11)),
-                Text('Hoạt động: ${_formatDateTime(session['last_used_at']?.toString())}', style: const TextStyle(color: Colors.grey, fontSize: 11)),
+                Text(
+                    'Đăng nhập: ${_formatDateTime(session['created_at']?.toString())}',
+                    style: const TextStyle(color: Colors.grey, fontSize: 11)),
+                Text(
+                    'Hoạt động: ${_formatDateTime(session['last_used_at']?.toString())}',
+                    style: const TextStyle(color: Colors.grey, fontSize: 11)),
               ],
             ),
           ),
@@ -542,11 +589,17 @@ class _SecurityScreenState extends State<SecurityScreen> {
             children: [
               Icon(Icons.gpp_bad_outlined, color: dangerColor, size: 22),
               const SizedBox(width: 8),
-              Text(Trans.dangerZone, style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: dangerColor)),
+              Text(Trans.dangerZone,
+                  style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: dangerColor)),
             ],
           ),
           const SizedBox(height: 4),
-          const Text('Thao tác này sẽ xóa vĩnh viễn toàn bộ dữ liệu tài khoản và không thể hoàn tác.', style: TextStyle(color: Colors.grey, fontSize: 13)),
+          const Text(
+              'Thao tác này sẽ xóa vĩnh viễn toàn bộ dữ liệu tài khoản và không thể hoàn tác.',
+              style: TextStyle(color: Colors.grey, fontSize: 13)),
           const SizedBox(height: 14),
           SizedBox(
             width: double.infinity,
@@ -557,9 +610,11 @@ class _SecurityScreenState extends State<SecurityScreen> {
                 backgroundColor: dangerColor,
                 foregroundColor: Colors.white,
                 elevation: 0,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8)),
               ),
-              child: Text(Trans.deleteAccount, style: const TextStyle(fontWeight: FontWeight.bold)),
+              child: Text(Trans.deleteAccount,
+                  style: const TextStyle(fontWeight: FontWeight.bold)),
             ),
           ),
         ],
@@ -582,18 +637,25 @@ class _SecurityScreenState extends State<SecurityScreen> {
       decoration: InputDecoration(
         labelText: label,
         labelStyle: const TextStyle(fontSize: 13),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+        contentPadding:
+            const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8),
-          borderSide: BorderSide(color: Theme.of(context).colorScheme.outline, width: 0.15),
+          borderSide: BorderSide(
+              color: Theme.of(context).colorScheme.outline, width: 0.15),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8),
-          borderSide: BorderSide(color: Theme.of(context).colorScheme.outline, width: 0.15),
+          borderSide: BorderSide(
+              color: Theme.of(context).colorScheme.outline, width: 0.15),
         ),
         suffixIcon: IconButton(
-          icon: Icon(obscureText ? Icons.visibility_off_outlined : Icons.visibility_outlined, size: 18),
+          icon: Icon(
+              obscureText
+                  ? Icons.visibility_off_outlined
+                  : Icons.visibility_outlined,
+              size: 18),
           onPressed: onToggleVisibility,
         ),
       ),
@@ -607,24 +669,36 @@ class _SecurityScreenState extends State<SecurityScreen> {
       decoration: BoxDecoration(
         color: theme.colorScheme.surfaceVariant.withOpacity(0.5),
         borderRadius: BorderRadius.circular(6),
-        border: Border.all(color: theme.colorScheme.outlineVariant.withOpacity(0.5)),
+        border: Border.all(
+            color: theme.colorScheme.outlineVariant.withOpacity(0.5)),
       ),
       child: Text(
         code,
-        style: const TextStyle(fontWeight: FontWeight.w600, fontFamily: 'monospace', fontSize: 12, letterSpacing: 0.5),
+        style: const TextStyle(
+            fontWeight: FontWeight.w600,
+            fontFamily: 'monospace',
+            fontSize: 12,
+            letterSpacing: 0.5),
       ),
     );
   }
 
-  Widget _buildStatusAlert(String message, Color bgColor, Color textColor, IconData icon) {
+  Widget _buildStatusAlert(
+      String message, Color bgColor, Color textColor, IconData icon) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-      decoration: BoxDecoration(color: bgColor, borderRadius: BorderRadius.circular(8)),
+      decoration:
+          BoxDecoration(color: bgColor, borderRadius: BorderRadius.circular(8)),
       child: Row(
         children: [
           Icon(icon, color: textColor, size: 18),
           const SizedBox(width: 8),
-          Expanded(child: Text(message, style: TextStyle(color: textColor, fontSize: 13, fontWeight: FontWeight.w500))),
+          Expanded(
+              child: Text(message,
+                  style: TextStyle(
+                      color: textColor,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w500))),
         ],
       ),
     );
@@ -640,7 +714,8 @@ class _SecurityScreenState extends State<SecurityScreen> {
       context: context,
       builder: (dialogContext) => StatefulBuilder(
         builder: (context, setDialogState) => AlertDialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           title: Text(Trans.deleteAccountConfirmTitle),
           content: SingleChildScrollView(
             child: Column(
@@ -648,7 +723,10 @@ class _SecurityScreenState extends State<SecurityScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(Trans.deleteAccountWarning,
-                    style: TextStyle(fontSize: 13, color: dangerColor, fontWeight: FontWeight.bold)),
+                    style: TextStyle(
+                        fontSize: 13,
+                        color: dangerColor,
+                        fontWeight: FontWeight.bold)),
                 const SizedBox(height: 12),
                 Text(Trans.deleteAccountCannotRecover,
                     style: const TextStyle(fontSize: 13, color: Colors.grey)),
@@ -659,7 +737,8 @@ class _SecurityScreenState extends State<SecurityScreen> {
                   onChanged: (value) => setDialogState(() => password = value),
                   decoration: InputDecoration(
                     labelText: Trans.password,
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8)),
                   ),
                 ),
                 const SizedBox(height: 12),
@@ -667,14 +746,17 @@ class _SecurityScreenState extends State<SecurityScreen> {
                   children: [
                     Checkbox(
                       value: agreed,
-                      onChanged: (value) => setDialogState(() => agreed = value ?? false),
+                      onChanged: (value) =>
+                          setDialogState(() => agreed = value ?? false),
                       activeColor: dangerColor,
                     ),
                     Expanded(
                       child: GestureDetector(
                         onTap: () => setDialogState(() => agreed = !agreed),
                         child: Text(Trans.iAgreeDelete,
-                            style: TextStyle(fontSize: 13, color: agreed ? dangerColor : Colors.grey)),
+                            style: TextStyle(
+                                fontSize: 13,
+                                color: agreed ? dangerColor : Colors.grey)),
                       ),
                     ),
                   ],
@@ -704,7 +786,8 @@ class _SecurityScreenState extends State<SecurityScreen> {
                           );
                           // Navigate to login using navigatorKey (app uses conditional rendering)
                           navigatorKey.currentState?.pushAndRemoveUntil(
-                            MaterialPageRoute(builder: (_) => const LoginScreen()),
+                            MaterialPageRoute(
+                                builder: (_) => const LoginScreen()),
                             (route) => false,
                           );
                         }

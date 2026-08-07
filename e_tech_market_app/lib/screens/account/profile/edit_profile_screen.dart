@@ -36,13 +36,20 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   @override
   void initState() {
     super.initState();
-    _nameCtrl = TextEditingController(text: widget.user['name']?.toString() ?? '');
-    _phoneCtrl = TextEditingController(text: widget.user['phone']?.toString() ?? '');
-    _emailCtrl = TextEditingController(text: widget.user['email']?.toString() ?? '');
-    _addressCtrl = TextEditingController(text: widget.user['address_line']?.toString() ?? '');
-    _wardCtrl = TextEditingController(text: widget.user['ward']?.toString() ?? '');
-    _districtCtrl = TextEditingController(text: widget.user['district']?.toString() ?? '');
-    _provinceCtrl = TextEditingController(text: widget.user['province']?.toString() ?? '');
+    _nameCtrl =
+        TextEditingController(text: widget.user['name']?.toString() ?? '');
+    _phoneCtrl =
+        TextEditingController(text: widget.user['phone']?.toString() ?? '');
+    _emailCtrl =
+        TextEditingController(text: widget.user['email']?.toString() ?? '');
+    _addressCtrl = TextEditingController(
+        text: widget.user['address_line']?.toString() ?? '');
+    _wardCtrl =
+        TextEditingController(text: widget.user['ward']?.toString() ?? '');
+    _districtCtrl =
+        TextEditingController(text: widget.user['district']?.toString() ?? '');
+    _provinceCtrl =
+        TextEditingController(text: widget.user['province']?.toString() ?? '');
 
     final rawUrl = widget.user['avatar_url']?.toString() ?? '';
     if (rawUrl.isNotEmpty) {
@@ -73,7 +80,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   Future<void> _pickAvatar() async {
     final picker = ImagePicker();
-    final picked = await picker.pickImage(source: ImageSource.gallery, maxWidth: 512, maxHeight: 512, imageQuality: 80);
+    final picked = await picker.pickImage(
+        source: ImageSource.gallery,
+        maxWidth: 512,
+        maxHeight: 512,
+        imageQuality: 80);
     if (picked != null) {
       setState(() {
         _avatarFile = File(picked.path);
@@ -114,18 +125,25 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         data: {
           'name': _nameCtrl.text.trim(),
           'email': _emailCtrl.text.trim(),
-          'phone': _phoneCtrl.text.trim().isEmpty ? null : _phoneCtrl.text.trim(),
-          'address_line': _addressCtrl.text.trim().isEmpty ? null : _addressCtrl.text.trim(),
+          'phone':
+              _phoneCtrl.text.trim().isEmpty ? null : _phoneCtrl.text.trim(),
+          'address_line': _addressCtrl.text.trim().isEmpty
+              ? null
+              : _addressCtrl.text.trim(),
           'ward': _wardCtrl.text.trim().isEmpty ? null : _wardCtrl.text.trim(),
-          'district': _districtCtrl.text.trim().isEmpty ? null : _districtCtrl.text.trim(),
-          'province': _provinceCtrl.text.trim().isEmpty ? null : _provinceCtrl.text.trim(),
+          'district': _districtCtrl.text.trim().isEmpty
+              ? null
+              : _districtCtrl.text.trim(),
+          'province': _provinceCtrl.text.trim().isEmpty
+              ? null
+              : _provinceCtrl.text.trim(),
         },
       );
 
       if (response.statusCode == 200) {
         final decoded = response.data;
-        final updatedUser = decoded['user'] ?? decoded; 
-        
+        final updatedUser = decoded['user'] ?? decoded;
+
         // Save to local session
         await AuthService.saveSession(token: token, user: updatedUser);
 
@@ -137,7 +155,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       if (mounted) {
         setState(() {
           final data = e.response?.data;
-          _errorMessage = (data is Map && data['message'] != null) ? data['message'].toString() : 'Không thể cập nhật hồ sơ.';
+          _errorMessage = (data is Map && data['message'] != null)
+              ? data['message'].toString()
+              : 'Không thể cập nhật hồ sơ.';
         });
       }
     } catch (e) {
@@ -184,9 +204,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   ),
                   child: Row(
                     children: [
-                      Icon(Icons.error_outline, color: Colors.red.shade700, size: 20),
+                      Icon(Icons.error_outline,
+                          color: Colors.red.shade700, size: 20),
                       const SizedBox(width: 8),
-                      Expanded(child: Text(_errorMessage!, style: TextStyle(color: Colors.red.shade800, fontSize: 13))),
+                      Expanded(
+                          child: Text(_errorMessage!,
+                              style: TextStyle(
+                                  color: Colors.red.shade800, fontSize: 13))),
                     ],
                   ),
                 ),
@@ -203,7 +227,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           color: Colors.white,
                           shape: BoxShape.circle,
                           boxShadow: [
-                            BoxShadow(color: Colors.black.withValues(alpha: 0.08), blurRadius: 12, offset: const Offset(0, 4)),
+                            BoxShadow(
+                                color: Colors.black.withValues(alpha: 0.08),
+                                blurRadius: 12,
+                                offset: const Offset(0, 4)),
                           ],
                         ),
                         child: Container(
@@ -223,11 +250,15 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                     ? Image.network(
                                         _avatarNetworkUrl!,
                                         fit: BoxFit.cover,
-                                        errorBuilder: (context, error, stackTrace) {
+                                        errorBuilder:
+                                            (context, error, stackTrace) {
                                           return Center(
                                             child: Text(
                                               _getAvatarInitial(),
-                                              style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 36),
+                                              style: const TextStyle(
+                                                  color: Colors.white,
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 36),
                                             ),
                                           );
                                         },
@@ -235,7 +266,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                     : Center(
                                         child: Text(
                                           _getAvatarInitial(),
-                                          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 36),
+                                          style: const TextStyle(
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 36),
                                         ),
                                       )),
                           ),
@@ -251,7 +285,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                             shape: BoxShape.circle,
                             border: Border.all(color: Colors.white, width: 2.5),
                           ),
-                          child: const Icon(Icons.camera_alt, color: Colors.white, size: 16),
+                          child: const Icon(Icons.camera_alt,
+                              color: Colors.white, size: 16),
                         ),
                       ),
                     ],
@@ -260,7 +295,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               ),
               const SizedBox(height: 8),
               Center(
-                child: Text(Trans.tapToChangeAvatar, style: TextStyle(color: theme.colorScheme.onSurface.withValues(alpha: 0.6), fontSize: 12)),
+                child: Text(Trans.tapToChangeAvatar,
+                    style: TextStyle(
+                        color:
+                            theme.colorScheme.onSurface.withValues(alpha: 0.6),
+                        fontSize: 12)),
               ),
               const SizedBox(height: 24),
 
@@ -271,29 +310,42 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   color: Theme.of(context).colorScheme.surface,
                   borderRadius: BorderRadius.circular(5),
                   boxShadow: [
-                    BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 10, offset: const Offset(0, 4)),
+                    BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.04),
+                        blurRadius: 10,
+                        offset: const Offset(0, 4)),
                   ],
                 ),
                 child: Column(
                   children: [
-                    _buildTextField('Họ và tên', _nameCtrl, icon: Icons.person_outline, required: true),
+                    _buildTextField('Họ và tên', _nameCtrl,
+                        icon: Icons.person_outline, required: true),
                     const SizedBox(height: 16),
-                    _buildTextField('Email', _emailCtrl, icon: Icons.email_outlined, required: true, keyboardType: TextInputType.emailAddress),
+                    _buildTextField('Email', _emailCtrl,
+                        icon: Icons.email_outlined,
+                        required: true,
+                        keyboardType: TextInputType.emailAddress),
                     const SizedBox(height: 16),
-                    _buildTextField('Số điện thoại', _phoneCtrl, icon: Icons.phone_outlined, keyboardType: TextInputType.phone),
+                    _buildTextField('Số điện thoại', _phoneCtrl,
+                        icon: Icons.phone_outlined,
+                        keyboardType: TextInputType.phone),
                     const SizedBox(height: 16),
-                    _buildTextField('Địa chỉ', _addressCtrl, icon: Icons.location_on_outlined),
+                    _buildTextField('Địa chỉ', _addressCtrl,
+                        icon: Icons.location_on_outlined),
                     const SizedBox(height: 16),
-                    _buildTextField('Phường / Xã', _wardCtrl, icon: Icons.location_city_outlined),
+                    _buildTextField('Phường / Xã', _wardCtrl,
+                        icon: Icons.location_city_outlined),
                     const SizedBox(height: 16),
-                    _buildTextField('Quận / Huyện', _districtCtrl, icon: Icons.map_outlined),
+                    _buildTextField('Quận / Huyện', _districtCtrl,
+                        icon: Icons.map_outlined),
                     const SizedBox(height: 16),
-                    _buildTextField('Tỉnh / Thành phố', _provinceCtrl, icon: Icons.flag_outlined),
+                    _buildTextField('Tỉnh / Thành phố', _provinceCtrl,
+                        icon: Icons.flag_outlined),
                   ],
                 ),
               ),
               const SizedBox(height: 28),
-              
+
               SizedBox(
                 height: 52,
                 child: ElevatedButton(
@@ -302,11 +354,18 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     backgroundColor: const Color(0xFFF26522),
                     foregroundColor: Colors.white,
                     elevation: 0,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16)),
                   ),
                   child: _isLoading
-                      ? const SizedBox(width: 24, height: 24, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-                      : Text(Trans.saveInfo, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                      ? const SizedBox(
+                          width: 24,
+                          height: 24,
+                          child: CircularProgressIndicator(
+                              color: Colors.white, strokeWidth: 2))
+                      : Text(Trans.saveInfo,
+                          style: const TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 16)),
                 ),
               ),
               const SizedBox(height: 32),
@@ -317,28 +376,37 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     );
   }
 
-  Widget _buildTextField(String label, TextEditingController controller, {bool required = false, TextInputType? keyboardType, IconData? icon}) {
+  Widget _buildTextField(String label, TextEditingController controller,
+      {bool required = false, TextInputType? keyboardType, IconData? icon}) {
     final theme = Theme.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: TextStyle(fontWeight: FontWeight.w600, color: theme.colorScheme.onSurface, fontSize: 13)),
+        Text(label,
+            style: TextStyle(
+                fontWeight: FontWeight.w600,
+                color: theme.colorScheme.onSurface,
+                fontSize: 13)),
         const SizedBox(height: 8),
         TextFormField(
           controller: controller,
           keyboardType: keyboardType,
           decoration: InputDecoration(
-            prefixIcon: icon != null ? Icon(icon, color: theme.colorScheme.primary, size: 20) : null,
+            prefixIcon: icon != null
+                ? Icon(icon, color: theme.colorScheme.primary, size: 20)
+                : null,
             filled: true,
             fillColor: theme.colorScheme.surfaceContainerHighest,
-            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            contentPadding:
+                const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
               borderSide: BorderSide.none,
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: Color(0xFFF26522), width: 1.5),
+              borderSide:
+                  const BorderSide(color: Color(0xFFF26522), width: 1.5),
             ),
           ),
           validator: (value) {
@@ -352,14 +420,3 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     );
   }
 }
-
-
-
-
-
-
-
-
-
-
-

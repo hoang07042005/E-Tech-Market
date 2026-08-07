@@ -26,7 +26,9 @@ class AuthService {
     } catch (e) {
       if (e is DioException) {
         final data = e.response?.data;
-        if (e.response?.statusCode == 403 && data is Map && data['requires_2fa'] == true) {
+        if (e.response?.statusCode == 403 &&
+            data is Map &&
+            data['requires_2fa'] == true) {
           return parseLoginResponse(data);
         }
       }
@@ -49,7 +51,8 @@ class AuthService {
     }
 
     try {
-      final response = await DioClient.instance.post('/auth/google-login', data: {
+      final response =
+          await DioClient.instance.post('/auth/google-login', data: {
         'token': auth.idToken,
         'access_token': auth.accessToken,
       });
@@ -96,7 +99,7 @@ class AuthService {
     );
 
     final token = data['token'] as String?;
-    
+
     // Convert user safely
     final rawUser = data['user'];
     Map<String, dynamic>? user;
@@ -141,7 +144,8 @@ class AuthService {
         throw Exception('Kết nối máy chủ quá thời gian. Vui lòng thử lại.');
       }
       if (e.type == DioExceptionType.connectionError) {
-        throw Exception('Không thể kết nối máy chủ. Vui lòng kiểm tra kết nối mạng.');
+        throw Exception(
+            'Không thể kết nối máy chủ. Vui lòng kiểm tra kết nối mạng.');
       }
 
       if (data is Map<String, dynamic>) {
@@ -149,7 +153,8 @@ class AuthService {
         final rawMessage = data['message']?.toString() ??
             _findFirstError(data) ??
             defaultMessage;
-        throw Exception(_translateError(rawMessage, statusCode, defaultMessage));
+        throw Exception(
+            _translateError(rawMessage, statusCode, defaultMessage));
       }
 
       // Body là String (một số backend trả plain text)
@@ -158,12 +163,18 @@ class AuthService {
       }
 
       // HTTP status code không có body (hoặc body không parse được)
-      if (statusCode == 401) throw Exception('Email hoặc mật khẩu không chính xác. Vui lòng thử lại.');
-      if (statusCode == 403) throw Exception('Bạn không có quyền thực hiện thao tác này.');
-      if (statusCode == 404) throw Exception('Không tìm thấy tài khoản với email này.');
+      if (statusCode == 401)
+        throw Exception(
+            'Email hoặc mật khẩu không chính xác. Vui lòng thử lại.');
+      if (statusCode == 403)
+        throw Exception('Bạn không có quyền thực hiện thao tác này.');
+      if (statusCode == 404)
+        throw Exception('Không tìm thấy tài khoản với email này.');
       if (statusCode == 422) throw Exception('Dữ liệu nhập vào không hợp lệ.');
-      if (statusCode == 429) throw Exception('Bạn đã thử quá nhiều lần. Vui lòng đợi một lúc.');
-      if (statusCode != null && statusCode >= 500) throw Exception('Lỗi máy chủ. Vui lòng thử lại sau.');
+      if (statusCode == 429)
+        throw Exception('Bạn đã thử quá nhiều lần. Vui lòng đợi một lúc.');
+      if (statusCode != null && statusCode >= 500)
+        throw Exception('Lỗi máy chủ. Vui lòng thử lại sau.');
     }
     throw Exception(defaultMessage);
   }
@@ -202,7 +213,10 @@ class AuthService {
     }
 
     // ── Mật khẩu ──
-    if (lower.contains('password') && (lower.contains('min') || lower.contains('least 8') || lower.contains('at least 6'))) {
+    if (lower.contains('password') &&
+        (lower.contains('min') ||
+            lower.contains('least 8') ||
+            lower.contains('at least 6'))) {
       return 'Mật khẩu phải có ít nhất 6 ký tự.';
     }
     if (lower.contains('password') && lower.contains('confirmation')) {
@@ -226,7 +240,8 @@ class AuthService {
         lower.contains('account') && lower.contains('banned')) {
       return 'Tài khoản của bạn đã bị vô hiệu hóa. Vui lòng liên hệ hỗ trợ.';
     }
-    if (lower.contains('user not found') || lower.contains('account not found')) {
+    if (lower.contains('user not found') ||
+        lower.contains('account not found')) {
       return 'Không tìm thấy tài khoản với email này.';
     }
     if (lower.contains('too many') || lower.contains('rate limit')) {
@@ -234,8 +249,10 @@ class AuthService {
     }
 
     // ── Validation chung ──
-    if (lower.contains('required')) return 'Vui lòng điền đầy đủ thông tin bắt buộc.';
-    if (lower.contains('invalid')) return 'Thông tin không hợp lệ. Vui lòng kiểm tra lại.';
+    if (lower.contains('required'))
+      return 'Vui lòng điền đầy đủ thông tin bắt buộc.';
+    if (lower.contains('invalid'))
+      return 'Thông tin không hợp lệ. Vui lòng kiểm tra lại.';
 
     // ── Lỗi server ──
     if (statusCode != null && statusCode >= 500) {
@@ -251,7 +268,8 @@ class AuthService {
 
   /// Kiểm tra chuỗi có chứa ký tự tiếng Việt không
   static bool _isVietnamese(String text) {
-    return RegExp(r'[àáạảãăắặẳẵâấầẩẫèéẹẻẽêếềệểễìíịỉĩòóọỏõôốồộổỗơớờợởỡùúụủũưứừựửữỳýỵỷỹđÀÁẠẢÃĂẮẶẲẴÂẤẦẨẪÈÉẸẺẼÊẾỀỆỂỄÌÍỊỈĨÒÓỌỎÕÔỐỒỘỔỖƠỚỜỢỞỠÙÚỤỦŨƯỨỪỰỬỮỲÝỴỶỸĐ]')
+    return RegExp(
+            r'[àáạảãăắặẳẵâấầẩẫèéẹẻẽêếềệểễìíịỉĩòóọỏõôốồộổỗơớờợởỡùúụủũưứừựửữỳýỵỷỹđÀÁẠẢÃĂẮẶẲẴÂẤẦẨẪÈÉẸẺẼÊẾỀỆỂỄÌÍỊỈĨÒÓỌỎÕÔỐỒỘỔỖƠỚỜỢỞỠÙÚỤỦŨƯỨỪỰỬỮỲÝỴỶỸĐ]')
         .hasMatch(text);
   }
 
@@ -266,7 +284,6 @@ class AuthService {
     }
     return null;
   }
-
 
   static Future<void> saveSession({
     required String token,
@@ -283,7 +300,10 @@ class AuthService {
       final body = response.data;
       final data = body['data'];
       if (data is List) {
-        return data.map((item) => Map<String, dynamic>.from(item as Map<String, dynamic>)).toList();
+        return data
+            .map((item) =>
+                Map<String, dynamic>.from(item as Map<String, dynamic>))
+            .toList();
       }
       return [];
     } catch (e) {
@@ -309,7 +329,8 @@ class AuthService {
 
   static Future<void> forgotPassword(String email) async {
     try {
-      await DioClient.instance.post('/auth/forgot-password', data: {'email': email});
+      await DioClient.instance
+          .post('/auth/forgot-password', data: {'email': email});
     } catch (e) {
       _handleError(e, 'Gửi yêu cầu thất bại. Vui lòng thử lại.');
     }
@@ -372,7 +393,7 @@ class AuthService {
     try {
       final token = await getToken();
       if (token == null) return null;
-      
+
       final response = await DioClient.instance.get('/me');
       final data = response.data;
       if (data != null && data['user'] != null) {

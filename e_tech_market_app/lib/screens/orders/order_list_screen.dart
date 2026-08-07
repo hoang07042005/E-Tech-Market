@@ -39,11 +39,13 @@ class _OrderListScreenState extends State<OrderListScreen> {
     });
 
     try {
-      final response = await OrderService.fetchOrders(page: 1); // Only fetch page 1
+      final response =
+          await OrderService.fetchOrders(page: 1); // Only fetch page 1
       final data = response['data'];
-      
+
       // Fetch suggested products (lấy nhiều hơn rồi shuffle để hiển thị 10 sản phẩm ngẫu nhiên)
-      final productsRes = await ProductsService.fetchProducts(limit: 50, sort: 'newest');
+      final productsRes =
+          await ProductsService.fetchProducts(limit: 50, sort: 'newest');
       var prods = productsRes['data'] as List<dynamic>? ?? [];
       prods.shuffle();
       if (prods.length > 10) prods = prods.sublist(0, 10);
@@ -72,12 +74,18 @@ class _OrderListScreenState extends State<OrderListScreen> {
       if (q.isNotEmpty) {
         final code = (order['order_code'] ?? '').toString().toLowerCase();
         final items = (order['items'] as List<dynamic>?) ?? [];
-        final names = items.map((item) {
-          if (item is Map<String, dynamic>) {
-            return (item['product_name_snapshot'] ?? item['product']?['name'] ?? '').toString();
-          }
-          return '';
-        }).join(' ').toLowerCase();
+        final names = items
+            .map((item) {
+              if (item is Map<String, dynamic>) {
+                return (item['product_name_snapshot'] ??
+                        item['product']?['name'] ??
+                        '')
+                    .toString();
+              }
+              return '';
+            })
+            .join(' ')
+            .toLowerCase();
         if (!code.contains(q) && !names.contains(q)) return false;
       }
       if (_statusFilter != 'all') {
@@ -90,8 +98,10 @@ class _OrderListScreenState extends State<OrderListScreen> {
 
   Map<String, dynamic> _statusMeta(String status) {
     final s = status.toLowerCase();
-    if (s == 'pending') return {'label': 'Chờ xác nhận', 'color': Colors.orange};
-    if (s == 'processing') return {'label': 'Đã xác nhận', 'color': Colors.blue};
+    if (s == 'pending')
+      return {'label': 'Chờ xác nhận', 'color': Colors.orange};
+    if (s == 'processing')
+      return {'label': 'Đã xác nhận', 'color': Colors.blue};
     if (s == 'paid') return {'label': 'Đang chuẩn bị', 'color': Colors.blue};
     if (s == 'shipped') return {'label': 'Đang giao', 'color': Colors.blue};
     if (s == 'delivered') return {'label': 'Đã giao', 'color': Colors.green};
@@ -105,12 +115,18 @@ class _OrderListScreenState extends State<OrderListScreen> {
     final amount = value is num
         ? value.toDouble()
         : double.tryParse(value?.toString() ?? '') ?? 0.0;
-    return amount.toStringAsFixed(0).replaceAllMapped(RegExp(r'\B(?=(\d{3})+(?!\d))'), (match) => '.');
+    return amount
+        .toStringAsFixed(0)
+        .replaceAllMapped(RegExp(r'\B(?=(\d{3})+(?!\d))'), (match) => '.');
   }
 
   String _resolveOrderImageUrl(dynamic item) {
-    final product = item is Map<String, dynamic> ? item['product'] as Map<String, dynamic>? : null;
-    final variant = item is Map<String, dynamic> ? item['variant'] as Map<String, dynamic>? : null;
+    final product = item is Map<String, dynamic>
+        ? item['product'] as Map<String, dynamic>?
+        : null;
+    final variant = item is Map<String, dynamic>
+        ? item['variant'] as Map<String, dynamic>?
+        : null;
     final candidates = <String?>[
       variant?['image_url']?.toString(),
       product?['main_image_url']?.toString(),
@@ -132,12 +148,13 @@ class _OrderListScreenState extends State<OrderListScreen> {
     if (variant == null) return null;
     final direct = (variant['variant_name'] ?? variant['name'])?.toString();
     if (direct != null && direct.trim().isNotEmpty) return direct.trim();
-    
+
     final parts = [
       variant['color']?.toString(),
-      (variant['configuration'] ?? variant['storage'] ?? variant['ram'])?.toString(),
+      (variant['configuration'] ?? variant['storage'] ?? variant['ram'])
+          ?.toString(),
     ].where((part) => part != null && part.trim().isNotEmpty).toList();
-    
+
     if (parts.isNotEmpty) return parts.join(' - ');
     return null;
   }
@@ -163,12 +180,18 @@ class _OrderListScreenState extends State<OrderListScreen> {
                 style: const TextStyle(fontSize: 16),
                 decoration: InputDecoration(
                   hintText: 'Tìm mã đơn hàng hoặc sản phẩm...',
-                  hintStyle: TextStyle(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5)),
+                  hintStyle: TextStyle(
+                      color: Theme.of(context)
+                          .colorScheme
+                          .onSurface
+                          .withValues(alpha: 0.5)),
                   border: InputBorder.none,
                 ),
                 onChanged: (value) => setState(() => _search = value),
               )
-            : Text(Trans.myOrders, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 17)),
+            : Text(Trans.myOrders,
+                style:
+                    const TextStyle(fontWeight: FontWeight.bold, fontSize: 17)),
         actions: [
           if (_isSearching)
             IconButton(
@@ -202,7 +225,8 @@ class _OrderListScreenState extends State<OrderListScreen> {
                       children: [
                         Padding(
                           padding: const EdgeInsets.all(24),
-                          child: Text(_error!, style: const TextStyle(color: Colors.red)),
+                          child: Text(_error!,
+                              style: const TextStyle(color: Colors.red)),
                         ),
                       ],
                     )
@@ -212,11 +236,23 @@ class _OrderListScreenState extends State<OrderListScreen> {
                           padding: const EdgeInsets.all(24),
                           children: [
                             const SizedBox(height: 40),
-                            Icon(Icons.receipt_long_outlined, size: 72, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.4)),
+                            Icon(Icons.receipt_long_outlined,
+                                size: 72,
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .onSurface
+                                    .withValues(alpha: 0.4)),
                             const SizedBox(height: 24),
-                            Text(Trans.noOrdersYet, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                            Text(Trans.noOrdersYet,
+                                style: const TextStyle(
+                                    fontSize: 18, fontWeight: FontWeight.bold)),
                             const SizedBox(height: 12),
-                            Text(Trans.shopNowToCreateFirstOrder, style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6))),
+                            Text(Trans.shopNowToCreateFirstOrder,
+                                style: TextStyle(
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .onSurface
+                                        .withValues(alpha: 0.6))),
                           ],
                         )
                       : ListView(
@@ -224,7 +260,9 @@ class _OrderListScreenState extends State<OrderListScreen> {
                           padding: const EdgeInsets.all(16),
                           children: [
                             const SizedBox(height: 8),
-                            ..._filteredOrders.map((order) => _buildOrderCard(context, order)).toList(),
+                            ..._filteredOrders
+                                .map((order) => _buildOrderCard(context, order))
+                                .toList(),
                             const SizedBox(height: 16),
                             _buildSuggestedProductsSection(),
                           ],
@@ -239,7 +277,8 @@ class _OrderListScreenState extends State<OrderListScreen> {
       return Padding(
         padding: const EdgeInsets.symmetric(vertical: 32),
         child: Center(
-          child: CircularProgressIndicator(color: Theme.of(context).colorScheme.primary),
+          child: CircularProgressIndicator(
+              color: Theme.of(context).colorScheme.primary),
         ),
       );
     }
@@ -312,7 +351,8 @@ class _OrderListScreenState extends State<OrderListScreen> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => ProductDetailScreen(slug: product['slug']),
+                      builder: (context) =>
+                          ProductDetailScreen(slug: product['slug']),
                     ),
                   );
                 },
@@ -357,8 +397,14 @@ class _OrderListScreenState extends State<OrderListScreen> {
     final tabs = [
       {'value': 'all', 'label': 'Tất cả'},
       {'value': 'pending', 'label': 'Chờ xác nhận'},
-      {'value': 'processing', 'label': 'Chờ lấy hàng'}, // Changed from 'Đã xác nhận'
-      {'value': 'shipped', 'label': 'Chờ giao hàng'}, // Changed from 'Đang giao'
+      {
+        'value': 'processing',
+        'label': 'Chờ lấy hàng'
+      }, // Changed from 'Đã xác nhận'
+      {
+        'value': 'shipped',
+        'label': 'Chờ giao hàng'
+      }, // Changed from 'Đang giao'
       {'value': 'delivered', 'label': 'Đã giao'},
       {'value': 'completed', 'label': 'Hoàn thành'},
       {'value': 'returned', 'label': 'Hoàn trả'},
@@ -369,7 +415,9 @@ class _OrderListScreenState extends State<OrderListScreen> {
       width: double.infinity,
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
-        border: Border(bottom: BorderSide(color: Theme.of(context).colorScheme.outline, width: 0.2)),
+        border: Border(
+            bottom: BorderSide(
+                color: Theme.of(context).colorScheme.outline, width: 0.2)),
       ),
       child: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
@@ -384,11 +432,14 @@ class _OrderListScreenState extends State<OrderListScreen> {
                 _loadOrders(page: 1);
               },
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 decoration: BoxDecoration(
                   border: Border(
                     bottom: BorderSide(
-                      color: isSelected ? const Color(0xFFF26522) : Colors.transparent,
+                      color: isSelected
+                          ? const Color(0xFFF26522)
+                          : Colors.transparent,
                       width: 2,
                     ),
                   ),
@@ -397,8 +448,11 @@ class _OrderListScreenState extends State<OrderListScreen> {
                   tab['label'] as String,
                   style: TextStyle(
                     fontSize: 14,
-                    fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
-                    color: isSelected ? const Color(0xFFF26522) : Theme.of(context).colorScheme.onSurface,
+                    fontWeight:
+                        isSelected ? FontWeight.w600 : FontWeight.normal,
+                    color: isSelected
+                        ? const Color(0xFFF26522)
+                        : Theme.of(context).colorScheme.onSurface,
                   ),
                 ),
               ),
@@ -408,8 +462,6 @@ class _OrderListScreenState extends State<OrderListScreen> {
       ),
     );
   }
-
-
 
   Widget _buildOrderCard(BuildContext context, dynamic order) {
     if (order is! Map<String, dynamic>) return const SizedBox.shrink();
@@ -432,7 +484,9 @@ class _OrderListScreenState extends State<OrderListScreen> {
 
     if (firstItem is Map<String, dynamic>) {
       final product = firstItem['product'] as Map<String, dynamic>?;
-      prodName = (product?['name'] ?? firstItem['product_name_snapshot'] ?? 'Sản phẩm').toString();
+      prodName =
+          (product?['name'] ?? firstItem['product_name_snapshot'] ?? 'Sản phẩm')
+              .toString();
       final variant = firstItem['variant'] as Map<String, dynamic>?;
       final variantLabel = _getVariantLabel(variant);
       if (variantLabel != null) {
@@ -448,9 +502,13 @@ class _OrderListScreenState extends State<OrderListScreen> {
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Theme.of(context).colorScheme.outline, width: 0.15),
+        border: Border.all(
+            color: Theme.of(context).colorScheme.outline, width: 0.15),
         boxShadow: [
-          BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 12, offset: const Offset(0, 4)),
+          BoxShadow(
+              color: Colors.black.withOpacity(0.04),
+              blurRadius: 12,
+              offset: const Offset(0, 4)),
         ],
       ),
       child: ClipRRect(
@@ -465,22 +523,34 @@ class _OrderListScreenState extends State<OrderListScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text('#$code', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+                      Text('#$code',
+                          style: const TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 15)),
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 3),
                         decoration: BoxDecoration(
                           color: (meta['color'] as Color).withOpacity(0.1),
                           borderRadius: BorderRadius.circular(6),
                         ),
                         child: Text(
                           meta['label'] as String,
-                          style: TextStyle(color: meta['color'] as Color, fontWeight: FontWeight.bold, fontSize: 13),
+                          style: TextStyle(
+                              color: meta['color'] as Color,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 13),
                         ),
                       ),
                     ],
                   ),
                   const SizedBox(height: 4),
-                  Text(Trans.orderDateLabel(date), style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6), fontSize: 12)),
+                  Text(Trans.orderDateLabel(date),
+                      style: TextStyle(
+                          color: Theme.of(context)
+                              .colorScheme
+                              .onSurface
+                              .withValues(alpha: 0.6),
+                          fontSize: 12)),
                   const SizedBox(height: 4),
                   // const Divider(height: 24),
                   if (items.length > 1) ...[
@@ -500,7 +570,17 @@ class _OrderListScreenState extends State<OrderListScreen> {
                                   width: 64,
                                   height: 64,
                                   fit: BoxFit.cover,
-                                  errorBuilder: (_, __, ___) => Container(color: Theme.of(context).colorScheme.surfaceContainerHighest, width: 64, height: 64, child: Icon(Icons.image_not_supported, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.4))),
+                                  errorBuilder: (_, __, ___) => Container(
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .surfaceContainerHighest,
+                                      width: 64,
+                                      height: 64,
+                                      child: Icon(Icons.image_not_supported,
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .onSurface
+                                              .withValues(alpha: 0.4))),
                                 ),
                               ),
                             );
@@ -510,8 +590,16 @@ class _OrderListScreenState extends State<OrderListScreen> {
                               child: Container(
                                 width: 64,
                                 height: 64,
-                                decoration: BoxDecoration(color: Theme.of(context).colorScheme.surfaceContainerHighest, borderRadius: BorderRadius.circular(12)),
-                                child: Icon(Icons.image_not_supported, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.4)),
+                                decoration: BoxDecoration(
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .surfaceContainerHighest,
+                                    borderRadius: BorderRadius.circular(12)),
+                                child: Icon(Icons.image_not_supported,
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .onSurface
+                                        .withValues(alpha: 0.4)),
                               ),
                             );
                           }
@@ -521,9 +609,16 @@ class _OrderListScreenState extends State<OrderListScreen> {
                     const SizedBox(height: 12),
                     // Hàng 2: Tất cả tên sản phẩm dạng gạch đầu dòng
                     ...items.map((item) {
-                      final product = item is Map<String, dynamic> ? item['product'] as Map<String, dynamic>? : null;
-                      String name = (product?['name'] ?? item['product_name_snapshot'] ?? 'Sản phẩm').toString();
-                      final variant = item is Map<String, dynamic> ? item['variant'] as Map<String, dynamic>? : null;
+                      final product = item is Map<String, dynamic>
+                          ? item['product'] as Map<String, dynamic>?
+                          : null;
+                      String name = (product?['name'] ??
+                              item['product_name_snapshot'] ??
+                              'Sản phẩm')
+                          .toString();
+                      final variant = item is Map<String, dynamic>
+                          ? item['variant'] as Map<String, dynamic>?
+                          : null;
                       final variantLabel = _getVariantLabel(variant);
                       if (variantLabel != null) {
                         name = '$name ($variantLabel)';
@@ -532,7 +627,8 @@ class _OrderListScreenState extends State<OrderListScreen> {
                         padding: const EdgeInsets.only(bottom: 2.0),
                         child: Text(
                           '- $name',
-                          style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+                          style: const TextStyle(
+                              fontWeight: FontWeight.w600, fontSize: 14),
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -542,7 +638,12 @@ class _OrderListScreenState extends State<OrderListScreen> {
                     // Hàng 3: Tổng số lượng
                     Text(
                       'Tổng số lượng: ${items.fold<int>(0, (sum, item) => sum + (int.tryParse(item['quantity']?.toString() ?? '1') ?? 1))}',
-                      style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6), fontSize: 13),
+                      style: TextStyle(
+                          color: Theme.of(context)
+                              .colorScheme
+                              .onSurface
+                              .withValues(alpha: 0.6),
+                          fontSize: 13),
                     ),
                   ] else ...[
                     Row(
@@ -555,26 +656,54 @@ class _OrderListScreenState extends State<OrderListScreen> {
                               width: 64,
                               height: 64,
                               fit: BoxFit.cover,
-                              errorBuilder: (_, __, ___) => Container(color: Theme.of(context).colorScheme.surfaceContainerHighest, width: 64, height: 64, child: Icon(Icons.image_not_supported, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.4))),
+                              errorBuilder: (_, __, ___) => Container(
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .surfaceContainerHighest,
+                                  width: 64,
+                                  height: 64,
+                                  child: Icon(Icons.image_not_supported,
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .onSurface
+                                          .withValues(alpha: 0.4))),
                             ),
                           )
                         else
                           Container(
                             width: 64,
                             height: 64,
-                            decoration: BoxDecoration(color: Theme.of(context).colorScheme.surfaceContainerHighest, borderRadius: BorderRadius.circular(12)),
-                            child: Icon(Icons.image_not_supported, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.4)),
+                            decoration: BoxDecoration(
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .surfaceContainerHighest,
+                                borderRadius: BorderRadius.circular(12)),
+                            child: Icon(Icons.image_not_supported,
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .onSurface
+                                    .withValues(alpha: 0.4)),
                           ),
                         const SizedBox(width: 12),
                         Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(prodName, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14), maxLines: 2, overflow: TextOverflow.ellipsis),
+                              Text(prodName,
+                                  style: const TextStyle(
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: 14),
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis),
                               const SizedBox(height: 4),
                               Text(
                                 Trans.quantityLabel(int.tryParse(prodQty) ?? 1),
-                                style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6), fontSize: 13),
+                                style: TextStyle(
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .onSurface
+                                        .withValues(alpha: 0.6),
+                                    fontSize: 13),
                               ),
                             ],
                           ),
@@ -588,14 +717,24 @@ class _OrderListScreenState extends State<OrderListScreen> {
                     children: [
                       Row(
                         children: [
-                          Text(Trans.totalLabel, style: const TextStyle(fontSize: 13)),
-                          Text('$finalPriceđ', style: const TextStyle(fontWeight: FontWeight.bold, color: Color(0xFFF26522), fontSize: 16)),
+                          Text(Trans.totalLabel,
+                              style: const TextStyle(fontSize: 13)),
+                          Text('$finalPriceđ',
+                              style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: Color(0xFFF26522),
+                                  fontSize: 16)),
                         ],
                       ),
                       TextButton(
                         onPressed: () {
                           if (id is int) {
-                            Navigator.push(context, MaterialPageRoute(builder: (_) => OrderDetailScreen(orderId: id))).then((_) {
+                            Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (_) =>
+                                            OrderDetailScreen(orderId: id)))
+                                .then((_) {
                               _loadOrders(page: 1);
                             });
                           }
@@ -605,9 +744,11 @@ class _OrderListScreenState extends State<OrderListScreen> {
                           foregroundColor: Colors.white,
                           elevation: 0,
                           padding: const EdgeInsets.symmetric(horizontal: 10),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(6)),
                         ),
-                        child: Text(Trans.detail, style: TextStyle(color: Colors.white)),
+                        child: Text(Trans.detail,
+                            style: TextStyle(color: Colors.white)),
                       )
                     ],
                   ),
@@ -619,8 +760,6 @@ class _OrderListScreenState extends State<OrderListScreen> {
       ),
     );
   }
-
-
 
   @override
   void dispose() {

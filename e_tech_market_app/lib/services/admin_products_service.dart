@@ -15,7 +15,8 @@ class AdminProductsService {
       }
       return data is List ? data : [];
     } on DioException catch (e) {
-      throw Exception('Không thể tải danh sách sản phẩm: ${e.response?.statusCode}');
+      throw Exception(
+          'Không thể tải danh sách sản phẩm: ${e.response?.statusCode}');
     }
   }
 
@@ -34,7 +35,8 @@ class AdminProductsService {
       final response = await DioClient.instance.get('/admin/products/$id');
       return response.data as Map<String, dynamic>;
     } on DioException catch (e) {
-      throw Exception('Không thể tải chi tiết sản phẩm: ${e.response?.statusCode}');
+      throw Exception(
+          'Không thể tải chi tiết sản phẩm: ${e.response?.statusCode}');
     }
   }
 
@@ -84,7 +86,8 @@ class AdminProductsService {
     } on DioException catch (e) {
       if (e.response?.data is Map) {
         final data = e.response!.data as Map<String, dynamic>;
-        throw Exception(data['message'] ?? 'Lỗi lưu sản phẩm (${e.response?.statusCode})');
+        throw Exception(
+            data['message'] ?? 'Lỗi lưu sản phẩm (${e.response?.statusCode})');
       }
       throw Exception('Lỗi lưu sản phẩm (${e.response?.statusCode})');
     }

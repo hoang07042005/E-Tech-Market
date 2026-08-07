@@ -297,7 +297,8 @@ class StockBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (isFlashSale) {
-      if (flashSaleLimit == null || flashSaleLimit == 0) return const SizedBox();
+      if (flashSaleLimit == null || flashSaleLimit == 0)
+        return const SizedBox();
       final sold = flashSaleSold ?? 0;
       final limit = flashSaleLimit!;
       final pct = (sold / limit * 100).clamp(0, 100).toDouble();
@@ -353,7 +354,8 @@ class StockBar extends StatelessWidget {
     } else {
       if (normalStock == null) return const SizedBox();
       final stock = normalStock!;
-      final pct = (stock / 100 * 100).clamp(0, 100).toDouble(); // STOCK_MAX = 100
+      final pct =
+          (stock / 100 * 100).clamp(0, 100).toDouble(); // STOCK_MAX = 100
       final isOut = stock <= 0;
       final isLow = stock > 0 && stock <= 10;
 
@@ -364,14 +366,19 @@ class StockBar extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                isOut 
-                    ? "❌ Hết hàng" 
-                    : isLow 
-                        ? "⚠️ Sắp hết hàng (còn $stock)" 
+                isOut
+                    ? "❌ Hết hàng"
+                    : isLow
+                        ? "⚠️ Sắp hết hàng (còn $stock)"
                         : "Còn $stock sản phẩm",
                 style: TextStyle(
-                  color: isOut ? const Color(0xFF9E9E9E) : isLow ? const Color(0xFFE53E3E) : const Color(0xFFFF4B2B),
-                  fontWeight: (isLow || isOut) ? FontWeight.w700 : FontWeight.w600,
+                  color: isOut
+                      ? const Color(0xFF9E9E9E)
+                      : isLow
+                          ? const Color(0xFFE53E3E)
+                          : const Color(0xFFFF4B2B),
+                  fontWeight:
+                      (isLow || isOut) ? FontWeight.w700 : FontWeight.w600,
                   fontSize: 10,
                 ),
               ),

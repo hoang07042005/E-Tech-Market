@@ -71,7 +71,8 @@ class _HeroBannerSectionState extends State<HeroBannerSection> {
     return Column(
       children: [
         SizedBox(
-          height: 320, // Increased height to accommodate the banner + marquee padding
+          height:
+              320, // Increased height to accommodate the banner + marquee padding
           width: double.infinity,
           child: Stack(
             children: [
@@ -88,14 +89,17 @@ class _HeroBannerSectionState extends State<HeroBannerSection> {
                     onPageChanged: widget.onBannerIndexChanged,
                     itemCount: widget.banners.length,
                     itemBuilder: (context, index) {
-                      final banner = widget.banners[index] as Map<String, dynamic>;
-                      final imageUrl = NetworkUtils.fixDeviceUrl(banner['image_url'] as String?);
+                      final banner =
+                          widget.banners[index] as Map<String, dynamic>;
+                      final imageUrl = NetworkUtils.fixDeviceUrl(
+                          banner['image_url'] as String?);
                       return Opacity(
                         opacity: 0.8,
                         child: Image.network(
                           imageUrl,
                           fit: BoxFit.cover,
-                          errorBuilder: (_, __, ___) => Container(color: Colors.grey.shade300),
+                          errorBuilder: (_, __, ___) =>
+                              Container(color: Colors.grey.shade300),
                         ),
                       );
                     },
@@ -135,7 +139,9 @@ class _HeroBannerSectionState extends State<HeroBannerSection> {
                           height: 8,
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            color: index == widget.currentBannerIndex ? const Color(0xFFF97316) : Colors.white54,
+                            color: index == widget.currentBannerIndex
+                                ? const Color(0xFFF97316)
+                                : Colors.white54,
                           ),
                         ),
                       ),
@@ -151,7 +157,9 @@ class _HeroBannerSectionState extends State<HeroBannerSection> {
                   child: Center(
                     child: GestureDetector(
                       onTap: () {
-                        final newIndex = widget.currentBannerIndex == 0 ? widget.banners.length - 1 : widget.currentBannerIndex - 1;
+                        final newIndex = widget.currentBannerIndex == 0
+                            ? widget.banners.length - 1
+                            : widget.currentBannerIndex - 1;
                         _pageController.animateToPage(
                           newIndex,
                           duration: const Duration(milliseconds: 600),
@@ -164,7 +172,8 @@ class _HeroBannerSectionState extends State<HeroBannerSection> {
                           color: Colors.black45,
                           shape: BoxShape.circle,
                         ),
-                        child: const Icon(Icons.chevron_left, color: Colors.white, size: 20),
+                        child: const Icon(Icons.chevron_left,
+                            color: Colors.white, size: 20),
                       ),
                     ),
                   ),
@@ -176,7 +185,10 @@ class _HeroBannerSectionState extends State<HeroBannerSection> {
                   child: Center(
                     child: GestureDetector(
                       onTap: () {
-                        final newIndex = widget.currentBannerIndex == widget.banners.length - 1 ? 0 : widget.currentBannerIndex + 1;
+                        final newIndex = widget.currentBannerIndex ==
+                                widget.banners.length - 1
+                            ? 0
+                            : widget.currentBannerIndex + 1;
                         _pageController.animateToPage(
                           newIndex,
                           duration: const Duration(milliseconds: 600),
@@ -189,7 +201,8 @@ class _HeroBannerSectionState extends State<HeroBannerSection> {
                           color: const Color(0xFFF97316),
                           shape: BoxShape.circle,
                         ),
-                        child: const Icon(Icons.chevron_right, color: Colors.white, size: 20),
+                        child: const Icon(Icons.chevron_right,
+                            color: Colors.white, size: 20),
                       ),
                     ),
                   ),
@@ -210,7 +223,8 @@ class _HeroBannerSectionState extends State<HeroBannerSection> {
   }
 
   Widget _buildBannerContent() {
-    final titleRaw = widget.banners[widget.currentBannerIndex]['title'] ?? 'CHẠM ĐẾN TƯƠNG LAI\nTHIẾT BỊ ĐỈNH CAO';
+    final titleRaw = widget.banners[widget.currentBannerIndex]['title'] ??
+        'CHẠM ĐẾN TƯƠNG LAI\nTHIẾT BỊ ĐỈNH CAO';
     final parts = (titleRaw as String).split('\n');
     String title1 = parts[0];
     String title2 = parts.length > 1 ? parts.sublist(1).join('\n') : '';
@@ -271,15 +285,17 @@ class _HeroBannerSectionState extends State<HeroBannerSection> {
         if (title2.isNotEmpty)
           RichText(
             text: TextSpan(
-              style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold, height: 1.2),
+              style: const TextStyle(
+                  fontSize: 22, fontWeight: FontWeight.bold, height: 1.2),
               children: [
                 TextSpan(
                   text: '$title1\n',
-                  style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
+                  style:
+                      TextStyle(color: Theme.of(context).colorScheme.onSurface),
                 ),
                 TextSpan(
                   text: title2,
-                  style:  TextStyle(color: Color(0xFFF97316)),
+                  style: TextStyle(color: Color(0xFFF97316)),
                 ),
               ],
             ),
@@ -287,13 +303,21 @@ class _HeroBannerSectionState extends State<HeroBannerSection> {
         else
           Text(
             title1,
-            style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.white, height: 1.2),
+            style: const TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+                height: 1.2),
           ),
         const SizedBox(height: 10),
         // Description
         Text(
-          widget.banners[widget.currentBannerIndex]['description'] ?? 'Khám phá thế hệ công nghệ mới với những thiết bị chính hãng, hiệu năng vượt trội.',
-          style:  TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.onSurface, height: 1.4),
+          widget.banners[widget.currentBannerIndex]['description'] ??
+              'Khám phá thế hệ công nghệ mới với những thiết bị chính hãng, hiệu năng vượt trội.',
+          style: TextStyle(
+              fontSize: 12,
+              color: Theme.of(context).colorScheme.onSurface,
+              height: 1.4),
           maxLines: 3,
           overflow: TextOverflow.ellipsis,
         ),
@@ -306,8 +330,10 @@ class _HeroBannerSectionState extends State<HeroBannerSection> {
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFFF97316),
                 foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(24)),
                 elevation: 0,
                 minimumSize: const Size(0, 36),
               ),
@@ -324,17 +350,23 @@ class _HeroBannerSectionState extends State<HeroBannerSection> {
                 child: OutlinedButton(
                   onPressed: () {
                     // Navigate to flash sale screen if exists, for now fallback to ShopNow or push directly
-                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Tính năng đang phát triển')));
+                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                        content: Text('Tính năng đang phát triển')));
                   },
                   style: OutlinedButton.styleFrom(
                     tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                     foregroundColor: Theme.of(context).colorScheme.onSurface,
-                    side: BorderSide(color: Theme.of(context).colorScheme.onSurface, width: 0.5),
-                    backgroundColor: Theme.of(context).brightness == Brightness.light
-                        ? Colors.white.withOpacity(0.5)
-                        : Colors.black.withOpacity(0.5),
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+                    side: BorderSide(
+                        color: Theme.of(context).colorScheme.onSurface,
+                        width: 0.5),
+                    backgroundColor:
+                        Theme.of(context).brightness == Brightness.light
+                            ? Colors.white.withOpacity(0.5)
+                            : Colors.black.withOpacity(0.5),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(24)),
                     minimumSize: const Size(0, 36),
                   ),
                   child: const Text(
@@ -372,20 +404,29 @@ class _HeroBannerSectionState extends State<HeroBannerSection> {
               children: [
                 Text(
                   'CHẠM ĐẾN TƯƠNG LAI\nTHIẾT BỊ ĐỈNH CAO',
-                  style: TextStyle(fontSize: 22, fontWeight: FontWeight.w700, height: 1.15, color: Theme.of(context).colorScheme.onSurface),
+                  style: TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.w700,
+                      height: 1.15,
+                      color: Theme.of(context).colorScheme.onSurface),
                 ),
                 const SizedBox(height: 8),
                 Text(
                   'Ưu đãi và sản phẩm mới nhất đang chờ bạn khám phá.',
-                  style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.onSurface, height: 1.4),
+                  style: TextStyle(
+                      fontSize: 12,
+                      color: Theme.of(context).colorScheme.onSurface,
+                      height: 1.4),
                 ),
                 const SizedBox(height: 14),
                 ElevatedButton(
                   onPressed: widget.onShopNow,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFFF97316),
-                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 24, vertical: 10),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(6)),
                   ),
                   child: const Text(
                     'KHÁM PHÁ NGAY',
@@ -412,10 +453,11 @@ class HeroBannerMarquee extends StatefulWidget {
   State<HeroBannerMarquee> createState() => _HeroBannerMarqueeState();
 }
 
-class _HeroBannerMarqueeState extends State<HeroBannerMarquee> with SingleTickerProviderStateMixin {
+class _HeroBannerMarqueeState extends State<HeroBannerMarquee>
+    with SingleTickerProviderStateMixin {
   final ScrollController _scrollController = ScrollController();
   late Ticker _ticker;
-  
+
   final List<Map<String, dynamic>> _features = [
     {
       'icon': Icons.verified_user,
@@ -435,7 +477,8 @@ class _HeroBannerMarqueeState extends State<HeroBannerMarquee> with SingleTicker
     },
     {
       'icon': Icons.autorenew,
-      'text': "Thủ tục linh hoạt, hỗ trợ 1 đổi 1 khi phát sinh lỗi. Đổi trả dễ dàng"
+      'text':
+          "Thủ tục linh hoạt, hỗ trợ 1 đổi 1 khi phát sinh lỗi. Đổi trả dễ dàng"
     }
   ];
 
@@ -469,7 +512,7 @@ class _HeroBannerMarqueeState extends State<HeroBannerMarquee> with SingleTicker
         scrollDirection: Axis.horizontal,
         physics: const NeverScrollableScrollPhysics(), // Only auto scroll
         // Providing a very large number simulates infinite scrolling easily
-        itemCount: 10000, 
+        itemCount: 10000,
         itemBuilder: (context, index) {
           final feature = _features[index % _features.length];
           return Container(
@@ -500,4 +543,3 @@ class _HeroBannerMarqueeState extends State<HeroBannerMarquee> with SingleTicker
     );
   }
 }
-
