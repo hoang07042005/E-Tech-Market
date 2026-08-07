@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
-\restrict o62b7obq2DzJGqX3fk5NRcAcsc9IbJG3tEHHbK2fMYFmGB1017jJdEShcjRieLy
+\restrict vI46eSfbgqultInhdHJjaWxxdfIllEetw0h0UhEjmvJrem2B2QO5AsZcUeoez0y
 
 -- Dumped from database version 15.18
 -- Dumped by pg_dump version 15.18
@@ -1993,7 +1993,7 @@ CREATE TABLE public.users (
     id bigint NOT NULL,
     name character varying(255) NOT NULL,
     email character varying(255) NOT NULL,
-    password character varying(255) NOT NULL,
+    password character varying(255),
     phone character varying(30),
     address_line text,
     province character varying(100),
@@ -2012,7 +2012,10 @@ CREATE TABLE public.users (
     google2fa_secret character varying(100),
     google2fa_enabled boolean DEFAULT false,
     google_id character varying(255),
-    is_loyalty_member boolean DEFAULT false
+    is_loyalty_member boolean DEFAULT false,
+    is_locked boolean DEFAULT false NOT NULL,
+    reset_token character varying(255),
+    reset_token_expires_at timestamp(0) without time zone
 );
 
 
@@ -2596,6 +2599,7 @@ COPY public.carts (id, user_id, status, created_at, updated_at) FROM stdin;
 13	12	active	2026-07-06 10:06:55+00	2026-07-06 10:06:55+00
 14	10	active	2026-07-07 09:15:52+00	2026-07-07 09:15:52+00
 16	363	active	2026-07-29 11:15:58+00	2026-07-29 11:15:58+00
+17	364	active	2026-08-06 16:13:26+00	2026-08-06 16:13:26+00
 \.
 
 
@@ -2687,6 +2691,7 @@ COPY public.category_coupon (category_id, coupon_id) FROM stdin;
 
 COPY public.contact_messages (id, name, email, phone, subject, message, handled_at, handled_by_user_id, created_at, updated_at) FROM stdin;
 4	Nguyễn Văn An	nguyenvanan@gmail.com	0901 234 567	Hợp tác / Doanh nghiệp	Xin chào E-Tech Market,\n\nChúng tôi là đại diện của Công ty ABC, hiện đang quan tâm đến việc hợp tác phân phối các sản phẩm công nghệ và linh kiện máy tính.\n\nMong muốn được trao đổi thêm về chính sách đại lý, mức chiết khấu, quy trình nhập hàng và các chương trình hỗ trợ dành cho đối tác.\n\nVui lòng liên hệ với chúng tôi qua email hoặc số điện thoại trên để sắp xếp buổi trao đổi trong thời gian sớm nhất.\n\nXin cảm ơn!	2026-07-28 08:48:29+00	11	2026-07-08 15:39:54+00	2026-07-28 08:48:29+00
+5	Trần Văn Nghĩa	nghia123@etech.com	0987654321	Mở khóa tài khoản	Xin chào E-Tech Market,\n\nTôi hiện không thể đăng nhập vào tài khoản của mình mặc dù đã nhập đúng email và mật khẩu. Hệ thống thông báo tài khoản của tôi đã bị khóa.\n\nKính mong Quý cửa hàng kiểm tra nguyên nhân và hỗ trợ mở khóa tài khoản để tôi có thể tiếp tục sử dụng dịch vụ. Nếu cần cung cấp thêm thông tin để xác minh, vui lòng liên hệ với tôi qua email hoặc số điện thoại đã đăng ký.\n\nXin chân thành cảm ơn và mong sớm nhận được phản hồi từ Quý cửa hàng.	2026-08-07 08:38:51+00	11	2026-08-07 08:38:15+00	2026-08-07 08:38:51+00
 \.
 
 
@@ -3220,6 +3225,7 @@ COPY public.migrations (id, migration, batch) FROM stdin;
 71	2026_07_31_082821_add_other_types_to_wishlists_table	58
 73	2026_08_03_080058_create_trade_in_tables	59
 74	2026_08_06_112100_create_category_coupon_table	60
+75	2026_08_07_081431_add_lock_and_reset_fields_to_users_table	61
 \.
 
 
@@ -3271,6 +3277,7 @@ COPY public.model_has_roles (role_id, model_type, model_id) FROM stdin;
 64	App\\Models\\User	346
 65	App\\Models\\User	346
 60	App\\Models\\User	363
+60	App\\Models\\User	364
 \.
 
 
@@ -3329,6 +3336,8 @@ COPY public.notifications (id, user_id, type, title, body, data, read_at, create
 37	358	trade_in_new	Yêu cầu thu cũ đổi mới mới	Khách hàng Trần Văn Nghĩa vừa gửi yêu cầu định giá máy cũ (Tên máy: Redmi Note 15\r\nDung lượng: 128\r\nMàu sắc: đen\r\nTình trạng bảo hành: Hết bảo hành\r\nPhụ kiện đi kèm: sạc, hộp).	{"request_id": 7, "request_code": "TI3AZR7H3A"}	\N	2026-08-05 14:01:13+00	2026-08-05 14:01:13+00
 38	10	trade_in_new	Yêu cầu thu cũ đổi mới mới	Khách hàng Trần Văn Nghĩa vừa gửi yêu cầu định giá máy cũ (Tên máy: Redmi Note 15\r\nDung lượng: 128\r\nMàu sắc: đen\r\nTình trạng bảo hành: Hết bảo hành\r\nPhụ kiện đi kèm: sạc, hộp).	{"request_id": 7, "request_code": "TI3AZR7H3A"}	\N	2026-08-05 14:01:13+00	2026-08-05 14:01:13+00
 39	11	trade_in_new	Yêu cầu thu cũ đổi mới mới	Khách hàng Trần Văn Nghĩa vừa gửi yêu cầu định giá máy cũ (Tên máy: Redmi Note 15\r\nDung lượng: 128\r\nMàu sắc: đen\r\nTình trạng bảo hành: Hết bảo hành\r\nPhụ kiện đi kèm: sạc, hộp).	{"request_id": 7, "request_code": "TI3AZR7H3A"}	\N	2026-08-05 14:01:13+00	2026-08-05 14:01:13+00
+40	358	contact_message	Liên hệ mới	Trần Văn Nghĩa • Mở khóa tài khoản • Xin chào E-Tech Market,\n\nTôi hiện không thể đăng nhập vào tài khoản của mình mặc dù đã nhập đúng email và mật khẩu. Hệ thống thông báo tài k	{"email": "nghia123@etech.com", "phone": "0987654321", "contact_message_id": 5}	\N	2026-08-07 08:38:15+00	2026-08-07 08:38:15+00
+41	11	contact_message	Liên hệ mới	Trần Văn Nghĩa • Mở khóa tài khoản • Xin chào E-Tech Market,\n\nTôi hiện không thể đăng nhập vào tài khoản của mình mặc dù đã nhập đúng email và mật khẩu. Hệ thống thông báo tài k	{"email": "nghia123@etech.com", "phone": "0987654321", "contact_message_id": 5}	\N	2026-08-07 08:38:15+00	2026-08-07 08:38:15+00
 \.
 
 
@@ -3606,42 +3615,44 @@ COPY public.personal_access_tokens (id, tokenable_type, tokenable_id, name, toke
 75	App\\Models\\User	2	auth_token	74b1c8a9e2a680f8e941f3c48029a6d593915d714422d56d06c95033032d65d6	["*"]	2026-05-19 10:49:34	2026-05-20 10:37:00	2026-05-19 10:37:00	2026-05-19 10:49:34
 85	App\\Models\\User	344	auth_token	ed6c2d9525a6f189db0f3011cdd37973788bf13a83feb7bcd7a418a8ab330fbc	["*"]	2026-05-20 10:23:09	2026-05-21 08:40:08	2026-05-20 08:40:08	2026-05-20 10:23:09
 146	App\\Models\\User	346	auth_token	b5e98f80921b72043221ce73a61032368e8536334f0900781a395012941f5649	["*"]	2026-06-11 11:01:17	2026-06-12 11:01:15	2026-06-11 11:01:15	2026-06-11 11:01:17
+420	App\\Models\\User	11	E-Tech App • Dart/3.6 (dart:io)	5ec652f2d96b16df0a02e22682c0e67297bdb5e24e2c072e6f9bdf86402e62f3	["*"]	2026-08-07 08:58:01	2026-08-08 08:57:57	2026-08-07 08:57:57	2026-08-07 08:58:01
+426	App\\Models\\User	363	E-Tech App • Dart/3.6 (dart:io)	3f20c82ea2ca906a2546bb8908d49272e4a7f89e5e2496a94e001609fca21d37	["*"]	\N	2026-08-08 09:17:35	2026-08-07 09:17:35	2026-08-07 09:17:35
+418	App\\Models\\User	358	E-Tech App • Mozilla/5.0 (Windows NT; Windows NT 10.0; en-US) WindowsPowerShell/5.1.26100.8972	e598a6b4a7910071b7e09df4fbdbd366a40b8fafececc5deebe3b967a04783c0	["*"]	\N	2026-08-08 08:56:18	2026-08-07 08:56:18	2026-08-07 08:56:18
 100	App\\Models\\User	347	auth_token	f188076521ef4d6a535fd5d448f5938e9c1b557473e290b8e9174848eb4c6ea8	["*"]	\N	2026-06-02 14:05:34	2026-06-01 14:05:34	2026-06-01 14:05:34
 101	App\\Models\\User	347	auth_token	47715868f46056b86c4ebd92fa5477d5e08d55386ff0482061ec3721ab9d5e60	["*"]	\N	2026-06-02 14:06:10	2026-06-01 14:06:10	2026-06-01 14:06:10
+412	App\\Models\\User	11	Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 Edg/151.0.0.0	a5ee10a7669db6edd1d0dbe6dcaf616e0014725fab9dab59b60c6c3391c587cf	["*"]	2026-08-07 09:34:18	2026-08-08 08:12:27	2026-08-07 08:12:27	2026-08-07 09:34:18
 156	App\\Models\\User	346	auth_token	bb6e8cb8586bae53edd6acca6b23c6b29fd45f0c2747e19f93343a41b9ab794d	["*"]	2026-06-12 14:32:17	2026-06-13 14:26:59	2026-06-12 14:26:59	2026-06-12 14:32:17
 102	App\\Models\\User	17	auth_token	f5a1e668f753b3b3f7cf8b5028555463f4925b1a9ae9948be07e84993fc36e9d	["*"]	\N	2026-06-02 15:58:47	2026-06-01 15:58:47	2026-06-01 15:58:47
 122	App\\Models\\User	17	auth_token	9f2c1a84a9f6a95aa804f58813fb648103fd5437f5a1c22d2797c071608ab902	["*"]	2026-06-04 16:35:19	2026-06-05 16:35:17	2026-06-04 16:35:17	2026-06-04 16:35:19
 124	App\\Models\\User	17	auth_token	ed1aba4550e784ac905098a9537d33b1b7b94a11599f5368ea3be048a272d190	["*"]	2026-06-04 16:35:48	2026-06-05 16:35:47	2026-06-04 16:35:47	2026-06-04 16:35:48
 112	App\\Models\\User	347	auth_token	dfa30585a2befb6ffbd208d7f341eeedfaeac5e802b07d9fbe19ee4b5993aee0	["*"]	2026-06-04 14:14:13	2026-06-05 08:47:49	2026-06-04 08:47:49	2026-06-04 14:14:13
+419	App\\Models\\User	363	E-Tech App • Dart/3.6 (dart:io)	a0b4e8f35771e2cc427aa9cfda670c6e081a4654dd763527faed6f86ff793eae	["*"]	2026-08-07 08:57:37	2026-08-08 08:56:47	2026-08-07 08:56:47	2026-08-07 08:57:37
+421	App\\Models\\User	11	E-Tech App • Dart/3.6 (dart:io)	a6ebc022be53cbe1390b209cc38328510a7bce0d3b602a16ebb1aafa101fc56c	["*"]	\N	2026-08-08 09:12:21	2026-08-07 09:12:21	2026-08-07 09:12:21
 141	App\\Models\\User	346	auth_token	3ec9fb5f6f9730646da4e0fb60c47650bd949c395b5fda4811252bc9ead87a6b	["*"]	2026-06-11 10:56:33	2026-06-12 10:52:06	2026-06-11 10:52:06	2026-06-11 10:56:33
 135	App\\Models\\User	346	auth_token	ac65513f1fb05033d79bc42196e7a73bf91cc5d90de06510d22cc19bda1911b4	["*"]	2026-06-10 10:38:42	2026-06-11 09:26:52	2026-06-10 09:26:52	2026-06-10 10:38:42
 105	App\\Models\\User	347	auth_token	ad11005e8ebbaa764d67aff3a98fe1b4f336dbb5e3a61737bbb4f763336fa76e	["*"]	2026-06-02 09:38:28	2026-06-03 09:35:51	2026-06-02 09:35:51	2026-06-02 09:38:28
 106	App\\Models\\User	347	auth_token	7a22f24202b31d0c1b3c084da0eb3e9f9f7de78e3577d268130babe7de44b5d7	["*"]	\N	2026-06-03 09:38:58	2026-06-02 09:38:58	2026-06-02 09:38:58
+427	App\\Models\\User	363	E-Tech App • Dart/3.6 (dart:io)	78082c269157980a83df02cc4471419c49e5700b606e981aeda3f7e84c1e4913	["*"]	2026-08-07 09:20:12	2026-08-08 09:18:10	2026-08-07 09:18:10	2026-08-07 09:20:12
 185	App\\Models\\User	350	auth_token	6f3062ae137d3f6217e68d9aa90e6688bb9a5d3172e7e714422eeb323ceac13d	["*"]	\N	2026-06-19 08:25:30	2026-06-18 08:25:30	2026-06-18 08:25:30
 410	App\\Models\\User	346	PostmanRuntime/7.56.0	3dc13c0bd5a9c65e815d8296c40ad50c118dd0e69c155d993f180dde45cd6e61	["*"]	2026-08-06 15:40:12	2026-08-07 15:39:56	2026-08-06 15:39:56	2026-08-06 15:40:12
+414	App\\Models\\User	363	Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 Edg/151.0.0.0	4edb2696283959c6214ca54ed832f9edf0dc3e20992e77def5ca95940a7096aa	["*"]	\N	2026-08-08 08:40:04	2026-08-07 08:40:04	2026-08-07 08:40:04
+422	App\\Models\\User	363	E-Tech App • Dart/3.6 (dart:io)	f520569d7d592e90a82264697f82e2eea4a85789b72b1760ba22776b72a9b090	["*"]	\N	2026-08-08 09:12:55	2026-08-07 09:12:55	2026-08-07 09:12:55
 222	App\\Models\\User	346	auth	e3c4ab226f9121cb853c4a8ac5f636e1065856f75f6fee38463884557a16ee95	["*"]	2026-06-18 16:05:01	2026-06-19 16:04:55	2026-06-18 16:04:55	2026-06-18 16:05:01
 227	App\\Models\\User	346	auth	4b0c138d5a723636cdf1c55080787441216a1dea42efe04933cea624fb30c561	["*"]	2026-06-19 15:11:09	2026-06-20 13:59:22	2026-06-19 13:59:22	2026-06-19 15:11:09
-226	App\\Models\\User	353	auth	ef0ed857e4297cdacf5c87a594d3bc3d013e1d37990efb6d20519545dc0c943e	["*"]	2026-06-19 11:40:35	2026-06-20 10:46:29	2026-06-19 10:46:29	2026-06-19 11:40:35
-238	App\\Models\\User	353	auth	c4fe73469e06a373905aa53636285a84483f00d80e48a0a436dfebbc495f0e0e	["*"]	2026-06-22 09:37:20	2026-06-23 09:24:26	2026-06-22 09:24:26	2026-06-22 09:37:20
-236	App\\Models\\User	353	auth	37dc7909ef9aea08cf2b98c8802d080d80da81ebf39e12c665e2f8365d24a1d1	["*"]	2026-06-22 11:49:30	2026-06-23 08:36:10	2026-06-22 08:36:10	2026-06-22 11:49:30
-240	App\\Models\\User	353	auth	e80f1d14ce870939f3da3d3eafd84cae4ac9c2b9e6b1caacf14f3ce5adf66e4a	["*"]	2026-06-22 14:58:19	2026-06-23 09:39:03	2026-06-22 09:39:03	2026-06-22 14:58:19
 245	App\\Models\\User	346	auth	ed904fe25d7c51e276eb82a249cffd28a99e609b2e3d0329195257ff9d180e01	["*"]	2026-06-22 15:25:51	2026-06-23 15:22:26	2026-06-22 15:22:26	2026-06-22 15:25:51
 261	App\\Models\\User	346	auth	03af7ec3877259768ebcd2985014ccf90a80ad10b2d41036955ddb98de15e025	["*"]	2026-06-29 16:22:15	2026-06-30 14:54:14	2026-06-29 14:54:14	2026-06-29 16:22:15
 270	App\\Models\\User	354	auth	01299b1f66183a9f066696b2039330785c756e79de30cf52f3291cae729f3336	["*"]	2026-06-30 09:29:13	2026-07-01 08:58:28	2026-06-30 08:58:28	2026-06-30 09:29:13
 273	App\\Models\\User	354	auth	6a96e15d71610f5e185fa7806c3f9b3efda9a778d67ca68578e0e30e6438d1ad	["*"]	2026-06-30 11:12:00	2026-07-01 09:38:49	2026-06-30 09:38:49	2026-06-30 11:12:00
 267	App\\Models\\User	354	auth	8f9b54d1f4b1de8e861c28ca909a41d46d6bad753b15c4a74336d66653e80ab6	["*"]	2026-06-30 09:24:39	2026-07-01 08:35:32	2026-06-30 08:35:32	2026-06-30 09:24:39
 251	App\\Models\\User	346	auth	f224326242d332ad8041cf007411e1b58b5ecf2b346dc5d1703afa77f2f200dc	["*"]	2026-06-24 11:18:55	2026-06-25 11:18:38	2026-06-24 11:18:38	2026-06-24 11:18:55
-246	App\\Models\\User	353	auth	37093899c9ff5e3d9ef13daab0f8ee4ce622817ef871697383fbc337df7a8dc7	["*"]	2026-06-22 17:11:24	2026-06-23 17:10:43	2026-06-22 17:10:43	2026-06-22 17:11:24
+423	App\\Models\\User	363	E-Tech App • Dart/3.6 (dart:io)	bcc0628f904b01a0313a30313c4c4663f4af2861f4ba663ba0200f28153b3d17	["*"]	\N	2026-08-08 09:12:56	2026-08-07 09:12:56	2026-08-07 09:12:56
 272	App\\Models\\User	354	auth	380e9ec6d51ac17cfbb0ee836e4a5ec3c3b551dd96b39cf65c8b6eeeb48e94ef	["*"]	2026-06-30 09:44:01	2026-07-01 09:30:55	2026-06-30 09:30:55	2026-06-30 09:44:01
 316	App\\Models\\User	350	auth	091f5a922fd754a7bf6e945d2c47e690f34130f8643996e1be4bfc1e5ed8bf8f	["*"]	\N	2026-07-11 14:18:50	2026-07-10 14:18:50	2026-07-10 14:18:50
 281	App\\Models\\User	346	auth	9d7747c6a11beebae64a04d69e501e15fbbfd0ad130f39f56e2acdee06869c9e	["*"]	2026-07-02 12:01:43	2026-07-03 09:22:30	2026-07-02 09:22:30	2026-07-02 12:01:43
 292	App\\Models\\User	346	auth	0d2e1f98e53518516bc649468f1228061f4530b8ee1154c9978e668f0a427966	["*"]	2026-07-06 10:58:30	2026-07-07 10:58:23	2026-07-06 10:58:23	2026-07-06 10:58:30
 285	App\\Models\\User	346	auth	418a23075371722ee2267bf72e6aa28b749220bab17ecf11f47f1dbdb0ec1725	["*"]	2026-07-03 15:28:49	2026-07-04 13:57:28	2026-07-03 13:57:28	2026-07-03 15:28:49
-283	App\\Models\\User	353	auth	76164a55ef6bafada8926142fa1f4c71a2d15c8d1e0413ce166ad6eafb33782a	["*"]	2026-07-03 13:21:57	2026-07-04 08:29:36	2026-07-03 08:29:36	2026-07-03 13:21:57
 296	App\\Models\\User	346	auth	218ad1a87fe70ce57cdf52f77b6a5730333399e5f60c6d8d2632bf73f16ad292	["*"]	2026-07-06 16:12:11	2026-07-07 14:59:19	2026-07-06 14:59:19	2026-07-06 16:12:11
-297	App\\Models\\User	353	auth	73ea0828363ca5332011ed1c4bb13e3f9c3959e07f476f3e6cc8e5658c507e22	["*"]	2026-07-07 08:58:17	2026-07-07 17:04:28	2026-07-06 17:04:28	2026-07-07 08:58:17
 293	App\\Models\\User	346	auth	9882654ea91426860c1f6d9ebf651f81c0c662b58038fc26ed80c23ad82d3320	["*"]	2026-07-06 11:12:36	2026-07-07 11:06:53	2026-07-06 11:06:53	2026-07-06 11:12:36
-299	App\\Models\\User	353	auth	4a1e80d29d809fb62999b92ab321ce72914512b109c3aac320df4906797483f9	["*"]	2026-07-07 14:24:09	2026-07-08 08:58:41	2026-07-07 08:58:41	2026-07-07 14:24:09
 314	App\\Models\\User	355	auth	c2cc497d8e0db46d23d6d5b45e262314213b8904f91a851c0acebd07f76d11b0	["*"]	\N	2026-07-11 14:16:49	2026-07-10 14:16:49	2026-07-10 14:16:49
 313	App\\Models\\User	346	auth	2b61d05502b1624e7d68040b84f6228c94046ad4bbd3924eaae2ec0f19f5cd76	["*"]	2026-07-10 13:57:36	2026-07-11 13:54:25	2026-07-10 13:54:25	2026-07-10 13:57:36
 317	App\\Models\\User	350	auth	9eba394bc02afbfafbf1e56523226714c20914486ba644124996745563c530be	["*"]	\N	2026-07-11 14:20:32	2026-07-10 14:20:32	2026-07-10 14:20:32
@@ -3659,24 +3670,14 @@ COPY public.personal_access_tokens (id, tokenable_type, tokenable_id, name, toke
 329	App\\Models\\User	357	auth	e187eb22db9e1813bd8256a9dcdc4a110bc476e36a85be6b36c4d04ef4ecc052	["*"]	2026-07-10 16:25:01	2026-07-11 16:24:55	2026-07-10 16:24:55	2026-07-10 16:25:01
 333	App\\Models\\User	350	auth	ad33509445deb03d6eb1d619714479b93e2faf3e43e4084218cbbd67f914d040	["*"]	2026-07-10 16:31:52	2026-07-11 16:31:44	2026-07-10 16:31:44	2026-07-10 16:31:52
 330	App\\Models\\User	357	auth	6553521c53472f7fdb966c63f10bebf8acd628baf637cfc171d1607e95d28e56	["*"]	2026-07-10 16:26:38	2026-07-11 16:25:23	2026-07-10 16:25:23	2026-07-10 16:26:38
-376	App\\Models\\User	363	auth	7ba402b6b0fcc262d90a9814e98c65d3616d46897ecaf733b919fbd8d1287715	["*"]	2026-07-29 16:56:37	2026-07-30 16:23:15	2026-07-29 16:23:15	2026-07-29 16:56:37
-366	App\\Models\\User	363	auth	970d0189d6249622e443061d2c7f18f0224ee477e7ba41dc18ec9ed194094fd5	["*"]	2026-07-29 13:57:16	2026-07-30 13:54:58	2026-07-29 13:54:58	2026-07-29 13:57:16
+424	App\\Models\\User	363	E-Tech App • Dart/3.6 (dart:io)	3cd24e0fba4b950613b947038d2a73585d60dd2ea799eed4e19edbe4a4a1fda2	["*"]	\N	2026-08-08 09:12:57	2026-08-07 09:12:57	2026-08-07 09:12:57
+416	App\\Models\\User	363	Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 Edg/151.0.0.0	7d7827a37e3087c8614a7a0cccac7e3e3a18938229d8cd00a8d6873dfb4f0adb	["*"]	2026-08-07 09:35:15	2026-08-08 08:50:19	2026-08-07 08:50:19	2026-08-07 09:35:15
 354	App\\Models\\User	10	auth	028aaa96e8dccca7c654c7f5cd2778eaba5891fa7bb8b176ddb2d51865b764d1	["*"]	2026-07-28 13:30:45	2026-07-29 11:26:56	2026-07-28 11:26:56	2026-07-28 13:30:45
-385	App\\Models\\User	363	auth	be2bbaa899484c7a455426253ff7b4664d0d757eb9788a545000cf4ce03caea2	["*"]	2026-08-03 16:18:23	2026-08-04 15:59:02	2026-08-03 15:59:02	2026-08-03 16:18:23
 347	App\\Models\\User	346	auth	2ee468922abe00775b2b1e5f8ec7dabe85052d31a02a497c07ccde26c3489290	["*"]	2026-07-24 16:09:07	2026-07-25 16:08:04	2026-07-24 16:08:04	2026-07-24 16:09:07
-358	App\\Models\\User	363	auth	f3535176377dcc5bc88b0a4705291de294eef2a0d8289506fd3e0458f5cc0279	["*"]	2026-07-29 11:16:13	2026-07-30 11:15:56	2026-07-29 11:15:56	2026-07-29 11:16:13
-360	App\\Models\\User	363	auth	ac8799159a029580201942c4ab0f06eaf7ed928b6b858f1c15c44c68b8ee204a	["*"]	2026-07-29 12:51:44	2026-07-30 11:16:41	2026-07-29 11:16:41	2026-07-29 12:51:44
-364	App\\Models\\User	363	auth	5f2ce287a702a0ba4c72a51dadd8c60cb1f232c645e881c70db4ef85a5820bcd	["*"]	2026-07-29 14:55:00	2026-07-30 13:51:27	2026-07-29 13:51:27	2026-07-29 14:55:00
-365	App\\Models\\User	363	auth	c7a95c7fee96a05fda9cf91609cfd062e8198c10435a000d4c33ff71f9cf4be4	["*"]	\N	2026-07-30 13:51:49	2026-07-29 13:51:49	2026-07-29 13:51:49
-371	App\\Models\\User	363	auth	930ddcc268682c13e43079e660fb19fe187ccb16e88e0dad09a6eb5508f4c3a5	["*"]	2026-07-29 15:32:25	2026-07-30 15:28:50	2026-07-29 15:28:50	2026-07-29 15:32:25
-374	App\\Models\\User	363	auth	a8bf60ac06c89a4241dc4b66f3c485f198cced2fcc6e4370f0ac31738f4d6fb9	["*"]	2026-07-29 16:08:05	2026-07-30 15:57:44	2026-07-29 15:57:44	2026-07-29 16:08:05
-372	App\\Models\\User	363	auth	36a0ce863195bc02feb62ba15cc5bdf6d9fb2d194a2b7cd508de3eeeaa599db1	["*"]	2026-07-29 15:39:28	2026-07-30 15:34:10	2026-07-29 15:34:10	2026-07-29 15:39:28
-386	App\\Models\\User	363	auth	c126abc8086b662455e20711b0e2a887867a1bfa84f8bad11aefacaa34e35992	["*"]	2026-08-03 17:25:03	2026-08-04 16:33:19	2026-08-03 16:33:19	2026-08-03 17:25:03
 393	App\\Models\\User	346	auth	4110662187f5407819765ca9ad4141d9c17ea3aebafadb2ad631bea3d3ad06ed	["*"]	2026-08-04 10:17:14	2026-08-05 10:16:17	2026-08-04 10:16:17	2026-08-04 10:17:14
-400	App\\Models\\User	363	auth	7717eb1b6c8f1881d50552edd68125452e1a06ac524e856f80749e6e82bab8e2	["*"]	2026-08-05 16:48:08	2026-08-06 13:32:19	2026-08-05 13:32:19	2026-08-05 16:48:08
-401	App\\Models\\User	363	auth	70ee64f1307111d97df75635e1078fbdca9bf8458daa69b52db134fe9ce10253	["*"]	2026-08-05 15:26:29	2026-08-06 13:37:29	2026-08-05 13:37:29	2026-08-05 15:26:29
-405	App\\Models\\User	11	auth	c46af746149b89c116d35155c0bffea82be3f3f60fa6779192551a7295aa35da	["*"]	2026-08-06 16:08:17	2026-08-07 08:13:03	2026-08-06 08:13:03	2026-08-06 16:08:17
-407	App\\Models\\User	11	E-Tech App • Dart/3.6 (dart:io)	5d53cace40292405827bd92305fc110a9278111242531ad721c252d23a488e09	["*"]	2026-08-06 10:04:43	2026-08-07 09:51:25	2026-08-06 09:51:25	2026-08-06 10:04:43
+425	App\\Models\\User	358	E-Tech App • Dart/3.6 (dart:io)	77970483995753c2473c6111286e50d04c8c66f6443f67a66551d35598e18e78	["*"]	\N	2026-08-08 09:14:18	2026-08-07 09:14:18	2026-08-07 09:14:18
+407	App\\Models\\User	11	E-Tech App • Dart/3.6 (dart:io)	5d53cace40292405827bd92305fc110a9278111242531ad721c252d23a488e09	["*"]	2026-08-07 08:44:15	2026-08-07 09:51:25	2026-08-06 09:51:25	2026-08-07 08:44:15
+417	App\\Models\\User	358	E-Tech App • Symfony	6637e584c400989e8462bff5d4a04d40ca25f569874c9893ada6be55a6e6afd4	["*"]	\N	2026-08-08 08:55:31	2026-08-07 08:55:31	2026-08-07 08:55:31
 403	App\\Models\\User	11	auth	9bcc912e633889e4ec58fbe4ea0631d5c70da5a1cc9cc2264963e0960bb19a49	["*"]	2026-08-05 17:30:02	2026-08-06 17:25:36	2026-08-05 17:25:36	2026-08-05 17:30:02
 402	App\\Models\\User	11	auth	28c9338e7c9111dbe48ebf8a10c4395787251497762b756013c3f735e7485afc	["*"]	2026-08-06 09:50:33	2026-08-06 15:26:56	2026-08-05 15:26:56	2026-08-06 09:50:33
 \.
@@ -6432,24 +6433,25 @@ COPY public.user_coupons (id, user_id, coupon_id, created_at, updated_at) FROM s
 -- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.users (id, name, email, password, phone, address_line, province, district, ward, is_active, email_verified_at, remember_token, created_at, updated_at, deleted_at, avatar_url, current_points, total_spent, rank_id, google2fa_secret, google2fa_enabled, google_id, is_loyalty_member) FROM stdin;
-73	?�í Vi�?t Hoñng	doviethoang07042005@gmail.com	$2y$12$b24R0tVlcJVHgpt77jNd4.EObcQACoG6.fH6845Mxdma03/KhOHYy	\N	\N	\N	\N	\N	t	2026-05-21 16:30:37+00	\N	2026-05-21 16:30:37+00	2026-07-29 11:12:50+00	\N	https://lh3.googleusercontent.com/a/ACg8ocLbwb5cfjn47mo39bVnxEq_tUoO2gHj4xtct3dMfjsWPfCg6T_O=s96-c	0	0.00	\N	\N	f	\N	t
-352	Nguy�?n Ti�? Ph?t	tienphat@gmail.com	$2y$12$W/1qS9yG8SLy8r7ZCrJRrO/E58kYy9Gnw2XJS01ldouIoOpuzqTpi	\N	\N	\N	\N	\N	t	\N	\N	2026-06-18 14:28:54+00	2026-07-29 11:12:50+00	\N	\N	0	0.00	\N	\N	f	\N	t
-346	Nguyễn Văn An	annguyen@etech.com	$2y$12$KxPzihkh5WsGLppd9nWGxeUZ9pbsd5FmKUG.4mDWrrn6QVPtFtK7.	1234567890	123	126	125	124	t	\N	Erj06Qdfod6U2PKO9fFyugz8tAcc7li3DLsJxNSquaruj4DoPQfYaNtHwsNT	2026-06-01 10:18:54+00	2026-07-29 11:12:50+00	\N	http://nginx:8000/storage/avatars/FBHOSctwyzE2c6uEvdjHKSo0gphQ4fWcuiMGCMsy.png	29	2990000.00	1	\N	f	\N	t
-12	Trần Văn Tuấn	tuantran5448@gmail.com	$2y$12$Y6kLOAm0qT7OeaFpKuti3ux4Ny.2oKNYNSjpPbKlL8aWTw/5yR8eK	0973124568	\N	\N	\N	\N	t	\N	pFnPQGgYGnZFPM3lglqtYCRzJaQJPGOrbmtUtiOxKltOymHHToWsbY2k79qC	2026-05-07 01:54:44+00	2026-07-29 11:12:50+00	\N	\N	0	0.00	\N	\N	f	\N	t
-353	Tiến Nguyễn	tiennguyen@gmail.com	$2y$12$oMcl.duPJaHbHgk4BxXJreZlMp1Z9gWo247kRbMMhFB5KpIovlPv6	1234567890	123	123	123	123	t	\N	\N	2026-06-18 15:10:43+00	2026-07-29 11:12:50+00	\N	http://nginx:8000/storage/avatars/YNZ0RGbd7p9Jg30qktatLLMEjV0CAoNZis6q51V7.png	149	14990000.00	2	\N	f	\N	t
-341	Nguyễn Tiến Thành	thanhnguyen@tech.com	$2y$12$lJv8zUr2wHjLmafzVWPdx.L0wfqukFX62CozAenFjKKLU/RurGIuu	0987654321	123	126	125	124	t	\N	\N	2026-05-19 11:19:55+00	2026-07-29 11:12:50+00	\N	\N	0	0.00	\N	\N	f	\N	t
-347	Phạm Văn Kiên	kienpham@gmail.com	$2y$12$d01EFeH2SPS/OpTT4RkvRecuBx6LD./xmxFez1/VKXA/e2GAf2nxy	1234567890	123	123	123	123	t	\N	\N	2026-06-01 14:05:34+00	2026-07-29 11:12:50+00	\N	http://localhost:8000/storage/avatars/deYycJN7c4wq3zepPI6XFEYv6ruEIbQHN6oyQy6l.jpg	0	0.00	\N	\N	f	\N	t
-18	do hoang	do7509243@gmail.com	$2y$12$l5M5N.l19xW2f8NRs/xmM.SrBjY31hyg4YH3h5cxa823PAvs1Vmxy	\N	\N	\N	\N	\N	t	2026-05-12 09:41:10+00	\N	2026-05-12 09:41:10+00	2026-07-29 11:12:50+00	\N	https://lh3.googleusercontent.com/a/ACg8ocKZ_4Rs0Br3-LHDQxKD_716cNGreG2ZwMZSsDRJFKY64_Q6KA=s96-c	0	0.00	\N	\N	f	107066343840035406585	t
-17	viet hoang	viethoang7425@gmail.com	$2y$12$uPgIB4MMEkLjmr08DWcs6u8kLeA.bX5UAu0QgVyGewJDQeTyQHInC	0945612378	123	126	125	124	t	2026-05-12 09:40:23+00	\N	2026-05-12 09:40:23+00	2026-07-29 11:12:50+00	\N	http://localhost:8000/storage/avatars/lloZDVwg8cmuymdOfKd4o4ZqwPP96lzLyV7lOgq5.webp	375	37570000.00	2	\N	f	114585305248866029315	t
-358	Admin	admin@etech.com	$2y$12$WtXwHAYFl4JH4viq2z3kRO0hiApgc3dx5Jfh7NquPzzJW8sHW00Ga	0123456789	\N	\N	\N	\N	t	2026-07-24 13:39:54+00	\N	2026-07-24 13:39:54+00	2026-07-29 11:12:50+00	\N	\N	0	0.00	\N	\N	f	\N	t
-359	Shop Manager	shop@etech.com	$2y$12$nL/DyGdF08P4876FqoJ4RO6QLwW3Fe4yiiwe8.ofzOe7iD2GqzZYS	0123456788	\N	\N	\N	\N	t	2026-07-24 13:39:54+00	\N	2026-07-24 13:39:54+00	2026-07-29 11:12:50+00	\N	\N	0	0.00	\N	\N	f	\N	t
-360	Delivery Staff	delivery@etech.com	$2y$12$.GukH5UGJHk01jmNP9YMfe.TEx1Inv5z1Eh8gqqDv/wqEr1H89DJi	0123456799	\N	\N	\N	\N	t	2026-07-24 13:39:54+00	\N	2026-07-24 13:39:54+00	2026-07-29 11:12:50+00	\N	\N	0	0.00	\N	\N	f	\N	t
-361	Nguyễn Văn A	test@example.com	$2y$12$aDn9bbuMIfAQ19pGWnpmmutuXI9mYFpCpxLSCL9d0SD5TAbLixmpK	0123456787	12 Nguyễn Văn A	Hà Nội	Cầu Giấy	Dịch Vọng	t	2026-07-24 13:39:55+00	\N	2026-07-24 13:39:55+00	2026-07-29 11:12:50+00	\N	\N	500	0.00	\N	\N	f	\N	t
-362	Trần Thị B	customer@etech.com	$2y$12$RV6K5F3eBl4ILEDjaJ9M/.bONxePAyN94sfAEjqrwqw1XNwABpW8.	0901000002	56 Trần Phú	Hồ Chí Minh	Quận 1	Phường Bến Nghé	t	2026-07-24 13:39:55+00	\N	2026-07-24 13:39:55+00	2026-07-29 11:12:50+00	\N	\N	0	0.00	\N	\N	f	\N	t
-10	E-TECH MARKET	e_tech_market@gmail.com	$2y$12$kyJv3Ab5NxnG3vdRGERkTuvSIXcr/yxzv/VSdTAc.h.cmjuRdrMq2	1234567890	123	123	123	123	t	\N	pFxzbtRQblYjc6gnn1TsHcppYU7nIhXsZXcegr9Auu0URisQBtRGsgAebvt1	2026-05-03 20:47:01+00	2026-07-29 11:12:50+00	\N	http://nginx:8000/storage/avatars/mDUg5foUH0qYWvG9PCnujm2Q0d5qWA57IrIkQDLN.png	725	81628000.00	3	\N	f	\N	t
-363	Trần Văn Nghĩa	nghia123@etech.com	$2y$12$SPiZaxprdxeBE5PmlX942O1FKBqMQ4dScyrVoC/OVGgE5FSmxE9/i	0987654321	\N	\N	\N	\N	t	\N	\N	2026-07-29 11:15:56+00	2026-07-29 16:36:59+00	\N	http://nginx:8000/storage/avatars/5jG8A9QMztaYVj5XU9QJZsNfatHgW0PpruleTcnC.jpg	586	51890000.00	3	\N	f	\N	t
-11	Đỗ Việt Hoàng	doviethoang@gmail.com	$2y$12$HLzWuy3aXGq2XiZYhHu6WeYygw0NhpswnCjFHkrzNojtBa88gJjri	1234567890	Số 5, Ngõ 2, Kiều Mai	Thành Phố Hà Nội	Quận Nam Từ LIêm	Phường Xuân Phương	t	\N	wfvcetBndAWs4QKjPuFAs0N0XOeh02bILKHEf6lJhFzdEBi3mKW6IXnuvrLw	2026-05-04 23:18:01+00	2026-08-06 15:53:15+00	\N	http://localhost:8000/storage/avatars/hEe0GJE5XwMY09by9Vbwr5HrXez9gxWpdwIgBbWL.png	3721	333939000.00	4	\N	f	\N	t
+COPY public.users (id, name, email, password, phone, address_line, province, district, ward, is_active, email_verified_at, remember_token, created_at, updated_at, deleted_at, avatar_url, current_points, total_spent, rank_id, google2fa_secret, google2fa_enabled, google_id, is_loyalty_member, is_locked, reset_token, reset_token_expires_at) FROM stdin;
+73	?�í Vi�?t Hoñng	doviethoang07042005@gmail.com	$2y$12$b24R0tVlcJVHgpt77jNd4.EObcQACoG6.fH6845Mxdma03/KhOHYy	\N	\N	\N	\N	\N	t	2026-05-21 16:30:37+00	\N	2026-05-21 16:30:37+00	2026-07-29 11:12:50+00	\N	https://lh3.googleusercontent.com/a/ACg8ocLbwb5cfjn47mo39bVnxEq_tUoO2gHj4xtct3dMfjsWPfCg6T_O=s96-c	0	0.00	\N	\N	f	\N	t	f	\N	\N
+352	Nguy�?n Ti�? Ph?t	tienphat@gmail.com	$2y$12$W/1qS9yG8SLy8r7ZCrJRrO/E58kYy9Gnw2XJS01ldouIoOpuzqTpi	\N	\N	\N	\N	\N	t	\N	\N	2026-06-18 14:28:54+00	2026-07-29 11:12:50+00	\N	\N	0	0.00	\N	\N	f	\N	t	f	\N	\N
+346	Nguyễn Văn An	annguyen@etech.com	$2y$12$KxPzihkh5WsGLppd9nWGxeUZ9pbsd5FmKUG.4mDWrrn6QVPtFtK7.	1234567890	123	126	125	124	t	\N	Erj06Qdfod6U2PKO9fFyugz8tAcc7li3DLsJxNSquaruj4DoPQfYaNtHwsNT	2026-06-01 10:18:54+00	2026-07-29 11:12:50+00	\N	http://nginx:8000/storage/avatars/FBHOSctwyzE2c6uEvdjHKSo0gphQ4fWcuiMGCMsy.png	29	2990000.00	1	\N	f	\N	t	f	\N	\N
+12	Trần Văn Tuấn	tuantran5448@gmail.com	$2y$12$Y6kLOAm0qT7OeaFpKuti3ux4Ny.2oKNYNSjpPbKlL8aWTw/5yR8eK	0973124568	\N	\N	\N	\N	t	\N	pFnPQGgYGnZFPM3lglqtYCRzJaQJPGOrbmtUtiOxKltOymHHToWsbY2k79qC	2026-05-07 01:54:44+00	2026-07-29 11:12:50+00	\N	\N	0	0.00	\N	\N	f	\N	t	f	\N	\N
+341	Nguyễn Tiến Thành	thanhnguyen@tech.com	$2y$12$lJv8zUr2wHjLmafzVWPdx.L0wfqukFX62CozAenFjKKLU/RurGIuu	0987654321	123	126	125	124	t	\N	\N	2026-05-19 11:19:55+00	2026-07-29 11:12:50+00	\N	\N	0	0.00	\N	\N	f	\N	t	f	\N	\N
+347	Phạm Văn Kiên	kienpham@gmail.com	$2y$12$d01EFeH2SPS/OpTT4RkvRecuBx6LD./xmxFez1/VKXA/e2GAf2nxy	1234567890	123	123	123	123	t	\N	\N	2026-06-01 14:05:34+00	2026-07-29 11:12:50+00	\N	http://localhost:8000/storage/avatars/deYycJN7c4wq3zepPI6XFEYv6ruEIbQHN6oyQy6l.jpg	0	0.00	\N	\N	f	\N	t	f	\N	\N
+353	Tiến Nguyễn	tiennguyen@gmail.com	\N	1234567890	123	123	123	123	t	\N	\N	2026-06-18 15:10:43+00	2026-08-07 08:41:11+00	2026-08-07 08:41:11+00	http://nginx:8000/storage/avatars/YNZ0RGbd7p9Jg30qktatLLMEjV0CAoNZis6q51V7.png	149	14990000.00	2	\N	f	\N	t	f	93952e982803b1199c3c35389cbe261e36efe1b39ab8bf96327b2c15c7464fad	2026-08-07 08:55:48
+18	do hoang	do7509243@gmail.com	$2y$12$l5M5N.l19xW2f8NRs/xmM.SrBjY31hyg4YH3h5cxa823PAvs1Vmxy	\N	\N	\N	\N	\N	t	2026-05-12 09:41:10+00	\N	2026-05-12 09:41:10+00	2026-07-29 11:12:50+00	\N	https://lh3.googleusercontent.com/a/ACg8ocKZ_4Rs0Br3-LHDQxKD_716cNGreG2ZwMZSsDRJFKY64_Q6KA=s96-c	0	0.00	\N	\N	f	107066343840035406585	t	f	\N	\N
+17	viet hoang	viethoang7425@gmail.com	$2y$12$uPgIB4MMEkLjmr08DWcs6u8kLeA.bX5UAu0QgVyGewJDQeTyQHInC	0945612378	123	126	125	124	t	2026-05-12 09:40:23+00	\N	2026-05-12 09:40:23+00	2026-07-29 11:12:50+00	\N	http://localhost:8000/storage/avatars/lloZDVwg8cmuymdOfKd4o4ZqwPP96lzLyV7lOgq5.webp	375	37570000.00	2	\N	f	114585305248866029315	t	f	\N	\N
+359	Shop Manager	shop@etech.com	$2y$12$nL/DyGdF08P4876FqoJ4RO6QLwW3Fe4yiiwe8.ofzOe7iD2GqzZYS	0123456788	\N	\N	\N	\N	t	2026-07-24 13:39:54+00	\N	2026-07-24 13:39:54+00	2026-07-29 11:12:50+00	\N	\N	0	0.00	\N	\N	f	\N	t	f	\N	\N
+360	Delivery Staff	delivery@etech.com	$2y$12$.GukH5UGJHk01jmNP9YMfe.TEx1Inv5z1Eh8gqqDv/wqEr1H89DJi	0123456799	\N	\N	\N	\N	t	2026-07-24 13:39:54+00	\N	2026-07-24 13:39:54+00	2026-07-29 11:12:50+00	\N	\N	0	0.00	\N	\N	f	\N	t	f	\N	\N
+362	Trần Thị B	customer@etech.com	$2y$12$RV6K5F3eBl4ILEDjaJ9M/.bONxePAyN94sfAEjqrwqw1XNwABpW8.	0901000002	56 Trần Phú	Hồ Chí Minh	Quận 1	Phường Bến Nghé	t	2026-07-24 13:39:55+00	\N	2026-07-24 13:39:55+00	2026-07-29 11:12:50+00	\N	\N	0	0.00	\N	\N	f	\N	t	f	\N	\N
+10	E-TECH MARKET	e_tech_market@gmail.com	$2y$12$kyJv3Ab5NxnG3vdRGERkTuvSIXcr/yxzv/VSdTAc.h.cmjuRdrMq2	1234567890	123	123	123	123	t	\N	pFxzbtRQblYjc6gnn1TsHcppYU7nIhXsZXcegr9Auu0URisQBtRGsgAebvt1	2026-05-03 20:47:01+00	2026-07-29 11:12:50+00	\N	http://nginx:8000/storage/avatars/mDUg5foUH0qYWvG9PCnujm2Q0d5qWA57IrIkQDLN.png	725	81628000.00	3	\N	f	\N	t	f	\N	\N
+363	Trần Văn Nghĩa	nghia123@etech.com	$2y$12$0dDOd8EiGDTFOMsTGnHK2uAsG4M3ZnwrKK6e/g2XhRWpcHBJhJ/0.	0987654321	\N	\N	\N	\N	t	\N	\N	2026-07-29 11:15:56+00	2026-08-07 08:40:04+00	\N	http://nginx:8000/storage/avatars/5jG8A9QMztaYVj5XU9QJZsNfatHgW0PpruleTcnC.jpg	586	51890000.00	3	\N	f	\N	t	f	\N	\N
+361	Nguyễn Văn A	test@example.com	\N	0123456787	12 Nguyễn Văn A	Hà Nội	Cầu Giấy	Dịch Vọng	t	2026-07-24 13:39:55+00	\N	2026-07-24 13:39:55+00	2026-08-07 08:41:19+00	\N	\N	500	0.00	\N	\N	f	\N	t	t	\N	\N
+358	Admin	admin@etech.com	$2y$12$fs/9U3x0tzVyLQZY4eoTr.FLIsSGqQ4faPONFyvGbwai7E97heR2W	0123456789	\N	\N	\N	\N	t	2026-07-24 13:39:54+00	\N	2026-07-24 13:39:54+00	2026-08-07 08:55:30+00	\N	\N	0	0.00	\N	\N	f	\N	t	f	\N	\N
+11	Đỗ Việt Hoàng	doviethoang@gmail.com	$2y$12$HLzWuy3aXGq2XiZYhHu6WeYygw0NhpswnCjFHkrzNojtBa88gJjri	1234567890	Số 5, Ngõ 2, Kiều Mai	Thành Phố Hà Nội	Quận Nam Từ LIêm	Phường Xuân Phương	t	\N	wfvcetBndAWs4QKjPuFAs0N0XOeh02bILKHEf6lJhFzdEBi3mKW6IXnuvrLw	2026-05-04 23:18:01+00	2026-08-06 15:53:15+00	\N	http://localhost:8000/storage/avatars/hEe0GJE5XwMY09by9Vbwr5HrXez9gxWpdwIgBbWL.png	3721	333939000.00	4	\N	f	\N	t	f	\N	\N
+364	Viet Hoangdo	hoangdoviet347@gmail.com	$2y$12$8U2wTZTfw0prdG4XloVcJO5fcl2xhOeCvVQNjTf4e.3Aks3uFiRZK	\N	\N	\N	\N	\N	t	\N	\N	2026-08-06 16:13:24+00	2026-08-06 16:13:24+00	\N	https://lh3.googleusercontent.com/a/ACg8ocKNXTxhcIAqV7qw6by4NUHlmynW5-S6ou_fr5cLykq9PtnR2w=s96-c	0	0.00	1	\N	f	103167164374152767778	f	f	\N	\N
 \.
 
 
@@ -6551,7 +6553,7 @@ SELECT pg_catalog.setval('public.cart_items_id_seq', 188, true);
 -- Name: carts_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.carts_id_seq', 16, true);
+SELECT pg_catalog.setval('public.carts_id_seq', 17, true);
 
 
 --
@@ -6565,7 +6567,7 @@ SELECT pg_catalog.setval('public.categories_id_seq', 218, true);
 -- Name: contact_messages_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.contact_messages_id_seq', 4, true);
+SELECT pg_catalog.setval('public.contact_messages_id_seq', 5, true);
 
 
 --
@@ -6621,7 +6623,7 @@ SELECT pg_catalog.setval('public.inventory_transactions_id_seq', 348, true);
 -- Name: jobs_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.jobs_id_seq', 640, true);
+SELECT pg_catalog.setval('public.jobs_id_seq', 642, true);
 
 
 --
@@ -6635,7 +6637,7 @@ SELECT pg_catalog.setval('public.membership_ranks_id_seq', 4, true);
 -- Name: migrations_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.migrations_id_seq', 74, true);
+SELECT pg_catalog.setval('public.migrations_id_seq', 75, true);
 
 
 --
@@ -6649,7 +6651,7 @@ SELECT pg_catalog.setval('public.newsletter_subscriptions_id_seq', 33, true);
 -- Name: notifications_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.notifications_id_seq', 39, true);
+SELECT pg_catalog.setval('public.notifications_id_seq', 41, true);
 
 
 --
@@ -6698,7 +6700,7 @@ SELECT pg_catalog.setval('public.permissions_id_seq', 18, true);
 -- Name: personal_access_tokens_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.personal_access_tokens_id_seq', 410, true);
+SELECT pg_catalog.setval('public.personal_access_tokens_id_seq', 427, true);
 
 
 --
@@ -6824,7 +6826,7 @@ SELECT pg_catalog.setval('public.user_coupons_id_seq', 14, true);
 -- Name: users_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.users_id_seq', 363, true);
+SELECT pg_catalog.setval('public.users_id_seq', 364, true);
 
 
 --
@@ -8470,5 +8472,5 @@ REVOKE USAGE ON SCHEMA public FROM PUBLIC;
 -- PostgreSQL database dump complete
 --
 
-\unrestrict o62b7obq2DzJGqX3fk5NRcAcsc9IbJG3tEHHbK2fMYFmGB1017jJdEShcjRieLy
+\unrestrict vI46eSfbgqultInhdHJjaWxxdfIllEetw0h0UhEjmvJrem2B2QO5AsZcUeoez0y
 
