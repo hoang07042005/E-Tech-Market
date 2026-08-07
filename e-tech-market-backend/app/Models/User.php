@@ -66,6 +66,9 @@ class User extends Authenticatable implements MustVerifyEmail
         'total_spent',
         'rank_id',
         'google_id',
+        'is_locked',
+        'reset_token',
+        'reset_token_expires_at',
     ];
 
     /**
@@ -87,6 +90,8 @@ class User extends Authenticatable implements MustVerifyEmail
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
         'is_loyalty_member' => 'boolean',
+        'is_locked' => 'boolean',
+        'reset_token_expires_at' => 'datetime',
     ];
 
     public function carts(): HasOne

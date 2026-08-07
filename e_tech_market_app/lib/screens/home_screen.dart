@@ -482,7 +482,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _onTabSelected(int index) {
-    if ((index == 3 || index == 4) && _user == null) {
+    if (index == 3 && _user == null) {
       Navigator.push(
               context, MaterialPageRoute(builder: (_) => const LoginScreen()))
           .then((_) => _loadUser());
@@ -866,9 +866,15 @@ class _HomeScreenState extends State<HomeScreen> {
       case 3:
         return const OrderListScreen();
       case 4:
-        return _user == null
-            ? const Center(child: CircularProgressIndicator())
-            : AccountScreen(user: _user!, onLogout: _logout);
+        return AccountScreen(
+          user: _user,
+          onLogout: _logout,
+          onLogin: () {
+            Navigator.push(
+              context, MaterialPageRoute(builder: (_) => const LoginScreen())
+            ).then((_) => _loadUser());
+          },
+        );
       default:
         return const SizedBox.shrink();
     }

@@ -11,27 +11,47 @@ export default function ResetPasswordPage() {
 
   const token = searchParams.get('token') || ''
   const email = searchParams.get('email') || ''
+  const type = searchParams.get('type') || ''
 
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [loading, setLoading] = useState(false)
+  const [validating, setValidating] = useState(type === 'locked')
   const [done, setDone] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
+  useEffect(() => {
+    if (type !== 'locked' || !token || !email) return
+    const validateToken = async () => {
+      try {
+        await apiFetch('/api/auth/locked/validate-reset-token', {
+          method: 'POST',
+          body: JSON.stringify({ email, token }),
+        })
+      } catch (err: any) {
+        setError(err instanceof Error ? err.message : (err?.message || 'Liên kết không hợp lệ.'))
+      } finally {
+        setValidating(false)
+      }
+    }
+    validateToken()
+  }, [type, token, email])
+
   const canSubmit = useMemo(() => {
-    if (loading) return false
+    if (loading || validating) return false
     if (!token || !email) return false
     if (password.length < 8) return false
     if (password !== confirmPassword) return false
     return true
-  }, [confirmPassword, email, loading, password, token])
+  }, [confirmPassword, email, loading, validating, password, token])
 
   async function onSubmit(e: FormEvent) {
     e.preventDefault()
     setError(null)
     setLoading(true)
     try {
-      await apiFetch('/api/auth/reset-password', {
+      const endpoint = type === 'locked' ? '/api/auth/locked/reset-password' : '/api/auth/reset-password'
+      const res = await apiFetch<{ user?: unknown }>(endpoint, {
         method: 'POST',
         body: JSON.stringify({
           email,
@@ -40,9 +60,18 @@ export default function ResetPasswordPage() {
           password_confirmation: confirmPassword,
         }),
       })
-      setDone(true)
-    } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : null
+      if (type === 'locked') {
+        // Auto login is handled by the backend returning token/cookie
+        if (res.user) {
+          localStorage.setItem('user', JSON.stringify(res.user))
+          window.dispatchEvent(new Event('auth-change'))
+        }
+        navigate('/')
+      } else {
+        setDone(true)
+      }
+    } catch (err: any) {
+      const message = err instanceof Error ? err.message : (err?.message || null)
       setError(message || 'Không thể đặt lại mật khẩu. Vui lòng thử lại.')
     } finally {
       setLoading(false)

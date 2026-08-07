@@ -30,7 +30,7 @@ class _ContactScreenState extends State<ContactScreen> {
   String _subject = 'Hỗ trợ kỹ thuật';
   bool _submitting = false;
 
-  final _subjects = ['Hỗ trợ kỹ thuật', 'Đổi trả / Bảo hành', 'Thanh toán / Đơn hàng', 'Hợp tác / Doanh nghiệp'];
+  final _subjects = ['Hỗ trợ kỹ thuật', 'Đổi trả / Bảo hành', 'Thanh toán / Đơn hàng', 'Hợp tác / Doanh nghiệp', 'Mở khóa tài khoản', 'Khác'];
 
   @override
   void initState() {

@@ -208,17 +208,19 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     const accent = Color(0xFFEF7A45);
     return Scaffold(
-      backgroundColor: const Color(0xFFFAF1EB),
+      backgroundColor: const Color.fromARGB(255, 250, 250, 250),
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(vertical: 36, horizontal: 20),
-          child: Center(
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 360),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  const SizedBox(height: 8),
+        child: Stack(
+          children: [
+            SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(vertical: 36, horizontal: 20),
+              child: Center(
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 360),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      const SizedBox(height: 8),
                   Center(
                     child: Text(
                       'E-TECH MARKET',
@@ -258,10 +260,10 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   const SizedBox(height: 20),
                   Container(
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFFAF1EB),
+                    // decoration: BoxDecoration(
+                    //   color: const Color.fromARGB(255, 255, 255, 255),
                       
-                    ),
+                    // ),
                     padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 18),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -405,7 +407,25 @@ class _LoginScreenState extends State<LoginScreen> {
                 ],
               ),
             ),
-          ),
+            ),
+            ),
+            Positioned(
+              top: 8,
+              left: 8,
+              child: IconButton(
+                icon: const Icon(Icons.arrow_back, color: Color(0xFFEF7A45), size: 28),
+                onPressed: () {
+                  if (Navigator.canPop(context)) {
+                    Navigator.of(context).pop();
+                  } else {
+                    Navigator.of(context).pushReplacement(
+                      MaterialPageRoute(builder: (_) => const EntryPoint()),
+                    );
+                  }
+                },
+              ),
+            ),
+          ],
         ),
       ),
     );

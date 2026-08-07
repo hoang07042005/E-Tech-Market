@@ -1,9 +1,7 @@
 import 'dart:convert';
 import 'package:dio/dio.dart';
-import 'package:flutter/widgets.dart';
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
   final dio = Dio();
   try {
     final res = await dio.post('http://localhost:8000/api/v1/auth/login', 
@@ -34,12 +32,11 @@ void main() async {
       );
     }
     
-    print('User: $user');
-    print('Token: $token');
+    print('User type: ${user.runtimeType}');
     
     try {
       final str = jsonEncode(user);
-      print("jsonEncode success: $str");
+      print("jsonEncode success!");
     } catch (e) {
       print("jsonEncode failed: $e");
     }

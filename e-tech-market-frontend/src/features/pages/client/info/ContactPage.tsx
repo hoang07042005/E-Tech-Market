@@ -176,6 +176,8 @@ export default function ContactPage() {
                         <option>Đổi trả / Bảo hành</option>
                         <option>Thanh toán / Đơn hàng</option>
                         <option>Hợp tác / Doanh nghiệp</option>
+                        <option>Mở khóa tài khoản</option>
+                        <option>Khác</option>
                       </select>
                     </div>
                   </div>

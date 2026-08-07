@@ -178,9 +178,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
   Widget build(BuildContext context) {
     const accent = Color(0xFFEF7A45);
     return Scaffold(
-      backgroundColor: const Color(0xFFFAF1EB),
+      backgroundColor: const Color.fromARGB(255, 255, 255, 255),
       body: SafeArea(
-        child: SingleChildScrollView(
+        child: Stack(
+          children: [
+            SingleChildScrollView(
           padding: const EdgeInsets.symmetric(vertical: 36, horizontal: 20),
           child: Center(
             child: ConstrainedBox(
@@ -227,9 +229,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),
                   const SizedBox(height: 20),
                   Container(
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFFAF1EB),
-                    ),
+                    // decoration: BoxDecoration(
+                    //   color: const Color(0xFFFAF1EB),
+                    // ),
                     padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 18),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -383,7 +385,21 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ],
               ),
             ),
-          ),
+            ),
+            ),
+            Positioned(
+              top: 8,
+              left: 8,
+              child: IconButton(
+                icon: const Icon(Icons.arrow_back, color: Color(0xFFEF7A45), size: 28),
+                onPressed: () {
+                  if (Navigator.canPop(context)) {
+                    Navigator.of(context).pop();
+                  }
+                },
+              ),
+            ),
+          ],
         ),
       ),
     );

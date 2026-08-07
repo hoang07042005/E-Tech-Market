@@ -55,4 +55,42 @@ class UsersController extends Controller
             abort($code, $e->getMessage());
         }
     }
+
+    /**
+     * Khóa tài khoản.
+     */
+    public function lock(Request $request, User $user): JsonResponse
+    {
+        try {
+            $this->userService->lockUser($user, $request->user());
+            
+            \Illuminate\Support\Facades\Mail::to($user->email)->send(new \App\Mail\AccountLockedEmail($user->name));
+            
+            return response()->json(['message' => 'Đã khóa tài khoản thành công.']);
+        } catch (\Exception $e) {
+            $code = $e->getCode() ?: 422;
+            abort($code, $e->getMessage());
+        }
+    }
+
+    /**
+     * Mở khóa và gửi link đặt lại mật khẩu.
+     */
+    public function unlock(Request $request, User $user): JsonResponse
+    {
+        try {
+            $token = $this->userService->unlockUserAndCreateResetToken($user);
+            
+            // Build front-end reset URL
+            $frontendUrl = config('app.frontend_url', 'http://localhost:5173');
+            $resetUrl = $frontendUrl . '/reset-password?token=' . $token . '&email=' . urlencode($user->email) . '&type=locked';
+            
+            \Illuminate\Support\Facades\Mail::to($user->email)->send(new \App\Mail\AccountUnlockedEmail($resetUrl, $user->name));
+            
+            return response()->json(['message' => 'Đã mở khóa tài khoản và gửi email thiết lập lại mật khẩu.']);
+        } catch (\Exception $e) {
+            $code = $e->getCode() ?: 422;
+            abort($code, $e->getMessage());
+        }
+    }
 }

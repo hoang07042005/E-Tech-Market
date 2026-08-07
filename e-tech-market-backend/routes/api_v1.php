@@ -59,6 +59,8 @@ use Illuminate\Support\Facades\Route;
     Route::post('/auth/google-login', [AuthController::class, 'googleLogin'])->middleware('throttle:auth.login');
     Route::post('/auth/forgot-password', [PasswordResetController::class, 'forgot'])->middleware('throttle:auth.password');
     Route::post('/auth/reset-password', [PasswordResetController::class, 'reset'])->middleware('throttle:auth.password');
+    Route::post('/auth/locked/validate-reset-token', [AuthController::class, 'validateLockedResetToken'])->middleware('throttle:auth.password');
+    Route::post('/auth/locked/reset-password', [AuthController::class, 'resetLockedPassword'])->middleware('throttle:auth.password');
 
     Route::get('/auth/email/verify/{id}/{hash}', [VerificationController::class, 'verify'])
         ->middleware(['signed', 'throttle:6,1'])
@@ -163,9 +165,11 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/roles', [AdminRolesController::class, 'index'])->name('roles.index');
         Route::patch('/roles/{role}', [AdminRolesController::class, 'update'])->name('roles.update');
 
-        Route::get('/users', [AdminUsersController::class, 'index'])->name('users');
-        Route::patch('/users/{user}', [AdminUsersController::class, 'update'])->name('users');
-        Route::delete('/users/{user}', [AdminUsersController::class, 'destroy'])->name('users');
+        Route::get('/users', [AdminUsersController::class, 'index'])->name('users.index');
+        Route::patch('/users/{user}', [AdminUsersController::class, 'update'])->name('users.update');
+        Route::delete('/users/{user}', [AdminUsersController::class, 'destroy'])->name('users.destroy');
+        Route::post('/users/{user}/lock', [AdminUsersController::class, 'lock'])->name('users.lock');
+        Route::post('/users/{user}/unlock', [AdminUsersController::class, 'unlock'])->name('users.unlock');
 
         // Hard delete trashed product variants (Admin) - must be declared BEFORE '/products/{product}' to avoid
         // 'deleted-variants' being treated as a product id.

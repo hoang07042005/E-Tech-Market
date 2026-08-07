@@ -74,6 +74,11 @@ class AuthController extends Controller
         if(!$u) {
             throw ValidationException::withMessages(["email"=>["Sai mật khẩu hoặc email không tồn tại."]]);
         }
+
+        if ($u->is_locked || is_null($u->password)) {
+            throw ValidationException::withMessages(["email"=>["Tài khoản của bạn đang trong trạng thái yêu cầu đặt lại mật khẩu. Vui lòng kiểm tra email để nhận liên kết thiết lập mật khẩu mới."]]);
+        }
+
         if(!Hash::check($r->password,$u->password)) {
             throw ValidationException::withMessages(["email"=>["Sai mật khẩu hoặc email không tồn tại."]]);
         }
@@ -477,5 +482,69 @@ class AuthController extends Controller
             'next_rank' => $nextRank ? new MembershipRankResource($nextRank) : null,
             'point_history' => $pointHistory,
         ]);
+    }
+
+    public function validateLockedResetToken(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email',
+            'token' => 'required|string',
+        ]);
+
+        $user = User::where('email', $request->email)->first();
+
+        if (!$user || $user->reset_token !== hash('sha256', $request->token)) {
+            return response()->json(['message' => 'Liên kết không hợp lệ.'], 400);
+        }
+
+        if (Carbon::now()->isAfter($user->reset_token_expires_at)) {
+            return response()->json(['message' => 'Liên kết đặt lại mật khẩu đã hết hạn (quá 15 phút). Vui lòng gửi lại yêu cầu hỗ trợ.'], 400);
+        }
+
+        return response()->json(['message' => 'Token hợp lệ.']);
+    }
+
+    public function resetLockedPassword(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email',
+            'token' => 'required|string',
+            'password' => 'required|string|min:8|confirmed',
+        ], [
+            'password.min' => 'Mật khẩu phải có ít nhất 8 ký tự.',
+            'password.confirmed' => 'Xác nhận mật khẩu không khớp.',
+        ]);
+
+        $user = User::where('email', $request->email)->first();
+
+        if (!$user || $user->reset_token !== hash('sha256', $request->token)) {
+            return response()->json(['message' => 'Liên kết không hợp lệ.'], 400);
+        }
+
+        if (Carbon::now()->isAfter($user->reset_token_expires_at)) {
+            return response()->json(['message' => 'Liên kết đặt lại mật khẩu đã hết hạn (quá 15 phút). Vui lòng gửi lại yêu cầu hỗ trợ.'], 400);
+        }
+
+        $user->password = Hash::make($request->password);
+        $user->reset_token = null;
+        $user->reset_token_expires_at = null;
+        // User was already unlocked by unlock endpoint, but just to be sure:
+        $user->is_locked = false; 
+        $user->save();
+
+        if ($request->hasSession()) {
+            $request->session()->regenerate();
+            \Illuminate\Support\Facades\Auth::guard('web')->login($user);
+        }
+
+        [$token, $cookie] = $this->createTokenResponse($request, $user);
+        $user->load(['roles', 'membershipRank']);
+
+        $data = ['user' => new UserResource($user), 'message' => 'Đặt lại mật khẩu thành công.'];
+        if ($token !== null) {
+            $data['token'] = $token;
+        }
+
+        return response()->json($data)->withCookie($cookie);
     }
 }

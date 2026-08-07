@@ -22,6 +22,7 @@ type AdminUserRow = {
   phone: string | null
   avatar_url?: string | null
   is_active: boolean
+  is_locked: boolean
   created_at: string
   roles?: Role[]
 }
@@ -96,7 +97,7 @@ function getCurrentUserIdFromStore(): number | null {
   }
 }
 
-type BusyKind = 'lock' | 'delete' | 'roles'
+type BusyKind = 'lock' | 'delete' | 'roles' | 'disable'
 
 export default function UsersAdminPage() {
   const currentUserId = useMemo(() => getCurrentUserIdFromStore(), [])
@@ -113,6 +114,14 @@ export default function UsersAdminPage() {
   const [error, setError] = useState<string | null>(null)
   const [busy, setBusy] = useState<{ userId: number; kind: BusyKind } | null>(null)
   const [activeTab, setActiveTab] = useState<'customer' | 'admin'>('customer')
+
+  const [confirmDialog, setConfirmDialog] = useState<{
+    isOpen: boolean
+    title: string
+    message: string
+    onConfirm: () => void
+    loading?: boolean
+  }>({ isOpen: false, title: '', message: '', onConfirm: () => {} })
 
   const [roleCatalog, setRoleCatalog] = useState<Role[]>([])
   const [rolesCatalogLoading, setRolesCatalogLoading] = useState(true)
@@ -219,35 +228,87 @@ export default function UsersAdminPage() {
   const setLock = async (u: AdminUserRow, lock: boolean) => {
     if (busy != null) return
     const label = lock ? 'khóa' : 'mở khóa'
-    if (!confirm(lock ? `Khóa tài khoản "${u.name}"? Họ sẽ không đăng nhập được.` : `Mở khóa tài khoản "${u.name}"?`)) return
-    setBusy({ userId: u.id, kind: 'lock' })
-    setError(null)
-    try {
-      await apiFetch<AdminUserRow>(`/api/admin/users/${u.id}`, {
-        method: 'PATCH',
-        body: JSON.stringify({ is_active: !lock }),
-      })
-      await load()
-    } catch (e: unknown) {
-      setError(e instanceof Error ? e.message : `Không ${label} được tài khoản.`)
-    } finally {
-      setBusy(null)
-    }
+    const title = lock ? 'Xác nhận khóa tài khoản' : 'Xác nhận mở khóa tài khoản'
+    const message = lock 
+      ? `Khóa tài khoản "${u.name}"? Họ sẽ không đăng nhập được và tài khoản sẽ bị đăng xuất khỏi tất cả thiết bị.`
+      : `Mở khóa tài khoản "${u.name}" và gửi email yêu cầu tạo mật khẩu mới?`
+
+    setConfirmDialog({
+      isOpen: true,
+      title,
+      message,
+      onConfirm: async () => {
+        setConfirmDialog(prev => ({ ...prev, loading: true }))
+        setBusy({ userId: u.id, kind: 'lock' })
+        setError(null)
+        try {
+          await apiFetch(`/api/admin/users/${u.id}/${lock ? 'lock' : 'unlock'}`, {
+            method: 'POST',
+          })
+          toast.success(lock ? 'Đã khóa tài khoản thành công.' : 'Đã mở khóa và gửi link thiết lập mật khẩu.')
+          await load()
+        } catch (e: unknown) {
+          setError(e instanceof Error ? e.message : `Không ${label} được tài khoản.`)
+        } finally {
+          setBusy(null)
+          setConfirmDialog(prev => ({ ...prev, isOpen: false, loading: false }))
+        }
+      }
+    })
+  }
+
+  const setDisable = async (u: AdminUserRow, disable: boolean) => {
+    if (busy != null) return
+    const label = disable ? 'vô hiệu hóa' : 'kích hoạt'
+    const title = disable ? 'Xác nhận vô hiệu hóa' : 'Xác nhận kích hoạt'
+    const message = disable ? `Vô hiệu hóa tài khoản "${u.name}"?` : `Kích hoạt lại tài khoản "${u.name}"?`
+
+    setConfirmDialog({
+      isOpen: true,
+      title,
+      message,
+      onConfirm: async () => {
+        setConfirmDialog(prev => ({ ...prev, loading: true }))
+        setBusy({ userId: u.id, kind: 'disable' })
+        setError(null)
+        try {
+          await apiFetch<AdminUserRow>(`/api/admin/users/${u.id}`, {
+            method: 'PATCH',
+            body: JSON.stringify({ is_active: !disable }),
+          })
+          await load()
+        } catch (e: unknown) {
+          setError(e instanceof Error ? e.message : `Không ${label} được tài khoản.`)
+        } finally {
+          setBusy(null)
+          setConfirmDialog(prev => ({ ...prev, isOpen: false, loading: false }))
+        }
+      }
+    })
   }
 
   const removeUser = async (u: AdminUserRow) => {
     if (busy != null) return
-    if (!confirm(`Xóa tài khoản "${u.name}" (${u.email})? Hành động không thể hoàn tác.`)) return
-    setBusy({ userId: u.id, kind: 'delete' })
-    setError(null)
-    try {
-      await apiFetch(`/api/admin/users/${u.id}`, { method: 'DELETE' })
-      await load()
-    } catch (e: unknown) {
-      setError(e instanceof Error ? e.message : 'Không xóa được tài khoản.')
-    } finally {
-      setBusy(null)
-    }
+    
+    setConfirmDialog({
+      isOpen: true,
+      title: 'Xóa tài khoản',
+      message: `Xóa tài khoản "${u.name}" (${u.email})? Hành động không thể hoàn tác.`,
+      onConfirm: async () => {
+        setConfirmDialog(prev => ({ ...prev, loading: true }))
+        setBusy({ userId: u.id, kind: 'delete' })
+        setError(null)
+        try {
+          await apiFetch(`/api/admin/users/${u.id}`, { method: 'DELETE' })
+          await load()
+        } catch (e: unknown) {
+          setError(e instanceof Error ? e.message : 'Không xóa tài khoản được.')
+        } finally {
+          setBusy(null)
+          setConfirmDialog(prev => ({ ...prev, isOpen: false, loading: false }))
+        }
+      }
+    })
   }
 
   const openRoleEditor = (u: AdminUserRow) => {
@@ -473,24 +534,17 @@ export default function UsersAdminPage() {
                         </div>
                       </td>
                       <td>
-                        <span className={`pStatus ${u.is_active ? 'active' : 'inactive'}`}>
-                          {u.is_active ? 'HOẠT ĐỘNG' : 'VÔ HIỆU'}
-                        </span>
+                        {u.is_locked ? (
+                          <span className="pStatus inactive" style={{ background: '#fef2f2', color: '#dc2626', borderColor: '#f87171' }}>BỊ KHÓA</span>
+                        ) : (
+                          <span className={`pStatus ${u.is_active ? 'active' : 'inactive'}`}>
+                            {u.is_active ? 'HOẠT ĐỘNG' : 'VÔ HIỆU'}
+                          </span>
+                        )}
                       </td>
                       <td>
                         <div className="pActions usersAdminActions">
-                          {u.is_active ? (
-                            <button
-                              type="button"
-                              className="pEdit usersAdminIconBtn"
-                              disabled={isSelf || rowBusy}
-                              aria-label={isSelf ? 'Không thể khóa chính bạn' : 'Khóa tài khoản'}
-                              title={isSelf ? 'Không thể khóa chính bạn' : 'Khóa tài khoản'}
-                              onClick={() => void setLock(u, true)}
-                            >
-                              {lockLoading ? <IconSpinner /> : <LockIcon />}
-                            </button>
-                          ) : (
+                          {u.is_locked ? (
                             <button
                               type="button"
                               className="pEdit usersAdminIconBtn"
@@ -500,6 +554,17 @@ export default function UsersAdminPage() {
                               onClick={() => void setLock(u, false)}
                             >
                               {lockLoading ? <IconSpinner /> : <UnlockIcon />}
+                            </button>
+                          ) : (
+                            <button
+                              type="button"
+                              className="pEdit usersAdminIconBtn"
+                              disabled={isSelf || rowBusy}
+                              aria-label={isSelf ? 'Không thể khóa chính bạn' : 'Khóa tài khoản'}
+                              title={isSelf ? 'Không thể khóa chính bạn' : 'Khóa tài khoản'}
+                              onClick={() => void setLock(u, true)}
+                            >
+                              {lockLoading ? <IconSpinner /> : <LockIcon />}
                             </button>
                           )}
                           <button
@@ -639,6 +704,27 @@ export default function UsersAdminPage() {
                   )}
                 </div>
               ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL: Xác nhận */}
+      {confirmDialog.isOpen && (
+        <div className="usersRoleModalOverlay" role="presentation" onClick={() => !confirmDialog.loading && setConfirmDialog(prev => ({ ...prev, isOpen: false }))}>
+          <div className="usersRoleModal" role="dialog" aria-modal="true" style={{ maxWidth: '400px' }} onClick={e => e.stopPropagation()}>
+            <div className="usersRoleModalHead">
+              <h3 className="usersRoleModalTitle">{confirmDialog.title}</h3>
+              <button type="button" className="usersRoleModalClose" aria-label="Đóng" disabled={confirmDialog.loading} onClick={() => setConfirmDialog(prev => ({ ...prev, isOpen: false }))}>×</button>
+            </div>
+            <div className="usersRoleModalBody">
+              <p style={{ margin: 0, lineHeight: 1.5, color: '#4b5563', fontSize: '15px' }}>{confirmDialog.message}</p>
+            </div>
+            <div className="usersRoleModalFoot">
+              <button type="button" className="usersRoleModalBtnGhost" disabled={confirmDialog.loading} onClick={() => setConfirmDialog(prev => ({ ...prev, isOpen: false }))}>Hủy</button>
+              <button type="button" className="usersRoleModalBtnSave" style={{ background: '#dc2626', borderColor: '#dc2626' }} disabled={confirmDialog.loading} onClick={confirmDialog.onConfirm}>
+                {confirmDialog.loading ? 'Đang xử lý…' : 'Xác nhận'}
+              </button>
             </div>
           </div>
         </div>

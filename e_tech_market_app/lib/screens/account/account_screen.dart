@@ -23,13 +23,15 @@ import '../trande_in/trande_in_history.dart';
 import '../../services/checkout_service.dart';
 
 class AccountScreen extends StatefulWidget {
-  final Map<String, dynamic> user;
+  final Map<String, dynamic>? user;
   final VoidCallback onLogout;
+  final VoidCallback onLogin;
 
   const AccountScreen({
     super.key,
     required this.user,
     required this.onLogout,
+    required this.onLogin,
   });
 
 
@@ -50,7 +52,8 @@ class _AccountScreenState extends State<AccountScreen> {
   }
 
   String _getAvatarInitial() {
-    final name = widget.user['name'] as String?;
+    if (widget.user == null) return 'K'; // Khách
+    final name = widget.user!['name'] as String?;
     if (name == null || name.isEmpty) return 'U';
     
     final parts = name.split(' ');
@@ -64,25 +67,32 @@ class _AccountScreenState extends State<AccountScreen> {
 
   @override
   Widget build(BuildContext context) {
-    String? avatarUrl = widget.user['avatar'] as String? ??
-        widget.user['avatar_url'] as String? ??
-        widget.user['profile_image'] as String? ??
-        widget.user['image'] as String?;
+    final bool isLoggedIn = widget.user != null;
     
-    if (avatarUrl != null && avatarUrl.isNotEmpty) {
-      avatarUrl = NetworkUtils.fixDeviceUrl(avatarUrl);
-    } else {
-      avatarUrl = null;
+    String? avatarUrl;
+    if (isLoggedIn) {
+      avatarUrl = widget.user!['avatar'] as String? ??
+          widget.user!['avatar_url'] as String? ??
+          widget.user!['profile_image'] as String? ??
+          widget.user!['image'] as String?;
+      
+      if (avatarUrl != null && avatarUrl.isNotEmpty) {
+        avatarUrl = NetworkUtils.fixDeviceUrl(avatarUrl);
+      } else {
+        avatarUrl = null;
+      }
     }
 
-    final name = widget.user['name'] ?? Trans.guestUser;
-    final email = widget.user['email'] ?? Trans.noEmail;
+    final name = isLoggedIn ? (widget.user!['name'] ?? Trans.guestUser) : 'Khách';
+    final email = isLoggedIn ? (widget.user!['email'] ?? Trans.noEmail) : 'Vui lòng đăng nhập';
 
     // Kiểm tra xem người dùng có vai trò là admin không
     bool isAdmin = false;
-    final roles = widget.user['roles'];
-    if (roles is List) {
-      isAdmin = roles.any((role) => role is Map && role['slug'] == 'admin');
+    if (isLoggedIn) {
+      final roles = widget.user!['roles'];
+      if (roles is List) {
+        isAdmin = roles.any((role) => role is Map && role['slug'] == 'admin');
+      }
     }
 
     return SafeArea(
@@ -161,84 +171,86 @@ class _AccountScreenState extends State<AccountScreen> {
 
 
             // --- TÀI KHOẢN ---
-            _buildMenuSection(
-                context: context,
-                title: Trans.accountTitle,
-              
-              children: [
+            if (isLoggedIn) ...[
+              _buildMenuSection(
+                  context: context,
+                  title: Trans.accountTitle,
                 
-                // Thông tin cá nhân: Màu Xanh Dương (Tin cậy)
-                _buildMenuItem(
-                  context,
-                  Icons.person_outline,
-                  Trans.personalInfo, 
-                  const Color(0xFFE0F2FE), 
-                  const Color(0xFF0284C7), 
-                  () {
-                    Navigator.push(context, MaterialPageRoute(builder: (_) => const ProfileScreen()));
-                  }
-                ),
-                // Đơn hàng: Màu Vàng Cam (Trạng thái giao nhận, vận chuyển)
-                _buildMenuItem(
-                  context,
-                  Icons.receipt_long_outlined,
-                  Trans.myOrders, 
-                  const Color(0xFFFEF3C7), 
-                  const Color(0xFFD97706), 
-                  () {
-                    Navigator.push(context, MaterialPageRoute(builder: (_) => const OrderListScreen()));
-                  }
-                ),
-                // Sản phẩm yêu thích: Màu Hồng/Đỏ (Yêu thích, tim)
-                _buildMenuItem(
-                  context,
-                  Icons.favorite_outline,
-                  Trans.myWishlist, 
-                  const Color(0xFFFCE7F3), 
-                  const Color(0xFFDB2777), 
-                  () {
-                    Navigator.push(context, MaterialPageRoute(builder: (_) => const WishlistScreen()));
-                  }
-                ),
-                // Kho voucher: Màu Tím (Ưu đãi, sự kiện đặc biệt)
-                _buildMenuItem(
-                  context,
-                  Icons.local_activity_outlined,
-                  Trans.voucherWarehouse, 
-                  const Color(0xFFF3E8FF), 
-                  const Color(0xFF9333EA), 
-                  () {
-                    Navigator.push(context, MaterialPageRoute(builder: (_) => const VoucherWarehouseScreen()));
-                  }
-                ),
-                
-                // Lịch sử thu cũ
-                _buildMenuItem(
-                  context,
-                  Icons.history_outlined,
-                  'Lịch sử thu cũ',
-                  const Color(0xFFFFF7ED),
-                  const Color(0xFFEF7A45),
-                  () {
-                    Navigator.push(context, MaterialPageRoute(builder: (_) => const TradeInHistoryScreen()));
-                  }
-                ),
+                children: [
+                  
+                  // Thông tin cá nhân: Màu Xanh Dương (Tin cậy)
+                  _buildMenuItem(
+                    context,
+                    Icons.person_outline,
+                    Trans.personalInfo, 
+                    const Color(0xFFE0F2FE), 
+                    const Color(0xFF0284C7), 
+                    () {
+                      Navigator.push(context, MaterialPageRoute(builder: (_) => const ProfileScreen()));
+                    }
+                  ),
+                  // Đơn hàng: Màu Vàng Cam (Trạng thái giao nhận, vận chuyển)
+                  _buildMenuItem(
+                    context,
+                    Icons.receipt_long_outlined,
+                    Trans.myOrders, 
+                    const Color(0xFFFEF3C7), 
+                    const Color(0xFFD97706), 
+                    () {
+                      Navigator.push(context, MaterialPageRoute(builder: (_) => const OrderListScreen()));
+                    }
+                  ),
+                  // Sản phẩm yêu thích: Màu Hồng/Đỏ (Yêu thích, tim)
+                  _buildMenuItem(
+                    context,
+                    Icons.favorite_outline,
+                    Trans.myWishlist, 
+                    const Color(0xFFFCE7F3), 
+                    const Color(0xFFDB2777), 
+                    () {
+                      Navigator.push(context, MaterialPageRoute(builder: (_) => const WishlistScreen()));
+                    }
+                  ),
+                  // Kho voucher: Màu Tím (Ưu đãi, sự kiện đặc biệt)
+                  _buildMenuItem(
+                    context,
+                    Icons.local_activity_outlined,
+                    Trans.voucherWarehouse, 
+                    const Color(0xFFF3E8FF), 
+                    const Color(0xFF9333EA), 
+                    () {
+                      Navigator.push(context, MaterialPageRoute(builder: (_) => const VoucherWarehouseScreen()));
+                    }
+                  ),
+                  
+                  // Lịch sử thu cũ
+                  _buildMenuItem(
+                    context,
+                    Icons.history_outlined,
+                    'Lịch sử thu cũ',
+                    const Color(0xFFFFF7ED),
+                    const Color(0xFFEF7A45),
+                    () {
+                      Navigator.push(context, MaterialPageRoute(builder: (_) => const TradeInHistoryScreen()));
+                    }
+                  ),
 
-                // Thẻ hội viên: Màu Xanh Cyan/Premium (Tích điểm, thưởng)
-                _buildMenuItem(
-                  context,
-                  Icons.workspace_premium_outlined,
-                  'Thẻ Hội Viên & Điểm Thưởng',
-                  const Color(0xFFCFFAFE),
-                  const Color(0xFF0891B2),
-                  () {
-                    Navigator.push(context, MaterialPageRoute(builder: (_) => const LoyaltyScreen()));
-                  }
-                ),
-              ],
-            ),
-            
-            const SizedBox(height: 24),
+                  // Thẻ hội viên: Màu Xanh Cyan/Premium (Tích điểm, thưởng)
+                  _buildMenuItem(
+                    context,
+                    Icons.workspace_premium_outlined,
+                    'Thẻ Hội Viên & Điểm Thưởng',
+                    const Color(0xFFCFFAFE),
+                    const Color(0xFF0891B2),
+                    () {
+                      Navigator.push(context, MaterialPageRoute(builder: (_) => const LoyaltyScreen()));
+                    }
+                  ),
+                ],
+              ),
+              
+              const SizedBox(height: 24),
+            ],
 
             // --- VỀ E-TECH MARKET ---
             _buildMenuSection(
@@ -372,23 +384,30 @@ class _AccountScreenState extends State<AccountScreen> {
 
             const SizedBox(height: 32),
             
-            // Logout Button
+            // Login/Logout Button
             SizedBox(
               width: double.infinity,
               height: 52,
               child: ElevatedButton.icon(
-                onPressed: widget.onLogout,
+                onPressed: isLoggedIn ? widget.onLogout : widget.onLogin,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFFFEE2E2), 
-                  foregroundColor: const Color(0xFFD32F2F),
+                  backgroundColor: isLoggedIn ? const Color(0xFFFEE2E2) : const Color(0xFFEF7A45), 
+                  foregroundColor: isLoggedIn ? const Color(0xFFD32F2F) : Colors.white,
                   elevation: 0,
                   shadowColor: Colors.transparent,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(16),
                   ),
                 ),
-                icon: const Icon(Icons.logout, size: 22, color: Color(0xFFD32F2F)),
-                label: Text(Trans.logout, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                icon: Icon(
+                  isLoggedIn ? Icons.logout : Icons.login, 
+                  size: 22, 
+                  color: isLoggedIn ? const Color(0xFFD32F2F) : Colors.white
+                ),
+                label: Text(
+                  isLoggedIn ? Trans.logout : 'Đăng nhập', 
+                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)
+                ),
               ),
             ),
             const SizedBox(height: 40),

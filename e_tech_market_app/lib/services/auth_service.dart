@@ -81,17 +81,30 @@ class AuthService {
   }
 
   static Future<Map<String, dynamic>> _parseAuthResponse(dynamic body) async {
-    final parsed = parseLoginResponse(body);
-    if (parsed['requires_2fa'] == true) {
-      return parsed;
+    final parsed2fa = parseLoginResponse(body);
+    if (parsed2fa['requires_2fa'] == true) {
+      return parsed2fa;
     }
 
-    if (body is! Map<String, dynamic>) {
+    if (body is! Map) {
       throw Exception('Phản hồi máy chủ không hợp lệ.');
     }
 
-    final token = body['token'] as String?;
-    final user = body['user'] as Map<String, dynamic>?;
+    // Convert full body safely to handle _InternalLinkedHashMap<dynamic, dynamic>
+    final data = Map<String, dynamic>.from(
+      body.map((key, value) => MapEntry(key.toString(), value)),
+    );
+
+    final token = data['token'] as String?;
+    
+    // Convert user safely
+    final rawUser = data['user'];
+    Map<String, dynamic>? user;
+    if (rawUser is Map) {
+      user = Map<String, dynamic>.from(
+        rawUser.map((key, value) => MapEntry(key.toString(), value)),
+      );
+    }
 
     if (token == null || user == null) {
       throw Exception('Phản hồi máy chủ không hợp lệ.');

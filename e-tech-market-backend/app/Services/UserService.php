@@ -104,4 +104,47 @@ class UserService
 
         $user->delete();
     }
+
+    /**
+     * Khóa tài khoản người dùng
+     */
+    public function lockUser(User $user, User $currentUser): void
+    {
+        if ($currentUser->id === $user->id) {
+            throw new \Exception('Không thể khóa chính tài khoản đang đăng nhập.', 422);
+        }
+
+        $targetHasAdmin = $user->roles()->where('slug', 'admin')->exists();
+        if ($targetHasAdmin) {
+            throw new \Exception('Không thể khóa tài khoản quản trị viên.', 422);
+        }
+
+        $user->update([
+            'is_locked' => true,
+            'password' => null, // Xóa triệt để mật khẩu cũ
+        ]);
+
+        // Hủy toàn bộ token (đăng xuất thiết bị khác)
+        $user->tokens()->delete();
+    }
+
+    /**
+     * Mở khóa và tạo link reset mật khẩu
+     */
+    public function unlockUserAndCreateResetToken(User $user): string
+    {
+        if (!$user->is_locked) {
+            throw new \Exception('Tài khoản này không bị khóa.', 422);
+        }
+
+        $token = \Illuminate\Support\Str::random(60);
+
+        $user->update([
+            'is_locked' => false,
+            'reset_token' => hash('sha256', $token),
+            'reset_token_expires_at' => now()->addMinutes(15),
+        ]);
+
+        return $token;
+    }
 }
