@@ -1,161 +1,179 @@
-import { useEffect, useState, useMemo } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
-import { Helmet } from 'react-helmet-async'
-import { apiFetch } from '@/configs/api.config'
-import { API_BASE_URL } from '@/configs/api.config'
-import '@/styles/pages/VideoPage.css'
+import { useEffect, useState, useMemo } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
+import { apiFetch } from "@/configs/api.config";
+import { API_BASE_URL } from "@/configs/api.config";
+import "@/styles/pages/VideoPage.css";
 
 interface Category {
-  id: number
-  name: string
-  slug: string
+  id: number;
+  name: string;
+  slug: string;
 }
 
 interface Product {
-  id: number
-  name: string
-  slug: string
-  main_image_url: string | null
-  price: string | number
-  short_description?: string | null
+  id: number;
+  name: string;
+  slug: string;
+  main_image_url: string | null;
+  price: string | number;
+  short_description?: string | null;
 }
 
 interface Video {
-  id: number
-  product_id?: number | null
-  category_id?: number | null
-  video_category_id?: number | null
-  title?: string | null
-  description?: string | null
-  video_url: string
-  thumbnail_url?: string | null
-  sort_order?: number
-  is_active: boolean
-  product?: Product | null
-  category?: Category | null
-  video_category?: Category | null
+  id: number;
+  product_id?: number | null;
+  category_id?: number | null;
+  video_category_id?: number | null;
+  title?: string | null;
+  description?: string | null;
+  video_url: string;
+  thumbnail_url?: string | null;
+  sort_order?: number;
+  is_active: boolean;
+  product?: Product | null;
+  category?: Category | null;
+  video_category?: Category | null;
 }
 
 type NormalizedVideo = Video & {
-  _catId: number | null
-  _catObj: Category | null
-}
+  _catId: number | null;
+  _catObj: Category | null;
+};
 
 const resolveImageUrl = (url: string | null) => {
-  if (!url) return 'https://via.placeholder.com/400x250'
-  const s = url.trim()
-  if (!s) return 'https://via.placeholder.com/400x250'
+  if (!url) return "https://via.placeholder.com/400x250";
+  const s = url.trim();
+  if (!s) return "https://via.placeholder.com/400x250";
   // Already absolute URL - check if hostname is accessible
   if (/^https?:\/\//i.test(s)) {
     try {
-      const urlObj = new URL(s)
+      const urlObj = new URL(s);
       // If hostname is 'nginx' (Docker network hostname), replace with current origin
-      if (urlObj.hostname === 'nginx' || urlObj.hostname === 'localhost') {
-        const path = s.replace(/^https?:\/\/[^/]+/, '')
-        return window.location.origin + path
+      if (urlObj.hostname === "nginx" || urlObj.hostname === "localhost") {
+        const path = s.replace(/^https?:\/\/[^/]+/, "");
+        return window.location.origin + path;
       }
-    } catch { /* keep original */
+    } catch {
+      /* keep original */
     }
-    return s
+    return s;
   }
-  return `${API_BASE_URL}${s.startsWith('/') ? s : `/${s}`}`
-}
+  return `${API_BASE_URL}${s.startsWith("/") ? s : `/${s}`}`;
+};
 
 // Extract YouTube thumbnail from video_url to avoid broken thumbnail_url stored in DB
-const getVideoThumbnail = (videoUrl: string, fallbackUrl?: string | null): string => {
-  const ytMatch = videoUrl?.match(/(?:youtube\.com\/(?:[^/]+\/.+\/|(?:v|e(?:mbed)?\/)|.*[?&]v=)|youtu\.be\/)([^"&?/\s]{11})/)
+const getVideoThumbnail = (
+  videoUrl: string,
+  fallbackUrl?: string | null,
+): string => {
+  const ytMatch = videoUrl?.match(
+    /(?:youtube\.com\/(?:[^/]+\/.+\/|(?:v|e(?:mbed)?\/)|.*[?&]v=)|youtu\.be\/)([^"&?/\s]{11})/,
+  );
   if (ytMatch) {
-    return `https://img.youtube.com/vi/${ytMatch[1]}/hqdefault.jpg`
+    return `https://img.youtube.com/vi/${ytMatch[1]}/hqdefault.jpg`;
   }
-  return resolveImageUrl(fallbackUrl ?? null)
-}
+  return resolveImageUrl(fallbackUrl ?? null);
+};
 
-import { useWishlistQuery, useWishlistMutation } from '@/features/services/mutations'
-import { useAuthStore } from '@/features/store/useAuthStore'
+import {
+  useWishlistQuery,
+  useWishlistMutation,
+} from "@/features/services/mutations";
+import { useAuthStore } from "@/features/store/useAuthStore";
 
 export default function VideoPage() {
-  const navigate = useNavigate()
-  const userStr = useAuthStore((state) => state.userStr)
-  const hasAuth = !!userStr
-  const { data: videoWishlists } = useWishlistQuery(hasAuth, 'video')
-  const videoWishlistMutation = useWishlistMutation('video')
+  const navigate = useNavigate();
+  const userStr = useAuthStore((state) => state.userStr);
+  const hasAuth = !!userStr;
+  const { data: videoWishlists } = useWishlistQuery(hasAuth, "video");
+  const videoWishlistMutation = useWishlistMutation("video");
 
   const isFavorited = (video: NormalizedVideo) => {
-    if (!hasAuth) return false
-    return videoWishlists?.some(w => w.video_id === video.id)
-  }
+    if (!hasAuth) return false;
+    return videoWishlists?.some((w) => w.video_id === video.id);
+  };
 
-  const handleToggleFavorite = (e: React.MouseEvent, video: NormalizedVideo) => {
-    e.stopPropagation()
+  const handleToggleFavorite = (
+    e: React.MouseEvent,
+    video: NormalizedVideo,
+  ) => {
+    e.stopPropagation();
     if (!hasAuth) {
-      alert('Vui lòng đăng nhập để yêu thích!')
-      return
+      alert("Vui lòng đăng nhập để yêu thích!");
+      return;
     }
-    videoWishlistMutation.mutate(video.id)
-  }
+    videoWishlistMutation.mutate(video.id);
+  };
 
-  const [videos, setVideos] = useState<NormalizedVideo[]>([])
-  const [categories, setCategories] = useState<Category[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+  const [videos, setVideos] = useState<NormalizedVideo[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   // filter: 'all' | 'product' | 'general' | `cat-{id}`
-  const [filter, setFilter] = useState<string>('all')
+  const [filter, setFilter] = useState<string>("all");
 
   useEffect(() => {
-    let mounted = true
-    setLoading(true)
+    let mounted = true;
+    setLoading(true);
 
-    apiFetch<Video[]>('/api/videos')
+    apiFetch<Video[]>("/api/videos")
       .then((videoRes) => {
         if (mounted) {
-          const videosNorm = (Array.isArray(videoRes) ? videoRes : []).map(v => ({
-            ...v,
-            _catId: v.video_category_id ?? v.category_id ?? null,
-            _catObj: v.video_category ?? v.category ?? null
-          }))
+          const videosNorm = (Array.isArray(videoRes) ? videoRes : []).map(
+            (v) => ({
+              ...v,
+              _catId: v.video_category_id ?? v.category_id ?? null,
+              _catObj: v.video_category ?? v.category ?? null,
+            }),
+          );
 
-          setVideos(videosNorm)
+          setVideos(videosNorm);
 
           const uniqueCategories = Array.from(
             new Map(
               videosNorm
-                .filter(v => v._catObj)
-                .map(v => [v._catObj!.id, v._catObj!])
-            ).values()
-          )
+                .filter((v) => v._catObj)
+                .map((v) => [v._catObj!.id, v._catObj!]),
+            ).values(),
+          );
 
-          setCategories(uniqueCategories)
-          setLoading(false)
+          setCategories(uniqueCategories);
+          setLoading(false);
         }
       })
       .catch((err) => {
         if (mounted) {
-          setError(err instanceof Error ? err.message : 'Lỗi tải video')
-          setLoading(false)
+          setError(err instanceof Error ? err.message : "Lỗi tải video");
+          setLoading(false);
         }
-      })
+      });
 
     return () => {
-      mounted = false
-    }
-  }, [])
+      mounted = false;
+    };
+  }, []);
 
   const filteredVideos = useMemo(() => {
-    if (filter === 'product') return videos.filter(v => !!v.product_id)
-    if (filter === 'general') return videos.filter(v => !v.product_id && !v._catId)
-    if (filter.startsWith('cat-')) {
-      const catId = parseInt(filter.replace('cat-', ''))
-      return videos.filter(v => v._catId === catId)
+    if (filter === "product") return videos.filter((v) => !!v.product_id);
+    if (filter === "general")
+      return videos.filter((v) => !v.product_id && !v._catId);
+    if (filter.startsWith("cat-")) {
+      const catId = parseInt(filter.replace("cat-", ""));
+      return videos.filter((v) => v._catId === catId);
     }
-    return videos
-  }, [videos, filter])
+    return videos;
+  }, [videos, filter]);
 
   return (
     <>
       <Helmet>
         <title>Video giới thiệu công nghệ | E-Tech Market</title>
-        <meta name="description" content="Xem video giới thiệu và review sản phẩm công nghệ tại E-Tech Market." />
+        <meta
+          name="description"
+          content="Xem video giới thiệu và review sản phẩm công nghệ tại E-Tech Market."
+        />
       </Helmet>
 
       <div className="clientVideoPage">
@@ -166,7 +184,10 @@ export default function VideoPage() {
 
           <header className="cvHeader">
             <h1 className="cvTitle">Video giới thiệu công nghệ</h1>
-            <p className="cvSubtitle">Khám phá các sản phẩm công nghệ qua những thước phim thực tế và review chi tiết.</p>
+            <p className="cvSubtitle">
+              Khám phá các sản phẩm công nghệ qua những thước phim thực tế và
+              review chi tiết.
+            </p>
           </header>
 
           <div className="cvFilterRow">
@@ -174,25 +195,25 @@ export default function VideoPage() {
               {/* Tab cố định */}
               <button
                 type="button"
-                className={`cvChip ${filter === 'all' ? 'active' : ''}`}
-                onClick={() => setFilter('all')}
+                className={`cvChip ${filter === "all" ? "active" : ""}`}
+                onClick={() => setFilter("all")}
               >
                 Tất cả
               </button>
               <button
                 type="button"
-                className={`cvChip ${filter === 'product' ? 'active' : ''}`}
-                onClick={() => setFilter('product')}
+                className={`cvChip ${filter === "product" ? "active" : ""}`}
+                onClick={() => setFilter("product")}
               >
                 Có sản phẩm
               </button>
 
               {/* Danh mục động - chỉ hiện danh mục có video */}
-              {categories.map(cat => (
+              {categories.map((cat) => (
                 <button
                   key={cat.id}
                   type="button"
-                  className={`cvChip ${filter === `cat-${cat.id}` ? 'active' : ''}`}
+                  className={`cvChip ${filter === `cat-${cat.id}` ? "active" : ""}`}
                   onClick={() => setFilter(`cat-${cat.id}`)}
                 >
                   {cat.name}
@@ -200,17 +221,19 @@ export default function VideoPage() {
               ))}
 
               {/* "Video chung" = không có sản phẩm & không có danh mục */}
-              {videos.some(v => !v.product_id && !v._catId) && (
+              {videos.some((v) => !v.product_id && !v._catId) && (
                 <button
                   type="button"
-                  className={`cvChip ${filter === 'general' ? 'active' : ''}`}
-                  onClick={() => setFilter('general')}
+                  className={`cvChip ${filter === "general" ? "active" : ""}`}
+                  onClick={() => setFilter("general")}
                 >
                   Video chung
                 </button>
               )}
             </div>
-            <div className="cvCount">Hiển thị {filteredVideos.length} video</div>
+            <div className="cvCount">
+              Hiển thị {filteredVideos.length} video
+            </div>
           </div>
 
           {loading ? (
@@ -221,46 +244,86 @@ export default function VideoPage() {
           ) : error ? (
             <div className="cvError">
               <p>{error}</p>
-              <button type="button" onClick={() => window.location.reload()}>Tải lại</button>
+              <button type="button" onClick={() => window.location.reload()}>
+                Tải lại
+              </button>
             </div>
           ) : filteredVideos.length === 0 ? (
             <div className="cvEmpty">Không tìm thấy video nào.</div>
           ) : (
             <div className="cvGrid">
               {filteredVideos.map((video) => (
-                <div key={video.id} className="cvCard" onClick={() => navigate(`/videos/${video.id}`)}>
+                <div
+                  key={video.id}
+                  className="cvCard"
+                  onClick={() => navigate(`/videos/${video.id}`)}
+                >
                   <div className="cvThumbnailWrap">
                     <img
-                      src={getVideoThumbnail(video.video_url, video.product?.main_image_url)}
-                      alt={video.title || 'Product Video'}
+                      src={getVideoThumbnail(
+                        video.video_url,
+                        video.product?.main_image_url,
+                      )}
+                      alt={video.title || "Product Video"}
                       className="cvThumbnail"
                     />
                     <div className="cvPlayOverlay">
                       <div className="cvPlayBtn">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="white">
+                        <svg
+                          width="24"
+                          height="24"
+                          viewBox="0 0 24 24"
+                          fill="white"
+                        >
                           <polygon points="6 4 20 12 6 20 6 4" />
                         </svg>
                       </div>
                     </div>
                   </div>
                   <div className="cvCardBody">
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                      <h3 className="cvCardTitle">{video.title || 'Video giới thiệu'}</h3>
-                      <button 
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "flex-start",
+                      }}
+                    >
+                      <h3 className="cvCardTitle">
+                        {video.title || "Video giới thiệu"}
+                      </h3>
+                      <button
                         onClick={(e) => handleToggleFavorite(e, video)}
-                        style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, marginTop: '2px' }}
+                        style={{
+                          background: "none",
+                          border: "none",
+                          cursor: "pointer",
+                          padding: 0,
+                          marginTop: "2px",
+                        }}
                       >
                         <HeartIcon filled={isFavorited(video)} />
                       </button>
                     </div>
                     {video.description ? (
-                        <p className="cvCardDesc">{video.description}</p>
-                      ) : video.product?.short_description ? (
-                        <p className="cvCardDesc">{video.product.short_description}</p>
-                      ) : null}
+                      <p className="cvCardDesc">{video.description}</p>
+                    ) : video.product?.short_description ? (
+                      <p className="cvCardDesc">
+                        {video.product.short_description}
+                      </p>
+                    ) : null}
                     {video.product ? (
                       <div className="cvProductLinkBadge">
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: '4px' }}>
+                        <svg
+                          width="12"
+                          height="12"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          style={{ marginRight: "4px" }}
+                        >
                           <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
                           <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
                         </svg>
@@ -268,7 +331,17 @@ export default function VideoPage() {
                       </div>
                     ) : video._catObj ? (
                       <div className="cvCategoryBadge">
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: '4px' }}>
+                        <svg
+                          width="12"
+                          height="12"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          style={{ marginRight: "4px" }}
+                        >
                           <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z" />
                           <line x1="7" y1="7" x2="7.01" y2="7" />
                         </svg>
@@ -283,14 +356,22 @@ export default function VideoPage() {
         </div>
       </div>
     </>
-  )
+  );
 }
 
 function HeartIcon({ filled }: { filled?: boolean }) {
   return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill={filled ? '#ef4444' : 'none'} stroke={filled ? '#ef4444' : 'currentColor'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg
+      width="20"
+      height="20"
+      viewBox="0 0 24 24"
+      fill={filled ? "#ef4444" : "none"}
+      stroke={filled ? "#ef4444" : "currentColor"}
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
       <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
     </svg>
-  )
+  );
 }
-

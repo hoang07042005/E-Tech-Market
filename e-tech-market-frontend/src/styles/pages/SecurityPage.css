@@ -37,7 +37,7 @@
   display: flex;
   align-items: center;
   gap: 14px;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
 }
 .secOverviewIconWrap {
   width: 44px;
@@ -48,10 +48,22 @@
   justify-content: center;
   flex-shrink: 0;
 }
-.secOverviewIconWrap.green { background: #dcfce7; color: #16a34a; }
-.secOverviewIconWrap.blue { background: #e0f2fe; color: #0284c7; }
-.secOverviewIconWrap.orange { background: #ffedd5; color: #ea580c; }
-.secOverviewIconWrap.purple { background: #f3e8ff; color: #9333ea; }
+.secOverviewIconWrap.green {
+  background: #dcfce7;
+  color: #16a34a;
+}
+.secOverviewIconWrap.blue {
+  background: #e0f2fe;
+  color: #0284c7;
+}
+.secOverviewIconWrap.orange {
+  background: #ffedd5;
+  color: #ea580c;
+}
+.secOverviewIconWrap.purple {
+  background: #f3e8ff;
+  color: #9333ea;
+}
 
 .secOverviewText {
   display: flex;
@@ -67,10 +79,18 @@
   font-size: 14px;
   font-weight: 700;
 }
-.secOverviewTextMain.green { color: #16a34a; }
-.secOverviewTextMain.blue { color: #0284c7; }
-.secOverviewTextMain.orange { color: #ea580c; }
-.secOverviewTextMain.purple { color: #9333ea; }
+.secOverviewTextMain.green {
+  color: #16a34a;
+}
+.secOverviewTextMain.blue {
+  color: #0284c7;
+}
+.secOverviewTextMain.orange {
+  color: #ea580c;
+}
+.secOverviewTextMain.purple {
+  color: #9333ea;
+}
 
 .secOverviewTextSub {
   font-size: 11px;
@@ -91,7 +111,7 @@
   border: 1px solid #e2e8f0;
   border-radius: 12px;
   padding: 24px;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
   display: flex;
   flex-direction: column;
 }
@@ -314,7 +334,9 @@
   cursor: pointer;
   transition: background 0.2s;
 }
-.secSessionTopBtn:hover { background: #fff7ed; }
+.secSessionTopBtn:hover {
+  background: #fff7ed;
+}
 
 .secSessionsList {
   display: flex;
@@ -454,7 +476,9 @@
   cursor: pointer;
   transition: background 0.2s;
 }
-.secDangerTopBtn:hover { background: #fef2f2; }
+.secDangerTopBtn:hover {
+  background: #fef2f2;
+}
 
 .secDangerList {
   display: flex;
@@ -488,13 +512,12 @@
   margin-top: 2px;
 }
 
-
 /* Messages */
 .secInlineError {
   margin-top: 12px;
   color: #b91c1c;
-  background: rgba(239, 68, 68, .06);
-  border: 1px solid rgba(239, 68, 68, .22);
+  background: rgba(239, 68, 68, 0.06);
+  border: 1px solid rgba(239, 68, 68, 0.22);
   border-radius: 8px;
   padding: 10px 12px;
   font-size: 13px;
@@ -503,8 +526,8 @@
 .secInlineSuccess {
   margin-top: 12px;
   color: #166534;
-  background: rgba(34, 197, 94, .10);
-  border: 1px solid rgba(34, 197, 94, .22);
+  background: rgba(34, 197, 94, 0.1);
+  border: 1px solid rgba(34, 197, 94, 0.22);
   border-radius: 8px;
   padding: 10px 12px;
   font-size: 13px;
@@ -529,25 +552,64 @@
   width: 100%;
   max-width: 440px;
   padding: 24px;
-  box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
   display: flex;
   flex-direction: column;
   gap: 16px;
 }
-.secModalTitle { font-weight: 700; font-size: 18px; color: #0f172a; }
-.secModalDesc { color: #64748b; font-size: 14px; line-height: 1.5; }
-.secModalActions { display: flex; justify-content: flex-end; gap: 12px; margin-top: 8px; }
-.secModalBtnCancel { background: #f1f5f9; color: #334155; border: none; padding: 10px 16px; border-radius: 8px; font-weight: 600; cursor: pointer; }
-.secModalBtnDanger { background: #ef4444; color: #fff; border: none; padding: 10px 16px; border-radius: 8px; font-weight: 600; cursor: pointer; }
+.secModalTitle {
+  font-weight: 700;
+  font-size: 18px;
+  color: #0f172a;
+}
+.secModalDesc {
+  color: #64748b;
+  font-size: 14px;
+  line-height: 1.5;
+}
+.secModalActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 8px;
+}
+.secModalBtnCancel {
+  background: #f1f5f9;
+  color: #334155;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.secModalBtnDanger {
+  background: #ef4444;
+  color: #fff;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+}
 
 /* Responsive */
 @media (max-width: 980px) {
-  .secOverviewGrid { grid-template-columns: 1fr 1fr; }
-  .secTwoCol { grid-template-columns: 1fr; }
-  .secSessionStatusCol { flex-direction: column; gap: 8px; align-items: flex-end; }
+  .secOverviewGrid {
+    grid-template-columns: 1fr 1fr;
+  }
+  .secTwoCol {
+    grid-template-columns: 1fr;
+  }
+  .secSessionStatusCol {
+    flex-direction: column;
+    gap: 8px;
+    align-items: flex-end;
+  }
 }
 @media (max-width: 500px) {
-  .secOverviewGrid { grid-template-columns: 1fr 1fr; }
+  .secOverviewGrid {
+    grid-template-columns: 1fr 1fr;
+  }
   .secOutlineOrangeBtn {
     width: 145px;
     padding: 10px 12px;
@@ -556,17 +618,17 @@
     grid-template-columns: 1fr;
     padding: 10px 12px;
   }
-  .secSessionDeviceName{
+  .secSessionDeviceName {
     font-size: 13px;
   }
-  .secSessionLoc{
+  .secSessionLoc {
     font-size: 12px;
   }
-  .secSessionStatusTag{
+  .secSessionStatusTag {
     font-size: 12px;
     padding: 4px 12px;
   }
-  .secSessionLogoutBtn{
+  .secSessionLogoutBtn {
     font-size: 12px;
     padding: 6px 12px;
   }

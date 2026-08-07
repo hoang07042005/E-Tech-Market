@@ -405,7 +405,8 @@
 }
 
 @media (max-width: 768px) {
-  .postMainContent, .postSidebar {
+  .postMainContent,
+  .postSidebar {
     min-width: 0;
   }
   .postTitle {
@@ -499,7 +500,9 @@
   text-decoration: none;
   color: inherit;
   align-items: center;
-  transition: transform 0.2s, opacity 0.2s;
+  transition:
+    transform 0.2s,
+    opacity 0.2s;
 }
 
 .sidebarPostItem:hover {

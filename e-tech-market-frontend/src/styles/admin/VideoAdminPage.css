@@ -28,7 +28,7 @@
 }
 
 .videoadminpage-style-5 {
-display: -webkit-box;
+  display: -webkit-box;
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;

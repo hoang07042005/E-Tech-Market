@@ -3,7 +3,7 @@ import type { ChangeEvent } from "react";
 import { apiFetch, API_BASE_URL } from "@/configs/api.config";
 import ConfirmModal from "@/components/ConfirmModal";
 import HardDeletePage from "../products/HardDeletePage"; // Tích hợp component Hard delete
-import { toast } from '@/utils/toast';
+import { toast } from "@/utils/toast";
 import "@/styles/admin/ReviewsAdminPage.css";
 
 type Review = {
@@ -53,7 +53,7 @@ function resolveReviewImageUrl(url: string | null | undefined) {
 
 export default function ReviewsAdminPage() {
   // 1. Thêm trạng thái viewMode điều hướng cấu trúc giao diện
-  const [viewMode, setViewMode] = useState<'main' | 'hard_delete'>('main');
+  const [viewMode, setViewMode] = useState<"main" | "hard_delete">("main");
 
   const [reviews, setReviews] = useState<Review[]>([]);
   const [totalReviews, setTotalReviews] = useState(0);
@@ -152,8 +152,8 @@ export default function ReviewsAdminPage() {
   };
 
   // 2. Chuyển sang trang Hard Delete nếu viewMode chuyển đổi cấu trúc
-  if (viewMode === 'hard_delete') {
-    return <HardDeletePage onBack={() => setViewMode('main')} />
+  if (viewMode === "hard_delete") {
+    return <HardDeletePage onBack={() => setViewMode("main")} />;
   }
 
   return (
@@ -162,16 +162,17 @@ export default function ReviewsAdminPage() {
         <div className="pageHeaderLeft">
           <h2>Quản lý Đánh giá</h2>
           <p>
-            Hệ thống giám sát, phê duyệt và phân tích phản hồi từ khách hàng mua sắm.
+            Hệ thống giám sát, phê duyệt và phân tích phản hồi từ khách hàng mua
+            sắm.
           </p>
         </div>
-        
+
         {/* 3. Thêm nút bấm vào phần bên phải của thanh Header */}
         <div className="pageHeaderRight">
           <button
             type="button"
             className="revHardDeleteBtn"
-            onClick={() => setViewMode('hard_delete')}
+            onClick={() => setViewMode("hard_delete")}
             title="Dữ liệu đã xóa (Hard delete)"
           >
             Dữ liệu đã xóa (Hard delete)
@@ -361,7 +362,7 @@ export default function ReviewsAdminPage() {
                           onClick={() => handleStatusUpdate(r.id, "approved")}
                           title="Phê duyệt"
                         >
-                          <ApproveIcon /> 
+                          <ApproveIcon />
                         </button>
                       )}
                       {r.status !== "rejected" && (
@@ -477,11 +478,9 @@ export default function ReviewsAdminPage() {
                       <span>Khách hàng • ID: #{selectedReview.user_id}</span>
                     </div>
                   </div>
-                  
+
                   <div className="premiumFocusStatus">
-                    <span
-                      className={`statusBadgeDot ${selectedReview.status}`}
-                    >
+                    <span className={`statusBadgeDot ${selectedReview.status}`}>
                       {selectedReview.status === "pending"
                         ? "Chờ duyệt"
                         : selectedReview.status === "approved"
@@ -508,8 +507,13 @@ export default function ReviewsAdminPage() {
 
                   {!!selectedReview.order_id && (
                     <span className="premiumVerifiedBadge">
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                      <svg
+                        width="14"
+                        height="14"
+                        viewBox="0 0 24 24"
+                        fill="currentColor"
+                      >
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
                       </svg>
                       Đã mua hàng
                     </span>
@@ -549,7 +553,9 @@ export default function ReviewsAdminPage() {
 
               {/* ATTACHED PRODUCT */}
               <div className="premiumProductRef">
-                <span className="drawerSectionLabel">Đánh giá cho sản phẩm</span>
+                <span className="drawerSectionLabel">
+                  Đánh giá cho sản phẩm
+                </span>
                 <div className="premiumProductCard">
                   <img
                     className="premiumProductImg"
@@ -595,8 +601,68 @@ export default function ReviewsAdminPage() {
   );
 }
 
-
-function DetailIcon() {return (<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-eye" viewBox="0 0 16 16"><path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8M1.173 8a13 13 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5s3.879 1.168 5.168 2.457A13 13 0 0 1 14.828 8q-.086.13-.195.288c-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5s-3.879-1.168-5.168-2.457A13 13 0 0 1 1.172 8z"/><path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5M4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0"/></svg>)}
-function TrashIcon() {return (<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>)}
-function RejectIcon() {return (<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-x-circle" viewBox="0 0 16 16"><path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/><path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708"/></svg>)}
-function ApproveIcon() {return (<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>)}
+function DetailIcon() {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="16"
+      height="16"
+      fill="currentColor"
+      className="bi bi-eye"
+      viewBox="0 0 16 16"
+    >
+      <path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8M1.173 8a13 13 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5s3.879 1.168 5.168 2.457A13 13 0 0 1 14.828 8q-.086.13-.195.288c-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5s-3.879-1.168-5.168-2.457A13 13 0 0 1 1.172 8z" />
+      <path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5M4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0" />
+    </svg>
+  );
+}
+function TrashIcon() {
+  return (
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <polyline points="3 6 5 6 21 6" />
+      <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+      <line x1="10" y1="11" x2="10" y2="17" />
+      <line x1="14" y1="11" x2="14" y2="17" />
+    </svg>
+  );
+}
+function RejectIcon() {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="16"
+      height="16"
+      fill="currentColor"
+      className="bi bi-x-circle"
+      viewBox="0 0 16 16"
+    >
+      <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16" />
+      <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708" />
+    </svg>
+  );
+}
+function ApproveIcon() {
+  return (
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <polyline points="20 6 9 17 4 12"></polyline>
+    </svg>
+  );
+}

@@ -1,72 +1,80 @@
-import { useEffect, useState } from 'react'
-import { useParams, Link, useNavigate } from 'react-router-dom'
-import { Helmet } from 'react-helmet-async'
-import { apiFetch } from '@/configs/api.config'
-import { API_BASE_URL } from '@/configs/api.config'
-import '@/styles/pages/VideoPage.css'
+import { useEffect, useState } from "react";
+import { useParams, Link, useNavigate } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
+import { apiFetch } from "@/configs/api.config";
+import { API_BASE_URL } from "@/configs/api.config";
+import "@/styles/pages/VideoPage.css";
 
 interface Product {
-  id: number
-  name: string
-  slug: string
-  main_image_url: string | null
-  price: string | number
-  short_description?: string | null
+  id: number;
+  name: string;
+  slug: string;
+  main_image_url: string | null;
+  price: string | number;
+  short_description?: string | null;
 }
 
 interface Video {
-  id: number
-  product_id?: number | null
-  title?: string | null
-  description?: string | null
-  video_url: string
-  thumbnail_url?: string | null
-  sort_order?: number
-  is_active: boolean
-  product?: Product | null
-  products?: Product[] | null
+  id: number;
+  product_id?: number | null;
+  title?: string | null;
+  description?: string | null;
+  video_url: string;
+  thumbnail_url?: string | null;
+  sort_order?: number;
+  is_active: boolean;
+  product?: Product | null;
+  products?: Product[] | null;
 }
 
 const resolveImageUrl = (url: string | null) => {
-  if (!url) return 'https://via.placeholder.com/400x250'
-  const s = url.trim()
-  if (!s) return 'https://via.placeholder.com/400x250'
+  if (!url) return "https://via.placeholder.com/400x250";
+  const s = url.trim();
+  if (!s) return "https://via.placeholder.com/400x250";
   // Already absolute URL - check if hostname is accessible
   if (/^https?:\/\//i.test(s)) {
     try {
-      const urlObj = new URL(s)
+      const urlObj = new URL(s);
       // If hostname is 'nginx' (Docker network hostname), replace with current origin
-      if (urlObj.hostname === 'nginx' || urlObj.hostname === 'localhost') {
-        const path = s.replace(/^https?:\/\/[^/]+/, '')
-        return window.location.origin + path
+      if (urlObj.hostname === "nginx" || urlObj.hostname === "localhost") {
+        const path = s.replace(/^https?:\/\/[^/]+/, "");
+        return window.location.origin + path;
       }
-    } catch { /* keep original */
+    } catch {
+      /* keep original */
     }
-    return s
+    return s;
   }
-  return `${API_BASE_URL}${s.startsWith('/') ? s : `/${s}`}`
-}
+  return `${API_BASE_URL}${s.startsWith("/") ? s : `/${s}`}`;
+};
 
 // Extract YouTube thumbnail from video_url to avoid broken thumbnail_url stored in DB
-const getVideoThumbnail = (videoUrl: string, fallbackUrl?: string | null): string => {
-  const ytMatch = videoUrl?.match(/(?:youtube\.com\/(?:[^/]+\/.+\/|(?:v|e(?:mbed)?\/)|.*[?&]v=)|youtu\.be\/)([^"&?/\s]{11})/)
+const getVideoThumbnail = (
+  videoUrl: string,
+  fallbackUrl?: string | null,
+): string => {
+  const ytMatch = videoUrl?.match(
+    /(?:youtube\.com\/(?:[^/]+\/.+\/|(?:v|e(?:mbed)?\/)|.*[?&]v=)|youtu\.be\/)([^"&?/\s]{11})/,
+  );
   if (ytMatch) {
-    return `https://img.youtube.com/vi/${ytMatch[1]}/hqdefault.jpg`
+    return `https://img.youtube.com/vi/${ytMatch[1]}/hqdefault.jpg`;
   }
-  return resolveImageUrl(fallbackUrl ?? null)
-}
+  return resolveImageUrl(fallbackUrl ?? null);
+};
 
 function renderVideoPlayer(videoUrl: string, title?: string | null) {
-  if (!videoUrl) return null
+  if (!videoUrl) return null;
 
-  let embedUrl = ''
-  const ytMatch = videoUrl.match(/(?:youtube\.com\/(?:[^/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?/\s]{11})/)
+  let embedUrl = "";
+  const ytMatch = videoUrl.match(
+    /(?:youtube\.com\/(?:[^/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?/\s]{11})/,
+  );
   if (ytMatch) {
-    embedUrl = `https://www.youtube.com/embed/${ytMatch[1]}?autoplay=1`
+    embedUrl = `https://www.youtube.com/embed/${ytMatch[1]}?autoplay=1`;
   } else {
-    const vimeoMatch = videoUrl.match(/(?:vimeo\.com\/)(?:video\/)?(\d+)/)
+    const vimeoMatch = videoUrl.match(/(?:vimeo\.com\/)(?:video\/)?(\d+)/);
     if (vimeoMatch) {
-      embedUrl = `https://player.vimeo.com/video/${vimeoMatch[1]}?autoplay=1`
+      embedUrl = `https://player.vimeo.com/video/${vimeoMatch[1]}?autoplay=1`;
     }
   }
 
@@ -76,69 +84,89 @@ function renderVideoPlayer(videoUrl: string, title?: string | null) {
         width="100%"
         height="100%"
         src={embedUrl}
-        title={title || 'Product Video'}
+        title={title || "Product Video"}
         frameBorder="0"
         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
         allowFullScreen
-        style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', border: 0 }}
+        style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          width: "100%",
+          height: "100%",
+          border: 0,
+        }}
       />
-    )
+    );
   }
 
-  const videoSrc = videoUrl.startsWith('http') ? videoUrl : `${API_BASE_URL}${videoUrl.startsWith('/') ? videoUrl : `/${videoUrl}`}`
+  const videoSrc = videoUrl.startsWith("http")
+    ? videoUrl
+    : `${API_BASE_URL}${videoUrl.startsWith("/") ? videoUrl : `/${videoUrl}`}`;
   return (
     <video
       src={videoSrc}
       controls
       autoPlay
       preload="metadata"
-      style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover' }}
+      style={{
+        position: "absolute",
+        top: 0,
+        left: 0,
+        width: "100%",
+        height: "100%",
+        objectFit: "cover",
+      }}
     />
-  )
+  );
 }
 
 export default function VideoDetailPage() {
-  const { id } = useParams<{ id: string }>()
-  const navigate = useNavigate()
-  const [video, setVideo] = useState<Video | null>(null)
-  const [recommendations, setRecommendations] = useState<Video[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+  const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
+  const [video, setVideo] = useState<Video | null>(null);
+  const [recommendations, setRecommendations] = useState<Video[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    let mounted = true
-    if (!id) return
+    let mounted = true;
+    if (!id) return;
 
-    setLoading(true)
-    setError(null)
+    setLoading(true);
+    setError(null);
 
     // Fetch video detail and recommendations
     Promise.all([
       apiFetch<Video>(`/api/videos/${id}`),
-      apiFetch<Video[]>('/api/videos')
+      apiFetch<Video[]>("/api/videos"),
     ])
       .then(([detailRes, listRes]) => {
         if (mounted) {
-          setVideo(detailRes)
+          setVideo(detailRes);
           if (Array.isArray(listRes)) {
             // Exclude current video from recommendations
-            const filtered = listRes.filter((v) => v.id !== Number(id)).slice(0, 5)
-            setRecommendations(filtered)
+            const filtered = listRes
+              .filter((v) => v.id !== Number(id))
+              .slice(0, 5);
+            setRecommendations(filtered);
           }
-          setLoading(false)
+          setLoading(false);
         }
       })
       .catch((err) => {
         if (mounted) {
-          setError(err instanceof Error ? err.message : 'Lỗi tải chi tiết video')
-          setLoading(false)
+          setError(
+            err instanceof Error ? err.message : "Lỗi tải chi tiết video",
+          );
+          setLoading(false);
         }
-      })
+      });
 
     return () => {
-      mounted = false
-    }
-  }, [id])
+      mounted = false;
+    };
+  }, [id]);
 
   if (loading) {
     return (
@@ -150,7 +178,7 @@ export default function VideoDetailPage() {
           </div>
         </div>
       </div>
-    )
+    );
   }
 
   if (error || !video) {
@@ -158,25 +186,42 @@ export default function VideoDetailPage() {
       <div className="clientVideoPage">
         <div className="cvContainer">
           <div className="cvError">
-            <p>{error || 'Không tìm thấy video yêu cầu'}</p>
-            <button type="button" onClick={() => navigate('/videos')}>Quay lại danh sách</button>
+            <p>{error || "Không tìm thấy video yêu cầu"}</p>
+            <button type="button" onClick={() => navigate("/videos")}>
+              Quay lại danh sách
+            </button>
           </div>
         </div>
       </div>
-    )
+    );
   }
 
   return (
     <>
       <Helmet>
-        <title>{video.title ? `${video.title} | E-Tech Market` : 'Xem video giới thiệu công nghệ | E-Tech Market'}</title>
-        <meta name="description" content={`Xem video review và giới thiệu sản phẩm: ${video.title || ''}`} />
+        <title>
+          {video.title
+            ? `${video.title} | E-Tech Market`
+            : "Xem video giới thiệu công nghệ | E-Tech Market"}
+        </title>
+        <meta
+          name="description"
+          content={`Xem video review và giới thiệu sản phẩm: ${video.title || ""}`}
+        />
       </Helmet>
 
       <div className="clientVideoPage">
         <div className="cvContainer">
-          <nav className="cvBreadcrumb" style={{ whiteSpace: 'normal', wordBreak: 'break-word', display: 'block' }}>
-            <Link to="/">Trang chủ</Link> / <Link to="/videos">Videos</Link> / <span>{video.title}</span>
+          <nav
+            className="cvBreadcrumb"
+            style={{
+              whiteSpace: "normal",
+              wordBreak: "break-word",
+              display: "block",
+            }}
+          >
+            <Link to="/">Trang chủ</Link> / <Link to="/videos">Videos</Link> /{" "}
+            <span>{video.title}</span>
           </nav>
 
           <div className="vdpLayout">
@@ -187,17 +232,21 @@ export default function VideoDetailPage() {
                   {renderVideoPlayer(video.video_url, video.title)}
                 </div>
               </div>
-              <h1 className="vdpTitle">{video.title || 'Video giới thiệu sản phẩm'}</h1>
+              <h1 className="vdpTitle">
+                {video.title || "Video giới thiệu sản phẩm"}
+              </h1>
               <div className="vdpMeta">
                 <span className="vdpStatusBadge">Phát sóng trực tuyến</span>
               </div>
               <div className="vdpDivider"></div>
-              
+
               {/* Product description / Video info */}
               <div className="vdpDescription">
                 <h3>Về video này</h3>
                 <div className="vdpDescriptionText">
-                  {video.description || video.product?.short_description || 'Đây là video giới thiệu trực quan, giúp bạn có cái nhìn khách quan và rõ nét nhất về thiết kế, tính năng và hiệu năng thực tế của sản phẩm. Video được tổng hợp và phân phối bởi E-Tech Market.'}
+                  {video.description ||
+                    video.product?.short_description ||
+                    "Đây là video giới thiệu trực quan, giúp bạn có cái nhìn khách quan và rõ nét nhất về thiết kế, tính năng và hiệu năng thực tế của sản phẩm. Video được tổng hợp và phân phối bởi E-Tech Market."}
                 </div>
               </div>
             </div>
@@ -206,45 +255,93 @@ export default function VideoDetailPage() {
             <aside className="vdpSidebar">
               {/* Linked Product Card */}
               {video.products && video.products.length > 0 ? (
-                <div className="vdpProductCard" style={{ padding: '20px' }}>
-                  <h3 className="vdpSidebarTitle" style={{ marginBottom: '10px' }}>Sản phẩm trong video</h3>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                    {video.products.map(p => (
-                      <div 
-                        key={p.id} 
+                <div className="vdpProductCard" style={{ padding: "20px" }}>
+                  <h3
+                    className="vdpSidebarTitle"
+                    style={{ marginBottom: "10px" }}
+                  >
+                    Sản phẩm trong video
+                  </h3>
+                  <div
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: "12px",
+                    }}
+                  >
+                    {video.products.map((p) => (
+                      <div
+                        key={p.id}
                         onClick={() => navigate(`/products/${p.slug}`)}
                         style={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: '10px',
-                          padding: '5px',
-                          borderRadius: '5px',
-                          border: '1px solid #f1f5f9',
-                          backgroundColor: '#ffffff',
-                          cursor: 'pointer',
-                          transition: 'all 0.2s ease',
-                          boxShadow: '0 1px 2px rgba(0,0,0,0.02)'
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "10px",
+                          padding: "5px",
+                          borderRadius: "5px",
+                          border: "1px solid #f1f5f9",
+                          backgroundColor: "#ffffff",
+                          cursor: "pointer",
+                          transition: "all 0.2s ease",
+                          boxShadow: "0 1px 2px rgba(0,0,0,0.02)",
                         }}
                         onMouseEnter={(e) => {
-                          e.currentTarget.style.borderColor = '#fdba74'
-                          e.currentTarget.style.boxShadow = '0 4px 6px -1px rgba(249, 115, 22, 0.1), 0 2px 4px -1px rgba(249, 115, 22, 0.06)'
+                          e.currentTarget.style.borderColor = "#fdba74";
+                          e.currentTarget.style.boxShadow =
+                            "0 4px 6px -1px rgba(249, 115, 22, 0.1), 0 2px 4px -1px rgba(249, 115, 22, 0.06)";
                         }}
                         onMouseLeave={(e) => {
-                          e.currentTarget.style.borderColor = '#f1f5f9'
-                          e.currentTarget.style.boxShadow = '0 1px 2px rgba(0,0,0,0.02)'
+                          e.currentTarget.style.borderColor = "#f1f5f9";
+                          e.currentTarget.style.boxShadow =
+                            "0 1px 2px rgba(0,0,0,0.02)";
                         }}
                       >
                         <img
                           src={resolveImageUrl(p.main_image_url)}
                           alt={p.name}
-                          style={{ width: '64px', height: '64px', objectFit: 'contain', borderRadius: '4px', backgroundColor: '#f8fafc' }}
+                          style={{
+                            width: "64px",
+                            height: "64px",
+                            objectFit: "contain",
+                            borderRadius: "4px",
+                            backgroundColor: "#f8fafc",
+                          }}
                         />
-                        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '4px', minWidth: 0 }}>
-                          <h4 style={{ margin: 0, fontSize: '14px', fontWeight: 600, color: '#1e293b', lineHeight: '1.4', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                        <div
+                          style={{
+                            flex: 1,
+                            display: "flex",
+                            flexDirection: "column",
+                            gap: "4px",
+                            minWidth: 0,
+                          }}
+                        >
+                          <h4
+                            style={{
+                              margin: 0,
+                              fontSize: "14px",
+                              fontWeight: 600,
+                              color: "#1e293b",
+                              lineHeight: "1.4",
+                              display: "-webkit-box",
+                              WebkitLineClamp: 2,
+                              WebkitBoxOrient: "vertical",
+                              overflow: "hidden",
+                            }}
+                          >
                             {p.name}
                           </h4>
                         </div>
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <svg
+                          width="20"
+                          height="20"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="#94a3b8"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        >
                           <polyline points="9 18 15 12 9 6"></polyline>
                         </svg>
                       </div>
@@ -252,56 +349,113 @@ export default function VideoDetailPage() {
                   </div>
                 </div>
               ) : video.product ? (
-                <div className="vdpProductCard" style={{ padding: '20px' }}>
-                  <h3 className="vdpSidebarTitle" style={{ marginBottom: '16px' }}>Sản phẩm trong video</h3>
-                  <div 
+                <div className="vdpProductCard" style={{ padding: "20px" }}>
+                  <h3
+                    className="vdpSidebarTitle"
+                    style={{ marginBottom: "16px" }}
+                  >
+                    Sản phẩm trong video
+                  </h3>
+                  <div
                     onClick={() => navigate(`/products/${video.product!.slug}`)}
                     style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '12px',
-                      padding: '12px',
-                      borderRadius: '8px',
-                      border: '1px solid #f1f5f9',
-                      backgroundColor: '#ffffff',
-                      cursor: 'pointer',
-                      transition: 'all 0.2s ease',
-                      boxShadow: '0 1px 2px rgba(0,0,0,0.02)'
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "12px",
+                      padding: "12px",
+                      borderRadius: "8px",
+                      border: "1px solid #f1f5f9",
+                      backgroundColor: "#ffffff",
+                      cursor: "pointer",
+                      transition: "all 0.2s ease",
+                      boxShadow: "0 1px 2px rgba(0,0,0,0.02)",
                     }}
                     onMouseEnter={(e) => {
-                      e.currentTarget.style.borderColor = '#fdba74'
-                      e.currentTarget.style.boxShadow = '0 4px 6px -1px rgba(249, 115, 22, 0.1), 0 2px 4px -1px rgba(249, 115, 22, 0.06)'
+                      e.currentTarget.style.borderColor = "#fdba74";
+                      e.currentTarget.style.boxShadow =
+                        "0 4px 6px -1px rgba(249, 115, 22, 0.1), 0 2px 4px -1px rgba(249, 115, 22, 0.06)";
                     }}
                     onMouseLeave={(e) => {
-                      e.currentTarget.style.borderColor = '#f1f5f9'
-                      e.currentTarget.style.boxShadow = '0 1px 2px rgba(0,0,0,0.02)'
+                      e.currentTarget.style.borderColor = "#f1f5f9";
+                      e.currentTarget.style.boxShadow =
+                        "0 1px 2px rgba(0,0,0,0.02)";
                     }}
                   >
                     <img
                       src={resolveImageUrl(video.product.main_image_url)}
                       alt={video.product.name}
-                      style={{ width: '64px', height: '64px', objectFit: 'contain', borderRadius: '4px', backgroundColor: '#f8fafc' }}
+                      style={{
+                        width: "64px",
+                        height: "64px",
+                        objectFit: "contain",
+                        borderRadius: "4px",
+                        backgroundColor: "#f8fafc",
+                      }}
                     />
-                    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '4px', minWidth: 0 }}>
-                      <h4 style={{ margin: 0, fontSize: '14px', fontWeight: 600, color: '#1e293b', lineHeight: '1.4', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                    <div
+                      style={{
+                        flex: 1,
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: "4px",
+                        minWidth: 0,
+                      }}
+                    >
+                      <h4
+                        style={{
+                          margin: 0,
+                          fontSize: "14px",
+                          fontWeight: 600,
+                          color: "#1e293b",
+                          lineHeight: "1.4",
+                          display: "-webkit-box",
+                          WebkitLineClamp: 2,
+                          WebkitBoxOrient: "vertical",
+                          overflow: "hidden",
+                        }}
+                      >
                         {video.product.name}
                       </h4>
-                      <div style={{ fontSize: '14px', fontWeight: 700, color: '#f97316' }}>
-                        {video.product.price ? parseFloat(video.product.price.toString()).toLocaleString('vi-VN') + ' đ' : 'Liên hệ'}
+                      <div
+                        style={{
+                          fontSize: "14px",
+                          fontWeight: 700,
+                          color: "#f97316",
+                        }}
+                      >
+                        {video.product.price
+                          ? parseFloat(
+                              video.product.price.toString(),
+                            ).toLocaleString("vi-VN") + " đ"
+                          : "Liên hệ"}
                       </div>
                     </div>
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <svg
+                      width="20"
+                      height="20"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="#94a3b8"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
                       <polyline points="9 18 15 12 9 6"></polyline>
                     </svg>
                   </div>
                   {video.product.short_description && (
-                    <p className="vdpProductDesc" style={{ marginTop: '16px' }}>{video.product.short_description}</p>
+                    <p className="vdpProductDesc" style={{ marginTop: "16px" }}>
+                      {video.product.short_description}
+                    </p>
                   )}
                 </div>
               ) : (
                 <div className="vdpProductCard vdpNoProduct">
                   <h3 className="vdpSidebarTitle">Sản phẩm</h3>
-                  <p>Video tổng quan giới thiệu các giải pháp công nghệ tại E-Tech Market.</p>
+                  <p>
+                    Video tổng quan giới thiệu các giải pháp công nghệ tại
+                    E-Tech Market.
+                  </p>
                 </div>
               )}
 
@@ -318,17 +472,31 @@ export default function VideoDetailPage() {
                       >
                         <div className="vdpRecThumbWrap">
                           <img
-                            src={getVideoThumbnail(rec.video_url, rec.product?.main_image_url)}
-                            alt={rec.title || ''}
+                            src={getVideoThumbnail(
+                              rec.video_url,
+                              rec.product?.main_image_url,
+                            )}
+                            alt={rec.title || ""}
                             className="vdpRecThumb"
                           />
-                          <div className="vdpRecPlay"><svg width="24" height="24" viewBox="0 0 24 24" fill="white">
-                          <polygon points="6 4 20 12 6 20 6 4" />
-                        </svg></div>
+                          <div className="vdpRecPlay">
+                            <svg
+                              width="24"
+                              height="24"
+                              viewBox="0 0 24 24"
+                              fill="white"
+                            >
+                              <polygon points="6 4 20 12 6 20 6 4" />
+                            </svg>
+                          </div>
                         </div>
                         <div className="vdpRecInfo">
                           <h4 className="vdpRecTitle">{rec.title}</h4>
-                          {rec.product && <span className="vdpRecProduct">{rec.product.name}</span>}
+                          {rec.product && (
+                            <span className="vdpRecProduct">
+                              {rec.product.name}
+                            </span>
+                          )}
                         </div>
                       </div>
                     ))}
@@ -340,5 +508,5 @@ export default function VideoDetailPage() {
         </div>
       </div>
     </>
-  )
+  );
 }

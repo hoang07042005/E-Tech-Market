@@ -5,7 +5,7 @@ import "@/styles/admin/SettingsAdminPage.css";
 import logoMomo from "@/assets/logo-momo.png";
 import logoVnpay from "@/assets/vnpay-logo.png";
 import logoCod from "@/assets/COD.png";
-import { toast } from '@/utils/toast';
+import { toast } from "@/utils/toast";
 
 type IconProps = { className?: string; title?: string };
 
@@ -1299,20 +1299,22 @@ export default function SettingsAdminPage() {
               <div key={m.id} className="admShipMethodTile">
                 <div className="admShipMethodTop">
                   <div className="admShipMethodIcon" aria-hidden>
-                    <svg xmlns="http://www.w3.org/2000/svg"
-                        width="20"
-                        height="20"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="2"
-                        stroke-linecap="round"
-                        stroke-linejoin="round">
-                      <rect x="1" y="3" width="15" height="13" rx="2"/>
-                      <path d="M16 8h4l3 3v5h-7V8z"/>
-                      <circle cx="5.5" cy="19" r="2"/>
-                      <circle cx="18.5" cy="19" r="2"/>
-                      <path d="M7.5 19h9"/>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="20"
+                      height="20"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <rect x="1" y="3" width="15" height="13" rx="2" />
+                      <path d="M16 8h4l3 3v5h-7V8z" />
+                      <circle cx="5.5" cy="19" r="2" />
+                      <circle cx="18.5" cy="19" r="2" />
+                      <path d="M7.5 19h9" />
                     </svg>
                   </div>
                   <label
@@ -2128,7 +2130,9 @@ export default function SettingsAdminPage() {
             <div className="admModalHead">
               <div>
                 <div className="admModalTitle">Dán nhiều vùng vận chuyển</div>
-                <div className="admModalSub">Dán mỗi dòng: Tên|Thời gian dự kiến|Đơn giá (VND)</div>
+                <div className="admModalSub">
+                  Dán mỗi dòng: Tên|Thời gian dự kiến|Đơn giá (VND)
+                </div>
               </div>
               <button
                 type="button"
@@ -2156,11 +2160,28 @@ export default function SettingsAdminPage() {
                 </div>
               )}
 
-              <div style={{ display: "flex", gap: 10, justifyContent: "flex-end", marginTop: 8 }}>
-                <button type="button" className="admShipPolicyBtn" onClick={() => setZonePasteOpen(false)} disabled={addingZones}>
+              <div
+                style={{
+                  display: "flex",
+                  gap: 10,
+                  justifyContent: "flex-end",
+                  marginTop: 8,
+                }}
+              >
+                <button
+                  type="button"
+                  className="admShipPolicyBtn"
+                  onClick={() => setZonePasteOpen(false)}
+                  disabled={addingZones}
+                >
                   Huỷ
                 </button>
-                <button type="button" className="admSettingsSaveBtn" onClick={() => void handleSubmitZonePaste()} disabled={addingZones}>
+                <button
+                  type="button"
+                  className="admSettingsSaveBtn"
+                  onClick={() => void handleSubmitZonePaste()}
+                  disabled={addingZones}
+                >
                   {addingZones ? "Đang thêm…" : "Thêm vùng"}
                 </button>
               </div>

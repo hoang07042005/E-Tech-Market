@@ -1,17 +1,16 @@
 /* ================================================================
    Profile Trade-In History — Two-column layout
    ================================================================ */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap");
 
 /* ── Container ── */
 .ptih-container {
-  font-family: 'Inter', sans-serif;
+  font-family: "Inter", sans-serif;
   max-width: 1150px;
   width: 100%;
   overflow-x: hidden;
   box-sizing: border-box;
 }
-
 
 /* ── Header ── */
 .ptih-header {
@@ -77,7 +76,11 @@
   border-radius: 50%;
   animation: ptih-spin 0.7s linear infinite;
 }
-@keyframes ptih-spin { to { transform: rotate(360deg); } }
+@keyframes ptih-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
 
 /* ── Layout: Two columns ── */
 .ptih-layout {
@@ -105,7 +108,9 @@
   scrollbar-width: none;
   border-bottom: 1px solid rgba(15, 23, 42, 0.1);
 }
-.ptih-tabs::-webkit-scrollbar { display: none; }
+.ptih-tabs::-webkit-scrollbar {
+  display: none;
+}
 
 .ptih-tab {
   padding: 10px 18px;
@@ -117,7 +122,9 @@
   font-size: 13.5px;
   font-weight: 500;
   cursor: pointer;
-  transition: color 0.18s, border-color 0.18s;
+  transition:
+    color 0.18s,
+    border-color 0.18s;
   white-space: nowrap;
   flex-shrink: 0;
 }
@@ -170,7 +177,9 @@
   background: #fff;
   border-bottom: 1.5px dashed #ff5b09;
   cursor: pointer;
-  transition: box-shadow 0.2s, border-color 0.2s;
+  transition:
+    box-shadow 0.2s,
+    border-color 0.2s;
   overflow: hidden;
   position: relative;
   box-sizing: border-box;
@@ -391,12 +400,30 @@
 }
 
 /* ── Status Badges ── */
-.ptih-badge-pending   { background: #fffbeb; color: #b45309; }
-.ptih-badge-quoted    { background: #fef3c7; color: #d97706; }
-.ptih-badge-approved  { background: #dcfce7; color: #15803d; }
-.ptih-badge-rejected  { background: #fee2e2; color: #dc2626; }
-.ptih-badge-completed { background: #dcfce7; color: #15803d; }
-.ptih-badge-gray      { background: #f1f5f9; color: #64748b; }
+.ptih-badge-pending {
+  background: #fffbeb;
+  color: #b45309;
+}
+.ptih-badge-quoted {
+  background: #fef3c7;
+  color: #d97706;
+}
+.ptih-badge-approved {
+  background: #dcfce7;
+  color: #15803d;
+}
+.ptih-badge-rejected {
+  background: #fee2e2;
+  color: #dc2626;
+}
+.ptih-badge-completed {
+  background: #dcfce7;
+  color: #15803d;
+}
+.ptih-badge-gray {
+  background: #f1f5f9;
+  color: #64748b;
+}
 
 /* ── Pagination ── */
 .ptih-pagination {
@@ -466,12 +493,18 @@
   top: 20px;
   overflow: hidden;
   animation: ptih-slide-in 0.22s ease;
-  box-shadow: 0 4px 24px rgba(0,0,0,0.07);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.07);
 }
 
 @keyframes ptih-slide-in {
-  from { opacity: 0; transform: translateX(16px); }
-  to   { opacity: 1; transform: translateX(0); }
+  from {
+    opacity: 0;
+    transform: translateX(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
 
 .ptih-detail-header {
@@ -522,11 +555,31 @@
   font-weight: 600;
   border: 1px solid transparent;
 }
-.ptih-status-badge-large.ptih-badge-pending   { background: #fffbeb; color: #b45309; border-color: #fde68a; }
-.ptih-status-badge-large.ptih-badge-quoted    { background: #fef3c7; color: #d97706; border-color: #fcd34d; }
-.ptih-status-badge-large.ptih-badge-approved  { background: #dcfce7; color: #15803d; border-color: #86efac; }
-.ptih-status-badge-large.ptih-badge-rejected  { background: #fee2e2; color: #dc2626; border-color: #fca5a5; }
-.ptih-status-badge-large.ptih-badge-completed { background: #dcfce7; color: #15803d; border-color: #86efac; }
+.ptih-status-badge-large.ptih-badge-pending {
+  background: #fffbeb;
+  color: #b45309;
+  border-color: #fde68a;
+}
+.ptih-status-badge-large.ptih-badge-quoted {
+  background: #fef3c7;
+  color: #d97706;
+  border-color: #fcd34d;
+}
+.ptih-status-badge-large.ptih-badge-approved {
+  background: #dcfce7;
+  color: #15803d;
+  border-color: #86efac;
+}
+.ptih-status-badge-large.ptih-badge-rejected {
+  background: #fee2e2;
+  color: #dc2626;
+  border-color: #fca5a5;
+}
+.ptih-status-badge-large.ptih-badge-completed {
+  background: #dcfce7;
+  color: #15803d;
+  border-color: #86efac;
+}
 
 /* Detail body — scrollable */
 .ptih-detail-body {
@@ -535,9 +588,16 @@
   scrollbar-width: thin;
   scrollbar-color: #e2e8f0 transparent;
 }
-.ptih-detail-body::-webkit-scrollbar { width: 4px; }
-.ptih-detail-body::-webkit-scrollbar-track { background: transparent; }
-.ptih-detail-body::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 4px; }
+.ptih-detail-body::-webkit-scrollbar {
+  width: 4px;
+}
+.ptih-detail-body::-webkit-scrollbar-track {
+  background: transparent;
+}
+.ptih-detail-body::-webkit-scrollbar-thumb {
+  background: #e2e8f0;
+  border-radius: 4px;
+}
 
 /* Sections */
 .ptih-detail-section {
@@ -567,11 +627,26 @@
   justify-content: center;
   flex-shrink: 0;
 }
-.ptih-section-icon.blue   { background: #dbeafe; color: #2563eb; }
-.ptih-section-icon.orange { background: #ffedd5; color: #ea580c; }
-.ptih-section-icon.green  { background: #dcfce7; color: #16a34a; }
-.ptih-section-icon.purple { background: #ede9fe; color: #7c3aed; }
-.ptih-section-icon.amber  { background: #fef3c7; color: #d97706; }
+.ptih-section-icon.blue {
+  background: #dbeafe;
+  color: #2563eb;
+}
+.ptih-section-icon.orange {
+  background: #ffedd5;
+  color: #ea580c;
+}
+.ptih-section-icon.green {
+  background: #dcfce7;
+  color: #16a34a;
+}
+.ptih-section-icon.purple {
+  background: #ede9fe;
+  color: #7c3aed;
+}
+.ptih-section-icon.amber {
+  background: #fef3c7;
+  color: #d97706;
+}
 
 /* Info table */
 .ptih-info-table {
@@ -657,7 +732,9 @@
   position: relative;
   transition: transform 0.2s;
 }
-.ptih-img-cell:hover { transform: scale(1.05); }
+.ptih-img-cell:hover {
+  transform: scale(1.05);
+}
 .ptih-img-cell img {
   width: 100%;
   height: 100%;
@@ -765,7 +842,10 @@
   transform: translateY(-1px);
   box-shadow: 0 4px 16px rgba(22, 163, 74, 0.4);
 }
-.ptih-btn-accept:disabled { opacity: 0.6; cursor: not-allowed; }
+.ptih-btn-accept:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
 
 /* Notice variants */
 .ptih-notice-success {
@@ -808,14 +888,23 @@
 /* ================================================================
    Dark Mode
    ================================================================ */
-html.dark .ptih-title { color: #f1f5f9; }
-html.dark .ptih-subtitle { color: #94a3b8; }
+html.dark .ptih-title {
+  color: #f1f5f9;
+}
+html.dark .ptih-subtitle {
+  color: #94a3b8;
+}
 
 html.dark .ptih-tabs {
   border-bottom-color: #334155;
 }
-html.dark .ptih-tab { color: #64748b; }
-html.dark .ptih-tab:hover { color: #f97316; border-bottom-color: #7c3aed; }
+html.dark .ptih-tab {
+  color: #64748b;
+}
+html.dark .ptih-tab:hover {
+  color: #f97316;
+  border-bottom-color: #7c3aed;
+}
 html.dark .ptih-tab-active {
   color: #f97316 !important;
   border-bottom-color: #f97316 !important;
@@ -825,41 +914,118 @@ html.dark .ptih-card {
   background: #1e293b;
   border-color: #334155;
 }
-html.dark .ptih-card:hover { border-color: #6366f1; }
-html.dark .ptih-card-selected { border-color: #818cf8 !important; }
-html.dark .ptih-device-name { color: #f1f5f9; }
-html.dark .ptih-specs { color: #94a3b8; }
-html.dark .ptih-meta-code { color: #94a3b8; }
-html.dark .ptih-meta-code strong { color: #cbd5e1; }
-html.dark .ptih-meta-date { color: #64748b; }
-html.dark .ptih-card-price-val { color: #a5b4fc; }
-html.dark .ptih-thumb { background: #0f172a; border-color: #334155; }
+html.dark .ptih-card:hover {
+  border-color: #6366f1;
+}
+html.dark .ptih-card-selected {
+  border-color: #818cf8 !important;
+}
+html.dark .ptih-device-name {
+  color: #f1f5f9;
+}
+html.dark .ptih-specs {
+  color: #94a3b8;
+}
+html.dark .ptih-meta-code {
+  color: #94a3b8;
+}
+html.dark .ptih-meta-code strong {
+  color: #cbd5e1;
+}
+html.dark .ptih-meta-date {
+  color: #64748b;
+}
+html.dark .ptih-card-price-val {
+  color: #a5b4fc;
+}
+html.dark .ptih-thumb {
+  background: #0f172a;
+  border-color: #334155;
+}
 
-html.dark .ptih-page-btn { background: #1e293b; border-color: #334155; color: #94a3b8; }
-html.dark .ptih-page-btn:hover:not(:disabled) { border-color: #6366f1; color: #a5b4fc; }
-html.dark .ptih-page-btn-active { background: #6366f1; border-color: #6366f1; color: #fff !important; }
-html.dark .ptih-page-info { color: #94a3b8; }
+html.dark .ptih-page-btn {
+  background: #1e293b;
+  border-color: #334155;
+  color: #94a3b8;
+}
+html.dark .ptih-page-btn:hover:not(:disabled) {
+  border-color: #6366f1;
+  color: #a5b4fc;
+}
+html.dark .ptih-page-btn-active {
+  background: #6366f1;
+  border-color: #6366f1;
+  color: #fff !important;
+}
+html.dark .ptih-page-info {
+  color: #94a3b8;
+}
 
-html.dark .ptih-detail-panel { background: #1e293b; border-color: #334155; }
-html.dark .ptih-detail-header { border-color: #334155; }
-html.dark .ptih-detail-title { color: #f1f5f9; }
-html.dark .ptih-detail-close:hover { background: #0f172a; color: #f1f5f9; }
-html.dark .ptih-detail-status-bar { border-color: #334155; }
-html.dark .ptih-detail-body::-webkit-scrollbar-thumb { background: #334155; }
-html.dark .ptih-detail-section { border-color: #1e293b; }
-html.dark .ptih-section-heading { color: #e2e8f0; }
-html.dark .ptih-info-key { color: #64748b; }
-html.dark .ptih-info-val { color: #cbd5e1; }
-html.dark .ptih-info-val-strong { color: #f1f5f9; }
-html.dark .ptih-cond-label { color: #cbd5e1; }
-html.dark .ptih-cond-val { color: #94a3b8; }
-html.dark .ptih-img-cell { border-color: #334155; }
-html.dark .ptih-price-box { background: linear-gradient(135deg, #2d1b4e, #1e1b4b); border-color: #4c1d95; }
-html.dark .ptih-price-box-label { color: #c4b5fd; }
-html.dark .ptih-price-box-value { color: #a78bfa; }
-html.dark .ptih-note-box { background: #0f172a; color: #cbd5e1; border-left-color: #6366f1; }
-html.dark .ptih-action-section { background: #0f172a; }
-html.dark .ptih-no-image-text { color: #64748b; }
+html.dark .ptih-detail-panel {
+  background: #1e293b;
+  border-color: #334155;
+}
+html.dark .ptih-detail-header {
+  border-color: #334155;
+}
+html.dark .ptih-detail-title {
+  color: #f1f5f9;
+}
+html.dark .ptih-detail-close:hover {
+  background: #0f172a;
+  color: #f1f5f9;
+}
+html.dark .ptih-detail-status-bar {
+  border-color: #334155;
+}
+html.dark .ptih-detail-body::-webkit-scrollbar-thumb {
+  background: #334155;
+}
+html.dark .ptih-detail-section {
+  border-color: #1e293b;
+}
+html.dark .ptih-section-heading {
+  color: #e2e8f0;
+}
+html.dark .ptih-info-key {
+  color: #64748b;
+}
+html.dark .ptih-info-val {
+  color: #cbd5e1;
+}
+html.dark .ptih-info-val-strong {
+  color: #f1f5f9;
+}
+html.dark .ptih-cond-label {
+  color: #cbd5e1;
+}
+html.dark .ptih-cond-val {
+  color: #94a3b8;
+}
+html.dark .ptih-img-cell {
+  border-color: #334155;
+}
+html.dark .ptih-price-box {
+  background: linear-gradient(135deg, #2d1b4e, #1e1b4b);
+  border-color: #4c1d95;
+}
+html.dark .ptih-price-box-label {
+  color: #c4b5fd;
+}
+html.dark .ptih-price-box-value {
+  color: #a78bfa;
+}
+html.dark .ptih-note-box {
+  background: #0f172a;
+  color: #cbd5e1;
+  border-left-color: #6366f1;
+}
+html.dark .ptih-action-section {
+  background: #0f172a;
+}
+html.dark .ptih-no-image-text {
+  color: #64748b;
+}
 
 /* ================================================================
    Responsive
@@ -898,8 +1064,13 @@ html.dark .ptih-no-image-text { color: #64748b; }
     margin-bottom: 16px;
   }
 
-  .ptih-title { font-size: 18px; }
-  .ptih-btn-new { width: 100%; justify-content: center; }
+  .ptih-title {
+    font-size: 18px;
+  }
+  .ptih-btn-new {
+    width: 100%;
+    justify-content: center;
+  }
 
   /* Tabs already scrollable from base styles — just adjust sizing */
   .ptih-tab {
@@ -941,10 +1112,19 @@ html.dark .ptih-no-image-text { color: #64748b; }
     border-radius: 8px;
   }
 
-  .ptih-device-name { font-size: 13px; margin-bottom: 2px; }
-  .ptih-specs { display: none; }
-  .ptih-meta-code { font-size: 11.5px; }
-  .ptih-meta-date { font-size: 11px; }
+  .ptih-device-name {
+    font-size: 13px;
+    margin-bottom: 2px;
+  }
+  .ptih-specs {
+    display: none;
+  }
+  .ptih-meta-code {
+    font-size: 11.5px;
+  }
+  .ptih-meta-date {
+    font-size: 11px;
+  }
 
   /* card-right: bottom bar across full width */
   .ptih-card-right {
@@ -955,9 +1135,15 @@ html.dark .ptih-no-image-text { color: #64748b; }
     min-width: unset;
     flex-shrink: unset;
   }
-  .ptih-card-price-wrap { text-align: left; }
-  .ptih-card-price-label { font-size: 11px; }
-  .ptih-card-price-val   { font-size: 14px; }
+  .ptih-card-price-wrap {
+    text-align: left;
+  }
+  .ptih-card-price-label {
+    font-size: 11px;
+  }
+  .ptih-card-price-val {
+    font-size: 14px;
+  }
 
   /* Pagination compact */
   .ptih-pagination {
@@ -966,7 +1152,11 @@ html.dark .ptih-no-image-text { color: #64748b; }
     gap: 8px;
     margin-top: 14px;
   }
-  .ptih-page-btn { width: 30px; height: 30px; font-size: 12px; }
+  .ptih-page-btn {
+    width: 30px;
+    height: 30px;
+    font-size: 12px;
+  }
 
   /* Detail panel full-width */
   .ptih-detail-panel {
@@ -975,9 +1165,20 @@ html.dark .ptih-no-image-text { color: #64748b; }
     border-right: none;
     box-shadow: none;
   }
-  .ptih-detail-header { padding: 14px; }
-  .ptih-detail-section { padding: 14px; }
-  .ptih-info-key { min-width: 74px; font-size: 12px; }
-  .ptih-info-val { font-size: 12px; }
-  .ptih-price-box-value { font-size: 20px; }
+  .ptih-detail-header {
+    padding: 14px;
+  }
+  .ptih-detail-section {
+    padding: 14px;
+  }
+  .ptih-info-key {
+    min-width: 74px;
+    font-size: 12px;
+  }
+  .ptih-info-val {
+    font-size: 12px;
+  }
+  .ptih-price-box-value {
+    font-size: 20px;
+  }
 }

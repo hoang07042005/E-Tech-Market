@@ -1,9 +1,9 @@
-import DOMPurify from 'dompurify'
+import DOMPurify from "dompurify";
 
 export function sanitizeHtml(html: string | null | undefined): string {
-  if (!html) return ''
+  if (!html) return "";
   return DOMPurify.sanitize(html, {
     USE_PROFILES: { html: true },
-    ADD_ATTR: ['target', 'rel'],
-  })
+    ADD_ATTR: ["target", "rel"],
+  });
 }

@@ -1,27 +1,27 @@
-import { render, screen } from '@testing-library/react'
-import { BrowserRouter } from 'react-router-dom'
-import HeaderPage from '../HeaderPage'
+import { render, screen } from "@testing-library/react";
+import { BrowserRouter } from "react-router-dom";
+import HeaderPage from "../HeaderPage";
 
-describe.skip('HeaderPage Component', () => {
-  it('renders the search inputs correctly', () => {
+describe.skip("HeaderPage Component", () => {
+  it("renders the search inputs correctly", () => {
     render(
       <BrowserRouter>
         <HeaderPage />
-      </BrowserRouter>
-    )
+      </BrowserRouter>,
+    );
 
-    const searchInputs = screen.getAllByPlaceholderText(/Tìm kiếm/i)
-    expect(searchInputs.length).toBeGreaterThan(0)
-  })
+    const searchInputs = screen.getAllByPlaceholderText(/Tìm kiếm/i);
+    expect(searchInputs.length).toBeGreaterThan(0);
+  });
 
-  it('renders cart and notification icons', () => {
+  it("renders cart and notification icons", () => {
     render(
       <BrowserRouter>
         <HeaderPage />
-      </BrowserRouter>
-    )
+      </BrowserRouter>,
+    );
 
-    const cartBtn = screen.getByLabelText(/Giỏ hàng/i)
-    expect(cartBtn).toBeInTheDocument()
-  })
-})
+    const cartBtn = screen.getByLabelText(/Giỏ hàng/i);
+    expect(cartBtn).toBeInTheDocument();
+  });
+});

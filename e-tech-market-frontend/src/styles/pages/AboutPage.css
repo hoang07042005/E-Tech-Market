@@ -1,9 +1,8 @@
-
 .abPage {
   width: 100%;
   background: var(--et-bg);
   color: var(--et-text);
-  font-family: 'Inter', sans-serif;
+  font-family: "Inter", sans-serif;
 }
 .abInner {
   max-width: 1470px;
@@ -52,7 +51,13 @@
 .abHeroTint {
   position: absolute;
   inset: 0;
- background: linear-gradient(to right, rgb(10 10 10 / 38%) 0%, rgb(10 10 10 / 25%) 40%, rgba(10, 10, 10, 0.2) 80%, rgba(10, 10, 10, 0) 100%);
+  background: linear-gradient(
+    to right,
+    rgb(10 10 10 / 38%) 0%,
+    rgb(10 10 10 / 25%) 40%,
+    rgba(10, 10, 10, 0.2) 80%,
+    rgba(10, 10, 10, 0) 100%
+  );
 }
 .abHeroContainer {
   position: relative;
@@ -96,7 +101,8 @@
   gap: 16px;
   justify-content: flex-start;
 }
-.abBtnPrimary, .abBtnGhost {
+.abBtnPrimary,
+.abBtnGhost {
   font-size: 0.9rem;
   font-weight: 600;
   padding: 12px 24px;
@@ -116,7 +122,7 @@
 .abBtnGhost {
   background: transparent;
   color: #fff;
-  border: 1px solid rgba(255,255,255,0.3);
+  border: 1px solid rgba(255, 255, 255, 0.3);
 }
 .abBtnGhost:hover {
   border-color: #fff;
@@ -135,7 +141,7 @@
 .abStoryMedia {
   border-radius: 8px;
   overflow: hidden;
-  box-shadow: 0 14px 36px rgba(0,0,0,0.08);
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.08);
   aspect-ratio: 16 / 10;
 }
 .abStoryMedia img {
@@ -172,7 +178,7 @@
 }
 .abStoryFeatIcon {
   color: var(--et-primary, #f97316);
-  background: rgba(249,115,22,0.1);
+  background: rgba(249, 115, 22, 0.1);
   padding: 8px;
   border-radius: 50%;
   display: flex;
@@ -220,7 +226,7 @@
   border-radius: 8px;
   padding: 12px;
   text-align: center;
-  box-shadow: 0 4px 12px rgba(249,115,22,0.05);
+  box-shadow: 0 4px 12px rgba(249, 115, 22, 0.05);
   margin-bottom: 16px;
   height: 90px;
   display: flex;
@@ -345,7 +351,7 @@
 .abWhyMedia {
   border-radius: 12px;
   overflow: hidden;
-  box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
 }
 .abWhyMedia img {
   width: 100%;
@@ -570,7 +576,7 @@
   border-radius: 12px;
   overflow: hidden;
   width: 400px;
-  box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
 }
 .abCtaImage img {
   width: 100%;
@@ -586,22 +592,69 @@
 
 /* Media Queries */
 @media (max-width: 1024px) {
-  .abValuesGrid { grid-template-columns: repeat(3, 1fr); }
-  .abProcessArrow { display: none; }
-  .abProcessFlow { grid-template-columns: repeat(3, 1fr); gap: 32px 16px; }
-  .abJourneyTimeline { flex-direction: column; align-items: flex-start; padding-left: 20px; }
-  .abJourneyLine { top: 0; bottom: 0; left: 28px; width: 2px; height: auto; border-top: none; border-left: 2px dashed #fdba74; }
-  .abJourneyStep { flex-direction: row !important; width: 100%; align-items: center; justify-content: flex-start; margin-bottom: 24px; }
-  .abJourneyStep:nth-child(even) .abJourneyCard, .abJourneyStep:nth-child(even) .abJourneyDot { margin-top: 0; margin-bottom: 0; }
-  .abJourneyDot { margin-right: 24px; margin-bottom: 0; position: relative; z-index: 3; order: 1; flex-shrink: 0; }
-  .abJourneyIcon { display: none; }
-  .abJourneyCard { width: calc(100% - 60px); height: auto; padding: 16px; text-align: left; order: 2; margin: 0 !important; }
+  .abValuesGrid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .abProcessArrow {
+    display: none;
+  }
+  .abProcessFlow {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 32px 16px;
+  }
+  .abJourneyTimeline {
+    flex-direction: column;
+    align-items: flex-start;
+    padding-left: 20px;
+  }
+  .abJourneyLine {
+    top: 0;
+    bottom: 0;
+    left: 28px;
+    width: 2px;
+    height: auto;
+    border-top: none;
+    border-left: 2px dashed #fdba74;
+  }
+  .abJourneyStep {
+    flex-direction: row !important;
+    width: 100%;
+    align-items: center;
+    justify-content: flex-start;
+    margin-bottom: 24px;
+  }
+  .abJourneyStep:nth-child(even) .abJourneyCard,
+  .abJourneyStep:nth-child(even) .abJourneyDot {
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+  .abJourneyDot {
+    margin-right: 24px;
+    margin-bottom: 0;
+    position: relative;
+    z-index: 3;
+    order: 1;
+    flex-shrink: 0;
+  }
+  .abJourneyIcon {
+    display: none;
+  }
+  .abJourneyCard {
+    width: calc(100% - 60px);
+    height: auto;
+    padding: 16px;
+    text-align: left;
+    order: 2;
+    margin: 0 !important;
+  }
 }
 @media (max-width: 768px) {
-  .abInner { padding: 16px 16px 40px; }
-  .abStoryGrid { 
-    grid-template-columns: 40% 1fr; 
-    grid-template-areas: 
+  .abInner {
+    padding: 16px 16px 40px;
+  }
+  .abStoryGrid {
+    grid-template-columns: 40% 1fr;
+    grid-template-areas:
       "eyebrow eyebrow"
       "title title"
       "prose prose"
@@ -609,123 +662,286 @@
     gap: 12px 16px;
     align-items: stretch;
   }
-  .abWhyGrid, .abCta { grid-template-columns: 1fr; flex-direction: column; }
-  .abWhyList { grid-template-columns: 1fr; }
-  .abTeamGrid { grid-template-columns: repeat(3, 1fr); gap: 12px; }
-  .abTeamInfo { padding: 8px; }
-  .abTeamName { font-size: 0.75rem; margin-bottom: 2px; }
-  .abTeamRole { font-size: 0.65rem; margin-bottom: 8px; }
-  .abTeamSocial { gap: 6px; }
-  .abTeamSocialIcon svg { width: 12px; height: 12px; }
-  .abValuesGrid { grid-template-columns: repeat(3, 1fr); gap: 8px; }
-  .abValueCard { padding: 16px 8px; }
-  .abProcessFlow { grid-template-columns: repeat(3, 1fr); gap: 16px 8px; }
-  .abCtaImage { width: 100%; margin-top: 24px; }
-  .abStatsInner { 
+  .abWhyGrid,
+  .abCta {
+    grid-template-columns: 1fr;
+    flex-direction: column;
+  }
+  .abWhyList {
+    grid-template-columns: 1fr;
+  }
+  .abTeamGrid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+  }
+  .abTeamInfo {
+    padding: 8px;
+  }
+  .abTeamName {
+    font-size: 0.75rem;
+    margin-bottom: 2px;
+  }
+  .abTeamRole {
+    font-size: 0.65rem;
+    margin-bottom: 8px;
+  }
+  .abTeamSocial {
+    gap: 6px;
+  }
+  .abTeamSocialIcon svg {
+    width: 12px;
+    height: 12px;
+  }
+  .abValuesGrid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+  .abValueCard {
+    padding: 16px 8px;
+  }
+  .abProcessFlow {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px 8px;
+  }
+  .abCtaImage {
+    width: 100%;
+    margin-top: 24px;
+  }
+  .abStatsInner {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 16px 8px;
     padding: 24px 12px;
   }
-  .abStat { 
-    width: 100%; 
+  .abStat {
+    width: 100%;
     flex-direction: column;
     align-items: center;
     text-align: center;
     gap: 8px;
   }
-  .abStatIcon svg { width: 26px; height: 26px; }
-  .abStatNum { font-size: 1.2rem; margin-bottom: 4px; }
-  .abStatLabel { width: 100%; font-size: 0.7rem; }
-  .abCommitmentGrid { 
+  .abStatIcon svg {
+    width: 26px;
+    height: 26px;
+  }
+  .abStatNum {
+    font-size: 1.2rem;
+    margin-bottom: 4px;
+  }
+  .abStatLabel {
+    width: 100%;
+    font-size: 0.7rem;
+  }
+  .abCommitmentGrid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 16px 8px;
   }
-  .abCommitItem { 
-    max-width: 100%; 
-    display: flex; 
+  .abCommitItem {
+    max-width: 100%;
+    display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 8px; 
-    text-align: center; 
-    width: 100%; 
+    gap: 8px;
+    text-align: center;
+    width: 100%;
   }
-  .abCommitIcon { margin-bottom: 0; }
-  .abCommitIcon svg { width: 24px; height: 24px; }
-  .abCommitItemTitle { font-size: 0.7rem; }
+  .abCommitIcon {
+    margin-bottom: 0;
+  }
+  .abCommitIcon svg {
+    width: 24px;
+    height: 24px;
+  }
+  .abCommitItemTitle {
+    font-size: 0.7rem;
+  }
 }
 @media (max-width: 480px) {
-  .abValuesGrid { grid-template-columns: repeat(3, 1fr); gap: 4px; }
-  .abValueCard { padding: 12px 4px; }
-  .abValueCard h4 { font-size: 0.75rem; }
-  .abValueCard p { font-size: 0.65rem; }
-  .abTeamGrid { grid-template-columns: repeat(3, 1fr); gap: 8px; }
-  .abProcessFlow { grid-template-columns: repeat(3, 1fr); gap: 12px 4px; }
-  .abProcessIconWrap { width: 40px; height: 40px; margin-bottom: 8px; }
-  .abProcessIconInner svg { width: 20px; height: 20px; }
-  .abProcessTitle { font-size: 0.75rem; margin-bottom: 4px; }
-  .abProcessDesc { font-size: 0.65rem; }
-  .abStatsInner { 
+  .abValuesGrid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 4px;
+  }
+  .abValueCard {
+    padding: 12px 4px;
+  }
+  .abValueCard h4 {
+    font-size: 0.75rem;
+  }
+  .abValueCard p {
+    font-size: 0.65rem;
+  }
+  .abTeamGrid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+  .abProcessFlow {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px 4px;
+  }
+  .abProcessIconWrap {
+    width: 40px;
+    height: 40px;
+    margin-bottom: 8px;
+  }
+  .abProcessIconInner svg {
+    width: 20px;
+    height: 20px;
+  }
+  .abProcessTitle {
+    font-size: 0.75rem;
+    margin-bottom: 4px;
+  }
+  .abProcessDesc {
+    font-size: 0.65rem;
+  }
+  .abStatsInner {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 16px 8px;
     padding: 20px 8px !important;
   }
-  .abStat { 
-    width: 100%; 
+  .abStat {
+    width: 100%;
     flex-direction: column;
     align-items: center;
     text-align: center;
     gap: 8px;
   }
-  .abStatIcon svg { width: 24px; height: 24px; }
-  .abStatNum { font-size: 1.1rem; margin-bottom: 2px; }
-  .abStatLabel { width: 100%; font-size: 0.65rem; }
+  .abStatIcon svg {
+    width: 24px;
+    height: 24px;
+  }
+  .abStatNum {
+    font-size: 1.1rem;
+    margin-bottom: 2px;
+  }
+  .abStatLabel {
+    width: 100%;
+    font-size: 0.65rem;
+  }
 }
 
 @media (max-width: 768px) {
-  .abHeroTitle { font-size: 28px; line-height: 1.3; }
-  .abHeroTopTag { top: 16px; left: 16px; }
-  .abHeroActions { flex-direction: column; width: 100%; gap: 12px; }
+  .abHeroTitle {
+    font-size: 28px;
+    line-height: 1.3;
+  }
+  .abHeroTopTag {
+    top: 16px;
+    left: 16px;
+  }
+  .abHeroActions {
+    flex-direction: column;
+    width: 100%;
+    gap: 12px;
+  }
 
-  .abCtaActions { flex-direction: row; width: 100%; gap: 12px; flex-wrap: nowrap; }
-  .abCtaActions button { flex: 1; padding: 12px 8px; font-size: 0.75rem; text-align: center; white-space: nowrap; }
-  .abCta { padding: 24px; text-align: center; }
-  .abStoryMedia { aspect-ratio: 16/10; }
+  .abCtaActions {
+    flex-direction: row;
+    width: 100%;
+    gap: 12px;
+    flex-wrap: nowrap;
+  }
+  .abCtaActions button {
+    flex: 1;
+    padding: 12px 8px;
+    font-size: 0.75rem;
+    text-align: center;
+    white-space: nowrap;
+  }
+  .abCta {
+    padding: 24px;
+    text-align: center;
+  }
+  .abStoryMedia {
+    aspect-ratio: 16/10;
+  }
 }
 @media (max-width: 768px) {
-  .abStoryContent { display: contents; }
-  .abStoryMedia { grid-area: media; aspect-ratio: unset; height: auto; min-height: 100%; margin: 0; align-self: stretch; border-radius: 8px; }
-  .abEyebrow { grid-area: eyebrow; font-size: 0.7rem; margin-bottom: 4px; }
-  .abSectionTitle { grid-area: title; font-size: 1.1rem; margin-bottom: 8px; }
-  .abProse { grid-area: prose; font-size: 0.75rem; margin-bottom: 24px; line-height: 1.5; }
-  .abStoryFeatures { grid-area: features; gap: 8px; grid-template-columns: 1fr; align-self: flex-start; margin-top: -4px; }
-  .abStoryFeatText { font-size: 0.7rem; }
-  .abStoryFeatIcon { padding: 6px; }
-  .abStoryFeatIcon svg { width: 14px; height: 14px; }
-  .abStoryFeat { gap: 8px; }
+  .abStoryContent {
+    display: contents;
+  }
+  .abStoryMedia {
+    grid-area: media;
+    aspect-ratio: unset;
+    height: auto;
+    min-height: 100%;
+    margin: 0;
+    align-self: stretch;
+    border-radius: 8px;
+  }
+  .abEyebrow {
+    grid-area: eyebrow;
+    font-size: 0.7rem;
+    margin-bottom: 4px;
+  }
+  .abSectionTitle {
+    grid-area: title;
+    font-size: 1.1rem;
+    margin-bottom: 8px;
+  }
+  .abProse {
+    grid-area: prose;
+    font-size: 0.75rem;
+    margin-bottom: 24px;
+    line-height: 1.5;
+  }
+  .abStoryFeatures {
+    grid-area: features;
+    gap: 8px;
+    grid-template-columns: 1fr;
+    align-self: flex-start;
+    margin-top: -4px;
+  }
+  .abStoryFeatText {
+    font-size: 0.7rem;
+  }
+  .abStoryFeatIcon {
+    padding: 6px;
+  }
+  .abStoryFeatIcon svg {
+    width: 14px;
+    height: 14px;
+  }
+  .abStoryFeat {
+    gap: 8px;
+  }
 }
 
 @media (max-width: 768px) {
   /* Reduce outer padding to give more space for content */
-  .abInner { padding: 12px 12px 40px !important; }
+  .abInner {
+    padding: 12px 12px 40px !important;
+  }
 
   /* Optimize Hero section */
 
   /* Fix paddings inside cards and sections */
-  .abStoryContent { padding-right: 0 !important; }
-  .abValuesWrap { padding: 16px 12px !important; }
-  .abStatsInner { padding: 24px 12px !important; }
-  .abCommitment { padding: 24px 12px !important; }
-  .abCta { padding: 24px 12px !important; }
+  .abStoryContent {
+    padding-right: 0 !important;
+  }
+  .abValuesWrap {
+    padding: 16px 12px !important;
+  }
+  .abStatsInner {
+    padding: 24px 12px !important;
+  }
+  .abCommitment {
+    padding: 24px 12px !important;
+  }
+  .abCta {
+    padding: 24px 12px !important;
+  }
 
   /* Ensure buttons take full width nicely without huge paddings */
 
-  .abBtnPrimary, .abBtnGhost { padding: 0; font-size: 12px !important; }
+  .abBtnPrimary,
+  .abBtnGhost {
+    padding: 0;
+    font-size: 12px !important;
+  }
 }
-
-
 
 @media (max-width: 992px) {
   .abHero {
@@ -741,10 +957,15 @@
   }
 }
 
-
 @media (max-width: 768px) {
   .abHeroTint {
-    background: linear-gradient(to right, rgb(10 10 10 / 38%) 0%, rgb(10 10 10 / 25%) 40%, rgba(10, 10, 10, 0.2) 80%, rgba(10, 10, 10, 0) 100%);
+    background: linear-gradient(
+      to right,
+      rgb(10 10 10 / 38%) 0%,
+      rgb(10 10 10 / 25%) 40%,
+      rgba(10, 10, 10, 0.2) 80%,
+      rgba(10, 10, 10, 0) 100%
+    );
   }
   .abHeroContainer {
     padding: 0 15px;
@@ -754,8 +975,14 @@
   .abHero {
     min-height: 300px;
   }
- .abHeroTint {
-    background: linear-gradient(to right, rgb(10 10 10 / 38%) 0%, rgb(10 10 10 / 25%) 40%, rgba(10, 10, 10, 0.2) 80%, rgba(10, 10, 10, 0) 100%);
+  .abHeroTint {
+    background: linear-gradient(
+      to right,
+      rgb(10 10 10 / 38%) 0%,
+      rgb(10 10 10 / 25%) 40%,
+      rgba(10, 10, 10, 0.2) 80%,
+      rgba(10, 10, 10, 0) 100%
+    );
   }
   .abHeroImg {
     object-position: center;

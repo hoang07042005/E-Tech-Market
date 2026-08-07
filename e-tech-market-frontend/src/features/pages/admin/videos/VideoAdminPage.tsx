@@ -1,180 +1,212 @@
-import React, { useState, useEffect } from 'react'
-import { API_BASE_URL, apiFetch } from '@/configs/api.config'
-import '@/styles/admin/CategoryPage.css'
-import { fetchAdminVideoCategories } from '@/features/services/admin/video-categories.admin.service'
-import { fetchAdminVideos, deleteAdminVideo, saveAdminVideo, buildVideoPayload, type Video } from '@/features/services/admin/videos.admin.service'
-import type { VideoCategory } from '@/features/services/admin/video-categories.admin.service'
-import '@/styles/admin/VideoAdminPage.css'
-import ConfirmModal from '@/components/ConfirmModal'
-import { toast } from '@/utils/toast';
+import React, { useState, useEffect } from "react";
+import { API_BASE_URL, apiFetch } from "@/configs/api.config";
+import "@/styles/admin/CategoryPage.css";
+import { fetchAdminVideoCategories } from "@/features/services/admin/video-categories.admin.service";
+import {
+  fetchAdminVideos,
+  deleteAdminVideo,
+  saveAdminVideo,
+  buildVideoPayload,
+  type Video,
+} from "@/features/services/admin/videos.admin.service";
+import type { VideoCategory } from "@/features/services/admin/video-categories.admin.service";
+import "@/styles/admin/VideoAdminPage.css";
+import ConfirmModal from "@/components/ConfirmModal";
+import { toast } from "@/utils/toast";
 
 interface SimpleProduct {
-  id: number
-  name: string
+  id: number;
+  name: string;
 }
 
 const resolveThumbnailUrl = (url?: string | null) => {
-  if (!url) return null
-  const s = url.trim()
-  if (!s) return null
+  if (!url) return null;
+  const s = url.trim();
+  if (!s) return null;
   // Already absolute URL - check if hostname is accessible
   if (/^https?:\/\//i.test(s)) {
     try {
-      const urlObj = new URL(s)
+      const urlObj = new URL(s);
       // If hostname is 'nginx' (Docker network hostname), replace with current origin
-      if (urlObj.hostname === 'nginx' || urlObj.hostname === 'localhost') {
-        const path = s.replace(/^https?:\/\/[^/]+/, '')
-        return window.location.origin + path
+      if (urlObj.hostname === "nginx" || urlObj.hostname === "localhost") {
+        const path = s.replace(/^https?:\/\/[^/]+/, "");
+        return window.location.origin + path;
       }
-    } catch { /* keep original */
+    } catch {
+      /* keep original */
     }
-    return s
+    return s;
   }
-  return `${API_BASE_URL}${s.startsWith('/') ? s : `/${s}`}`
-}
+  return `${API_BASE_URL}${s.startsWith("/") ? s : `/${s}`}`;
+};
 
 export default function VideoAdminPage() {
-  const [videos, setVideos] = useState<Video[]>([])
-  const [products, setProducts] = useState<SimpleProduct[]>([])
-  const [categories, setCategories] = useState<VideoCategory[]>([])
-  const [isLoading, setIsLoading] = useState(true)
-  const [isModalOpen, setIsModalOpen] = useState(false)
-  const [editingVideo, setEditingVideo] = useState<Video | null>(null)
-  const [error, setError] = useState<string | null>(null)
-  
+  const [videos, setVideos] = useState<Video[]>([]);
+  const [products, setProducts] = useState<SimpleProduct[]>([]);
+  const [categories, setCategories] = useState<VideoCategory[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingVideo, setEditingVideo] = useState<Video | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
   // File inputs
-  const [videoFile, setVideoFile] = useState<File | null>(null)
-  const [thumbnailFile, setThumbnailFile] = useState<File | null>(null)
+  const [videoFile, setVideoFile] = useState<File | null>(null);
+  const [thumbnailFile, setThumbnailFile] = useState<File | null>(null);
 
   // 🔒 Token is sent via httpOnly cookie automatically
 
   // Form State
   const [formData, setFormData] = useState({
-    linked_type: 'product' as 'product' | 'general', // 'product' = liên kết SP, 'general' = video chung
+    linked_type: "product" as "product" | "general", // 'product' = liên kết SP, 'general' = video chung
     product_ids: [] as string[],
-    category_id: '',
-    title: '',
-    description: '',
-    video_url: '',
-    thumbnail_url: '',
+    category_id: "",
+    title: "",
+    description: "",
+    video_url: "",
+    thumbnail_url: "",
     is_active: true,
-    sort_order: 0
-  }) 
+    sort_order: 0,
+  });
 
   const loadData = async () => {
-    setIsLoading(true)
-    setError(null)
+    setIsLoading(true);
+    setError(null);
     try {
       const [videoData, productData, categoryData] = await Promise.all([
         fetchAdminVideos(),
-        apiFetch<any>('/api/admin/products?per_page=100'),
-        fetchAdminVideoCategories()
-      ])
-      setVideos(videoData)
-      const prodArr = Array.isArray(productData?.data) ? productData.data : (Array.isArray(productData) ? productData : [])
-      setProducts(prodArr)
-      setCategories(Array.isArray(categoryData) ? categoryData : [])
+        apiFetch<any>("/api/admin/products?per_page=100"),
+        fetchAdminVideoCategories(),
+      ]);
+      setVideos(videoData);
+      const prodArr = Array.isArray(productData?.data)
+        ? productData.data
+        : Array.isArray(productData)
+          ? productData
+          : [];
+      setProducts(prodArr);
+      setCategories(Array.isArray(categoryData) ? categoryData : []);
     } catch (err: any) {
-      setError(err.message || 'Không tải được dữ liệu.')
+      setError(err.message || "Không tải được dữ liệu.");
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   useEffect(() => {
-    loadData()
-  }, [])
+    loadData();
+  }, []);
 
   const handleOpenModal = (video?: Video) => {
-    setVideoFile(null)
-    setThumbnailFile(null)
-    setError(null)
+    setVideoFile(null);
+    setThumbnailFile(null);
+    setError(null);
     if (video) {
-      setEditingVideo(video)
+      setEditingVideo(video);
       setFormData({
-        linked_type: (video.products && video.products.length > 0) || video.product_id ? 'product' : 'general',
-        product_ids: video.products && video.products.length > 0 ? video.products.map(p => p.id.toString()) : (video.product_id ? [video.product_id.toString()] : []),
-        category_id: (video.video_category_id ?? video.category_id ?? video.category?.id ?? video.video_category?.id ?? video.videoCategory?.id ?? null)?.toString() || '',
-        title: video.title || '',
-        description: video.description || '',
-        video_url: video.video_url || '',
-        thumbnail_url: video.thumbnail_url || '',
+        linked_type:
+          (video.products && video.products.length > 0) || video.product_id
+            ? "product"
+            : "general",
+        product_ids:
+          video.products && video.products.length > 0
+            ? video.products.map((p) => p.id.toString())
+            : video.product_id
+              ? [video.product_id.toString()]
+              : [],
+        category_id:
+          (
+            video.video_category_id ??
+            video.category_id ??
+            video.category?.id ??
+            video.video_category?.id ??
+            video.videoCategory?.id ??
+            null
+          )?.toString() || "",
+        title: video.title || "",
+        description: video.description || "",
+        video_url: video.video_url || "",
+        thumbnail_url: video.thumbnail_url || "",
         is_active: video.is_active,
-        sort_order: video.sort_order || 0
-      })
+        sort_order: video.sort_order || 0,
+      });
     } else {
-      setEditingVideo(null)
+      setEditingVideo(null);
       setFormData({
-        linked_type: 'product',
+        linked_type: "product",
         product_ids: [],
-        category_id: '',
-        title: '',
-        description: '',
-        video_url: '',
-        thumbnail_url: '',
+        category_id: "",
+        title: "",
+        description: "",
+        video_url: "",
+        thumbnail_url: "",
         is_active: true,
-        sort_order: 0
-      })
+        sort_order: 0,
+      });
     }
-    setIsModalOpen(true)
-  }
+    setIsModalOpen(true);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setError(null)
+    e.preventDefault();
+    setError(null);
 
     if (!editingVideo && !formData.video_url && !videoFile) {
-      setError('Vui lòng nhập URL video hoặc tải lên tệp video.')
-      return
+      setError("Vui lòng nhập URL video hoặc tải lên tệp video.");
+      return;
     }
 
     try {
-      const payload = buildVideoPayload(formData)
+      const payload = buildVideoPayload(formData);
 
       if (videoFile) {
-        payload.append('video_file', videoFile)
+        payload.append("video_file", videoFile);
       }
       if (thumbnailFile) {
-        payload.append('thumbnail_file', thumbnailFile)
+        payload.append("thumbnail_file", thumbnailFile);
       }
 
-      await saveAdminVideo(payload, editingVideo?.id)
-      setIsModalOpen(false)
-      loadData()
+      await saveAdminVideo(payload, editingVideo?.id);
+      setIsModalOpen(false);
+      loadData();
     } catch (err: any) {
-      setError(err.message || 'Lưu video thất bại.')
+      setError(err.message || "Lưu video thất bại.");
     }
-  }
+  };
 
-  const [confirmOpen, setConfirmOpen] = useState(false)
-  const [pendingDeleteVideo, setPendingDeleteVideo] = useState<Video | null>(null)
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [pendingDeleteVideo, setPendingDeleteVideo] = useState<Video | null>(
+    null,
+  );
 
   const handleDelete = (video: Video) => {
-    setPendingDeleteVideo(video)
-    setConfirmOpen(true)
-  }
+    setPendingDeleteVideo(video);
+    setConfirmOpen(true);
+  };
 
   const confirmDelete = async () => {
-    const video = pendingDeleteVideo
-    setConfirmOpen(false)
-    setPendingDeleteVideo(null)
-    if (!video) return
+    const video = pendingDeleteVideo;
+    setConfirmOpen(false);
+    setPendingDeleteVideo(null);
+    if (!video) return;
     try {
-      await deleteAdminVideo(video.id)
-      loadData()
+      await deleteAdminVideo(video.id);
+      loadData();
     } catch (err: any) {
-      toast.error(err.message || 'Xóa video thất bại.')
+      toast.error(err.message || "Xóa video thất bại.");
     }
-  }
+  };
 
-  const isLinkedToProduct = formData.linked_type === 'product'
+  const isLinkedToProduct = formData.linked_type === "product";
 
   return (
     <div className="catAdminRoot">
       <div className="catHeader">
         <div className="catHeaderLeft">
           <h2 className="catAdminTitle">Quản lý Videos sản phẩm</h2>
-          <p className="catAdminSub">Cấu hình video giới thiệu sản phẩm hoặc video truyền thông theo danh mục</p>
+          <p className="catAdminSub">
+            Cấu hình video giới thiệu sản phẩm hoặc video truyền thông theo danh
+            mục
+          </p>
         </div>
         <button className="catAddBtn" onClick={() => handleOpenModal()}>
           <PlusIcon />
@@ -203,7 +235,10 @@ export default function VideoAdminPage() {
                 <tr key={i} className="admSkeletonRow">
                   <td colSpan={8}>
                     <div className="admSkeletonCell">
-                      <div className="admSkeletonBar" style={{ width: i % 2 === 0 ? '60%' : '80%' }} />
+                      <div
+                        className="admSkeletonBar"
+                        style={{ width: i % 2 === 0 ? "60%" : "80%" }}
+                      />
                     </div>
                   </td>
                 </tr>
@@ -227,30 +262,37 @@ export default function VideoAdminPage() {
             <tbody>
               {videos.length === 0 ? (
                 <tr>
-                  <td colSpan={8}  className="videoadminpage-style-1">
+                  <td colSpan={8} className="videoadminpage-style-1">
                     Chưa có video nào. Bấm «Thêm video» để tạo mới.
                   </td>
                 </tr>
               ) : (
-                videos.map(video => {
-                  const thumb = resolveThumbnailUrl(video.thumbnail_url)
-                  const linkedCategory = video.videoCategory ?? video.video_category ?? video.category
+                videos.map((video) => {
+                  const thumb = resolveThumbnailUrl(video.thumbnail_url);
+                  const linkedCategory =
+                    video.videoCategory ??
+                    video.video_category ??
+                    video.category;
                   return (
                     <tr key={video.id}>
                       <td>
                         {thumb ? (
-                          <img 
-                            src={thumb} 
-                            alt={video.title || 'Video thumbnail'} 
-                            
-                           className="videoadminpage-style-2" />
+                          <img
+                            src={thumb}
+                            alt={video.title || "Video thumbnail"}
+                            className="videoadminpage-style-2"
+                          />
                         ) : (
-                          <div  className="videoadminpage-style-3">
+                          <div className="videoadminpage-style-3">
                             Không có ảnh
                           </div>
                         )}
                       </td>
-                      <td><span  className="videoadminpage-style-4">{video.title || '—'}</span></td>
+                      <td>
+                        <span className="videoadminpage-style-4">
+                          {video.title || "—"}
+                        </span>
+                      </td>
                       {/* <td>
                         <span  className="videoadminpage-style-5">
                           {video.description || '—'}
@@ -263,44 +305,72 @@ export default function VideoAdminPage() {
                       </td> */}
                       <td>
                         {video.products && video.products.length > 0 ? (
-                          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                            {video.products.map(p => (
-                              <span key={p.id} className="videoadminpage-style-6">
+                          <div
+                            style={{
+                              display: "flex",
+                              flexDirection: "column",
+                              gap: "4px",
+                            }}
+                          >
+                            {video.products.map((p) => (
+                              <span
+                                key={p.id}
+                                className="videoadminpage-style-6"
+                              >
                                 📦 {p.name}
                               </span>
                             ))}
                           </div>
                         ) : video.product ? (
-                          <span  className="videoadminpage-style-6">
+                          <span className="videoadminpage-style-6">
                             📦 {video.product.name}
                           </span>
                         ) : linkedCategory ? (
-                          <span  className="videoadminpage-style-7">
+                          <span className="videoadminpage-style-7">
                             🏷️ {linkedCategory.name}
                           </span>
                         ) : (
-                          <span  className="videoadminpage-style-8">Video chung</span>
+                          <span className="videoadminpage-style-8">
+                            Video chung
+                          </span>
                         )}
                       </td>
                       <td>
-                        <a href={video.video_url} target="_blank" rel="noopener noreferrer" className="catSlug videoadminpage-style-9" >
+                        <a
+                          href={video.video_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="catSlug videoadminpage-style-9"
+                        >
                           {video.video_url}
                         </a>
                       </td>
                       <td>{video.sort_order}</td>
                       <td>
-                        <span className={`catStatus ${video.is_active ? 'active' : 'inactive'}`}>
-                          {video.is_active ? 'HIỂN THỊ' : 'TẮT'}
+                        <span
+                          className={`catStatus ${video.is_active ? "active" : "inactive"}`}
+                        >
+                          {video.is_active ? "HIỂN THỊ" : "TẮT"}
                         </span>
                       </td>
                       <td>
                         <div className="catActions">
-                          <button className="catEdit" onClick={() => handleOpenModal(video)}><EditIcon /></button>
-                          <button className="catDelete" onClick={() => handleDelete(video)}><TrashIcon /></button>
+                          <button
+                            className="catEdit"
+                            onClick={() => handleOpenModal(video)}
+                          >
+                            <EditIcon />
+                          </button>
+                          <button
+                            className="catDelete"
+                            onClick={() => handleDelete(video)}
+                          >
+                            <TrashIcon />
+                          </button>
                         </div>
                       </td>
                     </tr>
-                  )
+                  );
                 })
               )}
             </tbody>
@@ -311,48 +381,85 @@ export default function VideoAdminPage() {
       {/* Modal */}
       {isModalOpen && (
         <div className="catModalOverlay">
-          <div className="catModal videoadminpage-style-10" >
+          <div className="catModal videoadminpage-style-10">
             <div className="catModalHeader">
-              <h3>{editingVideo ? 'Cập nhật video' : 'Thêm video mới'}</h3>
-              <button className="catCloseModal" onClick={() => setIsModalOpen(false)}>×</button>
+              <h3>{editingVideo ? "Cập nhật video" : "Thêm video mới"}</h3>
+              <button
+                className="catCloseModal"
+                onClick={() => setIsModalOpen(false)}
+              >
+                ×
+              </button>
             </div>
             <form onSubmit={handleSubmit} className="catForm">
               <div className="videoadminpage-modal-body">
-              {/* Loại video: liên kết sản phẩm hay video chung */}
-              <div className="catFormField videoadminpage-style-11" >
-                <label>LOẠI VIDEO</label>
-                <div  className="videoadminpage-style-12">
-                  <label style={{ display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer', fontWeight: 500, color: isLinkedToProduct ? '#f97316' : '#64748b' }}>
-                    <input
-                      type="radio"
-                      name="linked_type"
-                      value="product"
-                      checked={isLinkedToProduct}
-                      onChange={() => setFormData({ ...formData, linked_type: 'product', category_id: '' })}
-                      style={{ accentColor: '#f97316' }}
-                    />
-                    📦 Liên kết sản phẩm
-                  </label>
-                  <label style={{ display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer', fontWeight: 500, color: !isLinkedToProduct ? '#60a5fa' : '#64748b' }}>
-                    <input
-                      type="radio"
-                      name="linked_type"
-                      value="general"
-                      checked={!isLinkedToProduct}
-                      onChange={() => setFormData({ ...formData, linked_type: 'general', product_ids: [] })}
-                      style={{ accentColor: '#60a5fa' }}
-                    />
-                    🏷️ Video theo danh mục (không gắn SP)
-                  </label>
+                {/* Loại video: liên kết sản phẩm hay video chung */}
+                <div className="catFormField videoadminpage-style-11">
+                  <label>LOẠI VIDEO</label>
+                  <div className="videoadminpage-style-12">
+                    <label
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "6px",
+                        cursor: "pointer",
+                        fontWeight: 500,
+                        color: isLinkedToProduct ? "#f97316" : "#64748b",
+                      }}
+                    >
+                      <input
+                        type="radio"
+                        name="linked_type"
+                        value="product"
+                        checked={isLinkedToProduct}
+                        onChange={() =>
+                          setFormData({
+                            ...formData,
+                            linked_type: "product",
+                            category_id: "",
+                          })
+                        }
+                        style={{ accentColor: "#f97316" }}
+                      />
+                      📦 Liên kết sản phẩm
+                    </label>
+                    <label
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "6px",
+                        cursor: "pointer",
+                        fontWeight: 500,
+                        color: !isLinkedToProduct ? "#60a5fa" : "#64748b",
+                      }}
+                    >
+                      <input
+                        type="radio"
+                        name="linked_type"
+                        value="general"
+                        checked={!isLinkedToProduct}
+                        onChange={() =>
+                          setFormData({
+                            ...formData,
+                            linked_type: "general",
+                            product_ids: [],
+                          })
+                        }
+                        style={{ accentColor: "#60a5fa" }}
+                      />
+                      🏷️ Video theo danh mục (không gắn SP)
+                    </label>
+                  </div>
                 </div>
-              </div>
 
                 <div className="catFormField">
                   <label>TIÊU ĐỀ VIDEO</label>
-                  <input 
-                    type="text" 
-                    value={formData.title} 
-                    onChange={e => setFormData({...formData, title: e.target.value})} 
+                  <input
+                    type="text"
+                    value={formData.title}
+                    onChange={(e) =>
+                      setFormData({ ...formData, title: e.target.value })
+                    }
                     placeholder="VD: Trên tay mở hộp iPhone 15 Pro Max"
                   />
                 </div>
@@ -362,43 +469,77 @@ export default function VideoAdminPage() {
                   <div className="catFormField">
                     <label>SẢN PHẨM LIÊN KẾT (CÓ THỂ CHỌN NHIỀU)</label>
                     <div className="videoadminpage-products-list">
-                      {products.map(p => (
-                        <label key={p.id} style={{ 
-                          display: 'flex', 
-                          alignItems: 'flex-start', 
-                          gap: '12px', 
-                          padding: '8px 10px', 
-                          cursor: 'pointer',
-                          borderRadius: '6px',
-                          textTransform: 'none',
-                          fontWeight: 400,
-                          letterSpacing: 'normal',
-                          margin: 0,
-                          transition: 'background-color 0.15s ease'
-                        }}
-                        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--admin-bg)'}
-                        onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+                      {products.map((p) => (
+                        <label
+                          key={p.id}
+                          style={{
+                            display: "flex",
+                            alignItems: "flex-start",
+                            gap: "12px",
+                            padding: "8px 10px",
+                            cursor: "pointer",
+                            borderRadius: "6px",
+                            textTransform: "none",
+                            fontWeight: 400,
+                            letterSpacing: "normal",
+                            margin: 0,
+                            transition: "background-color 0.15s ease",
+                          }}
+                          onMouseEnter={(e) =>
+                            (e.currentTarget.style.backgroundColor =
+                              "var(--admin-bg)")
+                          }
+                          onMouseLeave={(e) =>
+                            (e.currentTarget.style.backgroundColor =
+                              "transparent")
+                          }
                         >
                           <input
                             type="checkbox"
-                            checked={formData.product_ids.includes(p.id.toString())}
+                            checked={formData.product_ids.includes(
+                              p.id.toString(),
+                            )}
                             onChange={(e) => {
                               const checked = e.target.checked;
                               const pId = p.id.toString();
-                              setFormData(prev => ({
+                              setFormData((prev) => ({
                                 ...prev,
-                                product_ids: checked 
-                                  ? [...prev.product_ids, pId] 
-                                  : prev.product_ids.filter(id => id !== pId)
+                                product_ids: checked
+                                  ? [...prev.product_ids, pId]
+                                  : prev.product_ids.filter((id) => id !== pId),
                               }));
                             }}
-                            style={{ accentColor: '#f97316', width: '18px', height: '18px', marginTop: '2px', cursor: 'pointer' }}
+                            style={{
+                              accentColor: "#f97316",
+                              width: "18px",
+                              height: "18px",
+                              marginTop: "2px",
+                              cursor: "pointer",
+                            }}
                           />
-                          <span style={{ fontSize: '14px', color: 'var(--admin-text-h)', lineHeight: '1.4', flex: 1 }}>{p.name}</span>
+                          <span
+                            style={{
+                              fontSize: "14px",
+                              color: "var(--admin-text-h)",
+                              lineHeight: "1.4",
+                              flex: 1,
+                            }}
+                          >
+                            {p.name}
+                          </span>
                         </label>
                       ))}
                       {products.length === 0 && (
-                        <div style={{ fontSize: '13px', color: '#64748b', textAlign: 'center', padding: '16px 8px' }}>Không có sản phẩm nào</div>
+                        <div
+                          style={{
+                            fontSize: "13px",
+                            color: "#64748b",
+                            textAlign: "center",
+                            padding: "16px 8px",
+                          }}
+                        >
+                          Không có sản phẩm nào
+                        </div>
                       )}
                     </div>
                   </div>
@@ -408,12 +549,27 @@ export default function VideoAdminPage() {
                     <label>DANH MỤC</label>
                     <select
                       value={formData.category_id}
-                      onChange={e => setFormData({...formData, category_id: e.target.value})}
-                      style={{ padding: '10px', border: '1px solid var(--admin-border)', borderRadius: '6px', background: 'var(--admin-card-bg)', color: 'var(--admin-text-p)', width: '100%', height: '42px' }}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          category_id: e.target.value,
+                        })
+                      }
+                      style={{
+                        padding: "10px",
+                        border: "1px solid var(--admin-border)",
+                        borderRadius: "6px",
+                        background: "var(--admin-card-bg)",
+                        color: "var(--admin-text-p)",
+                        width: "100%",
+                        height: "42px",
+                      }}
                     >
                       <option value="">-- Không chọn danh mục --</option>
-                      {categories.map(c => (
-                        <option key={c.id} value={c.id}>{c.name}</option>
+                      {categories.map((c) => (
+                        <option key={c.id} value={c.id}>
+                          {c.name}
+                        </option>
                       ))}
                     </select>
                     {/* <div  className="videoadminpage-style-13">
@@ -422,113 +578,149 @@ export default function VideoAdminPage() {
                   </div>
                 )}
 
-              <div className="catFormField videoadminpage-style-15" >
-                <label>NỘI DUNG / MÔ TẢ NGẮN</label>
+                <div className="catFormField videoadminpage-style-15">
+                  <label>NỘI DUNG / MÔ TẢ NGẮN</label>
                   <textarea
                     rows={4}
                     value={formData.description}
-                    onChange={e => setFormData({...formData, description: e.target.value})}
+                    onChange={(e) =>
+                      setFormData({ ...formData, description: e.target.value })
+                    }
                     placeholder="Mô tả ngắn về video, tính năng nổi bật hoặc thông điệp chính"
                     maxLength={2500}
                     style={{
-                      width: '100%',
-                      padding: '10px',
-                      border: '1px solid var(--admin-border)',
-                      borderRadius: '6px',
-                      background: 'var(--admin-card-bg)',
-                      color: 'var(--admin-text-p)',
-                      resize: 'vertical',
-                      whiteSpace: 'pre-wrap'
+                      width: "100%",
+                      padding: "10px",
+                      border: "1px solid var(--admin-border)",
+                      borderRadius: "6px",
+                      background: "var(--admin-card-bg)",
+                      color: "var(--admin-text-p)",
+                      resize: "vertical",
+                      whiteSpace: "pre-wrap",
                     }}
                   />
-              </div>
+                </div>
 
-              <div className="catFormField videoadminpage-style-16" >
-                <label>URL VIDEO (YouTube, Vimeo hoặc liên kết ngoài)</label>
-                <input 
-                  type="text" 
-                  value={formData.video_url} 
-                  onChange={e => setFormData({...formData, video_url: e.target.value})} 
-                  placeholder="VD: https://www.youtube.com/watch?v=..."
-                  disabled={!!videoFile}
-                />
-              </div>
-
-              <div className="catFormField videoadminpage-style-17" >
-                <label>HOẶC TẢI LÊN VIDEO TỪ THIẾT BỊ (Hỗ trợ MP4, WebM)</label>
-                <input 
-                  type="file" 
-                  accept="video/*"
-                  onChange={e => {
-                    if (e.target.files?.[0]) {
-                      setVideoFile(e.target.files[0])
-                    } else {
-                      setVideoFile(null)
+                <div className="catFormField videoadminpage-style-16">
+                  <label>URL VIDEO (YouTube, Vimeo hoặc liên kết ngoài)</label>
+                  <input
+                    type="text"
+                    value={formData.video_url}
+                    onChange={(e) =>
+                      setFormData({ ...formData, video_url: e.target.value })
                     }
-                  }}
-                  className="videoadminpage-file-input"
-                  disabled={!!formData.video_url}
-                />
-              </div>
-
-              <div className="catFormField videoadminpage-style-18" >
-                <label>URL HÌNH THU NHỎ (THUMBNAIL URL)</label>
-                <input 
-                  type="text" 
-                  value={formData.thumbnail_url} 
-                  onChange={e => setFormData({...formData, thumbnail_url: e.target.value})} 
-                  placeholder="VD: https://img.youtube.com/vi/.../maxresdefault.jpg"
-                  disabled={!!thumbnailFile}
-                />
-              </div>
-
-              <div className="catFormField videoadminpage-style-19" >
-                <label>HOẶC TẢI LÊN HÌNH THU NHỎ (THUMBNAIL FILE)</label>
-                <input 
-                  type="file" 
-                  accept="image/*"
-                  onChange={e => {
-                    if (e.target.files?.[0]) {
-                      setThumbnailFile(e.target.files[0])
-                    } else {
-                      setThumbnailFile(null)
-                    }
-                  }}
-                  className="videoadminpage-file-input"
-                  disabled={!!formData.thumbnail_url}
-                />
-              </div>
-
-              <div className="catFormRow">
-                <div className="catFormField">
-                  <label>THỨ TỰ HIỂN THỊ</label>
-                  <input 
-                    type="number" 
-                    value={formData.sort_order} 
-                    onChange={e => setFormData({...formData, sort_order: parseInt(e.target.value) || 0})} 
+                    placeholder="VD: https://www.youtube.com/watch?v=..."
+                    disabled={!!videoFile}
                   />
                 </div>
-                <div className="catFormField">
-                  <label>TRẠNG THÁI</label>
-                  <div className="catToggleWrap">
-                    <input 
-                      type="checkbox" 
-                      id="videoStatusToggle"
-                      checked={formData.is_active} 
-                      onChange={e => setFormData({...formData, is_active: e.target.checked})} 
+
+                <div className="catFormField videoadminpage-style-17">
+                  <label>
+                    HOẶC TẢI LÊN VIDEO TỪ THIẾT BỊ (Hỗ trợ MP4, WebM)
+                  </label>
+                  <input
+                    type="file"
+                    accept="video/*"
+                    onChange={(e) => {
+                      if (e.target.files?.[0]) {
+                        setVideoFile(e.target.files[0]);
+                      } else {
+                        setVideoFile(null);
+                      }
+                    }}
+                    className="videoadminpage-file-input"
+                    disabled={!!formData.video_url}
+                  />
+                </div>
+
+                <div className="catFormField videoadminpage-style-18">
+                  <label>URL HÌNH THU NHỎ (THUMBNAIL URL)</label>
+                  <input
+                    type="text"
+                    value={formData.thumbnail_url}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        thumbnail_url: e.target.value,
+                      })
+                    }
+                    placeholder="VD: https://img.youtube.com/vi/.../maxresdefault.jpg"
+                    disabled={!!thumbnailFile}
+                  />
+                </div>
+
+                <div className="catFormField videoadminpage-style-19">
+                  <label>HOẶC TẢI LÊN HÌNH THU NHỎ (THUMBNAIL FILE)</label>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => {
+                      if (e.target.files?.[0]) {
+                        setThumbnailFile(e.target.files[0]);
+                      } else {
+                        setThumbnailFile(null);
+                      }
+                    }}
+                    className="videoadminpage-file-input"
+                    disabled={!!formData.thumbnail_url}
+                  />
+                </div>
+
+                <div className="catFormRow">
+                  <div className="catFormField">
+                    <label>THỨ TỰ HIỂN THỊ</label>
+                    <input
+                      type="number"
+                      value={formData.sort_order}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          sort_order: parseInt(e.target.value) || 0,
+                        })
+                      }
                     />
-                    <label htmlFor="videoStatusToggle" className="catToggleLabel">Kích hoạt hiển thị</label>
+                  </div>
+                  <div className="catFormField">
+                    <label>TRẠNG THÁI</label>
+                    <div className="catToggleWrap">
+                      <input
+                        type="checkbox"
+                        id="videoStatusToggle"
+                        checked={formData.is_active}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            is_active: e.target.checked,
+                          })
+                        }
+                      />
+                      <label
+                        htmlFor="videoStatusToggle"
+                        className="catToggleLabel"
+                      >
+                        Kích hoạt hiển thị
+                      </label>
+                    </div>
                   </div>
                 </div>
-              </div>
-              
-              </div> {/* End scrollable div */}
-
-              {error && <div className="catErrorBanner videoadminpage-style-20" >{error}</div>}
-
+              </div>{" "}
+              {/* End scrollable div */}
+              {error && (
+                <div className="catErrorBanner videoadminpage-style-20">
+                  {error}
+                </div>
+              )}
               <div className="catModalFooter videoadminpage-modal-footer">
-                <button type="button" className="catCancelBtn" onClick={() => setIsModalOpen(false)}>Hủy</button>
-                <button type="submit" className="catSubmitBtn">{editingVideo ? 'Cập nhật' : 'Thêm'}</button>
+                <button
+                  type="button"
+                  className="catCancelBtn"
+                  onClick={() => setIsModalOpen(false)}
+                >
+                  Hủy
+                </button>
+                <button type="submit" className="catSubmitBtn">
+                  {editingVideo ? "Cập nhật" : "Thêm"}
+                </button>
               </div>
             </form>
           </div>
@@ -540,37 +732,114 @@ export default function VideoAdminPage() {
         title="Xoá video"
         message={
           pendingDeleteVideo ? (
-            <div style={{ display: 'grid', gap: 12 }}>
+            <div style={{ display: "grid", gap: 12 }}>
               <p>Bạn có chắc chắn muốn xóa video này không?</p>
-              <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+              <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
                 {pendingDeleteVideo.thumbnail_url ? (
                   <img
-                    src={resolveThumbnailUrl(pendingDeleteVideo.thumbnail_url) || undefined}
-                    alt={pendingDeleteVideo.title || 'Video thumbnail'}
-                    style={{ width: 84, height: 56, objectFit: 'cover', borderRadius: 8, border: '1px solid #e5e7eb' }}
+                    src={
+                      resolveThumbnailUrl(pendingDeleteVideo.thumbnail_url) ||
+                      undefined
+                    }
+                    alt={pendingDeleteVideo.title || "Video thumbnail"}
+                    style={{
+                      width: 84,
+                      height: 56,
+                      objectFit: "cover",
+                      borderRadius: 8,
+                      border: "1px solid #e5e7eb",
+                    }}
                   />
                 ) : (
-                  <div style={{ width: 84, height: 56, borderRadius: 8, background: '#f3f4f6', display: 'grid', placeItems: 'center', color: '#6b7280', fontSize: 12 }}>
+                  <div
+                    style={{
+                      width: 84,
+                      height: 56,
+                      borderRadius: 8,
+                      background: "#f3f4f6",
+                      display: "grid",
+                      placeItems: "center",
+                      color: "#6b7280",
+                      fontSize: 12,
+                    }}
+                  >
                     Không có ảnh
                   </div>
                 )}
                 <div>
-                  <strong>{pendingDeleteVideo.title || 'Video không tên'}</strong>
-                  <div style={{ color: '#6b7280', marginTop: 4 }}>{pendingDeleteVideo.video_url || 'Không có URL'}</div>
+                  <strong>
+                    {pendingDeleteVideo.title || "Video không tên"}
+                  </strong>
+                  <div style={{ color: "#6b7280", marginTop: 4 }}>
+                    {pendingDeleteVideo.video_url || "Không có URL"}
+                  </div>
                 </div>
               </div>
             </div>
           ) : (
-            'Bạn có chắc chắn muốn xóa video này?'
+            "Bạn có chắc chắn muốn xóa video này?"
           )
         }
         onConfirm={confirmDelete}
-        onCancel={() => { setConfirmOpen(false); setPendingDeleteVideo(null) }}
+        onCancel={() => {
+          setConfirmOpen(false);
+          setPendingDeleteVideo(null);
+        }}
       />
     </div>
-  )
+  );
 }
 
-function PlusIcon() { return <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg> }
-function EditIcon() { return <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg> }
-function TrashIcon() { return <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg> }
+function PlusIcon() {
+  return (
+    <svg
+      width="18"
+      height="18"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <line x1="12" y1="5" x2="12" y2="19"></line>
+      <line x1="5" y1="12" x2="19" y2="12"></line>
+    </svg>
+  );
+}
+function EditIcon() {
+  return (
+    <svg
+      width="18"
+      height="18"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+      <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+    </svg>
+  );
+}
+function TrashIcon() {
+  return (
+    <svg
+      width="18"
+      height="18"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <polyline points="3 6 5 6 21 6"></polyline>
+      <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+      <line x1="10" y1="11" x2="10" y2="17"></line>
+      <line x1="14" y1="11" x2="14" y2="17"></line>
+    </svg>
+  );
+}

@@ -68,7 +68,7 @@ export default function BlogPostDetailPage() {
   const [commentContent, setCommentContent] = useState("");
   const [commentSubmitting, setCommentSubmitting] = useState(false);
   const [commentMessage, setCommentMessage] = useState<string | null>(null);
-  
+
   const [relatedPosts, setRelatedPosts] = useState<BlogPost[]>([]);
   const [popularPosts, setPopularPosts] = useState<BlogPost[]>([]);
 
@@ -102,9 +102,14 @@ export default function BlogPostDetailPage() {
           });
 
           if (res.category?.id) {
-            apiFetch<{data: BlogPost[]}>(`/api/blog/posts?category_id=${res.category.id}&per_page=5`)
-              .then(relRes => {
-                if (active) setRelatedPosts(relRes.data.filter(p => p.id !== res.id).slice(0, 4));
+            apiFetch<{ data: BlogPost[] }>(
+              `/api/blog/posts?category_id=${res.category.id}&per_page=5`,
+            )
+              .then((relRes) => {
+                if (active)
+                  setRelatedPosts(
+                    relRes.data.filter((p) => p.id !== res.id).slice(0, 4),
+                  );
               })
               .catch(console.error);
           }
@@ -115,9 +120,12 @@ export default function BlogPostDetailPage() {
         if (active) setLoading(false);
       });
 
-    apiFetch<{data: BlogPost[]}>(`/api/blog/posts?sort=views&per_page=5`)
-      .then(popRes => {
-        if (active) setPopularPosts(popRes.data.filter(p => p.slug !== slug).slice(0, 4));
+    apiFetch<{ data: BlogPost[] }>(`/api/blog/posts?sort=views&per_page=5`)
+      .then((popRes) => {
+        if (active)
+          setPopularPosts(
+            popRes.data.filter((p) => p.slug !== slug).slice(0, 4),
+          );
       })
       .catch(console.error);
 
@@ -178,7 +186,7 @@ export default function BlogPostDetailPage() {
         `/api/blog/posts/${slug}/comments`,
         {
           method: "POST",
-          
+
           body: JSON.stringify({
             content: commentContent,
           }),
@@ -399,14 +407,27 @@ export default function BlogPostDetailPage() {
               <div className="postSidebarWidget">
                 <h3 className="postWidgetTitle">Bài viết liên quan</h3>
                 <div className="sidebarPostList">
-                  {relatedPosts.map(rp => (
-                    <Link to={`/blog/posts/${rp.slug}`} key={rp.id} className="sidebarPostItem">
+                  {relatedPosts.map((rp) => (
+                    <Link
+                      to={`/blog/posts/${rp.slug}`}
+                      key={rp.id}
+                      className="sidebarPostItem"
+                    >
                       <div className="sidebarPostImg">
-                        <img src={resolveImageUrl(rp.thumbnail_url)} alt={rp.title} />
+                        <img
+                          src={resolveImageUrl(rp.thumbnail_url)}
+                          alt={rp.title}
+                        />
                       </div>
                       <div className="sidebarPostInfo">
-                        <h4 className="sidebarPostItemTitle" title={rp.title}>{rp.title}</h4>
-                        <span className="sidebarPostDate">{new Date(rp.published_at).toLocaleDateString("vi-VN")}</span>
+                        <h4 className="sidebarPostItemTitle" title={rp.title}>
+                          {rp.title}
+                        </h4>
+                        <span className="sidebarPostDate">
+                          {new Date(rp.published_at).toLocaleDateString(
+                            "vi-VN",
+                          )}
+                        </span>
                       </div>
                     </Link>
                   ))}
@@ -418,14 +439,25 @@ export default function BlogPostDetailPage() {
               <div className="postSidebarWidget">
                 <h3 className="postWidgetTitle">Xem nhiều nhất</h3>
                 <div className="sidebarPostList">
-                  {popularPosts.map(rp => (
-                    <Link to={`/blog/posts/${rp.slug}`} key={rp.id} className="sidebarPostItem">
+                  {popularPosts.map((rp) => (
+                    <Link
+                      to={`/blog/posts/${rp.slug}`}
+                      key={rp.id}
+                      className="sidebarPostItem"
+                    >
                       <div className="sidebarPostImg">
-                        <img src={resolveImageUrl(rp.thumbnail_url)} alt={rp.title} />
+                        <img
+                          src={resolveImageUrl(rp.thumbnail_url)}
+                          alt={rp.title}
+                        />
                       </div>
                       <div className="sidebarPostInfo">
-                        <h4 className="sidebarPostItemTitle" title={rp.title}>{rp.title}</h4>
-                        <span className="sidebarPostDate">{rp.views || 0} lượt xem</span>
+                        <h4 className="sidebarPostItemTitle" title={rp.title}>
+                          {rp.title}
+                        </h4>
+                        <span className="sidebarPostDate">
+                          {rp.views || 0} lượt xem
+                        </span>
                       </div>
                     </Link>
                   ))}
@@ -461,5 +493,3 @@ export default function BlogPostDetailPage() {
     </div>
   );
 }
-
-

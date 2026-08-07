@@ -1,5 +1,18 @@
-@keyframes spin-slow { 100% { transform: rotate(360deg); } }
-@keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes spin-slow {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
 
 /* Main Container */
 .loyalty-register-wrapper {
@@ -17,7 +30,11 @@
 .loyalty-hero-icon {
   width: 120px;
   height: 120px;
-  background: linear-gradient(135deg, rgba(233, 196, 0, 0.15), rgba(255, 225, 109, 0.3));
+  background: linear-gradient(
+    135deg,
+    rgba(233, 196, 0, 0.15),
+    rgba(255, 225, 109, 0.3)
+  );
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -81,13 +98,15 @@
   border-radius: 20px;
   text-align: center;
   border: 1px solid #e2e8f0;
-  box-shadow: 0 4px 20px -2px rgba(0,0,0,0.05);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05);
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
   cursor: default;
 }
 .loyalty-feature-card:hover {
   transform: translateY(-5px);
-  box-shadow: 0 12px 30px -5px rgba(0,0,0,0.1);
+  box-shadow: 0 12px 30px -5px rgba(0, 0, 0, 0.1);
 }
 .loyalty-feature-icon-wrap {
   width: 64px;
@@ -179,14 +198,14 @@
     font-size: 40px !important;
   }
   .loyalty-title {
-     font-size: 22px !important;
+    font-size: 22px !important;
   }
   .loyalty-subtitle {
-     font-size: 13px !important;
+    font-size: 13px !important;
   }
   .loyalty-btn {
-     padding: 12px 24px !important;
-     font-size: 15px !important;
+    padding: 12px 24px !important;
+    font-size: 15px !important;
   }
 }
 
@@ -204,13 +223,13 @@
   max-width: 580px;
   aspect-ratio: 1.6 / 1;
   border-radius: 16px;
-  background-image: url('/public/screen1.png');
+  background-image: url("/public/screen1.png");
   background-size: cover;
   background-position: center;
   padding: 40px;
   overflow: hidden;
   color: #ffffff;
-  box-shadow: 
+  box-shadow:
     0 20px 40px -10px rgba(0, 0, 0, 0.5),
     0 0 0 1px rgba(255, 255, 255, 0.1) inset;
 }
@@ -221,7 +240,7 @@
   position: absolute;
   inset: 0;
   background: linear-gradient(135deg, #1a1a1a2b, #464545);
-  
+
   z-index: 0;
 }
 
@@ -241,7 +260,11 @@
 .loyalty-member-bg-gradient {
   position: absolute;
   inset: 0;
-  background: linear-gradient(to top, rgba(7, 20, 36, 0.9) 0%, rgba(7, 20, 36, 0.4) 100%);
+  background: linear-gradient(
+    to top,
+    rgba(7, 20, 36, 0.9) 0%,
+    rgba(7, 20, 36, 0.4) 100%
+  );
 }
 .loyalty-member-content {
   position: relative;
@@ -385,7 +408,11 @@
 .loyalty-member-max-rank-icon {
   font-size: 14px;
   color: #ffe16d;
-  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  font-variation-settings:
+    "FILL" 0,
+    "wght" 400,
+    "GRAD" 0,
+    "opsz" 24;
 }
 .loyalty-member-bg-icon-wrapper {
   position: absolute;
@@ -397,7 +424,7 @@
   font-size: 64px;
   font-weight: 100;
   color: #ffe16d;
-  font-variation-settings: 'FILL' 1;
+  font-variation-settings: "FILL" 1;
 }
 
 /* History */
@@ -478,7 +505,6 @@
     aspect-ratio: auto;
     min-height: 220px;
     padding: 16px;
-
   }
   .loyalty-member-card-title {
     font-size: 18px;
@@ -567,11 +593,11 @@ html.dark .loyalty-history-item,
 html.dark .loyalty-history-item-title {
   background: #1e293b;
   color: #fff;
-  border:none;
+  border: none;
 }
 
-html.dark .loyalty-member-card{
-    background-image: url('/public/screen1.png');
+html.dark .loyalty-member-card {
+  background-image: url("/public/screen1.png");
   background-size: cover;
   background-position: center;
 }

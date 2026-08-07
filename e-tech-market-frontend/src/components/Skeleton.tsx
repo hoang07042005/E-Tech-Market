@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 
 interface SkeletonProps {
   width?: string | number;
@@ -8,12 +8,12 @@ interface SkeletonProps {
   style?: React.CSSProperties;
 }
 
-const Skeleton: React.FC<SkeletonProps> = ({ 
-  width = '100%', 
-  height = '1rem', 
-  borderRadius, 
-  className = '', 
-  style = {} 
+const Skeleton: React.FC<SkeletonProps> = ({
+  width = "100%",
+  height = "1rem",
+  borderRadius,
+  className = "",
+  style = {},
 }) => {
   const combinedStyle: React.CSSProperties = {
     width,

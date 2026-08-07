@@ -218,7 +218,7 @@
 
 .oneForOneTimeframeCard::after {
   content: "schedule";
-  font-family: 'Material Symbols Outlined';
+  font-family: "Material Symbols Outlined";
   position: absolute;
   right: -20px;
   top: -20px;
@@ -461,7 +461,9 @@
   font-weight: 700;
   cursor: pointer;
   box-shadow: 0 4px 12px rgba(144, 77, 0, 0.12);
-  transition: background-color 0.2s ease, transform 0.1s ease;
+  transition:
+    background-color 0.2s ease,
+    transform 0.1s ease;
 }
 
 .oneForOneSupportBtn:hover {
@@ -525,19 +527,19 @@
   .oneForOneLayout {
     grid-template-columns: 1fr;
   }
-  
+
   .oneForOneLayout > * {
     min-width: 0;
     overflow-wrap: break-word;
     word-break: break-word;
   }
-  
+
   .oneForOneHero {
     flex-direction: column;
     text-align: center;
     padding: 32px 24px;
   }
-  
+
   .oneForOneHeroVisual {
     max-width: 100%;
   }
@@ -547,15 +549,15 @@
   .oneForOneEligibilityGrid {
     grid-template-columns: 1fr;
   }
-  
+
   .oneForOneStepGrid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
-  
+
   .oneForOneExclusionsGrid {
     grid-template-columns: 1fr;
   }
-  
+
   .oneForOneTimeframeCard {
     flex-direction: column;
     text-align: center;
@@ -566,7 +568,7 @@
   .oneForOneStepGrid {
     grid-template-columns: 1fr;
   }
-  
+
   .oneForOneTitle {
     font-size: 30px;
   }
@@ -604,7 +606,12 @@ html.dark .oneForOneRelatedCard h4 {
 }
 
 html.dark .oneForOneHero {
-  background: linear-gradient(135deg, rgba(15, 23, 42, 0.98) 0%, rgba(30, 41, 59, 0.95) 55%, rgba(120, 53, 15, 0.95) 100%);
+  background: linear-gradient(
+    135deg,
+    rgba(15, 23, 42, 0.98) 0%,
+    rgba(30, 41, 59, 0.95) 55%,
+    rgba(120, 53, 15, 0.95) 100%
+  );
   border-color: rgba(249, 115, 22, 0.25);
   box-shadow: 0 20px 40px rgba(15, 23, 42, 0.45);
 }

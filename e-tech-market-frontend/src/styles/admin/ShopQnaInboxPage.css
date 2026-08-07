@@ -124,7 +124,7 @@
   border-radius: 20px;
   color: #6b7280;
   font-size: 15px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
 }
 
 /* ===== List ===== */
@@ -342,12 +342,7 @@
 .admSkeletonBar {
   height: 14px;
   border-radius: 999px;
-  background: linear-gradient(
-    90deg,
-    #eceff3 25%,
-    #f7f8fa 50%,
-    #eceff3 75%
-  );
+  background: linear-gradient(90deg, #eceff3 25%, #f7f8fa 50%, #eceff3 75%);
   background-size: 200% 100%;
   animation: skeletonLoading 1.3s infinite linear;
 }

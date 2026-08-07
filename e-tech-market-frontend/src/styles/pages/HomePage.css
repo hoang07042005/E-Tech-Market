@@ -234,7 +234,7 @@
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: rgba(255,255,255,0.4);
+  background: rgba(255, 255, 255, 0.4);
   border: none;
   cursor: pointer;
   transition: all 0.3s;
@@ -283,18 +283,18 @@
 }
 .hpHeroNew.theme-light .hpBtnHotDeals {
   color: #111;
-  border-color: rgba(0,0,0,0.4);
+  border-color: rgba(0, 0, 0, 0.4);
 }
 .hpHeroNew.theme-light .hpBtnHotDeals:hover {
-  background: rgba(0,0,0,0.05);
+  background: rgba(0, 0, 0, 0.05);
 }
 .hpHeroNew.theme-light .hpFeatureText {
   color: #111;
 }
 .hpHeroNew.theme-light .hpBannerNavBtn {
   color: #111;
-  background: rgba(255,255,255,0.6);
-  border-color: rgba(0,0,0,0.1);
+  background: rgba(255, 255, 255, 0.6);
+  border-color: rgba(0, 0, 0, 0.1);
 }
 .hpHeroNew.theme-light .hpBannerNavBtn:hover {
   background: #f97316;
@@ -302,7 +302,7 @@
   border-color: #f97316;
 }
 .hpHeroNew.theme-light .hpBannerDot {
-  background: rgba(0,0,0,0.3);
+  background: rgba(0, 0, 0, 0.3);
 }
 .hpHeroNew.theme-light .hpBannerDot.active {
   background: #f97316;
@@ -356,7 +356,8 @@
     gap: 8px !important;
     justify-content: flex-start !important;
   }
-  .hpBtnShopNow, .hpBtnHotDeals {
+  .hpBtnShopNow,
+  .hpBtnHotDeals {
     width: auto !important;
     padding: 6px 10px !important;
     font-size: 0.65rem !important;
@@ -393,8 +394,12 @@
     display: flex !important;
   }
   @keyframes hpHeroMarquee {
-    0% { transform: translateX(0); }
-    100% { transform: translateX(-50%); }
+    0% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateX(-50%);
+    }
   }
   .hpFeatureItem {
     width: 240px;
@@ -1294,7 +1299,6 @@
     text-align: center;
   }
 
-
   .hpWhyUsGrid {
     grid-template-columns: repeat(2, 1fr);
   }
@@ -1393,8 +1397,6 @@
     transform: translateX(calc(-50% - 10px));
   }
 }
-
-
 
 /* Global Reviews Section */
 /* .hpGlobalReviewsSection {
@@ -1956,20 +1958,28 @@
   color: #fff;
   border-right: none;
   /* Left big cutout + Top/Bottom groove cutouts + Right perforated edge */
-  -webkit-mask-image: 
+  -webkit-mask-image:
     radial-gradient(circle at 0 50%, transparent 8px, black 8.5px),
     radial-gradient(circle at 100% 0px, transparent 6px, black 6.5px),
     radial-gradient(circle at 100% 100%, transparent 6px, black 6.5px),
     radial-gradient(circle at 100% 50%, transparent 1.5px, black 2px);
-  -webkit-mask-size: 100% 100%, 100% 100%, 100% 100%, 100% 8px;
+  -webkit-mask-size:
+    100% 100%,
+    100% 100%,
+    100% 100%,
+    100% 8px;
   -webkit-mask-repeat: no-repeat, no-repeat, no-repeat, repeat-y;
   -webkit-mask-composite: source-in;
-  mask-image: 
+  mask-image:
     radial-gradient(circle at 0 50%, transparent 8px, black 8.5px),
     radial-gradient(circle at 100% 0px, transparent 6px, black 6.5px),
     radial-gradient(circle at 100% 100%, transparent 6px, black 6.5px),
     radial-gradient(circle at 100% 50%, transparent 1.5px, black 2px);
-  mask-size: 100% 100%, 100% 100%, 100% 100%, 100% 8px;
+  mask-size:
+    100% 100%,
+    100% 100%,
+    100% 100%,
+    100% 8px;
   mask-repeat: no-repeat, no-repeat, no-repeat, repeat-y;
   mask-composite: intersect;
 }
@@ -2016,20 +2026,28 @@
   display: flex;
   flex-direction: column;
   position: relative;
-  -webkit-mask-image: 
+  -webkit-mask-image:
     radial-gradient(circle at 100% 50%, transparent 8px, black 8.5px),
     radial-gradient(circle at 0% 0px, transparent 6px, black 6.5px),
     radial-gradient(circle at 0% 100%, transparent 6px, black 6.5px),
     radial-gradient(circle at 0% 50%, transparent 1.5px, black 2px);
-  -webkit-mask-size: 100% 100%, 100% 100%, 100% 100%, 100% 8px;
+  -webkit-mask-size:
+    100% 100%,
+    100% 100%,
+    100% 100%,
+    100% 8px;
   -webkit-mask-repeat: no-repeat, no-repeat, no-repeat, repeat-y;
   -webkit-mask-composite: source-in;
-  mask-image: 
+  mask-image:
     radial-gradient(circle at 100% 50%, transparent 8px, black 8.5px),
     radial-gradient(circle at 0% 0px, transparent 6px, black 6.5px),
     radial-gradient(circle at 0% 100%, transparent 6px, black 6.5px),
     radial-gradient(circle at 0% 50%, transparent 1.5px, black 2px);
-  mask-size: 100% 100%, 100% 100%, 100% 100%, 100% 8px;
+  mask-size:
+    100% 100%,
+    100% 100%,
+    100% 100%,
+    100% 8px;
   mask-repeat: no-repeat, no-repeat, no-repeat, repeat-y;
   mask-composite: intersect;
 }
@@ -2320,7 +2338,7 @@
   .hpContainer {
     padding: 12px 16px;
   }
-  
+
   /* Titles */
   .hpCouponSectionTitle,
   .hpCuratedTitle,
@@ -2329,7 +2347,7 @@
   .hpSectionTitleNew {
     font-size: 1.5rem !important;
   }
-  
+
   /* Subtitles / Kickers */
   .hpCouponSectionSub,
   .hpCuratedKicker,
@@ -2337,9 +2355,7 @@
     font-size: 0.7rem !important;
     margin-bottom: 8px !important;
   }
-  
 
-  
   /* Coupons */
   .hpCouponCardNew {
     width: 310px !important;
@@ -2367,13 +2383,13 @@
     padding: 4px 10px;
     font-size: 11px;
   }
-  
+
   /* Buttons */
   .hpNewsletterBtn {
     padding: 12px 24px !important;
     font-size: 0.8rem !important;
   }
-  
+
   /* Stats */
   .hpStatValue {
     font-size: 1.4rem !important;
@@ -2395,9 +2411,12 @@
 
 .fsBannerBg {
   position: absolute;
-  top: 0; left: 0; right: 0; bottom: 0;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   background: linear-gradient(90deg, #ed1c24 0%, #fa4b2a 100%);
-  box-shadow: 0 -2px 4px rgba(0,0,0,0.15);
+  box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.15);
   overflow: hidden;
 }
 
@@ -2408,7 +2427,7 @@
   bottom: 1px;
   width: 36%;
   z-index: 4;
-  filter: drop-shadow(2px 2px 0px #ffeb3b); 
+  filter: drop-shadow(2px 2px 0px #ffeb3b);
 }
 
 .fsLabelMain {
@@ -2428,7 +2447,7 @@
   line-height: 1.05;
   font-size: 12px;
   margin-left: 2px;
-  text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
 }
 
 .fsTimerBlock {
@@ -2483,7 +2502,7 @@
   bottom: 1px;
   width: 24%;
   z-index: 3;
-  filter: drop-shadow(-2px 2px 0px #ffeb3b); 
+  filter: drop-shadow(-2px 2px 0px #ffeb3b);
 }
 
 .fsDiscountMain {

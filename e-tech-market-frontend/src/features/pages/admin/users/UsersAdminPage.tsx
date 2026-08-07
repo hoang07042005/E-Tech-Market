@@ -1,390 +1,444 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
-import { useAuthStore } from '@/features/store/useAuthStore'
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { useAuthStore } from "@/features/store/useAuthStore";
 
-import { apiFetch, API_BASE_URL } from '@/configs/api.config'
-import { fetchRoles, fetchUsers, updateRole } from '@/features/services/admin/api.admin.service'
-import HardDeletePage from '../products/HardDeletePage' 
-import { toast } from '@/utils/toast';
-import '@/styles/admin/ProductPage.css'
-import '@/styles/admin/UsersAdminPage.css'
+import { apiFetch, API_BASE_URL } from "@/configs/api.config";
+import {
+  fetchRoles,
+  fetchUsers,
+  updateRole,
+} from "@/features/services/admin/api.admin.service";
+import HardDeletePage from "../products/HardDeletePage";
+import { toast } from "@/utils/toast";
+import "@/styles/admin/ProductPage.css";
+import "@/styles/admin/UsersAdminPage.css";
 
 type Role = {
-  id: number
-  name: string
-  slug: string
-  description?: string | null
-}
+  id: number;
+  name: string;
+  slug: string;
+  description?: string | null;
+};
 
 type AdminUserRow = {
-  id: number
-  name: string
-  email: string
-  phone: string | null
-  avatar_url?: string | null
-  is_active: boolean
-  is_locked: boolean
-  created_at: string
-  roles?: Role[]
-}
+  id: number;
+  name: string;
+  email: string;
+  phone: string | null;
+  avatar_url?: string | null;
+  is_active: boolean;
+  is_locked: boolean;
+  created_at: string;
+  roles?: Role[];
+};
 
 type PaginatedUsers = {
-  data: AdminUserRow[]
-  current_page: number
-  last_page: number
-  per_page: number
-  total: number
-}
+  data: AdminUserRow[];
+  current_page: number;
+  last_page: number;
+  per_page: number;
+  total: number;
+};
 
 const ROLE_FALLBACK_VI: Record<string, string> = {
-  admin: 'Quản trị viên',
-  staff: 'Nhân viên',
-  customer: 'Khách hàng',
-}
+  admin: "Quản trị viên",
+  staff: "Nhân viên",
+  customer: "Khách hàng",
+};
 
 function roleDisplayLabel(role: Role): string {
-  const desc = role.description?.trim()
-  if (desc) return desc
-  return ROLE_FALLBACK_VI[role.slug] ?? role.name
+  const desc = role.description?.trim();
+  if (desc) return desc;
+  return ROLE_FALLBACK_VI[role.slug] ?? role.name;
 }
 
 function resolveAvatar(url?: string | null) {
-  if (!url) return null
-  const s = url.trim()
-  if (!s) return null
+  if (!url) return null;
+  const s = url.trim();
+  if (!s) return null;
   if (/^https?:\/\//i.test(s)) {
     try {
-      const urlObj = new URL(s)
-      if (urlObj.hostname === 'nginx' || urlObj.hostname === 'localhost') {
-        const path = s.replace(/^https?:\/\/[^/]+/, '')
-        return window.location.origin + path
+      const urlObj = new URL(s);
+      if (urlObj.hostname === "nginx" || urlObj.hostname === "localhost") {
+        const path = s.replace(/^https?:\/\/[^/]+/, "");
+        return window.location.origin + path;
       }
-    } catch { /* keep original */ }
-    return s
+    } catch {
+      /* keep original */
+    }
+    return s;
   }
-  return `${API_BASE_URL}${s.startsWith('/') ? s : `/${s}`}`
+  return `${API_BASE_URL}${s.startsWith("/") ? s : `/${s}`}`;
 }
 
 function initialsOf(name: string) {
-  const parts = (name || '').trim().split(/\s+/).filter(Boolean)
-  if (!parts.length) return '—'
-  const a = parts[0]?.[0] ?? ''
-  const b = parts.length > 1 ? (parts[parts.length - 1]?.[0] ?? '') : (parts[0]?.[1] ?? '')
-  return (a + b).toUpperCase()
+  const parts = (name || "").trim().split(/\s+/).filter(Boolean);
+  if (!parts.length) return "—";
+  const a = parts[0]?.[0] ?? "";
+  const b =
+    parts.length > 1
+      ? (parts[parts.length - 1]?.[0] ?? "")
+      : (parts[0]?.[1] ?? "");
+  return (a + b).toUpperCase();
 }
 
 function avatarToneOf(s: string) {
-  const x = Array.from(s).reduce((acc, ch) => acc + ch.charCodeAt(0), 0) % 5
-  return (['beige', 'blue', 'peach', 'sand', 'gray'] as const)[x]
+  const x = Array.from(s).reduce((acc, ch) => acc + ch.charCodeAt(0), 0) % 5;
+  return (["beige", "blue", "peach", "sand", "gray"] as const)[x];
 }
 
 function formatRoles(roles: Role[] | undefined): string {
-  if (!roles?.length) return '—'
-  return roles.map(roleDisplayLabel).join(', ')
+  if (!roles?.length) return "—";
+  return roles.map(roleDisplayLabel).join(", ");
 }
 
 function userHasAdminRole(row: AdminUserRow): boolean {
-  return (row.roles ?? []).some(r => r.slug === 'admin')
+  return (row.roles ?? []).some((r) => r.slug === "admin");
 }
 
 function getCurrentUserIdFromStore(): number | null {
-  const raw = useAuthStore.getState().userStr
-  if (!raw) return null
+  const raw = useAuthStore.getState().userStr;
+  if (!raw) return null;
   try {
-    const u = JSON.parse(raw) as { id?: number }
-    return typeof u.id === 'number' ? u.id : null
+    const u = JSON.parse(raw) as { id?: number };
+    return typeof u.id === "number" ? u.id : null;
   } catch {
-    return null
+    return null;
   }
 }
 
-type BusyKind = 'lock' | 'delete' | 'roles' | 'disable'
+type BusyKind = "lock" | "delete" | "roles" | "disable";
 
 export default function UsersAdminPage() {
-  const currentUserId = useMemo(() => getCurrentUserIdFromStore(), [])
-  
-  const [viewMode, setViewMode] = useState<'main' | 'hard_delete'>('main')
+  const currentUserId = useMemo(() => getCurrentUserIdFromStore(), []);
 
-  const [page, setPage] = useState(1)
-  const [search, setSearch] = useState('')
-  const [debouncedSearch, setDebouncedSearch] = useState('')
-  const [rows, setRows] = useState<AdminUserRow[]>([])
-  const [lastPage, setLastPage] = useState(1)
-  const [total, setTotal] = useState(0)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-  const [busy, setBusy] = useState<{ userId: number; kind: BusyKind } | null>(null)
-  const [activeTab, setActiveTab] = useState<'customer' | 'admin'>('customer')
+  const [viewMode, setViewMode] = useState<"main" | "hard_delete">("main");
+
+  const [page, setPage] = useState(1);
+  const [search, setSearch] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+  const [rows, setRows] = useState<AdminUserRow[]>([]);
+  const [lastPage, setLastPage] = useState(1);
+  const [total, setTotal] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [busy, setBusy] = useState<{ userId: number; kind: BusyKind } | null>(
+    null,
+  );
+  const [activeTab, setActiveTab] = useState<"customer" | "admin">("customer");
 
   const [confirmDialog, setConfirmDialog] = useState<{
-    isOpen: boolean
-    title: string
-    message: string
-    onConfirm: () => void
-    loading?: boolean
-  }>({ isOpen: false, title: '', message: '', onConfirm: () => {} })
+    isOpen: boolean;
+    title: string;
+    message: string;
+    onConfirm: () => void;
+    loading?: boolean;
+  }>({ isOpen: false, title: "", message: "", onConfirm: () => {} });
 
-  const [roleCatalog, setRoleCatalog] = useState<Role[]>([])
-  const [rolesCatalogLoading, setRolesCatalogLoading] = useState(true)
-  const [rolesCatalogError, setRolesCatalogError] = useState<string | null>(null)
+  const [roleCatalog, setRoleCatalog] = useState<Role[]>([]);
+  const [rolesCatalogLoading, setRolesCatalogLoading] = useState(true);
+  const [rolesCatalogError, setRolesCatalogError] = useState<string | null>(
+    null,
+  );
 
-  const [roleEditor, setRoleEditor] = useState<{ user: AdminUserRow; selectedIds: number[] } | null>(null)
+  const [roleEditor, setRoleEditor] = useState<{
+    user: AdminUserRow;
+    selectedIds: number[];
+  } | null>(null);
 
-  const [roleCatalogOpen, setRoleCatalogOpen] = useState(false)
-  const [editingRole, setEditingRole] = useState<Role | null>(null)
-  const [editingRoleName, setEditingRoleName] = useState('')
-  const [editingRoleDesc, setEditingRoleDesc] = useState('')
-  const [roleSaving, setRoleSaving] = useState(false)
+  const [roleCatalogOpen, setRoleCatalogOpen] = useState(false);
+  const [editingRole, setEditingRole] = useState<Role | null>(null);
+  const [editingRoleName, setEditingRoleName] = useState("");
+  const [editingRoleDesc, setEditingRoleDesc] = useState("");
+  const [roleSaving, setRoleSaving] = useState(false);
 
   useEffect(() => {
-    const t = window.setTimeout(() => setDebouncedSearch(search.trim()), 350)
-    return () => window.clearTimeout(t)
-  }, [search])
+    const t = window.setTimeout(() => setDebouncedSearch(search.trim()), 350);
+    return () => window.clearTimeout(t);
+  }, [search]);
 
   useEffect(() => {
-    let cancelled = false
+    let cancelled = false;
     async function fetchRolesCatalog() {
-      setRolesCatalogLoading(true)
-      setRolesCatalogError(null)
+      setRolesCatalogLoading(true);
+      setRolesCatalogError(null);
       try {
-        const list = await fetchRoles<Role[]>()
-        if (!cancelled) setRoleCatalog(list ?? [])
+        const list = await fetchRoles<Role[]>();
+        if (!cancelled) setRoleCatalog(list ?? []);
       } catch (e: unknown) {
         if (!cancelled) {
-          setRoleCatalog([])
-          setRolesCatalogError(e instanceof Error ? e.message : 'Không tải được danh sách vai trò.')
+          setRoleCatalog([]);
+          setRolesCatalogError(
+            e instanceof Error
+              ? e.message
+              : "Không tải được danh sách vai trò.",
+          );
         }
       } finally {
-        if (!cancelled) setRolesCatalogLoading(false)
+        if (!cancelled) setRolesCatalogLoading(false);
       }
     }
-    void fetchRolesCatalog()
+    void fetchRolesCatalog();
     return () => {
-      cancelled = true
-    }
-  }, [])
+      cancelled = true;
+    };
+  }, []);
 
   const reloadRoleCatalog = async () => {
-    setRolesCatalogLoading(true)
+    setRolesCatalogLoading(true);
     try {
-      const list = await fetchRoles<Role[]>()
-      setRoleCatalog(list ?? [])
+      const list = await fetchRoles<Role[]>();
+      setRoleCatalog(list ?? []);
     } catch (e: unknown) {
-      setRolesCatalogError(e instanceof Error ? e.message : 'Không tải được danh sách vai trò.')
+      setRolesCatalogError(
+        e instanceof Error ? e.message : "Không tải được danh sách vai trò.",
+      );
     } finally {
-      setRolesCatalogLoading(false)
+      setRolesCatalogLoading(false);
     }
-  }
+  };
 
   const handleUpdateRole = async () => {
-    if (!editingRole) return
+    if (!editingRole) return;
     if (!editingRoleName.trim()) {
-      toast.error('Tên vai trò không được để trống')
-      return
+      toast.error("Tên vai trò không được để trống");
+      return;
     }
-    setRoleSaving(true)
-    setError(null)
+    setRoleSaving(true);
+    setError(null);
     try {
       await updateRole(editingRole.id, {
         name: editingRoleName,
-        description: editingRoleDesc
-      })
-      setEditingRole(null)
-      await reloadRoleCatalog()
+        description: editingRoleDesc,
+      });
+      setEditingRole(null);
+      await reloadRoleCatalog();
     } catch (e: unknown) {
-      toast.error(e instanceof Error ? e.message : 'Lỗi khi cập nhật vai trò')
+      toast.error(e instanceof Error ? e.message : "Lỗi khi cập nhật vai trò");
     } finally {
-      setRoleSaving(false)
+      setRoleSaving(false);
     }
-  }
+  };
 
   const load = useCallback(async () => {
-    setLoading(true)
-    setError(null)
+    setLoading(true);
+    setError(null);
     try {
-      const q = new URLSearchParams()
-      q.set('page', String(page))
-      q.set('role_type', activeTab)
-      if (debouncedSearch) q.set('search', debouncedSearch)
-      const res = await fetchUsers<PaginatedUsers>(q.toString())
-      setRows(res.data ?? [])
-      setLastPage(res.last_page ?? 1)
-      setTotal(res.total ?? 0)
+      const q = new URLSearchParams();
+      q.set("page", String(page));
+      q.set("role_type", activeTab);
+      if (debouncedSearch) q.set("search", debouncedSearch);
+      const res = await fetchUsers<PaginatedUsers>(q.toString());
+      setRows(res.data ?? []);
+      setLastPage(res.last_page ?? 1);
+      setTotal(res.total ?? 0);
     } catch (e: unknown) {
-      setError(e instanceof Error ? e.message : 'Không tải được danh sách người dùng.')
-      setRows([])
+      setError(
+        e instanceof Error ? e.message : "Không tải được danh sách người dùng.",
+      );
+      setRows([]);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }, [page, debouncedSearch, activeTab])
+  }, [page, debouncedSearch, activeTab]);
 
   useEffect(() => {
-    void load()
-  }, [load])
+    void load();
+  }, [load]);
 
   useEffect(() => {
-    setPage(1)
-  }, [debouncedSearch, activeTab])
+    setPage(1);
+  }, [debouncedSearch, activeTab]);
 
   const setLock = async (u: AdminUserRow, lock: boolean) => {
-    if (busy != null) return
-    const label = lock ? 'khóa' : 'mở khóa'
-    const title = lock ? 'Xác nhận khóa tài khoản' : 'Xác nhận mở khóa tài khoản'
-    const message = lock 
+    if (busy != null) return;
+    const label = lock ? "khóa" : "mở khóa";
+    const title = lock
+      ? "Xác nhận khóa tài khoản"
+      : "Xác nhận mở khóa tài khoản";
+    const message = lock
       ? `Khóa tài khoản "${u.name}"? Họ sẽ không đăng nhập được và tài khoản sẽ bị đăng xuất khỏi tất cả thiết bị.`
-      : `Mở khóa tài khoản "${u.name}" và gửi email yêu cầu tạo mật khẩu mới?`
+      : `Mở khóa tài khoản "${u.name}" và gửi email yêu cầu tạo mật khẩu mới?`;
 
     setConfirmDialog({
       isOpen: true,
       title,
       message,
       onConfirm: async () => {
-        setConfirmDialog(prev => ({ ...prev, loading: true }))
-        setBusy({ userId: u.id, kind: 'lock' })
-        setError(null)
+        setConfirmDialog((prev) => ({ ...prev, loading: true }));
+        setBusy({ userId: u.id, kind: "lock" });
+        setError(null);
         try {
-          await apiFetch(`/api/admin/users/${u.id}/${lock ? 'lock' : 'unlock'}`, {
-            method: 'POST',
-          })
-          toast.success(lock ? 'Đã khóa tài khoản thành công.' : 'Đã mở khóa và gửi link thiết lập mật khẩu.')
-          await load()
+          await apiFetch(
+            `/api/admin/users/${u.id}/${lock ? "lock" : "unlock"}`,
+            {
+              method: "POST",
+            },
+          );
+          toast.success(
+            lock
+              ? "Đã khóa tài khoản thành công."
+              : "Đã mở khóa và gửi link thiết lập mật khẩu.",
+          );
+          await load();
         } catch (e: unknown) {
-          setError(e instanceof Error ? e.message : `Không ${label} được tài khoản.`)
+          setError(
+            e instanceof Error ? e.message : `Không ${label} được tài khoản.`,
+          );
         } finally {
-          setBusy(null)
-          setConfirmDialog(prev => ({ ...prev, isOpen: false, loading: false }))
+          setBusy(null);
+          setConfirmDialog((prev) => ({
+            ...prev,
+            isOpen: false,
+            loading: false,
+          }));
         }
-      }
-    })
-  }
+      },
+    });
+  };
 
   const setDisable = async (u: AdminUserRow, disable: boolean) => {
-    if (busy != null) return
-    const label = disable ? 'vô hiệu hóa' : 'kích hoạt'
-    const title = disable ? 'Xác nhận vô hiệu hóa' : 'Xác nhận kích hoạt'
-    const message = disable ? `Vô hiệu hóa tài khoản "${u.name}"?` : `Kích hoạt lại tài khoản "${u.name}"?`
+    if (busy != null) return;
+    const label = disable ? "vô hiệu hóa" : "kích hoạt";
+    const title = disable ? "Xác nhận vô hiệu hóa" : "Xác nhận kích hoạt";
+    const message = disable
+      ? `Vô hiệu hóa tài khoản "${u.name}"?`
+      : `Kích hoạt lại tài khoản "${u.name}"?`;
 
     setConfirmDialog({
       isOpen: true,
       title,
       message,
       onConfirm: async () => {
-        setConfirmDialog(prev => ({ ...prev, loading: true }))
-        setBusy({ userId: u.id, kind: 'disable' })
-        setError(null)
+        setConfirmDialog((prev) => ({ ...prev, loading: true }));
+        setBusy({ userId: u.id, kind: "disable" });
+        setError(null);
         try {
           await apiFetch<AdminUserRow>(`/api/admin/users/${u.id}`, {
-            method: 'PATCH',
+            method: "PATCH",
             body: JSON.stringify({ is_active: !disable }),
-          })
-          await load()
+          });
+          await load();
         } catch (e: unknown) {
-          setError(e instanceof Error ? e.message : `Không ${label} được tài khoản.`)
+          setError(
+            e instanceof Error ? e.message : `Không ${label} được tài khoản.`,
+          );
         } finally {
-          setBusy(null)
-          setConfirmDialog(prev => ({ ...prev, isOpen: false, loading: false }))
+          setBusy(null);
+          setConfirmDialog((prev) => ({
+            ...prev,
+            isOpen: false,
+            loading: false,
+          }));
         }
-      }
-    })
-  }
+      },
+    });
+  };
 
   const removeUser = async (u: AdminUserRow) => {
-    if (busy != null) return
-    
+    if (busy != null) return;
+
     setConfirmDialog({
       isOpen: true,
-      title: 'Xóa tài khoản',
+      title: "Xóa tài khoản",
       message: `Xóa tài khoản "${u.name}" (${u.email})? Hành động không thể hoàn tác.`,
       onConfirm: async () => {
-        setConfirmDialog(prev => ({ ...prev, loading: true }))
-        setBusy({ userId: u.id, kind: 'delete' })
-        setError(null)
+        setConfirmDialog((prev) => ({ ...prev, loading: true }));
+        setBusy({ userId: u.id, kind: "delete" });
+        setError(null);
         try {
-          await apiFetch(`/api/admin/users/${u.id}`, { method: 'DELETE' })
-          await load()
+          await apiFetch(`/api/admin/users/${u.id}`, { method: "DELETE" });
+          await load();
         } catch (e: unknown) {
-          setError(e instanceof Error ? e.message : 'Không xóa tài khoản được.')
+          setError(
+            e instanceof Error ? e.message : "Không xóa tài khoản được.",
+          );
         } finally {
-          setBusy(null)
-          setConfirmDialog(prev => ({ ...prev, isOpen: false, loading: false }))
+          setBusy(null);
+          setConfirmDialog((prev) => ({
+            ...prev,
+            isOpen: false,
+            loading: false,
+          }));
         }
-      }
-    })
-  }
+      },
+    });
+  };
 
   const openRoleEditor = (u: AdminUserRow) => {
-    const ids = [...new Set((u.roles ?? []).map(r => r.id))]
-    setRoleEditor({ user: u, selectedIds: ids })
-  }
+    const ids = [...new Set((u.roles ?? []).map((r) => r.id))];
+    setRoleEditor({ user: u, selectedIds: ids });
+  };
 
   const toggleRoleInEditor = (roleId: number) => {
-    setRoleEditor(prev => {
-      if (!prev) return prev
-      const has = prev.selectedIds.includes(roleId)
-      const next = has ? prev.selectedIds.filter(id => id !== roleId) : [...prev.selectedIds, roleId]
-      return { ...prev, selectedIds: next }
-    })
-  }
+    setRoleEditor((prev) => {
+      if (!prev) return prev;
+      const has = prev.selectedIds.includes(roleId);
+      const next = has
+        ? prev.selectedIds.filter((id) => id !== roleId)
+        : [...prev.selectedIds, roleId];
+      return { ...prev, selectedIds: next };
+    });
+  };
 
   const saveRoles = async () => {
-    if (!roleEditor || busy != null) return
-    const { user, selectedIds } = roleEditor
+    if (!roleEditor || busy != null) return;
+    const { user, selectedIds } = roleEditor;
     if (selectedIds.length < 1) {
-      toast.error('Chọn ít nhất một vai trò.')
-      return
+      toast.error("Chọn ít nhất một vai trò.");
+      return;
     }
 
-    const uniqueSorted = [...new Set(selectedIds)].sort((a, b) => a - b)
-    setBusy({ userId: user.id, kind: 'roles' })
-    setError(null)
+    const uniqueSorted = [...new Set(selectedIds)].sort((a, b) => a - b);
+    setBusy({ userId: user.id, kind: "roles" });
+    setError(null);
     try {
       await apiFetch<AdminUserRow>(`/api/admin/users/${user.id}`, {
-        method: 'PATCH',
+        method: "PATCH",
         body: JSON.stringify({ role_ids: uniqueSorted }),
-      })
-      setRoleEditor(null)
-      await load()
+      });
+      setRoleEditor(null);
+      await load();
     } catch (e: unknown) {
-      setError(e instanceof Error ? e.message : 'Không lưu được vai trò.')
+      setError(e instanceof Error ? e.message : "Không lưu được vai trò.");
     } finally {
-      setBusy(null)
+      setBusy(null);
     }
-  }
+  };
 
   const closeRoleEditor = () => {
-    if (busy?.kind === 'roles') return
-    setRoleEditor(null)
-  }
+    if (busy?.kind === "roles") return;
+    setRoleEditor(null);
+  };
 
-  if (viewMode === 'hard_delete') {
-    return <HardDeletePage onBack={() => setViewMode('main')} />
+  if (viewMode === "hard_delete") {
+    return <HardDeletePage onBack={() => setViewMode("main")} />;
   }
 
   return (
     <div className="prodAdminRoot">
       <div className="usersAdminHeaderContainer">
         <div className="usersAdminHeaderTitleWrap">
-          <h2 className="usersAdminPageTitle">
-            Quản lý người dùng
-          </h2>
+          <h2 className="usersAdminPageTitle">Quản lý người dùng</h2>
           <p className="usersAdminPageSubtitle">
-            Đổi vai trò (nhiều vai trò được phép), khóa / mở khóa đăng nhập hoặc xóa mềm — không áp dụng chính tài khoản bạn.
+            Đổi vai trò (nhiều vai trò được phép), khóa / mở khóa đăng nhập hoặc
+            xóa mềm — không áp dụng chính tài khoản bạn.
           </p>
         </div>
-        
+
         <div className="usersAdminToolbarRow">
           <div className="pDetailFilterBar usersadminpage-style-1">
             <div className="pVariantFilterTabs usersadminpage-style-2">
-              <button 
+              <button
                 type="button"
-                className={`pVariantTabBtn ${activeTab === 'customer' ? 'active' : ''}`}
-                onClick={() => setActiveTab('customer')}
+                className={`pVariantTabBtn ${activeTab === "customer" ? "active" : ""}`}
+                onClick={() => setActiveTab("customer")}
               >
                 Khách hàng
               </button>
-              <button 
+              <button
                 type="button"
-                className={`pVariantTabBtn ${activeTab === 'admin' ? 'active' : ''}`}
-                onClick={() => setActiveTab('admin')}
+                className={`pVariantTabBtn ${activeTab === "admin" ? "active" : ""}`}
+                onClick={() => setActiveTab("admin")}
               >
                 Quản trị & Nhân viên
               </button>
@@ -392,18 +446,18 @@ export default function UsersAdminPage() {
           </div>
 
           <div className="usersAdminActionsWrapper">
-            <button 
+            <button
               type="button"
               className="pAddBtn usersAdminBtn"
               onClick={() => setRoleCatalogOpen(true)}
             >
               Cập nhật vai trò
             </button>
-            
+
             <button
               type="button"
               className="pAddBtn usersAdminBtn usersAdminBtnDanger"
-              onClick={() => setViewMode('hard_delete')}
+              onClick={() => setViewMode("hard_delete")}
               title="Dữ liệu đã xóa (Hard delete)"
             >
               Dữ liệu đã xóa (Hard delete)
@@ -414,14 +468,16 @@ export default function UsersAdminPage() {
               className="usersAdminSearch"
               placeholder="Tìm theo tên, email, SĐT…"
               value={search}
-              onChange={e => setSearch(e.target.value)}
+              onChange={(e) => setSearch(e.target.value)}
               aria-label="Tìm người dùng"
             />
           </div>
         </div>
       </div>
 
-      {rolesCatalogError && <div className="prodErrorBanner">{rolesCatalogError}</div>}
+      {rolesCatalogError && (
+        <div className="prodErrorBanner">{rolesCatalogError}</div>
+      )}
       {error && <div className="prodErrorBanner">{error}</div>}
 
       <div className="prodTableWrap">
@@ -442,7 +498,10 @@ export default function UsersAdminPage() {
                 <tr key={i} className="admSkeletonRow">
                   <td colSpan={6}>
                     <div className="admSkeletonCell">
-                      <div className="admSkeletonBar" style={{ width: i % 2 === 0 ? '70%' : '90%' }} />
+                      <div
+                        className="admSkeletonBar"
+                        style={{ width: i % 2 === 0 ? "70%" : "90%" }}
+                      />
                     </div>
                   </td>
                 </tr>
@@ -464,41 +523,55 @@ export default function UsersAdminPage() {
             <tbody>
               {rows.length === 0 ? (
                 <tr>
-                  <td colSpan={6}  className="usersadminpage-style-3">
-                    {debouncedSearch ? 'Không tìm thấy người dùng phù hợp.' : 'Chưa có người dùng.'}
+                  <td colSpan={6} className="usersadminpage-style-3">
+                    {debouncedSearch
+                      ? "Không tìm thấy người dùng phù hợp."
+                      : "Chưa có người dùng."}
                   </td>
                 </tr>
               ) : (
-                rows.map(u => {
-                  const isSelf = currentUserId != null && u.id === currentUserId
-                  const rowBusy = busy?.userId === u.id
-                  const lockLoading = rowBusy && busy?.kind === 'lock'
-                  const deleteLoading = rowBusy && busy?.kind === 'delete'
-                  const rolesSaving = rowBusy && busy?.kind === 'roles'
-                  const isAdminAccount = userHasAdminRole(u)
+                rows.map((u) => {
+                  const isSelf =
+                    currentUserId != null && u.id === currentUserId;
+                  const rowBusy = busy?.userId === u.id;
+                  const lockLoading = rowBusy && busy?.kind === "lock";
+                  const deleteLoading = rowBusy && busy?.kind === "delete";
+                  const rolesSaving = rowBusy && busy?.kind === "roles";
+                  const isAdminAccount = userHasAdminRole(u);
                   const rolesEditDisabled =
                     isSelf ||
                     rowBusy ||
                     rolesCatalogLoading ||
                     roleCatalog.length === 0 ||
-                    isAdminAccount
+                    isAdminAccount;
 
                   const roleEditTitle = isSelf
-                    ? 'Không thể đổi vai trò chính bạn'
+                    ? "Không thể đổi vai trò chính bạn"
                     : isAdminAccount
-                      ? 'Không thể đổi vai trò tài khoản quản trị viên'
+                      ? "Không thể đổi vai trò tài khoản quản trị viên"
                       : rolesCatalogLoading
-                        ? 'Đang tải vai trò…'
-                        : 'Đổi vai trò'
+                        ? "Đang tải vai trò…"
+                        : "Đổi vai trò";
 
                   return (
                     <tr key={u.id}>
                       <td>
                         <div className="usersAdminUserCell">
                           {u.avatar_url ? (
-                            <img className="usersAdminAvatarImg" src={resolveAvatar(u.avatar_url) || undefined} alt="" loading="lazy" decoding="async" />
+                            <img
+                              className="usersAdminAvatarImg"
+                              src={resolveAvatar(u.avatar_url) || undefined}
+                              alt=""
+                              loading="lazy"
+                              decoding="async"
+                            />
                           ) : (
-                            <span className={`usersAdminAvatar tone-${avatarToneOf(u.name)}`} aria-hidden>{initialsOf(u.name)}</span>
+                            <span
+                              className={`usersAdminAvatar tone-${avatarToneOf(u.name)}`}
+                              aria-hidden
+                            >
+                              {initialsOf(u.name)}
+                            </span>
                           )}
                           <span className="usersAdminName">{u.name}</span>
                         </div>
@@ -507,11 +580,13 @@ export default function UsersAdminPage() {
                         <span className="pCat">{u.email}</span>
                       </td>
                       <td>
-                        <span className="pCat">{u.phone || '—'}</span>
+                        <span className="pCat">{u.phone || "—"}</span>
                       </td>
                       <td>
                         <div className="usersAdminRoleCell">
-                          <span className="pCat usersAdminRoleText">{formatRoles(u.roles)}</span>
+                          <span className="pCat usersAdminRoleText">
+                            {formatRoles(u.roles)}
+                          </span>
                           <button
                             type="button"
                             className="pEdit usersAdminIconBtn usersAdminRoleEditBtn"
@@ -519,8 +594,8 @@ export default function UsersAdminPage() {
                             aria-label={roleEditTitle}
                             title={roleEditTitle}
                             onClick={() => {
-                              if (rolesEditDisabled) return
-                              openRoleEditor(u)
+                              if (rolesEditDisabled) return;
+                              openRoleEditor(u);
                             }}
                           >
                             {rolesSaving && !isAdminAccount ? (
@@ -535,10 +610,21 @@ export default function UsersAdminPage() {
                       </td>
                       <td>
                         {u.is_locked ? (
-                          <span className="pStatus inactive" style={{ background: '#fef2f2', color: '#dc2626', borderColor: '#f87171' }}>BỊ KHÓA</span>
+                          <span
+                            className="pStatus inactive"
+                            style={{
+                              background: "#fef2f2",
+                              color: "#dc2626",
+                              borderColor: "#f87171",
+                            }}
+                          >
+                            BỊ KHÓA
+                          </span>
                         ) : (
-                          <span className={`pStatus ${u.is_active ? 'active' : 'inactive'}`}>
-                            {u.is_active ? 'HOẠT ĐỘNG' : 'VÔ HIỆU'}
+                          <span
+                            className={`pStatus ${u.is_active ? "active" : "inactive"}`}
+                          >
+                            {u.is_active ? "HOẠT ĐỘNG" : "VÔ HIỆU"}
                           </span>
                         )}
                       </td>
@@ -549,8 +635,16 @@ export default function UsersAdminPage() {
                               type="button"
                               className="pEdit usersAdminIconBtn"
                               disabled={isSelf || rowBusy}
-                              aria-label={isSelf ? 'Không thể thao tác chính bạn' : 'Mở khóa tài khoản'}
-                              title={isSelf ? 'Không thể thao tác chính bạn' : 'Mở khóa tài khoản'}
+                              aria-label={
+                                isSelf
+                                  ? "Không thể thao tác chính bạn"
+                                  : "Mở khóa tài khoản"
+                              }
+                              title={
+                                isSelf
+                                  ? "Không thể thao tác chính bạn"
+                                  : "Mở khóa tài khoản"
+                              }
                               onClick={() => void setLock(u, false)}
                             >
                               {lockLoading ? <IconSpinner /> : <UnlockIcon />}
@@ -560,8 +654,16 @@ export default function UsersAdminPage() {
                               type="button"
                               className="pEdit usersAdminIconBtn"
                               disabled={isSelf || rowBusy}
-                              aria-label={isSelf ? 'Không thể khóa chính bạn' : 'Khóa tài khoản'}
-                              title={isSelf ? 'Không thể khóa chính bạn' : 'Khóa tài khoản'}
+                              aria-label={
+                                isSelf
+                                  ? "Không thể khóa chính bạn"
+                                  : "Khóa tài khoản"
+                              }
+                              title={
+                                isSelf
+                                  ? "Không thể khóa chính bạn"
+                                  : "Khóa tài khoản"
+                              }
                               onClick={() => void setLock(u, true)}
                             >
                               {lockLoading ? <IconSpinner /> : <LockIcon />}
@@ -571,8 +673,16 @@ export default function UsersAdminPage() {
                             type="button"
                             className="pDelete usersAdminIconBtn"
                             disabled={isSelf || rowBusy}
-                            aria-label={isSelf ? 'Không thể xóa chính bạn' : 'Xóa tài khoản'}
-                            title={isSelf ? 'Không thể xóa chính bạn' : 'Xóa tài khoản'}
+                            aria-label={
+                              isSelf
+                                ? "Không thể xóa chính bạn"
+                                : "Xóa tài khoản"
+                            }
+                            title={
+                              isSelf
+                                ? "Không thể xóa chính bạn"
+                                : "Xóa tài khoản"
+                            }
                             onClick={() => void removeUser(u)}
                           >
                             {deleteLoading ? <IconSpinner /> : <TrashIcon />}
@@ -580,7 +690,7 @@ export default function UsersAdminPage() {
                         </div>
                       </td>
                     </tr>
-                  )
+                  );
                 })
               )}
             </tbody>
@@ -590,7 +700,12 @@ export default function UsersAdminPage() {
 
       {!loading && lastPage > 1 && (
         <div className="usersAdminPager">
-          <button type="button" className="pEdit" disabled={page <= 1} onClick={() => setPage(p => Math.max(1, p - 1))}>
+          <button
+            type="button"
+            className="pEdit"
+            disabled={page <= 1}
+            onClick={() => setPage((p) => Math.max(1, p - 1))}
+          >
             Trước
           </button>
           <span className="usersAdminPagerInfo">
@@ -600,7 +715,7 @@ export default function UsersAdminPage() {
             type="button"
             className="pEdit"
             disabled={page >= lastPage}
-            onClick={() => setPage(p => Math.min(lastPage, p + 1))}
+            onClick={() => setPage((p) => Math.min(lastPage, p + 1))}
           >
             Sau
           </button>
@@ -609,33 +724,76 @@ export default function UsersAdminPage() {
 
       {/* MODAL: Đổi vai trò user */}
       {roleEditor && (
-        <div className="usersRoleModalOverlay" role="presentation" onClick={() => closeRoleEditor()}>
-          <div className="usersRoleModal" role="dialog" aria-modal="true" aria-labelledby="usersRoleModalTitle" onClick={e => e.stopPropagation()}>
+        <div
+          className="usersRoleModalOverlay"
+          role="presentation"
+          onClick={() => closeRoleEditor()}
+        >
+          <div
+            className="usersRoleModal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="usersRoleModalTitle"
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="usersRoleModalHead">
               <div>
-                <h3 id="usersRoleModalTitle" className="usersRoleModalTitle">Thay đổi vai trò</h3>
-                <p className="usersRoleModalLead">{roleEditor.user.name} · {roleEditor.user.email}</p>
+                <h3 id="usersRoleModalTitle" className="usersRoleModalTitle">
+                  Thay đổi vai trò
+                </h3>
+                <p className="usersRoleModalLead">
+                  {roleEditor.user.name} · {roleEditor.user.email}
+                </p>
               </div>
-              <button type="button" className="usersRoleModalClose" aria-label="Đóng" disabled={busy?.kind === 'roles'} onClick={() => closeRoleEditor()}>×</button>
+              <button
+                type="button"
+                className="usersRoleModalClose"
+                aria-label="Đóng"
+                disabled={busy?.kind === "roles"}
+                onClick={() => closeRoleEditor()}
+              >
+                ×
+              </button>
             </div>
             <div className="usersRoleModalBody">
-              {roleCatalog.map(r => {
-                const checked = roleEditor.selectedIds.includes(r.id)
+              {roleCatalog.map((r) => {
+                const checked = roleEditor.selectedIds.includes(r.id);
                 return (
                   <label key={r.id} className="usersRoleCheckRow">
-                    <input type="checkbox" checked={checked} disabled={busy?.kind === 'roles'} onChange={() => toggleRoleInEditor(r.id)} />
+                    <input
+                      type="checkbox"
+                      checked={checked}
+                      disabled={busy?.kind === "roles"}
+                      onChange={() => toggleRoleInEditor(r.id)}
+                    />
                     <div className="usersRoleCheckText">
-                      <span className="usersRoleCheckLabel">{roleDisplayLabel(r)}</span>
-                      <span className="usersRoleCheckDesc">Mã vai trò: <code>{r.slug}</code></span>
+                      <span className="usersRoleCheckLabel">
+                        {roleDisplayLabel(r)}
+                      </span>
+                      <span className="usersRoleCheckDesc">
+                        Mã vai trò: <code>{r.slug}</code>
+                      </span>
                     </div>
                   </label>
-                )
+                );
               })}
             </div>
             <div className="usersRoleModalFoot">
-              <button type="button" className="usersRoleModalBtnGhost" disabled={busy?.kind === 'roles'} onClick={() => closeRoleEditor()}>Hủy</button>
-              <button type="button" className="usersRoleModalBtnSave" disabled={busy?.kind === 'roles'} onClick={() => void saveRoles()}>
-                {busy?.kind === 'roles' ? 'Đang lưu…' : 'Lưu'}
+              <button
+                type="button"
+                className="usersRoleModalBtnGhost"
+                disabled={busy?.kind === "roles"}
+                onClick={() => closeRoleEditor()}
+              >
+                Hủy
+              </button>
+              <button
+                type="button"
+                className="usersRoleModalBtnSave"
+                disabled={busy?.kind === "roles"}
+                onClick={() => void saveRoles()}
+              >
+                {busy?.kind === "roles" ? "Đang lưu…" : "Lưu"}
               </button>
             </div>
           </div>
@@ -644,62 +802,141 @@ export default function UsersAdminPage() {
 
       {/* MODAL: Danh sách / Sửa vai trò hệ thống */}
       {roleCatalogOpen && (
-        <div className="usersRoleModalOverlay" role="presentation" onClick={() => !roleSaving && setRoleCatalogOpen(false)}>
-          <div className="usersRoleModal" role="dialog" onClick={e => e.stopPropagation()} style={{ maxWidth: '600px' }}>
+        <div
+          className="usersRoleModalOverlay"
+          role="presentation"
+          onClick={() => !roleSaving && setRoleCatalogOpen(false)}
+        >
+          <div
+            className="usersRoleModal"
+            role="dialog"
+            onClick={(e) => e.stopPropagation()}
+            style={{ maxWidth: "600px" }}
+          >
             <div className="usersRoleModalHead">
               <h3 className="usersRoleModalTitle">Danh sách vai trò</h3>
-              <button type="button" className="usersRoleModalClose" disabled={roleSaving} onClick={() => setRoleCatalogOpen(false)}>×</button>
+              <button
+                type="button"
+                className="usersRoleModalClose"
+                disabled={roleSaving}
+                onClick={() => setRoleCatalogOpen(false)}
+              >
+                ×
+              </button>
             </div>
             <div className="usersRoleModalBody">
-              {roleCatalog.map(r => (
-                <div key={r.id} className="usersRoleCheckRow" style={{ flexDirection: 'column', gap: '12px', alignItems: 'stretch' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
+              {roleCatalog.map((r) => (
+                <div
+                  key={r.id}
+                  className="usersRoleCheckRow"
+                  style={{
+                    flexDirection: "column",
+                    gap: "12px",
+                    alignItems: "stretch",
+                  }}
+                >
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      width: "100%",
+                    }}
+                  >
                     <div className="usersRoleCheckText">
-                      <span className="usersRoleCheckDesc" style={{ fontSize: '12px', textTransform: 'uppercase', letterSpacing: '1px' }}>
+                      <span
+                        className="usersRoleCheckDesc"
+                        style={{
+                          fontSize: "12px",
+                          textTransform: "uppercase",
+                          letterSpacing: "1px",
+                        }}
+                      >
                         Mã: <code>{r.slug}</code>
                       </span>
                     </div>
                     {editingRole?.id !== r.id && (
-                      <button 
-                        type="button" 
-                        className="pEdit usersAdminIconBtn" 
-                        onClick={() => { setEditingRole(r); setEditingRoleName(r.name); setEditingRoleDesc(r.description || ''); }}
+                      <button
+                        type="button"
+                        className="pEdit usersAdminIconBtn"
+                        onClick={() => {
+                          setEditingRole(r);
+                          setEditingRoleName(r.name);
+                          setEditingRoleDesc(r.description || "");
+                        }}
                         title="Sửa vai trò"
                       >
                         <PencilIcon />
                       </button>
                     )}
                   </div>
-                  
+
                   {editingRole?.id === r.id ? (
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', width: '100%', marginTop: '4px' }}>
-                      <input 
-                        className="usersAdminSearch" 
-                        style={{ maxWidth: '100%' }}
-                        placeholder="Tên vai trò (Vd: Quản trị viên)" 
-                        value={editingRoleName} 
-                        onChange={e => setEditingRoleName(e.target.value)} 
-                        disabled={roleSaving} 
+                    <div
+                      style={{
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: "10px",
+                        width: "100%",
+                        marginTop: "4px",
+                      }}
+                    >
+                      <input
+                        className="usersAdminSearch"
+                        style={{ maxWidth: "100%" }}
+                        placeholder="Tên vai trò (Vd: Quản trị viên)"
+                        value={editingRoleName}
+                        onChange={(e) => setEditingRoleName(e.target.value)}
+                        disabled={roleSaving}
                       />
-                      <input 
-                        className="usersAdminSearch" 
-                        style={{ maxWidth: '100%' }}
-                        placeholder="Mô tả vai trò (Không bắt buộc)" 
-                        value={editingRoleDesc} 
-                        onChange={e => setEditingRoleDesc(e.target.value)} 
-                        disabled={roleSaving} 
+                      <input
+                        className="usersAdminSearch"
+                        style={{ maxWidth: "100%" }}
+                        placeholder="Mô tả vai trò (Không bắt buộc)"
+                        value={editingRoleDesc}
+                        onChange={(e) => setEditingRoleDesc(e.target.value)}
+                        disabled={roleSaving}
                       />
-                      <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end', marginTop: '8px' }}>
-                        <button type="button" className="usersRoleModalBtnGhost" disabled={roleSaving} onClick={() => setEditingRole(null)}>Hủy</button>
-                        <button type="button" className="usersRoleModalBtnSave" disabled={roleSaving} onClick={() => void handleUpdateRole()}>
-                          {roleSaving ? 'Đang lưu...' : 'Lưu thay đổi'}
+                      <div
+                        style={{
+                          display: "flex",
+                          gap: "10px",
+                          justifyContent: "flex-end",
+                          marginTop: "8px",
+                        }}
+                      >
+                        <button
+                          type="button"
+                          className="usersRoleModalBtnGhost"
+                          disabled={roleSaving}
+                          onClick={() => setEditingRole(null)}
+                        >
+                          Hủy
+                        </button>
+                        <button
+                          type="button"
+                          className="usersRoleModalBtnSave"
+                          disabled={roleSaving}
+                          onClick={() => void handleUpdateRole()}
+                        >
+                          {roleSaving ? "Đang lưu..." : "Lưu thay đổi"}
                         </button>
                       </div>
                     </div>
                   ) : (
                     <div className="usersRoleCheckText">
-                      <span className="usersRoleCheckLabel" style={{ fontSize: '16px' }}>{roleDisplayLabel(r)}</span>
-                      <span className="usersRoleCheckDesc" style={{ marginTop: '4px' }}>{r.description || 'Chưa có mô tả cho vai trò này.'}</span>
+                      <span
+                        className="usersRoleCheckLabel"
+                        style={{ fontSize: "16px" }}
+                      >
+                        {roleDisplayLabel(r)}
+                      </span>
+                      <span
+                        className="usersRoleCheckDesc"
+                        style={{ marginTop: "4px" }}
+                      >
+                        {r.description || "Chưa có mô tả cho vai trò này."}
+                      </span>
                     </div>
                   )}
                 </div>
@@ -711,83 +948,206 @@ export default function UsersAdminPage() {
 
       {/* MODAL: Xác nhận */}
       {confirmDialog.isOpen && (
-        <div className="usersRoleModalOverlay" role="presentation" onClick={() => !confirmDialog.loading && setConfirmDialog(prev => ({ ...prev, isOpen: false }))}>
-          <div className="usersRoleModal" role="dialog" aria-modal="true" style={{ maxWidth: '400px' }} onClick={e => e.stopPropagation()}>
+        <div
+          className="usersRoleModalOverlay"
+          role="presentation"
+          onClick={() =>
+            !confirmDialog.loading &&
+            setConfirmDialog((prev) => ({ ...prev, isOpen: false }))
+          }
+        >
+          <div
+            className="usersRoleModal"
+            role="dialog"
+            aria-modal="true"
+            style={{ maxWidth: "400px" }}
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="usersRoleModalHead">
               <h3 className="usersRoleModalTitle">{confirmDialog.title}</h3>
-              <button type="button" className="usersRoleModalClose" aria-label="Đóng" disabled={confirmDialog.loading} onClick={() => setConfirmDialog(prev => ({ ...prev, isOpen: false }))}>×</button>
+              <button
+                type="button"
+                className="usersRoleModalClose"
+                aria-label="Đóng"
+                disabled={confirmDialog.loading}
+                onClick={() =>
+                  setConfirmDialog((prev) => ({ ...prev, isOpen: false }))
+                }
+              >
+                ×
+              </button>
             </div>
             <div className="usersRoleModalBody">
-              <p style={{ margin: 0, lineHeight: 1.5, color: '#4b5563', fontSize: '15px' }}>{confirmDialog.message}</p>
+              <p
+                style={{
+                  margin: 0,
+                  lineHeight: 1.5,
+                  color: "#4b5563",
+                  fontSize: "15px",
+                }}
+              >
+                {confirmDialog.message}
+              </p>
             </div>
             <div className="usersRoleModalFoot">
-              <button type="button" className="usersRoleModalBtnGhost" disabled={confirmDialog.loading} onClick={() => setConfirmDialog(prev => ({ ...prev, isOpen: false }))}>Hủy</button>
-              <button type="button" className="usersRoleModalBtnSave" style={{ background: '#dc2626', borderColor: '#dc2626' }} disabled={confirmDialog.loading} onClick={confirmDialog.onConfirm}>
-                {confirmDialog.loading ? 'Đang xử lý…' : 'Xác nhận'}
+              <button
+                type="button"
+                className="usersRoleModalBtnGhost"
+                disabled={confirmDialog.loading}
+                onClick={() =>
+                  setConfirmDialog((prev) => ({ ...prev, isOpen: false }))
+                }
+              >
+                Hủy
+              </button>
+              <button
+                type="button"
+                className="usersRoleModalBtnSave"
+                style={{ background: "#dc2626", borderColor: "#dc2626" }}
+                disabled={confirmDialog.loading}
+                onClick={confirmDialog.onConfirm}
+              >
+                {confirmDialog.loading ? "Đang xử lý…" : "Xác nhận"}
               </button>
             </div>
           </div>
         </div>
       )}
     </div>
-  )
+  );
 }
 
 function IconSpinner() {
   return (
-    <svg className="usersAdminIconSpinner" width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden>
-      <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeDasharray="40" strokeDashoffset="12" opacity="0.35" />
-      <path d="M12 3a9 9 0 0 1 9 9" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+    <svg
+      className="usersAdminIconSpinner"
+      width="18"
+      height="18"
+      viewBox="0 0 24 24"
+      fill="none"
+      aria-hidden
+    >
+      <circle
+        cx="12"
+        cy="12"
+        r="9"
+        stroke="currentColor"
+        strokeWidth="2.5"
+        strokeLinecap="round"
+        strokeDasharray="40"
+        strokeDashoffset="12"
+        opacity="0.35"
+      />
+      <path
+        d="M12 3a9 9 0 0 1 9 9"
+        stroke="currentColor"
+        strokeWidth="2.5"
+        strokeLinecap="round"
+      />
     </svg>
-  )
+  );
 }
 
 function LockIcon() {
   return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+    <svg
+      width="18"
+      height="18"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden
+    >
       <rect x="5" y="11" width="14" height="10" rx="2" />
       <path d="M7 11V8a5 5 0 0 1 10 0v3" />
     </svg>
-  )
+  );
 }
 
 function UnlockIcon() {
   return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+    <svg
+      width="18"
+      height="18"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden
+    >
       <rect x="5" y="11" width="14" height="10" rx="2" />
       <path d="M7 11V8a5 5 0 0 1 9.33-2.5" />
     </svg>
-  )
+  );
 }
 
 function TrashIcon() {
   return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+    <svg
+      width="18"
+      height="18"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden
+    >
       <polyline points="3 6 5 6 21 6" />
       <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
       <line x1="10" y1="11" x2="10" y2="17" />
       <line x1="14" y1="11" x2="14" y2="17" />
     </svg>
-  )
+  );
 }
 
 function PencilIcon() {
   return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+    <svg
+      width="18"
+      height="18"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden
+    >
       <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z" />
       <path d="m15 5 4 4" />
     </svg>
-  )
+  );
 }
 
 function PencilOffIcon() {
   return (
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden>
-      <g opacity={0.35} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <g
+        opacity={0.35}
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
         <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z" />
         <path d="m15 5 4 4" />
       </g>
-      <line x1="3" y1="3" x2="21" y2="21" stroke="currentColor" strokeWidth="2.25" strokeLinecap="round" />
+      <line
+        x1="3"
+        y1="3"
+        x2="21"
+        y2="21"
+        stroke="currentColor"
+        strokeWidth="2.25"
+        strokeLinecap="round"
+      />
     </svg>
-  )
+  );
 }

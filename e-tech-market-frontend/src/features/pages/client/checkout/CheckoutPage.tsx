@@ -1,404 +1,515 @@
-import { useEffect, useMemo, useState, type FormEvent } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
-import '@/styles/pages/CheckoutPage.css'
+import { useEffect, useMemo, useState, type FormEvent } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import "@/styles/pages/CheckoutPage.css";
 
-import { cartCount, cartTotal, getCart, setCart as setCartStorage, type CartState } from '@/features/services/cart.service'
-import { useCartMutation } from '@/features/services/mutations'
-import { apiFetch } from '@/configs/api.config'
-import logoMomo from '@/assets/logo-momo.png'
-import logoVnpay from '@/assets/vnpay-logo.png'
-import logoCod from '@/assets/COD.png'
-import { useAuthStore } from '@/features/store/useAuthStore'
+import {
+  cartCount,
+  cartTotal,
+  getCart,
+  setCart as setCartStorage,
+  type CartState,
+} from "@/features/services/cart.service";
+import { useCartMutation } from "@/features/services/mutations";
+import { apiFetch } from "@/configs/api.config";
+import logoMomo from "@/assets/logo-momo.png";
+import logoVnpay from "@/assets/vnpay-logo.png";
+import logoCod from "@/assets/COD.png";
+import { useAuthStore } from "@/features/store/useAuthStore";
 
 function formatVnd(n: number) {
-  return `${Math.round(n).toLocaleString('vi-VN')} đ`
+  return `${Math.round(n).toLocaleString("vi-VN")} đ`;
 }
 
-type PaymentMethod = 'cod' | 'vnpay' | 'momo'
+type PaymentMethod = "cod" | "vnpay" | "momo";
 
-type ShippingMethodId = number
+type ShippingMethodId = number;
 
-type PaymentAvailability = Record<PaymentMethod, boolean>
+type PaymentAvailability = Record<PaymentMethod, boolean>;
 
 type ShippingMethodPublic = {
-  id: number
-  name: string
-  description: string | null
-  base_fee: number
-  estimated_days_min: number | null
-  estimated_days_max: number | null
-  is_active: boolean
-}
+  id: number;
+  name: string;
+  description: string | null;
+  base_fee: number;
+  estimated_days_min: number | null;
+  estimated_days_max: number | null;
+  is_active: boolean;
+};
 
 type ShippingZonePublic = {
-  id: number
-  name: string
-  eta: string | null
-  fee: number
-  is_active: boolean
-}
+  id: number;
+  name: string;
+  eta: string | null;
+  fee: number;
+  is_active: boolean;
+};
 
 type StoredUser = {
-  name?: string
-  phone?: string
-  address_line?: string | null
-  province?: string | null
-  district?: string | null
-  ward?: string | null
-}
+  name?: string;
+  phone?: string;
+  address_line?: string | null;
+  province?: string | null;
+  district?: string | null;
+  ward?: string | null;
+};
 
 type CouponPublic = {
-  id: number
-  code: string
-  coupon_type: 'fixed' | 'percentage'
-  value: number
-  min_order_amount: number | null
-  start_at: string | null
-  end_at: string | null
-}
+  id: number;
+  code: string;
+  coupon_type: "fixed" | "percentage";
+  value: number;
+  min_order_amount: number | null;
+  start_at: string | null;
+  end_at: string | null;
+};
 
 function readStoredUser(raw: string | null): StoredUser | null {
-  if (!raw) return null
+  if (!raw) return null;
   try {
-    const v = JSON.parse(raw) as unknown
-    return v && typeof v === 'object' ? (v as StoredUser) : null
+    const v = JSON.parse(raw) as unknown;
+    return v && typeof v === "object" ? (v as StoredUser) : null;
   } catch {
-    return null
+    return null;
   }
 }
 
 function buildAccountAddressLine(u: StoredUser) {
-  const base = (u.address_line ?? '').trim()
-  const parts = [u.ward, u.district, u.province].map((x) => (x ?? '').trim()).filter(Boolean)
-  if (!base && parts.length === 0) return ''
-  if (!base) return parts.join(', ')
-  if (parts.length === 0) return base
-  return `${base}, ${parts.join(', ')}`
+  const base = (u.address_line ?? "").trim();
+  const parts = [u.ward, u.district, u.province]
+    .map((x) => (x ?? "").trim())
+    .filter(Boolean);
+  if (!base && parts.length === 0) return "";
+  if (!base) return parts.join(", ");
+  if (parts.length === 0) return base;
+  return `${base}, ${parts.join(", ")}`;
 }
 
 // Removed auto zone mapping on reload (user will choose or restore last selection).
 
 export default function CheckoutPage() {
-  const navigate = useNavigate()
-  const [cart, setCart] = useState<CartState>(() => getCart())
-  const CHECKOUT_SELECTED_KEY = 'checkout_selected_keys'
-  const [checkoutKeys, setCheckoutKeys] = useState<string[] | null>(null)
+  const navigate = useNavigate();
+  const [cart, setCart] = useState<CartState>(() => getCart());
+  const CHECKOUT_SELECTED_KEY = "checkout_selected_keys";
+  const [checkoutKeys, setCheckoutKeys] = useState<string[] | null>(null);
 
   // If user initiated checkout from cart with selected keys, filter cart to those items
   useEffect(() => {
     try {
-      const raw = window.localStorage.getItem(CHECKOUT_SELECTED_KEY)
-      if (!raw) return
-      const keys = JSON.parse(raw) as string[]
-      if (!Array.isArray(keys) || keys.length === 0) return
-      const all = getCart()
-      const filtered = { items: all.items.filter((it) => keys.includes(it.key)) }
+      const raw = window.localStorage.getItem(CHECKOUT_SELECTED_KEY);
+      if (!raw) return;
+      const keys = JSON.parse(raw) as string[];
+      if (!Array.isArray(keys) || keys.length === 0) return;
+      const all = getCart();
+      const filtered = {
+        items: all.items.filter((it) => keys.includes(it.key)),
+      };
       if (filtered.items.length > 0) {
-        setCart(filtered)
-        setCheckoutKeys(keys)
+        setCart(filtered);
+        setCheckoutKeys(keys);
       }
-    } catch (e) { void 0 } finally {
+    } catch (e) {
+      void 0;
+    } finally {
       try {
-        window.localStorage.removeItem(CHECKOUT_SELECTED_KEY)
-      } catch (e) { void 0 }
+        window.localStorage.removeItem(CHECKOUT_SELECTED_KEY);
+      } catch (e) {
+        void 0;
+      }
     }
-  }, [])
+  }, []);
 
   // Refresh prices from server to avoid stale localStorage prices
-  const [priceRefreshDone, setPriceRefreshDone] = useState(false)
-  const [priceChangedItems, setPriceChangedItems] = useState<{ name: string; oldPrice: number; newPrice: number }[]>([])
+  const [priceRefreshDone, setPriceRefreshDone] = useState(false);
+  const [priceChangedItems, setPriceChangedItems] = useState<
+    { name: string; oldPrice: number; newPrice: number }[]
+  >([]);
 
   useEffect(() => {
     // Run after the cart selection effect has settled
     const timer = setTimeout(async () => {
       try {
-        const current = getCart()
+        const current = getCart();
         const itemsToCheck = checkoutKeys
           ? current.items.filter((it) => checkoutKeys.includes(it.key))
-          : current.items
+          : current.items;
 
-        if (itemsToCheck.length === 0) { setPriceRefreshDone(true); return }
+        if (itemsToCheck.length === 0) {
+          setPriceRefreshDone(true);
+          return;
+        }
 
-        const updates: { name: string; oldPrice: number; newPrice: number }[] = []
+        const updates: { name: string; oldPrice: number; newPrice: number }[] =
+          [];
         const refreshed = await Promise.all(
           itemsToCheck.map(async (it) => {
             try {
-              if (!it.slug) return it // can't refresh without slug
-              const res = await apiFetch<any>(`/api/products/${it.slug}`)
+              if (!it.slug) return it; // can't refresh without slug
+              const res = await apiFetch<any>(`/api/products/${it.slug}`);
               const variant = it.variant_id
                 ? res.variants?.find((v: any) => v.id === it.variant_id)
-                : res.variants?.[0]
-              let freshPrice = Number(variant?.effective_price ?? res.price ?? it.price)
+                : res.variants?.[0];
+              let freshPrice = Number(
+                variant?.effective_price ?? res.price ?? it.price,
+              );
 
               // Respect active flash sale if any
               if (res.flash_sale_items?.length) {
-                const now = new Date().getTime()
+                const now = new Date().getTime();
                 for (const fsItem of res.flash_sale_items) {
                   if (fsItem.flash_sale) {
-                    const startStr = fsItem.flash_sale.start_at.replace(' ', 'T')
-                    const endStr = fsItem.flash_sale.end_at.replace(' ', 'T')
-                    const start = new Date(startStr).getTime()
-                    const end = new Date(endStr).getTime()
+                    const startStr = fsItem.flash_sale.start_at.replace(
+                      " ",
+                      "T",
+                    );
+                    const endStr = fsItem.flash_sale.end_at.replace(" ", "T");
+                    const start = new Date(startStr).getTime();
+                    const end = new Date(endStr).getTime();
                     if (now >= start && now <= end) {
-                      if (fsItem.variant_id == null || fsItem.variant_id === it.variant_id) {
-                        freshPrice = Number(fsItem.flash_sale_price ?? freshPrice)
-                        break
+                      if (
+                        fsItem.variant_id == null ||
+                        fsItem.variant_id === it.variant_id
+                      ) {
+                        freshPrice = Number(
+                          fsItem.flash_sale_price ?? freshPrice,
+                        );
+                        break;
                       }
                     }
                   }
                 }
               }
               if (freshPrice && Math.abs(freshPrice - it.price) > 1) {
-                updates.push({ name: it.name + (it.variant_label ? ` (${it.variant_label})` : ''), oldPrice: it.price, newPrice: freshPrice })
-                return { ...it, price: freshPrice }
+                updates.push({
+                  name:
+                    it.name +
+                    (it.variant_label ? ` (${it.variant_label})` : ""),
+                  oldPrice: it.price,
+                  newPrice: freshPrice,
+                });
+                return { ...it, price: freshPrice };
               }
-              return it
+              return it;
             } catch {
-              return it
+              return it;
             }
-          })
-        )
+          }),
+        );
 
         if (updates.length > 0) {
-          setPriceChangedItems(updates)
+          setPriceChangedItems(updates);
           // Merge refreshed prices back into full cart state
-          const all = getCart()
-          const keyToPrice = Object.fromEntries(refreshed.map(it => [it.key, it.price]))
-          const merged = { items: all.items.map(it => keyToPrice[it.key] !== undefined ? { ...it, price: keyToPrice[it.key] } : it) }
-          setCartStorage(merged)
-          setCart(checkoutKeys ? { items: merged.items.filter(it => checkoutKeys.includes(it.key)) } : merged)
+          const all = getCart();
+          const keyToPrice = Object.fromEntries(
+            refreshed.map((it) => [it.key, it.price]),
+          );
+          const merged = {
+            items: all.items.map((it) =>
+              keyToPrice[it.key] !== undefined
+                ? { ...it, price: keyToPrice[it.key] }
+                : it,
+            ),
+          };
+          setCartStorage(merged);
+          setCart(
+            checkoutKeys
+              ? {
+                  items: merged.items.filter((it) =>
+                    checkoutKeys.includes(it.key),
+                  ),
+                }
+              : merged,
+          );
         }
-      } catch { void 0 } finally {
-        setPriceRefreshDone(true)
+      } catch {
+        void 0;
+      } finally {
+        setPriceRefreshDone(true);
       }
-    }, 150)
-    return () => clearTimeout(timer)
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [checkoutKeys])
-  const [submitting, setSubmitting] = useState(false)
-  const [orderCode, setOrderCode] = useState<string | null>(null)
-  const [error, setError] = useState<string | null>(null)
+    }, 150);
+    return () => clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [checkoutKeys]);
+  const [submitting, setSubmitting] = useState(false);
+  const [orderCode, setOrderCode] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
   const [payAvail, setPayAvail] = useState<PaymentAvailability>({
     cod: true,
     vnpay: true,
     momo: true,
-  })
-  const [shippingMethods, setShippingMethods] = useState<ShippingMethodPublic[]>([])
-  const [shippingZones, setShippingZones] = useState<ShippingZonePublic[]>([])
-  const [shipPolicy, setShipPolicy] = useState<{ free_shipping_min: number; apply_global: boolean }>({
+  });
+  const [shippingMethods, setShippingMethods] = useState<
+    ShippingMethodPublic[]
+  >([]);
+  const [shippingZones, setShippingZones] = useState<ShippingZonePublic[]>([]);
+  const [shipPolicy, setShipPolicy] = useState<{
+    free_shipping_min: number;
+    apply_global: boolean;
+  }>({
     free_shipping_min: 0,
     apply_global: true,
-  })
-  const [agreedToTerms, setAgreedToTerms] = useState(false)
+  });
+  const [agreedToTerms, setAgreedToTerms] = useState(false);
 
   // --- Cart mutations ---
-  const { clearCart: clearBackendCart, removeFromCart: removeBackendItem } = useCartMutation()
+  const { clearCart: clearBackendCart, removeFromCart: removeBackendItem } =
+    useCartMutation();
 
   function removeSelectedLocalCartItems() {
     try {
-      const all = getCart()
+      const all = getCart();
       if (!checkoutKeys || checkoutKeys.length === 0) {
-        setCartStorage({ items: [] })
-        setCart({ items: [] })
-        return
+        setCartStorage({ items: [] });
+        setCart({ items: [] });
+        return;
       }
-      const remaining = all.items.filter((it) => !checkoutKeys.includes(it.key))
-      setCartStorage({ items: remaining })
-      setCart({ items: remaining })
-    } catch { void 0 }
+      const remaining = all.items.filter(
+        (it) => !checkoutKeys.includes(it.key),
+      );
+      setCartStorage({ items: remaining });
+      setCart({ items: remaining });
+    } catch {
+      void 0;
+    }
   }
 
   function removeSelectedBackendItems() {
     try {
       if (!checkoutKeys || checkoutKeys.length === 0) {
-        try { clearBackendCart() } catch { void 0 }
-        return
+        try {
+          clearBackendCart();
+        } catch {
+          void 0;
+        }
+        return;
       }
-      const all = getCart()
-      const toRemove = all.items.filter((it) => checkoutKeys.includes(it.key))
+      const all = getCart();
+      const toRemove = all.items.filter((it) => checkoutKeys.includes(it.key));
       toRemove.forEach((it) => {
         try {
-          removeBackendItem({ key: it.key, productId: it.product_id, variantId: it.variant_id })
-        } catch { void 0 }
-      })
-    } catch { void 0 }
+          removeBackendItem({
+            key: it.key,
+            productId: it.product_id,
+            variantId: it.variant_id,
+          });
+        } catch {
+          void 0;
+        }
+      });
+    } catch {
+      void 0;
+    }
   }
 
   // --- Coupon ---
-  const [couponInput, setCouponInput] = useState('')
-  const [appliedCoupon, setAppliedCoupon] = useState<{ code: string; discount_amount: number } | null>(null)
-  const [couponLoading, setCouponLoading] = useState(false)
-  const [couponError, setCouponError] = useState<string | null>(null)
-  const [activeCoupons, setActiveCoupons] = useState<CouponPublic[]>([])
-  const [showCouponModal, setShowCouponModal] = useState(false)
+  const [couponInput, setCouponInput] = useState("");
+  const [appliedCoupon, setAppliedCoupon] = useState<{
+    code: string;
+    discount_amount: number;
+  } | null>(null);
+  const [couponLoading, setCouponLoading] = useState(false);
+  const [couponError, setCouponError] = useState<string | null>(null);
+  const [activeCoupons, setActiveCoupons] = useState<CouponPublic[]>([]);
+  const [showCouponModal, setShowCouponModal] = useState(false);
 
   // --- Loyalty ---
-  const [loyaltyData, setLoyaltyData] = useState<any>(null)
-  const [pointsInput, setPointsInput] = useState<number | ''>('')
-  const [pointsToUse, setPointsToUse] = useState<number>(0)
+  const [loyaltyData, setLoyaltyData] = useState<any>(null);
+  const [pointsInput, setPointsInput] = useState<number | "">("");
+  const [pointsToUse, setPointsToUse] = useState<number>(0);
 
-  const userStr = useAuthStore((state) => state.userStr)
-  const account = useMemo(() => readStoredUser(userStr), [userStr])
-  const hasAuth = !!userStr
+  const userStr = useAuthStore((state) => state.userStr);
+  const account = useMemo(() => readStoredUser(userStr), [userStr]);
+  const hasAuth = !!userStr;
 
-  const pendingPaymentKey = 'pending_payment'
-  const shipMethodKey = 'checkout_shipping_method_id'
-  const shipZoneKey = 'checkout_shipping_zone_id'
+  const pendingPaymentKey = "pending_payment";
+  const shipMethodKey = "checkout_shipping_method_id";
+  const shipZoneKey = "checkout_shipping_zone_id";
 
   const paymentReturn = useMemo(() => {
-    const usp = new URLSearchParams(window.location.search)
-    const gateway = usp.get('gateway')
-    const success = usp.get('success')
-    const code = usp.get('order_code')
-    const id = usp.get('order_id')
-    if (!gateway || !success || !code) return null
-    return { gateway, success: success === '1', order_code: code, order_id: id ? Number(id) : null }
-  }, [])
+    const usp = new URLSearchParams(window.location.search);
+    const gateway = usp.get("gateway");
+    const success = usp.get("success");
+    const code = usp.get("order_code");
+    const id = usp.get("order_id");
+    if (!gateway || !success || !code) return null;
+    return {
+      gateway,
+      success: success === "1",
+      order_code: code,
+      order_id: id ? Number(id) : null,
+    };
+  }, []);
 
-  const [waitingPayment, setWaitingPayment] = useState(false)
+  const [waitingPayment, setWaitingPayment] = useState(false);
 
   const [form, setForm] = useState(() => ({
-    name: (account?.name ?? '').trim(),
-    phone: (account?.phone ?? '').trim(),
-    address_line: account ? buildAccountAddressLine(account) : '',
-    notes: '',
-    payment_method: 'cod' as PaymentMethod,
+    name: (account?.name ?? "").trim(),
+    phone: (account?.phone ?? "").trim(),
+    address_line: account ? buildAccountAddressLine(account) : "",
+    notes: "",
+    payment_method: "cod" as PaymentMethod,
     shipping_method_id: null as ShippingMethodId | null,
     shipping_zone_id: null as number | null,
-  }))
+  }));
 
   useEffect(() => {
-    let cancelled = false
-      ; (async () => {
-        try {
-          const cfg = await apiFetch<{ momo?: { enabled?: boolean }; vnpay?: { enabled?: boolean }; cod?: { enabled?: boolean } }>(
-            '/api/store/payments',
-          )
-          const next: PaymentAvailability = {
-            cod: !!cfg.cod?.enabled,
-            vnpay: !!cfg.vnpay?.enabled,
-            momo: !!cfg.momo?.enabled,
-          }
-          if (!cancelled) setPayAvail(next)
-        } catch (e) { void 0 }
-      })()
+    let cancelled = false;
+    (async () => {
+      try {
+        const cfg = await apiFetch<{
+          momo?: { enabled?: boolean };
+          vnpay?: { enabled?: boolean };
+          cod?: { enabled?: boolean };
+        }>("/api/store/payments");
+        const next: PaymentAvailability = {
+          cod: !!cfg.cod?.enabled,
+          vnpay: !!cfg.vnpay?.enabled,
+          momo: !!cfg.momo?.enabled,
+        };
+        if (!cancelled) setPayAvail(next);
+      } catch (e) {
+        void 0;
+      }
+    })();
 
-    apiFetch<CouponPublic[]>('/api/coupons')
+    apiFetch<CouponPublic[]>("/api/coupons")
       .then((res) => {
-        if (!cancelled && Array.isArray(res)) setActiveCoupons(res)
+        if (!cancelled && Array.isArray(res)) setActiveCoupons(res);
       })
-      .catch(() => { void 0 })
+      .catch(() => {
+        void 0;
+      });
 
     if (hasAuth) {
-      apiFetch<any>('/api/me/loyalty')
+      apiFetch<any>("/api/me/loyalty")
         .then((res) => {
-          if (!cancelled) setLoyaltyData(res)
+          if (!cancelled) setLoyaltyData(res);
         })
-        .catch(() => { void 0 })
+        .catch(() => {
+          void 0;
+        });
     }
 
     return () => {
-      cancelled = true
-    }
-  }, [])
+      cancelled = true;
+    };
+  }, []);
 
   useEffect(() => {
-    let cancelled = false
-      ; (async () => {
-        try {
-          const s = await apiFetch<{
-            policy: { free_shipping_min: number; apply_global: boolean }
-            methods: ShippingMethodPublic[]
-            zones: ShippingZonePublic[]
-          }>('/api/store/shipping')
+    let cancelled = false;
+    (async () => {
+      try {
+        const s = await apiFetch<{
+          policy: { free_shipping_min: number; apply_global: boolean };
+          methods: ShippingMethodPublic[];
+          zones: ShippingZonePublic[];
+        }>("/api/store/shipping");
 
-          if (cancelled) return
-          setShipPolicy({
-            free_shipping_min: Number(s.policy?.free_shipping_min ?? 0) || 0,
-            apply_global: !!s.policy?.apply_global,
-          })
-          setShippingMethods(Array.isArray(s.methods) ? s.methods : [])
-          setShippingZones(Array.isArray(s.zones) ? s.zones : [])
+        if (cancelled) return;
+        setShipPolicy({
+          free_shipping_min: Number(s.policy?.free_shipping_min ?? 0) || 0,
+          apply_global: !!s.policy?.apply_global,
+        });
+        setShippingMethods(Array.isArray(s.methods) ? s.methods : []);
+        setShippingZones(Array.isArray(s.zones) ? s.zones : []);
 
-          setForm((cur) => {
-            const next = { ...cur }
+        setForm((cur) => {
+          const next = { ...cur };
 
-            // Restore last selection from localStorage (if still active).
-            if (!next.shipping_method_id) {
-              const raw = window.localStorage.getItem(shipMethodKey)
-              const id = raw ? Number(raw) : NaN
-              const ok = Number.isFinite(id) && (Array.isArray(s.methods) ? s.methods : []).some((m) => m.is_active && m.id === id)
-              if (ok) next.shipping_method_id = id
-            }
-            if (!next.shipping_zone_id) {
-              const raw = window.localStorage.getItem(shipZoneKey)
-              const id = raw ? Number(raw) : NaN
-              const ok = Number.isFinite(id) && (Array.isArray(s.zones) ? s.zones : []).some((z) => z.is_active && z.id === id)
-              if (ok) next.shipping_zone_id = id
-            }
+          // Restore last selection from localStorage (if still active).
+          if (!next.shipping_method_id) {
+            const raw = window.localStorage.getItem(shipMethodKey);
+            const id = raw ? Number(raw) : NaN;
+            const ok =
+              Number.isFinite(id) &&
+              (Array.isArray(s.methods) ? s.methods : []).some(
+                (m) => m.is_active && m.id === id,
+              );
+            if (ok) next.shipping_method_id = id;
+          }
+          if (!next.shipping_zone_id) {
+            const raw = window.localStorage.getItem(shipZoneKey);
+            const id = raw ? Number(raw) : NaN;
+            const ok =
+              Number.isFinite(id) &&
+              (Array.isArray(s.zones) ? s.zones : []).some(
+                (z) => z.is_active && z.id === id,
+              );
+            if (ok) next.shipping_zone_id = id;
+          }
 
-            return next
-          })
-        } catch (e) { void 0 }
-      })()
+          return next;
+        });
+      } catch (e) {
+        void 0;
+      }
+    })();
     return () => {
-      cancelled = true
-    }
-  }, [])
+      cancelled = true;
+    };
+  }, []);
 
   // If selected method is disabled, auto switch to first enabled.
   useEffect(() => {
-    if (payAvail[form.payment_method]) return
-    const firstEnabled = (['cod', 'vnpay', 'momo'] as PaymentMethod[]).find((m) => payAvail[m])
-    if (!firstEnabled) return
+    if (payAvail[form.payment_method]) return;
+    const firstEnabled = (["cod", "vnpay", "momo"] as PaymentMethod[]).find(
+      (m) => payAvail[m],
+    );
+    if (!firstEnabled) return;
     const t = window.setTimeout(() => {
-      setForm((s) => ({ ...s, payment_method: firstEnabled }))
-    }, 0)
-    return () => window.clearTimeout(t)
-  }, [form.payment_method, payAvail])
+      setForm((s) => ({ ...s, payment_method: firstEnabled }));
+    }, 0);
+    return () => window.clearTimeout(t);
+  }, [form.payment_method, payAvail]);
 
   // Persist selections (do not auto-pick on reload).
   useEffect(() => {
-    if (form.shipping_method_id) window.localStorage.setItem(shipMethodKey, String(form.shipping_method_id))
-  }, [form.shipping_method_id])
+    if (form.shipping_method_id)
+      window.localStorage.setItem(
+        shipMethodKey,
+        String(form.shipping_method_id),
+      );
+  }, [form.shipping_method_id]);
 
   useEffect(() => {
-    if (form.shipping_zone_id) window.localStorage.setItem(shipZoneKey, String(form.shipping_zone_id))
-  }, [form.shipping_zone_id])
+    if (form.shipping_zone_id)
+      window.localStorage.setItem(shipZoneKey, String(form.shipping_zone_id));
+  }, [form.shipping_zone_id]);
 
   useEffect(() => {
-    const onChange = () => setCart(getCart())
-    window.addEventListener('cart-change', onChange)
-    window.addEventListener('storage', onChange)
+    const onChange = () => setCart(getCart());
+    window.addEventListener("cart-change", onChange);
+    window.addEventListener("storage", onChange);
     return () => {
-      window.removeEventListener('cart-change', onChange)
-      window.removeEventListener('storage', onChange)
-    }
-  }, [])
+      window.removeEventListener("cart-change", onChange);
+      window.removeEventListener("storage", onChange);
+    };
+  }, []);
 
-  const totalQty = useMemo(() => cartCount(cart), [cart])
-  const totalPrice = useMemo(() => cartTotal(cart), [cart])
+  const totalQty = useMemo(() => cartCount(cart), [cart]);
+  const totalPrice = useMemo(() => cartTotal(cart), [cart]);
 
   const isFreeShipping = useMemo(() => {
-    return shipPolicy.apply_global && shipPolicy.free_shipping_min > 0 && totalPrice >= shipPolicy.free_shipping_min
-  }, [shipPolicy.apply_global, shipPolicy.free_shipping_min, totalPrice])
+    return (
+      shipPolicy.apply_global &&
+      shipPolicy.free_shipping_min > 0 &&
+      totalPrice >= shipPolicy.free_shipping_min
+    );
+  }, [shipPolicy.apply_global, shipPolicy.free_shipping_min, totalPrice]);
 
-  const discountAmount = appliedCoupon?.discount_amount ?? 0
+  const discountAmount = appliedCoupon?.discount_amount ?? 0;
   const pointsDiscountAmount = pointsToUse * 500;
 
   const maxPointsAllowed = useMemo(() => {
-    const selected = shippingMethods.find((m) => m.id === form.shipping_method_id) || null
-    const selectedZone = shippingZones.find((z) => z.id === form.shipping_zone_id) || null
-    const shipFee = (selected?.base_fee ?? 0) + (selectedZone?.fee ?? 0)
-    const baseForPoints = Math.max(0, totalPrice - discountAmount + (isFreeShipping ? 0 : shipFee))
-    return Math.floor(baseForPoints * 0.20 / 500)
-  }, [form.shipping_method_id, form.shipping_zone_id, isFreeShipping, shippingMethods, shippingZones, totalPrice, discountAmount])
-
-  const grandTotal = useMemo(() => {
-    const selected = shippingMethods.find((m) => m.id === form.shipping_method_id) || null
-    const selectedZone = shippingZones.find((z) => z.id === form.shipping_zone_id) || null
-    const shipFee = (selected?.base_fee ?? 0) + (selectedZone?.fee ?? 0)
-    return Math.max(0, totalPrice - discountAmount + (isFreeShipping ? 0 : shipFee) - pointsDiscountAmount)
+    const selected =
+      shippingMethods.find((m) => m.id === form.shipping_method_id) || null;
+    const selectedZone =
+      shippingZones.find((z) => z.id === form.shipping_zone_id) || null;
+    const shipFee = (selected?.base_fee ?? 0) + (selectedZone?.fee ?? 0);
+    const baseForPoints = Math.max(
+      0,
+      totalPrice - discountAmount + (isFreeShipping ? 0 : shipFee),
+    );
+    return Math.floor((baseForPoints * 0.2) / 500);
   }, [
     form.shipping_method_id,
     form.shipping_zone_id,
@@ -407,92 +518,135 @@ export default function CheckoutPage() {
     shippingZones,
     totalPrice,
     discountAmount,
-    pointsDiscountAmount
-  ])
+  ]);
+
+  const grandTotal = useMemo(() => {
+    const selected =
+      shippingMethods.find((m) => m.id === form.shipping_method_id) || null;
+    const selectedZone =
+      shippingZones.find((z) => z.id === form.shipping_zone_id) || null;
+    const shipFee = (selected?.base_fee ?? 0) + (selectedZone?.fee ?? 0);
+    return Math.max(
+      0,
+      totalPrice -
+        discountAmount +
+        (isFreeShipping ? 0 : shipFee) -
+        pointsDiscountAmount,
+    );
+  }, [
+    form.shipping_method_id,
+    form.shipping_zone_id,
+    isFreeShipping,
+    shippingMethods,
+    shippingZones,
+    totalPrice,
+    discountAmount,
+    pointsDiscountAmount,
+  ]);
 
   const applyCoupon = async (overrideCode?: string) => {
-    const code = overrideCode || couponInput.trim()
-    if (!code) return
-    setCouponError(null)
-    setCouponLoading(true)
+    const code = overrideCode || couponInput.trim();
+    if (!code) return;
+    setCouponError(null);
+    setCouponLoading(true);
     try {
-      const res = await apiFetch<{ coupon: any; discount_amount: number }>('/api/coupons/apply', {
-        method: 'POST',
-        body: JSON.stringify({ code, order_amount: totalPrice }),
-      })
-      setAppliedCoupon({ code, discount_amount: res.discount_amount })
-      setCouponInput('')
-      setCouponError(null)
-      setShowCouponModal(false)
+      const res = await apiFetch<{ coupon: any; discount_amount: number }>(
+        "/api/coupons/apply",
+        {
+          method: "POST",
+          body: JSON.stringify({ code, order_amount: totalPrice }),
+        },
+      );
+      setAppliedCoupon({ code, discount_amount: res.discount_amount });
+      setCouponInput("");
+      setCouponError(null);
+      setShowCouponModal(false);
     } catch (err: unknown) {
-      setAppliedCoupon(null)
-      setCouponError(err instanceof Error ? err.message : 'Mã giảm giá không hợp lệ.')
+      setAppliedCoupon(null);
+      setCouponError(
+        err instanceof Error ? err.message : "Mã giảm giá không hợp lệ.",
+      );
     } finally {
-      setCouponLoading(false)
+      setCouponLoading(false);
     }
-  }
+  };
 
   const removeCoupon = () => {
-    setAppliedCoupon(null)
-    setCouponInput('')
-    setCouponError(null)
-  }
+    setAppliedCoupon(null);
+    setCouponInput("");
+    setCouponError(null);
+  };
 
   const shippingFee = useMemo(() => {
-    const selected = shippingMethods.find((m) => m.id === form.shipping_method_id) || null
-    const selectedZone = shippingZones.find((z) => z.id === form.shipping_zone_id) || null
-    return isFreeShipping ? 0 : (selected?.base_fee ?? 0) + (selectedZone?.fee ?? 0)
-  }, [form.shipping_method_id, form.shipping_zone_id, isFreeShipping, shippingMethods, shippingZones])
+    const selected =
+      shippingMethods.find((m) => m.id === form.shipping_method_id) || null;
+    const selectedZone =
+      shippingZones.find((z) => z.id === form.shipping_zone_id) || null;
+    return isFreeShipping
+      ? 0
+      : (selected?.base_fee ?? 0) + (selectedZone?.fee ?? 0);
+  }, [
+    form.shipping_method_id,
+    form.shipping_zone_id,
+    isFreeShipping,
+    shippingMethods,
+    shippingZones,
+  ]);
 
   const validationError = useMemo(() => {
-    if (cart.items.length === 0) return 'Giỏ hàng đang trống.'
-    if (form.name.trim().length === 0) return 'Vui lòng nhập họ và tên.'
-    if (form.phone.trim().length === 0) return 'Vui lòng nhập số điện thoại.'
-    if (form.address_line.trim().length === 0) return 'Vui lòng nhập địa chỉ.'
-    return null
-  }, [cart.items.length, form.address_line, form.name, form.phone])
+    if (cart.items.length === 0) return "Giỏ hàng đang trống.";
+    if (form.name.trim().length === 0) return "Vui lòng nhập họ và tên.";
+    if (form.phone.trim().length === 0) return "Vui lòng nhập số điện thoại.";
+    if (form.address_line.trim().length === 0) return "Vui lòng nhập địa chỉ.";
+    return null;
+  }, [cart.items.length, form.address_line, form.name, form.phone]);
 
   const submit = async (e?: FormEvent) => {
-    e?.preventDefault()
-    setError(null)
+    e?.preventDefault();
+    setError(null);
     if (validationError) {
-      setError(validationError)
-      return
+      setError(validationError);
+      return;
     }
     if (!payAvail[form.payment_method]) {
-      setError('Phương thức thanh toán này đang tạm khóa. Vui lòng chọn phương thức khác.')
-      return
+      setError(
+        "Phương thức thanh toán này đang tạm khóa. Vui lòng chọn phương thức khác.",
+      );
+      return;
     }
-    setSubmitting(true)
+    setSubmitting(true);
     try {
-      if (form.payment_method === 'cod') {
+      if (form.payment_method === "cod") {
         // If logged in, create real order in backend (so it is saved in DB).
         if (hasAuth) {
-          const created = await apiFetch<{ id: number; order_code: string }>(`/orders/from-items`, {
-            method: 'POST',
-            body: JSON.stringify({
-              shipping_name: form.name.trim(),
-              shipping_phone: form.phone.trim(),
-              shipping_address_line: form.address_line.trim(),
-              shipping_province: null,
-              shipping_district: null,
-              shipping_ward: null,
-              notes: form.notes.trim() || null,
-              coupon_code: appliedCoupon?.code || null,
-              points_used: pointsToUse,
-              payment_method: 'cod',
-              items: cart.items.map((it) => ({
-                product_id: it.product_id,
-                variant_id: it.variant_id,
-                quantity: it.quantity,
-              })),
-              shipping_method_id: form.shipping_method_id,
-              shipping_zone_id: form.shipping_zone_id,
-            }),
-          })
+          const created = await apiFetch<{ id: number; order_code: string }>(
+            `/orders/from-items`,
+            {
+              method: "POST",
+              body: JSON.stringify({
+                shipping_name: form.name.trim(),
+                shipping_phone: form.phone.trim(),
+                shipping_address_line: form.address_line.trim(),
+                shipping_province: null,
+                shipping_district: null,
+                shipping_ward: null,
+                notes: form.notes.trim() || null,
+                coupon_code: appliedCoupon?.code || null,
+                points_used: pointsToUse,
+                payment_method: "cod",
+                items: cart.items.map((it) => ({
+                  product_id: it.product_id,
+                  variant_id: it.variant_id,
+                  quantity: it.quantity,
+                })),
+                shipping_method_id: form.shipping_method_id,
+                shipping_zone_id: form.shipping_zone_id,
+              }),
+            },
+          );
 
           localStorage.setItem(
-            'last_order',
+            "last_order",
             JSON.stringify({
               order_id: created.id,
               order_code: created.order_code,
@@ -501,7 +655,7 @@ export default function CheckoutPage() {
               shipping_phone: form.phone.trim(),
               shipping_address_line: form.address_line.trim(),
               notes: form.notes.trim() || null,
-              payment_method: 'cod',
+              payment_method: "cod",
               shipping_method_id: form.shipping_method_id,
               shipping_zone_id: form.shipping_zone_id,
               total_qty: totalQty,
@@ -510,18 +664,18 @@ export default function CheckoutPage() {
               points_used: pointsToUse,
               items: cart.items,
             }),
-          )
-          removeSelectedLocalCartItems()
-          removeSelectedBackendItems()
-          localStorage.removeItem(pendingPaymentKey)
-          setOrderCode(created.order_code)
-          return
+          );
+          removeSelectedLocalCartItems();
+          removeSelectedBackendItems();
+          localStorage.removeItem(pendingPaymentKey);
+          setOrderCode(created.order_code);
+          return;
         }
 
         // Not logged in: keep frontend-only flow.
-        const code = `OD-${Math.random().toString(16).slice(2, 10).toUpperCase()}`
+        const code = `OD-${Math.random().toString(16).slice(2, 10).toUpperCase()}`;
         localStorage.setItem(
-          'last_order',
+          "last_order",
           JSON.stringify({
             order_code: code,
             created_at: new Date().toISOString(),
@@ -538,131 +692,174 @@ export default function CheckoutPage() {
             points_used: pointsToUse,
             items: cart.items,
           }),
-        )
-        removeSelectedLocalCartItems()
-        removeSelectedBackendItems()
-        localStorage.removeItem(pendingPaymentKey)
-        setOrderCode(code)
-        return
+        );
+        removeSelectedLocalCartItems();
+        removeSelectedBackendItems();
+        localStorage.removeItem(pendingPaymentKey);
+        setOrderCode(code);
+        return;
       }
 
       if (!hasAuth) {
-        setError('Vui lòng đăng nhập để thanh toán online.')
-        return
+        setError("Vui lòng đăng nhập để thanh toán online.");
+        return;
       }
 
       // For online payments: create 1 backend order from localStorage cart (no duplicates).
-      const created = await apiFetch<{ id: number; order_code: string }>(`/orders/from-items`, {
-        method: 'POST',
-        body: JSON.stringify({
-          shipping_name: form.name.trim(),
-          shipping_phone: form.phone.trim(),
-          shipping_address_line: form.address_line.trim(),
-          shipping_province: null,
-          shipping_district: null,
-          shipping_ward: null,
-          notes: form.notes.trim() || null,
-          coupon_code: appliedCoupon?.code || null,
-          points_used: pointsToUse,
-          payment_method: form.payment_method,
-          items: cart.items.map((it) => ({
-            product_id: it.product_id,
-            variant_id: it.variant_id,
-            quantity: it.quantity,
-            unit_price: it.price,
-          })),
-          shipping_method_id: form.shipping_method_id,
-          shipping_zone_id: form.shipping_zone_id,
+      const created = await apiFetch<{ id: number; order_code: string }>(
+        `/orders/from-items`,
+        {
+          method: "POST",
+          body: JSON.stringify({
+            shipping_name: form.name.trim(),
+            shipping_phone: form.phone.trim(),
+            shipping_address_line: form.address_line.trim(),
+            shipping_province: null,
+            shipping_district: null,
+            shipping_ward: null,
+            notes: form.notes.trim() || null,
+            coupon_code: appliedCoupon?.code || null,
+            points_used: pointsToUse,
+            payment_method: form.payment_method,
+            items: cart.items.map((it) => ({
+              product_id: it.product_id,
+              variant_id: it.variant_id,
+              quantity: it.quantity,
+              unit_price: it.price,
+            })),
+            shipping_method_id: form.shipping_method_id,
+            shipping_zone_id: form.shipping_zone_id,
+          }),
+        },
+      );
+      localStorage.setItem(
+        pendingPaymentKey,
+        JSON.stringify({
+          order_id: created.id,
+          order_code: created.order_code,
+          method: form.payment_method,
         }),
-      })
-      localStorage.setItem(pendingPaymentKey, JSON.stringify({ order_id: created.id, order_code: created.order_code, method: form.payment_method }))
+      );
 
       // Create payment link & redirect to gateway
-      const pay = await apiFetch<{ pay_url: string }>(`/payments/${form.payment_method}/create`, {
-        method: 'POST',
-        // MoMo will show "choose payment method" screen by default
-        body: JSON.stringify({ order_id: created.id }),
-      })
-      window.location.href = pay.pay_url
+      const pay = await apiFetch<{ pay_url: string }>(
+        `/payments/${form.payment_method}/create`,
+        {
+          method: "POST",
+          // MoMo will show "choose payment method" screen by default
+          body: JSON.stringify({ order_id: created.id }),
+        },
+      );
+      window.location.href = pay.pay_url;
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Không thể đặt hàng. Vui lòng thử lại.')
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Không thể đặt hàng. Vui lòng thử lại.",
+      );
     } finally {
-      setSubmitting(false)
+      setSubmitting(false);
     }
-  }
+  };
 
   // Handle gateway return (show success/fail; clear cart only on success)
   useEffect(() => {
-    if (!paymentReturn) return
+    if (!paymentReturn) return;
     queueMicrotask(() => {
       if (paymentReturn.success) {
-        localStorage.removeItem(pendingPaymentKey)
-        removeSelectedLocalCartItems()
-        removeSelectedBackendItems()
-        
-        setWaitingPayment(true)
+        localStorage.removeItem(pendingPaymentKey);
+        removeSelectedLocalCartItems();
+        removeSelectedBackendItems();
+
+        setWaitingPayment(true);
 
         const poll = async () => {
           if (!paymentReturn.order_id) {
-             setWaitingPayment(false)
-             setOrderCode(paymentReturn.order_code)
-             return;
+            setWaitingPayment(false);
+            setOrderCode(paymentReturn.order_code);
+            return;
           }
           try {
-             const res = await apiFetch<any>(`/api/orders/${paymentReturn.order_id}`)
-             if (res.payment_status === 'paid') {
-               setWaitingPayment(false)
-               setOrderCode(paymentReturn.order_code)
-             } else if (res.payment_status === 'failed') {
-               setWaitingPayment(false)
-               setError('Thanh toán thất bại. Bạn có thể bấm “Xác nhận đặt hàng” để thử thanh toán lại.')
-             } else {
-               window.setTimeout(poll, 2000)
-             }
-           } catch {
-             window.setTimeout(poll, 2000)
-           }
+            const res = await apiFetch<any>(
+              `/api/orders/${paymentReturn.order_id}`,
+            );
+            if (res.payment_status === "paid") {
+              setWaitingPayment(false);
+              setOrderCode(paymentReturn.order_code);
+            } else if (res.payment_status === "failed") {
+              setWaitingPayment(false);
+              setError(
+                "Thanh toán thất bại. Bạn có thể bấm “Xác nhận đặt hàng” để thử thanh toán lại.",
+              );
+            } else {
+              window.setTimeout(poll, 2000);
+            }
+          } catch {
+            window.setTimeout(poll, 2000);
+          }
         };
         poll();
-
       } else {
-        localStorage.removeItem(pendingPaymentKey)
-        setError('Thanh toán thất bại hoặc đã bị hủy. Bạn có thể kiểm tra lại giỏ hàng và tiến hành đặt lại.')
-        navigate('/checkout', { replace: true })
+        localStorage.removeItem(pendingPaymentKey);
+        setError(
+          "Thanh toán thất bại hoặc đã bị hủy. Bạn có thể kiểm tra lại giỏ hàng và tiến hành đặt lại.",
+        );
+        navigate("/checkout", { replace: true });
       }
-    })
-  }, [paymentReturn, navigate])
+    });
+  }, [paymentReturn, navigate]);
 
   useEffect(() => {
     const onPaymentStatus = (e: any) => {
       if (e.detail?.order_id === paymentReturn?.order_id) {
-        if (e.detail?.status === 'paid') {
-          setWaitingPayment(false)
-          setOrderCode(paymentReturn?.order_code || '')
-        } else if (e.detail?.status === 'failed') {
-          setWaitingPayment(false)
-          setError('Thanh toán thất bại. Bạn có thể bấm “Xác nhận đặt hàng” để thử thanh toán lại.')
+        if (e.detail?.status === "paid") {
+          setWaitingPayment(false);
+          setOrderCode(paymentReturn?.order_code || "");
+        } else if (e.detail?.status === "failed") {
+          setWaitingPayment(false);
+          setError(
+            "Thanh toán thất bại. Bạn có thể bấm “Xác nhận đặt hàng” để thử thanh toán lại.",
+          );
         }
       }
     };
-    window.addEventListener('payment_status_changed', onPaymentStatus)
-    return () => window.removeEventListener('payment_status_changed', onPaymentStatus)
-  }, [paymentReturn])
+    window.addEventListener("payment_status_changed", onPaymentStatus);
+    return () =>
+      window.removeEventListener("payment_status_changed", onPaymentStatus);
+  }, [paymentReturn]);
 
   if (waitingPayment) {
     return (
       <div className="coPage">
         <div className="coContainer">
           <div className="coSuccessWrap">
-            <div className="coSuccessCard" style={{ textAlign: 'center', padding: '60px 20px' }}>
-              <div className="et-loader-spinner" style={{ margin: '0 auto 24px' }}></div>
-              <h2 style={{ fontSize: '24px', fontWeight: 'bold', color: 'var(--et-text)', marginBottom: '12px' }}>Đang xác nhận thanh toán...</h2>
-              <p style={{ color: 'var(--et-text-muted)' }}>Hệ thống đang kết nối với đối tác thanh toán để xác nhận đơn hàng của bạn. Vui lòng không đóng trang này.</p>
+            <div
+              className="coSuccessCard"
+              style={{ textAlign: "center", padding: "60px 20px" }}
+            >
+              <div
+                className="et-loader-spinner"
+                style={{ margin: "0 auto 24px" }}
+              ></div>
+              <h2
+                style={{
+                  fontSize: "24px",
+                  fontWeight: "bold",
+                  color: "var(--et-text)",
+                  marginBottom: "12px",
+                }}
+              >
+                Đang xác nhận thanh toán...
+              </h2>
+              <p style={{ color: "var(--et-text-muted)" }}>
+                Hệ thống đang kết nối với đối tác thanh toán để xác nhận đơn
+                hàng của bạn. Vui lòng không đóng trang này.
+              </p>
             </div>
           </div>
         </div>
       </div>
-    )
+    );
   }
 
   if (orderCode) {
@@ -688,7 +885,9 @@ export default function CheckoutPage() {
                   <button
                     type="button"
                     className="coCopyBtnIcon"
-                    onClick={() => void navigator.clipboard?.writeText(orderCode)}
+                    onClick={() =>
+                      void navigator.clipboard?.writeText(orderCode)
+                    }
                     title="Sao chép"
                   >
                     <CopyIcon />
@@ -697,18 +896,34 @@ export default function CheckoutPage() {
               </div>
 
               <div className="coSuccessDesc">
-                Đơn hàng của bạn đã được ghi nhận và đang chờ xác nhận. Chúng tôi sẽ nhanh chóng xử lý, đóng gói và cập nhật trạng thái vận chuyển trong thời gian sớm nhất.
-                Bạn có thể theo dõi chi tiết đơn hàng, trạng thái giao hàng và thông tin thanh toán trong mục <b>Đơn hàng</b> bất cứ lúc nào.
+                Đơn hàng của bạn đã được ghi nhận và đang chờ xác nhận. Chúng
+                tôi sẽ nhanh chóng xử lý, đóng gói và cập nhật trạng thái vận
+                chuyển trong thời gian sớm nhất. Bạn có thể theo dõi chi tiết
+                đơn hàng, trạng thái giao hàng và thông tin thanh toán trong mục{" "}
+                <b>Đơn hàng</b> bất cứ lúc nào.
               </div>
 
               <div className="coSuccessActions">
-                <Link className="coGhostBtn coIconBtn" to="/" title="Về trang chủ">
+                <Link
+                  className="coGhostBtn coIconBtn"
+                  to="/"
+                  title="Về trang chủ"
+                >
                   <HomeIcon />
                 </Link>
-                <button type="button" className="coPrimaryBtn coIconBtn" onClick={() => navigate('/products')} title="Tiếp tục mua sắm">
+                <button
+                  type="button"
+                  className="coPrimaryBtn coIconBtn"
+                  onClick={() => navigate("/products")}
+                  title="Tiếp tục mua sắm"
+                >
                   <ShoppingBagIcon />
                 </button>
-                <Link className="coGhostBtn coIconBtn" to="/profile/orders" title="Xem đơn hàng">
+                <Link
+                  className="coGhostBtn coIconBtn"
+                  to="/profile/orders"
+                  title="Xem đơn hàng"
+                >
                   <PackageIcon />
                 </Link>
               </div>
@@ -716,7 +931,7 @@ export default function CheckoutPage() {
           </div>
         </div>
       </div>
-    )
+    );
   }
 
   return (
@@ -729,7 +944,9 @@ export default function CheckoutPage() {
             </Link>
             <div>
               <h1 className="coTitle">Thanh toán</h1>
-              <div className="coSubtitle">Kiểm tra thông tin nhận hàng và hoàn tất đơn.</div>
+              <div className="coSubtitle">
+                Kiểm tra thông tin nhận hàng và hoàn tất đơn.
+              </div>
             </div>
           </div>
         </div>
@@ -737,33 +954,56 @@ export default function CheckoutPage() {
         {cart.items.length === 0 ? (
           <div className="coEmpty">
             <p>Giỏ hàng của bạn đang trống.</p>
-            <Link to="/products" className="coPrimaryLink">Đi mua sắm</Link>
+            <Link to="/products" className="coPrimaryLink">
+              Đi mua sắm
+            </Link>
           </div>
         ) : (
           <div className="coGrid">
             {priceChangedItems.length > 0 && (
-              <div style={{
-                gridColumn: '1 / -1',
-                background: '#fff7ed',
-                border: '1px solid #fdba74',
-                borderRadius: '8px',
-                padding: '12px 16px',
-                marginBottom: '4px',
-                display: 'flex',
-                gap: '10px',
-                alignItems: 'flex-start'
-              }}>
-                <span style={{ fontSize: '18px', lineHeight: 1 }}>⚠️</span>
+              <div
+                style={{
+                  gridColumn: "1 / -1",
+                  background: "#fff7ed",
+                  border: "1px solid #fdba74",
+                  borderRadius: "8px",
+                  padding: "12px 16px",
+                  marginBottom: "4px",
+                  display: "flex",
+                  gap: "10px",
+                  alignItems: "flex-start",
+                }}
+              >
+                <span style={{ fontSize: "18px", lineHeight: 1 }}>⚠️</span>
                 <div>
-                  <div style={{ fontWeight: 600, color: '#92400e', marginBottom: '4px', fontSize: '14px' }}>
+                  <div
+                    style={{
+                      fontWeight: 600,
+                      color: "#92400e",
+                      marginBottom: "4px",
+                      fontSize: "14px",
+                    }}
+                  >
                     Giá một số sản phẩm đã thay đổi
                   </div>
                   {priceChangedItems.map((item, i) => (
-                    <div key={i} style={{ fontSize: '13px', color: '#78350f' }}>
-                      <b>{item.name}</b>: {Math.round(item.oldPrice).toLocaleString('vi-VN')} đ → <b style={{ color: '#b45309' }}>{Math.round(item.newPrice).toLocaleString('vi-VN')} đ</b>
+                    <div key={i} style={{ fontSize: "13px", color: "#78350f" }}>
+                      <b>{item.name}</b>:{" "}
+                      {Math.round(item.oldPrice).toLocaleString("vi-VN")} đ →{" "}
+                      <b style={{ color: "#b45309" }}>
+                        {Math.round(item.newPrice).toLocaleString("vi-VN")} đ
+                      </b>
                     </div>
                   ))}
-                  <div style={{ fontSize: '12px', color: '#92400e', marginTop: '6px' }}>Giá đã được cập nhật theo thông tin mới nhất từ hệ thống.</div>
+                  <div
+                    style={{
+                      fontSize: "12px",
+                      color: "#92400e",
+                      marginTop: "6px",
+                    }}
+                  >
+                    Giá đã được cập nhật theo thông tin mới nhất từ hệ thống.
+                  </div>
                 </div>
               </div>
             )}
@@ -778,7 +1018,9 @@ export default function CheckoutPage() {
                     <label>Họ và tên</label>
                     <input
                       value={form.name}
-                      onChange={(e) => setForm((s) => ({ ...s, name: e.target.value }))}
+                      onChange={(e) =>
+                        setForm((s) => ({ ...s, name: e.target.value }))
+                      }
                       placeholder="Nguyễn Văn A"
                       required
                     />
@@ -787,7 +1029,9 @@ export default function CheckoutPage() {
                     <label>Số điện thoại</label>
                     <input
                       value={form.phone}
-                      onChange={(e) => setForm((s) => ({ ...s, phone: e.target.value }))}
+                      onChange={(e) =>
+                        setForm((s) => ({ ...s, phone: e.target.value }))
+                      }
                       placeholder="0901234567"
                       required
                     />
@@ -798,7 +1042,9 @@ export default function CheckoutPage() {
                   <label>Địa chỉ</label>
                   <input
                     value={form.address_line}
-                    onChange={(e) => setForm((s) => ({ ...s, address_line: e.target.value }))}
+                    onChange={(e) =>
+                      setForm((s) => ({ ...s, address_line: e.target.value }))
+                    }
                     placeholder="Số nhà, tên đường, phường/xã, quận/huyện, tỉnh/thành…"
                     required
                   />
@@ -808,7 +1054,9 @@ export default function CheckoutPage() {
                   <label>Ghi chú đơn hàng</label>
                   <textarea
                     value={form.notes}
-                    onChange={(e) => setForm((s) => ({ ...s, notes: e.target.value }))}
+                    onChange={(e) =>
+                      setForm((s) => ({ ...s, notes: e.target.value }))
+                    }
                     placeholder="Ví dụ: giao giờ hành chính…"
                     rows={3}
                   />
@@ -819,41 +1067,53 @@ export default function CheckoutPage() {
                   <div className="coShipZoneRow">
                     <select
                       className="coSelect"
-                      value={form.shipping_zone_id ?? ''}
+                      value={form.shipping_zone_id ?? ""}
                       onChange={(e) =>
                         setForm((s) => ({
                           ...s,
-                          shipping_zone_id: e.target.value ? Number(e.target.value) : null,
+                          shipping_zone_id: e.target.value
+                            ? Number(e.target.value)
+                            : null,
                         }))
                       }
                       aria-label="Khu vực giao hàng"
                     >
                       <option value="">Chọn khu vực giao hàng</option>
-                      {!shippingZones.filter((z) => z.is_active).length && <option value="">Chưa cấu hình khu vực</option>}
+                      {!shippingZones.filter((z) => z.is_active).length && (
+                        <option value="">Chưa cấu hình khu vực</option>
+                      )}
                       {shippingZones
                         .filter((z) => z.is_active)
                         .map((z) => {
-                          const feeLabel = isFreeShipping ? 'Miễn phí' : z.fee > 0 ? `+${formatVnd(z.fee)}` : '+0 đ'
+                          const feeLabel = isFreeShipping
+                            ? "Miễn phí"
+                            : z.fee > 0
+                              ? `+${formatVnd(z.fee)}`
+                              : "+0 đ";
                           return (
                             <option key={z.id} value={String(z.id)}>
                               {z.name} ({feeLabel})
                             </option>
-                          )
+                          );
                         })}
                     </select>
                     <select
                       className="coSelect"
-                      value={form.shipping_method_id ?? ''}
+                      value={form.shipping_method_id ?? ""}
                       onChange={(e) =>
                         setForm((s) => ({
                           ...s,
-                          shipping_method_id: e.target.value ? Number(e.target.value) : null,
+                          shipping_method_id: e.target.value
+                            ? Number(e.target.value)
+                            : null,
                         }))
                       }
                       aria-label="Phương thức vận chuyển"
                     >
                       <option value="">Chọn phương thức vận chuyển</option>
-                      {!shippingMethods.filter((m) => m.is_active).length && <option value="">Chưa cấu hình vận chuyển</option>}
+                      {!shippingMethods.filter((m) => m.is_active).length && (
+                        <option value="">Chưa cấu hình vận chuyển</option>
+                      )}
                       {shippingMethods
                         .filter((m) => m.is_active)
                         .map((m) => {
@@ -862,67 +1122,91 @@ export default function CheckoutPage() {
                               ? `${m.estimated_days_min}–${m.estimated_days_max} ngày`
                               : m.estimated_days_min
                                 ? `${m.estimated_days_min}+ ngày`
-                                : ''
-                          const label = [m.name, eta ? `· ${eta}` : null].filter(Boolean).join(' ')
+                                : "";
+                          const label = [m.name, eta ? `· ${eta}` : null]
+                            .filter(Boolean)
+                            .join(" ");
                           return (
                             <option key={m.id} value={String(m.id)}>
                               {label}
                             </option>
-                          )
+                          );
                         })}
                     </select>
                   </div>
                   <div className="coShipNote">
                     {isFreeShipping
-                      ? 'Miễn phí vận chuyển (đủ điều kiện).'
-                      : 'Phí vận chuyển sẽ được tính theo phương thức bạn chọn.'}
+                      ? "Miễn phí vận chuyển (đủ điều kiện)."
+                      : "Phí vận chuyển sẽ được tính theo phương thức bạn chọn."}
                   </div>
                 </div>
               </form>
 
               <div className="coCard coPayCard">
                 <h3 className="coCardTitle">Phương thức thanh toán</h3>
-                <div className="coPayGrid" role="radiogroup" aria-label="Phương thức thanh toán">
+                <div
+                  className="coPayGrid"
+                  role="radiogroup"
+                  aria-label="Phương thức thanh toán"
+                >
                   {payAvail.cod && (
                     <button
                       type="button"
-                      className={`coPayOption ${form.payment_method === 'cod' ? 'is-active' : ''}`}
-                      onClick={() => setForm((s) => ({ ...s, payment_method: 'cod' }))}
+                      className={`coPayOption ${form.payment_method === "cod" ? "is-active" : ""}`}
+                      onClick={() =>
+                        setForm((s) => ({ ...s, payment_method: "cod" }))
+                      }
                     >
                       <div className="coPayLogo">
-                        <img className="coPayLogoImg" src={logoCod} alt="Thanh toán khi nhận (COD)" />
+                        <img
+                          className="coPayLogoImg"
+                          src={logoCod}
+                          alt="Thanh toán khi nhận (COD)"
+                        />
                       </div>
                       <div className="coPayLabel">Thanh toán khi nhận</div>
                     </button>
                   )}
-                  
+
                   {payAvail.vnpay && (
                     <button
                       type="button"
-                      className={`coPayOption ${form.payment_method === 'vnpay' ? 'is-active' : ''}`}
-                      onClick={() => setForm((s) => ({ ...s, payment_method: 'vnpay' }))}
+                      className={`coPayOption ${form.payment_method === "vnpay" ? "is-active" : ""}`}
+                      onClick={() =>
+                        setForm((s) => ({ ...s, payment_method: "vnpay" }))
+                      }
                     >
                       <div className="coPayLogo">
-                        <img className="coPayLogoImg" src={logoVnpay} alt="VNPAY" />
+                        <img
+                          className="coPayLogoImg"
+                          src={logoVnpay}
+                          alt="VNPAY"
+                        />
                       </div>
                       <div className="coPayLabel">VNPAY (ATM/CREDIT)</div>
                     </button>
                   )}
-                  
+
                   {payAvail.momo && (
                     <button
                       type="button"
-                      className={`coPayOption ${form.payment_method === 'momo' ? 'is-active' : ''}`}
-                      onClick={() => setForm((s) => ({ ...s, payment_method: 'momo' }))}
+                      className={`coPayOption ${form.payment_method === "momo" ? "is-active" : ""}`}
+                      onClick={() =>
+                        setForm((s) => ({ ...s, payment_method: "momo" }))
+                      }
                     >
                       <div className="coPayLogo">
-                        <img className="coPayLogoImg" src={logoMomo} alt="MoMo" />
+                        <img
+                          className="coPayLogoImg"
+                          src={logoMomo}
+                          alt="MoMo"
+                        />
                       </div>
                       <div className="coPayLabel">Ví điện tử MoMo</div>
                     </button>
                   )}
                 </div>
-                {(!payAvail.cod && !payAvail.vnpay && !payAvail.momo) && (
+                {!payAvail.cod && !payAvail.vnpay && !payAvail.momo && (
                   <div className="coPayLockedHint" aria-live="polite">
                     Hiện tại tất cả phương thức thanh toán đang được bảo trì.
                   </div>
@@ -932,17 +1216,25 @@ export default function CheckoutPage() {
 
             <aside className="coSummary">
               <div className="coSummaryCard">
-                <h3 className="coSummaryTitle">Tóm tắt đơn hàng ({totalQty})</h3>
+                <h3 className="coSummaryTitle">
+                  Tóm tắt đơn hàng ({totalQty})
+                </h3>
 
                 <div className="coSummaryItems">
                   {cart.items.map((it) => (
                     <div key={it.key} className="coSumItem">
                       <div className="coSumThumb">
-                        {it.image_url ? <img src={it.image_url} alt="" /> : <div className="coSumThumbPh" />}
+                        {it.image_url ? (
+                          <img src={it.image_url} alt="" />
+                        ) : (
+                          <div className="coSumThumbPh" />
+                        )}
                       </div>
                       <div className="coSumBody">
                         <div className="coSumName">{it.name}</div>
-                        {it.variant_label && <div className="coSumVariant">{it.variant_label}</div>}
+                        {it.variant_label && (
+                          <div className="coSumVariant">{it.variant_label}</div>
+                        )}
                         <div className="coSumMeta">
                           <span>x{it.quantity}</span>
                           <span>{formatVnd(it.price)}</span>
@@ -970,10 +1262,20 @@ export default function CheckoutPage() {
                   {appliedCoupon ? (
                     <div className="coCouponApplied">
                       <div className="coCouponAppliedInfo">
-                        <span className="coCouponTag">🎟️ {appliedCoupon.code}</span>
-                        <span className="coCouponSaved">-{formatVnd(appliedCoupon.discount_amount)}</span>
+                        <span className="coCouponTag">
+                          🎟️ {appliedCoupon.code}
+                        </span>
+                        <span className="coCouponSaved">
+                          -{formatVnd(appliedCoupon.discount_amount)}
+                        </span>
                       </div>
-                      <button type="button" className="coCouponRemoveBtn" onClick={removeCoupon}>Bỏ mã</button>
+                      <button
+                        type="button"
+                        className="coCouponRemoveBtn"
+                        onClick={removeCoupon}
+                      >
+                        Bỏ mã
+                      </button>
                     </div>
                   ) : (
                     <div className="coCouponInputGroup">
@@ -982,8 +1284,15 @@ export default function CheckoutPage() {
                           className="coCouponInput"
                           placeholder="Nhập mã giảm giá"
                           value={couponInput}
-                          onChange={(e) => setCouponInput(e.target.value.toUpperCase())}
-                          onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); void applyCoupon() } }}
+                          onChange={(e) =>
+                            setCouponInput(e.target.value.toUpperCase())
+                          }
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter") {
+                              e.preventDefault();
+                              void applyCoupon();
+                            }
+                          }}
                           disabled={couponLoading}
                         />
                         <button
@@ -992,52 +1301,115 @@ export default function CheckoutPage() {
                           onClick={() => void applyCoupon()}
                           disabled={couponLoading || !couponInput.trim()}
                         >
-                          {couponLoading ? 'Đang kiểm…' : 'Áp dụng'}
+                          {couponLoading ? "Đang kiểm…" : "Áp dụng"}
                         </button>
                       </div>
-                      <button type="button" className="coCouponListBtn" onClick={() => setShowCouponModal(true)}>
+                      <button
+                        type="button"
+                        className="coCouponListBtn"
+                        onClick={() => setShowCouponModal(true)}
+                      >
                         🎁 Chọn mã có sẵn
                       </button>
                     </div>
                   )}
                 </div>
-                {couponError && <div className="coCouponError">{couponError}</div>}
+                {couponError && (
+                  <div className="coCouponError">{couponError}</div>
+                )}
 
                 {hasAuth && loyaltyData && loyaltyData.current_points > 0 && (
-                  <div className="coLoyaltyBlock" style={{ marginTop: '16px', padding: '12px', background: '#f8f9fa', borderRadius: '8px', border: '1px solid #e9ecef' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', fontSize: '14px' }}>
+                  <div
+                    className="coLoyaltyBlock"
+                    style={{
+                      marginTop: "16px",
+                      padding: "12px",
+                      background: "#f8f9fa",
+                      borderRadius: "8px",
+                      border: "1px solid #e9ecef",
+                    }}
+                  >
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        marginBottom: "8px",
+                        fontSize: "14px",
+                      }}
+                    >
                       <strong>Điểm thưởng: {loyaltyData.current_points}</strong>
-                      <span style={{ color: '#d97706' }}>1 điểm = 500đ</span>
+                      <span style={{ color: "#d97706" }}>1 điểm = 500đ</span>
                     </div>
-                    <div className="coCouponInputRow" style={{ marginBottom: '8px' }}>
+                    <div
+                      className="coCouponInputRow"
+                      style={{ marginBottom: "8px" }}
+                    >
                       <input
                         type="number"
                         min="0"
-                        max={Math.min(loyaltyData.current_points, maxPointsAllowed)}
+                        max={Math.min(
+                          loyaltyData.current_points,
+                          maxPointsAllowed,
+                        )}
                         className="coCouponInput"
                         placeholder="Số điểm muốn dùng"
                         value={pointsInput}
                         onChange={(e) => {
-                          const val = e.target.value === '' ? '' : Number(e.target.value);
+                          const val =
+                            e.target.value === "" ? "" : Number(e.target.value);
                           setPointsInput(val);
                         }}
                       />
                       <button
                         type="button"
                         className="coCouponBtn"
-                        disabled={pointsInput === '' || pointsInput <= 0 || pointsInput > Math.min(loyaltyData.current_points, maxPointsAllowed)}
+                        disabled={
+                          pointsInput === "" ||
+                          pointsInput <= 0 ||
+                          pointsInput >
+                            Math.min(
+                              loyaltyData.current_points,
+                              maxPointsAllowed,
+                            )
+                        }
                         onClick={() => setPointsToUse(Number(pointsInput))}
                       >
                         Áp dụng
                       </button>
                     </div>
                     {pointsToUse > 0 && (
-                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '14px', alignItems: 'center' }}>
-                        <span style={{ color: '#16a34a' }}>Đã dùng {pointsToUse} điểm (-{formatVnd(pointsToUse * 500)})</span>
-                        <button type="button" style={{ background: 'none', border: 'none', color: '#dc2626', cursor: 'pointer', fontSize: '12px', textDecoration: 'underline' }} onClick={() => { setPointsToUse(0); setPointsInput(''); }}>Hủy</button>
+                      <div
+                        style={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          fontSize: "14px",
+                          alignItems: "center",
+                        }}
+                      >
+                        <span style={{ color: "#16a34a" }}>
+                          Đã dùng {pointsToUse} điểm (-
+                          {formatVnd(pointsToUse * 500)})
+                        </span>
+                        <button
+                          type="button"
+                          style={{
+                            background: "none",
+                            border: "none",
+                            color: "#dc2626",
+                            cursor: "pointer",
+                            fontSize: "12px",
+                            textDecoration: "underline",
+                          }}
+                          onClick={() => {
+                            setPointsToUse(0);
+                            setPointsInput("");
+                          }}
+                        >
+                          Hủy
+                        </button>
                       </div>
                     )}
-                    <div style={{ fontSize: '12px', color: '#6b7280' }}>
+                    <div style={{ fontSize: "12px", color: "#6b7280" }}>
                       (Tối đa dùng {maxPointsAllowed} điểm cho đơn hàng này)
                     </div>
                   </div>
@@ -1046,14 +1418,18 @@ export default function CheckoutPage() {
                 {discountAmount > 0 && (
                   <div className="coSummaryRow coDiscountRow">
                     <span>Giảm giá (Coupon)</span>
-                    <b className="coDiscountValue">-{formatVnd(discountAmount)}</b>
+                    <b className="coDiscountValue">
+                      -{formatVnd(discountAmount)}
+                    </b>
                   </div>
                 )}
 
                 {pointsDiscountAmount > 0 && (
                   <div className="coSummaryRow coDiscountRow">
                     <span>Giảm giá (Điểm thưởng)</span>
-                    <b className="coDiscountValue">-{formatVnd(pointsDiscountAmount)}</b>
+                    <b className="coDiscountValue">
+                      -{formatVnd(pointsDiscountAmount)}
+                    </b>
                   </div>
                 )}
 
@@ -1068,14 +1444,46 @@ export default function CheckoutPage() {
                 <button
                   type="button"
                   className="coConfirmBtn"
-                  disabled={submitting || cart.items.length === 0 || !agreedToTerms}
+                  disabled={
+                    submitting || cart.items.length === 0 || !agreedToTerms
+                  }
                   onClick={() => void submit()}
                 >
                   XÁC NHẬN ĐẶT HÀNG
                 </button>
-                <div className="coFinePrint" style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', textAlign: 'left' }} onClick={() => setAgreedToTerms(!agreedToTerms)}>
-                  <input type="checkbox" checked={agreedToTerms} onChange={() => {}} style={{ cursor: 'pointer' }} />
-                  <span>Tôi đã đọc và đồng ý với <Link to="/dieu-khoan-mua-hang" target="_blank" onClick={(e) => e.stopPropagation()} style={{ textDecoration: 'none', color: '#1629f9ff', fontWeight: 'bold' }}>điều khoản mua hàng</Link>.</span>
+                <div
+                  className="coFinePrint"
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "8px",
+                    cursor: "pointer",
+                    textAlign: "left",
+                  }}
+                  onClick={() => setAgreedToTerms(!agreedToTerms)}
+                >
+                  <input
+                    type="checkbox"
+                    checked={agreedToTerms}
+                    onChange={() => {}}
+                    style={{ cursor: "pointer" }}
+                  />
+                  <span>
+                    Tôi đã đọc và đồng ý với{" "}
+                    <Link
+                      to="/dieu-khoan-mua-hang"
+                      target="_blank"
+                      onClick={(e) => e.stopPropagation()}
+                      style={{
+                        textDecoration: "none",
+                        color: "#1629f9ff",
+                        fontWeight: "bold",
+                      }}
+                    >
+                      điều khoản mua hàng
+                    </Link>
+                    .
+                  </span>
                 </div>
               </div>
             </aside>
@@ -1084,25 +1492,42 @@ export default function CheckoutPage() {
       </div>
 
       {showCouponModal && (
-        <div className="coModalOverlay" onClick={() => setShowCouponModal(false)}>
+        <div
+          className="coModalOverlay"
+          onClick={() => setShowCouponModal(false)}
+        >
           <div className="coModalContent" onClick={(e) => e.stopPropagation()}>
             <div className="coModalHeader">
               <h3 className="coModalTitle">Chọn mã giảm giá</h3>
-              <button type="button" className="coModalClose" onClick={() => setShowCouponModal(false)}>✕</button>
+              <button
+                type="button"
+                className="coModalClose"
+                onClick={() => setShowCouponModal(false)}
+              >
+                ✕
+              </button>
             </div>
             <div className="coModalBody">
               {activeCoupons.length === 0 ? (
-                <div className="coModalEmpty">Hiện chưa có mã giảm giá nào.</div>
+                <div className="coModalEmpty">
+                  Hiện chưa có mã giảm giá nào.
+                </div>
               ) : (
                 <div className="coCouponList">
                   {activeCoupons.map((c) => {
-                    const isEligible = !c.min_order_amount || totalPrice >= c.min_order_amount
+                    const isEligible =
+                      !c.min_order_amount || totalPrice >= c.min_order_amount;
                     return (
-                      <div key={c.id} className={`coCouponItem ${!isEligible ? 'is-disabled' : ''}`}>
+                      <div
+                        key={c.id}
+                        className={`coCouponItem ${!isEligible ? "is-disabled" : ""}`}
+                      >
                         <div className="coCouponItemLeft">
                           <div className="coCouponItemCode">{c.code}</div>
                           <div className="coCouponItemValue">
-                            {c.coupon_type === 'percentage' ? `Giảm ${c.value}%` : `Giảm ${formatVnd(c.value)}`}
+                            {c.coupon_type === "percentage"
+                              ? `Giảm ${c.value}%`
+                              : `Giảm ${formatVnd(c.value)}`}
                           </div>
                           {c.min_order_amount && (
                             <div className="coCouponItemMin">
@@ -1121,7 +1546,7 @@ export default function CheckoutPage() {
                           </button>
                         </div>
                       </div>
-                    )
+                    );
                   })}
                 </div>
               )}
@@ -1130,19 +1555,117 @@ export default function CheckoutPage() {
         </div>
       )}
     </div>
-  )
+  );
 }
 
+function CheckIcon() {
+  return (
+    <svg
+      width="40"
+      height="40"
+      viewBox="0 0 24 24"
+      fill="none"
+      aria-hidden="true"
+    >
+      <path
+        d="M20 6L9 17l-5-5"
+        stroke="currentColor"
+        strokeWidth="2.4"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
 
+function CopyIcon() {
+  return (
+    <svg
+      width="20"
+      height="20"
+      viewBox="0 0 24 24"
+      fill="none"
+      aria-hidden="true"
+    >
+      <rect
+        width="14"
+        height="14"
+        x="8"
+        y="8"
+        rx="2"
+        ry="2"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
 
+function HomeIcon() {
+  return (
+    <svg
+      width="20"
+      height="20"
+      viewBox="0 0 24 24"
+      fill="none"
+      aria-hidden="true"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+      <polyline points="9 22 9 12 15 12 15 22" />
+    </svg>
+  );
+}
 
+function PackageIcon() {
+  return (
+    <svg
+      width="20"
+      height="20"
+      viewBox="0 0 24 24"
+      fill="none"
+      aria-hidden="true"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <line x1="16.5" y1="9.4" x2="7.5" y2="4.21" />
+      <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
+      <polyline points="3.27 6.96 12 12.01 20.73 6.96" />
+      <line x1="12" y1="22.08" x2="12" y2="12" />
+    </svg>
+  );
+}
 
-function CheckIcon() {return (<svg width="40" height="40" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M20 6L9 17l-5-5"stroke="currentColor"strokeWidth="2.4"strokeLinecap="round"strokeLinejoin="round"/></svg>)}
-
-function CopyIcon() {return (<svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect width="14" height="14" x="8" y="8" rx="2" ry="2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>)}
-
-function HomeIcon() {return (<svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>)}
-
-function PackageIcon() {return (<svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="16.5" y1="9.4" x2="7.5" y2="4.21"/><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>)}
-
-function ShoppingBagIcon() {return (<svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" /><line x1="3" y1="6" x2="21" y2="6" /><path d="M16 10a4 4 0 0 1-8 0" /></svg>)}
+function ShoppingBagIcon() {
+  return (
+    <svg
+      width="20"
+      height="20"
+      viewBox="0 0 24 24"
+      fill="none"
+      aria-hidden="true"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
+      <line x1="3" y1="6" x2="21" y2="6" />
+      <path d="M16 10a4 4 0 0 1-8 0" />
+    </svg>
+  );
+}

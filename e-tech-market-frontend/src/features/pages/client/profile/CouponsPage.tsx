@@ -399,7 +399,10 @@ export default function CouponsPage() {
                   ? `Áp dụng cho: ${c.categories.map((cat: any) => cat.name).join(", ")}`
                   : "Cho mọi sản phẩm"}
               </div>
-              <div className="cpTicketRightMain" style={{ alignItems: "center" }}>
+              <div
+                className="cpTicketRightMain"
+                style={{ alignItems: "center" }}
+              >
                 <div className="cpTicketInfoCol">
                   <div className="cpTicketCodeRow">
                     <span className="cpTicketCodeText">{c.code}</span>
@@ -433,13 +436,12 @@ export default function CouponsPage() {
                     </>
                   )}
                 </div>
-               
               </div>
-               <div className="cpTicketDesc">
-                    {c.coupon_type === "percentage"
-                      ? `Nhận ngay ưu đãi giảm ${Number(c.value)}% khi tổng giá trị đơn hàng đạt từ ${formatVnd(c.min_order_amount || 0)}. Áp dụng cho các sản phẩm đủ điều kiện.`
-                      : `Nhận ngay ưu đãi giảm ${formatVnd(c.value)} khi tổng giá trị đơn hàng đạt từ ${formatVnd(c.min_order_amount || 0)}. Áp dụng cho các sản phẩm đủ điều kiện.`}
-                  </div>
+              <div className="cpTicketDesc">
+                {c.coupon_type === "percentage"
+                  ? `Nhận ngay ưu đãi giảm ${Number(c.value)}% khi tổng giá trị đơn hàng đạt từ ${formatVnd(c.min_order_amount || 0)}. Áp dụng cho các sản phẩm đủ điều kiện.`
+                  : `Nhận ngay ưu đãi giảm ${formatVnd(c.value)} khi tổng giá trị đơn hàng đạt từ ${formatVnd(c.min_order_amount || 0)}. Áp dụng cho các sản phẩm đủ điều kiện.`}
+              </div>
 
               <div className="cpTicketActionCol">
                 <div className="cpTicketConditions">
@@ -483,7 +485,10 @@ export default function CouponsPage() {
       <div className="cpHeader">
         <div>
           <h1 className="cpHeaderTitle">Kho vouchers</h1>
-          <p className="cpHeaderSub">Tất cả voucher giảm giá và ưu đãi của bạn được lưu trữ tại đây. Chọn voucher phù hợp để tiết kiệm hơn cho mỗi đơn hàng.</p>
+          <p className="cpHeaderSub">
+            Tất cả voucher giảm giá và ưu đãi của bạn được lưu trữ tại đây. Chọn
+            voucher phù hợp để tiết kiệm hơn cho mỗi đơn hàng.
+          </p>
         </div>
         <div className="cpHeaderImage">
           <img src="/maGG.png" alt="Vouchers" />
@@ -578,28 +583,36 @@ export default function CouponsPage() {
                   className={`cpTab ${tab === "all" ? "active" : ""}`}
                   onClick={() => setTab("all")}
                 >
-                  <span className="icon-all"><TicketIcon /></span>
+                  <span className="icon-all">
+                    <TicketIcon />
+                  </span>
                   Tất cả ({totalCount})
                 </div>
                 <div
                   className={`cpTab ${tab === "available" ? "active" : ""}`}
                   onClick={() => setTab("available")}
                 >
-                  <span className="icon-available"><TagIcon /></span>
+                  <span className="icon-available">
+                    <TagIcon />
+                  </span>
                   Khả dụng ({availableCount})
                 </div>
                 <div
                   className={`cpTab ${tab === "expiring" ? "active" : ""}`}
                   onClick={() => setTab("expiring")}
                 >
-                  <span className="icon-expiring"><ClockIcon /></span>
+                  <span className="icon-expiring">
+                    <ClockIcon />
+                  </span>
                   Sắp hết hạn ({expiringCount})
                 </div>
                 <div
                   className={`cpTab ${tab === "used" ? "active" : ""}`}
                   onClick={() => setTab("used")}
                 >
-                  <span className="icon-used"><RefreshIcon /></span>
+                  <span className="icon-used">
+                    <RefreshIcon />
+                  </span>
                   Đã sử dụng ({usedCount})
                 </div>
               </div>

@@ -255,8 +255,10 @@ export default function DashboardPage({
 
   const [dashLoading, setDashLoading] = useState(true);
 
-  const [reviewMediaGallery, setReviewMediaGallery] =
-    useState<{ list: ReviewMediaItem[]; index: number } | null>(null);
+  const [reviewMediaGallery, setReviewMediaGallery] = useState<{
+    list: ReviewMediaItem[];
+    index: number;
+  } | null>(null);
   const [isReviewMediaModalOpen, setIsReviewMediaModalOpen] = useState(false);
   const [dashError, setDashError] = useState<string | null>(null);
   const [dash, setDash] = useState<DashStats | null>(null);
@@ -2313,7 +2315,12 @@ export default function DashboardPage({
                     </div>
                   </div>
 
-                  <div className="admReviewQuote" style={{ whiteSpace: 'pre-wrap' }}>“{r.comment}”</div>
+                  <div
+                    className="admReviewQuote"
+                    style={{ whiteSpace: "pre-wrap" }}
+                  >
+                    “{r.comment}”
+                  </div>
                   <div className="admReviewTime2">{r.time}</div>
 
                   {Array.isArray(r.media) && r.media.length > 0 && (
@@ -2469,15 +2476,20 @@ export default function DashboardPage({
                   </>
                 )}
                 <div className="admReviewLightboxContent">
-                  {reviewMediaGallery.list[reviewMediaGallery.index].type === "image" ? (
+                  {reviewMediaGallery.list[reviewMediaGallery.index].type ===
+                  "image" ? (
                     <img
-                      src={resolveAdminImg(reviewMediaGallery.list[reviewMediaGallery.index].url)}
+                      src={resolveAdminImg(
+                        reviewMediaGallery.list[reviewMediaGallery.index].url,
+                      )}
                       alt="Media đánh giá"
                       className="admReviewLightboxMedia"
                     />
                   ) : (
                     <video
-                      src={resolveAdminImg(reviewMediaGallery.list[reviewMediaGallery.index].url)}
+                      src={resolveAdminImg(
+                        reviewMediaGallery.list[reviewMediaGallery.index].url,
+                      )}
                       controls
                       autoPlay
                       className="admReviewLightboxMedia"

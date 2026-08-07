@@ -1215,7 +1215,7 @@ html.dark .fs-tab-content-panel.side-form {
   .fs-page-title {
     font-size: 18px !important;
   }
-  
+
   /* Metrics grid - 3 columns for the 3 cards */
   .fs-metrics-grid {
     grid-template-columns: repeat(3, 1fr) !important;

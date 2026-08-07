@@ -8,7 +8,7 @@
 .policyCard {
   background: #fff;
   border-radius: 5px;
-  box-shadow: 0 2px 16px 0 rgba(30,41,59,0.08);
+  box-shadow: 0 2px 16px 0 rgba(30, 41, 59, 0.08);
   max-width: 840px;
   width: 100%;
   padding: 32px 28px 28px 28px;
@@ -145,7 +145,8 @@
     overflow-wrap: break-word;
     word-break: break-word;
   }
-  .policyPaymentGrid, .policyContactGrid {
+  .policyPaymentGrid,
+  .policyContactGrid {
     flex-direction: column;
     gap: 10px;
   }

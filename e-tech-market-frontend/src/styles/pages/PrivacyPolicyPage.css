@@ -3,7 +3,15 @@
   width: 100%;
   background: #fff;
   color: var(--et-text);
-  font-family: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  font-family:
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    "Segoe UI",
+    Roboto,
+    "Helvetica Neue",
+    Arial,
+    sans-serif;
 }
 
 .ppHero {
@@ -34,9 +42,9 @@
 
 .ppHeroEyebrow {
   margin: 0;
-  font-size: .6875rem;
+  font-size: 0.6875rem;
   font-weight: 600;
-  letter-spacing: .22em;
+  letter-spacing: 0.22em;
   text-transform: uppercase;
   color: var(--et-primary);
 }
@@ -45,7 +53,7 @@
   margin: 0 0 16px;
   font-size: clamp(2rem, 4.2vw, 3rem);
   font-weight: 600;
-  letter-spacing: -.03em;
+  letter-spacing: -0.03em;
   line-height: 1.08;
 }
 
@@ -55,7 +63,7 @@
 
 .ppHeroLead {
   margin: 0 0 clamp(28px, 4vw, 40px);
-  font-size: .9625rem;
+  font-size: 0.9625rem;
   line-height: 1.7;
   color: var(--et-text-muted);
   max-width: 720px;
@@ -82,7 +90,12 @@
 .ppHeroBannerTint {
   position: absolute;
   inset: 0;
-  background: linear-gradient(115deg, rgba(23, 23, 23, .6) 0%, rgba(23, 23, 23, .15) 50%, transparent 92%);
+  background: linear-gradient(
+    115deg,
+    rgba(23, 23, 23, 0.6) 0%,
+    rgba(23, 23, 23, 0.15) 50%,
+    transparent 92%
+  );
   pointer-events: none;
 }
 
@@ -90,11 +103,11 @@
   position: absolute;
   top: clamp(16px, 3vw, 28px);
   left: clamp(16px, 3vw, 28px);
-  font-size: clamp(.6rem, 1.05vw, .6875rem);
+  font-size: clamp(0.6rem, 1.05vw, 0.6875rem);
   font-weight: 600;
-  letter-spacing: .22em;
-  color: rgba(255, 255, 255, .98);
-  text-shadow: 0 2px 18px rgba(0, 0, 0, .5);
+  letter-spacing: 0.22em;
+  color: rgba(255, 255, 255, 0.98);
+  text-shadow: 0 2px 18px rgba(0, 0, 0, 0.5);
 }
 
 .ppHeroBadge {
@@ -105,9 +118,9 @@
   border-radius: 6px;
   background: var(--et-primary);
   color: #fff;
-  font-size: .625rem;
+  font-size: 0.625rem;
   font-weight: 600;
-  letter-spacing: .12em;
+  letter-spacing: 0.12em;
   line-height: 1.3;
 }
 
@@ -133,9 +146,9 @@
 }
 
 .ppNavLabel {
-  font-size: .6875rem;
+  font-size: 0.6875rem;
   font-weight: 600;
-  letter-spacing: .16em;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
   color: var(--et-primary);
   margin: 0 0 16px;
@@ -160,13 +173,15 @@
   padding: 10px 0 10px 12px;
   margin-left: -2px;
   border-left: 2px solid transparent;
-  font-size: .75rem;
+  font-size: 0.75rem;
   font-weight: 600;
-  letter-spacing: .08em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   line-height: 1.38;
   color: var(--et-text-muted);
-  transition: color .18s ease, border-color .18s ease;
+  transition:
+    color 0.18s ease,
+    border-color 0.18s ease;
 }
 
 .ppTocBtn:hover {
@@ -189,21 +204,21 @@
   padding: clamp(22px, 4vw, 26px);
   background: linear-gradient(160deg, #f97316 0%, #ea580c 100%);
   color: #fff;
-  box-shadow: 0 12px 32px rgba(249, 115, 22, .25);
+  box-shadow: 0 12px 32px rgba(249, 115, 22, 0.25);
 }
 
 .ppCtaTitle {
   margin: 0 0 10px;
   font-size: 1rem;
   font-weight: 600;
-  letter-spacing: .04em;
+  letter-spacing: 0.04em;
 }
 
 .ppCtaText {
   margin: 0 0 18px;
-  font-size: .8125rem;
+  font-size: 0.8125rem;
   line-height: 1.6;
-  opacity: .96;
+  opacity: 0.96;
 }
 
 .ppCtaLink {
@@ -215,16 +230,18 @@
   border-radius: 5px;
   background: #fff;
   color: var(--et-primary-hover);
-  font-size: .6875rem;
+  font-size: 0.6875rem;
   font-weight: 600;
-  letter-spacing: .12em;
+  letter-spacing: 0.12em;
   text-decoration: none;
   text-transform: uppercase;
-  transition: transform .15s ease, box-shadow .15s ease;
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
 }
 
 .ppCtaLink:hover {
-  box-shadow: 0 8px 20px rgba(0, 0, 0, .12);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
   transform: translateY(-1px);
 }
 
@@ -257,19 +274,19 @@
 .ppSecNum {
   font-size: clamp(2.25rem, 4vw, 2.75rem);
   font-weight: 600;
-  letter-spacing: -.03em;
+  letter-spacing: -0.03em;
   color: #d4d4d8;
 }
 
 .ppSecHeading {
   font-size: clamp(1.125rem, 2vw, 1.375rem);
   font-weight: 600;
-  letter-spacing: -.015em;
+  letter-spacing: -0.015em;
   color: var(--et-text);
 }
 
 .ppProse {
-  font-size: .9375rem;
+  font-size: 0.9375rem;
   line-height: 1.76;
   color: #404040;
 }
@@ -313,14 +330,14 @@
 
 .ppInfoCardTitle {
   margin: 0 0 8px;
-  font-size: .9075rem;
+  font-size: 0.9075rem;
   font-weight: 600;
   color: var(--et-text);
 }
 
 .ppInfoCardDesc {
   margin: 0;
-  font-size: .82rem;
+  font-size: 0.82rem;
   line-height: 1.62;
   color: var(--et-text-muted);
 }
@@ -343,7 +360,7 @@
   position: relative;
   margin-bottom: 12px;
   padding-left: 16px;
-  font-size: .8925rem;
+  font-size: 0.8925rem;
   line-height: 1.65;
   color: #404040;
 }
@@ -353,10 +370,10 @@
 }
 
 .ppBulletList li::before {
-  content: '';
+  content: "";
   position: absolute;
   left: 0;
-  top: .55rem;
+  top: 0.55rem;
   width: 8px;
   height: 8px;
   border-radius: 2px;
@@ -366,7 +383,7 @@
 .ppSplit {
   margin-top: 22px;
   display: grid;
-  grid-template-columns: minmax(0, 1.12fr) minmax(220px, .82fr);
+  grid-template-columns: minmax(0, 1.12fr) minmax(220px, 0.82fr);
   gap: clamp(22px, 4vw, 32px);
   align-items: start;
 }
@@ -396,7 +413,7 @@
 .ppTable {
   width: 100%;
   border-collapse: collapse;
-  font-size: .85rem;
+  font-size: 0.85rem;
 }
 
 .ppTable th,
@@ -409,9 +426,9 @@
 
 .ppTable thead th {
   background: #fafafa;
-  font-size: .6875rem;
+  font-size: 0.6875rem;
   font-weight: 600;
-  letter-spacing: .1em;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--et-text-muted);
 }
@@ -437,25 +454,26 @@
 
 .ppRightsCell h3 {
   margin: 0 0 8px;
-  font-size: .9rem;
+  font-size: 0.9rem;
   font-weight: 600;
-  letter-spacing: -.01em;
+  letter-spacing: -0.01em;
   color: var(--et-text);
 }
 
 .ppRightsCell p {
   margin: 0;
-  font-size: .8175rem;
+  font-size: 0.8175rem;
   line-height: 1.65;
   color: var(--et-text-muted);
 }
 
 @media (max-width: 900px) {
   .ppMainGrid {
-    grid-template-columns: 1fr
+    grid-template-columns: 1fr;
   }
 
-  .ppArticle, .ppAside {
+  .ppArticle,
+  .ppAside {
     min-width: 0;
     overflow-wrap: break-word;
     word-break: break-word;
@@ -467,13 +485,13 @@
 
   .ppAside {
     position: relative;
-    top: auto
+    top: auto;
   }
 
   .ppToc {
     flex-direction: row;
     flex-wrap: wrap;
-    gap: 8px
+    gap: 8px;
   }
 
   .ppTocBtn {
@@ -481,36 +499,36 @@
     border: 1px solid var(--et-border);
     border-left-width: 1px;
     margin-left: 0;
-    padding: 10px 14px
+    padding: 10px 14px;
   }
 
   .ppTocBtnActive {
     border-color: var(--et-primary);
-    background: var(--et-primary-soft)
+    background: var(--et-primary-soft);
   }
 
   .ppCardGrid2,
   .ppRightsGrid {
-    grid-template-columns: 1fr
+    grid-template-columns: 1fr;
   }
 
   .ppSplit {
-    grid-template-columns: 1fr
+    grid-template-columns: 1fr;
   }
 
   .ppSplitFig {
     order: -1;
     aspect-ratio: 16 / 9;
-    max-height: 220px
+    max-height: 220px;
   }
 }
 
 @media print {
   .ppAside {
-    display: none !important
+    display: none !important;
   }
 
   .ppHeroBannerTint {
-    display: none
+    display: none;
   }
 }

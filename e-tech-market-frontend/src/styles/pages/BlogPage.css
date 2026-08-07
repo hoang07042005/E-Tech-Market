@@ -442,7 +442,8 @@
   .blogMainGrid {
     gap: 30px;
   }
-  .blogContentArea, .blogSidebar {
+  .blogContentArea,
+  .blogSidebar {
     min-width: 0;
   }
   .blogHero {

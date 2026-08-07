@@ -3,7 +3,7 @@ import { apiFetch, API_BASE_URL } from "@/configs/api.config";
 import ConfirmModal from "@/components/ConfirmModal";
 import "@/styles/admin/ProductNewsPage.css";
 import { sanitizeHtml } from "@/utils/sanitizeHtml";
-import { toast } from '@/utils/toast';
+import { toast } from "@/utils/toast";
 import ReactQuill from "react-quill-new";
 import "react-quill-new/dist/quill.snow.css";
 
@@ -36,7 +36,7 @@ const resolveImageUrl = (url: string | null) => {
 };
 
 export default function ProductNewsPage() {
-  const hasAuth = true  // Always authenticated — behind ProtectedRoute;
+  const hasAuth = true; // Always authenticated — behind ProtectedRoute;
 
   const [products, setProducts] = useState<ProductLite[]>([]);
   const [selectedProductId, setSelectedProductId] = useState<number | null>(
@@ -47,7 +47,9 @@ export default function ProductNewsPage() {
   const [loadingNews, setLoadingNews] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [confirmOpen, setConfirmOpen] = useState(false);
-  const [pendingDeleteNews, setPendingDeleteNews] = useState<NewsItem | null>(null);
+  const [pendingDeleteNews, setPendingDeleteNews] = useState<NewsItem | null>(
+    null,
+  );
 
   const selectedProduct = useMemo(
     () => products.find((p) => p.id === selectedProductId) || null,
@@ -92,7 +94,7 @@ export default function ProductNewsPage() {
     setError(null);
     try {
       const data = await apiFetch<NewsItem[]>(
-        `/api/admin/products/${productId}/news`
+        `/api/admin/products/${productId}/news`,
       );
       setNews(data);
     } catch (e: unknown) {
@@ -397,7 +399,9 @@ export default function ProductNewsPage() {
                   <label>Tiêu đề</label>
                   <input
                     value={form.title}
-                    onChange={(e) => setForm({ ...form, title: e.target.value })}
+                    onChange={(e) =>
+                      setForm({ ...form, title: e.target.value })
+                    }
                   />
                 </div>
                 <div className="pnField">
@@ -469,7 +473,11 @@ export default function ProductNewsPage() {
                     theme="snow"
                     value={form.content_html}
                     onChange={(val) => setForm({ ...form, content_html: val })}
-                    style={{ background: "#fff", marginBottom: "40px", height: "300px" }}
+                    style={{
+                      background: "#fff",
+                      marginBottom: "40px",
+                      height: "300px",
+                    }}
                   />
                 </div>
               </div>

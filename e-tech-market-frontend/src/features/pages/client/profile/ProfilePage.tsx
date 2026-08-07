@@ -61,43 +61,74 @@ function formatMoneyVnd(v: number | string) {
 }
 
 function fmtDateTimeVi(iso?: string | null) {
-  if (!iso) return '—'
-  const t = Date.parse(iso)
-  if (!Number.isFinite(t)) return '—'
-  const d = new Date(t)
-  const pad = (x: number) => x.toString().padStart(2, '0')
-  return `${d.getDate()}/${d.getMonth() + 1}/${d.getFullYear()} • ${pad(d.getHours())}:${pad(d.getMinutes())}`
+  if (!iso) return "—";
+  const t = Date.parse(iso);
+  if (!Number.isFinite(t)) return "—";
+  const d = new Date(t);
+  const pad = (x: number) => x.toString().padStart(2, "0");
+  return `${d.getDate()}/${d.getMonth() + 1}/${d.getFullYear()} • ${pad(d.getHours())}:${pad(d.getMinutes())}`;
 }
 
 function statusMeta(status?: string | null) {
-  const s = (status || '').toLowerCase()
-  if (s === 'pending')    return { label: 'Chờ xác nhận', tone: 'wait'   as const }
-  if (s === 'processing') return { label: 'Đã xác nhận',  tone: 'info'   as const }
-  if (s === 'paid')       return { label: 'Chuẩn bị hàng', tone: 'info'  as const }
-  if (s === 'shipped')    return { label: 'Đang giao',    tone: 'info'   as const }
-  if (s === 'delivered')  return { label: 'Đã giao',      tone: 'ok'     as const }
-  if (s === 'completed')  return { label: 'Hoàn thành',   tone: 'ok'     as const }
-  if (s === 'returned')   return { label: 'Hoàn trả',     tone: 'return' as const }
-  if (s === 'cancelled')  return { label: 'Đã hủy',       tone: 'bad'    as const }
-  return { label: s || '—', tone: 'muted' as const }
+  const s = (status || "").toLowerCase();
+  if (s === "pending") return { label: "Chờ xác nhận", tone: "wait" as const };
+  if (s === "processing")
+    return { label: "Đã xác nhận", tone: "info" as const };
+  if (s === "paid") return { label: "Chuẩn bị hàng", tone: "info" as const };
+  if (s === "shipped") return { label: "Đang giao", tone: "info" as const };
+  if (s === "delivered") return { label: "Đã giao", tone: "ok" as const };
+  if (s === "completed") return { label: "Hoàn thành", tone: "ok" as const };
+  if (s === "returned") return { label: "Hoàn trả", tone: "return" as const };
+  if (s === "cancelled") return { label: "Đã hủy", tone: "bad" as const };
+  return { label: s || "—", tone: "muted" as const };
 }
 
 const ChevronIcon = () => (
-  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-    <path d="m9 18 6-6-6-6"/>
+  <svg
+    width="14"
+    height="14"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2.5"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <path d="m9 18 6-6-6-6" />
   </svg>
-)
+);
 const DotsIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/>
+  <svg
+    width="16"
+    height="16"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <circle cx="12" cy="5" r="1" />
+    <circle cx="12" cy="12" r="1" />
+    <circle cx="12" cy="19" r="1" />
   </svg>
-)
+);
 const BoxIcon = () => (
-  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/>
-    <path d="m3.29 7 8.71 5 8.71-5"/><path d="M12 22V12"/>
+  <svg
+    width="22"
+    height="22"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z" />
+    <path d="m3.29 7 8.71 5 8.71-5" />
+    <path d="M12 22V12" />
   </svg>
-)
+);
 
 function resolveMediaUrl(maybeUrl: string | null | undefined): string | null {
   if (!maybeUrl) return null;
@@ -141,7 +172,11 @@ const parseImagesTradeIn = (imgs: any): string[] => {
   if (!imgs) return [];
   if (Array.isArray(imgs)) return imgs;
   if (typeof imgs === "string") {
-    try { return JSON.parse(imgs); } catch { return []; }
+    try {
+      return JSON.parse(imgs);
+    } catch {
+      return [];
+    }
   }
   return [];
 };
@@ -161,7 +196,10 @@ const parseInfoLinesTradeIn = (machineInfo: string) => {
   lines.slice(1).forEach((line) => {
     const colonIdx = line.indexOf(":");
     if (colonIdx > -1) {
-      specs.push({ key: line.slice(0, colonIdx).trim(), val: line.slice(colonIdx + 1).trim() });
+      specs.push({
+        key: line.slice(0, colonIdx).trim(),
+        val: line.slice(colonIdx + 1).trim(),
+      });
     } else {
       specs.push({ key: "", val: line.trim() });
     }
@@ -170,16 +208,23 @@ const parseInfoLinesTradeIn = (machineInfo: string) => {
 };
 
 const TRADE_IN_STATUS_MAP: Record<string, { label: string; cls: string }> = {
-  pending:   { label: "Chờ kiểm tra", cls: "pending" },
-  quoted:    { label: "Đang xử lý",   cls: "quoted" },
-  approved:  { label: "Đã hoàn tất",  cls: "approved" },
-  rejected:  { label: "Đã từ chối",   cls: "rejected" },
-  completed: { label: "Đã thu mua",   cls: "completed" },
+  pending: { label: "Chờ kiểm tra", cls: "pending" },
+  quoted: { label: "Đang xử lý", cls: "quoted" },
+  approved: { label: "Đã hoàn tất", cls: "approved" },
+  rejected: { label: "Đã từ chối", cls: "rejected" },
+  completed: { label: "Đã thu mua", cls: "completed" },
 };
 
 const IconChevronRightTradeIn = () => (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-    <polyline points="9 18 15 12 9 6"/>
+  <svg
+    width="16"
+    height="16"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+  >
+    <polyline points="9 18 15 12 9 6" />
   </svg>
 );
 
@@ -682,7 +727,7 @@ export default function ProfilePage() {
                 >
                   <h2 className="pfCardTitle">
                     {activeTab === "orders"
-                      ?""
+                      ? ""
                       : activeTab === "notifications"
                         ? ""
                         : activeTab === "coupons"
@@ -830,62 +875,115 @@ export default function ProfilePage() {
                           <div className="pfOdhList" style={{ padding: 0 }}>
                             {orders.slice(0, 6).map((o) => {
                               const meta = statusMeta(o.status);
-                              const total = typeof o.total_amount === 'string' ? Number(o.total_amount) : (o.total_amount ?? 0);
-                              
-                              const imgs = (o.items ?? []).map(it => {
-                                const p = (it as any)?.product as any;
-                                const candidates = [
-                                  (it as any)?.variant?.image_url,
-                                  (it as any)?.image,
-                                  p?.image, p?.image_url, p?.main_image_url,
-                                  p?.main_image, p?.thumbnail,
-                                  Array.isArray(p?.images) ? p.images[0] : null,
-                                  Array.isArray(p?.media) ? (p.media[0]?.url ?? p.media[0]) : null,
-                                  (it as any)?.product?.main_image_url,
-                                ];
-                                let img: any = null;
-                                for (const c of candidates) {
-                                  if (!c) continue;
-                                  if (typeof c === 'string') { img = c; break; }
-                                  if (typeof c === 'object') {
-                                    if (typeof c.url === 'string') { img = c.url; break; }
-                                    if (typeof c.src === 'string') { img = c.src; break; }
-                                    if (typeof c.path === 'string') { img = c.path; break; }
-                                  }
-                                }
-                                return resolveMediaUrl(img ?? null) || null;
-                              }).filter(Boolean) as string[];
+                              const total =
+                                typeof o.total_amount === "string"
+                                  ? Number(o.total_amount)
+                                  : (o.total_amount ?? 0);
 
-                              const names = (o.items ?? []).map(it => {
-                                const p = (it as any)?.product as any;
-                                return (p?.name || (it as any)?.product_name_snapshot || '').toString();
-                              }).filter(Boolean);
+                              const imgs = (o.items ?? [])
+                                .map((it) => {
+                                  const p = (it as any)?.product as any;
+                                  const candidates = [
+                                    (it as any)?.variant?.image_url,
+                                    (it as any)?.image,
+                                    p?.image,
+                                    p?.image_url,
+                                    p?.main_image_url,
+                                    p?.main_image,
+                                    p?.thumbnail,
+                                    Array.isArray(p?.images)
+                                      ? p.images[0]
+                                      : null,
+                                    Array.isArray(p?.media)
+                                      ? (p.media[0]?.url ?? p.media[0])
+                                      : null,
+                                    (it as any)?.product?.main_image_url,
+                                  ];
+                                  let img: any = null;
+                                  for (const c of candidates) {
+                                    if (!c) continue;
+                                    if (typeof c === "string") {
+                                      img = c;
+                                      break;
+                                    }
+                                    if (typeof c === "object") {
+                                      if (typeof c.url === "string") {
+                                        img = c.url;
+                                        break;
+                                      }
+                                      if (typeof c.src === "string") {
+                                        img = c.src;
+                                        break;
+                                      }
+                                      if (typeof c.path === "string") {
+                                        img = c.path;
+                                        break;
+                                      }
+                                    }
+                                  }
+                                  return resolveMediaUrl(img ?? null) || null;
+                                })
+                                .filter(Boolean) as string[];
+
+                              const names = (o.items ?? [])
+                                .map((it) => {
+                                  const p = (it as any)?.product as any;
+                                  return (
+                                    p?.name ||
+                                    (it as any)?.product_name_snapshot ||
+                                    ""
+                                  ).toString();
+                                })
+                                .filter(Boolean);
 
                               const itemCount = o.items?.length ?? 0;
-                              const payMethod = (o as any).payment_method || 'Chuyển khoản';
-                              const estDelivery = (o as any).estimated_delivery || null;
+                              const payMethod =
+                                (o as any).payment_method || "Chuyển khoản";
+                              const estDelivery =
+                                (o as any).estimated_delivery || null;
 
                               return (
                                 <div key={o.id} className="pfOdRow">
                                   {/* LEFT */}
                                   <div className="pfOdRowLeft">
-                                    <Link className="pfOdRowCode" to={`/profile/orders/${o.id}`}>
+                                    <Link
+                                      className="pfOdRowCode"
+                                      to={`/profile/orders/${o.id}`}
+                                    >
                                       #{o.order_code}
                                     </Link>
-                                    <div className="pfOdRowDate">{fmtDateTimeVi(o.created_at)}</div>
-                                    <span className={`pfOdStatus pfTone-${meta.tone}`}>{meta.label}</span>
-                                    <div className="pfOdRowPayment">Thanh toán: {payMethod}</div>
+                                    <div className="pfOdRowDate">
+                                      {fmtDateTimeVi(o.created_at)}
+                                    </div>
+                                    <span
+                                      className={`pfOdStatus pfTone-${meta.tone}`}
+                                    >
+                                      {meta.label}
+                                    </span>
+                                    <div className="pfOdRowPayment">
+                                      Thanh toán: {payMethod}
+                                    </div>
                                   </div>
 
                                   {/* MIDDLE */}
                                   <div className="pfOdRowMid">
-                                    <div className="pfOdRowCount">{itemCount} sản phẩm</div>
-                                    <div className={`pfOdRowProducts ${itemCount > 1 ? 'pfOdRowProducts--multi' : ''}`}>
+                                    <div className="pfOdRowCount">
+                                      {itemCount} sản phẩm
+                                    </div>
+                                    <div
+                                      className={`pfOdRowProducts ${itemCount > 1 ? "pfOdRowProducts--multi" : ""}`}
+                                    >
                                       {/* Thumbnails — up to 3 */}
                                       {imgs.length > 0 && (
                                         <div className="pfOdThumbStrip">
                                           {imgs.slice(0, 3).map((src, i) => (
-                                            <img key={i} className="pfOdThumb" src={src} alt="" loading="lazy" />
+                                            <img
+                                              key={i}
+                                              className="pfOdThumb"
+                                              src={src}
+                                              alt=""
+                                              loading="lazy"
+                                            />
                                           ))}
                                         </div>
                                       )}
@@ -900,16 +998,28 @@ export default function ProfilePage() {
                                       {/* Name list */}
                                       <div className="pfOdNameList">
                                         {names.slice(0, 3).map((name, i) => {
-                                          const qty = o.items?.[i] ? ((o.items[i] as any)?.quantity ?? 1) : 1;
+                                          const qty = o.items?.[i]
+                                            ? ((o.items[i] as any)?.quantity ??
+                                              1)
+                                            : 1;
                                           return (
-                                            <div key={i} className="pfOdNameRow">
-                                              <span className="pfOdNameText">{name}</span>
-                                              <span className="pfOdNameQty">x{qty}</span>
+                                            <div
+                                              key={i}
+                                              className="pfOdNameRow"
+                                            >
+                                              <span className="pfOdNameText">
+                                                {name}
+                                              </span>
+                                              <span className="pfOdNameQty">
+                                                x{qty}
+                                              </span>
                                             </div>
-                                          )
+                                          );
                                         })}
                                         {names.length > 3 && (
-                                          <div className="pfOdNameMore">+ {names.length - 3} sản phẩm khác</div>
+                                          <div className="pfOdNameMore">
+                                            + {names.length - 3} sản phẩm khác
+                                          </div>
                                         )}
                                       </div>
                                     </div>
@@ -929,15 +1039,26 @@ export default function ProfilePage() {
                                     </div>
 
                                     <div className="pfOdRowTotalWrap">
-                                      <span className="pfOdRowTotalLabel">Tổng tiền:</span>
-                                      <div className="pfOdRowTotal">{formatMoneyVnd(total)}</div>
+                                      <span className="pfOdRowTotalLabel">
+                                        Tổng tiền:
+                                      </span>
+                                      <div className="pfOdRowTotal">
+                                        {formatMoneyVnd(total)}
+                                      </div>
                                     </div>
 
                                     <div className="pfOdRowActions">
-                                      <Link className="pfOdDetailBtn" to={`/profile/orders/${o.id}`}>
+                                      <Link
+                                        className="pfOdDetailBtn"
+                                        to={`/profile/orders/${o.id}`}
+                                      >
                                         Xem chi tiết <ChevronIcon />
                                       </Link>
-                                      <button type="button" className="pfOdMenuBtn" aria-label="Tùy chọn">
+                                      <button
+                                        type="button"
+                                        className="pfOdMenuBtn"
+                                        aria-label="Tùy chọn"
+                                      >
                                         <DotsIcon />
                                       </button>
                                     </div>
@@ -1183,20 +1304,37 @@ export default function ProfilePage() {
                     </section>
 
                     {tradeIns.length > 0 && (
-                      <section className="pfMiniCard pfMiniCard-tradein" aria-label="Yêu cầu thu cũ gần đây">
+                      <section
+                        className="pfMiniCard pfMiniCard-tradein"
+                        aria-label="Yêu cầu thu cũ gần đây"
+                      >
                         <div className="pfMiniHeader">
-                          <h3 className="pfMiniTitle">Yêu cầu thu cũ gần đây</h3>
-                          <Link to="/profile/trade-in" className="pfMiniViewAll">Xem tất cả</Link>
+                          <h3 className="pfMiniTitle">
+                            Yêu cầu thu cũ gần đây
+                          </h3>
+                          <Link
+                            to="/profile/trade-in"
+                            className="pfMiniViewAll"
+                          >
+                            Xem tất cả
+                          </Link>
                         </div>
                         <div className="ptih-list">
-                          {tradeIns.slice(0, 2).map(req => {
-                            const d        = new Date(req.created_at);
-                            const dateStr  = d.toLocaleDateString("vi-VN");
-                            const imgs     = parseImagesTradeIn(req.images);
-                            const thumb    = imgs.length > 0 ? resolveMediaUrlTradeIn(imgs[0]) : null;
-                            const { name, specs } = parseInfoLinesTradeIn(req.machine_info);
-                            const statusInfo = TRADE_IN_STATUS_MAP[req.status] ?? { label: req.status, cls: "gray" };
-                            
+                          {tradeIns.slice(0, 2).map((req) => {
+                            const d = new Date(req.created_at);
+                            const dateStr = d.toLocaleDateString("vi-VN");
+                            const imgs = parseImagesTradeIn(req.images);
+                            const thumb =
+                              imgs.length > 0
+                                ? resolveMediaUrlTradeIn(imgs[0])
+                                : null;
+                            const { name, specs } = parseInfoLinesTradeIn(
+                              req.machine_info,
+                            );
+                            const statusInfo = TRADE_IN_STATUS_MAP[
+                              req.status
+                            ] ?? { label: req.status, cls: "gray" };
+
                             return (
                               <Link
                                 to="/profile/trade-in"
@@ -1204,7 +1342,9 @@ export default function ProfilePage() {
                                 className="ptih-card"
                               >
                                 {/* Status badge */}
-                                <div className={`ptih-card-badge ptih-badge-${statusInfo.cls}`}>
+                                <div
+                                  className={`ptih-card-badge ptih-badge-${statusInfo.cls}`}
+                                >
                                   {statusInfo.label}
                                 </div>
 
@@ -1216,44 +1356,91 @@ export default function ProfilePage() {
                                         <img src={thumb} alt="thumb" />
                                       ) : (
                                         <div className="ptih-thumb-placeholder">
-                                          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#cbd5e1" strokeWidth="1.5">
-                                            <rect x="3" y="3" width="18" height="18" rx="2"/>
-                                            <circle cx="8.5" cy="8.5" r="1.5"/>
-                                            <polyline points="21 15 16 10 5 21"/>
+                                          <svg
+                                            width="24"
+                                            height="24"
+                                            viewBox="0 0 24 24"
+                                            fill="none"
+                                            stroke="#cbd5e1"
+                                            strokeWidth="1.5"
+                                          >
+                                            <rect
+                                              x="3"
+                                              y="3"
+                                              width="18"
+                                              height="18"
+                                              rx="2"
+                                            />
+                                            <circle cx="8.5" cy="8.5" r="1.5" />
+                                            <polyline points="21 15 16 10 5 21" />
                                           </svg>
                                         </div>
                                       )}
                                     </div>
 
                                     <div className="ptih-card-info">
-                                      <div className="ptih-device-name">{name || req.category?.name || "Thiết bị"}</div>
+                                      <div className="ptih-device-name">
+                                        {name ||
+                                          req.category?.name ||
+                                          "Thiết bị"}
+                                      </div>
                                       <div className="ptih-specs-list">
-                                        {specs.map((s: {key: string, val: string}, idx: number) => (
-                                          <div key={idx} className="ptih-spec-item">
-                                            <span className="ptih-spec-key">{s.key}:</span> {s.val}
-                                          </div>
-                                        ))}
+                                        {specs.map(
+                                          (
+                                            s: { key: string; val: string },
+                                            idx: number,
+                                          ) => (
+                                            <div
+                                              key={idx}
+                                              className="ptih-spec-item"
+                                            >
+                                              <span className="ptih-spec-key">
+                                                {s.key}:
+                                              </span>{" "}
+                                              {s.val}
+                                            </div>
+                                          ),
+                                        )}
                                       </div>
                                       <div className="ptih-meta-row-auto">
-                                        <span className="ptih-meta-code">Mã: <strong>#{req.request_code}</strong></span>
-                                        <span className="ptih-meta-date">{dateStr}</span>
+                                        <span className="ptih-meta-code">
+                                          Mã:{" "}
+                                          <strong>#{req.request_code}</strong>
+                                        </span>
+                                        <span className="ptih-meta-date">
+                                          {dateStr}
+                                        </span>
                                       </div>
                                     </div>
                                   </div>
 
                                   {/* Middle: Conditions */}
                                   <div className="ptih-card-mid-row">
-                                    {req.conditions && req.conditions.length > 0 ? (
+                                    {req.conditions &&
+                                    req.conditions.length > 0 ? (
                                       <div className="ptih-condition-cards">
-                                        {req.conditions.slice(0, 3).map((c: any, idx: number) => {
-                                          const parts = c.name.split(':');
-                                          const title = parts.length > 1 ? parts.slice(1).join(':').trim() : c.name.trim();
-                                          return (
-                                            <div key={idx} className="ptih-cond-card">
-                                              <span className="ptih-cond-title">{title}</span>
-                                            </div>
-                                          );
-                                        })}
+                                        {req.conditions
+                                          .slice(0, 3)
+                                          .map((c: any, idx: number) => {
+                                            const parts = c.name.split(":");
+                                            const title =
+                                              parts.length > 1
+                                                ? parts
+                                                    .slice(1)
+                                                    .join(":")
+                                                    .trim()
+                                                : c.name.trim();
+                                            return (
+                                              <div
+                                                key={idx}
+                                                className="ptih-cond-card"
+                                              >
+                                                <span className="ptih-cond-title">
+                                                  {title}
+                                                </span>
+                                              </div>
+                                            );
+                                          })}
                                         {req.conditions.length > 3 && (
                                           <div className="ptih-cond-card more">
                                             +{req.conditions.length - 3}
@@ -1265,29 +1452,42 @@ export default function ProfilePage() {
 
                                   {/* Row 2: price + arrow */}
                                   <div className="ptih-card-right ptih-card-right-auto">
-                                    {(req.final_price || req.estimated_price) ? (
+                                    {req.final_price || req.estimated_price ? (
                                       <div className="ptih-card-price-wrap">
                                         {req.estimated_price && (
                                           <div className="price-col">
-                                            <span className="ptih-card-price-label">Giá dự kiến</span>
-                                            <span className={`price-est ${req.final_price ? 'strike' : 'active'}`}>
-                                              {formatCurrencyTradeIn(req.estimated_price)}
+                                            <span className="ptih-card-price-label">
+                                              Giá dự kiến
+                                            </span>
+                                            <span
+                                              className={`price-est ${req.final_price ? "strike" : "active"}`}
+                                            >
+                                              {formatCurrencyTradeIn(
+                                                req.estimated_price,
+                                              )}
                                             </span>
                                           </div>
                                         )}
-                                        {req.estimated_price && req.final_price && (
-                                          <div className="price-sep">|</div>
-                                        )}
+                                        {req.estimated_price &&
+                                          req.final_price && (
+                                            <div className="price-sep">|</div>
+                                          )}
                                         {req.final_price && (
                                           <div className="price-col">
-                                            <span className="ptih-card-price-label">Giá thu chính thức</span>
+                                            <span className="ptih-card-price-label">
+                                              Giá thu chính thức
+                                            </span>
                                             <span className="price-final">
-                                              {formatCurrencyTradeIn(req.final_price)}
+                                              {formatCurrencyTradeIn(
+                                                req.final_price,
+                                              )}
                                             </span>
                                           </div>
                                         )}
                                       </div>
-                                    ) : <div />}
+                                    ) : (
+                                      <div />
+                                    )}
                                     <span className="ptih-card-arrow">
                                       <IconChevronRightTradeIn />
                                     </span>

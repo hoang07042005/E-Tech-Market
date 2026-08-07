@@ -1,97 +1,119 @@
-import { apiFetch, setAuthToken, getAuthToken, clearAuthToken } from '@/configs/api.config'
+import {
+  apiFetch,
+  setAuthToken,
+  getAuthToken,
+  clearAuthToken,
+} from "@/configs/api.config";
 
 export type LoginPayload = {
-  email: string
-  password: string
-  otp?: string
-}
+  email: string;
+  password: string;
+  otp?: string;
+};
 
 export type RegisterPayload = {
-  name: string
-  email: string
-  password: string
-  phone?: string
-  address_line?: string
-  province?: string
-  district?: string
-  ward?: string
-}
+  name: string;
+  email: string;
+  password: string;
+  phone?: string;
+  address_line?: string;
+  province?: string;
+  district?: string;
+  ward?: string;
+};
 
 export type AuthResponse = {
-  user: any
-  token?: string
-}
+  user: any;
+  token?: string;
+};
 
 export async function login(payload: LoginPayload): Promise<AuthResponse> {
-  const res = await apiFetch<AuthResponse>('/api/auth/login', {
-    method: 'POST',
+  const res = await apiFetch<AuthResponse>("/api/auth/login", {
+    method: "POST",
     body: JSON.stringify(payload),
-  })
-  console.log('[login] Response:', res)
+  });
+  console.log("[login] Response:", res);
   // Store token in memory for Bearer auth (not localStorage for security)
   if (res.user) {
-    try { localStorage.setItem("user", JSON.stringify(res.user)) } catch {}
-    window.dispatchEvent(new Event("auth-change"))
+    try {
+      localStorage.setItem("user", JSON.stringify(res.user));
+    } catch {}
+    window.dispatchEvent(new Event("auth-change"));
   }
   if (res.token) {
-    console.log('[login] Token received, storing in memory:', res.token.slice(0, 20) + '...')
-    setAuthToken(res.token)
+    console.log(
+      "[login] Token received, storing in memory:",
+      res.token.slice(0, 20) + "...",
+    );
+    setAuthToken(res.token);
   } else {
-    console.log('[login] No token in response!')
+    console.log("[login] No token in response!");
   }
-  return res
+  return res;
 }
 
-export async function register(payload: RegisterPayload): Promise<AuthResponse> {
-  const res = await apiFetch<AuthResponse>('/api/auth/register', {
-    method: 'POST',
+export async function register(
+  payload: RegisterPayload,
+): Promise<AuthResponse> {
+  const res = await apiFetch<AuthResponse>("/api/auth/register", {
+    method: "POST",
     body: JSON.stringify(payload),
-  })
+  });
   // Store token in memory for Bearer auth (not localStorage for security)
   if (res.user) {
-    try { localStorage.setItem("user", JSON.stringify(res.user)) } catch {}
-    window.dispatchEvent(new Event("auth-change"))
+    try {
+      localStorage.setItem("user", JSON.stringify(res.user));
+    } catch {}
+    window.dispatchEvent(new Event("auth-change"));
   }
   if (res.token) {
-    setAuthToken(res.token)
+    setAuthToken(res.token);
   }
-  return res
+  return res;
 }
 
 export async function me(): Promise<any> {
-  return apiFetch<any>('/api/me', { method: 'GET' })
+  return apiFetch<any>("/api/me", { method: "GET" });
 }
 
 export async function logout(): Promise<void> {
-  await apiFetch<any>('/api/auth/logout', {
-    method: 'POST',
-  })
-  clearAuthToken()
+  await apiFetch<any>("/api/auth/logout", {
+    method: "POST",
+  });
+  clearAuthToken();
 }
 
 // Export for other modules to check auth state
-export { getAuthToken }
+export { getAuthToken };
 
-export async function registerLoyaltyCard(): Promise<{ message: string, user: any }> {
-  const res = await apiFetch<any>('/api/loyalty/register', {
-    method: 'POST',
-  })
+export async function registerLoyaltyCard(): Promise<{
+  message: string;
+  user: any;
+}> {
+  const res = await apiFetch<any>("/api/loyalty/register", {
+    method: "POST",
+  });
   if (res.user) {
-    try { localStorage.setItem("user", JSON.stringify(res.user)) } catch {}
-    window.dispatchEvent(new Event("auth-change"))
+    try {
+      localStorage.setItem("user", JSON.stringify(res.user));
+    } catch {}
+    window.dispatchEvent(new Event("auth-change"));
   }
-  return res
+  return res;
 }
 
-export async function cancelLoyaltyCard(): Promise<{ message: string, user: any }> {
-  const res = await apiFetch<any>('/api/loyalty/cancel', {
-    method: 'POST',
-  })
+export async function cancelLoyaltyCard(): Promise<{
+  message: string;
+  user: any;
+}> {
+  const res = await apiFetch<any>("/api/loyalty/cancel", {
+    method: "POST",
+  });
   if (res.user) {
-    try { localStorage.setItem("user", JSON.stringify(res.user)) } catch {}
-    window.dispatchEvent(new Event("auth-change"))
+    try {
+      localStorage.setItem("user", JSON.stringify(res.user));
+    } catch {}
+    window.dispatchEvent(new Event("auth-change"));
   }
-  return res
+  return res;
 }
-
-

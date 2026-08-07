@@ -1,97 +1,104 @@
-import { useEffect, useMemo, useState, type FormEvent } from 'react'
-import { useNavigate, useSearchParams } from 'react-router-dom'
-import { apiFetch } from '@/configs/api.config'
+import { useEffect, useMemo, useState, type FormEvent } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { apiFetch } from "@/configs/api.config";
 
-import AuthMarketingColumn from './AuthMarketingColumn'
-import '@/styles/pages/AuthPage.css'
+import AuthMarketingColumn from "./AuthMarketingColumn";
+import "@/styles/pages/AuthPage.css";
 
 export default function ResetPasswordPage() {
-  const navigate = useNavigate()
-  const [searchParams] = useSearchParams()
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
 
-  const token = searchParams.get('token') || ''
-  const email = searchParams.get('email') || ''
-  const type = searchParams.get('type') || ''
+  const token = searchParams.get("token") || "";
+  const email = searchParams.get("email") || "";
+  const type = searchParams.get("type") || "";
 
-  const [password, setPassword] = useState('')
-  const [confirmPassword, setConfirmPassword] = useState('')
-  const [loading, setLoading] = useState(false)
-  const [validating, setValidating] = useState(type === 'locked')
-  const [done, setDone] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [validating, setValidating] = useState(type === "locked");
+  const [done, setDone] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (type !== 'locked' || !token || !email) return
+    if (type !== "locked" || !token || !email) return;
     const validateToken = async () => {
       try {
-        await apiFetch('/api/auth/locked/validate-reset-token', {
-          method: 'POST',
+        await apiFetch("/api/auth/locked/validate-reset-token", {
+          method: "POST",
           body: JSON.stringify({ email, token }),
-        })
+        });
       } catch (err: any) {
-        setError(err instanceof Error ? err.message : (err?.message || 'Liên kết không hợp lệ.'))
+        setError(
+          err instanceof Error
+            ? err.message
+            : err?.message || "Liên kết không hợp lệ.",
+        );
       } finally {
-        setValidating(false)
+        setValidating(false);
       }
-    }
-    validateToken()
-  }, [type, token, email])
+    };
+    validateToken();
+  }, [type, token, email]);
 
   const canSubmit = useMemo(() => {
-    if (loading || validating) return false
-    if (!token || !email) return false
-    if (password.length < 8) return false
-    if (password !== confirmPassword) return false
-    return true
-  }, [confirmPassword, email, loading, validating, password, token])
+    if (loading || validating) return false;
+    if (!token || !email) return false;
+    if (password.length < 8) return false;
+    if (password !== confirmPassword) return false;
+    return true;
+  }, [confirmPassword, email, loading, validating, password, token]);
 
   async function onSubmit(e: FormEvent) {
-    e.preventDefault()
-    setError(null)
-    setLoading(true)
+    e.preventDefault();
+    setError(null);
+    setLoading(true);
     try {
-      const endpoint = type === 'locked' ? '/api/auth/locked/reset-password' : '/api/auth/reset-password'
+      const endpoint =
+        type === "locked"
+          ? "/api/auth/locked/reset-password"
+          : "/api/auth/reset-password";
       const res = await apiFetch<{ user?: unknown }>(endpoint, {
-        method: 'POST',
+        method: "POST",
         body: JSON.stringify({
           email,
           token,
           password,
           password_confirmation: confirmPassword,
         }),
-      })
-      if (type === 'locked') {
+      });
+      if (type === "locked") {
         // Auto login is handled by the backend returning token/cookie
         if (res.user) {
-          localStorage.setItem('user', JSON.stringify(res.user))
-          window.dispatchEvent(new Event('auth-change'))
+          localStorage.setItem("user", JSON.stringify(res.user));
+          window.dispatchEvent(new Event("auth-change"));
         }
-        navigate('/')
+        navigate("/");
       } else {
-        setDone(true)
+        setDone(true);
       }
     } catch (err: any) {
-      const message = err instanceof Error ? err.message : (err?.message || null)
-      setError(message || 'Không thể đặt lại mật khẩu. Vui lòng thử lại.')
+      const message = err instanceof Error ? err.message : err?.message || null;
+      setError(message || "Không thể đặt lại mật khẩu. Vui lòng thử lại.");
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
   }
 
-  const missingParams = !token || !email
+  const missingParams = !token || !email;
 
   useEffect(() => {
-    const html = document.documentElement
-    const body = document.body
-    const prevHtmlBg = html.style.backgroundColor
-    const prevBodyBg = body.style.backgroundColor
-    html.style.backgroundColor = '#000000'
-    body.style.backgroundColor = '#000000'
+    const html = document.documentElement;
+    const body = document.body;
+    const prevHtmlBg = html.style.backgroundColor;
+    const prevBodyBg = body.style.backgroundColor;
+    html.style.backgroundColor = "#000000";
+    body.style.backgroundColor = "#000000";
     return () => {
-      html.style.backgroundColor = prevHtmlBg
-      body.style.backgroundColor = prevBodyBg
-    }
-  }, [])
+      html.style.backgroundColor = prevHtmlBg;
+      body.style.backgroundColor = prevBodyBg;
+    };
+  }, []);
 
   return (
     <div className="authPageRoot">
@@ -101,7 +108,8 @@ export default function ResetPasswordPage() {
             eyebrow="BẢO MẬT TÀI KHOẢN"
             title={
               <>
-                Đặt lại<br />
+                Đặt lại
+                <br />
                 <span className="authGradientText">mật khẩu</span>.
               </>
             }
@@ -109,21 +117,39 @@ export default function ResetPasswordPage() {
           <div className="authRight">
             <div className="authCard">
               <div className="authMobileMascot" aria-hidden="true">
-                <img src="/linh-vat.png" alt="" className="authMobileMascotImg" draggable={false} />
+                <img
+                  src="/linh-vat.png"
+                  alt=""
+                  className="authMobileMascotImg"
+                  draggable={false}
+                />
               </div>
               <div className="authCardHeader">
                 <h2 className="authCardTitle">Đặt lại mật khẩu</h2>
                 <p className="authCardSub">
-                  {missingParams ? 'Link không hợp lệ hoặc thiếu tham số.' : `Tài khoản: ${email}`}
+                  {missingParams
+                    ? "Link không hợp lệ hoặc thiếu tham số."
+                    : `Tài khoản: ${email}`}
                 </p>
               </div>
 
               {done ? (
                 <div className="authForm">
-                  <div className="authError" style={{ borderColor: 'rgba(34, 197, 94, 0.35)', color: '#86efac', background: 'rgba(34, 197, 94, 0.08)' }}>
+                  <div
+                    className="authError"
+                    style={{
+                      borderColor: "rgba(34, 197, 94, 0.35)",
+                      color: "#86efac",
+                      background: "rgba(34, 197, 94, 0.08)",
+                    }}
+                  >
                     Đặt lại mật khẩu thành công. Vui lòng đăng nhập lại.
                   </div>
-                  <button type="button" className="authSubmit" onClick={() => navigate('/login')}>
+                  <button
+                    type="button"
+                    className="authSubmit"
+                    onClick={() => navigate("/login")}
+                  >
                     ĐI ĐẾN ĐĂNG NHẬP
                   </button>
                 </div>
@@ -144,7 +170,9 @@ export default function ResetPasswordPage() {
                   </div>
 
                   <div className="authField">
-                    <label className="authFieldLabel">Xác nhận mật khẩu mới</label>
+                    <label className="authFieldLabel">
+                      Xác nhận mật khẩu mới
+                    </label>
                     <input
                       value={confirmPassword}
                       onChange={(ev) => setConfirmPassword(ev.target.value)}
@@ -159,12 +187,20 @@ export default function ResetPasswordPage() {
 
                   {error && <div className="authError">{error}</div>}
 
-                  <button type="submit" disabled={!canSubmit} className="authSubmit">
-                    {loading ? 'ĐANG LƯU...' : 'CẬP NHẬT MẬT KHẨU'}
+                  <button
+                    type="submit"
+                    disabled={!canSubmit}
+                    className="authSubmit"
+                  >
+                    {loading ? "ĐANG LƯU..." : "CẬP NHẬT MẬT KHẨU"}
                   </button>
 
                   <div className="authSwitchWrap">
-                    <button type="button" onClick={() => navigate('/login')} className="authSwitchBtn">
+                    <button
+                      type="button"
+                      onClick={() => navigate("/login")}
+                      className="authSwitchBtn"
+                    >
                       Quay lại đăng nhập
                     </button>
                   </div>
@@ -175,6 +211,5 @@ export default function ResetPasswordPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }
-

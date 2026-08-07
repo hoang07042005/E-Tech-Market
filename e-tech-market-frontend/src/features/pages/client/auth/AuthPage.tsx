@@ -1,114 +1,114 @@
-import { useEffect, useMemo, useState, type FormEvent } from 'react'
-import { useNavigate, useSearchParams } from 'react-router-dom'
-import { login, register } from '@/features/services/auth.service'
-import { GoogleLoginButton } from './GoogleLoginButton'
-import { setAuthSessionExpiry } from '@/features/store/auth.store'
+import { useEffect, useMemo, useState, type FormEvent } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { login, register } from "@/features/services/auth.service";
+import { GoogleLoginButton } from "./GoogleLoginButton";
+import { setAuthSessionExpiry } from "@/features/store/auth.store";
 
-import '@/styles/pages/AuthPage.css'
-import AuthMarketingColumn from './AuthMarketingColumn'
+import "@/styles/pages/AuthPage.css";
+import AuthMarketingColumn from "./AuthMarketingColumn";
 
-type Mode = 'login' | 'register'
+type Mode = "login" | "register";
 
 type MeUser = {
-  name: string
-  email: string
-}
+  name: string;
+  email: string;
+};
 
 export default function AuthPage({
-  initialMode = 'register',
+  initialMode = "register",
   onAuthed,
 }: {
-  initialMode?: Mode
-  onAuthed?: (user: MeUser) => void
+  initialMode?: Mode;
+  onAuthed?: (user: MeUser) => void;
 }) {
-  const navigate = useNavigate()
-  const [searchParams, setSearchParams] = useSearchParams()
-  const mode = initialMode
-  const sessionExpired = searchParams.get('session') === 'expired'
+  const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const mode = initialMode;
+  const sessionExpired = searchParams.get("session") === "expired";
 
-  const [user, setUser] = useState<MeUser | null>(null)
-  const [error, setError] = useState<string | null>(null)
-  const [loading, setLoading] = useState(false)
+  const [user, setUser] = useState<MeUser | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (!sessionExpired) return
-    setSearchParams({}, { replace: true })
-  }, [sessionExpired, setSearchParams])
+    if (!sessionExpired) return;
+    setSearchParams({}, { replace: true });
+  }, [sessionExpired, setSearchParams]);
 
   const [loginForm, setLoginForm] = useState({
-    email: '',
-    password: '',
-    otp: '',
-  })
-  
-  const [showOtpModal, setShowOtpModal] = useState(false)
+    email: "",
+    password: "",
+    otp: "",
+  });
+
+  const [showOtpModal, setShowOtpModal] = useState(false);
 
   const [registerForm, setRegisterForm] = useState({
-    name: '',
-    email: '',
-    password: '',
-    confirmPassword: '',
-    phone: '',
+    name: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+    phone: "",
     agreed: true,
-  })
+  });
 
   const canSubmit = useMemo(() => {
-    if (loading) return false
-    if (mode === 'login') return !!loginForm.email && !!loginForm.password
+    if (loading) return false;
+    if (mode === "login") return !!loginForm.email && !!loginForm.password;
     return (
       !!registerForm.name &&
       !!registerForm.email &&
       !!registerForm.password &&
       registerForm.password === registerForm.confirmPassword &&
       registerForm.agreed
-    )
-  }, [loginForm.email, loginForm.password, mode, registerForm, loading])
+    );
+  }, [loginForm.email, loginForm.password, mode, registerForm, loading]);
 
   useEffect(() => {
-    const html = document.documentElement
-    const body = document.body
-    const prevHtmlBg = html.style.backgroundColor
-    const prevBodyBg = body.style.backgroundColor
-    html.style.backgroundColor = '#000000'
-    body.style.backgroundColor = '#000000'
+    const html = document.documentElement;
+    const body = document.body;
+    const prevHtmlBg = html.style.backgroundColor;
+    const prevBodyBg = body.style.backgroundColor;
+    html.style.backgroundColor = "#000000";
+    body.style.backgroundColor = "#000000";
     return () => {
-      html.style.backgroundColor = prevHtmlBg
-      body.style.backgroundColor = prevBodyBg
-    }
-  }, [])
+      html.style.backgroundColor = prevHtmlBg;
+      body.style.backgroundColor = prevBodyBg;
+    };
+  }, []);
 
   useEffect(() => {
     // No token in localStorage for httpOnly cookie auth.
     // If the user has a valid session cookie, App.tsx will resolve /api/me.
-  }, [])
+  }, []);
 
   async function onSubmit(e: FormEvent) {
-    e.preventDefault()
-    setError(null)
-    setLoading(true)
+    e.preventDefault();
+    setError(null);
+    setLoading(true);
 
     try {
-      if (mode === 'login') {
-        const res = await login(loginForm)
+      if (mode === "login") {
+        const res = await login(loginForm);
         // 🔒 Token is stored in httpOnly cookie, handled automatically by browser
-        localStorage.setItem('user', JSON.stringify(res.user))
-        setAuthSessionExpiry()
-        window.dispatchEvent(new Event('auth-change'))
-        setUser(res.user as MeUser)
-        onAuthed?.(res.user as MeUser)
-        navigate('/')
-        return
+        localStorage.setItem("user", JSON.stringify(res.user));
+        setAuthSessionExpiry();
+        window.dispatchEvent(new Event("auth-change"));
+        setUser(res.user as MeUser);
+        onAuthed?.(res.user as MeUser);
+        navigate("/");
+        return;
       }
 
       if (registerForm.password !== registerForm.confirmPassword) {
-        setError('Mật khẩu xác nhận không khớp.')
-        setLoading(false)
-        return
+        setError("Mật khẩu xác nhận không khớp.");
+        setLoading(false);
+        return;
       }
       if (!registerForm.agreed) {
-        setError('Bạn cần đồng ý điều khoản và chính sách bảo mật.')
-        setLoading(false)
-        return
+        setError("Bạn cần đồng ý điều khoản và chính sách bảo mật.");
+        setLoading(false);
+        return;
       }
 
       const res = await register({
@@ -116,34 +116,38 @@ export default function AuthPage({
         email: registerForm.email,
         password: registerForm.password,
         phone: registerForm.phone,
-      })
+      });
 
       // 🔒 Token is stored in httpOnly cookie, handled automatically by browser
-      localStorage.setItem('user', JSON.stringify(res.user))
-      setAuthSessionExpiry()
-      window.dispatchEvent(new Event('auth-change'))
-      setUser(res.user as MeUser)
-      onAuthed?.(res.user as MeUser)
-      navigate('/')
+      localStorage.setItem("user", JSON.stringify(res.user));
+      setAuthSessionExpiry();
+      window.dispatchEvent(new Event("auth-change"));
+      setUser(res.user as MeUser);
+      onAuthed?.(res.user as MeUser);
+      navigate("/");
     } catch (err: any) {
-      setLoading(false)
+      setLoading(false);
       if (err?.requires_2fa) {
-        setShowOtpModal(true)
-        return
+        setShowOtpModal(true);
+        return;
       }
-      
-      let message = err instanceof Error ? err.message : (err?.message || 'Đăng nhập hoặc đăng ký thất bại. Vui lòng thử lại.')
+
+      let message =
+        err instanceof Error
+          ? err.message
+          : err?.message ||
+            "Đăng nhập hoặc đăng ký thất bại. Vui lòng thử lại.";
       if (err?.errors) {
-        const firstErrorKey = Object.keys(err.errors)[0]
+        const firstErrorKey = Object.keys(err.errors)[0];
         if (firstErrorKey && err.errors[firstErrorKey].length > 0) {
-          message = err.errors[firstErrorKey][0]
+          message = err.errors[firstErrorKey][0];
         }
       }
-      setError(message)
+      setError(message);
     }
   }
 
-  if (user) return null
+  if (user) return null;
 
   return (
     <div className="authPageRoot">
@@ -151,14 +155,16 @@ export default function AuthPage({
         <div className="authPageGrid">
           <AuthMarketingColumn
             title={
-              mode === 'login' ? (
+              mode === "login" ? (
                 <>
-                  Chào mừng<br />
+                  Chào mừng
+                  <br />
                   <span className="authGradientText">trở lại</span>.
                 </>
               ) : (
                 <>
-                  Cùng<br />
+                  Cùng
+                  <br />
                   <span className="authGradientText">đồng hành</span>.
                 </>
               )
@@ -168,27 +174,37 @@ export default function AuthPage({
           <div className="authRight">
             <div className="authCard">
               <div className="authMobileMascot" aria-hidden="true">
-                <img src="/linh-vat.png" alt="" className="authMobileMascotImg" draggable={false} />
+                <img
+                  src="/linh-vat.png"
+                  alt=""
+                  className="authMobileMascotImg"
+                  draggable={false}
+                />
               </div>
               <div className="authCardHeader">
                 <h2 className="authCardTitle">
-                  {mode === 'login' ? 'Đăng nhập' : 'Đăng ký'}
+                  {mode === "login" ? "Đăng nhập" : "Đăng ký"}
                 </h2>
                 <p className="authCardSub">
-                  {mode === 'login'
-                    ? 'Nhập email và mật khẩu để vào cửa hàng.'
-                    : 'Tạo tài khoản để mua sắm và theo dõi đơn hàng.'}
+                  {mode === "login"
+                    ? "Nhập email và mật khẩu để vào cửa hàng."
+                    : "Tạo tài khoản để mua sắm và theo dõi đơn hàng."}
                 </p>
               </div>
 
               <form onSubmit={onSubmit} className="authForm">
-                {mode === 'register' ? (
+                {mode === "register" ? (
                   <div className="authFormGrid">
                     <div className="authField">
                       <label className="authFieldLabel">Họ và tên</label>
                       <input
                         value={registerForm.name}
-                        onChange={(ev) => setRegisterForm(s => ({ ...s, name: ev.target.value }))}
+                        onChange={(ev) =>
+                          setRegisterForm((s) => ({
+                            ...s,
+                            name: ev.target.value,
+                          }))
+                        }
                         className="authInput"
                         placeholder="Nguyễn Văn A"
                         type="text"
@@ -199,7 +215,12 @@ export default function AuthPage({
                       <label className="authFieldLabel">Email</label>
                       <input
                         value={registerForm.email}
-                        onChange={(ev) => setRegisterForm(s => ({ ...s, email: ev.target.value }))}
+                        onChange={(ev) =>
+                          setRegisterForm((s) => ({
+                            ...s,
+                            email: ev.target.value,
+                          }))
+                        }
                         className="authInput"
                         placeholder="ban@vidu.com"
                         type="email"
@@ -212,7 +233,9 @@ export default function AuthPage({
                     <label className="authFieldLabel">Email</label>
                     <input
                       value={loginForm.email}
-                      onChange={(ev) => setLoginForm(s => ({ ...s, email: ev.target.value }))}
+                      onChange={(ev) =>
+                        setLoginForm((s) => ({ ...s, email: ev.target.value }))
+                      }
                       className="authInput"
                       placeholder="Địa chỉ email của bạn"
                       type="email"
@@ -221,13 +244,18 @@ export default function AuthPage({
                   </div>
                 )}
 
-                {mode === 'register' && (
+                {mode === "register" && (
                   <>
                     <div className="authField">
                       <label className="authFieldLabel">Số điện thoại</label>
                       <input
                         value={registerForm.phone}
-                        onChange={(ev) => setRegisterForm(s => ({ ...s, phone: ev.target.value }))}
+                        onChange={(ev) =>
+                          setRegisterForm((s) => ({
+                            ...s,
+                            phone: ev.target.value,
+                          }))
+                        }
                         className="authInput"
                         placeholder="0901234567"
                         type="tel"
@@ -237,15 +265,20 @@ export default function AuthPage({
                   </>
                 )}
 
-                <div className={mode === 'register' ? 'authFormGrid' : ''}>
+                <div className={mode === "register" ? "authFormGrid" : ""}>
                   <div className="authField">
                     <label className="authFieldLabel">Mật khẩu</label>
                     <input
-                      value={mode === 'login' ? loginForm.password : registerForm.password}
+                      value={
+                        mode === "login"
+                          ? loginForm.password
+                          : registerForm.password
+                      }
                       onChange={(ev) => {
-                        const v = ev.target.value
-                        if (mode === 'login') setLoginForm(s => ({ ...s, password: v }))
-                        else setRegisterForm(s => ({ ...s, password: v }))
+                        const v = ev.target.value;
+                        if (mode === "login")
+                          setLoginForm((s) => ({ ...s, password: v }));
+                        else setRegisterForm((s) => ({ ...s, password: v }));
                       }}
                       className="authInput"
                       placeholder="••••••••"
@@ -254,12 +287,19 @@ export default function AuthPage({
                     />
                   </div>
 
-                  {mode === 'register' && (
+                  {mode === "register" && (
                     <div className="authField">
-                      <label className="authFieldLabel">Xác nhận mật khẩu</label>
+                      <label className="authFieldLabel">
+                        Xác nhận mật khẩu
+                      </label>
                       <input
                         value={registerForm.confirmPassword}
-                        onChange={(ev) => setRegisterForm(s => ({ ...s, confirmPassword: ev.target.value }))}
+                        onChange={(ev) =>
+                          setRegisterForm((s) => ({
+                            ...s,
+                            confirmPassword: ev.target.value,
+                          }))
+                        }
                         className="authInput"
                         placeholder="••••••••"
                         type="password"
@@ -269,7 +309,7 @@ export default function AuthPage({
                   )}
                 </div>
 
-                {mode === 'register' && (
+                {mode === "register" && (
                   <div className="authCheckRow">
                     <input
                       id="auth-agree-56c92ad3"
@@ -283,27 +323,30 @@ export default function AuthPage({
                       }
                       className="authCheckbox"
                     />
-                    <label className="authCheckLabel" htmlFor="auth-agree-56c92ad3">
-                      Tôi đồng ý với{' '}
+                    <label
+                      className="authCheckLabel"
+                      htmlFor="auth-agree-56c92ad3"
+                    >
+                      Tôi đồng ý với{" "}
                       <a
                         className="authCheckLink"
                         href="/dieu-khoan"
                         onClick={(e) => {
-                          e.preventDefault()
-                          e.stopPropagation()
-                          navigate('/dieu-khoan')
+                          e.preventDefault();
+                          e.stopPropagation();
+                          navigate("/dieu-khoan");
                         }}
                       >
                         điều khoản sử dụng
-                      </a>{' '}
-                      và{' '}
+                      </a>{" "}
+                      và{" "}
                       <a
                         className="authCheckLink"
                         href="/chinh-sach-bao-mat"
                         onClick={(e) => {
-                          e.preventDefault()
-                          e.stopPropagation()
-                          navigate('/chinh-sach-bao-mat')
+                          e.preventDefault();
+                          e.stopPropagation();
+                          navigate("/chinh-sach-bao-mat");
                         }}
                       >
                         chính sách bảo mật
@@ -316,22 +359,26 @@ export default function AuthPage({
                 {(sessionExpired || error) && (
                   <div className="authError">
                     {sessionExpired
-                      ? 'Phiên đăng nhập đã hết hạn (24 giờ). Vui lòng đăng nhập lại.'
+                      ? "Phiên đăng nhập đã hết hạn (24 giờ). Vui lòng đăng nhập lại."
                       : error}
                   </div>
                 )}
 
-                <button type="submit" disabled={!canSubmit || loading} className="authSubmit">
+                <button
+                  type="submit"
+                  disabled={!canSubmit || loading}
+                  className="authSubmit"
+                >
                   {loading
-                    ? mode === 'login'
-                      ? 'ĐANG ĐĂNG NHẬP...'
-                      : 'ĐANG ĐĂNG KÝ...'
-                    : mode === 'login'
-                      ? 'ĐĂNG NHẬP'
-                      : 'TẠO TÀI KHOẢN'}
+                    ? mode === "login"
+                      ? "ĐANG ĐĂNG NHẬP..."
+                      : "ĐANG ĐĂNG KÝ..."
+                    : mode === "login"
+                      ? "ĐĂNG NHẬP"
+                      : "TẠO TÀI KHOẢN"}
                 </button>
 
-                {mode === 'login' && (
+                {mode === "login" && (
                   <div className="authGoogleSection">
                     <div className="authDivider">
                       <span className="authDividerLine" />
@@ -342,18 +389,18 @@ export default function AuthPage({
                   </div>
                 )}
 
-                {mode === 'login' ? (
+                {mode === "login" ? (
                   <div className="authLoginFooterRow">
                     <button
                       type="button"
-                      onClick={() => navigate('/forgot-password')}
+                      onClick={() => navigate("/forgot-password")}
                       className="authSwitchBtn authSwitchBtn--start"
                     >
                       Quên mật khẩu?
                     </button>
                     <button
                       type="button"
-                      onClick={() => navigate('/register')}
+                      onClick={() => navigate("/register")}
                       className="authSwitchBtn authSwitchBtn--end"
                     >
                       Chưa có tài khoản? Đăng ký
@@ -363,7 +410,7 @@ export default function AuthPage({
                   <div className="authSwitchWrap">
                     <button
                       type="button"
-                      onClick={() => navigate('/login')}
+                      onClick={() => navigate("/login")}
                       className="authSwitchBtn"
                     >
                       Đã có tài khoản? Đăng nhập
@@ -375,47 +422,70 @@ export default function AuthPage({
           </div>
         </div>
       </div>
-      
+
       {showOtpModal && (
         <div className="authModalOverlay">
           <div className="authModalContent">
             <h3 className="authModalTitle">Xác thực 2 bước (2FA)</h3>
-            <p className="authModalSub">Mở ứng dụng Google Authenticator và nhập mã 6 số để tiếp tục.</p>
+            <p className="authModalSub">
+              Mở ứng dụng Google Authenticator và nhập mã 6 số để tiếp tục.
+            </p>
             <input
               type="text"
               className="authInput"
               placeholder="123456"
               maxLength={6}
               value={loginForm.otp}
-              onChange={(e) => setLoginForm((prev) => ({ ...prev, otp: e.target.value.replace(/\D/g, '') }))}
+              onChange={(e) =>
+                setLoginForm((prev) => ({
+                  ...prev,
+                  otp: e.target.value.replace(/\D/g, ""),
+                }))
+              }
             />
-            {error && <div className="authError" style={{ marginTop: 10 }}>{error}</div>}
-            <div className="authModalActions" style={{ display: 'flex', gap: 10, marginTop: 20, justifyContent: 'flex-end' }}>
-              <button 
-                type="button" 
-                className="authSwitchBtn" 
-                style={{ padding: '8px 16px', background: 'rgba(255,255,255,0.1)', borderRadius: 6 }}
+            {error && (
+              <div className="authError" style={{ marginTop: 10 }}>
+                {error}
+              </div>
+            )}
+            <div
+              className="authModalActions"
+              style={{
+                display: "flex",
+                gap: 10,
+                marginTop: 20,
+                justifyContent: "flex-end",
+              }}
+            >
+              <button
+                type="button"
+                className="authSwitchBtn"
+                style={{
+                  padding: "8px 16px",
+                  background: "rgba(255,255,255,0.1)",
+                  borderRadius: 6,
+                }}
                 onClick={() => {
-                  setShowOtpModal(false)
-                  setError(null)
-                  setLoginForm((p) => ({ ...p, otp: '' }))
+                  setShowOtpModal(false);
+                  setError(null);
+                  setLoginForm((p) => ({ ...p, otp: "" }));
                 }}
               >
                 Hủy
               </button>
-              <button 
-                type="button" 
-                className="authSubmit" 
-                style={{ margin: 0, width: 'auto', padding: '8px 24px' }}
+              <button
+                type="button"
+                className="authSubmit"
+                style={{ margin: 0, width: "auto", padding: "8px 24px" }}
                 disabled={loading || loginForm.otp.length !== 6}
                 onClick={onSubmit}
               >
-                {loading ? 'Đang xử lý...' : 'Xác nhận'}
+                {loading ? "Đang xử lý..." : "Xác nhận"}
               </button>
             </div>
           </div>
         </div>
       )}
     </div>
-  )
+  );
 }

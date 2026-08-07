@@ -36,7 +36,9 @@
   z-index: 9999;
   overflow: hidden;
   border: 1px solid #e2e8f0;
-  transition: background-color 0.3s ease, border-color 0.3s ease;
+  transition:
+    background-color 0.3s ease,
+    border-color 0.3s ease;
 }
 
 html.dark .etech-bot-container {
@@ -169,12 +171,14 @@ html.dark .etech-bot-avatar {
   font-size: 14px;
   line-height: 1.5;
   white-space: pre-wrap;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-  transition: background-color 0.3s, color 0.3s;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  transition:
+    background-color 0.3s,
+    color 0.3s;
 }
 
 html.dark .etech-bot-msg-bubble {
-  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
 .etech-bot-msg-row.user .etech-bot-msg-bubble {
@@ -204,7 +208,7 @@ html.dark .etech-bot-msg-row.model .etech-bot-msg-bubble {
 }
 
 .etech-bot-msg-row.user .etech-bot-msg-time {
-  color: rgba(255,255,255,0.7);
+  color: rgba(255, 255, 255, 0.7);
   text-align: right;
 }
 
@@ -253,9 +257,12 @@ html.dark .etech-bot-msg-row.model .etech-bot-msg-time {
   border: 1px solid #e2e8f0;
   overflow: hidden;
   cursor: pointer;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
   flex-shrink: 0;
-  transition: transform 0.2s, background-color 0.3s, border-color 0.3s;
+  transition:
+    transform 0.2s,
+    background-color 0.3s,
+    border-color 0.3s;
 }
 
 html.dark .etech-bot-product-card {
@@ -414,8 +421,13 @@ html.dark .etech-bot-typing-indicator {
 }
 
 @keyframes etech-typing {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-4px); }
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
 }
 
 .etech-bot-quick-actions {
@@ -458,7 +470,9 @@ html.dark .etech-bot-quick-btn:hover {
   padding: 12px 16px;
   background-color: white;
   border-top: 1px solid #e2e8f0;
-  transition: background-color 0.3s, border-color 0.3s;
+  transition:
+    background-color 0.3s,
+    border-color 0.3s;
 }
 
 html.dark .etech-bot-input-wrap {

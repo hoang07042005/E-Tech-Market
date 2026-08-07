@@ -3,60 +3,60 @@
   color: var(--et-text);
   background: #fff;
   padding: 40px 0 80px;
-  font-family: Outfit, sans-serif
+  font-family: Outfit, sans-serif;
 }
 
 .ppContainer {
   max-width: 1470px;
   margin: 0 auto;
-  padding: 0 40px
+  padding: 0 40px;
 }
 
 .ppMainGrid {
   display: grid;
   grid-template-columns: 220px 1fr;
   gap: 40px;
-  align-items: start
+  align-items: start;
 }
 
 .ppSidebarNew {
   position: sticky;
-  top: 100px
+  top: 100px;
 }
 
 .ppSidebarClose {
-  display: none
+  display: none;
 }
 
 .ppSidebarOverlay {
-  display: none
+  display: none;
 }
 
 .ppMobileFilterBtn {
-  display: none
+  display: none;
 }
 
 .ppControlsRow {
   display: flex;
   align-items: center;
-  gap: 15px
+  gap: 15px;
 }
 
 .ppSidebarLabel {
-  letter-spacing: .15em;
+  letter-spacing: 0.15em;
   color: #666;
   margin-bottom: 25px;
   font-size: 11px;
-  font-weight: 600
+  font-weight: 600;
 }
 
 .ppCardImageWrap {
-  display: block
+  display: block;
 }
 
 .ppSearchWrap {
   width: 280px;
-  position: relative
+  position: relative;
 }
 
 .ppSearchInput {
@@ -67,14 +67,14 @@
   padding: 12px 40px 12px 15px;
   font-family: Inter, sans-serif;
   font-size: 12px;
-  transition: all .2s;
+  transition: all 0.2s;
   border-radius: 5px;
 }
 
 .ppSearchInput:focus {
   border-color: var(--et-primary);
   outline: none;
-  box-shadow: 0 4px 12px #f973161f
+  box-shadow: 0 4px 12px #f973161f;
 }
 
 .ppSearchIcon {
@@ -85,11 +85,11 @@
   position: absolute;
   top: 50%;
   right: 12px;
-  transform: translateY(-50%)
+  transform: translateY(-50%);
 }
 
 .ppFilterGroup {
-  margin-bottom: 40px
+  margin-bottom: 40px;
 }
 
 .ppFilterTitleRow {
@@ -120,7 +120,10 @@
   display: inline-block;
   vertical-align: middle;
   cursor: pointer;
-  transition: background .12s ease, border-color .12s ease, transform .12s ease;
+  transition:
+    background 0.12s ease,
+    border-color 0.12s ease,
+    transform 0.12s ease;
 }
 .ppPriceToggle input[type="checkbox"]:hover {
   border-color: #0073ee;
@@ -144,17 +147,17 @@
 }
 
 .ppFilterTitle {
-  letter-spacing: .1em;
+  letter-spacing: 0.1em;
   color: #111;
   margin-bottom: 20px;
   font-size: 12px;
-  font-weight: 600
+  font-weight: 600;
 }
 
 .ppCheckboxList {
   flex-direction: column;
   gap: 12px;
-  display: flex
+  display: flex;
 }
 
 .ppCheckboxItem {
@@ -164,12 +167,12 @@
   gap: 5px;
   font-size: 13px;
   font-weight: 500;
-  transition: color .2s;
-  display: flex
+  transition: color 0.2s;
+  display: flex;
 }
 
 .ppCheckboxItem:hover {
-  color: var(--et-primary-hover)
+  color: var(--et-primary-hover);
 }
 
 .ppCheckboxItem input[type="checkbox"] {
@@ -184,7 +187,10 @@
   display: inline-block;
   vertical-align: middle;
   cursor: pointer;
-  transition: background .12s ease, border-color .12s ease, transform .12s ease;
+  transition:
+    background 0.12s ease,
+    border-color 0.12s ease,
+    transform 0.12s ease;
 }
 
 .ppCheckboxItem input[type="checkbox"]:hover {
@@ -209,13 +215,13 @@
 }
 
 .ppCatItemWrap {
-  margin-bottom: 5px
+  margin-bottom: 5px;
 }
 
 .ppCatItemHeader {
   justify-content: space-between;
   align-items: center;
-  display: flex
+  display: flex;
 }
 
 .ppCatToggle {
@@ -227,29 +233,29 @@
   align-items: center;
   padding: 0 5px;
   font-size: 16px;
-  transition: transform .3s;
-  display: flex
+  transition: transform 0.3s;
+  display: flex;
 }
 
 .ppCatToggle.open {
-  transform: rotate(180deg)
+  transform: rotate(180deg);
 }
 
 .ppCatChildren {
   border-left: 1px solid #0000000d;
   margin-top: 5px;
   margin-left: 20px;
-  padding-left: 10px
+  padding-left: 10px;
 }
 
 .ppPriceRangeWrap {
-  padding-right: 10px
+  padding-right: 10px;
 }
 
 .ppPriceRange {
   width: 100%;
   accent-color: #169f05;
-  margin-bottom: 12px
+  margin-bottom: 12px;
 }
 
 .ppPriceCustomInputs {
@@ -278,35 +284,35 @@
   justify-content: space-between;
   font-size: 12px;
   font-weight: 600;
-  display: flex
+  display: flex;
 }
 
 .ppBrandGrid {
   grid-template-columns: 1fr 1fr;
   gap: 8px;
-  display: grid
+  display: grid;
 }
 
 .ppBrandBtn {
-  letter-spacing: .05em;
+  letter-spacing: 0.05em;
   cursor: pointer;
   background: #fff;
   border: 1px solid #ddd;
   padding: 10px;
   font-size: 11px;
   font-weight: 600;
-  transition: all .2s
+  transition: all 0.2s;
 }
 
 .ppBrandBtn:hover {
   background: #fffaf5;
-  border-color: #f9731673
+  border-color: #f9731673;
 }
 
 .ppBrandBtn--active {
   background: var(--et-primary) !important;
   color: #fff !important;
-  border-color: var(--et-primary) !important
+  border-color: var(--et-primary) !important;
 }
 
 .ppPromoBox {
@@ -315,48 +321,50 @@
   border: 1px solid #f9731633;
   border-radius: 12px;
   margin-top: 40px;
-  padding: 30px 20px
+  padding: 30px 20px;
 }
 
 .ppPromoKicker {
   color: var(--et-primary);
-  letter-spacing: .2em;
+  letter-spacing: 0.2em;
   margin-bottom: 15px;
   font-size: 10px;
   font-weight: 600;
-  display: block
+  display: block;
 }
 
 .ppPromoTitle {
   margin-bottom: 10px;
   font-size: 16px;
   font-weight: 600;
-  line-height: 1.3
+  line-height: 1.3;
 }
 
 .ppPromoDesc {
   color: var(--et-text-muted);
   margin-bottom: 25px;
   font-size: 12px;
-  line-height: 1.5
+  line-height: 1.5;
 }
 
 .ppPromoBtn {
   border: none;
   border-bottom: 2px solid var(--et-primary);
   color: var(--et-text);
-  letter-spacing: .1em;
+  letter-spacing: 0.1em;
   cursor: pointer;
   background: 0 0;
   padding-bottom: 5px;
   font-size: 11px;
   font-weight: 600;
-  transition: color .2s, border-color .2s
+  transition:
+    color 0.2s,
+    border-color 0.2s;
 }
 
 .ppPromoBtn:hover {
   color: var(--et-primary-hover);
-  border-bottom-color: var(--et-primary-hover)
+  border-bottom-color: var(--et-primary-hover);
 }
 
 .ppHeaderNew {
@@ -365,38 +373,38 @@
   align-items: flex-start;
   margin-bottom: 40px;
   padding-bottom: 30px;
-  display: flex
+  display: flex;
 }
 
 .ppCategoryHeading {
-  letter-spacing: .15em;
+  letter-spacing: 0.15em;
   margin-bottom: 10px;
   font-size: 14px;
-  font-weight: 600
+  font-weight: 600;
 }
 
 .ppCategorySub {
   color: #666;
-  font-size: 13px
+  font-size: 13px;
 }
 
 .ppHeaderRight {
   align-items: center;
   gap: 20px;
-  display: flex
+  display: flex;
 }
 
 .ppSortWrap {
   white-space: nowrap;
   align-items: center;
   gap: 12px;
-  display: flex
+  display: flex;
 }
 
 .ppSortText {
   color: #888;
   font-size: 11px;
-  font-weight: 600
+  font-weight: 600;
 }
 
 .ppSortDropdownNew {
@@ -418,17 +426,19 @@
   color: #111;
   cursor: pointer;
   outline: none;
-  transition: border-color .2s, box-shadow .2s;
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s;
   box-sizing: border-box;
 }
 
 .ppSortTriggerNew:hover {
   border-color: var(--et-primary);
-  box-shadow: 0 0 0 1px rgba(249, 115, 22, .15);
+  box-shadow: 0 0 0 1px rgba(249, 115, 22, 0.15);
 }
 
 .ppSortArrow {
-  transition: transform .2s ease;
+  transition: transform 0.2s ease;
   color: #666;
 }
 
@@ -444,25 +454,27 @@
   background: #ffffff;
   border: 1px solid #e2e8f0;
   border-radius: 8px;
-  box-shadow: 0 10px 25px -5px rgba(15, 23, 42, .08), 0 8px 16px -6px rgba(15, 23, 42, .04);
+  box-shadow:
+    0 10px 25px -5px rgba(15, 23, 42, 0.08),
+    0 8px 16px -6px rgba(15, 23, 42, 0.04);
   padding: 6px;
   z-index: 50;
   display: flex;
   flex-direction: column;
   gap: 2px;
   box-sizing: border-box;
-  animation: ppSortFadeIn .18s cubic-bezier(.16, 1, .3, 1) both;
+  animation: ppSortFadeIn 0.18s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 @keyframes ppSortFadeIn {
   from {
     opacity: 0;
-    transform: translateY(-8px)
+    transform: translateY(-8px);
   }
 
   to {
     opacity: 1;
-    transform: translateY(0)
+    transform: translateY(0);
   }
 }
 
@@ -477,17 +489,19 @@
   font-weight: 600;
   color: #475569;
   cursor: pointer;
-  transition: background .18s ease, color .18s ease;
+  transition:
+    background 0.18s ease,
+    color 0.18s ease;
   box-sizing: border-box;
 }
 
 .ppSortOptionItemNew:hover {
-  background: rgba(15, 23, 42, .03);
+  background: rgba(15, 23, 42, 0.03);
   color: var(--et-primary-hover);
 }
 
 .ppSortOptionItemNew--active {
-  background: rgba(249, 115, 22, .08) !important;
+  background: rgba(249, 115, 22, 0.08) !important;
   color: var(--et-primary) !important;
   font-weight: 600;
 }
@@ -495,19 +509,19 @@
 .ppProductGridNew {
   grid-template-columns: repeat(5, 1fr);
   gap: 18px;
-  display: grid
+  display: grid;
 }
 
 .ppCardNew {
   background: #fff;
   border: 1px solid #0000001c;
   border-radius: 5px;
-  transition: all .3s
+  transition: all 0.3s;
 }
 
 .ppCardNew:hover {
   border-color: #eee;
-  box-shadow: 0 10px 30px #0000000d
+  box-shadow: 0 10px 30px #0000000d;
 }
 
 .ppCardImageWrap {
@@ -515,7 +529,7 @@
   background: #f1f3f5;
   display: block;
   position: relative;
-  overflow: hidden
+  overflow: hidden;
 }
 
 .ppWishBtn {
@@ -529,22 +543,26 @@
   align-items: center;
   width: 34px;
   height: 34px;
-  transition: transform .18s, background .18s, color .18s, border-color .18s;
+  transition:
+    transform 0.18s,
+    background 0.18s,
+    color 0.18s,
+    border-color 0.18s;
   display: inline-flex;
   position: absolute;
   top: 5px;
-  left: 5px
+  left: 5px;
 }
 
 .ppWishBtn:hover {
   color: var(--et-primary);
   border-color: #f973164d;
-  transform: translateY(-1px)
+  transform: translateY(-1px);
 }
 
 .ppWishBtn--active {
   color: var(--et-primary);
-  border-color: #f9731640
+  border-color: #f9731640;
 }
 
 .ppCompareBtn {
@@ -558,24 +576,24 @@
   align-items: center;
   width: 34px;
   height: 34px;
-  transition: all .2s;
+  transition: all 0.2s;
   display: inline-flex;
   position: absolute;
   top: 5px;
-  left: 45px
+  left: 45px;
 }
 
 .ppCompareBtn:hover {
   color: var(--et-primary);
   background: #fff;
   border-color: #f973164d;
-  transform: translateY(-1px)
+  transform: translateY(-1px);
 }
 
 .ppCompareBtn--active {
   color: #fff;
   background: var(--et-primary) !important;
-  border-color: var(--et-primary) !important
+  border-color: var(--et-primary) !important;
 }
 
 .ppCardImg {
@@ -583,19 +601,19 @@
   object-fit: contain;
   width: 100%;
   height: 100%;
-  transition: transform .5s;
+  transition: transform 0.5s;
   border-top-left-radius: 5px;
   border-top-right-radius: 5px;
 }
 
 .ppCardNew:hover .ppCardImg {
-  transform: scale(1.05)
+  transform: scale(1.05);
 }
 
 .ppCardBadge {
   background: var(--et-primary);
   color: #fff;
-  letter-spacing: .1em;
+  letter-spacing: 0.1em;
   padding: 4px;
   font-size: 8px;
   font-weight: 600;
@@ -608,29 +626,29 @@
   display: flex;
   flex-direction: row;
   gap: 4px;
-  align-items: flex-end
+  align-items: flex-end;
 }
 
 .ppCardBadge--featured {
-  background: #f59e0b
+  background: #f59e0b;
 }
 
 .ppCardBadge--new {
-  background: #22c55e
+  background: #22c55e;
 }
 
 .ppCardBadge--limited {
   background: var(--et-primary-hover);
   left: 15px;
-  right: auto
+  right: auto;
 }
 
 .ppCardBadge--discount {
-  background: #ef4444
+  background: #ef4444;
 }
 
 .ppCardContent {
-  padding: 10px
+  padding: 10px;
 }
 
 .ppCardTopRow {
@@ -638,19 +656,19 @@
   align-items: center;
   gap: 12px;
   min-width: 0;
-  display: flex
+  display: flex;
 }
 
 .ppCardBrand {
   color: #999;
-  letter-spacing: .1em;
+  letter-spacing: 0.1em;
   white-space: nowrap;
   text-overflow: ellipsis;
   flex: none;
   max-width: 34%;
   font-size: 11px;
   font-weight: 600;
-  overflow: hidden
+  overflow: hidden;
 }
 
 .ppCardRating {
@@ -661,38 +679,38 @@
   padding-right: 10px;
   gap: 8px;
   min-width: 0;
-  display: inline-flex
+  display: inline-flex;
 }
 
 .ppCardStars {
   gap: 2px;
   line-height: 1;
-  display: inline-flex
+  display: inline-flex;
 }
 
 .ppStar {
   font-size: 15px;
-  line-height: 1
+  line-height: 1;
 }
 
 .ppStar--full {
-  color: #e6e300
+  color: #e6e300;
 }
 
 .ppStar--half {
   color: #f59e0b;
-  opacity: .55
+  opacity: 0.55;
 }
 
 .ppStar--empty {
-  color: #d4d4d8
+  color: #d4d4d8;
 }
 
 .ppCardRatingText {
   color: #a3a3a3;
   white-space: nowrap;
   font-size: 12px;
-  font-weight: 600
+  font-weight: 600;
 }
 
 .ppCardPrice {
@@ -700,7 +718,7 @@
   white-space: nowrap;
   flex: none;
   font-size: 15px;
-  font-weight: 600
+  font-weight: 600;
 }
 
 .ppCardTitle {
@@ -720,30 +738,30 @@
 .ppCardTitleLink {
   color: inherit;
   text-decoration: none;
-  display: block
+  display: block;
 }
 
 .ppCardMeta {
-  margin-bottom: 15px
+  margin-bottom: 15px;
 }
 
 .ppColorDots {
   gap: 8px;
-  display: flex
+  display: flex;
 }
 
 .ppDot {
   border-radius: 50%;
   width: 8px;
-  height: 8px
+  height: 8px;
 }
 
 .ppDot--gray {
-  background: #cbd5e0
+  background: #cbd5e0;
 }
 
 .ppDot--black {
-  background: #2d3748
+  background: #2d3748;
 }
 
 .ppCardDesc {
@@ -771,7 +789,10 @@
   letter-spacing: 0.08em;
   border-radius: 5px;
   cursor: pointer;
-  transition: background 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
+  transition:
+    background 0.2s ease,
+    transform 0.15s ease,
+    box-shadow 0.2s ease;
   text-transform: uppercase;
   text-align: center;
   text-decoration: none;
@@ -798,18 +819,18 @@
 
 .ppPaginationInfo {
   font-size: 14px;
-  color: #6b7280
+  color: #6b7280;
 }
 
 .ppPaginationInfo b {
   color: #111827;
-  font-weight: 600
+  font-weight: 600;
 }
 
 .ppPaginationBtns {
   display: flex;
   align-items: center;
-  gap: 6px
+  gap: 6px;
 }
 
 .ppPagBtn {
@@ -822,55 +843,55 @@
   padding: 0 16px;
   font-size: 14px;
   font-weight: 600;
-  transition: all .2s;
+  transition: all 0.2s;
   display: flex;
   align-items: center;
-  justify-content: center
+  justify-content: center;
 }
 
 .ppPagBtn:hover:not(:disabled) {
   color: var(--et-primary);
   border-color: var(--et-primary);
-  background: #f0fdf4
+  background: #f0fdf4;
 }
 
 .ppPagBtn:disabled {
   opacity: 0.4;
   cursor: not-allowed;
-  background: #f3f4f6
+  background: #f3f4f6;
 }
 
 .ppPagBtn--active {
   background: var(--et-primary);
   color: #fff;
-  border-color: var(--et-primary)
+  border-color: var(--et-primary);
 }
 
 .ppPagBtn--active:hover:not(:disabled) {
   background: var(--et-primary-hover);
   border-color: var(--et-primary-hover);
-  color: #fff
+  color: #fff;
 }
 
 .ppPageDots {
   color: #9ca3af;
   padding: 0 6px;
   font-size: 16px;
-  font-weight: 500
+  font-weight: 500;
 }
 
 @media (max-width: 640px) {
   .ppPagination {
     flex-direction: column;
-    gap: 16px
+    gap: 16px;
   }
   .ppPaginationInfo {
-    order: 2
+    order: 2;
   }
   .ppPaginationBtns {
     order: 1;
     flex-wrap: wrap;
-    justify-content: center
+    justify-content: center;
   }
 }
 
@@ -895,7 +916,7 @@
   font-size: 13px;
   font-weight: 500;
   color: #444;
-  transition: color .2s;
+  transition: color 0.2s;
   user-select: none;
 }
 
@@ -914,23 +935,23 @@
 
 @media (width<=1200px) {
   .ppProductGridNew {
-    grid-template-columns: 1fr 1fr
+    grid-template-columns: 1fr 1fr;
   }
 }
 
 @media (width<=900px) {
   .ppMainGrid {
-    grid-template-columns: 1fr
+    grid-template-columns: 1fr;
   }
   .ppPageNew {
-        padding: 10px 0 30px;
+    padding: 10px 0 30px;
   }
-  .ppPagination{
+  .ppPagination {
     padding: 0;
   }
 
   .ppContainer {
-    padding: 0 20px
+    padding: 0 20px;
   }
 
   .ppHeaderNew {
@@ -938,7 +959,7 @@
     align-items: stretch;
     gap: 20px;
     padding-bottom: 20px;
-    margin-bottom: 30px
+    margin-bottom: 30px;
   }
 
   .ppHeaderRight {
@@ -986,7 +1007,7 @@
     padding: 0 10px;
     gap: 8px;
   }
-  
+
   .ppSortTriggerNew span {
     white-space: nowrap;
     overflow: hidden;
@@ -1015,7 +1036,7 @@
     transition: all 0.2s ease;
     flex-shrink: 0;
   }
-  
+
   .ppMobileFilterBtn {
     display: inline-flex;
     align-items: center;
@@ -1035,13 +1056,15 @@
     white-space: nowrap;
   }
 
-  .ppMobileIconBtn:hover, .ppMobileFilterBtn:hover {
+  .ppMobileIconBtn:hover,
+  .ppMobileFilterBtn:hover {
     background: #fff;
     color: var(--et-primary);
     border-color: var(--et-primary);
     box-shadow: 0 4px 12px rgba(249, 115, 22, 0.12);
   }
-  .ppMobileIconBtn svg, .ppMobileFilterBtn svg {
+  .ppMobileIconBtn svg,
+  .ppMobileFilterBtn svg {
     width: 18px;
     height: 18px;
     stroke-width: 2;
@@ -1057,11 +1080,11 @@
     z-index: 1000;
     padding: 30px 20px;
     overflow-y: auto;
-    transition: left .3s ease
+    transition: left 0.3s ease;
   }
 
   .ppSidebarNew--open {
-    left: 0
+    left: 0;
   }
 
   .ppSidebarClose {
@@ -1071,7 +1094,7 @@
     right: 20px;
     cursor: pointer;
     font-size: 20px;
-    color: #666
+    color: #666;
   }
 
   .ppSidebarOverlay {
@@ -1081,18 +1104,18 @@
     left: 0;
     width: 100vw;
     height: 100vh;
-    background: rgba(0, 0, 0, .5);
-    z-index: 999
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999;
   }
 
   .ppProductGridNew {
-    grid-template-columns: 1fr 1fr
+    grid-template-columns: 1fr 1fr;
   }
 }
 
 @media (width<=600px) {
   .ppContainer {
-    padding: 0 10px
+    padding: 0 10px;
   }
 
   .ppProductGridNew {
@@ -1152,14 +1175,15 @@
     font-size: 0.75rem;
   }
 
-  .ppCompareBtn, .ppWishBtn {
+  .ppCompareBtn,
+  .ppWishBtn {
     width: 28px;
     height: 28px;
   }
   .ppCompareBtn {
     left: 36px;
   }
-  
+
   .fsLabelText {
     font-size: 9px;
     margin-left: 1px;
@@ -1207,9 +1231,12 @@
 
 .fsBannerBg {
   position: absolute;
-  top: 0; left: 0; right: 0; bottom: 0;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   background: linear-gradient(90deg, #ed1c24 0%, #fa4b2a 100%);
-  box-shadow: 0 -2px 4px rgba(0,0,0,0.15);
+  box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.15);
   overflow: hidden;
 }
 
@@ -1221,7 +1248,7 @@
   width: 36%;
   z-index: 4;
   /* Viền vàng 3D sát lề ôm trọn khối cắt chéo */
-  filter: drop-shadow(2px 2px 0px #ffeb3b); 
+  filter: drop-shadow(2px 2px 0px #ffeb3b);
 }
 
 .fsLabelMain {
@@ -1241,7 +1268,7 @@
   line-height: 1.05;
   font-size: 12px;
   margin-left: 2px;
-  text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
 }
 
 .fsTimerBlock {
@@ -1297,7 +1324,7 @@
   width: 24%;
   z-index: 3;
   /* Viền vàng 3D cắt chéo trái và chìm xuống dưới */
-  filter: drop-shadow(-2px 2px 0px #ffeb3b); 
+  filter: drop-shadow(-2px 2px 0px #ffeb3b);
 }
 
 .fsDiscountMain {

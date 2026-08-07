@@ -24,7 +24,7 @@ import {
 } from "@/features/services/mutations";
 import Skeleton from "@/components/Skeleton";
 import { useAuthStore } from "@/features/store/useAuthStore";
-import { toast } from '@/utils/toast';
+import { toast } from "@/utils/toast";
 
 const TEN_DAYS_MS = 10 * 24 * 60 * 60 * 1000;
 
@@ -194,35 +194,57 @@ function StockBar({ stock }: { stock: number }) {
   return (
     <div className="ppStockBar">
       <div className="ppStockBarMeta">
-        <span className={`ppStockBarSold${isLow || isOut ? " ppStockBarSold--low" : ""}`} style={isOut ? { color: '#9e9e9e' } : {}}>
-          {isOut 
-              ? "❌ Hết hàng" 
-              : isLow 
-                  ? `⚠️ Sắp hết hàng (còn ${stock})` 
-                  : `Còn ${stock} sản phẩm`}
+        <span
+          className={`ppStockBarSold${isLow || isOut ? " ppStockBarSold--low" : ""}`}
+          style={isOut ? { color: "#9e9e9e" } : {}}
+        >
+          {isOut
+            ? "❌ Hết hàng"
+            : isLow
+              ? `⚠️ Sắp hết hàng (còn ${stock})`
+              : `Còn ${stock} sản phẩm`}
         </span>
         <span className="ppStockBarPct">{pct.toFixed(0)}%</span>
       </div>
       <div className="ppStockBarTrack">
         <div
           className={`ppStockBarFill${isLow ? " ppStockBarFill--low" : isOut ? "" : " ppStockBarFill--normal"}`}
-          style={{ width: `${pct}%`, background: isOut ? '#e0e0e0' : undefined }}
+          style={{
+            width: `${pct}%`,
+            background: isOut ? "#e0e0e0" : undefined,
+          }}
         />
       </div>
     </div>
   );
 }
 
-function FlashSaleBanner({ endAt, discountPercent }: { endAt: string, discountPercent: number }) {
-  const [timeLeft, setTimeLeft] = useState({ hours: "00", minutes: "00", seconds: "00" });
+function FlashSaleBanner({
+  endAt,
+  discountPercent,
+}: {
+  endAt: string;
+  discountPercent: number;
+}) {
+  const [timeLeft, setTimeLeft] = useState({
+    hours: "00",
+    minutes: "00",
+    seconds: "00",
+  });
 
   useEffect(() => {
     const compute = () => {
       const distance = new Date(endAt).getTime() - new Date().getTime();
       if (distance < 0) return { hours: "00", minutes: "00", seconds: "00" };
-      const h = Math.floor(distance / (1000 * 60 * 60)).toString().padStart(2, "0");
-      const m = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)).toString().padStart(2, "0");
-      const s = Math.floor((distance % (1000 * 60)) / 1000).toString().padStart(2, "0");
+      const h = Math.floor(distance / (1000 * 60 * 60))
+        .toString()
+        .padStart(2, "0");
+      const m = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60))
+        .toString()
+        .padStart(2, "0");
+      const s = Math.floor((distance % (1000 * 60)) / 1000)
+        .toString()
+        .padStart(2, "0");
       return { hours: h, minutes: m, seconds: s };
     };
     setTimeLeft(compute());
@@ -237,32 +259,39 @@ function FlashSaleBanner({ endAt, discountPercent }: { endAt: string, discountPe
       {/* Khối 1: Label */}
       <div className="fsLabelBlock">
         <div className="fsLabelMain">
-           <svg width="18" height="24" viewBox="0 0 24 24" fill="#ffeb3b" stroke="#ffaa00" strokeWidth="1">
-             <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
-           </svg>
-           <div className="fsLabelText">
-             FLASH<br/>SALE
-           </div>
+          <svg
+            width="18"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="#ffeb3b"
+            stroke="#ffaa00"
+            strokeWidth="1"
+          >
+            <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
+          </svg>
+          <div className="fsLabelText">
+            FLASH
+            <br />
+            SALE
+          </div>
         </div>
       </div>
 
       {/* Khối 2: Countdown */}
       <div className="fsTimerBlock">
-         <span className="fsTimerTitle">Kết thúc sau:</span>
-         <div className="fsTimerDisplay">
-           <span className="fsTimerDigit">{timeLeft.hours}</span>
-           <span className="fsTimerColon">:</span>
-           <span className="fsTimerDigit">{timeLeft.minutes}</span>
-           <span className="fsTimerColon">:</span>
-           <span className="fsTimerDigit">{timeLeft.seconds}</span>
-         </div>
+        <span className="fsTimerTitle">Kết thúc sau:</span>
+        <div className="fsTimerDisplay">
+          <span className="fsTimerDigit">{timeLeft.hours}</span>
+          <span className="fsTimerColon">:</span>
+          <span className="fsTimerDigit">{timeLeft.minutes}</span>
+          <span className="fsTimerColon">:</span>
+          <span className="fsTimerDigit">{timeLeft.seconds}</span>
+        </div>
       </div>
-      
+
       {/* Khối 3: Discount */}
       <div className="fsDiscountBlock">
-        <div className="fsDiscountMain">
-          -{discountPercent}%
-        </div>
+        <div className="fsDiscountMain">-{discountPercent}%</div>
       </div>
     </div>
   );
@@ -286,7 +315,10 @@ export function ProductCard({
   const activeFlashSaleItem = useMemo(() => {
     return product.flash_sale_items?.find((item) => {
       // Backend filters active and date range already
-      const isSoldOut = item.quantity_limit !== null && item.quantity_limit > 0 && item.sold_quantity >= item.quantity_limit;
+      const isSoldOut =
+        item.quantity_limit !== null &&
+        item.quantity_limit > 0 &&
+        item.sold_quantity >= item.quantity_limit;
       return !!item.flash_sale && !isSoldOut;
     });
   }, [product.flash_sale_items]);
@@ -314,15 +346,18 @@ export function ProductCard({
       );
       selectedVariant = sorted[0];
       const highest = sorted[sorted.length - 1];
-      
-      let hasMultiplePrices = selectedVariant.effective_price !== highest.effective_price;
+
+      let hasMultiplePrices =
+        selectedVariant.effective_price !== highest.effective_price;
       let showDiscountBadge = isSingleVariant;
       let finalPrice = selectedVariant.effective_price;
       let originalPrice = Number.parseFloat(selectedVariant.price);
 
       if (isFlashSale && activeFlashSaleItem) {
         if (activeFlashSaleItem.variant_id) {
-          const flashVariant = activeVariants.find((v) => v.id === activeFlashSaleItem.variant_id);
+          const flashVariant = activeVariants.find(
+            (v) => v.id === activeFlashSaleItem.variant_id,
+          );
           if (flashVariant) {
             selectedVariant = flashVariant;
             originalPrice = Number.parseFloat(flashVariant.price);
@@ -334,7 +369,9 @@ export function ProductCard({
       }
 
       const hasDiscount = finalPrice < originalPrice && showDiscountBadge;
-      const vImgUrl = selectedVariant.image_url ? resolveImageUrl(selectedVariant.image_url) : resolveImageUrl(product.main_image_url);
+      const vImgUrl = selectedVariant.image_url
+        ? resolveImageUrl(selectedVariant.image_url)
+        : resolveImageUrl(product.main_image_url);
 
       return {
         displayPrice: finalPrice,
@@ -347,7 +384,10 @@ export function ProductCard({
           : 0,
         variantId: selectedVariant.id,
         variantLabel:
-          [variantColorLabel(selectedVariant), variantStorageLabel(selectedVariant)]
+          [
+            variantColorLabel(selectedVariant),
+            variantStorageLabel(selectedVariant),
+          ]
             .filter(Boolean)
             .join(" · ") || selectedVariant.variant_name,
         imageUrl: vImgUrl,
@@ -366,7 +406,12 @@ export function ProductCard({
       variantLabel: null,
       imageUrl: resolveImageUrl(product.main_image_url),
     };
-  }, [product.variants, isFlashSale, activeFlashSaleItem, product.main_image_url]);
+  }, [
+    product.variants,
+    isFlashSale,
+    activeFlashSaleItem,
+    product.main_image_url,
+  ]);
 
   const isNew = isNewWithinTenDays(product.created_at);
 
@@ -509,7 +554,10 @@ export function ProductCard({
           </div>
         )}
         {isFlashSale && activeFlashSaleItem?.flash_sale && (
-          <FlashSaleBanner endAt={activeFlashSaleItem.flash_sale.end_at} discountPercent={discountPercent} />
+          <FlashSaleBanner
+            endAt={activeFlashSaleItem.flash_sale.end_at}
+            discountPercent={discountPercent}
+          />
         )}
       </Link>
       <div className="ppCardContent">
@@ -534,7 +582,10 @@ export function ProductCard({
             )}
           </span>
         </div>
-        <Link to={`/products/${product.slug}${variantId ? `?variant=${variantId}` : ""}`} className="ppCardTitleLink">
+        <Link
+          to={`/products/${product.slug}${variantId ? `?variant=${variantId}` : ""}`}
+          className="ppCardTitleLink"
+        >
           <h3 className="ppCardTitle">{product.name}</h3>
         </Link>
         <div className="ppCardPriceRow">
@@ -554,30 +605,47 @@ export function ProductCard({
             )}
         </div>
 
-        {isFlashSale && activeFlashSaleItem && activeFlashSaleItem.quantity_limit && (
-          <div className="ppStockBar">
-            <div className="ppStockBarMeta">
-              <span className="ppStockBarSold">Đã bán {activeFlashSaleItem.sold_quantity}/{activeFlashSaleItem.quantity_limit}</span>
-              <span className="ppStockBarPct">
-                {Math.round((activeFlashSaleItem.sold_quantity / activeFlashSaleItem.quantity_limit) * 100)}%
-              </span>
+        {isFlashSale &&
+          activeFlashSaleItem &&
+          activeFlashSaleItem.quantity_limit && (
+            <div className="ppStockBar">
+              <div className="ppStockBarMeta">
+                <span className="ppStockBarSold">
+                  Đã bán {activeFlashSaleItem.sold_quantity}/
+                  {activeFlashSaleItem.quantity_limit}
+                </span>
+                <span className="ppStockBarPct">
+                  {Math.round(
+                    (activeFlashSaleItem.sold_quantity /
+                      activeFlashSaleItem.quantity_limit) *
+                      100,
+                  )}
+                  %
+                </span>
+              </div>
+              <div className="ppStockBarTrack">
+                <div
+                  className="ppStockBarFill ppStockBarFill--flash"
+                  style={{
+                    width: `${Math.min(100, (activeFlashSaleItem.sold_quantity / activeFlashSaleItem.quantity_limit) * 100)}%`,
+                  }}
+                />
+              </div>
             </div>
-            <div className="ppStockBarTrack">
-              <div
-                className="ppStockBarFill ppStockBarFill--flash"
-                style={{ width: `${Math.min(100, (activeFlashSaleItem.sold_quantity / activeFlashSaleItem.quantity_limit) * 100)}%` }}
-              />
-            </div>
-          </div>
-        )}
+          )}
 
-        {!isFlashSale && (() => {
-          // Tính tổng stock: ưu tiên từng variant, fallback sang product.stock_quantity
-          const totalStock = (product.variants && product.variants.length > 0)
-            ? product.variants.reduce((sum, v) => sum + (v.stock_quantity ?? 0), 0)
-            : (product.stock_quantity ?? null);
-          return totalStock != null ? <StockBar stock={totalStock} /> : null;
-        })()}
+        {!isFlashSale &&
+          (() => {
+            // Tính tổng stock: ưu tiên từng variant, fallback sang product.stock_quantity
+            const totalStock =
+              product.variants && product.variants.length > 0
+                ? product.variants.reduce(
+                    (sum, v) => sum + (v.stock_quantity ?? 0),
+                    0,
+                  )
+                : (product.stock_quantity ?? null);
+            return totalStock != null ? <StockBar stock={totalStock} /> : null;
+          })()}
 
         <ProductDescWithDetailButton product={product} />
       </div>
@@ -984,7 +1052,9 @@ export default function ProductsPage() {
                 </p>
               </div>
               <div className="ppHeaderRight">
-                <div className={`ppSearchWrap ${mobileSearchOpen ? "ppSearchWrap--mobile-open" : ""}`}>
+                <div
+                  className={`ppSearchWrap ${mobileSearchOpen ? "ppSearchWrap--mobile-open" : ""}`}
+                >
                   <input
                     type="text"
                     className="ppSearchInput"
@@ -1061,7 +1131,7 @@ export default function ProductsPage() {
                       )}
                     </div>
                   </div>
-                  
+
                   <div className="ppMobileActionIcons">
                     <button
                       className="ppMobileFilterBtn hfMobileOnly"

@@ -1,6 +1,6 @@
 import { useCallback, useState, useEffect, useMemo } from "react";
 import ConfirmModal from "@/components/ConfirmModal";
-import { toast } from '@/utils/toast';
+import { toast } from "@/utils/toast";
 import {
   fetchAdminDeletedProductVariants,
   hardDeleteAdminDeletedProductVariants,
@@ -39,7 +39,16 @@ import type {
 import "@/styles/admin/ProductPage.css";
 import "@/styles/admin/HardDeletePage.css";
 
-type DeletedTab = "product_variants" | "products" | "product_news" | "product_faqs" | "blog_posts" | "blog_comments" | "users" | "categories" | "reviews";
+type DeletedTab =
+  | "product_variants"
+  | "products"
+  | "product_news"
+  | "product_faqs"
+  | "blog_posts"
+  | "blog_comments"
+  | "users"
+  | "categories"
+  | "reviews";
 
 const PAGE_SIZE = 100;
 
@@ -103,7 +112,9 @@ function Thumb({ url }: { url: string | null }) {
 // ── Status badge ─────────────────────────────────────────────────────────────
 function StatusBadge({ active }: { active: boolean }) {
   return (
-    <span className={`hdp-badge ${active ? "hdp-badge--active" : "hdp-badge--inactive"}`}>
+    <span
+      className={`hdp-badge ${active ? "hdp-badge--active" : "hdp-badge--inactive"}`}
+    >
       {active ? "Active" : "Inactive"}
     </span>
   );
@@ -154,11 +165,17 @@ function VariantsTab({
               items.map((v) => (
                 <tr key={v.id}>
                   <td>
-                    <input type="checkbox" checked={sel.selectedSet.has(v.id)} onChange={() => sel.toggleOne(v.id)} />
+                    <input
+                      type="checkbox"
+                      checked={sel.selectedSet.has(v.id)}
+                      onChange={() => sel.toggleOne(v.id)}
+                    />
                   </td>
                   <td>
                     <div className="hdp-cell-grid">
-                      <span className="hdp-cell-name">{v.variant_name || "(không có tên)"}</span>
+                      <span className="hdp-cell-name">
+                        {v.variant_name || "(không có tên)"}
+                      </span>
                       <span className="hdp-cell-sub">ID: {v.id}</span>
                     </div>
                   </td>
@@ -166,7 +183,9 @@ function VariantsTab({
                     <span className="hdp-cell-name">{v.product_id}</span>
                   </td>
                   <td>{v.stock_quantity ?? 0}</td>
-                  <td><Thumb url={v.image_url} /></td>
+                  <td>
+                    <Thumb url={v.image_url} />
+                  </td>
                   <td>
                     <span className="hdp-cell-dark">{v.deleted_at ?? "—"}</span>
                   </td>
@@ -226,18 +245,34 @@ function ProductsTab({
               items.map((p) => (
                 <tr key={p.id}>
                   <td>
-                    <input type="checkbox" checked={sel.selectedSet.has(p.id)} onChange={() => sel.toggleOne(p.id)} />
+                    <input
+                      type="checkbox"
+                      checked={sel.selectedSet.has(p.id)}
+                      onChange={() => sel.toggleOne(p.id)}
+                    />
                   </td>
                   <td>
                     <div className="hdp-cell-grid">
                       <span className="hdp-cell-name">{p.name}</span>
-                      <span className="hdp-cell-sub">ID: {p.id} · {p.slug}</span>
+                      <span className="hdp-cell-sub">
+                        ID: {p.id} · {p.slug}
+                      </span>
                     </div>
                   </td>
-                  <td>{p.category?.name ?? <span className="hdp-cell-muted">—</span>}</td>
-                  <td>{p.brand ?? <span className="hdp-cell-muted">—</span>}</td>
-                  <td><Thumb url={p.main_image_url} /></td>
-                  <td><StatusBadge active={p.is_active} /></td>
+                  <td>
+                    {p.category?.name ?? (
+                      <span className="hdp-cell-muted">—</span>
+                    )}
+                  </td>
+                  <td>
+                    {p.brand ?? <span className="hdp-cell-muted">—</span>}
+                  </td>
+                  <td>
+                    <Thumb url={p.main_image_url} />
+                  </td>
+                  <td>
+                    <StatusBadge active={p.is_active} />
+                  </td>
                   <td>
                     <span className="hdp-cell-dark">{p.deleted_at ?? "—"}</span>
                   </td>
@@ -297,12 +332,18 @@ function ProductNewsTab({
               items.map((n) => (
                 <tr key={n.id}>
                   <td>
-                    <input type="checkbox" checked={sel.selectedSet.has(n.id)} onChange={() => sel.toggleOne(n.id)} />
+                    <input
+                      type="checkbox"
+                      checked={sel.selectedSet.has(n.id)}
+                      onChange={() => sel.toggleOne(n.id)}
+                    />
                   </td>
                   <td>
                     <div className="hdp-cell-grid">
                       <span className="hdp-cell-name">{n.title}</span>
-                      <span className="hdp-cell-sub">ID: {n.id} · {n.slug}</span>
+                      <span className="hdp-cell-sub">
+                        ID: {n.id} · {n.slug}
+                      </span>
                     </div>
                   </td>
                   <td>
@@ -315,15 +356,23 @@ function ProductNewsTab({
                       <span className="hdp-cell-muted">ID: {n.product_id}</span>
                     )}
                   </td>
-                  <td><Thumb url={n.thumbnail_url} /></td>
-                  <td><StatusBadge active={n.is_active} /></td>
+                  <td>
+                    <Thumb url={n.thumbnail_url} />
+                  </td>
+                  <td>
+                    <StatusBadge active={n.is_active} />
+                  </td>
                   <td>
                     <span className="hdp-cell-dark-sm">
-                      {n.published_at ? new Date(n.published_at).toLocaleDateString("vi-VN") : "—"}
+                      {n.published_at
+                        ? new Date(n.published_at).toLocaleDateString("vi-VN")
+                        : "—"}
                     </span>
                   </td>
                   <td>
-                    <span className="hdp-cell-dark-sm">{n.deleted_at ?? "—"}</span>
+                    <span className="hdp-cell-dark-sm">
+                      {n.deleted_at ?? "—"}
+                    </span>
                   </td>
                 </tr>
               ))
@@ -380,7 +429,11 @@ function ProductFaqsTab({
               items.map((f) => (
                 <tr key={f.id}>
                   <td>
-                    <input type="checkbox" checked={sel.selectedSet.has(f.id)} onChange={() => sel.toggleOne(f.id)} />
+                    <input
+                      type="checkbox"
+                      checked={sel.selectedSet.has(f.id)}
+                      onChange={() => sel.toggleOne(f.id)}
+                    />
                   </td>
                   <td>
                     <div className="hdp-cell-grid">
@@ -403,9 +456,13 @@ function ProductFaqsTab({
                       {f.answer ?? <span className="hdp-cell-muted">—</span>}
                     </span>
                   </td>
-                  <td><StatusBadge active={f.is_active} /></td>
                   <td>
-                    <span className="hdp-cell-dark-sm">{f.deleted_at ?? "—"}</span>
+                    <StatusBadge active={f.is_active} />
+                  </td>
+                  <td>
+                    <span className="hdp-cell-dark-sm">
+                      {f.deleted_at ?? "—"}
+                    </span>
                   </td>
                 </tr>
               ))
@@ -463,19 +520,41 @@ function BlogPostsTab({
               items.map((p) => (
                 <tr key={p.id}>
                   <td>
-                    <input type="checkbox" checked={sel.selectedSet.has(p.id)} onChange={() => sel.toggleOne(p.id)} />
+                    <input
+                      type="checkbox"
+                      checked={sel.selectedSet.has(p.id)}
+                      onChange={() => sel.toggleOne(p.id)}
+                    />
                   </td>
                   <td>
                     <div className="hdp-cell-grid">
                       <span className="hdp-cell-name">{p.title}</span>
-                      <span className="hdp-cell-sub">ID: {p.id} · {p.slug}</span>
+                      <span className="hdp-cell-sub">
+                        ID: {p.id} · {p.slug}
+                      </span>
                     </div>
                   </td>
-                  <td>{p.category?.name ?? <span className="hdp-cell-muted">—</span>}</td>
-                  <td>{p.author?.name ?? <span className="hdp-cell-muted">—</span>}</td>
-                  <td><Thumb url={p.thumbnail_url} /></td>
-                  <td><StatusBadge active={p.is_published} /></td>
-                  <td><span className="hdp-cell-dark-sm">{p.deleted_at ?? "—"}</span></td>
+                  <td>
+                    {p.category?.name ?? (
+                      <span className="hdp-cell-muted">—</span>
+                    )}
+                  </td>
+                  <td>
+                    {p.author?.name ?? (
+                      <span className="hdp-cell-muted">—</span>
+                    )}
+                  </td>
+                  <td>
+                    <Thumb url={p.thumbnail_url} />
+                  </td>
+                  <td>
+                    <StatusBadge active={p.is_published} />
+                  </td>
+                  <td>
+                    <span className="hdp-cell-dark-sm">
+                      {p.deleted_at ?? "—"}
+                    </span>
+                  </td>
                 </tr>
               ))
             )}
@@ -531,7 +610,11 @@ function BlogCommentsTab({
               items.map((c) => (
                 <tr key={c.id}>
                   <td>
-                    <input type="checkbox" checked={sel.selectedSet.has(c.id)} onChange={() => sel.toggleOne(c.id)} />
+                    <input
+                      type="checkbox"
+                      checked={sel.selectedSet.has(c.id)}
+                      onChange={() => sel.toggleOne(c.id)}
+                    />
                   </td>
                   <td>
                     <span className="hdp-answer-cell" title={c.content}>
@@ -540,26 +623,40 @@ function BlogCommentsTab({
                   </td>
                   <td>
                     <div className="hdp-cell-grid">
-                      <span className="hdp-cell-name">{c.author_name ?? "Ẩn danh"}</span>
-                      {c.author_email && <span className="hdp-cell-sub">{c.author_email}</span>}
+                      <span className="hdp-cell-name">
+                        {c.author_name ?? "Ẩn danh"}
+                      </span>
+                      {c.author_email && (
+                        <span className="hdp-cell-sub">{c.author_email}</span>
+                      )}
                     </div>
                   </td>
                   <td>
                     {c.post ? (
                       <div className="hdp-cell-grid-sm">
                         <span className="hdp-cell-name">{c.post.title}</span>
-                        <span className="hdp-cell-sub">ID: {c.blog_post_id}</span>
+                        <span className="hdp-cell-sub">
+                          ID: {c.blog_post_id}
+                        </span>
                       </div>
                     ) : (
-                      <span className="hdp-cell-muted">ID: {c.blog_post_id}</span>
+                      <span className="hdp-cell-muted">
+                        ID: {c.blog_post_id}
+                      </span>
                     )}
                   </td>
                   <td>
-                    <span className={`hdp-badge ${c.status === "approved" ? "hdp-badge--active" : "hdp-badge--inactive"}`}>
+                    <span
+                      className={`hdp-badge ${c.status === "approved" ? "hdp-badge--active" : "hdp-badge--inactive"}`}
+                    >
                       {c.status ?? "—"}
                     </span>
                   </td>
-                  <td><span className="hdp-cell-dark-sm">{c.deleted_at ?? "—"}</span></td>
+                  <td>
+                    <span className="hdp-cell-dark-sm">
+                      {c.deleted_at ?? "—"}
+                    </span>
+                  </td>
                 </tr>
               ))
             )}
@@ -616,7 +713,11 @@ function UsersTab({
               items.map((u) => (
                 <tr key={u.id}>
                   <td>
-                    <input type="checkbox" checked={sel.selectedSet.has(u.id)} onChange={() => sel.toggleOne(u.id)} />
+                    <input
+                      type="checkbox"
+                      checked={sel.selectedSet.has(u.id)}
+                      onChange={() => sel.toggleOne(u.id)}
+                    />
                   </td>
                   <td>
                     <div className="hdp-cell-grid">
@@ -624,11 +725,23 @@ function UsersTab({
                       <span className="hdp-cell-sub">ID: {u.id}</span>
                     </div>
                   </td>
-                  <td><span className="hdp-cell-sub">{u.email}</span></td>
-                  <td>{u.phone ?? <span className="hdp-cell-muted">—</span>}</td>
-                  <td><Thumb url={u.avatar_url} /></td>
-                  <td><StatusBadge active={u.is_active} /></td>
-                  <td><span className="hdp-cell-dark-sm">{u.deleted_at ?? "—"}</span></td>
+                  <td>
+                    <span className="hdp-cell-sub">{u.email}</span>
+                  </td>
+                  <td>
+                    {u.phone ?? <span className="hdp-cell-muted">—</span>}
+                  </td>
+                  <td>
+                    <Thumb url={u.avatar_url} />
+                  </td>
+                  <td>
+                    <StatusBadge active={u.is_active} />
+                  </td>
+                  <td>
+                    <span className="hdp-cell-dark-sm">
+                      {u.deleted_at ?? "—"}
+                    </span>
+                  </td>
                 </tr>
               ))
             )}
@@ -684,7 +797,11 @@ function CategoriesTab({
               items.map((c) => (
                 <tr key={c.id}>
                   <td>
-                    <input type="checkbox" checked={sel.selectedSet.has(c.id)} onChange={() => sel.toggleOne(c.id)} />
+                    <input
+                      type="checkbox"
+                      checked={sel.selectedSet.has(c.id)}
+                      onChange={() => sel.toggleOne(c.id)}
+                    />
                   </td>
                   <td>
                     <div className="hdp-cell-grid">
@@ -692,10 +809,18 @@ function CategoriesTab({
                       <span className="hdp-cell-sub">ID: {c.id}</span>
                     </div>
                   </td>
-                  <td><span className="hdp-cell-sub">{c.slug}</span></td>
+                  <td>
+                    <span className="hdp-cell-sub">{c.slug}</span>
+                  </td>
                   <td>{c.type ?? <span className="hdp-cell-muted">—</span>}</td>
-                  <td><StatusBadge active={c.is_active} /></td>
-                  <td><span className="hdp-cell-dark-sm">{c.deleted_at ?? "—"}</span></td>
+                  <td>
+                    <StatusBadge active={c.is_active} />
+                  </td>
+                  <td>
+                    <span className="hdp-cell-dark-sm">
+                      {c.deleted_at ?? "—"}
+                    </span>
+                  </td>
                 </tr>
               ))
             )}
@@ -752,10 +877,16 @@ function ReviewsTab({
               items.map((r) => (
                 <tr key={r.id}>
                   <td>
-                    <input type="checkbox" checked={sel.selectedSet.has(r.id)} onChange={() => sel.toggleOne(r.id)} />
+                    <input
+                      type="checkbox"
+                      checked={sel.selectedSet.has(r.id)}
+                      onChange={() => sel.toggleOne(r.id)}
+                    />
                   </td>
                   <td>
-                    <span className="hdp-answer-cell" title={r.comment}>{r.comment}</span>
+                    <span className="hdp-answer-cell" title={r.comment}>
+                      {r.comment}
+                    </span>
                   </td>
                   <td>
                     {r.product ? (
@@ -778,14 +909,25 @@ function ReviewsTab({
                     )}
                   </td>
                   <td>
-                    <span className="hdp-cell-name" style={{ color: "#f97316" }}>⭐ {r.rating}</span>
+                    <span
+                      className="hdp-cell-name"
+                      style={{ color: "#f97316" }}
+                    >
+                      ⭐ {r.rating}
+                    </span>
                   </td>
                   <td>
-                    <span className={`hdp-badge ${r.status === "approved" ? "hdp-badge--active" : "hdp-badge--inactive"}`}>
+                    <span
+                      className={`hdp-badge ${r.status === "approved" ? "hdp-badge--active" : "hdp-badge--inactive"}`}
+                    >
                       {r.status ?? "—"}
                     </span>
                   </td>
-                  <td><span className="hdp-cell-dark-sm">{r.deleted_at ?? "—"}</span></td>
+                  <td>
+                    <span className="hdp-cell-dark-sm">
+                      {r.deleted_at ?? "—"}
+                    </span>
+                  </td>
                 </tr>
               ))
             )}
@@ -818,7 +960,9 @@ export default function HardDeletePage({ onBack }: { onBack: () => void }) {
   const [blogPosts, setBlogPosts] = useState<AdminDeletedBlogPost[]>([]);
   const [blogPostsLoading, setBlogPostsLoading] = useState(false);
 
-  const [blogComments, setBlogComments] = useState<AdminDeletedBlogComment[]>([]);
+  const [blogComments, setBlogComments] = useState<AdminDeletedBlogComment[]>(
+    [],
+  );
   const [blogCommentsLoading, setBlogCommentsLoading] = useState(false);
 
   const [users, setUsers] = useState<AdminDeletedUser[]>([]);
@@ -838,9 +982,15 @@ export default function HardDeletePage({ onBack }: { onBack: () => void }) {
   const newsAllIds = useMemo(() => news.map((i) => i.id), [news]);
   const faqAllIds = useMemo(() => faqs.map((i) => i.id), [faqs]);
   const blogPostAllIds = useMemo(() => blogPosts.map((i) => i.id), [blogPosts]);
-  const blogCommentAllIds = useMemo(() => blogComments.map((i) => i.id), [blogComments]);
+  const blogCommentAllIds = useMemo(
+    () => blogComments.map((i) => i.id),
+    [blogComments],
+  );
   const userAllIds = useMemo(() => users.map((i) => i.id), [users]);
-  const categoryAllIds = useMemo(() => categories.map((i) => i.id), [categories]);
+  const categoryAllIds = useMemo(
+    () => categories.map((i) => i.id),
+    [categories],
+  );
   const reviewAllIds = useMemo(() => reviews.map((i) => i.id), [reviews]);
 
   const variantSel = useSelection(variantAllIds);
@@ -982,42 +1132,71 @@ export default function HardDeletePage({ onBack }: { onBack: () => void }) {
 
   useEffect(() => {
     if (tab === "product_variants") {
-      const t = window.setTimeout(() => { void fetchVariants(); }, 0);
+      const t = window.setTimeout(() => {
+        void fetchVariants();
+      }, 0);
       return () => window.clearTimeout(t);
     }
     if (tab === "products") {
-      const t = window.setTimeout(() => { void fetchProducts(); }, 0);
+      const t = window.setTimeout(() => {
+        void fetchProducts();
+      }, 0);
       return () => window.clearTimeout(t);
     }
     if (tab === "product_news") {
-      const t = window.setTimeout(() => { void fetchNews(); }, 0);
+      const t = window.setTimeout(() => {
+        void fetchNews();
+      }, 0);
       return () => window.clearTimeout(t);
     }
     if (tab === "product_faqs") {
-      const t = window.setTimeout(() => { void fetchFaqs(); }, 0);
+      const t = window.setTimeout(() => {
+        void fetchFaqs();
+      }, 0);
       return () => window.clearTimeout(t);
     }
     if (tab === "blog_posts") {
-      const t = window.setTimeout(() => { void fetchBlogPosts(); }, 0);
+      const t = window.setTimeout(() => {
+        void fetchBlogPosts();
+      }, 0);
       return () => window.clearTimeout(t);
     }
     if (tab === "blog_comments") {
-      const t = window.setTimeout(() => { void fetchBlogComments(); }, 0);
+      const t = window.setTimeout(() => {
+        void fetchBlogComments();
+      }, 0);
       return () => window.clearTimeout(t);
     }
     if (tab === "users") {
-      const t = window.setTimeout(() => { void fetchUsers(); }, 0);
+      const t = window.setTimeout(() => {
+        void fetchUsers();
+      }, 0);
       return () => window.clearTimeout(t);
     }
     if (tab === "categories") {
-      const t = window.setTimeout(() => { void fetchCategories(); }, 0);
+      const t = window.setTimeout(() => {
+        void fetchCategories();
+      }, 0);
       return () => window.clearTimeout(t);
     }
     if (tab === "reviews") {
-      const t = window.setTimeout(() => { void fetchReviews(); }, 0);
+      const t = window.setTimeout(() => {
+        void fetchReviews();
+      }, 0);
       return () => window.clearTimeout(t);
     }
-  }, [tab, fetchVariants, fetchProducts, fetchNews, fetchFaqs, fetchBlogPosts, fetchBlogComments, fetchUsers, fetchCategories, fetchReviews]);
+  }, [
+    tab,
+    fetchVariants,
+    fetchProducts,
+    fetchNews,
+    fetchFaqs,
+    fetchBlogPosts,
+    fetchBlogComments,
+    fetchUsers,
+    fetchCategories,
+    fetchReviews,
+  ]);
 
   // ── Confirm modal ──────────────────────────────────────────────────────────
   const [confirmOpen, setConfirmOpen] = useState(false);
@@ -1025,15 +1204,23 @@ export default function HardDeletePage({ onBack }: { onBack: () => void }) {
   const [pending, setPending] = useState(false);
 
   const currentSel =
-    tab === "product_variants" ? variantSel
-    : tab === "products" ? productSel
-    : tab === "product_news" ? newsSel
-    : tab === "product_faqs" ? faqSel
-    : tab === "blog_posts" ? blogPostSel
-    : tab === "blog_comments" ? blogCommentSel
-    : tab === "users" ? userSel
-    : tab === "categories" ? categorySel
-    : reviewSel;
+    tab === "product_variants"
+      ? variantSel
+      : tab === "products"
+        ? productSel
+        : tab === "product_news"
+          ? newsSel
+          : tab === "product_faqs"
+            ? faqSel
+            : tab === "blog_posts"
+              ? blogPostSel
+              : tab === "blog_comments"
+                ? blogCommentSel
+                : tab === "users"
+                  ? userSel
+                  : tab === "categories"
+                    ? categorySel
+                    : reviewSel;
 
   const openConfirm = () => {
     if (currentSel.selectedIds.length === 0) {
@@ -1131,7 +1318,9 @@ export default function HardDeletePage({ onBack }: { onBack: () => void }) {
       <div className="prodHeader">
         <div>
           <h2 className="prodTitle">Dữ liệu đã xóa (Hard delete)</h2>
-          <p className="prodSub">Xem/tác động hard-delete theo từng nhóm dữ liệu (tab).</p>
+          <p className="prodSub">
+            Xem/tác động hard-delete theo từng nhóm dữ liệu (tab).
+          </p>
         </div>
 
         <div className="hdp-header-actions">
@@ -1146,7 +1335,9 @@ export default function HardDeletePage({ onBack }: { onBack: () => void }) {
             disabled={pending || currentSel.selectedIds.length === 0}
             title="Xóa hẳn dữ liệu đã chọn (không thể hoàn tác)"
           >
-            {pending ? "Đang xóa..." : `Xóa hẳn (${currentSel.selectedIds.length})`}
+            {pending
+              ? "Đang xóa..."
+              : `Xóa hẳn (${currentSel.selectedIds.length})`}
           </button>
         </div>
       </div>
@@ -1164,7 +1355,9 @@ export default function HardDeletePage({ onBack }: { onBack: () => void }) {
             >
               {t.label}
               {tabCounts[t.key] > 0 && (
-                <span className={`hdp-tab-count${isActive ? " hdp-tab-count--active" : ""}`}>
+                <span
+                  className={`hdp-tab-count${isActive ? " hdp-tab-count--active" : ""}`}
+                >
                   ({tabCounts[t.key]})
                 </span>
               )}
@@ -1176,10 +1369,18 @@ export default function HardDeletePage({ onBack }: { onBack: () => void }) {
       {error && <div className="prodErrorBanner">{error}</div>}
 
       {tab === "product_variants" && (
-        <VariantsTab items={variants} isLoading={variantsLoading} sel={variantSel} />
+        <VariantsTab
+          items={variants}
+          isLoading={variantsLoading}
+          sel={variantSel}
+        />
       )}
       {tab === "products" && (
-        <ProductsTab items={products} isLoading={productsLoading} sel={productSel} />
+        <ProductsTab
+          items={products}
+          isLoading={productsLoading}
+          sel={productSel}
+        />
       )}
       {tab === "product_news" && (
         <ProductNewsTab items={news} isLoading={newsLoading} sel={newsSel} />
@@ -1188,19 +1389,35 @@ export default function HardDeletePage({ onBack }: { onBack: () => void }) {
         <ProductFaqsTab items={faqs} isLoading={faqsLoading} sel={faqSel} />
       )}
       {tab === "blog_posts" && (
-        <BlogPostsTab items={blogPosts} isLoading={blogPostsLoading} sel={blogPostSel} />
+        <BlogPostsTab
+          items={blogPosts}
+          isLoading={blogPostsLoading}
+          sel={blogPostSel}
+        />
       )}
       {tab === "blog_comments" && (
-        <BlogCommentsTab items={blogComments} isLoading={blogCommentsLoading} sel={blogCommentSel} />
+        <BlogCommentsTab
+          items={blogComments}
+          isLoading={blogCommentsLoading}
+          sel={blogCommentSel}
+        />
       )}
       {tab === "users" && (
         <UsersTab items={users} isLoading={usersLoading} sel={userSel} />
       )}
       {tab === "categories" && (
-        <CategoriesTab items={categories} isLoading={categoriesLoading} sel={categorySel} />
+        <CategoriesTab
+          items={categories}
+          isLoading={categoriesLoading}
+          sel={categorySel}
+        />
       )}
       {tab === "reviews" && (
-        <ReviewsTab items={reviews} isLoading={reviewsLoading} sel={reviewSel} />
+        <ReviewsTab
+          items={reviews}
+          isLoading={reviewsLoading}
+          sel={reviewSel}
+        />
       )}
 
       <ConfirmModal
@@ -1213,8 +1430,11 @@ export default function HardDeletePage({ onBack }: { onBack: () => void }) {
               <b>{confirmLabels[tab]}</b> bạn đã chọn.
             </p>
             {tab === "users" && (
-              <p style={{ margin: "8px 0 0", color: "#ef4444", fontWeight: 500 }}>
-                Lưu ý: Xóa người dùng sẽ tự động xóa TOÀN BỘ ĐƠN HÀNG và dữ liệu liên quan của họ!
+              <p
+                style={{ margin: "8px 0 0", color: "#ef4444", fontWeight: 500 }}
+              >
+                Lưu ý: Xóa người dùng sẽ tự động xóa TOÀN BỘ ĐƠN HÀNG và dữ liệu
+                liên quan của họ!
               </p>
             )}
             <p className="hdp-confirm-count">

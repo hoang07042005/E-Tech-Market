@@ -4,7 +4,13 @@
 
 .adminPageContainer {
   padding: 32px;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-family:
+    "Inter",
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Roboto,
+    sans-serif;
   color: #334155;
   background-color: #f8fafc;
   min-height: 100vh;
@@ -46,7 +52,7 @@
   justify-content: center;
   gap: 8px;
   box-shadow: 0 1px 2px rgba(234, 88, 12, 0.2);
-  transition: all .2s ease;
+  transition: all 0.2s ease;
   box-sizing: border-box;
 }
 
@@ -61,7 +67,9 @@
   background: white;
   border-radius: 12px;
   border: 1px solid #e2e8f0;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.03), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.03),
+    0 2px 4px -1px rgba(0, 0, 0, 0.03);
   overflow: hidden;
 }
 
@@ -108,16 +116,20 @@
   background: linear-gradient(135deg, #ea580c 0%, #f43f5e 100%);
   color: #ffffff;
   padding: 8px 24px;
-  font-family: 'Courier New', Courier, monospace;
+  font-family: "Courier New", Courier, monospace;
   font-weight: 800;
   font-size: 1rem;
   letter-spacing: 2px;
   text-transform: uppercase;
-  -webkit-mask-image: radial-gradient(circle at 0 50%, transparent 6px, black 6.5px), radial-gradient(circle at 100% 50%, transparent 6px, black 6.5px);
+  -webkit-mask-image:
+    radial-gradient(circle at 0 50%, transparent 6px, black 6.5px),
+    radial-gradient(circle at 100% 50%, transparent 6px, black 6.5px);
   -webkit-mask-size: 51% 100%;
   -webkit-mask-position: left, right;
   -webkit-mask-repeat: no-repeat;
-  mask-image: radial-gradient(circle at 0 50%, transparent 6px, black 6.5px), radial-gradient(circle at 100% 50%, transparent 6px, black 6.5px);
+  mask-image:
+    radial-gradient(circle at 0 50%, transparent 6px, black 6.5px),
+    radial-gradient(circle at 100% 50%, transparent 6px, black 6.5px);
   mask-size: 51% 100%;
   mask-position: left, right;
   mask-repeat: no-repeat;
@@ -125,7 +137,7 @@
 }
 
 .couponCodeBadge::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 4px;
   bottom: 4px;
@@ -285,7 +297,7 @@
 }
 
 .adminPagination button:disabled {
-  opacity: .4;
+  opacity: 0.4;
   cursor: not-allowed;
   background: #f1f5f9;
 }
@@ -316,12 +328,18 @@
   border-radius: 16px;
   width: 100%;
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
-  animation: modalFadeIn .25s cubic-bezier(0.16, 1, 0.3, 1);
+  animation: modalFadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 @keyframes modalFadeIn {
-  from { opacity: 0; transform: translateY(10px) scale(0.98); }
-  to { opacity: 1; transform: translateY(0) scale(1); }
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 .adminModalHeader {
@@ -429,7 +447,6 @@
   display: flex;
   justify-content: flex-end;
   gap: 12px;
-
 }
 
 .modalBtnCancel {
@@ -473,8 +490,12 @@
 }
 
 @keyframes shimmer {
-  0% { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
 }
 
 .deleteConfirmContent p {
@@ -523,7 +544,7 @@
     white-space: nowrap;
   }
 
-  .adminTable th, 
+  .adminTable th,
   .adminTable td {
     padding: 8px 10px;
     font-size: 11px;
@@ -566,14 +587,14 @@
     font-size: 11px;
   }
 
-  .adminBtnSecondary, 
+  .adminBtnSecondary,
   .adminBtnDanger {
     width: 28px !important;
     height: 28px !important;
     border-radius: 4px !important;
   }
 
-  .adminBtnSecondary svg, 
+  .adminBtnSecondary svg,
   .adminBtnDanger svg {
     width: 14px !important;
     height: 14px !important;
@@ -601,9 +622,9 @@
     margin-bottom: 12px;
   }
 
-  .adminFormGroup input[type="text"], 
-  .adminFormGroup input[type="number"], 
-  .adminFormGroup input[type="datetime-local"], 
+  .adminFormGroup input[type="text"],
+  .adminFormGroup input[type="number"],
+  .adminFormGroup input[type="datetime-local"],
   .adminFormGroup select {
     padding: 8px 12px;
     font-size: 13px;
@@ -653,7 +674,7 @@
     font-size: 12px;
   }
 
-  .adminTable th, 
+  .adminTable th,
   .adminTable td {
     padding: 8px 12px;
     font-size: 11px;
@@ -695,14 +716,14 @@
     font-size: 10px;
   }
 
-  .adminBtnSecondary, 
+  .adminBtnSecondary,
   .adminBtnDanger {
     width: 26px !important;
     height: 26px !important;
     border-radius: 4px !important;
   }
 
-  .adminBtnSecondary svg, 
+  .adminBtnSecondary svg,
   .adminBtnDanger svg {
     width: 12px !important;
     height: 12px !important;
@@ -749,9 +770,9 @@
     margin-bottom: 4px;
   }
 
-  .adminFormGroup input[type="text"], 
-  .adminFormGroup input[type="number"], 
-  .adminFormGroup input[type="datetime-local"], 
+  .adminFormGroup input[type="text"],
+  .adminFormGroup input[type="number"],
+  .adminFormGroup input[type="datetime-local"],
   .adminFormGroup select {
     padding: 6px 10px;
     font-size: 12px;

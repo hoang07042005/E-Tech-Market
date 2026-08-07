@@ -382,7 +382,7 @@
   height: 3px;
   background: #3b82f6;
   border-radius: 5px;
-  margin-top: 2px ;
+  margin-top: 2px;
 }
 
 .adm-dash-style-51 {
@@ -401,7 +401,7 @@
   height: 3px;
   background: #fb923c;
   border-radius: 5px;
-   margin-top: 2px ;
+  margin-top: 2px;
 }
 
 .adm-dash-style-53 {
@@ -410,7 +410,6 @@
   font-weight: 600;
   color: #475569;
   padding-bottom: 6px;
-
 }
 
 .adm-dash-style-54 {
@@ -421,7 +420,7 @@
   height: 3px;
   background: #c084fc;
   border-radius: 5px;
-   margin-top: 2px ;
+  margin-top: 2px;
 }
 
 .adm-dash-style-55 {
@@ -571,7 +570,6 @@
   text-align: center;
 }
 
-
 .adm-dash-style-76 {
   padding: 16px;
   color: #64748b;
@@ -668,13 +666,13 @@
   padding-left: 18px;
   border-radius: 5px;
   background: #f8fafc;
-  box-shadow: 0 1px 2px 0 rgba(0,0,0,0.02);
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.02);
   position: relative;
   overflow: hidden;
 }
 
 .admPieCategoryItem::before {
-  content: '';
+  content: "";
   position: absolute;
   inset: 0 auto 0 0;
   width: 4px;
@@ -736,7 +734,7 @@ html.dark .adm-dash-style-80 {
 }
 
 html.dark .adm-dash-style-74 {
-  background: rgba(255,255,255,.04) !important;
+  background: rgba(255, 255, 255, 0.04) !important;
 }
 
 html.dark .adm-dash-style-23,
@@ -762,18 +760,22 @@ html.dark .admRangeDateInput {
   color: var(--admin-text-p) !important;
 }
 
-html.dark .admDashWrap :is(.admCard,
-  .admCardTight,
-  .admKpiCard,
-  .admKpiCard2,
-  .admAnalyticsCard,
-  .admAnalyticsCatsWrap,
-  .admOrdersCard,
-  .admReviewCard,
-  .admLoyalCard,
-  .admQuickRow,
-  .admTopRatedRow,
-  .admPieCategoryItem) {
+html.dark
+  .admDashWrap
+  :is(
+    .admCard,
+    .admCardTight,
+    .admKpiCard,
+    .admKpiCard2,
+    .admAnalyticsCard,
+    .admAnalyticsCatsWrap,
+    .admOrdersCard,
+    .admReviewCard,
+    .admLoyalCard,
+    .admQuickRow,
+    .admTopRatedRow,
+    .admPieCategoryItem
+  ) {
   background: var(--admin-card-bg) !important;
   border-color: var(--admin-border) !important;
   color: var(--admin-text-p) !important;
@@ -783,24 +785,27 @@ html.dark .admPieCategoryItem {
   border-left-color: var(--category-color, #3b82f6) !important;
 }
 
-html.dark .admDashWrap :is(.admQuickRowText,
-  .admQuickRowChevron,
-  .admTopRatedName,
-  .admTopRatedScore,
-  .admTopRatedCount,
-  .admTopRatedMeta) {
+html.dark
+  .admDashWrap
+  :is(
+    .admQuickRowText,
+    .admQuickRowChevron,
+    .admTopRatedName,
+    .admTopRatedScore,
+    .admTopRatedCount,
+    .admTopRatedMeta
+  ) {
   color: var(--admin-text-p) !important;
 }
 
-html.dark .admDashWrap :is(.admQuickRowIcon,
-  .admTopRatedThumb) {
+html.dark .admDashWrap :is(.admQuickRowIcon, .admTopRatedThumb) {
   background: #0f172a !important;
   border-color: var(--admin-border) !important;
 }
 
 html.dark .admDashWrap .admQuickRow:nth-child(2),
 html.dark .admDashWrap .admQuickRow:nth-child(3) {
-  background: rgba(255, 255, 255, .04) !important;
+  background: rgba(255, 255, 255, 0.04) !important;
 }
 
 /* KPI sparkline styles */
@@ -826,7 +831,7 @@ html.dark .admDashWrap .admQuickRow:nth-child(3) {
   width: 100%;
   max-width: 140px;
   height: 56px;
-  display: flex ;
+  display: flex;
   opacity: 1;
   justify-content: center;
   align-items: center;
@@ -836,7 +841,6 @@ html.dark .admDashWrap .admQuickRow:nth-child(3) {
 }
 .admKpiSparkline.admKpiThinArea path {
   shape-rendering: geometricPrecision;
-
 }
 
 .admKpiCard2 {
@@ -863,7 +867,9 @@ html.dark .admKpiSparkline polyline {
 }
 
 .admKpiBarChart rect {
-  transition: opacity 0.12s ease, transform 0.12s ease;
+  transition:
+    opacity 0.12s ease,
+    transform 0.12s ease;
   rx: 3;
 }
 .admKpiBarChart line {
@@ -876,10 +882,12 @@ html.dark .admKpiSparkline polyline {
   opacity: 0.95;
 }
 .admKpiPurpleBars rect {
-  transition: transform 0.12s ease, opacity 0.12s ease;
+  transition:
+    transform 0.12s ease,
+    opacity 0.12s ease;
 }
 .admKpiPurpleBars rect:last-child {
-  filter: drop-shadow(0 6px 10px rgba(124,58,237,0.12));
+  filter: drop-shadow(0 6px 10px rgba(124, 58, 237, 0.12));
 }
 .admKpiDonut {
   display: block;
@@ -903,8 +911,8 @@ html.dark .admKpiSparkline polyline {
   border-color: #ef4444;
 }
 html.dark .admKpiBlock {
-  background: rgba(255,255,255,0.02);
-  border-color: rgba(255,255,255,0.06);
+  background: rgba(255, 255, 255, 0.02);
+  border-color: rgba(255, 255, 255, 0.06);
 }
 html.dark .admKpiBlock.filled {
   background: #ef4444;
@@ -912,7 +920,7 @@ html.dark .admKpiBlock.filled {
 }
 
 .admKpiSparkline.admKpiRevenue circle {
-  filter: drop-shadow(0 2px 6px rgba(16,185,129,0.12));
+  filter: drop-shadow(0 2px 6px rgba(16, 185, 129, 0.12));
 }
 
 /* Review Lightbox */
@@ -957,18 +965,22 @@ html.dark .admRangeDateInput {
   color: var(--admin-text-p) !important;
 }
 
-html.dark .admDashWrap :is(.admCard,
-  .admCardTight,
-  .admKpiCard,
-  .admKpiCard2,
-  .admAnalyticsCard,
-  .admAnalyticsCatsWrap,
-  .admOrdersCard,
-  .admReviewCard,
-  .admLoyalCard,
-  .admQuickRow,
-  .admTopRatedRow,
-  .admPieCategoryItem) {
+html.dark
+  .admDashWrap
+  :is(
+    .admCard,
+    .admCardTight,
+    .admKpiCard,
+    .admKpiCard2,
+    .admAnalyticsCard,
+    .admAnalyticsCatsWrap,
+    .admOrdersCard,
+    .admReviewCard,
+    .admLoyalCard,
+    .admQuickRow,
+    .admTopRatedRow,
+    .admPieCategoryItem
+  ) {
   background: var(--admin-card-bg) !important;
   border-color: var(--admin-border) !important;
   color: var(--admin-text-p) !important;
@@ -978,24 +990,27 @@ html.dark .admPieCategoryItem {
   border-left-color: var(--category-color, #3b82f6) !important;
 }
 
-html.dark .admDashWrap :is(.admQuickRowText,
-  .admQuickRowChevron,
-  .admTopRatedName,
-  .admTopRatedScore,
-  .admTopRatedCount,
-  .admTopRatedMeta) {
+html.dark
+  .admDashWrap
+  :is(
+    .admQuickRowText,
+    .admQuickRowChevron,
+    .admTopRatedName,
+    .admTopRatedScore,
+    .admTopRatedCount,
+    .admTopRatedMeta
+  ) {
   color: var(--admin-text-p) !important;
 }
 
-html.dark .admDashWrap :is(.admQuickRowIcon,
-  .admTopRatedThumb) {
+html.dark .admDashWrap :is(.admQuickRowIcon, .admTopRatedThumb) {
   background: #0f172a !important;
   border-color: var(--admin-border) !important;
 }
 
 html.dark .admDashWrap .admQuickRow:nth-child(2),
 html.dark .admDashWrap .admQuickRow:nth-child(3) {
-  background: rgba(255, 255, 255, .04) !important;
+  background: rgba(255, 255, 255, 0.04) !important;
 }
 
 /* KPI sparkline styles */
@@ -1021,7 +1036,7 @@ html.dark .admDashWrap .admQuickRow:nth-child(3) {
   width: 100%;
   max-width: 140px;
   height: 56px;
-  display: flex ;
+  display: flex;
   opacity: 1;
   justify-content: center;
   align-items: center;
@@ -1031,7 +1046,6 @@ html.dark .admDashWrap .admQuickRow:nth-child(3) {
 }
 .admKpiSparkline.admKpiThinArea path {
   shape-rendering: geometricPrecision;
-
 }
 
 .admKpiCard2 {
@@ -1058,7 +1072,9 @@ html.dark .admKpiSparkline polyline {
 }
 
 .admKpiBarChart rect {
-  transition: opacity 0.12s ease, transform 0.12s ease;
+  transition:
+    opacity 0.12s ease,
+    transform 0.12s ease;
   rx: 3;
 }
 .admKpiBarChart line {
@@ -1071,10 +1087,12 @@ html.dark .admKpiSparkline polyline {
   opacity: 0.95;
 }
 .admKpiPurpleBars rect {
-  transition: transform 0.12s ease, opacity 0.12s ease;
+  transition:
+    transform 0.12s ease,
+    opacity 0.12s ease;
 }
 .admKpiPurpleBars rect:last-child {
-  filter: drop-shadow(0 6px 10px rgba(124,58,237,0.12));
+  filter: drop-shadow(0 6px 10px rgba(124, 58, 237, 0.12));
 }
 .admKpiDonut {
   display: block;
@@ -1098,8 +1116,8 @@ html.dark .admKpiSparkline polyline {
   border-color: #ef4444;
 }
 html.dark .admKpiBlock {
-  background: rgba(255,255,255,0.02);
-  border-color: rgba(255,255,255,0.06);
+  background: rgba(255, 255, 255, 0.02);
+  border-color: rgba(255, 255, 255, 0.06);
 }
 html.dark .admKpiBlock.filled {
   background: #ef4444;
@@ -1107,7 +1125,7 @@ html.dark .admKpiBlock.filled {
 }
 
 .admKpiSparkline.admKpiRevenue circle {
-  filter: drop-shadow(0 2px 6px rgba(16,185,129,0.12));
+  filter: drop-shadow(0 2px 6px rgba(16, 185, 129, 0.12));
 }
 
 /* Review Lightbox */
@@ -1229,7 +1247,7 @@ html.dark .admKpiBlock.filled {
   .adm-dash-style-30 {
     height: 180px !important;
   }
-  
+
   .adm-dash-style-65 {
     height: 160px !important;
   }
@@ -1276,7 +1294,7 @@ html.dark .admKpiBlock.filled {
       flex-direction: column;
       gap: 12px;
     }
-    
+
     .admAnalyticsLegend {
       justify-content: flex-start;
     }
@@ -1306,7 +1324,8 @@ html.dark .admKpiBlock.filled {
       grid-template-columns: repeat(6, minmax(0, 1fr)) !important;
       gap: 6px !important;
     }
-    .admCard, .admCardTight {
+    .admCard,
+    .admCardTight {
       padding: 12px !important;
     }
     .admKpiCard2 {
@@ -1326,40 +1345,50 @@ html.dark .admKpiBlock.filled {
       padding-top: 10px !important;
       margin-top: 10px !important;
     }
-    .adm-dash-style-47, .adm-dash-style-55 {
+    .adm-dash-style-47,
+    .adm-dash-style-55 {
       grid-template-columns: 70px 1fr !important;
       gap: 10px !important;
       width: 100% !important;
     }
-    .adm-dash-style-48, .adm-dash-style-57 {
+    .adm-dash-style-48,
+    .adm-dash-style-57 {
       width: 100% !important;
       gap: 4px !important;
       grid-template-columns: 1fr 1.2fr 1fr !important;
     }
-    .adm-dash-style-49, .adm-dash-style-51, .adm-dash-style-53 {
+    .adm-dash-style-49,
+    .adm-dash-style-51,
+    .adm-dash-style-53 {
       font-size: 9px !important;
     }
-    .adm-dash-style-58, .adm-dash-style-59, .adm-dash-style-60 {
+    .adm-dash-style-58,
+    .adm-dash-style-59,
+    .adm-dash-style-60 {
       font-size: 10px !important;
       text-align: left !important;
     }
     .adm-dash-style-56 {
       font-size: 10px !important;
     }
-    .adm-dash-style-35, .adm-dash-style-44 {
+    .adm-dash-style-35,
+    .adm-dash-style-44 {
       font-size: 9px !important;
     }
-    .admRangeSelectWrap, .adm-dash-style-42, .admResolutionSelect {
+    .admRangeSelectWrap,
+    .adm-dash-style-42,
+    .admResolutionSelect {
       padding: 4px 8px !important;
       font-size: 10px !important;
     }
     .adm-dash-style-33 {
       gap: 8px !important;
     }
-    .adm-dash-style-34, .adm-dash-style-43 {
+    .adm-dash-style-34,
+    .adm-dash-style-43 {
       gap: 2px !important;
     }
-    
+
     /* Recent Orders Table scaling */
     .admOrdersTable {
       min-width: 600px !important;
@@ -1393,11 +1422,13 @@ html.dark .admKpiBlock.filled {
       overflow: hidden;
       max-width: 150px;
     }
-    .admOrdersAmount, .admOrdersDate {
+    .admOrdersAmount,
+    .admOrdersDate {
       font-size: 11px !important;
       white-space: nowrap !important;
     }
-    .admOrdersAvatar, .admOrdersAvatarImg {
+    .admOrdersAvatar,
+    .admOrdersAvatarImg {
       width: 20px !important;
       height: 20px !important;
       font-size: 9px !important;
@@ -1424,7 +1455,8 @@ html.dark .admKpiBlock.filled {
       overflow: hidden;
       text-overflow: ellipsis;
     }
-    .admTable td:nth-child(3), .admTable td:nth-child(4) {
+    .admTable td:nth-child(3),
+    .admTable td:nth-child(4) {
       max-width: 80px;
       white-space: nowrap;
       overflow: hidden;
@@ -1453,13 +1485,16 @@ html.dark .admKpiBlock.filled {
       gap: 12px !important;
       font-size: 9px !important;
     }
-    .adm-dash-style-21, .adm-dash-style-24, .adm-dash-style-27 {
+    .adm-dash-style-21,
+    .adm-dash-style-24,
+    .adm-dash-style-27 {
       gap: 4px !important;
     }
     .admAnalyticsAxisRow {
       margin-bottom: 6px !important;
     }
-    .adm-dash-style-19, .admAnalyticsAxisRight {
+    .adm-dash-style-19,
+    .admAnalyticsAxisRight {
       font-size: 9px !important;
     }
     .adm-dash-style-30 {
@@ -1481,7 +1516,8 @@ html.dark .admKpiBlock.filled {
       font-size: 9px !important;
       margin-top: 4px !important;
     }
-    .admReviewAvatar, .admReviewAvatarImg {
+    .admReviewAvatar,
+    .admReviewAvatarImg {
       width: 20px !important;
       height: 20px !important;
       font-size: 10px !important;
@@ -1516,7 +1552,8 @@ html.dark .admKpiBlock.filled {
       padding: 6px 8px !important;
       gap: 8px !important;
     }
-    .admLoyalName, .admLoyalSpent {
+    .admLoyalName,
+    .admLoyalSpent {
       font-size: 11px !important;
     }
     .admLoyalOrders {
@@ -1527,7 +1564,8 @@ html.dark .admKpiBlock.filled {
       padding: 2px 4px !important;
       margin-top: 2px !important;
     }
-    .admLoyalAvatar, .admLoyalAvatarImg {
+    .admLoyalAvatar,
+    .admLoyalAvatarImg {
       width: 24px !important;
       height: 24px !important;
       font-size: 11px !important;
@@ -1575,7 +1613,8 @@ html.dark .admKpiBlock.filled {
     .admPieCategoryItem::before {
       width: 3px !important;
     }
-    .adm-dash-style-71, .adm-dash-style-73 {
+    .adm-dash-style-71,
+    .adm-dash-style-73 {
       font-size: 10px !important;
     }
     .adm-dash-style-67 {
@@ -1584,9 +1623,11 @@ html.dark .admKpiBlock.filled {
     .adm-dash-style-68 {
       font-size: 9px !important;
     }
-    
+
     /* Scale down KPI fonts extremely to fit 6 cols */
-    .admKpiLabel2, .admKpiValue2, .admKpiSub2 {
+    .admKpiLabel2,
+    .admKpiValue2,
+    .admKpiSub2 {
       white-space: nowrap !important;
       overflow: hidden !important;
       text-overflow: ellipsis !important;
@@ -1616,7 +1657,8 @@ html.dark .admKpiBlock.filled {
       justify-content: center !important;
       align-items: center !important;
     }
-    .admKpiSparkline, .admKpiBarChart {
+    .admKpiSparkline,
+    .admKpiBarChart {
       max-width: 90px !important;
       width: 100% !important;
       height: 40px !important;
@@ -1660,7 +1702,7 @@ html.dark .admKpiBlock.filled {
       height: 20px !important;
     }
     .admQuickRowIcon svg {
-      width: 12px !important; 
+      width: 12px !important;
       height: 12px !important;
     }
     .admQuickRowText {
@@ -1695,7 +1737,8 @@ html.dark .admKpiBlock.filled {
     .admTopRatedStars {
       font-size: 10px !important;
     }
-    .admTopRatedScore, .admTopRatedCount {
+    .admTopRatedScore,
+    .admTopRatedCount {
       font-size: 9px !important;
     }
     .admCardTitle {
@@ -1703,4 +1746,3 @@ html.dark .admKpiBlock.filled {
     }
   }
 }
-

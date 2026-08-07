@@ -1,131 +1,152 @@
-import { useEffect, useMemo, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
-import '@/styles/pages/CartPage.css'
-import { API_BASE_URL, apiFetch } from '@/configs/api.config'
-import { fetchProducts, type Product as ApiProduct } from '@/features/services/products.service'
-import Skeleton from '@/components/Skeleton'
+import { useEffect, useMemo, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import "@/styles/pages/CartPage.css";
+import { API_BASE_URL, apiFetch } from "@/configs/api.config";
+import {
+  fetchProducts,
+  type Product as ApiProduct,
+} from "@/features/services/products.service";
+import Skeleton from "@/components/Skeleton";
 
 import {
   cartCount,
   getCart,
   type CartState,
-} from '@/features/services/cart.service'
-import { useCartMutation } from '@/features/services/mutations'
-import { toast } from '@/utils/toast';
+} from "@/features/services/cart.service";
+import { useCartMutation } from "@/features/services/mutations";
+import { toast } from "@/utils/toast";
 
 function formatVnd(n: number) {
-  return `${Math.round(n).toLocaleString('vi-VN')} đ`
+  return `${Math.round(n).toLocaleString("vi-VN")} đ`;
 }
 
 function resolveImageUrl(url: string | null | undefined) {
-  if (!url) return 'https://via.placeholder.com/400'
-  const s = url.trim()
-  if (!s) return 'https://via.placeholder.com/400'
+  if (!url) return "https://via.placeholder.com/400";
+  const s = url.trim();
+  if (!s) return "https://via.placeholder.com/400";
   if (/^https?:\/\//i.test(s)) {
     try {
-      const urlObj = new URL(s)
-      if (urlObj.hostname === 'nginx' || urlObj.hostname === 'localhost') {
-        const path = s.replace(/^https?:\/\/[^/]+/, '')
-        return window.location.origin + path
+      const urlObj = new URL(s);
+      if (urlObj.hostname === "nginx" || urlObj.hostname === "localhost") {
+        const path = s.replace(/^https?:\/\/[^/]+/, "");
+        return window.location.origin + path;
       }
-    } catch { void 0 }
-    return s
+    } catch {
+      void 0;
+    }
+    return s;
   }
-  const path = s.startsWith('/') ? s : `/${s}`
-  if (!path.startsWith('/storage/')) return `${API_BASE_URL}/storage${path}`
-  return `${API_BASE_URL}${path}`
+  const path = s.startsWith("/") ? s : `/${s}`;
+  if (!path.startsWith("/storage/")) return `${API_BASE_URL}/storage${path}`;
+  return `${API_BASE_URL}${path}`;
 }
 
 export default function CartPage() {
-  const navigate = useNavigate()
-  const [cart, setCart] = useState<CartState>(() => getCart())
-  const SELECTED_KEY = 'cart_selected_keys'
-  const CHECKOUT_SELECTED_KEY = 'checkout_selected_keys'
+  const navigate = useNavigate();
+  const [cart, setCart] = useState<CartState>(() => getCart());
+  const SELECTED_KEY = "cart_selected_keys";
+  const CHECKOUT_SELECTED_KEY = "checkout_selected_keys";
   const [selectedKeys, setSelectedKeys] = useState<string[]>(() => {
     try {
-      const raw = window.localStorage.getItem(SELECTED_KEY)
-      if (raw) return JSON.parse(raw)
-    } catch { void 0 }
-    return getCart().items.map((it) => it.key)
-  })
-  const [suggested, setSuggested] = useState<ApiProduct[]>([])
-  const [boughtTogether, setBoughtTogether] = useState<ApiProduct[]>([])
-  const [loadingSuggestions, setLoadingSuggestions] = useState(true)
-  const [loadingBoughtTogether, setLoadingBoughtTogether] = useState(false)
-  const { updateQuantity, removeFromCart, clearCart } = useCartMutation()
+      const raw = window.localStorage.getItem(SELECTED_KEY);
+      if (raw) return JSON.parse(raw);
+    } catch {
+      void 0;
+    }
+    return getCart().items.map((it) => it.key);
+  });
+  const [suggested, setSuggested] = useState<ApiProduct[]>([]);
+  const [boughtTogether, setBoughtTogether] = useState<ApiProduct[]>([]);
+  const [loadingSuggestions, setLoadingSuggestions] = useState(true);
+  const [loadingBoughtTogether, setLoadingBoughtTogether] = useState(false);
+  const { updateQuantity, removeFromCart, clearCart } = useCartMutation();
 
   useEffect(() => {
-    const onChange = () => setCart(getCart())
-    window.addEventListener('cart-change', onChange)
-    window.addEventListener('storage', onChange)
+    const onChange = () => setCart(getCart());
+    window.addEventListener("cart-change", onChange);
+    window.addEventListener("storage", onChange);
     // Reload cart when page mounts (in case user returned from checkout)
-    setCart(getCart())
+    setCart(getCart());
     return () => {
-      window.removeEventListener('cart-change', onChange)
-      window.removeEventListener('storage', onChange)
-    }
-  }, [])
+      window.removeEventListener("cart-change", onChange);
+      window.removeEventListener("storage", onChange);
+    };
+  }, []);
 
   // Keep selectedKeys in sync with cart items
   useEffect(() => {
-    const keys = cart.items.map((it) => it.key)
+    const keys = cart.items.map((it) => it.key);
     setSelectedKeys((prev) => {
       // keep previous selections that still exist
-      const next = prev.filter((k) => keys.includes(k))
-      if (next.length === 0 && keys.length > 0) return keys
-      return next
-    })
-  }, [cart.items.map((i) => i.key).join('|')])
+      const next = prev.filter((k) => keys.includes(k));
+      if (next.length === 0 && keys.length > 0) return keys;
+      return next;
+    });
+  }, [cart.items.map((i) => i.key).join("|")]);
 
   // persist selections
   useEffect(() => {
     try {
-      window.localStorage.setItem(SELECTED_KEY, JSON.stringify(selectedKeys))
-    } catch { void 0 }
-  }, [selectedKeys])
+      window.localStorage.setItem(SELECTED_KEY, JSON.stringify(selectedKeys));
+    } catch {
+      void 0;
+    }
+  }, [selectedKeys]);
 
   useEffect(() => {
-    let cancelled = false
-    const items = cart.items
+    let cancelled = false;
+    const items = cart.items;
     if (items.length > 0) {
-      setLoadingBoughtTogether(true)
+      setLoadingBoughtTogether(true);
       // Fetch based on the first item in cart for smart suggestions
-      const firstItem = items[0]
-      apiFetch<{ bought_together: ApiProduct[] }>(`/api/products/${encodeURIComponent(firstItem.slug)}/related`)
-        .then(res => {
-          if (!cancelled) setBoughtTogether(res.bought_together || [])
+      const firstItem = items[0];
+      apiFetch<{ bought_together: ApiProduct[] }>(
+        `/api/products/${encodeURIComponent(firstItem.slug)}/related`,
+      )
+        .then((res) => {
+          if (!cancelled) setBoughtTogether(res.bought_together || []);
         })
         .catch(() => {
-          if (!cancelled) setBoughtTogether([])
+          if (!cancelled) setBoughtTogether([]);
         })
         .finally(() => {
-          if (!cancelled) setLoadingBoughtTogether(false)
-        })
+          if (!cancelled) setLoadingBoughtTogether(false);
+        });
     } else {
-      setBoughtTogether([])
-      setLoadingBoughtTogether(false)
+      setBoughtTogether([]);
+      setLoadingBoughtTogether(false);
     }
 
-    setLoadingSuggestions(true)
+    setLoadingSuggestions(true);
     fetchProducts({ page: 1, per_page: 6 })
       .then((res) => {
-        if (!cancelled) setSuggested(Array.isArray(res.data) ? res.data.slice(0, 6) : [])
+        if (!cancelled)
+          setSuggested(Array.isArray(res.data) ? res.data.slice(0, 6) : []);
       })
       .catch(() => {
-        if (!cancelled) setSuggested([])
+        if (!cancelled) setSuggested([]);
       })
       .finally(() => {
-        if (!cancelled) setLoadingSuggestions(false)
-      })
+        if (!cancelled) setLoadingSuggestions(false);
+      });
     return () => {
-      cancelled = true
-    }
-  }, [cart.items.length])
+      cancelled = true;
+    };
+  }, [cart.items.length]);
 
-  const totalQty = useMemo(() => cartCount(cart), [cart])
-  const selectedItems = useMemo(() => cart.items.filter((it) => selectedKeys.includes(it.key)), [cart, selectedKeys])
-  const selectedQty = useMemo(() => selectedItems.reduce((s, it) => s + it.quantity, 0), [selectedItems])
-  const selectedTotal = useMemo(() => selectedItems.reduce((s, it) => s + it.quantity * it.price, 0), [selectedItems])
+  const totalQty = useMemo(() => cartCount(cart), [cart]);
+  const selectedItems = useMemo(
+    () => cart.items.filter((it) => selectedKeys.includes(it.key)),
+    [cart, selectedKeys],
+  );
+  const selectedQty = useMemo(
+    () => selectedItems.reduce((s, it) => s + it.quantity, 0),
+    [selectedItems],
+  );
+  const selectedTotal = useMemo(
+    () => selectedItems.reduce((s, it) => s + it.quantity * it.price, 0),
+    [selectedItems],
+  );
 
   function ProductSuggestionSkeleton() {
     return (
@@ -134,14 +155,14 @@ export default function CartPage() {
           <Skeleton height="200px" borderRadius="12px" />
         </div>
         <div className="ppCardContent">
-          <div className="ppCardTopRow" style={{ marginBottom: '8px' }}>
+          <div className="ppCardTopRow" style={{ marginBottom: "8px" }}>
             <Skeleton width="60px" height="14px" />
             <Skeleton width="80px" height="14px" />
           </div>
           <Skeleton width="100%" height="20px" />
         </div>
       </div>
-    )
+    );
   }
 
   return (
@@ -155,24 +176,38 @@ export default function CartPage() {
               <span>Giỏ hàng</span>
             </div>
             <h1 className="cartTitle">Giỏ hàng</h1>
-            <div className="cartSub">Kiểm tra lại sản phẩm trước khi thanh toán.</div>
+            <div className="cartSub">
+              Kiểm tra lại sản phẩm trước khi thanh toán.
+            </div>
           </div>
           <div className="cartHeaderRight">
             <span className="cartMeta">{totalQty} sản phẩm</span>
             {cart.items.length > 0 && (
               <>
-                <label style={{ display: 'inline-flex', alignItems: 'center', gap: 8, marginRight: 12 }}>
+                <label
+                  style={{
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: 8,
+                    marginRight: 12,
+                  }}
+                >
                   <input
                     type="checkbox"
                     checked={selectedItems.length === cart.items.length}
                     onChange={(e) => {
-                      if (e.target.checked) setSelectedKeys(cart.items.map((it) => it.key))
-                      else setSelectedKeys([])
+                      if (e.target.checked)
+                        setSelectedKeys(cart.items.map((it) => it.key));
+                      else setSelectedKeys([]);
                     }}
                   />
                   <span>Chọn tất cả</span>
                 </label>
-                <button type="button" className="cartClearBtn" onClick={() => clearCart()}>
+                <button
+                  type="button"
+                  className="cartClearBtn"
+                  onClick={() => clearCart()}
+                >
                   <TrashIcon /> Xoá tất cả
                 </button>
               </>
@@ -188,42 +223,57 @@ export default function CartPage() {
               </div>
               <div className="cartEmptyTitle">Giỏ hàng của bạn đang trống</div>
               <div className="cartEmptyDesc">
-                Hãy chọn thêm sản phẩm bạn yêu thích. Gợi ý bên dưới có thể phù hợp với bạn.
+                Hãy chọn thêm sản phẩm bạn yêu thích. Gợi ý bên dưới có thể phù
+                hợp với bạn.
               </div>
-              <Link to="/products" className="cartEmptyBtn">Quay lại cửa hàng</Link>
+              <Link to="/products" className="cartEmptyBtn">
+                Quay lại cửa hàng
+              </Link>
             </div>
 
             <section className="cartSuggest">
               <div className="cartSuggestHead">
                 <h2 className="cartSuggestTitle">Sản phẩm gợi ý</h2>
-                <Link to="/products" className="cartSuggestLink">Xem thêm</Link>
+                <Link to="/products" className="cartSuggestLink">
+                  Xem thêm
+                </Link>
               </div>
               <div className="ppProductGridNew cartSuggestGrid">
                 {loadingSuggestions
-                  ? Array.from({ length: 6 }).map((_, i) => <ProductSuggestionSkeleton key={i} />)
+                  ? Array.from({ length: 6 }).map((_, i) => (
+                      <ProductSuggestionSkeleton key={i} />
+                    ))
                   : suggested.slice(0, 6).map((p) => (
-                    <div key={p.id} className="ppCardNew">
-                      <Link to={`/products/${p.slug}`} className="ppCardImageWrap">
-                        <img
-                          className="ppCardImg"
-                          src={resolveImageUrl(p.main_image_url)}
-                          alt={p.name}
-                          loading="lazy"
-                          decoding="async"
-                        />
-                      </Link>
-                      <div className="ppCardContent">
-                        <div className="ppCardTopRow">
-                          <span className="ppCardBrand">{(p.brand || 'TECH').toUpperCase()}</span>
-                          {/* <span className="ppCardPrice">{formatVnd(Number.parseFloat(p.price || '0'))}</span> */}
-                        </div>
-                        <Link to={`/products/${p.slug}`} className="ppCardTitleLink">
-                          <h3 className="ppCardTitle">{p.name}</h3>
-                          <h3 className="ppCardTitle">{p.description}</h3>
+                      <div key={p.id} className="ppCardNew">
+                        <Link
+                          to={`/products/${p.slug}`}
+                          className="ppCardImageWrap"
+                        >
+                          <img
+                            className="ppCardImg"
+                            src={resolveImageUrl(p.main_image_url)}
+                            alt={p.name}
+                            loading="lazy"
+                            decoding="async"
+                          />
                         </Link>
+                        <div className="ppCardContent">
+                          <div className="ppCardTopRow">
+                            <span className="ppCardBrand">
+                              {(p.brand || "TECH").toUpperCase()}
+                            </span>
+                            {/* <span className="ppCardPrice">{formatVnd(Number.parseFloat(p.price || '0'))}</span> */}
+                          </div>
+                          <Link
+                            to={`/products/${p.slug}`}
+                            className="ppCardTitleLink"
+                          >
+                            <h3 className="ppCardTitle">{p.name}</h3>
+                            <h3 className="ppCardTitle">{p.description}</h3>
+                          </Link>
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    ))}
               </div>
             </section>
           </>
@@ -242,32 +292,52 @@ export default function CartPage() {
                 </div>
                 {cart.items.map((it) => (
                   <div key={it.key} className="cartItem">
-                    <div style={{ display: 'flex', alignItems: 'center', marginRight: 12 }}>
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        marginRight: 12,
+                      }}
+                    >
                       <input
                         type="checkbox"
                         checked={selectedKeys.includes(it.key)}
                         onChange={(e) => {
                           setSelectedKeys((prev) => {
-                            if (e.target.checked) return Array.from(new Set([...prev, it.key]))
-                            return prev.filter((k) => k !== it.key)
-                          })
+                            if (e.target.checked)
+                              return Array.from(new Set([...prev, it.key]));
+                            return prev.filter((k) => k !== it.key);
+                          });
                         }}
                       />
                     </div>
                     <div className="cartItemImgWrap">
                       {it.image_url ? (
-                        <img src={it.image_url} alt={it.name} className="cartItemImg" />
+                        <img
+                          src={it.image_url}
+                          alt={it.name}
+                          className="cartItemImg"
+                        />
                       ) : (
                         <div className="cartItemImgPlaceholder" />
                       )}
                     </div>
 
                     <div className="cartItemBody">
-                      <Link to={`/products/${it.slug}`} className="cartItemName">
+                      <Link
+                        to={`/products/${it.slug}`}
+                        className="cartItemName"
+                      >
                         {it.name}
                       </Link>
-                      {it.variant_label && <div className="cartItemVariant">{it.variant_label}</div>}
-                      <div className="cartItemPriceSm">{formatVnd(it.price)}</div>
+                      {it.variant_label && (
+                        <div className="cartItemVariant">
+                          {it.variant_label}
+                        </div>
+                      )}
+                      <div className="cartItemPriceSm">
+                        {formatVnd(it.price)}
+                      </div>
                     </div>
 
                     <div className="cartUnit hideSm">{formatVnd(it.price)}</div>
@@ -276,7 +346,14 @@ export default function CartPage() {
                       <button
                         type="button"
                         className="cartQtyBtn"
-                        onClick={() => updateQuantity({ key: it.key, qty: it.quantity - 1, productId: it.product_id, variantId: it.variant_id })}
+                        onClick={() =>
+                          updateQuantity({
+                            key: it.key,
+                            qty: it.quantity - 1,
+                            productId: it.product_id,
+                            variantId: it.variant_id,
+                          })
+                        }
                         disabled={it.quantity <= 1}
                         aria-label="Giảm số lượng"
                       >
@@ -287,45 +364,86 @@ export default function CartPage() {
                         type="number"
                         min={1}
                         value={it.quantity}
-                        onChange={(e) => updateQuantity({ key: it.key, qty: Number(e.target.value), productId: it.product_id, variantId: it.variant_id })}
+                        onChange={(e) =>
+                          updateQuantity({
+                            key: it.key,
+                            qty: Number(e.target.value),
+                            productId: it.product_id,
+                            variantId: it.variant_id,
+                          })
+                        }
                         aria-label="Số lượng"
                       />
                       <button
                         type="button"
                         className="cartQtyBtn"
-                        onClick={() => updateQuantity({ key: it.key, qty: it.quantity + 1, productId: it.product_id, variantId: it.variant_id })}
+                        onClick={() =>
+                          updateQuantity({
+                            key: it.key,
+                            qty: it.quantity + 1,
+                            productId: it.product_id,
+                            variantId: it.variant_id,
+                          })
+                        }
                         aria-label="Tăng số lượng"
                       >
                         <PlusIcon />
                       </button>
                     </div>
 
-                    <div className="cartLine hideSm">{formatVnd(it.price * it.quantity)}</div>
+                    <div className="cartLine hideSm">
+                      {formatVnd(it.price * it.quantity)}
+                    </div>
 
-                    <button type="button" className="cartRemoveBtn" onClick={() => removeFromCart({ key: it.key, productId: it.product_id, variantId: it.variant_id })} aria-label="Xoá sản phẩm">
+                    <button
+                      type="button"
+                      className="cartRemoveBtn"
+                      onClick={() =>
+                        removeFromCart({
+                          key: it.key,
+                          productId: it.product_id,
+                          variantId: it.variant_id,
+                        })
+                      }
+                      aria-label="Xoá sản phẩm"
+                    >
                       <TrashIcon />
                     </button>
                   </div>
                 ))}
                 <div className="cartFooterBar">
                   <div className="cartFooterLeft">
-                    <span className="cartFooterLabel">Tổng (đã chọn) — {selectedQty} sản phẩm</span>
-                    <span className="cartFooterValue">{formatVnd(selectedTotal)}</span>
+                    <span className="cartFooterLabel">
+                      Tổng (đã chọn) — {selectedQty} sản phẩm
+                    </span>
+                    <span className="cartFooterValue">
+                      {formatVnd(selectedTotal)}
+                    </span>
                   </div>
                   <div className="cartFooterRight">
-                    <Link to="/products" className="cartBackLinkSmall"> ← Quay lại cửa hàng</Link>
+                    <Link to="/products" className="cartBackLinkSmall">
+                      {" "}
+                      ← Quay lại cửa hàng
+                    </Link>
                     <button
                       type="button"
                       className="cartCheckoutBtn"
                       onClick={() => {
                         if (selectedKeys.length === 0) {
-                          toast.error('Vui lòng chọn ít nhất một sản phẩm để thanh toán.')
-                          return
+                          toast.error(
+                            "Vui lòng chọn ít nhất một sản phẩm để thanh toán.",
+                          );
+                          return;
                         }
                         try {
-                          window.localStorage.setItem(CHECKOUT_SELECTED_KEY, JSON.stringify(selectedKeys))
-                        } catch { void 0 }
-                        navigate('/checkout')
+                          window.localStorage.setItem(
+                            CHECKOUT_SELECTED_KEY,
+                            JSON.stringify(selectedKeys),
+                          );
+                        } catch {
+                          void 0;
+                        }
+                        navigate("/checkout");
                       }}
                     >
                       Thanh toán
@@ -338,15 +456,68 @@ export default function CartPage() {
             {boughtTogether.length > 0 && (
               <section className="cartSuggest cartSuggest--boughtTogether">
                 <div className="cartSuggestHead">
-                  <h2 className="cartSuggestTitle">Sản phẩm thường được mua kèm</h2>
+                  <h2 className="cartSuggestTitle">
+                    Sản phẩm thường được mua kèm
+                  </h2>
                   <span className="cartSuggestBadge">Smart Choice</span>
                 </div>
                 <div className="ppProductGridNew cartSuggestGrid">
                   {loadingBoughtTogether
-                    ? Array.from({ length: 4 }).map((_, i) => <ProductSuggestionSkeleton key={i} />)
+                    ? Array.from({ length: 4 }).map((_, i) => (
+                        <ProductSuggestionSkeleton key={i} />
+                      ))
                     : boughtTogether.map((p) => (
+                        <div key={p.id} className="ppCardNew">
+                          <Link
+                            to={`/products/${p.slug}`}
+                            className="ppCardImageWrap"
+                          >
+                            <img
+                              className="ppCardImg"
+                              src={resolveImageUrl(p.main_image_url)}
+                              alt={p.name}
+                              loading="lazy"
+                              decoding="async"
+                            />
+                          </Link>
+                          <div className="ppCardContent">
+                            <div className="ppCardTopRow">
+                              <span className="ppCardBrand">
+                                {(p.brand || "TECH").toUpperCase()}
+                              </span>
+                              {/* <span className="ppCardPrice">{formatVnd(Number.parseFloat(p.price || '0'))}</span> */}
+                            </div>
+                            <Link
+                              to={`/products/${p.slug}`}
+                              className="ppCardTitleLink"
+                            >
+                              <h3 className="ppCardTitle">{p.name}</h3>
+                            </Link>
+                          </div>
+                        </div>
+                      ))}
+                </div>
+              </section>
+            )}
+
+            <section className="cartSuggest">
+              <div className="cartSuggestHead">
+                <h2 className="cartSuggestTitle">Sản phẩm gợi ý cho bạn</h2>
+                <Link to="/products" className="cartSuggestLink">
+                  Xem thêm
+                </Link>
+              </div>
+              <div className="ppProductGridNew cartSuggestGrid">
+                {loadingSuggestions
+                  ? Array.from({ length: 6 }).map((_, i) => (
+                      <ProductSuggestionSkeleton key={i} />
+                    ))
+                  : suggested.slice(0, 6).map((p) => (
                       <div key={p.id} className="ppCardNew">
-                        <Link to={`/products/${p.slug}`} className="ppCardImageWrap">
+                        <Link
+                          to={`/products/${p.slug}`}
+                          className="ppCardImageWrap"
+                        >
                           <img
                             className="ppCardImg"
                             src={resolveImageUrl(p.main_image_url)}
@@ -357,62 +528,134 @@ export default function CartPage() {
                         </Link>
                         <div className="ppCardContent">
                           <div className="ppCardTopRow">
-                            <span className="ppCardBrand">{(p.brand || 'TECH').toUpperCase()}</span>
+                            <span className="ppCardBrand">
+                              {(p.brand || "TECH").toUpperCase()}
+                            </span>
                             {/* <span className="ppCardPrice">{formatVnd(Number.parseFloat(p.price || '0'))}</span> */}
                           </div>
-                          <Link to={`/products/${p.slug}`} className="ppCardTitleLink">
+                          <Link
+                            to={`/products/${p.slug}`}
+                            className="ppCardTitleLink"
+                          >
                             <h3 className="ppCardTitle">{p.name}</h3>
                           </Link>
                         </div>
                       </div>
                     ))}
-                </div>
-              </section>
-            )}
-
-            <section className="cartSuggest">
-              <div className="cartSuggestHead">
-                <h2 className="cartSuggestTitle">Sản phẩm gợi ý cho bạn</h2>
-                <Link to="/products" className="cartSuggestLink">Xem thêm</Link>
-              </div>
-              <div className="ppProductGridNew cartSuggestGrid">
-                {loadingSuggestions
-                  ? Array.from({ length: 6 }).map((_, i) => <ProductSuggestionSkeleton key={i} />)
-                  : suggested.slice(0, 6).map((p) => (
-                    <div key={p.id} className="ppCardNew">
-                      <Link to={`/products/${p.slug}`} className="ppCardImageWrap">
-                        <img
-                          className="ppCardImg"
-                          src={resolveImageUrl(p.main_image_url)}
-                          alt={p.name}
-                          loading="lazy"
-                          decoding="async"
-                        />
-                      </Link>
-                      <div className="ppCardContent">
-                        <div className="ppCardTopRow">
-                          <span className="ppCardBrand">{(p.brand || 'TECH').toUpperCase()}</span>
-                          {/* <span className="ppCardPrice">{formatVnd(Number.parseFloat(p.price || '0'))}</span> */}
-                        </div>
-                        <Link to={`/products/${p.slug}`} className="ppCardTitleLink">
-                          <h3 className="ppCardTitle">{p.name}</h3>
-                        </Link>
-                      </div>
-                    </div>
-                  ))}
               </div>
             </section>
           </>
         )}
       </div>
     </div>
-  )
+  );
 }
 
-
-
-
-function TrashIcon() {return (<svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M3 6h18" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" /><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" /><path d="M6 6l1 16a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-16" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" /><path d="M10 11v7M14 11v7" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" /></svg>)}
-function MinusIcon() {return (<svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></svg>)}
-function PlusIcon() {return (<svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 5v14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /><path d="M5 12h14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></svg>)}
-function BagIcon() {return (<svg width="26" height="26" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 7V6a6 6 0 0 1 12 0v1"stroke="currentColor"strokeWidth="1.8"strokeLinecap="round"/><path d="M4.5 7.5h15l-1.2 14a2 2 0 0 1-2 1.8H7.7a2 2 0 0 1-2-1.8l-1.2-14Z"stroke="currentColor"strokeWidth="1.8"strokeLinejoin="round"/><path d="M9 11v0.01M15 11v0.01" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" /></svg>)}
+function TrashIcon() {
+  return (
+    <svg
+      width="18"
+      height="18"
+      viewBox="0 0 24 24"
+      fill="none"
+      aria-hidden="true"
+    >
+      <path
+        d="M3 6h18"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+      />
+      <path
+        d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M6 6l1 16a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-16"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M10 11v7M14 11v7"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+function MinusIcon() {
+  return (
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      aria-hidden="true"
+    >
+      <path
+        d="M5 12h14"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+function PlusIcon() {
+  return (
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      aria-hidden="true"
+    >
+      <path
+        d="M12 5v14"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+      />
+      <path
+        d="M5 12h14"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+function BagIcon() {
+  return (
+    <svg
+      width="26"
+      height="26"
+      viewBox="0 0 24 24"
+      fill="none"
+      aria-hidden="true"
+    >
+      <path
+        d="M6 7V6a6 6 0 0 1 12 0v1"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+      />
+      <path
+        d="M4.5 7.5h15l-1.2 14a2 2 0 0 1-2 1.8H7.7a2 2 0 0 1-2-1.8l-1.2-14Z"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M9 11v0.01M15 11v0.01"
+        stroke="currentColor"
+        strokeWidth="2.4"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}

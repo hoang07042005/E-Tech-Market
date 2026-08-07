@@ -18,8 +18,12 @@
 /* Flash Sale Banner */
 /* --- Flash Sale Banner --- */
 .pdpFlashBanner {
-  background: 
-    radial-gradient(circle at 70% 30%, rgba(255, 255, 255, 0.2) 0%, transparent 40%),
+  background:
+    radial-gradient(
+      circle at 70% 30%,
+      rgba(255, 255, 255, 0.2) 0%,
+      transparent 40%
+    ),
     linear-gradient(100deg, #d30005 0%, #fa0011 30%, #da0006 70%, #a80003 100%);
   border-radius: 8px;
   margin-bottom: 24px;
@@ -79,7 +83,7 @@
 }
 
 .pdpFlashBanner-headerRight {
-  filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.3));
+  filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.3));
 }
 
 .pdpFlashBanner-discountBadge {
@@ -94,8 +98,6 @@
   align-items: center;
   justify-content: center;
 }
-
-
 
 .pdpFlashBanner-body {
   background: #fff;
@@ -487,10 +489,18 @@
   .pdpMainGrid-right {
     display: contents;
   }
-  .pdpGallery { order: 1; }
-  .pdpInfo { order: 2; }
-  .pdpSidebarSide { order: 3; }
-  .pdpSpecsSide { order: 4; }
+  .pdpGallery {
+    order: 1;
+  }
+  .pdpInfo {
+    order: 2;
+  }
+  .pdpSidebarSide {
+    order: 3;
+  }
+  .pdpSpecsSide {
+    order: 4;
+  }
 }
 
 /* Gallery */
@@ -2246,11 +2256,11 @@
 }
 
 .pdpReviewsScore {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 8px;
-    padding: 0 64px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 0 64px;
 }
 
 .pdpScoreBig {
@@ -2626,7 +2636,6 @@
   .pdpReviewMediaRow,
   .pdpReviewTime {
     grid-column: 1 / -1;
-
   }
 
   .pdpReviewsTitle {
@@ -3572,7 +3581,6 @@
     min-width: 0;
     overflow: hidden;
   }
-
 
   .pdpName {
     font-size: 22px;

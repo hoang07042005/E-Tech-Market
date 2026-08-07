@@ -7,15 +7,20 @@
   --text-dark: #1e293b;
   --text-slate: #475569;
   --text-light: #64748b;
-  --shadow-box: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -2px rgba(0,0,0,0.05);
-  --shadow-lg: 0 20px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.1);
+  --shadow-box:
+    0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+  --shadow-lg:
+    0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
 }
 
 .contactsAdminPage {
   padding: 24px;
   max-width: 1280px;
   margin: 0 auto;
-  font-family: system-ui, -apple-system, sans-serif;
+  font-family:
+    system-ui,
+    -apple-system,
+    sans-serif;
   color: var(--text-dark);
 }
 
@@ -73,7 +78,7 @@
   border-color: var(--admin-accent);
   color: #fff;
   font-weight: 600;
-  box-shadow: 0 2px 4px rgba(37,99,235,0.2);
+  box-shadow: 0 2px 4px rgba(37, 99, 235, 0.2);
 }
 
 .contactsAdminPage .contactsSortSelect {
@@ -132,7 +137,7 @@
   font-size: 10px !important;
   font-weight: 700 !important;
   text-transform: uppercase;
-  letter-spacing: .02em;
+  letter-spacing: 0.02em;
   padding: 6px 8px !important;
   text-align: left;
   line-height: 1.2 !important;
@@ -153,7 +158,9 @@
   background: #f8fafc;
 }
 
-.text-right { text-align: right !important; }
+.text-right {
+  text-align: right !important;
+}
 
 /* USER CARD PROFILE CELL */
 .contactsAdminPage .customerCell {
@@ -277,15 +284,26 @@
   height: 12px;
 }
 
-.contactsAdminPage .iconBtn.detail { color: #0b59ea; background: #c7cffea1; }
-.contactsAdminPage .iconBtn.info { color: #0babea; background: #c7f5fea1; }
-.contactsAdminPage .iconBtn.success { color: #16a34a; background: #c7f7d2a1; }
-.contactsAdminPage .iconBtn.danger { color: #dc2626; background: #fecaca; }
-
-.contactsAdminPage .iconBtn:hover {
- opacity: 0.7;
+.contactsAdminPage .iconBtn.detail {
+  color: #0b59ea;
+  background: #c7cffea1;
+}
+.contactsAdminPage .iconBtn.info {
+  color: #0babea;
+  background: #c7f5fea1;
+}
+.contactsAdminPage .iconBtn.success {
+  color: #16a34a;
+  background: #c7f7d2a1;
+}
+.contactsAdminPage .iconBtn.danger {
+  color: #dc2626;
+  background: #fecaca;
 }
 
+.contactsAdminPage .iconBtn:hover {
+  opacity: 0.7;
+}
 
 /* PAGINATION AREA */
 .contactsAdminPage .contactsPagination {
@@ -339,7 +357,7 @@
 }
 
 .contactsAdminPage .pageNumbers button:disabled {
-  opacity: .4;
+  opacity: 0.4;
   cursor: not-allowed;
 }
 
@@ -369,8 +387,14 @@
 }
 
 @keyframes modalScaleUp {
-  from { transform: scale(0.96); opacity: 0; }
-  to { transform: scale(1); opacity: 1; }
+  from {
+    transform: scale(0.96);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
 
 .contactDetailModalBox .modalHeader {
@@ -396,7 +420,9 @@
   color: var(--text-light);
   cursor: pointer;
 }
-.closeModalBtn:hover { color: var(--text-dark); }
+.closeModalBtn:hover {
+  color: var(--text-dark);
+}
 
 /* BỐ CỤC NỘI DUNG 2 CỘT MODAL */
 .modalContentLayout {
@@ -409,7 +435,9 @@
 }
 
 @media (min-width: 768px) {
-  .modalContentLayout { grid-template-columns: 280px 1fr; }
+  .modalContentLayout {
+    grid-template-columns: 280px 1fr;
+  }
 }
 
 .modalSidebarInfo {
@@ -434,9 +462,21 @@
   margin: 0 auto 12px auto;
 }
 
-.modalSidebarInfo h4 { margin: 0 0 4px 0; font-size: 16px; font-weight: 700; }
-.modalMetaTime { font-size: 12px; color: var(--text-light); margin: 0; }
-.infoDivider { height: 1px; background: var(--border-slate); margin: 16px 0; }
+.modalSidebarInfo h4 {
+  margin: 0 0 4px 0;
+  font-size: 16px;
+  font-weight: 700;
+}
+.modalMetaTime {
+  font-size: 12px;
+  color: var(--text-light);
+  margin: 0;
+}
+.infoDivider {
+  height: 1px;
+  background: var(--border-slate);
+  margin: 16px 0;
+}
 
 .infoDetailRow {
   display: flex;
@@ -445,10 +485,24 @@
   margin-bottom: 12px;
   gap: 2px;
 }
-.infoLabel { font-size: 12px; color: var(--text-light); font-weight: 500; }
-.infoValue { font-size: 14px; font-weight: 500; color: var(--text-dark); word-break: break-all; }
-.infoValue.link { color: var(--primary-blue); text-decoration: none; }
-.infoValue.link:hover { text-decoration: underline; }
+.infoLabel {
+  font-size: 12px;
+  color: var(--text-light);
+  font-weight: 500;
+}
+.infoValue {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-dark);
+  word-break: break-all;
+}
+.infoValue.link {
+  color: var(--primary-blue);
+  text-decoration: none;
+}
+.infoValue.link:hover {
+  text-decoration: underline;
+}
 
 .handledMetaBox {
   margin-top: 16px;
@@ -461,7 +515,9 @@
   padding: 8px;
   border-radius: 6px;
 }
-.handledMetaBox p { margin: 2px 0; }
+.handledMetaBox p {
+  margin: 2px 0;
+}
 
 /* PHẦN HIỂN THỊ TIN NHẮN CHÍNH */
 .modalMainMessage {
@@ -502,10 +558,12 @@
   line-height: 1.6;
   white-space: pre-wrap;
   font-size: 14px;
-  -ms-overflow-style: 'none';
-  scrollbar-width: 'none';
+  -ms-overflow-style: "none";
+  scrollbar-width: "none";
 }
-.messageContentDisplay::-webkit-scrollbar { display: none; }
+.messageContentDisplay::-webkit-scrollbar {
+  display: none;
+}
 /* FOOTER BUTTONS MODAL */
 .modalFooterActions {
   padding: 16px 24px;
@@ -527,17 +585,39 @@
   display: inline-flex;
   align-items: center;
 }
-.btn-primary { background: var(--admin-accent); color: #fff; }
-.btn-primary:hover { background: var(--admin-accent-hover); }
-.btn-outline { background: #fff; border-color: #cbd5e1; color: var(--text-slate); }
-.btn-outline:hover { background: var(--bg-slate); }
-.btn-info { background: #eff6ff; color: var(--primary-blue); border-color: #bfdbfe; }
-.btn-info:hover { background: #dbeafe; }
+.btn-primary {
+  background: var(--admin-accent);
+  color: #fff;
+}
+.btn-primary:hover {
+  background: var(--admin-accent-hover);
+}
+.btn-outline {
+  background: #fff;
+  border-color: #cbd5e1;
+  color: var(--text-slate);
+}
+.btn-outline:hover {
+  background: var(--bg-slate);
+}
+.btn-info {
+  background: #eff6ff;
+  color: var(--primary-blue);
+  border-color: #bfdbfe;
+}
+.btn-info:hover {
+  background: #dbeafe;
+}
 
 /* MEDIA RESPONSIVE TABLE */
 @media (max-width: 768px) {
-  .contactsAdminPage .adminTableWrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
-  .contactsAdminPage .contactsTable { min-width: 700px; }
+  .contactsAdminPage .adminTableWrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .contactsAdminPage .contactsTable {
+    min-width: 700px;
+  }
 }
 
 /* ── Mobile Responsive Optimizations ───────────────────────────────────────── */
@@ -804,4 +884,4 @@
     font-size: 12px;
     padding: 0 12px;
   }
-}
+}

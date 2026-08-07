@@ -2,7 +2,15 @@
   width: 100%;
   background: #fff;
   color: var(--et-text);
-  font-family: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  font-family:
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    "Segoe UI",
+    Roboto,
+    "Helvetica Neue",
+    Arial,
+    sans-serif;
 }
 
 .tosHero {
@@ -20,7 +28,7 @@
   margin: 0 0 16px;
   font-size: clamp(2rem, 4vw, 3rem);
   font-weight: 600;
-  letter-spacing: -.03em;
+  letter-spacing: -0.03em;
   line-height: 1.12;
 }
 
@@ -30,7 +38,7 @@
 
 .tosHeroMeta {
   margin: 0;
-  font-size: .9375rem;
+  font-size: 0.9375rem;
   color: var(--et-text-muted);
   line-height: 1.65;
   max-width: 720px;
@@ -59,9 +67,9 @@
 }
 
 .tosAsideLabel {
-  font-size: .6875rem;
+  font-size: 0.6875rem;
   font-weight: 600;
-  letter-spacing: .16em;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
   color: var(--et-primary);
   margin: 0 0 20px;
@@ -83,15 +91,17 @@
   border: none;
   background: transparent;
   cursor: pointer;
-  font-size: .8125rem;
+  font-size: 0.8125rem;
   font-weight: 600;
-  letter-spacing: .04em;
+  letter-spacing: 0.04em;
   color: var(--et-text-muted);
   padding: 10px 0 10px 2px;
   border-left: 2px solid transparent;
   padding-left: 12px;
   margin-left: -2px;
-  transition: color .18s ease, border-color .18s ease;
+  transition:
+    color 0.18s ease,
+    border-color 0.18s ease;
 }
 
 .tosTocBtn:hover {
@@ -154,7 +164,7 @@
   margin: 0 0 clamp(22px, 3vw, 28px);
   font-size: clamp(1.25rem, 2.2vw, 1.5rem);
   font-weight: 600;
-  letter-spacing: -.02em;
+  letter-spacing: -0.02em;
   display: flex;
   align-items: baseline;
   gap: 10px;
@@ -167,7 +177,7 @@
 }
 
 .tosProse {
-  font-size: .9375rem;
+  font-size: 0.9375rem;
   line-height: 1.75;
   color: #404040;
 }
@@ -200,18 +210,23 @@
 .tosBannerOverlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(105deg, rgba(0, 0, 0, .55) 0%, rgba(0, 0, 0, .12) 55%, transparent 100%);
+  background: linear-gradient(
+    105deg,
+    rgba(0, 0, 0, 0.55) 0%,
+    rgba(0, 0, 0, 0.12) 55%,
+    transparent 100%
+  );
   display: flex;
   align-items: flex-end;
   padding: clamp(16px, 3vw, 28px);
 }
 
 .tosBannerTag {
-  font-size: clamp(.65rem, 1.2vw, .75rem);
+  font-size: clamp(0.65rem, 1.2vw, 0.75rem);
   font-weight: 600;
-  letter-spacing: .18em;
+  letter-spacing: 0.18em;
   color: #fff;
-  text-shadow: 0 2px 12px rgba(0, 0, 0, .45);
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.45);
 }
 
 .tosIconList {
@@ -243,14 +258,14 @@
 
 .tosIconItemTitle {
   font-weight: 600;
-  font-size: .9375rem;
+  font-size: 0.9375rem;
   margin: 0 0 6px;
   color: var(--et-text);
 }
 
 .tosIconItemDesc {
   margin: 0;
-  font-size: .875rem;
+  font-size: 0.875rem;
   line-height: 1.65;
   color: var(--et-text-muted);
 }
@@ -260,7 +275,7 @@
   padding: clamp(22px, 3vw, 28px);
   border-radius: 5px;
   background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%);
-  border: 1px solid rgba(249, 115, 22, .22);
+  border: 1px solid rgba(249, 115, 22, 0.22);
 }
 
 .tosQuotePanel blockquote {
@@ -294,7 +309,7 @@
 
 .tosRiskTitle {
   margin: 0;
-  font-size: .875rem;
+  font-size: 0.875rem;
   font-weight: 600;
   line-height: 1.35;
   color: var(--et-text);
@@ -313,12 +328,12 @@
   padding: 14px 24px;
   border-radius: 10px;
   font-weight: 600;
-  font-size: .8125rem;
-  letter-spacing: .08em;
+  font-size: 0.8125rem;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   background: var(--et-primary);
   color: #fff;
-  transition: background .18s ease;
+  transition: background 0.18s ease;
 }
 
 .tosBtnPrimary:hover {
@@ -331,12 +346,14 @@
   padding: 12px 22px;
   border-radius: 10px;
   font-weight: 600;
-  font-size: .8125rem;
-  letter-spacing: .08em;
+  font-size: 0.8125rem;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   background: #fff;
   color: var(--et-primary);
-  transition: background .18s ease, color .18s ease;
+  transition:
+    background 0.18s ease,
+    color 0.18s ease;
 }
 
 .tosBtnGhost:hover {
@@ -346,10 +363,11 @@
 @media (max-width: 900px) {
   .tosMainGrid {
     grid-template-columns: 1fr;
-    gap: 28px
+    gap: 28px;
   }
 
-  .tosArticle, .tosAside {
+  .tosArticle,
+  .tosAside {
     min-width: 0;
     overflow-wrap: break-word;
     word-break: break-word;
@@ -360,13 +378,13 @@
     top: auto;
     display: flex;
     flex-direction: column-reverse;
-    gap: 24px
+    gap: 24px;
   }
 
   .tosToc {
     flex-direction: row;
     flex-wrap: wrap;
-    gap: 8px
+    gap: 8px;
   }
 
   .tosTocBtn {
@@ -375,38 +393,38 @@
     border-radius: 999px;
     border: 1px solid var(--et-border);
     border-left-width: 1px;
-    margin-left: 0
+    margin-left: 0;
   }
 
   .tosTocBtnActive {
     border-color: var(--et-primary);
-    background: var(--et-primary-soft)
+    background: var(--et-primary-soft);
   }
 
   .tosAsidePhoto {
     aspect-ratio: 16 / 9;
-    max-height: 200px
+    max-height: 200px;
   }
 
   .tosRiskGrid {
-    grid-template-columns: 1fr
+    grid-template-columns: 1fr;
   }
 
   .tosBanner {
-    aspect-ratio: 16 / 9
+    aspect-ratio: 16 / 9;
   }
 }
 
 @media print {
   .tosHero {
-    border-bottom-color: #ccc
+    border-bottom-color: #ccc;
   }
 
   .tosAside {
-    display: none !important
+    display: none !important;
   }
 
   .tosActions {
-    page-break-before: avoid
+    page-break-before: avoid;
   }
 }

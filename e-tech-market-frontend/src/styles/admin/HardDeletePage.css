@@ -132,7 +132,9 @@
   color: #64748b;
   cursor: pointer;
   white-space: nowrap;
-  transition: color 0.15s, border-color 0.15s;
+  transition:
+    color 0.15s,
+    border-color 0.15s;
 }
 
 .hdp-tab-btn--active {
@@ -206,15 +208,13 @@
     padding: 8px 12px;
     font-size: 12px;
   }
-  
+
   .hdp-header-actions {
     gap: 6px;
   }
 }
 
 @media (max-width: 992px) and (orientation: landscape) {
-
-
   .hdp-select-header {
     padding: 8px 12px;
   }
@@ -233,7 +233,7 @@
     padding: 6px 10px;
     font-size: 10px;
   }
-  
+
   .hdp-header-actions {
     gap: 8px;
   }

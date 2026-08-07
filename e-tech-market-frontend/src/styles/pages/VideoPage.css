@@ -17,7 +17,7 @@
   color: #94a3b8;
   margin-bottom: 24px;
   text-transform: uppercase;
-  letter-spacing: .05em;
+  letter-spacing: 0.05em;
 }
 
 .cvBreadcrumb a {
@@ -120,8 +120,12 @@
 }
 
 @keyframes cv-spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 .cvError {
@@ -336,8 +340,14 @@
 }
 
 @keyframes cv-modal-fade {
-  from { opacity: 0; transform: scale(0.95); }
-  to { opacity: 1; transform: scale(1); }
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 .cvModalClose {
@@ -855,7 +865,6 @@
   background: rgba(0, 0, 0, 0.4);
   color: #ffffff;
   font-size: 18px;
-
 }
 
 .vdpRecInfo {
@@ -930,10 +939,12 @@
   .cvCardTitle {
     font-size: 14px;
   }
-  .vdpMain, .vdpSidebar {
+  .vdpMain,
+  .vdpSidebar {
     min-width: 0;
   }
-  .vdpDescriptionText, .vdpDescription p {
+  .vdpDescriptionText,
+  .vdpDescription p {
     overflow-wrap: break-word;
     word-break: break-word;
   }

@@ -53,7 +53,14 @@ type StoredUser = {
 
 function isAdminUser(user: StoredUser | null): boolean {
   if (!user?.roles || !Array.isArray(user.roles)) return false;
-  const staffRoles = ["admin", "warehouse-staff", "order-staff", "editor", "delivery", "shop"];
+  const staffRoles = [
+    "admin",
+    "warehouse-staff",
+    "order-staff",
+    "editor",
+    "delivery",
+    "shop",
+  ];
   return user.roles.some((r) => staffRoles.includes(r?.slug || ""));
 }
 
@@ -470,7 +477,7 @@ export default function HeaderPage({ active = "Home" }: { active?: NavKey }) {
     main_image_url?: string | null;
     price?: string | number | null;
     sale_price?: string | number | null;
-    type?: 'product' | 'post' | 'news' | 'video';
+    type?: "product" | "post" | "news" | "video";
   };
 
   const handleSearchSubmit = (event: FormEvent<HTMLFormElement>) => {
@@ -498,41 +505,66 @@ export default function HeaderPage({ active = "Home" }: { active?: NavKey }) {
       try {
         const queryTerm = encodeURIComponent(val.trim());
         const [productsRes, postsRes, newsRes, videosRes] = await Promise.all([
-           apiFetch(`/products?search=${queryTerm}&per_page=4`).catch(() => ({ data: [] })),
-           apiFetch(`/blog/posts?search=${queryTerm}&per_page=2`).catch(() => ({ data: [] })),
-           apiFetch(`/product-news?search=${queryTerm}`).catch(() => ({ data: [] })),
-           apiFetch(`/videos?search=${queryTerm}`).catch(() => ([]))
+          apiFetch(`/products?search=${queryTerm}&per_page=4`).catch(() => ({
+            data: [],
+          })),
+          apiFetch(`/blog/posts?search=${queryTerm}&per_page=2`).catch(() => ({
+            data: [],
+          })),
+          apiFetch(`/product-news?search=${queryTerm}`).catch(() => ({
+            data: [],
+          })),
+          apiFetch(`/videos?search=${queryTerm}`).catch(() => []),
         ]);
-        
-        const jsonProducts = productsRes as { data?: SearchHit[] } | SearchHit[];
-        const hitsProducts = Array.isArray(jsonProducts) ? jsonProducts : Array.isArray((jsonProducts as any).data) ? (jsonProducts as any).data : [];
-        const finalProducts = hitsProducts.slice(0, 4).map((p: any) => ({ ...p, type: 'product' as const }));
-        
-        const postsHits = ((postsRes as any).data || []).slice(0, 2).map((p: any) => ({
-           id: p.id,
-           name: p.title,
-           slug: p.slug,
-           main_image_url: p.thumbnail_url,
-           type: 'post' as const
-        }));
 
-        const newsHits = ((newsRes as any).data || []).slice(0, 2).map((n: any) => ({
-           id: parseInt(`999${n.id}`),
-           name: n.title,
-           slug: n.slug,
-           main_image_url: n.thumbnail_url || n.thumbnail_path,
-           type: 'news' as const
-        }));
+        const jsonProducts = productsRes as
+          | { data?: SearchHit[] }
+          | SearchHit[];
+        const hitsProducts = Array.isArray(jsonProducts)
+          ? jsonProducts
+          : Array.isArray((jsonProducts as any).data)
+            ? (jsonProducts as any).data
+            : [];
+        const finalProducts = hitsProducts
+          .slice(0, 4)
+          .map((p: any) => ({ ...p, type: "product" as const }));
 
-        const videosHits = (Array.isArray(videosRes) ? videosRes : []).slice(0, 2).map((v: any) => ({
-           id: parseInt(`888${v.id}`),
-           name: v.title,
-           slug: v.id.toString(), // Videos don't have slugs, navigate by ID? Wait, does the frontend have a video page?
-           main_image_url: v.thumbnail_url,
-           type: 'video' as const
-        }));
-        
-        const allHits = [...finalProducts, ...postsHits, ...newsHits, ...videosHits];
+        const postsHits = ((postsRes as any).data || [])
+          .slice(0, 2)
+          .map((p: any) => ({
+            id: p.id,
+            name: p.title,
+            slug: p.slug,
+            main_image_url: p.thumbnail_url,
+            type: "post" as const,
+          }));
+
+        const newsHits = ((newsRes as any).data || [])
+          .slice(0, 2)
+          .map((n: any) => ({
+            id: parseInt(`999${n.id}`),
+            name: n.title,
+            slug: n.slug,
+            main_image_url: n.thumbnail_url || n.thumbnail_path,
+            type: "news" as const,
+          }));
+
+        const videosHits = (Array.isArray(videosRes) ? videosRes : [])
+          .slice(0, 2)
+          .map((v: any) => ({
+            id: parseInt(`888${v.id}`),
+            name: v.title,
+            slug: v.id.toString(), // Videos don't have slugs, navigate by ID? Wait, does the frontend have a video page?
+            main_image_url: v.thumbnail_url,
+            type: "video" as const,
+          }));
+
+        const allHits = [
+          ...finalProducts,
+          ...postsHits,
+          ...newsHits,
+          ...videosHits,
+        ];
         setSearchResults(allHits);
         setSearchOpen(allHits.length > 0);
       } catch {
@@ -557,14 +589,14 @@ export default function HeaderPage({ active = "Home" }: { active?: NavKey }) {
       const hit = searchResults[searchActiveIdx];
       if (hit) {
         setSearchOpen(false);
-        if (hit.type === 'post') {
-            navigate(`/blog/${hit.slug}`);
-        } else if (hit.type === 'news') {
-            navigate(`/product-news/${hit.slug}`);
-        } else if (hit.type === 'video') {
-            navigate(`/videos/${hit.slug}`);
+        if (hit.type === "post") {
+          navigate(`/blog/${hit.slug}`);
+        } else if (hit.type === "news") {
+          navigate(`/product-news/${hit.slug}`);
+        } else if (hit.type === "video") {
+          navigate(`/videos/${hit.slug}`);
         } else {
-            navigate(`/products/${hit.slug}`);
+          navigate(`/products/${hit.slug}`);
         }
       }
     } else if (e.key === "Escape") {
@@ -623,21 +655,101 @@ export default function HeaderPage({ active = "Home" }: { active?: NavKey }) {
         >
           <div className="hfNavMobileHeader hfMobileOnly">
             <span className="hfNavMobileTitle">Menu</span>
-            <button className="hfNavMobileClose" onClick={() => setMenuOpen(false)}>
+            <button
+              className="hfNavMobileClose"
+              onClick={() => setMenuOpen(false)}
+            >
               <CloseIcon />
             </button>
           </div>
-          
+
           <div className="hfNavContent">
             {NAV.map((item) => {
               let Icon = null;
-              if (item === "Home") Icon = <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>;
-              if (item === "Product") Icon = <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg>;
-              if (item === "Accessory") Icon = <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>;
-              if (item === "TradeIn") Icon = <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="1 4 1 10 7 10"></polyline><polyline points="23 20 23 14 17 14"></polyline><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"></path></svg>;
-              if (item === "Blog") Icon = <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>;
-              if (item === "Contact") Icon = <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>;
-              if (item === "About") Icon = <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>;
+              if (item === "Home")
+                Icon = (
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                  >
+                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                    <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                  </svg>
+                );
+              if (item === "Product")
+                Icon = (
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                  >
+                    <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path>
+                    <line x1="7" y1="7" x2="7.01" y2="7"></line>
+                  </svg>
+                );
+              if (item === "Accessory")
+                Icon = (
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                  >
+                    <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+                  </svg>
+                );
+              if (item === "TradeIn")
+                Icon = (
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                  >
+                    <polyline points="1 4 1 10 7 10"></polyline>
+                    <polyline points="23 20 23 14 17 14"></polyline>
+                    <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"></path>
+                  </svg>
+                );
+              if (item === "Blog")
+                Icon = (
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                  >
+                    <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+                    <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+                  </svg>
+                );
+              if (item === "Contact")
+                Icon = (
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                  >
+                    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+                  </svg>
+                );
+              if (item === "About")
+                Icon = (
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                  >
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="12" y1="16" x2="12" y2="12"></line>
+                    <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                  </svg>
+                );
 
               return (
                 <div
@@ -653,12 +765,14 @@ export default function HeaderPage({ active = "Home" }: { active?: NavKey }) {
                     }
                   }}
                 >
-                  {Icon && <span className="hfNavIcon hfMobileOnly">{Icon}</span>}
+                  {Icon && (
+                    <span className="hfNavIcon hfMobileOnly">{Icon}</span>
+                  )}
                   {NAV_LABEL[item]}
                 </div>
               );
             })}
-            
+
             {user && isAdminUser(user) && (
               <div
                 role="button"
@@ -673,7 +787,14 @@ export default function HeaderPage({ active = "Home" }: { active?: NavKey }) {
                 }}
               >
                 <span className="hfNavIcon hfMobileOnly">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                  >
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                  </svg>
                 </span>
                 Quản trị
               </div>
@@ -687,7 +808,9 @@ export default function HeaderPage({ active = "Home" }: { active?: NavKey }) {
                 navigate("/wishlist");
               }}
             >
-              <span className="hfNavIcon hfMobileOnly"><WishlistIcon /></span>
+              <span className="hfNavIcon hfMobileOnly">
+                <WishlistIcon />
+              </span>
               <span>Yêu thích</span>
             </div>
 
@@ -698,7 +821,9 @@ export default function HeaderPage({ active = "Home" }: { active?: NavKey }) {
                 navigate("/notifications");
               }}
             >
-              <span className="hfNavIcon hfMobileOnly"><BellIcon /></span>
+              <span className="hfNavIcon hfMobileOnly">
+                <BellIcon />
+              </span>
               <span>Thông báo</span>
               {notifUnread > 0 && (
                 <span className="hfNavBadgeMobile">
@@ -792,14 +917,14 @@ export default function HeaderPage({ active = "Home" }: { active?: NavKey }) {
                       onMouseEnter={() => setSearchActiveIdx(idx)}
                       onClick={() => {
                         setSearchOpen(false);
-                        if (hit.type === 'post') {
-                            navigate(`/blog/${hit.slug}`);
-                        } else if (hit.type === 'news') {
-                            navigate(`/product-news/${hit.slug}`);
-                        } else if (hit.type === 'video') {
-                            navigate(`/videos/${hit.slug}`);
+                        if (hit.type === "post") {
+                          navigate(`/blog/${hit.slug}`);
+                        } else if (hit.type === "news") {
+                          navigate(`/product-news/${hit.slug}`);
+                        } else if (hit.type === "video") {
+                          navigate(`/videos/${hit.slug}`);
                         } else {
-                            navigate(`/products/${hit.slug}`);
+                          navigate(`/products/${hit.slug}`);
                         }
                       }}
                     >
@@ -825,15 +950,42 @@ export default function HeaderPage({ active = "Home" }: { active?: NavKey }) {
                       </svg>
                       <div className="hfSearchItemInfo">
                         <span className="hfSearchItemName">{hit.name}</span>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                          {hit.type === 'post' || hit.type === 'news' || hit.type === 'video' ? (
-                            <span style={{ fontSize: '10px', background: hit.type === 'news' ? '#ef4444' : hit.type === 'video' ? '#8b5cf6' : '#3b82f6', color: '#fff', padding: '2px 6px', borderRadius: '4px' }}>
-                              {hit.type === 'news' ? 'Tin Sản Phẩm' : hit.type === 'video' ? 'Video' : 'Tin Tức'}
+                        <div
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "8px",
+                          }}
+                        >
+                          {hit.type === "post" ||
+                          hit.type === "news" ||
+                          hit.type === "video" ? (
+                            <span
+                              style={{
+                                fontSize: "10px",
+                                background:
+                                  hit.type === "news"
+                                    ? "#ef4444"
+                                    : hit.type === "video"
+                                      ? "#8b5cf6"
+                                      : "#3b82f6",
+                                color: "#fff",
+                                padding: "2px 6px",
+                                borderRadius: "4px",
+                              }}
+                            >
+                              {hit.type === "news"
+                                ? "Tin Sản Phẩm"
+                                : hit.type === "video"
+                                  ? "Video"
+                                  : "Tin Tức"}
                             </span>
-                          ) : price > 0 && (
-                            <span className="hfSearchItemPrice">
-                              {price.toLocaleString("vi-VN")}₫
-                            </span>
+                          ) : (
+                            price > 0 && (
+                              <span className="hfSearchItemPrice">
+                                {price.toLocaleString("vi-VN")}₫
+                              </span>
+                            )
                           )}
                         </div>
                       </div>

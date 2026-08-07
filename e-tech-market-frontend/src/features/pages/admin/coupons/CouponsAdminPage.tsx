@@ -1,127 +1,141 @@
-import { useState, useEffect } from 'react'
-import { apiFetch } from '@/configs/api.config'
-import ConfirmModal from '@/components/ConfirmModal'
-import { toast } from '@/utils/toast';
-import '@/styles/admin/CouponsAdmin.css'
+import { useState, useEffect } from "react";
+import { apiFetch } from "@/configs/api.config";
+import ConfirmModal from "@/components/ConfirmModal";
+import { toast } from "@/utils/toast";
+import "@/styles/admin/CouponsAdmin.css";
 
 type Coupon = {
-  id: number
-  code: string
-  coupon_type: 'percentage' | 'fixed'
-  value: string
-  min_order_amount: string | null
-  start_at: string | null
-  end_at: string | null
-  max_uses: number | null
-  max_uses_per_user: number | null
-  is_active: boolean
-  usages_count?: number
-  categories?: { id: number; name: string }[]
-  category_ids?: number[]
-}
+  id: number;
+  code: string;
+  coupon_type: "percentage" | "fixed";
+  value: string;
+  min_order_amount: string | null;
+  start_at: string | null;
+  end_at: string | null;
+  max_uses: number | null;
+  max_uses_per_user: number | null;
+  is_active: boolean;
+  usages_count?: number;
+  categories?: { id: number; name: string }[];
+  category_ids?: number[];
+};
 
 export default function CouponsAdminPage() {
-  const [coupons, setCoupons] = useState<Coupon[]>([])
-  const [loading, setLoading] = useState(true)
-  const [page, setPage] = useState(1)
-  const [totalPages, setTotalPages] = useState(1)
-  const [showModal, setShowModal] = useState(false)
-  const [editData, setEditData] = useState<Partial<Coupon> | null>(null)
-  const [categories, setCategories] = useState<{id: number; name: string}[]>([])
-  const [showDeleteModal, setShowDeleteModal] = useState(false)
-  const [couponToDelete, setCouponToDelete] = useState<Coupon | null>(null)
+  const [coupons, setCoupons] = useState<Coupon[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [showModal, setShowModal] = useState(false);
+  const [editData, setEditData] = useState<Partial<Coupon> | null>(null);
+  const [categories, setCategories] = useState<{ id: number; name: string }[]>(
+    [],
+  );
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [couponToDelete, setCouponToDelete] = useState<Coupon | null>(null);
 
-  const hasAuth = true
+  const hasAuth = true;
 
   const fetchCoupons = async (currentPage: number) => {
     if (!hasAuth) {
-      setLoading(false)
-      return
+      setLoading(false);
+      return;
     }
-    setLoading(true)
+    setLoading(true);
     try {
-      const res = await apiFetch<any>(`/api/admin/coupons?page=${currentPage}&limit=10`)
-      const fetchedCoupons = Array.isArray(res?.data) ? res.data : Array.isArray(res) ? res : []
-      setCoupons(fetchedCoupons)
-      setTotalPages(res?.last_page || res?.meta?.last_page || 1)
+      const res = await apiFetch<any>(
+        `/api/admin/coupons?page=${currentPage}&limit=10`,
+      );
+      const fetchedCoupons = Array.isArray(res?.data)
+        ? res.data
+        : Array.isArray(res)
+          ? res
+          : [];
+      setCoupons(fetchedCoupons);
+      setTotalPages(res?.last_page || res?.meta?.last_page || 1);
     } catch (err) {
-      console.error(err)
+      console.error(err);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   useEffect(() => {
-    fetchCoupons(page)
+    fetchCoupons(page);
     const fetchCategories = async () => {
       try {
-        const res = await apiFetch<any>('/api/admin/categories?limit=100')
-        const cats = Array.isArray(res?.data) ? res.data : Array.isArray(res) ? res : []
-        setCategories(cats)
+        const res = await apiFetch<any>("/api/admin/categories?limit=100");
+        const cats = Array.isArray(res?.data)
+          ? res.data
+          : Array.isArray(res)
+            ? res
+            : [];
+        setCategories(cats);
       } catch (err) {
-        console.error(err)
+        console.error(err);
       }
-    }
-    fetchCategories()
-  }, [page])
+    };
+    fetchCategories();
+  }, [page]);
 
   const handleSave = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!hasAuth || !editData) return
+    e.preventDefault();
+    if (!hasAuth || !editData) return;
     try {
-      const isEdit = !!editData.id
-      const url = isEdit ? `/api/admin/coupons/${editData.id}` : `/api/admin/coupons`
-      const method = isEdit ? 'PUT' : 'POST'
-      
+      const isEdit = !!editData.id;
+      const url = isEdit
+        ? `/api/admin/coupons/${editData.id}`
+        : `/api/admin/coupons`;
+      const method = isEdit ? "PUT" : "POST";
+
       await apiFetch(url, {
         method,
         body: JSON.stringify(editData),
-      })
-      
-      setShowModal(false)
-      setEditData(null)
-      fetchCoupons(page)
+      });
+
+      setShowModal(false);
+      setEditData(null);
+      fetchCoupons(page);
     } catch (err: any) {
-      toast.error('Lỗi lưu mã giảm giá: ' + (err.message || ''))
+      toast.error("Lỗi lưu mã giảm giá: " + (err.message || ""));
     }
-  }
+  };
 
   const deleteCoupon = async (id: number) => {
-    if (!hasAuth) return
+    if (!hasAuth) return;
     try {
-      await apiFetch(`/api/admin/coupons/${id}`, { method: 'DELETE' })
-      setCoupons((prev) => prev.filter((c) => c.id !== id))
-      setShowDeleteModal(false)
-      setCouponToDelete(null)
+      await apiFetch(`/api/admin/coupons/${id}`, { method: "DELETE" });
+      setCoupons((prev) => prev.filter((c) => c.id !== id));
+      setShowDeleteModal(false);
+      setCouponToDelete(null);
     } catch {
-      toast.error('Lỗi khi xoá.')
+      toast.error("Lỗi khi xoá.");
     }
-  }
+  };
 
   const requestDeleteCoupon = (coupon: Coupon) => {
-    setCouponToDelete(coupon)
-    setShowDeleteModal(true)
-  }
+    setCouponToDelete(coupon);
+    setShowDeleteModal(true);
+  };
 
   const openNew = () => {
     setEditData({
-      code: '',
-      coupon_type: 'percentage',
-      value: '',
-      min_order_amount: '',
+      code: "",
+      coupon_type: "percentage",
+      value: "",
+      min_order_amount: "",
       is_active: true,
       category_ids: [],
-    })
-    setShowModal(true)
-  }
+    });
+    setShowModal(true);
+  };
 
   const openEdit = (c: Coupon) => {
     setEditData({
       ...c,
       category_ids: c.categories?.map((cat) => cat.id) || [],
-    })
-    setShowModal(true)
-  }
+    });
+    setShowModal(true);
+  };
 
   return (
     <div className="adminPageContainer">
@@ -129,10 +143,22 @@ export default function CouponsAdminPage() {
       <div className="adminPageHeader">
         <div>
           <h2 className="adminPageTitle">Quản lý Mã giảm giá</h2>
-          <p className="adminPageSubtitle">Tạo, bật/tắt và theo dõi hiệu suất sử dụng các chương trình ưu đãi.</p>
+          <p className="adminPageSubtitle">
+            Tạo, bật/tắt và theo dõi hiệu suất sử dụng các chương trình ưu đãi.
+          </p>
         </div>
         <button className="adminBtnPrimary" onClick={openNew}>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.5"
+          >
+            <line x1="12" y1="5" x2="12" y2="19"></line>
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+          </svg>
           Tạo mã mới
         </button>
       </div>
@@ -156,7 +182,10 @@ export default function CouponsAdminPage() {
               {Array.from({ length: 5 }).map((_, i) => (
                 <tr key={i} className="admSkeletonRow">
                   <td colSpan={7}>
-                    <div className="admSkeletonBar" style={{ width: i % 2 === 0 ? '50%' : '70%' }} />
+                    <div
+                      className="admSkeletonBar"
+                      style={{ width: i % 2 === 0 ? "50%" : "70%" }}
+                    />
                   </td>
                 </tr>
               ))}
@@ -187,21 +216,27 @@ export default function CouponsAdminPage() {
                   <td>
                     <div className="couponCodeBadge">{c.code}</div>
                   </td>
-                  
+
                   {/* Cột thông tin ưu đãi */}
                   <td>
                     <div className="couponDiscountVal">
-                      {c.coupon_type === 'percentage' ? `${Number(c.value)}%` : `${Number(c.value).toLocaleString('vi-VN')}đ`}
+                      {c.coupon_type === "percentage"
+                        ? `${Number(c.value)}%`
+                        : `${Number(c.value).toLocaleString("vi-VN")}đ`}
                     </div>
                     <div className="couponTypeSub">
-                      {c.coupon_type === 'percentage' ? 'Giảm theo phần trăm' : 'Giảm số tiền cố định'}
+                      {c.coupon_type === "percentage"
+                        ? "Giảm theo phần trăm"
+                        : "Giảm số tiền cố định"}
                     </div>
                   </td>
 
                   {/* Đơn tối thiểu */}
                   <td>
                     <span className="couponMinOrder">
-                      {c.min_order_amount ? `${Number(c.min_order_amount).toLocaleString('vi-VN')}đ` : '—'}
+                      {c.min_order_amount
+                        ? `${Number(c.min_order_amount).toLocaleString("vi-VN")}đ`
+                        : "—"}
                     </span>
                   </td>
 
@@ -210,11 +245,19 @@ export default function CouponsAdminPage() {
                     <div className="couponTimeBlock">
                       <div className="timeItem">
                         <span className="timeLabel">Từ:</span>
-                        <span className="timeValue">{c.start_at ? new Date(c.start_at).toLocaleDateString('vi-VN') : 'Bất kỳ'}</span>
+                        <span className="timeValue">
+                          {c.start_at
+                            ? new Date(c.start_at).toLocaleDateString("vi-VN")
+                            : "Bất kỳ"}
+                        </span>
                       </div>
                       <div className="timeItem">
                         <span className="timeLabel">Đến:</span>
-                        <span className="timeValue">{c.end_at ? new Date(c.end_at).toLocaleDateString('vi-VN') : 'Vô hạn'}</span>
+                        <span className="timeValue">
+                          {c.end_at
+                            ? new Date(c.end_at).toLocaleDateString("vi-VN")
+                            : "Vô hạn"}
+                        </span>
                       </div>
                     </div>
                   </td>
@@ -223,24 +266,26 @@ export default function CouponsAdminPage() {
                   <td>
                     <div className="couponUsage">
                       <strong>{c.usages_count || 0}</strong>
-                      <span className="usageMax"> / {c.max_uses || '∞'}</span>
+                      <span className="usageMax"> / {c.max_uses || "∞"}</span>
                     </div>
                   </td>
 
                   {/* Trạng thái hoạt động dạng Pill chấm tròn */}
                   <td>
                     {(() => {
-                      const now = new Date()
-                      const isExpired = c.end_at ? new Date(c.end_at) < now : false
-                      let statusText = 'Đang hoạt động'
-                      let statusClass = 'ok'
-                      
+                      const now = new Date();
+                      const isExpired = c.end_at
+                        ? new Date(c.end_at) < now
+                        : false;
+                      let statusText = "Đang hoạt động";
+                      let statusClass = "ok";
+
                       if (!c.is_active) {
-                        statusText = 'Tạm dừng'
-                        statusClass = 'bad'
+                        statusText = "Tạm dừng";
+                        statusClass = "bad";
                       } else if (isExpired) {
-                        statusText = 'Đã hết hạn'
-                        statusClass = 'bad'
+                        statusText = "Đã hết hạn";
+                        statusClass = "bad";
                       }
 
                       return (
@@ -248,17 +293,28 @@ export default function CouponsAdminPage() {
                           <span className="statusDot"></span>
                           {statusText}
                         </span>
-                      )
+                      );
                     })()}
                   </td>
 
                   {/* Nhóm thao tác icon vuông đồng bộ */}
                   <td>
                     <div className="adminActionGroup">
-                      <button className="adminBtnSecondary" title="Chỉnh sửa" onClick={() => { setEditData(c); setShowModal(true) }}>
+                      <button
+                        className="adminBtnSecondary"
+                        title="Chỉnh sửa"
+                        onClick={() => {
+                          setEditData(c);
+                          setShowModal(true);
+                        }}
+                      >
                         <PencilIcon />
                       </button>
-                      <button className="adminBtnDanger" title="Xóa mã" onClick={() => requestDeleteCoupon(c)}>
+                      <button
+                        className="adminBtnDanger"
+                        title="Xóa mã"
+                        onClick={() => requestDeleteCoupon(c)}
+                      >
                         <TrashIcon />
                       </button>
                     </div>
@@ -273,101 +329,276 @@ export default function CouponsAdminPage() {
       {/* Phân trang */}
       <div className="adminPagination">
         <button disabled={page <= 1} onClick={() => setPage((p) => p - 1)}>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="15 18 9 12 15 6"></polyline></svg>
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+          >
+            <polyline points="15 18 9 12 15 6"></polyline>
+          </svg>
         </button>
-        <span className="pageIndicator">Trang <b>{page}</b> / {totalPages}</span>
-        <button disabled={page >= totalPages} onClick={() => setPage((p) => p + 1)}>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+        <span className="pageIndicator">
+          Trang <b>{page}</b> / {totalPages}
+        </span>
+        <button
+          disabled={page >= totalPages}
+          onClick={() => setPage((p) => p + 1)}
+        >
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+          >
+            <polyline points="9 18 15 12 9 6"></polyline>
+          </svg>
         </button>
       </div>
 
       {/* Modal chỉnh sửa & tạo mới */}
       {showModal && editData && (
         <div className="adminModalOverlay" onClick={() => setShowModal(false)}>
-          <div className="adminModalContent" onClick={e => e.stopPropagation()} style={{ maxWidth: 580 }}>
+          <div
+            className="adminModalContent"
+            onClick={(e) => e.stopPropagation()}
+            style={{ maxWidth: 580 }}
+          >
             <div className="adminModalHeader">
-              <h3>{editData.id ? '✏️ Chỉnh sửa mã giảm giá' : '✨ Tạo mã giảm giá mới'}</h3>
-              <button className="adminModalClose" onClick={() => setShowModal(false)}>×</button>
+              <h3>
+                {editData.id
+                  ? "✏️ Chỉnh sửa mã giảm giá"
+                  : "✨ Tạo mã giảm giá mới"}
+              </h3>
+              <button
+                className="adminModalClose"
+                onClick={() => setShowModal(false)}
+              >
+                ×
+              </button>
             </div>
             <form onSubmit={handleSave} className="adminModalBody">
               <div className="formRow">
                 <div className="adminFormGroup">
                   <label>Mã khuyến mãi (Code)</label>
-                  <input required type="text" placeholder="VD: NHALAM10, TET2026..." value={editData.code || ''} onChange={e => setEditData({ ...editData, code: e.target.value.toUpperCase() })} />
+                  <input
+                    required
+                    type="text"
+                    placeholder="VD: NHALAM10, TET2026..."
+                    value={editData.code || ""}
+                    onChange={(e) =>
+                      setEditData({
+                        ...editData,
+                        code: e.target.value.toUpperCase(),
+                      })
+                    }
+                  />
                 </div>
                 <div className="adminFormGroup">
                   <label>Giá trị đơn hàng tối thiểu (đ)</label>
-                  <input type="number" min="0" step="1000" placeholder="0đ (Bỏ trống nếu không yêu cầu)" value={editData.min_order_amount || ''} onChange={e => setEditData({ ...editData, min_order_amount: e.target.value })} />
+                  <input
+                    type="number"
+                    min="0"
+                    step="1000"
+                    placeholder="0đ (Bỏ trống nếu không yêu cầu)"
+                    value={editData.min_order_amount || ""}
+                    onChange={(e) =>
+                      setEditData({
+                        ...editData,
+                        min_order_amount: e.target.value,
+                      })
+                    }
+                  />
                 </div>
               </div>
 
               <div className="formRow">
                 <div className="adminFormGroup">
                   <label>Loại hình</label>
-                  <select value={editData.coupon_type} onChange={e => setEditData({ ...editData, coupon_type: e.target.value as any })}>
+                  <select
+                    value={editData.coupon_type}
+                    onChange={(e) =>
+                      setEditData({
+                        ...editData,
+                        coupon_type: e.target.value as any,
+                      })
+                    }
+                  >
                     <option value="percentage">Phần trăm (%)</option>
                     <option value="fixed">Số tiền cố định (đ)</option>
                   </select>
                 </div>
                 <div className="adminFormGroup">
-                  <label>Mức giảm {editData.coupon_type === 'percentage' ? '(%)' : '(đ)'}</label>
-                  <input required type="number" min="0" step={editData.coupon_type === 'percentage' ? '1' : '1000'} value={editData.value || ''} onChange={e => setEditData({ ...editData, value: e.target.value })} />
+                  <label>
+                    Mức giảm{" "}
+                    {editData.coupon_type === "percentage" ? "(%)" : "(đ)"}
+                  </label>
+                  <input
+                    required
+                    type="number"
+                    min="0"
+                    step={editData.coupon_type === "percentage" ? "1" : "1000"}
+                    value={editData.value || ""}
+                    onChange={(e) =>
+                      setEditData({ ...editData, value: e.target.value })
+                    }
+                  />
                 </div>
               </div>
 
               <div className="formRow">
                 <div className="adminFormGroup">
                   <label>Tổng lượt phát hành tối đa</label>
-                  <input type="number" min="1" placeholder="Vô hạn (∞)" value={editData.max_uses || ''} onChange={e => setEditData({ ...editData, max_uses: parseInt(e.target.value) || null })} />
+                  <input
+                    type="number"
+                    min="1"
+                    placeholder="Vô hạn (∞)"
+                    value={editData.max_uses || ""}
+                    onChange={(e) =>
+                      setEditData({
+                        ...editData,
+                        max_uses: parseInt(e.target.value) || null,
+                      })
+                    }
+                  />
                 </div>
                 <div className="adminFormGroup">
                   <label>Giới hạn / Mỗi khách hàng</label>
-                  <input type="number" min="1" placeholder="Không giới hạn" value={editData.max_uses_per_user || ''} onChange={e => setEditData({ ...editData, max_uses_per_user: parseInt(e.target.value) || null })} />
+                  <input
+                    type="number"
+                    min="1"
+                    placeholder="Không giới hạn"
+                    value={editData.max_uses_per_user || ""}
+                    onChange={(e) =>
+                      setEditData({
+                        ...editData,
+                        max_uses_per_user: parseInt(e.target.value) || null,
+                      })
+                    }
+                  />
                 </div>
               </div>
 
               <div className="formRow">
                 <div className="adminFormGroup">
                   <label>Ngày bắt đầu hiệu lực</label>
-                  <input type="datetime-local" value={editData.start_at ? editData.start_at.slice(0, 16) : ''} onChange={e => setEditData({ ...editData, start_at: e.target.value || null })} />
+                  <input
+                    type="datetime-local"
+                    value={
+                      editData.start_at ? editData.start_at.slice(0, 16) : ""
+                    }
+                    onChange={(e) =>
+                      setEditData({
+                        ...editData,
+                        start_at: e.target.value || null,
+                      })
+                    }
+                  />
                 </div>
                 <div className="adminFormGroup">
                   <label>Ngày hết hạn</label>
-                  <input type="datetime-local" value={editData.end_at ? editData.end_at.slice(0, 16) : ''} onChange={e => setEditData({ ...editData, end_at: e.target.value || null })} />
+                  <input
+                    type="datetime-local"
+                    value={editData.end_at ? editData.end_at.slice(0, 16) : ""}
+                    onChange={(e) =>
+                      setEditData({
+                        ...editData,
+                        end_at: e.target.value || null,
+                      })
+                    }
+                  />
                 </div>
               </div>
 
               <div className="adminFormGroup">
-                <label>Áp dụng cho danh mục (để trống nếu áp dụng toàn bộ)</label>
-                <div className="adminCategoryScroll" style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginTop: '4px' }}>
-                  {categories.map(cat => {
-                    const isChecked = editData.category_ids?.includes(cat.id)
+                <label>
+                  Áp dụng cho danh mục (để trống nếu áp dụng toàn bộ)
+                </label>
+                <div
+                  className="adminCategoryScroll"
+                  style={{
+                    display: "flex",
+                    flexWrap: "wrap",
+                    gap: "8px",
+                    marginTop: "4px",
+                  }}
+                >
+                  {categories.map((cat) => {
+                    const isChecked = editData.category_ids?.includes(cat.id);
                     return (
-                      <label key={cat.id} style={{ display: 'flex', alignItems: 'center', gap: '4px', cursor: 'pointer', background: isChecked ? '#fff7ed' : '#f1f5f9', padding: '6px 10px', borderRadius: '4px', border: `1px solid ${isChecked ? '#ff6b2b' : 'transparent'}`, color: isChecked ? '#ea580c' : '#475569', fontSize: '13px' }}>
-                        <input type="checkbox" style={{ margin: 0 }} checked={isChecked || false} onChange={(e) => {
-                          const checked = e.target.checked
-                          const currentIds = editData.category_ids || []
-                          if (checked) {
-                            setEditData({ ...editData, category_ids: [...currentIds, cat.id] })
-                          } else {
-                            setEditData({ ...editData, category_ids: currentIds.filter(id => id !== cat.id) })
-                          }
-                        }} />
+                      <label
+                        key={cat.id}
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "4px",
+                          cursor: "pointer",
+                          background: isChecked ? "#fff7ed" : "#f1f5f9",
+                          padding: "6px 10px",
+                          borderRadius: "4px",
+                          border: `1px solid ${isChecked ? "#ff6b2b" : "transparent"}`,
+                          color: isChecked ? "#ea580c" : "#475569",
+                          fontSize: "13px",
+                        }}
+                      >
+                        <input
+                          type="checkbox"
+                          style={{ margin: 0 }}
+                          checked={isChecked || false}
+                          onChange={(e) => {
+                            const checked = e.target.checked;
+                            const currentIds = editData.category_ids || [];
+                            if (checked) {
+                              setEditData({
+                                ...editData,
+                                category_ids: [...currentIds, cat.id],
+                              });
+                            } else {
+                              setEditData({
+                                ...editData,
+                                category_ids: currentIds.filter(
+                                  (id) => id !== cat.id,
+                                ),
+                              });
+                            }
+                          }}
+                        />
                         {cat.name}
                       </label>
-                    )
+                    );
                   })}
                 </div>
               </div>
 
               <div className="adminFormCheckbox">
-                <input type="checkbox" id="isActive" checked={!!editData.is_active} onChange={e => setEditData({ ...editData, is_active: e.target.checked })} />
-                <label htmlFor="isActive">Kích hoạt và cho phép người dùng áp dụng mã ngay bây giờ</label>
+                <input
+                  type="checkbox"
+                  id="isActive"
+                  checked={!!editData.is_active}
+                  onChange={(e) =>
+                    setEditData({ ...editData, is_active: e.target.checked })
+                  }
+                />
+                <label htmlFor="isActive">
+                  Kích hoạt và cho phép người dùng áp dụng mã ngay bây giờ
+                </label>
               </div>
-              
+
               <div className="adminModalFooter">
-                <button type="button" className="modalBtnCancel" onClick={() => setShowModal(false)}>Đóng lại</button>
-                <button type="submit" className="adminBtnPrimary">Lưu dữ liệu</button>
+                <button
+                  type="button"
+                  className="modalBtnCancel"
+                  onClick={() => setShowModal(false)}
+                >
+                  Đóng lại
+                </button>
+                <button type="submit" className="adminBtnPrimary">
+                  Lưu dữ liệu
+                </button>
               </div>
             </form>
           </div>
@@ -377,22 +608,72 @@ export default function CouponsAdminPage() {
       <ConfirmModal
         open={showDeleteModal}
         title="Xác nhận xoá mã giảm giá"
-        message={couponToDelete ? (
-          <div className="deleteConfirmContent">
-            <p>Hành động này không thể hoàn tác. Bạn có chắc muốn xóa vĩnh viễn mã giảm giá sau?</p>
-            <div className="deleteCard">
-              <strong>Mã: {couponToDelete.code}</strong>
-              <span>Ưu đãi: {couponToDelete.coupon_type === 'percentage' ? `${Number(couponToDelete.value)}%` : `${Number(couponToDelete.value).toLocaleString('vi-VN')}đ`}</span>
+        message={
+          couponToDelete ? (
+            <div className="deleteConfirmContent">
+              <p>
+                Hành động này không thể hoàn tác. Bạn có chắc muốn xóa vĩnh viễn
+                mã giảm giá sau?
+              </p>
+              <div className="deleteCard">
+                <strong>Mã: {couponToDelete.code}</strong>
+                <span>
+                  Ưu đãi:{" "}
+                  {couponToDelete.coupon_type === "percentage"
+                    ? `${Number(couponToDelete.value)}%`
+                    : `${Number(couponToDelete.value).toLocaleString("vi-VN")}đ`}
+                </span>
+              </div>
             </div>
-          </div>
-        ) : 'Bạn có chắc chắn muốn xoá mã giảm giá này?'}
-        onConfirm={() => { if (couponToDelete) void deleteCoupon(couponToDelete.id) }}
-        onCancel={() => { setShowDeleteModal(false); setCouponToDelete(null) }}
+          ) : (
+            "Bạn có chắc chắn muốn xoá mã giảm giá này?"
+          )
+        }
+        onConfirm={() => {
+          if (couponToDelete) void deleteCoupon(couponToDelete.id);
+        }}
+        onCancel={() => {
+          setShowDeleteModal(false);
+          setCouponToDelete(null);
+        }}
       />
     </div>
-  )
+  );
 }
 
-
-function PencilIcon() {return (<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>)}
-function TrashIcon() {return (<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>)}
+function PencilIcon() {
+  return (
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M12 20h9" />
+      <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
+    </svg>
+  );
+}
+function TrashIcon() {
+  return (
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <polyline points="3 6 5 6 21 6" />
+      <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+      <line x1="10" y1="11" x2="10" y2="17" />
+      <line x1="14" y1="11" x2="14" y2="17" />
+    </svg>
+  );
+}

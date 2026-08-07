@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { apiFetch, setAuthToken } from "@/configs/api.config";
 import { setAuthSessionExpiry } from "@/features/store/auth.store";
 import { useState } from "react";
-import { toast } from '@/utils/toast';
+import { toast } from "@/utils/toast";
 
 interface GoogleAuthResponse {
   // Trong prod/https, backend chỉ set httpOnly cookie (token = undefined).

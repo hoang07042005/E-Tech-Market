@@ -35,9 +35,15 @@
 }
 
 @keyframes float {
-  0% { transform: translateY(0px); }
-  50% { transform: translateY(-10px); }
-  100% { transform: translateY(0px); }
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
 }
 
 /* Summary Grid */
@@ -536,7 +542,7 @@
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
-    gap:8px;
+    gap: 8px;
   }
   .cpHeaderTitle {
     font-size: 24px;

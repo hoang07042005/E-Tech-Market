@@ -1,6 +1,10 @@
-import type { ProductSpecRow } from './PdpShared'
+import type { ProductSpecRow } from "./PdpShared";
 
-export function PdpSpecsSection({ mergedDisplaySpecs }: { mergedDisplaySpecs: ProductSpecRow[] }) {
+export function PdpSpecsSection({
+  mergedDisplaySpecs,
+}: {
+  mergedDisplaySpecs: ProductSpecRow[];
+}) {
   return (
     <div className="pdpSpecsSide">
       <div className="pdpSpecsSection">
@@ -12,14 +16,17 @@ export function PdpSpecsSection({ mergedDisplaySpecs }: { mergedDisplaySpecs: Pr
           <div className="pdpSpecsTable">
             {Object.entries(
               mergedDisplaySpecs.reduce(
-                (acc: Record<string, ProductSpecRow[]>, spec: ProductSpecRow) => {
-                  const group = spec.spec_group || 'Thông tin khác'
-                  if (!acc[group]) acc[group] = []
-                  acc[group].push(spec)
-                  return acc
+                (
+                  acc: Record<string, ProductSpecRow[]>,
+                  spec: ProductSpecRow,
+                ) => {
+                  const group = spec.spec_group || "Thông tin khác";
+                  if (!acc[group]) acc[group] = [];
+                  acc[group].push(spec);
+                  return acc;
                 },
                 {} as Record<string, ProductSpecRow[]>,
-              )
+              ),
             ).map(([groupName, groupSpecs], idx) => (
               <div key={idx} className="pdpTableRow">
                 <div className="pdpTableKey">{groupName}</div>
@@ -28,7 +35,10 @@ export function PdpSpecsSection({ mergedDisplaySpecs }: { mergedDisplaySpecs: Pr
                     <div key={i} className="vValueLine">
                       <span className="vInnerKey">{s.spec_key}: </span>
                       <span className="vInnerVal">
-                        {s.spec_value} {s.spec_unit && s.spec_unit.trim() !== '-' ? s.spec_unit : ''}
+                        {s.spec_value}{" "}
+                        {s.spec_unit && s.spec_unit.trim() !== "-"
+                          ? s.spec_unit
+                          : ""}
                       </span>
                     </div>
                   ))}
@@ -41,5 +51,5 @@ export function PdpSpecsSection({ mergedDisplaySpecs }: { mergedDisplaySpecs: Pr
         )}
       </div>
     </div>
-  )
+  );
 }

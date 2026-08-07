@@ -3,7 +3,14 @@
   max-width: 1470px;
   margin: 40px auto;
   padding: 0 24px;
-  font-family: 'Outfit', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family:
+    "Outfit",
+    "Inter",
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Roboto,
+    sans-serif;
   color: #1e293b;
 }
 
@@ -28,7 +35,7 @@
   font-weight: 800;
   color: #0f172a;
   margin: 0;
-  letter-spacing: -.8px;
+  letter-spacing: -0.8px;
   background: linear-gradient(135deg, #0f172a 0%, #334155 100%);
   -webkit-background-clip: text;
   background-clip: text;
@@ -54,8 +61,8 @@
   font-size: 14px;
   font-weight: 600;
   text-decoration: none;
-  transition: all .2s cubic-bezier(.4, 0, .2, 1);
-  box-shadow: 0 2px 6px rgba(0, 0, 0, .02);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02);
 }
 
 .notifBackLink:hover {
@@ -63,7 +70,7 @@
   color: #0f172a;
   border-color: #cbd5e1;
   transform: translateX(-3px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, .05);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
 /* Main Dashboard Grid */
@@ -85,7 +92,7 @@
   border: 1px solid #e2e8f0;
   border-radius: 5px;
   padding: 24px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, .02);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
 }
 
 .notifSidebarTitle {
@@ -93,7 +100,7 @@
   font-weight: 700;
   color: #0f172a;
   margin: 0 0 16px 0;
-  letter-spacing: -.3px;
+  letter-spacing: -0.3px;
 }
 
 .notifFilterList {
@@ -115,7 +122,7 @@
   border-radius: 5px;
   cursor: pointer;
   text-align: left;
-  transition: all .2s cubic-bezier(.4, 0, .2, 1);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .notifFilterItem.active {
@@ -148,7 +155,7 @@
 .notifFilterCount.badge-unread {
   background: #ff5e3a;
   color: #ffffff;
-  box-shadow: 0 2px 8px rgba(255, 94, 58, .2);
+  box-shadow: 0 2px 8px rgba(255, 94, 58, 0.2);
 }
 
 .notifBtnMarkAll {
@@ -165,7 +172,7 @@
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
-  transition: all .2s ease;
+  transition: all 0.2s ease;
 }
 
 .notifBtnMarkAll:hover:not(:disabled) {
@@ -175,7 +182,7 @@
 }
 
 .notifBtnMarkAll:disabled {
-  opacity: .5;
+  opacity: 0.5;
   cursor: not-allowed;
 }
 
@@ -197,7 +204,7 @@
   border-radius: 24px;
   border: 1px dashed #cbd5e1;
   text-align: center;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, .02);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
 }
 
 .notifEmptyIcon {
@@ -218,7 +225,7 @@
   font-weight: 700;
   color: #334155;
   margin: 0 0 8px 0;
-  letter-spacing: -.3px;
+  letter-spacing: -0.3px;
 }
 
 .notifEmptyText {
@@ -249,26 +256,26 @@
   cursor: pointer;
   position: relative;
   overflow: hidden;
-  transition: all .25s cubic-bezier(.4, 0, .2, 1);
-  box-shadow: 0 2px 10px rgba(0, 0, 0, .01);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.01);
 }
 
 .notifCard:hover {
   transform: translateY(-2px);
   border-color: #cbd5e1;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, .05);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
 }
 
 /* Left colored borders based on type using premium gradients */
 .notifCard::before {
-  content: '';
+  content: "";
   position: absolute;
   left: 0;
   top: 0;
   bottom: 0;
   width: 5px;
   background: #64748b;
-  transition: width .2s ease;
+  transition: width 0.2s ease;
 }
 
 .notifCard.unread::before {
@@ -331,7 +338,7 @@
   height: 48px;
   border-radius: 16px;
   flex-shrink: 0;
-  transition: transform .2s cubic-bezier(.4, 0, .2, 1);
+  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .notifCard:hover .notifIconContainer {
@@ -382,7 +389,7 @@
   color: #334155;
   margin: 0;
   line-height: 1.3;
-  letter-spacing: -.2px;
+  letter-spacing: -0.2px;
 }
 
 .notifCard.unread .notifCardTitle {
@@ -410,8 +417,8 @@
   background: #ff5e3a;
   color: #ffffff;
   text-transform: uppercase;
-  letter-spacing: .8px;
-  box-shadow: 0 2px 8px rgba(255, 94, 58, .2);
+  letter-spacing: 0.8px;
+  box-shadow: 0 2px 8px rgba(255, 94, 58, 0.2);
 }
 
 .notifBadgeRead {
@@ -435,7 +442,7 @@
   border: 1px solid #bfdbfe;
   color: #1d4ed8;
   cursor: pointer;
-  transition: all .2s ease;
+  transition: all 0.2s ease;
   padding: 0;
 }
 
@@ -481,8 +488,8 @@
   color: #475569;
   font-size: 18px;
   cursor: pointer;
-  transition: all .2s cubic-bezier(.4, 0, .2, 1);
-  box-shadow: 0 2px 6px rgba(0, 0, 0, .02);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02);
 }
 
 .notifPageBtn:hover:not(:disabled) {
@@ -493,7 +500,7 @@
 }
 
 .notifPageBtn:disabled {
-  opacity: .4;
+  opacity: 0.4;
   cursor: not-allowed;
 }
 
@@ -513,7 +520,7 @@
   .notifSidebar {
     position: static;
   }
-  
+
   /* Convert Sidebar to Horizontal Tabs on Mobile */
   .notifSidebarCard {
     padding: 0;
@@ -558,7 +565,7 @@
     background: #f1f5f9;
     color: #64748b;
   }
-  
+
   .notifFilterItem.active .notifFilterCount {
     color: #ea580c;
   }

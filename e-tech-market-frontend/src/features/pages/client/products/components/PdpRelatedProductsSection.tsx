@@ -1,7 +1,7 @@
-import { Link } from 'react-router-dom'
-import type { Product } from '@/features/services/products.service'
-import { resolveImageUrl } from './PdpShared'
-import { HeartIcon } from '@/components/icons/HeartIcon'
+import { Link } from "react-router-dom";
+import type { Product } from "@/features/services/products.service";
+import { resolveImageUrl } from "./PdpShared";
+import { HeartIcon } from "@/components/icons/HeartIcon";
 
 export function PdpRelatedProductsSection({
   relatedProducts,
@@ -9,12 +9,12 @@ export function PdpRelatedProductsSection({
   onToggleLike,
   title = "Sản phẩm liên quan",
 }: {
-  relatedProducts: Product[]
-  wishSet: Set<number>
-  onToggleLike: (productId: number) => void
-  title?: string
+  relatedProducts: Product[];
+  wishSet: Set<number>;
+  onToggleLike: (productId: number) => void;
+  title?: string;
 }) {
-  if (relatedProducts.length === 0) return null
+  if (relatedProducts.length === 0) return null;
 
   return (
     <section className="pdpRelatedSection" aria-label={title}>
@@ -41,24 +41,30 @@ export function PdpRelatedProductsSection({
               </Link>
 
               {(rp.short_description || rp.description) && (
-                <div className="pdpRelatedDesc">{rp.short_description || rp.description}</div>
+                <div className="pdpRelatedDesc">
+                  {rp.short_description || rp.description}
+                </div>
               )}
 
               <button
                 type="button"
                 className="pdpRelatedFavBtn"
-                aria-label={wishSet.has(rp.id) ? 'Bỏ khỏi yêu thích' : 'Thêm vào yêu thích'}
+                aria-label={
+                  wishSet.has(rp.id)
+                    ? "Bỏ khỏi yêu thích"
+                    : "Thêm vào yêu thích"
+                }
                 onClick={() => onToggleLike(rp.id)}
               >
                 <span className="pdpRelatedFavIcon" aria-hidden>
                   <HeartIcon filled={wishSet.has(rp.id)} size={18} />
                 </span>
-                <span>{wishSet.has(rp.id) ? 'Đã yêu thích' : 'Yêu thích'}</span>
+                <span>{wishSet.has(rp.id) ? "Đã yêu thích" : "Yêu thích"}</span>
               </button>
             </div>
           </div>
         ))}
       </div>
     </section>
-  )
+  );
 }

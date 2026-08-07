@@ -1,43 +1,50 @@
-import { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
-import { Helmet } from 'react-helmet-async'
-import { apiFetch } from '@/configs/api.config'
-import '@/styles/pages/OneForOnePolicyPage.css'
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
+import { apiFetch } from "@/configs/api.config";
+import "@/styles/pages/OneForOnePolicyPage.css";
 
 type StoreContactPayload = {
-  store_name: string
-  contact_email: string
-  contact_phone: string
-  warehouse_address: string
-}
+  store_name: string;
+  contact_email: string;
+  contact_phone: string;
+  warehouse_address: string;
+};
 
 export default function OneForOnePolicyPage() {
-  const [storeContact, setStoreContact] = useState<StoreContactPayload | null>(null)
+  const [storeContact, setStoreContact] = useState<StoreContactPayload | null>(
+    null,
+  );
 
   useEffect(() => {
-    let cancelled = false
-    ;(async () => {
+    let cancelled = false;
+    (async () => {
       try {
-        const data = await apiFetch<StoreContactPayload>('/api/store/contact')
-        if (!cancelled) setStoreContact(data)
+        const data = await apiFetch<StoreContactPayload>("/api/store/contact");
+        if (!cancelled) setStoreContact(data);
       } catch {
-        if (!cancelled) setStoreContact(null)
+        if (!cancelled) setStoreContact(null);
       }
-    })()
+    })();
     return () => {
-      cancelled = true
-    }
-  }, [])
+      cancelled = true;
+    };
+  }, []);
 
-  const displayStoreName = storeContact?.store_name?.trim() || 'E-Tech Market'
-  const displayPhone = storeContact?.contact_phone?.trim() || '1900 8181'
-  const cleanPhone = (storeContact?.contact_phone || '19008181').split(/[\n/(]/)[0].replace(/\s+/g, '')
+  const displayStoreName = storeContact?.store_name?.trim() || "E-Tech Market";
+  const displayPhone = storeContact?.contact_phone?.trim() || "1900 8181";
+  const cleanPhone = (storeContact?.contact_phone || "19008181")
+    .split(/[\n/(]/)[0]
+    .replace(/\s+/g, "");
 
   return (
     <div className="oneForOnePage">
       <Helmet>
         <title>Chính sách 1 đổi 1 - {displayStoreName}</title>
-        <meta name="description" content={`Quy định bảo hành và chính sách đổi trả 1 đổi 1 nhanh chóng, tiện lợi và uy tín tại ${displayStoreName}.`} />
+        <meta
+          name="description"
+          content={`Quy định bảo hành và chính sách đổi trả 1 đổi 1 nhanh chóng, tiện lợi và uy tín tại ${displayStoreName}.`}
+        />
       </Helmet>
 
       <div className="oneForOneContainer">
@@ -51,18 +58,21 @@ export default function OneForOnePolicyPage() {
           <span className="oneForOneBreadcrumbIcon">
             <IconChevronRight size={12} />
           </span>
-          <span style={{ color: 'var(--et-primary, #904d00)' }}>Chính sách 1 đổi 1</span>
+          <span style={{ color: "var(--et-primary, #904d00)" }}>
+            Chính sách 1 đổi 1
+          </span>
         </nav>
 
         {/* Hero Section */}
         <section className="oneForOneHero">
           <div className="oneForOneHeroContent">
-            <div className="oneForOneEyebrow">
-              Dịch vụ khách hàng
-            </div>
+            <div className="oneForOneEyebrow">Dịch vụ khách hàng</div>
             <h1 className="oneForOneTitle">Chính sách 1 đổi 1</h1>
             <p className="oneForOneLead">
-              Tại {displayStoreName}, sự hài lòng của bạn là ưu tiên hàng đầu. Chúng tôi cam kết mang lại trải nghiệm mua sắm an tâm tuyệt đối với chính sách đổi mới sản phẩm linh hoạt, đảm bảo quyền lợi tối đa cho khách hàng.
+              Tại {displayStoreName}, sự hài lòng của bạn là ưu tiên hàng đầu.
+              Chúng tôi cam kết mang lại trải nghiệm mua sắm an tâm tuyệt đối
+              với chính sách đổi mới sản phẩm linh hoạt, đảm bảo quyền lợi tối
+              đa cho khách hàng.
             </p>
           </div>
           <div className="oneForOneHeroVisual">
@@ -88,18 +98,29 @@ export default function OneForOnePolicyPage() {
               <div className="oneForOneEligibilityGrid">
                 <div className="oneForOneEligibilityBox">
                   <IconManufacturing />
-                  <h3 className="oneForOneEligibilityTitle">Lỗi từ nhà sản xuất</h3>
-                  <p className="oneForOneEligibilityDesc">Áp dụng cho các lỗi kỹ thuật, phần cứng phát sinh không do tác động ngoại lực.</p>
+                  <h3 className="oneForOneEligibilityTitle">
+                    Lỗi từ nhà sản xuất
+                  </h3>
+                  <p className="oneForOneEligibilityDesc">
+                    Áp dụng cho các lỗi kỹ thuật, phần cứng phát sinh không do
+                    tác động ngoại lực.
+                  </p>
                 </div>
                 <div className="oneForOneEligibilityBox">
                   <IconInventory />
                   <h3 className="oneForOneEligibilityTitle">Nguyên vẹn 100%</h3>
-                  <p className="oneForOneEligibilityDesc">Sản phẩm không trầy xước, móp méo, còn nguyên tem niêm phong của hãng.</p>
+                  <p className="oneForOneEligibilityDesc">
+                    Sản phẩm không trầy xước, móp méo, còn nguyên tem niêm phong
+                    của hãng.
+                  </p>
                 </div>
                 <div className="oneForOneEligibilityBox">
                   <IconDeployedCode />
                   <h3 className="oneForOneEligibilityTitle">Đầy đủ phụ kiện</h3>
-                  <p className="oneForOneEligibilityDesc">Phải có đầy đủ hộp (box), cáp sạc, sách hướng dẫn và quà tặng kèm (nếu có).</p>
+                  <p className="oneForOneEligibilityDesc">
+                    Phải có đầy đủ hộp (box), cáp sạc, sách hướng dẫn và quà
+                    tặng kèm (nếu có).
+                  </p>
                 </div>
               </div>
             </div>
@@ -128,22 +149,30 @@ export default function OneForOnePolicyPage() {
                 <div className="oneForOneStepCard">
                   <div className="oneForOneStepIndex">1</div>
                   <h3 className="oneForOneStepTitle">Tiếp nhận</h3>
-                  <p className="oneForOneStepDesc">Liên hệ hotline hoặc ghé cửa hàng trực tiếp.</p>
+                  <p className="oneForOneStepDesc">
+                    Liên hệ hotline hoặc ghé cửa hàng trực tiếp.
+                  </p>
                 </div>
                 <div className="oneForOneStepCard">
                   <div className="oneForOneStepIndex">2</div>
                   <h3 className="oneForOneStepTitle">Kiểm tra</h3>
-                  <p className="oneForOneStepDesc">Kỹ thuật viên giám định tình trạng máy.</p>
+                  <p className="oneForOneStepDesc">
+                    Kỹ thuật viên giám định tình trạng máy.
+                  </p>
                 </div>
                 <div className="oneForOneStepCard">
                   <div className="oneForOneStepIndex">3</div>
                   <h3 className="oneForOneStepTitle">Xác nhận</h3>
-                  <p className="oneForOneStepDesc">Chốt phương án đổi mới cho khách hàng.</p>
+                  <p className="oneForOneStepDesc">
+                    Chốt phương án đổi mới cho khách hàng.
+                  </p>
                 </div>
                 <div className="oneForOneStepCard">
                   <div className="oneForOneStepIndex">4</div>
                   <h3 className="oneForOneStepTitle">Đổi mới</h3>
-                  <p className="oneForOneStepDesc">Bàn giao máy mới 100% nguyên seal.</p>
+                  <p className="oneForOneStepDesc">
+                    Bàn giao máy mới 100% nguyên seal.
+                  </p>
                 </div>
               </div>
             </div>
@@ -160,29 +189,46 @@ export default function OneForOnePolicyPage() {
                 <div className="oneForOneExclusionItem">
                   <IconCancel />
                   <div>
-                    <h3 className="oneForOneExclusionTitle">Lỗi do người dùng</h3>
-                    <p className="oneForOneExclusionDesc">Sản phẩm bị vào nước, rơi vỡ, cháy nổ do sử dụng sai nguồn điện.</p>
+                    <h3 className="oneForOneExclusionTitle">
+                      Lỗi do người dùng
+                    </h3>
+                    <p className="oneForOneExclusionDesc">
+                      Sản phẩm bị vào nước, rơi vỡ, cháy nổ do sử dụng sai nguồn
+                      điện.
+                    </p>
                   </div>
                 </div>
                 <div className="oneForOneExclusionItem">
                   <IconCancel />
                   <div>
                     <h3 className="oneForOneExclusionTitle">Tự ý sửa chữa</h3>
-                    <p className="oneForOneExclusionDesc">Sản phẩm đã bị can thiệp phần cứng hoặc mất tem bảo hành.</p>
+                    <p className="oneForOneExclusionDesc">
+                      Sản phẩm đã bị can thiệp phần cứng hoặc mất tem bảo hành.
+                    </p>
                   </div>
                 </div>
                 <div className="oneForOneExclusionItem">
                   <IconCancel />
                   <div>
-                    <h3 className="oneForOneExclusionTitle">Mất phụ kiện/Hộp</h3>
-                    <p className="oneForOneExclusionDesc">Không còn đầy đủ phụ kiện đi kèm hoặc hộp bị rách nát, mất form.</p>
+                    <h3 className="oneForOneExclusionTitle">
+                      Mất phụ kiện/Hộp
+                    </h3>
+                    <p className="oneForOneExclusionDesc">
+                      Không còn đầy đủ phụ kiện đi kèm hoặc hộp bị rách nát, mất
+                      form.
+                    </p>
                   </div>
                 </div>
                 <div className="oneForOneExclusionItem">
                   <IconCancel />
                   <div>
-                    <h3 className="oneForOneExclusionTitle">Biến dạng vật lý</h3>
-                    <p className="oneForOneExclusionDesc">Sản phẩm trầy xước nặng, biến dạng so với tình trạng ban đầu.</p>
+                    <h3 className="oneForOneExclusionTitle">
+                      Biến dạng vật lý
+                    </h3>
+                    <p className="oneForOneExclusionDesc">
+                      Sản phẩm trầy xước nặng, biến dạng so với tình trạng ban
+                      đầu.
+                    </p>
                   </div>
                 </div>
               </div>
@@ -205,7 +251,9 @@ export default function OneForOnePolicyPage() {
                 </a>
               </div>
               <Link to="/contact">
-                <button className="oneForOneSupportBtn">Gửi yêu cầu hỗ trợ</button>
+                <button className="oneForOneSupportBtn">
+                  Gửi yêu cầu hỗ trợ
+                </button>
               </Link>
             </div>
 
@@ -231,7 +279,7 @@ export default function OneForOnePolicyPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }
 
 /* ==========================================================================
@@ -253,7 +301,7 @@ function IconChevronRight({ size = 20 }: { size?: number }) {
     >
       <polyline points="9 18 15 12 9 6" />
     </svg>
-  )
+  );
 }
 
 function IconVerified() {
@@ -272,7 +320,7 @@ function IconVerified() {
       <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
       <path d="m9 11 2 2 4-4" />
     </svg>
-  )
+  );
 }
 
 function IconManufacturing() {
@@ -291,7 +339,7 @@ function IconManufacturing() {
       <circle cx="12" cy="12" r="3" />
       <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51-1z" />
     </svg>
-  )
+  );
 }
 
 function IconInventory() {
@@ -311,7 +359,7 @@ function IconInventory() {
       <path d="M3.3 7 12 12l8.7-5" />
       <path d="M12 22V12" />
     </svg>
-  )
+  );
 }
 
 function IconDeployedCode() {
@@ -330,7 +378,7 @@ function IconDeployedCode() {
       <path d="M12 2L2 7l10 5 10-5-10-5Z" />
       <path d="M2 17l10 5 10-5M2 12l10 5 10-5" />
     </svg>
-  )
+  );
 }
 
 function IconAccountTree() {
@@ -352,7 +400,7 @@ function IconAccountTree() {
       <path d="M18 15V9a4 4 0 0 0-4-4H9" />
       <path d="M6 9v6" />
     </svg>
-  )
+  );
 }
 
 function IconReport() {
@@ -372,7 +420,7 @@ function IconReport() {
       <line x1="12" y1="9" x2="12" y2="13" />
       <line x1="12" y1="17" x2="12.01" y2="17" />
     </svg>
-  )
+  );
 }
 
 function IconCancel() {
@@ -392,7 +440,7 @@ function IconCancel() {
       <line x1="15" y1="9" x2="9" y2="15" />
       <line x1="9" y1="9" x2="15" y2="15" />
     </svg>
-  )
+  );
 }
 
 function IconSupportAgent() {
@@ -412,5 +460,5 @@ function IconSupportAgent() {
       <path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z" />
       <path d="M12 22V12" />
     </svg>
-  )
+  );
 }
