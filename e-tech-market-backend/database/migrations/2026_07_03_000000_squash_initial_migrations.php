@@ -28,6 +28,7 @@ return new class extends Migration
             $table->string('two_factor_code', 10)->nullable();
             $table->timestamp('two_factor_expires_at')->nullable();
             $table->timestampsTz();
+            $table->softDeletesTz();
             $table->index('email');
             $table->index('phone');
         });
