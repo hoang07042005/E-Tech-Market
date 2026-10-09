@@ -104,7 +104,6 @@ return new class extends Migration
             $table->fullText('name', 'description');
             $table->foreign('category_id')->references('id')->on('categories')->cascadeOnDelete();
             $table->index('category_id');
-            $table->index('is_featured');
         });
 
         // Product images
@@ -285,8 +284,6 @@ return new class extends Migration
             $table->foreign('shipping_method_id')->references('id')->on('shipping_methods')->nullOnDelete();
             $table->foreign('shipping_zone_id')->references('id')->on('shipping_zones')->nullOnDelete();
             $table->index('user_id');
-            $table->index('status');
-            $table->index('payment_status');
         });
 
         // Order status histories
@@ -551,8 +548,6 @@ return new class extends Migration
             $table->timestampsTz();
             $table->foreign('category_id')->references('id')->on('blog_categories')->cascadeOnDelete();
             $table->foreign('author_id')->references('id')->on('users')->cascadeOnDelete();
-            $table->index('slug');
-            $table->index('is_published');
             $table->index('author_id');
             $table->fullText('title', 'content');
         });
@@ -568,7 +563,6 @@ return new class extends Migration
             $table->timestamp('start_date')->nullable();
             $table->timestamp('end_date')->nullable();
             $table->timestampsTz();
-            $table->index('status');
             $table->index('sort_order');
         });
 
