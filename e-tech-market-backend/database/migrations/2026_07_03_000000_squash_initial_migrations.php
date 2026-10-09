@@ -40,17 +40,19 @@ return new class extends Migration
         });
 
         // Personal access tokens (Sanctum)
-        Schema::create('personal_access_tokens', function (Blueprint $table) {
-            $table->id();
-            $table->morphs('tokenable');
-            $table->string('name');
-            $table->string('token', 80)->unique();
-            $table->text('abilities')->nullable();
-            $table->timestamp('last_used_at')->nullable();
-            $table->timestamp('expires_at')->nullable();
-            $table->timestampsTz();
-            $table->index('tokenable_type', 'tokenable_id');
-        });
+        if (!Schema::hasTable('personal_access_tokens')) {
+            Schema::create('personal_access_tokens', function (Blueprint $table) {
+                $table->id();
+                $table->morphs('tokenable');
+                $table->string('name');
+                $table->string('token', 80)->unique();
+                $table->text('abilities')->nullable();
+                $table->timestamp('last_used_at')->nullable();
+                $table->timestamp('expires_at')->nullable();
+                $table->timestampsTz();
+                $table->index('tokenable_type', 'tokenable_id');
+            });
+        }
 
         // Failed jobs
         Schema::create('failed_jobs', function (Blueprint $table) {
