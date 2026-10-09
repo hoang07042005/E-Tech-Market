@@ -31,6 +31,10 @@ class PrometheusServiceProvider extends ServiceProvider
         // Register Prometheus CollectorRegistry
         $this->app->singleton(CollectorRegistry::class, function ($app) {
             try {
+                if (!extension_loaded('redis')) {
+                    throw new \Exception('Redis PHP extension is not loaded');
+                }
+
                 Log::debug('Initializing Prometheus registry with Redis storage');
 
                 $prefix = config('metrics.redis_prefix', 'prometheus_');
@@ -51,7 +55,7 @@ class PrometheusServiceProvider extends ServiceProvider
                 Log::info('Prometheus registry initialized successfully with Redis storage');
 
                 return $registry;
-            } catch (\Exception $e) {
+            } catch (\Throwable $e) {
                 Log::error('Failed to initialize Prometheus registry with Redis', [
                     'error' => $e->getMessage(),
                 ]);
