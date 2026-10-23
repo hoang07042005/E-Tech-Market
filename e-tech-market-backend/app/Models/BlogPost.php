@@ -54,16 +54,25 @@ class BlogPost extends Model
         'published_at' => 'datetime',
     ];
 
+    /**
+     * @return BelongsTo<BlogCategory, BlogPost>
+     */
     public function category(): BelongsTo
     {
         return $this->belongsTo(BlogCategory::class, 'blog_category_id');
     }
 
+    /**
+     * @return BelongsTo<User, BlogPost>
+     */
     public function author(): BelongsTo
     {
         return $this->belongsTo(User::class, 'author_id');
     }
 
+    /**
+     * @return HasMany<BlogComment>
+     */
     public function comments(): HasMany
     {
         return $this->hasMany(BlogComment::class, 'blog_post_id');

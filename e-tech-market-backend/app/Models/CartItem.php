@@ -34,16 +34,25 @@ class CartItem extends Model
         'unit_price' => 'decimal:2',
     ];
 
+    /**
+     * @return BelongsTo<Cart, CartItem>
+     */
     public function cart(): BelongsTo
     {
         return $this->belongsTo(Cart::class, 'cart_id');
     }
 
+    /**
+     * @return BelongsTo<Product, CartItem>
+     */
     public function product(): BelongsTo
     {
         return $this->belongsTo(Product::class, 'product_id');
     }
 
+    /**
+     * @return BelongsTo<ProductVariant, CartItem>
+     */
     public function variant(): BelongsTo
     {
         return $this->belongsTo(ProductVariant::class, 'variant_id');

@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -44,26 +45,41 @@ class Category extends Model
         'type' => 'string',
     ];
 
+    /**
+     * @return BelongsTo<Category, Category>
+     */
     public function parent(): BelongsTo
     {
         return $this->belongsTo(self::class, 'parent_id');
     }
 
+    /**
+     * @return HasMany<Category>
+     */
     public function children(): HasMany
     {
         return $this->hasMany(self::class, 'parent_id');
     }
 
+    /**
+     * @return HasMany<Category>
+     */
     public function childrenRecursive(): HasMany
     {
         return $this->children()->with('childrenRecursive')->where('is_active', true)->orderBy('sort_order');
     }
 
-    public function coupons(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
+    /**
+     * @return BelongsToMany<Coupon>
+     */
+    public function coupons(): BelongsToMany
     {
         return $this->belongsToMany(Coupon::class, 'category_coupon');
     }
 
+    /**
+     * @return HasMany<Product>
+     */
     public function products(): HasMany
     {
         return $this->hasMany(Product::class, 'category_id');
