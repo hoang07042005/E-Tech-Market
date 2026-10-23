@@ -14,6 +14,9 @@ class OrderStatusUpdatedNotification extends Notification implements ShouldQueue
 
     public int $tries = 3;
 
+    /**
+     * @return array<int, int>
+     */
     public function backoff(): array
     {
         return [10, 30, 60]; // Retry after 10s, 30s, 60s
@@ -23,12 +26,15 @@ class OrderStatusUpdatedNotification extends Notification implements ShouldQueue
         public Order $order
     ) {}
 
+    /**
+     * @return array<int, string>
+     */
     public function via(object $notifiable): array
     {
         return ['mail'];
     }
 
-    public function toMail(object $notifiable)
+    public function toMail(object $notifiable): \App\Mail\OrderEmail
     {
         $orderCode = $this->order->order_code ?: ('ET-'.$this->order->id);
         

@@ -13,6 +13,9 @@ class PasswordResetLinkNotification extends Notification implements ShouldQueue
 
     public int $tries = 3;
 
+    /**
+     * @return array<int, int>
+     */
     public function backoff(): array
     {
         return [10, 30, 60];
@@ -23,6 +26,9 @@ class PasswordResetLinkNotification extends Notification implements ShouldQueue
         private readonly string $email,
     ) {}
 
+    /**
+     * @return array<int, string>
+     */
     public function via(object $notifiable): array
     {
         return ['mail'];

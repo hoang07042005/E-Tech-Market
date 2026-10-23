@@ -13,6 +13,9 @@ class NewsletterWelcomeNotification extends Notification implements ShouldQueue
 
     public int $tries = 3;
 
+    /**
+     * @return array<int, int>
+     */
     public function backoff(): array
     {
         return [10, 30, 60];
@@ -20,6 +23,9 @@ class NewsletterWelcomeNotification extends Notification implements ShouldQueue
 
     public function __construct() {}
 
+    /**
+     * @return array<int, string>
+     */
     public function via(object $notifiable): array
     {
         return ['mail'];

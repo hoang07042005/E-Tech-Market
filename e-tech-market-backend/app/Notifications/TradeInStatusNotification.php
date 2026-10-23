@@ -11,13 +11,16 @@ class TradeInStatusNotification extends Notification
 {
     use Queueable;
 
-    protected $tradeInRequest;
+    protected TradeInRequest $tradeInRequest;
 
     public function __construct(TradeInRequest $tradeInRequest)
     {
         $this->tradeInRequest = $tradeInRequest;
     }
 
+    /**
+     * @return array<int, string>
+     */
     public function via(object $notifiable): array
     {
         return ['mail'];
