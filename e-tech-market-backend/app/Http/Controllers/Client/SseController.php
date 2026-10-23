@@ -5,10 +5,11 @@ namespace App\Http\Controllers\Client;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redis;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class SseController extends Controller
 {
-    public function stream(Request $request)
+    public function stream(Request $request): StreamedResponse
     {
         // Increase time limit for SSE
         set_time_limit(300);

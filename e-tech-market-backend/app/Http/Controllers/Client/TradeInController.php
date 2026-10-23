@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Client;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use App\Models\Category;
 use App\Models\TradeInCondition;
@@ -14,7 +15,7 @@ use Illuminate\Support\Facades\Storage;
 
 class TradeInController extends Controller
 {
-    public function getCategories()
+    public function getCategories(): JsonResponse
     {
         $categories = Category::whereIn('slug', ['dien-thoai', 'laptop'])->get();
         return response()->json([
@@ -23,7 +24,7 @@ class TradeInController extends Controller
         ]);
     }
 
-    public function getConditions(Request $request)
+    public function getConditions(Request $request): JsonResponse
     {
         $query = TradeInCondition::where('is_active', true)->orderBy('sort_order');
         if ($request->category_id) {
@@ -35,7 +36,7 @@ class TradeInController extends Controller
         ]);
     }
 
-    public function submitRequest(Request $request)
+    public function submitRequest(Request $request): JsonResponse
     {
         $request->validate([
             'category_id' => 'required|exists:categories,id',
@@ -107,7 +108,7 @@ class TradeInController extends Controller
         ]);
     }
 
-    public function history(Request $request)
+    public function history(Request $request): JsonResponse
     {
         $userId = auth('sanctum')->id();
         if (!$userId) {
@@ -125,7 +126,7 @@ class TradeInController extends Controller
         ]);
     }
 
-    public function acceptQuote($id)
+    public function acceptQuote(int|string $id): JsonResponse
     {
         $userId = auth('sanctum')->id();
         if (!$userId) {

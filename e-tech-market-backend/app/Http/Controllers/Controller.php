@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Validation\ValidatesRequests;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Routing\Controller as BaseController;
 
 class Controller extends BaseController
@@ -12,8 +13,10 @@ class Controller extends BaseController
 
     /**
      * Success JSON response
+     *
+     * @param mixed $data
      */
-    protected function successResponse($data = null, string $message = 'Success', int $code = 200)
+    protected function successResponse($data = null, string $message = 'Success', int $code = 200): JsonResponse
     {
         $response = [
             'success' => true,
@@ -29,8 +32,10 @@ class Controller extends BaseController
 
     /**
      * Error JSON response
+     *
+     * @param mixed $errors
      */
-    protected function errorResponse(string $message, int $code = 400, $errors = null)
+    protected function errorResponse(string $message, int $code = 400, $errors = null): JsonResponse
     {
         $response = [
             'success' => false,
@@ -47,15 +52,17 @@ class Controller extends BaseController
     /**
      * Not found JSON response
      */
-    protected function notFoundResponse(string $message = 'Không tìm thấy dữ liệu.')
+    protected function notFoundResponse(string $message = 'Không tìm thấy dữ liệu.'): JsonResponse
     {
         return $this->errorResponse($message, 404);
     }
 
     /**
      * Validation error JSON response
+     *
+     * @param array<string, mixed> $errors
      */
-    protected function validationErrorResponse(array $errors, string $message = 'Lỗi xác thực dữ liệu.')
+    protected function validationErrorResponse(array $errors, string $message = 'Lỗi xác thực dữ liệu.'): JsonResponse
     {
         return $this->errorResponse($message, 422, $errors);
     }
@@ -63,7 +70,7 @@ class Controller extends BaseController
     /**
      * Forbidden JSON response
      */
-    protected function forbiddenResponse(string $message = 'Access denied')
+    protected function forbiddenResponse(string $message = 'Access denied'): JsonResponse
     {
         return $this->errorResponse($message, 403);
     }
@@ -71,7 +78,7 @@ class Controller extends BaseController
     /**
      * Unauthorized JSON response
      */
-    protected function unauthorizedResponse(string $message = 'Unauthenticated')
+    protected function unauthorizedResponse(string $message = 'Unauthenticated'): JsonResponse
     {
         return $this->errorResponse($message, 401);
     }
@@ -79,7 +86,7 @@ class Controller extends BaseController
     /**
      * Server error JSON response
      */
-    protected function serverErrorResponse(string $message = 'Lỗi máy chủ.')
+    protected function serverErrorResponse(string $message = 'Lỗi máy chủ.'): JsonResponse
     {
         return $this->errorResponse($message, 500);
     }
