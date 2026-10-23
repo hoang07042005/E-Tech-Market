@@ -20,11 +20,17 @@ class OrderStatusHistory extends Model
         'changed_by_user_id' => 'integer',
     ];
 
+    /**
+     * @return BelongsTo<Order, OrderStatusHistory>
+     */
     public function order(): BelongsTo
     {
         return $this->belongsTo(Order::class, 'order_id');
     }
 
+    /**
+     * @return BelongsTo<User, OrderStatusHistory>
+     */
     public function changedBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'changed_by_user_id');

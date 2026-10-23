@@ -36,11 +36,17 @@ class Payment extends Model
         'paid_at' => 'datetime',
     ];
 
+    /**
+     * @return BelongsTo<Order, Payment>
+     */
     public function order(): BelongsTo
     {
         return $this->belongsTo(Order::class, 'order_id');
     }
 
+    /**
+     * @return HasMany<Transaction>
+     */
     public function transactions(): HasMany
     {
         return $this->hasMany(Transaction::class, 'payment_id');

@@ -50,16 +50,25 @@ class OrderReturnRequest extends Model
         'refund_proof' => 'array',
     ];
 
+    /**
+     * @return BelongsTo<Order, OrderReturnRequest>
+     */
     public function order(): BelongsTo
     {
         return $this->belongsTo(Order::class, 'order_id');
     }
 
+    /**
+     * @return BelongsTo<User, OrderReturnRequest>
+     */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id');
     }
 
+    /**
+     * @return BelongsTo<User, OrderReturnRequest>
+     */
     public function approvedBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'approved_by_user_id');

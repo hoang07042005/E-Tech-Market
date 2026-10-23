@@ -38,16 +38,25 @@ class OrderItem extends Model
         'total_price' => 'decimal:2',
     ];
 
+    /**
+     * @return BelongsTo<Order, OrderItem>
+     */
     public function order(): BelongsTo
     {
         return $this->belongsTo(Order::class, 'order_id');
     }
 
+    /**
+     * @return BelongsTo<Product, OrderItem>
+     */
     public function product(): BelongsTo
     {
         return $this->belongsTo(Product::class, 'product_id');
     }
 
+    /**
+     * @return BelongsTo<ProductVariant, OrderItem>
+     */
     public function variant(): BelongsTo
     {
         return $this->belongsTo(ProductVariant::class, 'variant_id');
