@@ -28,7 +28,10 @@ class Product extends Model
 {
     use HasFactory, SoftDeletes, Searchable;
 
-    public function toSearchableArray()
+    /**
+     * @return array<string, mixed>
+     */
+    public function toSearchableArray(): array
     {
         $array = $this->toArray();
 
@@ -61,36 +64,57 @@ class Product extends Model
         'is_featured' => 'boolean',
     ];
 
+    /**
+     * @return BelongsTo<Category, Product>
+     */
     public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class, 'category_id');
     }
 
+    /**
+     * @return HasMany<ProductImage>
+     */
     public function images(): HasMany
     {
         return $this->hasMany(ProductImage::class, 'product_id');
     }
 
+    /**
+     * @return HasMany<Video>
+     */
     public function videos(): HasMany
     {
         return $this->hasMany(Video::class, 'product_id')->orderBy('sort_order');
     }
 
+    /**
+     * @return HasMany<ProductSpec>
+     */
     public function specs(): HasMany
     {
         return $this->hasMany(ProductSpec::class, 'product_id');
     }
 
+    /**
+     * @return HasMany<ProductVariant>
+     */
     public function variants(): HasMany
     {
         return $this->hasMany(ProductVariant::class, 'product_id');
     }
 
+    /**
+     * @return HasMany<ProductFaq>
+     */
     public function faqs(): HasMany
     {
         return $this->hasMany('App\\Models\\ProductFaq', 'product_id')->orderBy('sort_order');
     }
 
+    /**
+     * @return HasMany<ProductNews>
+     */
     public function news(): HasMany
     {
         return $this->hasMany('App\\Models\\ProductNews', 'product_id')
@@ -98,31 +122,49 @@ class Product extends Model
             ->orderBy('sort_order');
     }
 
+    /**
+     * @return HasMany<Review>
+     */
     public function reviews(): HasMany
     {
         return $this->hasMany(Review::class, 'product_id');
     }
 
+    /**
+     * @return HasMany<ProductShopQna>
+     */
     public function shopQnas(): HasMany
     {
         return $this->hasMany(ProductShopQna::class, 'product_id');
     }
 
+    /**
+     * @return HasMany<Wishlist>
+     */
     public function wishlists(): HasMany
     {
         return $this->hasMany(Wishlist::class, 'product_id');
     }
 
+    /**
+     * @return HasMany<Inventory>
+     */
     public function inventoryItems(): HasMany
     {
         return $this->hasMany(Inventory::class, 'product_id');
     }
 
+    /**
+     * @return HasMany<FlashSaleItem>
+     */
     public function flashSaleItems(): HasMany
     {
         return $this->hasMany(FlashSaleItem::class, 'product_id');
     }
 
+    /**
+     * @return HasMany<OrderItem>
+     */
     public function orderItems(): HasMany
     {
         return $this->hasMany(OrderItem::class, 'product_id');

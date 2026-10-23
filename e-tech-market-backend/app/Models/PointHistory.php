@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class PointHistory extends Model
 {
@@ -19,7 +20,10 @@ class PointHistory extends Model
         'description',
     ];
 
-    public function user()
+    /**
+     * @return BelongsTo<User, PointHistory>
+     */
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
