@@ -34,6 +34,9 @@ class Inventory extends Model
         'last_stock_in_at' => 'datetime',
     ];
 
+    /**
+     * @return BelongsTo<Product, Inventory>
+     */
     public function product(): BelongsTo
     {
         return $this->belongsTo(Product::class, 'product_id');

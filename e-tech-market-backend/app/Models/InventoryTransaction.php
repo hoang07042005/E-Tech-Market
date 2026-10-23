@@ -24,11 +24,17 @@ class InventoryTransaction extends Model
         'quantity_after' => 'integer',
     ];
 
+    /**
+     * @return BelongsTo<Product, InventoryTransaction>
+     */
     public function product(): BelongsTo
     {
         return $this->belongsTo(Product::class, 'product_id');
     }
 
+    /**
+     * @return BelongsTo<Inventory, InventoryTransaction>
+     */
     public function inventory(): BelongsTo
     {
         return $this->belongsTo(Inventory::class, 'inventory_id');

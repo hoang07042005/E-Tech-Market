@@ -79,51 +79,81 @@ class Order extends Model
         'points_earned' => 'integer',
     ];
 
+    /**
+     * @return BelongsTo<User, Order>
+     */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id');
     }
 
+    /**
+     * @return BelongsTo<Cart, Order>
+     */
     public function cart(): BelongsTo
     {
         return $this->belongsTo(Cart::class, 'cart_id');
     }
 
+    /**
+     * @return BelongsTo<Coupon, Order>
+     */
     public function coupon(): BelongsTo
     {
         return $this->belongsTo(Coupon::class, 'coupon_id');
     }
 
+    /**
+     * @return BelongsTo<ShippingMethod, Order>
+     */
     public function shippingMethod(): BelongsTo
     {
         return $this->belongsTo(ShippingMethod::class, 'shipping_method_id');
     }
 
+    /**
+     * @return BelongsTo<ShippingZone, Order>
+     */
     public function shippingZone(): BelongsTo
     {
         return $this->belongsTo(ShippingZone::class, 'shipping_zone_id');
     }
 
+    /**
+     * @return HasMany<OrderItem>
+     */
     public function items(): HasMany
     {
         return $this->hasMany(OrderItem::class, 'order_id');
     }
 
+    /**
+     * @return HasMany<OrderStatusHistory>
+     */
     public function statusHistories(): HasMany
     {
         return $this->hasMany(OrderStatusHistory::class, 'order_id')->orderByDesc('created_at');
     }
 
+    /**
+     * @return HasOne<Payment>
+     */
     public function payment(): HasOne
     {
         return $this->hasOne(Payment::class, 'order_id');
     }
 
+    /**
+     * @return HasOne<OrderReturnRequest>
+     */
     public function returnRequest(): HasOne
     {
         return $this->hasOne(OrderReturnRequest::class, 'order_id');
     }
 
+    /**
+     * @return BelongsTo<User, Order>
+     */
     public function deliveryStaff(): BelongsTo
     {
         return $this->belongsTo(User::class, 'delivery_staff_id');
