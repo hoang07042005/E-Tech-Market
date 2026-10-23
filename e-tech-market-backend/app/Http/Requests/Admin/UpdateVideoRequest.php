@@ -30,6 +30,9 @@ class UpdateVideoRequest extends FormRequest
         $this->replace($data);
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function rules(): array
     {
         return [

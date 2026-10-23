@@ -52,6 +52,9 @@ class ApiLogging
 
     /**
      * Sanitize headers to remove sensitive data.
+     *
+     * @param array<string, mixed> $headers
+     * @return array<string, mixed>
      */
     private function sanitizeHeaders(array $headers): array
     {
@@ -66,6 +69,9 @@ class ApiLogging
 
     /**
      * Sanitize body to remove sensitive data.
+     *
+     * @param array<string, mixed> $body
+     * @return array<string, mixed>
      */
     private function sanitizeBody(array $body): array
     {
