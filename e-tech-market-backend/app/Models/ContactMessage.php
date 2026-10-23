@@ -24,6 +24,9 @@ class ContactMessage extends Model
         'handled_by_user_id' => 'integer',
     ];
 
+    /**
+     * @return BelongsTo<User, ContactMessage>
+     */
     public function handledBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'handled_by_user_id');

@@ -36,16 +36,25 @@ class FlashSaleItem extends Model
         'product_id' => 'integer',
     ];
 
+    /**
+     * @return BelongsTo<FlashSale, FlashSaleItem>
+     */
     public function flashSale(): BelongsTo
     {
         return $this->belongsTo(FlashSale::class);
     }
 
+    /**
+     * @return BelongsTo<Product, FlashSaleItem>
+     */
     public function product(): BelongsTo
     {
         return $this->belongsTo(Product::class);
     }
 
+    /**
+     * @return BelongsTo<ProductVariant, FlashSaleItem>
+     */
     public function variant(): BelongsTo
     {
         return $this->belongsTo(ProductVariant::class, 'variant_id');

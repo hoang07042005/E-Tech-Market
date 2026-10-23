@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
 
@@ -49,22 +50,34 @@ class Coupon extends Model
         'updated_at',
     ];
 
+    /**
+     * @return HasMany<CouponUsage>
+     */
     public function usages(): HasMany
     {
         return $this->hasMany(CouponUsage::class, 'coupon_id');
     }
 
-    public function categories(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
+    /**
+     * @return BelongsToMany<Category>
+     */
+    public function categories(): BelongsToMany
     {
         return $this->belongsToMany(Category::class, 'category_coupon');
     }
 
+    /**
+     * @return HasMany<Order>
+     */
     public function orders(): HasMany
     {
         return $this->hasMany(Order::class, 'coupon_id');
     }
 
-    public function savedByUsers(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
+    /**
+     * @return BelongsToMany<User>
+     */
+    public function savedByUsers(): BelongsToMany
     {
         return $this->belongsToMany(User::class, 'user_coupons', 'coupon_id', 'user_id')->withTimestamps();
     }

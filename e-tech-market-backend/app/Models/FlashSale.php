@@ -34,6 +34,9 @@ class FlashSale extends Model
         'end_at' => 'datetime',
     ];
 
+    /**
+     * @return HasMany<FlashSaleItem>
+     */
     public function items(): HasMany
     {
         return $this->hasMany(FlashSaleItem::class);

@@ -27,16 +27,25 @@ class CouponUsage extends Model
 
     protected $table = 'coupon_usage';
 
+    /**
+     * @return BelongsTo<Coupon, CouponUsage>
+     */
     public function coupon(): BelongsTo
     {
         return $this->belongsTo(Coupon::class, 'coupon_id');
     }
 
+    /**
+     * @return BelongsTo<User, CouponUsage>
+     */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id');
     }
 
+    /**
+     * @return BelongsTo<Order, CouponUsage>
+     */
     public function order(): BelongsTo
     {
         return $this->belongsTo(Order::class, 'order_id');
