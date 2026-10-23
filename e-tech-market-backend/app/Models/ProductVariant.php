@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property string $variant_name
  * @property string|null $color
  * @property string|null $configuration
+ * @property string|null $rich_html
  * @property string|null $sku
  * @property float $price
  * @property string|null $discount_type
@@ -37,6 +38,7 @@ class ProductVariant extends Model
         'variant_name',
         'color',
         'configuration',
+        'rich_html',
         'sku',
         'price',
         'discount_type',

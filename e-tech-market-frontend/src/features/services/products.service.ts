@@ -6,6 +6,7 @@ export type ProductVariant = {
   variant_name: string;
   color: string | null;
   configuration: string | null;
+  rich_html?: string | null;
   sku: string | null;
   price: string;
   discount_type: "percentage" | "fixed" | null;

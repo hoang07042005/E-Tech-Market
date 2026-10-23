@@ -940,9 +940,14 @@
 
 .pGeneralGrid {
   display: grid;
-  grid-template-columns: minmax(0, 1.4fr) minmax(0, 0.9fr);
-  gap: 18px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px 20px;
   align-items: start;
+}
+
+.pField--full {
+  grid-column: 1 / -1;
+  margin-bottom: 0;
 }
 
 .pGeneralMain {
@@ -981,7 +986,7 @@
     font-size: 12px;
   }
   .pGeneralGrid {
-    grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+    grid-template-columns: 1fr;
     gap: 12px;
   }
 }
@@ -1004,6 +1009,8 @@
 .pField input,
 .pField select,
 .pField textarea {
+  width: 100%;
+  box-sizing: border-box;
   background: #8c8c8c21;
   border: 1px solid #e5e5e557;
   border-radius: 5px;
@@ -1361,17 +1368,74 @@
   cursor: pointer;
 }
 
-.pToggleField {
+.pStatusSwitchRow {
   display: flex;
   align-items: center;
-  gap: 12px;
-  margin-top: 20px;
+  gap: 28px;
+  min-height: 48px;
+  flex-wrap: wrap;
 }
 
+.pSwitchItem {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.pSwitchText {
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--admin-text-p, #1e293b);
+  text-transform: none !important;
+  letter-spacing: normal !important;
+  cursor: pointer;
+}
+
+.pSwitchItem:hover .pSwitchText {
+  color: var(--admin-accent, #f97316);
+}
+
+.pToggleGroup {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+  padding: 12px 16px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  min-height: 48px;
+  box-sizing: border-box;
+}
+
+.pToggleField {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  cursor: pointer;
+}
+
+.pToggleField input[type="checkbox"] {
+  width: 18px !important;
+  height: 18px !important;
+  min-width: 18px !important;
+  margin: 0 !important;
+  cursor: pointer;
+  accent-color: var(--admin-accent, #f97316);
+  flex-shrink: 0 !important;
+}
+
+.pToggleField span,
 .pToggleField label {
+  font-size: 13px;
   font-weight: 600;
   color: var(--admin-text-p);
   cursor: pointer;
+  white-space: nowrap;
+  user-select: none;
 }
 
 /* Quick Paste Modal */
@@ -2502,3 +2566,225 @@
     padding: 2px 6px;
   }
 }
+
+/* Variant Rich HTML Scope Tabs & Toolbar */
+.pRichFieldHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.pRichCountBadge {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: #f97316;
+  background: rgba(249, 115, 22, 0.1);
+  border: 1px solid rgba(249, 115, 22, 0.25);
+  padding: 3px 10px;
+  border-radius: 999px;
+}
+
+.pRichScopeTabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 8px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+}
+
+.pRichScopeTab {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 12px;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  background: #ffffff;
+  color: #334155;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.pRichScopeTab:hover {
+  border-color: rgba(249, 115, 22, 0.45);
+  color: #0f172a;
+}
+
+.pRichScopeTab.is-active {
+  background: var(--admin-accent, #f97316);
+  border-color: var(--admin-accent, #f97316);
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(249, 115, 22, 0.22);
+}
+
+.pRichTabTag {
+  font-size: 10.5px;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 999px;
+  background: rgba(100, 116, 139, 0.12);
+  color: #64748b;
+}
+
+.pRichTabTag.is-filled,
+.pRichTabTag.is-custom {
+  background: rgba(34, 197, 94, 0.14);
+  color: #16a34a;
+}
+
+.pRichScopeTab.is-active .pRichTabTag {
+  background: rgba(255, 255, 255, 0.22);
+  color: #ffffff;
+}
+
+.pRichVariantToolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding: 10px 12px;
+  background: #fff7ed;
+  border: 1px solid rgba(249, 115, 22, 0.25);
+  border-radius: 8px;
+  font-size: 12.5px;
+}
+
+.pRichVariantStatus {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #334155;
+  font-weight: 600;
+}
+
+.pRichStatusDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #94a3b8;
+  flex-shrink: 0;
+}
+
+.pRichStatusDot.is-custom {
+  background: #22c55e;
+}
+
+.pRichVariantActions {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.pRichActionBtn {
+  padding: 5px 10px;
+  border-radius: 6px;
+  border: 1px solid rgba(249, 115, 22, 0.35);
+  background: #ffffff;
+  color: #ea580c;
+  font-size: 11.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.pRichActionBtn:hover {
+  background: #ffedd5;
+}
+
+.pRichActionBtn--sync {
+  border-color: rgba(37, 99, 235, 0.35);
+  color: #2563eb;
+}
+
+.pRichActionBtn--sync:hover {
+  background: #dbeafe;
+}
+
+.pRichActionBtn--clear {
+  border-color: rgba(239, 68, 68, 0.35);
+  color: #dc2626;
+}
+
+.pRichActionBtn--clear:hover {
+  background: #fee2e2;
+}
+
+.vRichJumpBtn {
+  margin-left: auto;
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: 1px dashed rgba(100, 116, 139, 0.45);
+  background: #ffffff;
+  color: #475569;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+}
+
+.vRichJumpBtn:hover {
+  border-color: var(--admin-accent, #f97316);
+  color: var(--admin-accent, #f97316);
+}
+
+.vRichJumpBtn.is-custom {
+  border-style: solid;
+  border-color: rgba(34, 197, 94, 0.45);
+  background: rgba(34, 197, 94, 0.08);
+  color: #16a34a;
+}
+
+/* Rich Editor full-width container & textarea */
+.pRichEditorWrap {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.pRichEditorLabel {
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--admin-text-s);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.pRichTextarea,
+#pf-rich-html textarea {
+  width: 100% !important;
+  box-sizing: border-box !important;
+  display: block !important;
+  min-height: 340px;
+  font-family: Consolas, Monaco, "Courier New", monospace, inherit;
+  font-size: 13.5px;
+  line-height: 1.6;
+  resize: vertical;
+  background: #fafafa;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 14px 16px;
+  color: #0f172a;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.pRichTextarea:focus,
+#pf-rich-html textarea:focus {
+  background: #ffffff;
+  border-color: var(--admin-accent, #f97316);
+  box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.15);
+  outline: none;
+}
+
+

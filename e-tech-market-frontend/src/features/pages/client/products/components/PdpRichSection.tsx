@@ -3,26 +3,34 @@ import { Link } from "react-router-dom";
 import type {
   Product,
   ProductNews,
+  ProductVariant,
 } from "@/features/services/products.service";
 import { sanitizeHtml } from "@/utils/sanitizeHtml";
 import { resolveImageUrl } from "./PdpShared";
 
 export function PdpRichSection({
   product,
+  selectedVariant,
   visibleNews,
 }: {
   product: Product;
+  selectedVariant?: ProductVariant | null;
   visibleNews: ProductNews[];
 }) {
   const [isRichExpanded, setIsRichExpanded] = useState(false);
   const [canExpandRich, setCanExpandRich] = useState(false);
   const richRef = useRef<HTMLDivElement | null>(null);
 
-  // Reset trạng thái khi sản phẩm thay đổi
+  const effectiveRichHtml =
+    selectedVariant?.rich_html && selectedVariant.rich_html.trim().length > 0
+      ? selectedVariant.rich_html
+      : product.rich_html;
+
+  // Reset trạng thái khi nội dung chi tiết hoặc phiên bản thay đổi
   useEffect(() => {
     setIsRichExpanded(false);
     setCanExpandRich(false);
-  }, [product.rich_html]);
+  }, [effectiveRichHtml, selectedVariant?.id]);
 
   useEffect(() => {
     const el = richRef.current;
@@ -40,11 +48,11 @@ export function PdpRichSection({
     const ro = new ResizeObserver(check);
     ro.observe(el);
     return () => ro.disconnect();
-  }, [product.rich_html]);
+  }, [effectiveRichHtml]);
 
-  if (!product.rich_html) return null;
+  if (!effectiveRichHtml) return null;
 
-  const sanitizedHtml = sanitizeHtml(product.rich_html);
+  const sanitizedHtml = sanitizeHtml(effectiveRichHtml);
 
   return (
     <section className="pdpRichSection" aria-label="Nội dung sản phẩm">
@@ -59,6 +67,25 @@ export function PdpRichSection({
       >
         <div className="pdpRichLeft">
           <div className="pdpRichCard">
+            <div className="pdpRichCardHead">
+              <div className="pdpRichCardTitleWrap">
+                <h3 className="pdpRichCardTitle">
+                  Mô tả chi tiết
+                  {selectedVariant
+                    ? ` · ${selectedVariant.variant_name || [selectedVariant.configuration, selectedVariant.color].filter(Boolean).join(" - ") || ""}`
+                    : ""}
+                </h3>
+                {selectedVariant?.rich_html?.trim() ? (
+                  <span className="pdpRichTag pdpRichTag--variant">
+                    Nội dung theo phiên bản
+                  </span>
+                ) : (
+                  <span className="pdpRichTag pdpRichTag--common">
+                    Nội dung chung
+                  </span>
+                )}
+              </div>
+            </div>
             <div
               ref={richRef}
               className={`pdpRichContent ${!isRichExpanded ? "is-collapsed" : ""}`}

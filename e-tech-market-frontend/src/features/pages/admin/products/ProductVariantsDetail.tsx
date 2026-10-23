@@ -29,6 +29,7 @@ interface ProductVariant {
   variant_name: string;
   color: string | null;
   configuration: string | null;
+  rich_html?: string | null;
   sku: string;
   price: string;
   discount_type: "percentage" | "fixed" | null;
@@ -507,6 +508,15 @@ export default function ProductVariantsDetail({
                             <span className="pVarMetaLabel">Cấu hình:</span>
                             <span className="pVarMetaValue">
                               {variant.configuration || "—"}
+                            </span>
+                          </div>
+                          <div className="pVarMetaItem">
+                            <span className="pVarMetaLabel">Nội dung:</span>
+                            <span className="pVarMetaValue">
+                              {variant.rich_html &&
+                              variant.rich_html.trim().length > 0
+                                ? "Nội dung riêng"
+                                : "Theo mặc định"}
                             </span>
                           </div>
                         </div>

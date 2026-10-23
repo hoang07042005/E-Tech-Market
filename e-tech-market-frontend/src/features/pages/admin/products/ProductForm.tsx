@@ -31,6 +31,7 @@ interface Variant {
   variant_name: string;
   color: string;
   configuration: string;
+  rich_html?: string;
   sku: string;
   price: string;
   discount_type: string;
@@ -162,6 +163,9 @@ export default function ProductForm({
   const [isFaqPasteOpen, setIsFaqPasteOpen] = useState(false);
   const [faqPasteText, setFaqPasteText] = useState("");
   const [mainInventoryQty, setMainInventoryQty] = useState<number | null>(null);
+  const [selectedRichVariantIdx, setSelectedRichVariantIdx] = useState<
+    "common" | number
+  >("common");
 
   // 🔒 Token is sent via httpOnly cookie automatically
 
@@ -199,6 +203,7 @@ export default function ProductForm({
           setVariants(
             ((pData.variants ?? []) as any[]).map((v) => ({
               ...v,
+              rich_html: v.rich_html || "",
               discount_type: v.discount_type || "",
               discount_value:
                 v.discount_value != null ? String(v.discount_value) : "",
@@ -337,6 +342,7 @@ export default function ProductForm({
         variant_name: parts[0] || "",
         color: parts[1] || "",
         configuration: parts[2] || "",
+        rich_html: "",
         sku: "",
         price: parts[3] || "0",
         discount_type: "",
@@ -358,6 +364,7 @@ export default function ProductForm({
         variant_name: "",
         color: "",
         configuration: "",
+        rich_html: "",
         sku: "",
         price: "0",
         discount_type: "",
@@ -391,6 +398,33 @@ export default function ProductForm({
 
   const removeVariant = (index: number) => {
     setVariants(variants.filter((_, i) => i !== index));
+    if (selectedRichVariantIdx === index) {
+      setSelectedRichVariantIdx("common");
+    } else if (
+      typeof selectedRichVariantIdx === "number" &&
+      selectedRichVariantIdx > index
+    ) {
+      setSelectedRichVariantIdx(selectedRichVariantIdx - 1);
+    }
+  };
+
+  const syncRichHtmlToSameConfig = (sourceIndex: number) => {
+    const sourceVar = variants[sourceIndex];
+    const cfg = (sourceVar?.configuration || "").trim();
+    if (!cfg) return;
+    const content = sourceVar.rich_html || "";
+    let count = 0;
+    const next = variants.map((v, idx) => {
+      if ((v.configuration || "").trim().toLowerCase() === cfg.toLowerCase()) {
+        if (idx !== sourceIndex) count += 1;
+        return { ...v, rich_html: content };
+      }
+      return v;
+    });
+    setVariants(next);
+    toast.success(
+      `Đã đồng bộ nội dung chi tiết cho ${count + 1} phiên bản cùng cấu hình "${cfg}".`,
+    );
   };
 
   const addFaq = () => {
@@ -563,130 +597,320 @@ export default function ProductForm({
                   </div>
 
                   <div className="pGeneralGrid">
-                    <div className="pGeneralMain">
-                      <div className="pField">
-                        <label>TÊN SẢN PHẨM</label>
-                        <input
-                          type="text"
-                          value={formData.name}
+                    <div className="pField">
+                      <label>TÊN SẢN PHẨM</label>
+                      <input
+                        type="text"
+                        value={formData.name}
+                        onChange={(e) =>
+                          setFormData({ ...formData, name: e.target.value })
+                        }
+                        placeholder="VD: iPhone 15 Pro Max"
+                        required
+                      />
+                    </div>
+
+                    <div className="pField">
+                      <label>DANH MỤC</label>
+                      <div className="pSelectWrap">
+                        <select
+                          value={formData.category_id}
                           onChange={(e) =>
-                            setFormData({ ...formData, name: e.target.value })
+                            setFormData({
+                              ...formData,
+                              category_id: e.target.value,
+                            })
                           }
-                          placeholder="VD: iPhone 15 Pro Max"
                           required
-                        />
-                      </div>
-
-                      <div className="pField">
-                        <label>MÔ TẢ NGẮN GỌN</label>
-                        <textarea
-                          value={formData.description}
-                          onChange={(e) =>
-                            setFormData({
-                              ...formData,
-                              description: e.target.value,
-                            })
-                          }
-                          rows={3}
-                          placeholder="Mô tả tóm tắt..."
-                        />
-                      </div>
-
-                      <div className="pField">
-                        <label>NỘI DUNG CHI TIẾT (HTML / VĂN BẢN THƯỜNG)</label>
-                        <textarea
-                          value={formData.rich_html}
-                          onChange={(e) =>
-                            setFormData({
-                              ...formData,
-                              rich_html: e.target.value,
-                            })
-                          }
-                          rows={10}
-                          placeholder="Dán mã HTML hoặc nhập văn bản thường. Khi nhập văn bản thường, bạn xuống dòng/thụt lề như thế nào thì hệ thống sẽ tự động hiển thị chính xác như thế tại trang chi tiết sản phẩm."
-                        />
-                        <p
-                          className="pHint"
-                          style={{ marginTop: 8, fontSize: 12 }}
+                          className="pPremiumSelect"
                         >
-                          Mẹo: Hỗ trợ cả 2 định dạng: Dán mã HTML hoặc gõ văn
-                          bản thông thường xuống dòng tự do (hệ thống sẽ tự nhận
-                          diện và giữ nguyên định dạng hiển thị của bạn).
-                        </p>
+                          <option value="">Chọn danh mục</option>
+                          {categories.map((c) => (
+                            <option key={c.id} value={c.id}>
+                              {c.name}
+                            </option>
+                          ))}
+                        </select>
+                        <div className="pSelectArrow">▾</div>
                       </div>
                     </div>
 
-                    <div className="pGeneralSide">
-                      <div className="pField">
-                        <label>DANH MỤC</label>
-                        <div className="pSelectWrap">
-                          <select
-                            value={formData.category_id}
-                            onChange={(e) =>
-                              setFormData({
-                                ...formData,
-                                category_id: e.target.value,
-                              })
-                            }
-                            required
-                            className="pPremiumSelect"
+                    <div className="pField">
+                      <label>THƯƠNG HIỆU</label>
+                      <input
+                        type="text"
+                        value={formData.brand}
+                        onChange={(e) =>
+                          setFormData({ ...formData, brand: e.target.value })
+                        }
+                        placeholder="VD: Apple"
+                      />
+                    </div>
+
+                    <div className="pField">
+                      <label>TRẠNG THÁI</label>
+                      <div className="pStatusSwitchRow">
+                        <label className="pSwitchItem">
+                          <span className="admSwitch">
+                            <input
+                              type="checkbox"
+                              id="isActive"
+                              checked={formData.is_active}
+                              onChange={(e) =>
+                                setFormData({
+                                  ...formData,
+                                  is_active: e.target.checked,
+                                })
+                              }
+                            />
+                            <span />
+                          </span>
+                          <span className="pSwitchText">Hiển thị tại cửa hàng</span>
+                        </label>
+                        <label className="pSwitchItem">
+                          <span className="admSwitch">
+                            <input
+                              type="checkbox"
+                              id="isFeatured"
+                              checked={formData.is_featured}
+                              onChange={(e) =>
+                                setFormData({
+                                  ...formData,
+                                  is_featured: e.target.checked,
+                                })
+                              }
+                            />
+                            <span />
+                          </span>
+                          <span className="pSwitchText">Sản phẩm nổi bật</span>
+                        </label>
+                      </div>
+                    </div>
+
+                    <div className="pField pField--full">
+                      <label>MÔ TẢ NGẮN GỌN (TÓM TẮT)</label>
+                      <textarea
+                        value={formData.description}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            description: e.target.value,
+                          })
+                        }
+                        rows={3}
+                        placeholder="Mô tả tóm tắt..."
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* SECTION: RICH CONTENT */}
+              <div className="pTabPane active">
+                <div className="pFormSection" id="pf-rich-html">
+                  <div className="pSectionHeader">
+                    <h3 className="pSectionTitle">Nội dung chi tiết theo phiên bản</h3>
+                    {variants.length > 0 && (
+                      <span className="pRichCountBadge">
+                        {
+                          variants.filter(
+                            (v) => (v.rich_html || "").trim().length > 0,
+                          ).length
+                        }
+                        /{variants.length} bản có nội dung riêng
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="pField">
+                    <label>CHỌN PHIÊN BẢN CẦN SOẠN NỘI DUNG</label>
+                    {variants.length > 0 ? (
+                      <div className="pRichScopeTabs" role="tablist">
+                        <button
+                          type="button"
+                          role="tab"
+                          aria-selected={selectedRichVariantIdx === "common"}
+                          className={`pRichScopeTab ${selectedRichVariantIdx === "common" ? "is-active" : ""}`}
+                          onClick={() => setSelectedRichVariantIdx("common")}
+                        >
+                          <span>Mặc định chung</span>
+                          <span
+                            className={`pRichTabTag ${formData.rich_html.trim() ? "is-filled" : ""}`}
                           >
-                            <option value="">Chọn danh mục</option>
-                            {categories.map((c) => (
-                              <option key={c.id} value={c.id}>
-                                {c.name}
-                              </option>
-                            ))}
-                          </select>
-                          <div className="pSelectArrow">▾</div>
-                        </div>
-                      </div>
+                            {formData.rich_html.trim() ? "Đã nhập" : "Trống"}
+                          </span>
+                        </button>
 
-                      <div className="pField">
-                        <label>THƯƠNG HIỆU</label>
-                        <input
-                          type="text"
-                          value={formData.brand}
-                          onChange={(e) =>
-                            setFormData({ ...formData, brand: e.target.value })
+                        {variants.map((v, idx) => {
+                          const isSelected = selectedRichVariantIdx === idx;
+                          const hasCustom =
+                            (v.rich_html || "").trim().length > 0;
+                          const label =
+                            v.variant_name?.trim() ||
+                            [v.configuration, v.color]
+                              .filter(Boolean)
+                              .join(" - ") ||
+                            `Phiên bản ${idx + 1}`;
+                          return (
+                            <button
+                              key={v.id ?? idx}
+                              type="button"
+                              role="tab"
+                              aria-selected={isSelected}
+                              className={`pRichScopeTab ${isSelected ? "is-active" : ""}`}
+                              onClick={() => setSelectedRichVariantIdx(idx)}
+                            >
+                              <span>{label}</span>
+                              <span
+                                className={`pRichTabTag ${hasCustom ? "is-custom" : ""}`}
+                              >
+                                {hasCustom ? "Riêng" : "Theo mặc định"}
+                              </span>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    ) : (
+                      <p className="pHint" style={{ marginBottom: 12 }}>
+                        Sản phẩm hiện chưa có phiên bản con. Bạn đang soạn nội dung chi tiết mặc định dùng chung cho toàn bộ sản phẩm.
+                      </p>
+                    )}
+
+                    {selectedRichVariantIdx !== "common" &&
+                      variants[selectedRichVariantIdx] &&
+                      (() => {
+                        const activeIdx = selectedRichVariantIdx;
+                        const activeVar = variants[activeIdx];
+                        const hasCustom =
+                          (activeVar.rich_html || "").trim().length > 0;
+                        const cfg = (activeVar.configuration || "").trim();
+                        const sameCfgCount = cfg
+                          ? variants.filter(
+                              (v, i) =>
+                                i !== activeIdx &&
+                                (v.configuration || "")
+                                  .trim()
+                                  .toLowerCase() === cfg.toLowerCase(),
+                            ).length
+                          : 0;
+
+                        return (
+                          <div
+                            className="pRichVariantToolbar"
+                            style={{ marginTop: 12, marginBottom: 12 }}
+                          >
+                            <div className="pRichVariantStatus">
+                              <span
+                                className={`pRichStatusDot ${hasCustom ? "is-custom" : "is-default"}`}
+                              />
+                              <span>
+                                {hasCustom
+                                  ? "Phiên bản này đang dùng nội dung chi tiết riêng."
+                                  : "Đang để trống — Hệ thống sẽ tự động hiển thị Nội dung mặc định chung."}
+                              </span>
+                            </div>
+                            <div className="pRichVariantActions">
+                              {formData.rich_html.trim().length > 0 && (
+                                <button
+                                  type="button"
+                                  className="pRichActionBtn"
+                                  onClick={() =>
+                                    updateVariant(
+                                      activeIdx,
+                                      "rich_html",
+                                      formData.rich_html,
+                                    )
+                                  }
+                                  title="Sao chép nội dung mặc định chung vào phiên bản này để chỉnh sửa thêm"
+                                >
+                                  Sao chép từ Mặc định
+                                </button>
+                              )}
+                              {cfg && sameCfgCount > 0 && (
+                                <button
+                                  type="button"
+                                  className="pRichActionBtn pRichActionBtn--sync"
+                                  onClick={() =>
+                                    syncRichHtmlToSameConfig(activeIdx)
+                                  }
+                                  title={`Áp dụng nội dung của phiên bản này cho ${sameCfgCount} phiên bản khác có cùng cấu hình "${cfg}"`}
+                                >
+                                  Đồng bộ cấu hình &quot;{cfg}&quot; (+
+                                  {sameCfgCount} bản)
+                                </button>
+                              )}
+                              {hasCustom && (
+                                <button
+                                  type="button"
+                                  className="pRichActionBtn pRichActionBtn--clear"
+                                  onClick={() =>
+                                    updateVariant(
+                                      activeIdx,
+                                      "rich_html",
+                                      "",
+                                    )
+                                  }
+                                >
+                                  Về mặc định
+                                </button>
+                              )}
+                            </div>
+                          </div>
+                        );
+                      })()}
+
+                    <div className="pRichEditorWrap">
+                      <label className="pRichEditorLabel">
+                        {selectedRichVariantIdx === "common"
+                          ? "NỘI DUNG CHI TIẾT MẶC ĐỊNH CHUNG (HTML / VĂN BẢN THƯỜNG)"
+                          : `NỘI DUNG CHI TIẾT RIÊNG CHO PHIÊN BẢN: ${
+                              variants[selectedRichVariantIdx]?.variant_name ||
+                              [
+                                variants[selectedRichVariantIdx]?.configuration,
+                                variants[selectedRichVariantIdx]?.color,
+                              ]
+                                .filter(Boolean)
+                                .join(" - ") ||
+                              `Phiên bản ${selectedRichVariantIdx + 1}`
+                            }`}
+                      </label>
+                      <textarea
+                        className="pRichTextarea"
+                        value={
+                          selectedRichVariantIdx === "common"
+                            ? formData.rich_html
+                            : variants[selectedRichVariantIdx]?.rich_html || ""
+                        }
+                        onChange={(e) => {
+                          if (selectedRichVariantIdx === "common") {
+                            setFormData({
+                              ...formData,
+                              rich_html: e.target.value,
+                            });
+                          } else {
+                            updateVariant(
+                              selectedRichVariantIdx,
+                              "rich_html",
+                              e.target.value,
+                            );
                           }
-                          placeholder="VD: Apple"
-                        />
-                      </div>
-
-                      <div className="pField">
-                        <label>TRẠNG THÁI</label>
-                        <div className="pToggleField" style={{ marginTop: 8 }}>
-                          <input
-                            type="checkbox"
-                            id="isActive"
-                            checked={formData.is_active}
-                            onChange={(e) =>
-                              setFormData({
-                                ...formData,
-                                is_active: e.target.checked,
-                              })
-                            }
-                          />
-                          <label htmlFor="isActive">
-                            Hiển thị tại cửa hàng
-                          </label>
-                        </div>
-                        <div className="pToggleField" style={{ marginTop: 8 }}>
-                          <input
-                            type="checkbox"
-                            id="isFeatured"
-                            checked={formData.is_featured}
-                            onChange={(e) =>
-                              setFormData({
-                                ...formData,
-                                is_featured: e.target.checked,
-                              })
-                            }
-                          />
-                          <label htmlFor="isFeatured">Sản phẩm nổi bật</label>
-                        </div>
-                      </div>
+                        }}
+                        rows={16}
+                        placeholder={
+                          selectedRichVariantIdx === "common"
+                            ? "Dán mã HTML hoặc nhập văn bản thường làm nội dung mặc định cho toàn bộ sản phẩm..."
+                            : "Nhập nội dung chi tiết riêng cho phiên bản đang chọn (bỏ trống nếu muốn tự động dùng nội dung mặc định chung)..."
+                        }
+                      />
+                      <p
+                        className="pHint"
+                        style={{ marginTop: 8, fontSize: 12 }}
+                      >
+                        Mẹo: Phiên bản nào để trống sẽ tự động hiển thị{" "}
+                        <strong>Mặc định chung</strong>. Nếu nhiều màu có cùng
+                        cấu hình (VD: 256GB), bạn chỉ cần nhập cho 1 bản rồi
+                        bấm <strong>Đồng bộ cấu hình</strong>.
+                      </p>
                     </div>
                   </div>
                 </div>

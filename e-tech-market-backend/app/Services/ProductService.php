@@ -419,12 +419,14 @@ class ProductService
                     $vDiscountStart = ! empty($vData['discount_start_at']) ? $vData['discount_start_at'] : null;
                     $vDiscountEnd = ! empty($vData['discount_end_at']) ? $vData['discount_end_at'] : null;
                     $vDiscountType = (isset($vData['discount_type']) && $vData['discount_type'] !== '') ? $vData['discount_type'] : null;
+                    $vRichHtml = HtmlSanitizer::sanitize($vData['rich_html'] ?? null);
 
                     $variant = ProductVariant::create([
                         'product_id' => $product->id,
                         'variant_name' => $vData['variant_name'],
                         'color' => $vData['color'] ?? null,
                         'configuration' => $vData['configuration'] ?? null,
+                        'rich_html' => $vRichHtml,
                         'sku' => $sku,
                         'price' => $vPrice,
                         'discount_type' => $vDiscountType,
@@ -502,11 +504,15 @@ class ProductService
                         if (! empty($vData['sku']) && trim((string) $vData['sku']) !== '') {
                             $sku = $vData['sku'];
                         }
+                        $vRichHtml = array_key_exists('rich_html', $vData)
+                            ? HtmlSanitizer::sanitize($vData['rich_html'])
+                            : $existing->rich_html;
 
                         $existing->update([
                             'variant_name' => $vData['variant_name'],
                             'color' => $vData['color'] ?? null,
                             'configuration' => $vData['configuration'] ?? null,
+                            'rich_html' => $vRichHtml,
                             'sku' => $sku,
                             'price' => $vPrice,
                             'discount_type' => $vDiscountType,
@@ -523,12 +529,14 @@ class ProductService
                         if (! empty($vData['sku']) && ! str_starts_with($vData['sku'], $prefix)) {
                             $sku = $vData['sku'];
                         }
+                        $vRichHtml = HtmlSanitizer::sanitize($vData['rich_html'] ?? null);
 
                         $variant = ProductVariant::create([
                             'product_id' => $product->id,
                             'variant_name' => $vData['variant_name'],
                             'color' => $vData['color'] ?? null,
                             'configuration' => $vData['configuration'] ?? null,
+                            'rich_html' => $vRichHtml,
                             'sku' => $sku,
                             'price' => $vPrice,
                             'discount_type' => $vDiscountType,

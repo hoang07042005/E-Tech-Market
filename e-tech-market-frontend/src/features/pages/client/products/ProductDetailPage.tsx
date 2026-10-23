@@ -60,7 +60,7 @@ import { useAuthStore } from "@/features/store/useAuthStore";
 export default function ProductDetailPage() {
   const navigate = useNavigate();
   const { slug } = useParams<{ slug: string }>();
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const variantIdParam = searchParams.get("variant");
 
   const queryClient = useQueryClient();
@@ -256,6 +256,23 @@ export default function ProductDetailPage() {
       }
     }
   }
+
+  const handleSelectVariant = useCallback(
+    (v: ProductVariant) => {
+      setSelectedVariant(v);
+      if (v?.id) {
+        setSearchParams(
+          (prev) => {
+            const next = new URLSearchParams(prev);
+            next.set("variant", String(v.id));
+            return next;
+          },
+          { replace: true },
+        );
+      }
+    },
+    [setSearchParams],
+  );
 
   const visibleReviews: ProductReview[] = useMemo(
     () => [...(product?.reviews ?? [])],
@@ -1313,7 +1330,7 @@ export default function ProductDetailPage() {
                         facet={variantFacetModel}
                         product={product}
                         selectedVariant={selectedVariant}
-                        onSelectVariant={setSelectedVariant}
+                        onSelectVariant={handleSelectVariant}
                       />
                     ) : (
                       <div className="pdpConfigGroup">
@@ -1326,7 +1343,7 @@ export default function ProductDetailPage() {
                                 key={v.id ?? i}
                                 type="button"
                                 className={`pdpVariantFallbackChip ${isActive ? "is-active" : ""}`}
-                                onClick={() => setSelectedVariant(v)}
+                                onClick={() => handleSelectVariant(v)}
                               >
                                 <span className="pdpVariantFallbackChip__name">
                                   {v.variant_name}
@@ -1493,6 +1510,12 @@ export default function ProductDetailPage() {
             </div>
           </div>
 
+          <PdpRichSection
+            product={product}
+            selectedVariant={selectedVariant}
+            visibleNews={visibleNews}
+          />
+
           <PdpRelatedProductsSection
             relatedProducts={relatedProducts}
             wishSet={wishSet}
@@ -1506,8 +1529,6 @@ export default function ProductDetailPage() {
             onToggleLike={onToggleLike}
             title="Sản phẩm đã xem gần đây"
           />
-
-          <PdpRichSection product={product} visibleNews={visibleNews} />
 
           <ProductReviewsSection
             product={product}
