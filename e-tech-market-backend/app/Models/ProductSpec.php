@@ -25,11 +25,17 @@ class ProductSpec extends Model
         'sort_order' => 'integer',
     ];
 
+    /**
+     * @return BelongsTo<Product, ProductSpec>
+     */
     public function product(): BelongsTo
     {
         return $this->belongsTo(Product::class, 'product_id');
     }
 
+    /**
+     * @return BelongsTo<ProductVariant, ProductSpec>
+     */
     public function variant(): BelongsTo
     {
         return $this->belongsTo(ProductVariant::class, 'product_variant_id');

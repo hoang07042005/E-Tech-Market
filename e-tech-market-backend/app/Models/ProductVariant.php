@@ -86,11 +86,17 @@ class ProductVariant extends Model
         return round(max(0, (float) $this->price - (float) $this->discount_value), 2);
     }
 
+    /**
+     * @return BelongsTo<Product, ProductVariant>
+     */
     public function product(): BelongsTo
     {
         return $this->belongsTo(Product::class, 'product_id');
     }
 
+    /**
+     * @return HasMany<ProductSpec>
+     */
     public function specs(): HasMany
     {
         return $this->hasMany(ProductSpec::class, 'product_variant_id');

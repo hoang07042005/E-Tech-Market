@@ -34,16 +34,25 @@ class Review extends Model
         'deleted_at',
     ];
 
+    /**
+     * @return BelongsTo<Product, Review>
+     */
     public function product(): BelongsTo
     {
         return $this->belongsTo(Product::class, 'product_id');
     }
 
+    /**
+     * @return BelongsTo<User, Review>
+     */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id');
     }
 
+    /**
+     * @return BelongsTo<Order, Review>
+     */
     public function order(): BelongsTo
     {
         return $this->belongsTo(Order::class, 'order_id');

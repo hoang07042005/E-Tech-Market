@@ -44,6 +44,9 @@ class ProductNews extends Model
         'published_at' => 'datetime',
     ];
 
+    /**
+     * @return BelongsTo<Product, ProductNews>
+     */
     public function product(): BelongsTo
     {
         return $this->belongsTo(Product::class, 'product_id');

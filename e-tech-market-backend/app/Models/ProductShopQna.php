@@ -38,11 +38,17 @@ class ProductShopQna extends Model
         'is_visible' => 'boolean',
     ];
 
+    /**
+     * @return BelongsTo<Product, ProductShopQna>
+     */
     public function product(): BelongsTo
     {
         return $this->belongsTo(Product::class, 'product_id');
     }
 
+    /**
+     * @return BelongsTo<User, ProductShopQna>
+     */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id');

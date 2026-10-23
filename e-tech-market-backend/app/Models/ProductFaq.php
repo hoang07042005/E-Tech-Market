@@ -24,6 +24,9 @@ class ProductFaq extends Model
         'is_active' => 'boolean',
     ];
 
+    /**
+     * @return BelongsTo<Product, ProductFaq>
+     */
     public function product(): BelongsTo
     {
         return $this->belongsTo(Product::class, 'product_id');
