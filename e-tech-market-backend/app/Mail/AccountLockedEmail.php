@@ -11,7 +11,7 @@ class AccountLockedEmail extends Mailable implements ShouldQueue
 {
     use Queueable, SerializesModels;
 
-    public $userName;
+    public string $userName;
 
     /**
      * Create a new message instance.

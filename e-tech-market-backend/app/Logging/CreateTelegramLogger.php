@@ -6,6 +6,9 @@ use Monolog\Logger;
 
 class CreateTelegramLogger
 {
+    /**
+     * @param array<string, mixed> $config
+     */
     public function __invoke(array $config): Logger
     {
         $botToken = (string) ($config['bot_token'] ?? '');

@@ -19,7 +19,7 @@ class OrderEmail extends Mailable
         public string $subjectText
     ) {}
 
-    public function build()
+    public function build(): static
     {
         return $this->subject($this->subjectText)
                     ->view('emails.order');

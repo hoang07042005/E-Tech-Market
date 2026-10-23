@@ -11,6 +11,9 @@ use Illuminate\Http\Resources\Json\JsonResource;
  */
 class OrderListResource extends JsonResource
 {
+    /**
+     * @return array<string, mixed>
+     */
     public function toArray(Request $request): array
     {
         $statusMeta = static function (?string $s): array {
