@@ -4,6 +4,9 @@ import { apiFetch } from '../../configs/api.config';
 
 vi.mock('../../configs/api.config', () => ({
   apiFetch: vi.fn(),
+  setAuthToken: vi.fn(),
+  getAuthToken: vi.fn(),
+  clearAuthToken: vi.fn(),
 }));
 
 describe('auth.service', () => {

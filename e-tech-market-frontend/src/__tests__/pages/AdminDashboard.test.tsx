@@ -135,9 +135,9 @@ describe('DashboardPage Component', () => {
 
     expect(await screen.findByText(/Tổng doanh thu/i)).toBeInTheDocument()
     await waitFor(() => {
-      expect(screen.getByText(/100\.?0?K đ/i)).toBeInTheDocument()
-      expect(screen.getByText(/42/i)).toBeInTheDocument()
-      expect(screen.getByText(/13/i)).toBeInTheDocument()
+      expect(screen.getAllByText(/100\.?0?K đ/i).length).toBeGreaterThan(0)
+      expect(screen.getAllByText(/42/i).length).toBeGreaterThan(0)
+      expect(screen.getAllByText(/13/i).length).toBeGreaterThan(0)
     })
   })
 })

@@ -6,6 +6,9 @@ use Exception;
 
 class InsufficientStockException extends Exception
 {
+    /**
+     * @var string
+     */
     protected $message = 'Insufficient stock';
 
     public function __construct(string $message = 'Insufficient stock', int $code = 400)

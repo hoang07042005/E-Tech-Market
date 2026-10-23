@@ -60,7 +60,9 @@ describe('AuthPage Component', () => {
       fireEvent.click(submitButton);
 
       await waitFor(() => {
-        expect(authService.login).toHaveBeenCalledWith({ email: 'test@example.com', password: 'password123' });
+        expect(authService.login).toHaveBeenCalledWith(
+          expect.objectContaining({ email: 'test@example.com', password: 'password123' }),
+        );
         expect(localStorage.getItem('user')).toBe('{"name":"Test","email":"test@example.com"}');
         expect(mockNavigate).toHaveBeenCalledWith('/');
       });

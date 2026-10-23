@@ -21,7 +21,7 @@ describe('wishlist.service', () => {
 
       const result = await fetchWishlist();
 
-      expect(apiFetch).toHaveBeenCalledWith('/wishlist');
+      expect(apiFetch).toHaveBeenCalledWith('/wishlist?type=product');
       expect(result).toEqual(mockData);
     });
 
@@ -40,7 +40,7 @@ describe('wishlist.service', () => {
 
       expect(apiFetch).toHaveBeenCalledWith('/wishlist/toggle', {
         method: 'POST',
-        body: JSON.stringify({ product_id: 101 }),
+        body: JSON.stringify({ id: 101, type: 'product' }),
       });
       expect(result).toBe('added');
     });
@@ -52,7 +52,7 @@ describe('wishlist.service', () => {
 
       expect(apiFetch).toHaveBeenCalledWith('/wishlist/toggle', {
         method: 'POST',
-        body: JSON.stringify({ product_id: 101 }),
+        body: JSON.stringify({ id: 101, type: 'product' }),
       });
       expect(result).toBe('removed');
     });

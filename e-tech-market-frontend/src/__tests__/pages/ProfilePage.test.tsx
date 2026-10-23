@@ -38,7 +38,7 @@ describe('ProfilePage Component', () => {
   });
 
   it('redirects to login if fetchMe fails', async () => {
-    (authService.me as any).mockRejectedValue(new Error('Unauthorized'));
+    (authService.me as any).mockRejectedValue(new Error('401 Unauthorized'));
     (apiFetch as any).mockResolvedValue({ data: [] });
 
     render(

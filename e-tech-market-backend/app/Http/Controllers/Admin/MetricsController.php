@@ -54,6 +54,9 @@ class MetricsController extends BaseController
         return response()->json($health, $statusCode);
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     private function checkDatabaseHealth(): array
     {
         try {
@@ -64,6 +67,9 @@ class MetricsController extends BaseController
         }
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     private function checkRedisHealth(): array
     {
         try {
@@ -74,6 +80,9 @@ class MetricsController extends BaseController
         }
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     private function checkQueueHealth(): array
     {
         try {
@@ -84,6 +93,9 @@ class MetricsController extends BaseController
         }
     }
 
+    /**
+     * @param array<string, mixed> $health
+     */
     private function isHealthy(array $health): bool
     {
         foreach ($health['services'] as $service) {

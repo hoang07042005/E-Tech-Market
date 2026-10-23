@@ -6,6 +6,9 @@ use Exception;
 
 class InvalidCouponException extends Exception
 {
+    /**
+     * @var string
+     */
     protected $message = 'Mã giảm giá không hợp lệ hoặc đã hết hạn.';
 
     public function __construct(string $message = 'Mã giảm giá không hợp lệ hoặc đã hết hạn.', int $code = 400)

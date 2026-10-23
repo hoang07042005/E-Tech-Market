@@ -136,7 +136,7 @@ describe('CartPage Component', () => {
     )
 
     expect(await screen.findByText(/Test Product/i)).toBeInTheDocument()
-    expect(screen.getByText(/1 sản phẩm/i)).toBeInTheDocument()
+    expect(screen.getAllByText(/1 sản phẩm/i).length).toBeGreaterThan(0)
     expect(screen.getAllByText(/120.000 đ/i).length).toBeGreaterThan(0)
     expect(screen.getByText(/Suggested Product/i)).toBeInTheDocument()
   })

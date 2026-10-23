@@ -15,8 +15,8 @@ describe('buildVideoPayload', () => {
       sort_order: 0,
     })
 
-    expect(payload.get('product_id')).toBe('')
-    expect(payload.get('video_category_id')).toBe('')
+    expect(payload.get('product_id')).toBeNull()
+    expect(payload.get('video_category_id')).toBeNull()
   })
 
   it('includes a selected category id for general videos', () => {

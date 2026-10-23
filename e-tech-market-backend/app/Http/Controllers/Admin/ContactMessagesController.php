@@ -21,16 +21,16 @@ class ContactMessagesController extends Controller
         return response()->json($messages);
     }
 
-    public function handle(Request $request, $id): JsonResponse
+    public function handle(Request $request, int|string $id): JsonResponse
     {
-        $contact_message = $this->contactMessageService->handleMessage($id, $request->user());
+        $contact_message = $this->contactMessageService->handleMessage((int) $id, $request->user());
 
         return response()->json($contact_message);
     }
 
-    public function destroy($id): JsonResponse
+    public function destroy(int|string $id): JsonResponse
     {
-        $this->contactMessageService->deleteMessage($id);
+        $this->contactMessageService->deleteMessage((int) $id);
 
         return response()->json(['message' => 'Tin nhắn đã được xóa thành công.']);
     }
