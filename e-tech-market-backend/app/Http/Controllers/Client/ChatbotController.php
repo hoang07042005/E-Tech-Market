@@ -56,6 +56,7 @@ PROMPT;
 
         $userMessage = trim($request->input('message'));
         $history = $request->input('history', []);
+        /** @var \App\Models\User|null $user */
         $user = auth('sanctum')->user();
         $phoneNumber = $request->input('phone_number');
         $productId = $request->input('product_id');
@@ -167,7 +168,8 @@ PROMPT;
         }
 
         // Format products for response
-        $productCards = collect($products)->map(function ($p) use ($intent) {
+        $productCards = [];
+        foreach ($products as $p) {
             $card = [
                 'id' => $p->id,
                 'name' => $p->name,
@@ -184,8 +186,8 @@ PROMPT;
                 $card['reviews_count'] = $p->reviews_count ?? 0;
             }
 
-            return $card;
-        })->values()->toArray();
+            $productCards[] = $card;
+        }
 
         return response()->json([
             'reply' => $reply,
@@ -229,8 +231,11 @@ PROMPT;
 
     /**
      * Handle order tracking intent.
+     *
+     * @param ?\App\Models\User $user
+     * @return array<string, mixed>
      */
-    private function handleOrderTracking(string $message, $user, ?string $phoneNumber = null): array
+    private function handleOrderTracking(string $message, ?\App\Models\User $user, ?string $phoneNumber = null): array
     {
         // Try to extract order code from message
         $orderCode = null;
@@ -314,6 +319,8 @@ PROMPT;
 
     /**
      * Handle product search based on message criteria.
+     *
+     * @return array<string, mixed>
      */
     private function handleProductQuery(string $message, string $intent): array
     {
@@ -519,6 +526,8 @@ CTX;
 
     /**
      * Handle flashsale query.
+     *
+     * @return array<string, mixed>
      */
     private function handleFlashsaleQuery(): array
     {
@@ -563,6 +572,8 @@ CTX;
 
     /**
      * Handle top rated products.
+     *
+     * @return array<string, mixed>
      */
     private function handleTopRatedQuery(): array
     {
@@ -590,6 +601,8 @@ CTX;
 
     /**
      * Handle discounted products.
+     *
+     * @return array<string, mixed>
      */
     private function handleDiscountedQuery(): array
     {
