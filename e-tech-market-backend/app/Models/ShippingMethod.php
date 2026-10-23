@@ -34,6 +34,9 @@ class ShippingMethod extends Model
         'is_active' => 'boolean',
     ];
 
+    /**
+     * @return HasMany<Order>
+     */
     public function orders(): HasMany
     {
         return $this->hasMany(Order::class, 'shipping_method_id');

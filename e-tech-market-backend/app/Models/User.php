@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -41,7 +42,7 @@ class User extends Authenticatable implements MustVerifyEmail
     use HasApiTokens, HasFactory, HasRoles, Notifiable;
     use SoftDeletes;
 
-    protected $guard_name = 'web';
+    protected string $guard_name = 'web';
 
     /**
      * The attributes that are mass assignable.
@@ -94,27 +95,42 @@ class User extends Authenticatable implements MustVerifyEmail
         'reset_token_expires_at' => 'datetime',
     ];
 
+    /**
+     * @return HasOne<Cart>
+     */
     public function carts(): HasOne
     {
         return $this->hasOne(Cart::class, 'user_id', 'id');
     }
 
+    /**
+     * @return HasMany<Order>
+     */
     public function orders(): HasMany
     {
         return $this->hasMany(Order::class, 'user_id', 'id');
     }
 
+    /**
+     * @return BelongsToMany<Coupon>
+     */
     public function savedCoupons(): BelongsToMany
     {
         return $this->belongsToMany(Coupon::class, 'user_coupons', 'user_id', 'coupon_id')->withTimestamps();
     }
 
-    public function membershipRank(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    /**
+     * @return BelongsTo<MembershipRank, User>
+     */
+    public function membershipRank(): BelongsTo
     {
         return $this->belongsTo(MembershipRank::class, 'rank_id');
     }
 
-    public function pointHistory()
+    /**
+     * @return HasMany<PointHistory>
+     */
+    public function pointHistory(): HasMany
     {
         return $this->hasMany(PointHistory::class, 'user_id');
     }

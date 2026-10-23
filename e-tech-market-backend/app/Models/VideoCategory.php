@@ -23,6 +23,9 @@ class VideoCategory extends Model
         'sort_order' => 'integer',
     ];
 
+    /**
+     * @return HasMany<Video>
+     */
     public function videos(): HasMany
     {
         return $this->hasMany(Video::class, 'video_category_id');

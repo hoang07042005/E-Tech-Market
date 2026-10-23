@@ -25,6 +25,9 @@ class Transaction extends Model
         'raw_response' => 'array',
     ];
 
+    /**
+     * @return BelongsTo<Payment, Transaction>
+     */
     public function payment(): BelongsTo
     {
         return $this->belongsTo(Payment::class, 'payment_id');
