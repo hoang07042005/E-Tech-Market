@@ -7,7 +7,9 @@ use App\Http\Resources\UserResource;
 use App\Http\Resources\MembershipRankResource;
 use App\Models\User;
 use App\Services\AuthService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Laravel\Sanctum\PersonalAccessToken;
 
 class AuthController extends Controller
 {
@@ -18,7 +20,7 @@ class AuthController extends Controller
         $this->authService = $authService;
     }
 
-    public function login(Request $r)
+    public function login(Request $r): JsonResponse
     {
         $r->validate([
             "email"=>"required|email",
@@ -43,7 +45,7 @@ class AuthController extends Controller
         return response()->json($data)->withCookie($result['cookie']);
     }
 
-    public function register(Request $r)
+    public function register(Request $r): JsonResponse
     {
         $r->validate([
             "name"=>"required|string|max:255",
@@ -73,7 +75,7 @@ class AuthController extends Controller
         return response()->json($data, 201)->withCookie($result['cookie']);
     }
 
-    public function logout(Request $r)
+    public function logout(Request $r): JsonResponse
     {
         $user = $r->user();
         if(!$user instanceof User) {
@@ -85,7 +87,7 @@ class AuthController extends Controller
         return response()->json(["message"=>"Logged out"])->withCookie($cookie);
     }
 
-    public function me(Request $r)
+    public function me(Request $r): JsonResponse
     {
         $user = $r->user();
         if(!$user instanceof User) {
@@ -96,7 +98,7 @@ class AuthController extends Controller
         return response()->json(["user"=>new UserResource($user)]);
     }
 
-    public function updateMe(Request $r)
+    public function updateMe(Request $r): JsonResponse
     {
         $user = $r->user();
         if(!$user instanceof User) {
@@ -118,7 +120,7 @@ class AuthController extends Controller
         return response()->json(["user"=>new UserResource($updatedUser)]);
     }
 
-    public function updateAvatar(Request $r)
+    public function updateAvatar(Request $r): JsonResponse
     {
         $user = $r->user();
         if(!$user instanceof User) {
@@ -134,7 +136,7 @@ class AuthController extends Controller
         return response()->json(["user"=>new UserResource($updatedUser)]);
     }
 
-    public function changePassword(Request $r)
+    public function changePassword(Request $r): JsonResponse
     {
         $user = $r->user();
         if(!$user instanceof User) {
@@ -155,7 +157,7 @@ class AuthController extends Controller
         return response()->json(["message"=>"Password changed"]);
     }
 
-    public function sessions(Request $r)
+    public function sessions(Request $r): JsonResponse
     {
         $user = $r->user();
         if(!$user instanceof User) {
@@ -163,22 +165,27 @@ class AuthController extends Controller
         }
 
         $current = $user->currentAccessToken();
+        /** @var \Illuminate\Database\Eloquent\Collection<int, PersonalAccessToken> $tokens */
         $tokens = $user->tokens()->orderByDesc('created_at')->get(['id', 'name', 'created_at', 'last_used_at']);
 
-        $data = $tokens->map(function($t) use ($current) {
+        $data = $tokens->map(function(PersonalAccessToken $t) use ($current) {
+            $isCurrent = false;
+            if ($current instanceof PersonalAccessToken) {
+                $isCurrent = ($t->id === $current->id);
+            }
             return [
                 "id"=>$t->id,
                 "name"=>$t->name,
                 "created_at"=>$t->created_at?->toIso8601String(),
                 "last_used_at"=>$t->last_used_at?->toIso8601String(),
-                "is_current"=>$current && $current->id === $t->id
+                "is_current"=>$isCurrent,
             ];
         });
 
         return response()->json(["data"=>$data]);
     }
 
-    public function revokeSession(Request $r, $id)
+    public function revokeSession(Request $r, int|string $id): JsonResponse
     {
         $user = $r->user();
         if(!$user instanceof User) {
@@ -189,7 +196,7 @@ class AuthController extends Controller
         return response()->json(["message" => "Session revoked"]);
     }
 
-    public function revokeAllSessions(Request $r)
+    public function revokeAllSessions(Request $r): JsonResponse
     {
         $user = $r->user();
         if(!$user instanceof User) {
@@ -200,7 +207,7 @@ class AuthController extends Controller
         return response()->json(["message" => "All sessions revoked"]);
     }
 
-    public function deleteAccount(Request $r)
+    public function deleteAccount(Request $r): JsonResponse
     {
         $user = $r->user();
         if(!$user instanceof User) {
@@ -216,7 +223,7 @@ class AuthController extends Controller
         return response()->json(["message"=>"Account deleted"]);
     }
 
-    public function googleLogin(Request $r)
+    public function googleLogin(Request $r): JsonResponse
     {
         $r->validate([
             'access_token' => 'required|string',
@@ -238,7 +245,7 @@ class AuthController extends Controller
         return response()->json($data)->withCookie($result['cookie']);
     }
 
-    public function loyalty(Request $r)
+    public function loyalty(Request $r): JsonResponse
     {
         $user = $r->user();
         if(!$user instanceof User) {
@@ -266,7 +273,7 @@ class AuthController extends Controller
         ]);
     }
 
-    public function validateLockedResetToken(Request $request)
+    public function validateLockedResetToken(Request $request): JsonResponse
     {
         $request->validate([
             'email' => 'required|email',
@@ -282,7 +289,7 @@ class AuthController extends Controller
         return response()->json(['message' => 'Token hợp lệ.']);
     }
 
-    public function resetLockedPassword(Request $request)
+    public function resetLockedPassword(Request $request): JsonResponse
     {
         $request->validate([
             'email' => 'required|email',

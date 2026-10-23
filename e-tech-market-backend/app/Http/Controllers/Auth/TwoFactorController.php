@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use PragmaRX\Google2FAQRCode\Google2FA;
 
@@ -11,7 +12,7 @@ class TwoFactorController extends Controller
     /**
      * Setup 2FA for the user (Generate Secret & QR code info)
      */
-    public function setup(Request $request)
+    public function setup(Request $request): JsonResponse
     {
         $user = $request->user();
 
@@ -47,7 +48,7 @@ class TwoFactorController extends Controller
     /**
      * Verify OTP and enable 2FA
      */
-    public function verify(Request $request)
+    public function verify(Request $request): JsonResponse
     {
         $request->validate([
             'otp' => 'required|string|size:6'
@@ -78,7 +79,7 @@ class TwoFactorController extends Controller
     /**
      * Disable 2FA
      */
-    public function disable(Request $request)
+    public function disable(Request $request): JsonResponse
     {
         $request->validate([
             'password' => 'required|string'

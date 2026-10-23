@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 /**
  * @property int $id
@@ -41,16 +42,25 @@ class Video extends Model
         'is_active' => 'boolean',
     ];
 
+    /**
+     * @return BelongsTo<Product, Video>
+     */
     public function product(): BelongsTo
     {
         return $this->belongsTo(Product::class, 'product_id');
     }
 
-    public function products()
+    /**
+     * @return BelongsToMany<Product>
+     */
+    public function products(): BelongsToMany
     {
         return $this->belongsToMany(Product::class, 'product_video');
     }
 
+    /**
+     * @return BelongsTo<VideoCategory, Video>
+     */
     public function videoCategory(): BelongsTo
     {
         return $this->belongsTo(VideoCategory::class, 'video_category_id');
