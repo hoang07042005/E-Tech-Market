@@ -193,8 +193,7 @@ class OrdersController extends Controller
         $paginator = $result['paginator'];
         $stats = $result['stats'];
 
-        $pageItems = collect($paginator->items());
-        $data = OrderListResource::collection($pageItems)->resolve();
+        $data = OrderListResource::collection($paginator->items())->resolve();
 
         return response()->json([
             'data' => $data,

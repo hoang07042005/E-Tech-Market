@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
 use App\Models\TradeInCondition;
 use App\Models\TradeInRequest;
 use App\Notifications\TradeInStatusNotification;
@@ -12,13 +13,13 @@ use Illuminate\Support\Facades\Notification;
 class TradeInController extends Controller
 {
     // --- CONDITIONS ---
-    public function getConditions()
+    public function getConditions(): JsonResponse
     {
         $conditions = TradeInCondition::with('category')->orderBy('sort_order')->get();
         return response()->json(['status' => 'success', 'data' => $conditions]);
     }
 
-    public function storeCondition(Request $request)
+    public function storeCondition(Request $request): JsonResponse
     {
         $data = $request->validate([
             'category_id' => 'required|exists:categories,id',
@@ -33,7 +34,7 @@ class TradeInController extends Controller
         return response()->json(['status' => 'success', 'data' => $condition], 201);
     }
 
-    public function updateCondition(Request $request, $id)
+    public function updateCondition(Request $request, int|string $id): JsonResponse
     {
         $condition = TradeInCondition::findOrFail($id);
         $data = $request->validate([
@@ -49,7 +50,7 @@ class TradeInController extends Controller
         return response()->json(['status' => 'success', 'data' => $condition]);
     }
 
-    public function deleteCondition($id)
+    public function deleteCondition(int|string $id): JsonResponse
     {
         $condition = TradeInCondition::findOrFail($id);
         $condition->delete();
@@ -57,7 +58,7 @@ class TradeInController extends Controller
     }
 
     // --- REQUESTS ---
-    public function getRequests(Request $request)
+    public function getRequests(Request $request): JsonResponse
     {
         $query = TradeInRequest::with(['category', 'user', 'conditions']);
         
@@ -69,13 +70,13 @@ class TradeInController extends Controller
         return response()->json(['status' => 'success', 'data' => $requests]);
     }
     
-    public function showRequest($id)
+    public function showRequest(int|string $id): JsonResponse
     {
         $req = TradeInRequest::with(['category', 'user', 'conditions'])->findOrFail($id);
         return response()->json(['status' => 'success', 'data' => $req]);
     }
 
-    public function updateRequestStatus(Request $request, $id)
+    public function updateRequestStatus(Request $request, int|string $id): JsonResponse
     {
         $req = TradeInRequest::findOrFail($id);
         $data = $request->validate([

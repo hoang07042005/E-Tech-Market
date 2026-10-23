@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class TradeInRequest extends Model
 {
@@ -28,17 +30,26 @@ class TradeInRequest extends Model
         'images' => 'array',
     ];
 
-    public function user()
+    /**
+     * @return BelongsTo<User, TradeInRequest>
+     */
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
-    public function category()
+    /**
+     * @return BelongsTo<Category, TradeInRequest>
+     */
+    public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class);
     }
 
-    public function conditions()
+    /**
+     * @return BelongsToMany<TradeInCondition>
+     */
+    public function conditions(): BelongsToMany
     {
         return $this->belongsToMany(TradeInCondition::class, 'trade_in_request_conditions');
     }
