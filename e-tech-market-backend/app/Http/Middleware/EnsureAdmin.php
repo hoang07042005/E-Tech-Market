@@ -34,6 +34,7 @@ class EnsureAdmin
         'admin.flash-sales' => 'manage-products',
         'admin.reviews' => 'manage-products',
         'admin.contact-messages' => 'manage-settings',
+        'admin.trade-in' => 'manage-products',
         'admin.dashboard' => null, // any admin permission
     ];
 
@@ -67,8 +68,8 @@ class EnsureAdmin
             $permission = $this->resolvePermissionFromRoute($request);
         }
 
-        if (! $permission) {
-            // General admin dashboard or other generic admin endpoints
+        // Only allow hasAnyPermission fallback for the overview Dashboard
+        if (! $permission && str_starts_with((string) $request->route()?->getName(), 'admin.dashboard')) {
             try {
                 if ($user->hasAnyPermission([
                     'manage-products', 'manage-orders', 'manage-coupons',
@@ -79,7 +80,9 @@ class EnsureAdmin
             } catch (\Throwable) {
                 // Missing permissions table/record
             }
+        }
 
+        if (! $permission) {
             return response()->json(['message' => 'Forbidden - Requires Admin privileges'], 403);
         }
 

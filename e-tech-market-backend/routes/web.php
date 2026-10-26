@@ -21,9 +21,15 @@ Route::get('/', function () {
 // which fails to serve files from symlinks/junctions.
 if (app()->environment('local')) {
     Route::get('/storage/{path}', function ($path) {
-        $filePath = storage_path('app/public/' . $path);
+        $basePath = realpath(storage_path('app/public'));
+        $filePath = realpath(storage_path('app/public/' . $path));
         
-        if (!file_exists($filePath)) {
+        // Prevent directory traversal attacks (e.g. /storage/../../.env)
+        if ($filePath === false || !str_starts_with($filePath, $basePath)) {
+            abort(403, 'Truy cập bị từ chối.');
+        }
+        
+        if (!file_exists($filePath) || is_dir($filePath)) {
             abort(404);
         }
         

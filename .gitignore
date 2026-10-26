@@ -1,1 +1,10 @@
 .env
+.env.*
+!.env.example
+
+# Database dumps & sensitive backups
+*.sql
+*.dump
+*.bak
+*.tar.gz
+*.log

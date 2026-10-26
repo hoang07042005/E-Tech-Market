@@ -254,14 +254,14 @@ Route::middleware('auth:sanctum')->group(function () {
         // Videos
         Route::apiResource('videos', App\Http\Controllers\Admin\VideoController::class);
 
-        Route::get('/trade-in/conditions', [App\Http\Controllers\Admin\TradeInController::class, 'getConditions']);
-        Route::post('/trade-in/conditions', [App\Http\Controllers\Admin\TradeInController::class, 'storeCondition']);
-        Route::put('/trade-in/conditions/{id}', [App\Http\Controllers\Admin\TradeInController::class, 'updateCondition']);
-        Route::delete('/trade-in/conditions/{id}', [App\Http\Controllers\Admin\TradeInController::class, 'deleteCondition']);
+        Route::get('/trade-in/conditions', [App\Http\Controllers\Admin\TradeInController::class, 'getConditions'])->name('trade-in.conditions.index');
+        Route::post('/trade-in/conditions', [App\Http\Controllers\Admin\TradeInController::class, 'storeCondition'])->name('trade-in.conditions.store');
+        Route::put('/trade-in/conditions/{id}', [App\Http\Controllers\Admin\TradeInController::class, 'updateCondition'])->name('trade-in.conditions.update');
+        Route::delete('/trade-in/conditions/{id}', [App\Http\Controllers\Admin\TradeInController::class, 'deleteCondition'])->name('trade-in.conditions.destroy');
         
-        Route::get('/trade-in/requests', [App\Http\Controllers\Admin\TradeInController::class, 'getRequests']);
-        Route::get('/trade-in/requests/{id}', [App\Http\Controllers\Admin\TradeInController::class, 'showRequest']);
-        Route::put('/trade-in/requests/{id}/status', [App\Http\Controllers\Admin\TradeInController::class, 'updateRequestStatus']);
+        Route::get('/trade-in/requests', [App\Http\Controllers\Admin\TradeInController::class, 'getRequests'])->name('trade-in.requests.index');
+        Route::get('/trade-in/requests/{id}', [App\Http\Controllers\Admin\TradeInController::class, 'showRequest'])->name('trade-in.requests.show');
+        Route::put('/trade-in/requests/{id}/status', [App\Http\Controllers\Admin\TradeInController::class, 'updateRequestStatus'])->name('trade-in.requests.update-status');
 
     });
 });
