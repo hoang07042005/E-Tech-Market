@@ -31,6 +31,8 @@ class CartService
 
     /**
      * Add item to cart
+     *
+     * @param array<string, mixed> $data
      */
     public function addItem(User $user, array $data): Cart
     {

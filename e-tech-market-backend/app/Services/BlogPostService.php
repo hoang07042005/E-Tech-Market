@@ -7,6 +7,8 @@ use App\Models\BlogComment;
 use App\Models\BlogPost;
 use App\Models\User;
 use App\Support\HtmlSanitizer;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
 
@@ -14,8 +16,10 @@ class BlogPostService
 {
     /**
      * Get paginated blog posts for admin.
+     *
+     * @return LengthAwarePaginator<BlogPost>
      */
-    public function getAdminPosts(int $perPage = 15)
+    public function getAdminPosts(int $perPage = 15): LengthAwarePaginator
     {
         return BlogPost::with(['category', 'author'])
             ->orderBy('created_at', 'desc')
@@ -24,6 +28,8 @@ class BlogPostService
 
     /**
      * Create a new blog post.
+     *
+     * @param array<string, mixed> $data
      */
     public function createPost(array $data, User $author): BlogPost
     {
@@ -53,6 +59,8 @@ class BlogPostService
 
     /**
      * Update an existing blog post.
+     *
+     * @param array<string, mixed> $data
      */
     public function updatePost(BlogPost $post, array $data): BlogPost
     {
@@ -107,6 +115,8 @@ class BlogPostService
 
     /**
      * Create a blog category.
+     *
+     * @param array<string, mixed> $data
      */
     public function createCategory(array $data): BlogCategory
     {
@@ -121,6 +131,8 @@ class BlogPostService
 
     /**
      * Update a blog category.
+     *
+     * @param array<string, mixed> $data
      */
     public function updateCategory(BlogCategory $category, array $data): BlogCategory
     {
@@ -150,8 +162,11 @@ class BlogPostService
 
     /**
      * Get paginated published blog posts for client.
+     *
+     * @param array<string, mixed> $filters
+     * @return LengthAwarePaginator<BlogPost>
      */
-    public function getClientPosts(array $filters, int $perPage = 9)
+    public function getClientPosts(array $filters, int $perPage = 9): LengthAwarePaginator
     {
         $cacheKey = 'blog_posts_index_'.md5(serialize($filters));
 
@@ -227,6 +242,8 @@ class BlogPostService
 
     /**
      * Store comment on a blog post.
+     *
+     * @param array<string, mixed> $data
      */
     public function storeComment(string $slug, array $data, ?User $user): BlogComment
     {
@@ -247,8 +264,10 @@ class BlogPostService
 
     /**
      * Get all blog categories.
+     *
+     * @return Collection<int, BlogCategory>
      */
-    public function getCategories()
+    public function getCategories(): Collection
     {
         return Cache::remember('blog_categories_all', 300, function () {
             return BlogCategory::orderBy('sort_order', 'asc')->get();
