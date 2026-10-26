@@ -22,8 +22,16 @@ class AuthenticatePrometheus
      */
     public function handle(Request $request, Closure $next): SymfonyResponse
     {
-        $username = config('metrics.prometheus_username', 'prometheus');
-        $password = config('metrics.prometheus_password', env('PROMETHEUS_PASSWORD', 'prometheus_secure_password_123'));
+        $username = (string) config('metrics.prometheus_username', env('PROMETHEUS_USERNAME', 'prometheus'));
+        $password = (string) config('metrics.prometheus_password', env('PROMETHEUS_PASSWORD', ''));
+
+        // If password is not configured, deny access by default
+        if ($password === '') {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Prometheus authentication is not properly configured.',
+            ], Response::HTTP_FORBIDDEN);
+        }
 
         // Get Authorization header
         $auth = $request->header('Authorization');
@@ -40,8 +48,8 @@ class AuthenticatePrometheus
         // Decode base64 credentials
         [$providedUsername, $providedPassword] = explode(':', base64_decode(substr($auth, 6)), 2) + [null, null];
 
-        // Verify credentials
-        if ($providedUsername !== $username || $providedPassword !== $password) {
+        // Constant-time string verification to prevent timing attacks
+        if (!hash_equals($username, (string) $providedUsername) || !hash_equals($password, (string) $providedPassword)) {
             return response()->json([
                 'status' => 'error',
                 'message' => 'Thông tin đăng nhập không hợp lệ.',

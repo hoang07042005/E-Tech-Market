@@ -32,7 +32,7 @@ return [
     | Basic Auth credentials for /metrics/prometheus endpoint
     */
     'prometheus_username' => env('PROMETHEUS_USERNAME', 'prometheus'),
-    'prometheus_password' => env('PROMETHEUS_PASSWORD', 'prometheus_secure_password_123'),
+    'prometheus_password' => env('PROMETHEUS_PASSWORD', null),
 
     /*
     |--------------------------------------------------------------------------
