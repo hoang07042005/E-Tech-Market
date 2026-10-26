@@ -17,6 +17,8 @@ class AdminDashboardService
 {
     /**
      * Gather all dashboard statistics.
+     *
+     * @return array<string, mixed>
      */
     public function getStats(string $range, ?string $startDateParam, ?string $endDateParam, string $resolution): array
     {
@@ -91,6 +93,9 @@ class AdminDashboardService
         };
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     private function buildKpi(Carbon $analyticsStart, Carbon $toEnd): array
     {
         // Count paid orders OR completed COD orders
@@ -143,6 +148,9 @@ class AdminDashboardService
         ];
     }
 
+    /**
+     * @return array<string, int>
+     */
     private function buildQuickTasks(): array
     {
         $lowStockThreshold = 10;
@@ -159,6 +167,9 @@ class AdminDashboardService
         ];
     }
 
+    /**
+     * @return array<int, array<string, mixed>>
+     */
     private function buildRecentOrders(): array
     {
         $statusLabel = $this->statusLabelFn();
@@ -200,6 +211,9 @@ class AdminDashboardService
             ->all();
     }
 
+    /**
+     * @return array<int, array<string, mixed>>
+     */
     private function buildRecentActivities(): array
     {
         $recentActivities = [];
@@ -284,6 +298,9 @@ class AdminDashboardService
         return array_slice($recentActivities, 0, 3);
     }
 
+    /**
+     * @return array<int, array<string, mixed>>
+     */
     private function buildTopRatedProducts(): array
     {
         return DB::table('products')
@@ -318,6 +335,9 @@ class AdminDashboardService
             ->all();
     }
 
+    /**
+     * @return array<int, array<string, mixed>>
+     */
     private function buildAnalyticsSeries(Carbon $analyticsStart, Carbon $toEnd, string $resolution): array
     {
         $analyticsByDay = Order::query()
@@ -400,6 +420,9 @@ class AdminDashboardService
         return array_values($buckets);
     }
 
+    /**
+     * @return array<int, array<string, mixed>>
+     */
     private function buildTopCategories(Carbon $analyticsStart, Carbon $toEnd): array
     {
         $catRows = DB::table('order_items')
@@ -434,6 +457,9 @@ class AdminDashboardService
         })->values()->all();
     }
 
+    /**
+     * @return array<int, array<string, mixed>>
+     */
     private function buildRecentReviews(): array
     {
         return Review::query()
@@ -486,6 +512,9 @@ class AdminDashboardService
             ->all();
     }
 
+    /**
+     * @return array<int, array<string, mixed>>
+     */
     private function buildTopCustomers(): array
     {
         // Get top customers with rank >= 3 (Vàng)
@@ -540,12 +569,12 @@ class AdminDashboardService
             ->all();
 
         // Compute orders_count for each top customer (paid OR completed/delivered not refunded)
-        $userIds = array_values(array_filter(array_map(static fn ($u) => $u['user_id'] ?? null, $usersWithOrders)));
+        $userIds = array_values(array_filter(array_map(static fn ($u) => (int) $u['user_id'], $usersWithOrders)));
         if (count($userIds) === 0) {
             return [];
         }
 
-        $orderCounts = Order::query()
+        $orderCounts = DB::table('orders')
             ->select('user_id', DB::raw('COUNT(id) as cnt'))
             ->whereIn('user_id', $userIds)
             ->where(function ($q) {
@@ -557,10 +586,8 @@ class AdminDashboardService
             })
             ->groupBy('user_id')
             ->get()
-            ->map(static fn ($r) => [(int) $r->user_id => (int) $r->cnt])
-            ->reduce(static function ($acc, $item) {
-                return $acc + $item;
-            }, []);
+            ->mapWithKeys(static fn ($r) => [(int) $r->user_id => (int) $r->cnt])
+            ->all();
 
         return collect($usersWithOrders)
             ->map(static function (array $u) use ($orderCounts) {
