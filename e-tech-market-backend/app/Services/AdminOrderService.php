@@ -68,6 +68,9 @@ class AdminOrderService
         return $order;
     }
 
+    /**
+     * @param array<int, \Illuminate\Http\UploadedFile> $files
+     */
     public function markReturnRefunded(Order $order, ?string $adminNote, array $files, ?int $adminId): Order
     {
         $proofMeta = [];
@@ -147,6 +150,9 @@ class AdminOrderService
         return $order;
     }
 
+    /**
+     * @param array<string, mixed> $data
+     */
     public function updateOrderStatus(Order $order, array $data, ?int $adminId): Order
     {
         $prevStatus = strtolower((string) ($order->status ?? ''));
@@ -195,6 +201,10 @@ class AdminOrderService
         return $order;
     }
 
+    /**
+     * @param array<string, mixed> $filters
+     * @return array<string, mixed>
+     */
     public function getAdminOrders(array $filters, int $perPage = 10, int $page = 1, ?User $user = null): array
     {
         app(\App\Services\OrderService::class)->pruneExpiredUnpaidOrders();

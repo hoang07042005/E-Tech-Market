@@ -16,6 +16,8 @@ class AuthService
 {
     /**
      * Create a new token for the user and set as httpOnly cookie.
+     *
+     * @return array{0: string|null, 1: \Symfony\Component\HttpFoundation\Cookie}
      */
     public function createTokenAndCookie(Request $r, User $user, int $minutes = 60 * 24): array
     {
@@ -43,7 +45,11 @@ class AuthService
         return [$tokenInBody, $cookie];
     }
 
-    public function login(Request $r, array $credentials, ?string $otp)
+    /**
+     * @param array<string, mixed> $credentials
+     * @return array<string, mixed>
+     */
+    public function login(Request $r, array $credentials, ?string $otp): array
     {
         $u = User::where("email", $credentials['email'])->first();
 
@@ -89,7 +95,11 @@ class AuthService
         ];
     }
 
-    public function register(Request $r, array $data)
+    /**
+     * @param array<string, mixed> $data
+     * @return array<string, mixed>
+     */
+    public function register(Request $r, array $data): array
     {
         $u = User::create([
             "name" => $data['name'],
@@ -119,7 +129,7 @@ class AuthService
         ];
     }
 
-    public function logout(Request $r, User $user)
+    public function logout(Request $r, User $user): \Symfony\Component\HttpFoundation\Cookie
     {
         $current = $user->currentAccessToken();
         if($current instanceof PersonalAccessToken) {
@@ -135,6 +145,9 @@ class AuthService
         return Cookie::forget('sanctum_token');
     }
 
+    /**
+     * @param array<string, mixed> $data
+     */
     public function updateProfile(User $user, array $data): User
     {
         $user->fill(array_filter($data))->save();
@@ -142,6 +155,9 @@ class AuthService
         return $user;
     }
 
+    /**
+     * @param \Illuminate\Http\UploadedFile $file
+     */
     public function updateAvatar(User $user, $file): User
     {
         $path = $file->store('avatars', 'public');
@@ -190,7 +206,10 @@ class AuthService
         $user->delete();
     }
 
-    public function googleLogin(Request $r, string $accessToken)
+    /**
+     * @return array<string, mixed>
+     */
+    public function googleLogin(Request $r, string $accessToken): array
     {
         try {
             $googleResponse = \Illuminate\Support\Facades\Http::withToken($accessToken)
@@ -277,7 +296,10 @@ class AuthService
         }
     }
 
-    public function resetLockedPassword(Request $r, string $email, string $token, string $password)
+    /**
+     * @return array<string, mixed>
+     */
+    public function resetLockedPassword(Request $r, string $email, string $token, string $password): array
     {
         $user = User::where('email', $email)->first();
 
