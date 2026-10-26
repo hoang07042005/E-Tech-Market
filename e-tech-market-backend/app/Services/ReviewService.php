@@ -6,14 +6,18 @@ use App\Models\Order;
 use App\Models\Product;
 use App\Models\Review;
 use App\Models\User;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Cache;
 
 class ReviewService
 {
     /**
      * Lấy danh sách đánh giá cho Admin
+     *
+     * @return LengthAwarePaginator<Review>
      */
-    public function getAdminReviews(?string $status, int $limit = 20)
+    public function getAdminReviews(?string $status, int $limit = 20): LengthAwarePaginator
     {
         $query = Review::query()->with(['user', 'product']);
 
@@ -43,8 +47,10 @@ class ReviewService
 
     /**
      * Lấy danh sách đánh giá cho trang chủ Client (cache)
+     *
+     * @return Collection<int, Review>
      */
-    public function getClientReviews(int $limit = 10, int $minRating = 5)
+    public function getClientReviews(int $limit = 10, int $minRating = 5): Collection
     {
         $cacheKey = "reviews_index_{$limit}_{$minRating}";
 
@@ -61,6 +67,8 @@ class ReviewService
 
     /**
      * Tạo hoặc cập nhật đánh giá từ Client
+     *
+     * @param array<string, mixed> $data
      */
     public function submitReview(User $user, Product $product, array $data): Review
     {

@@ -11,6 +11,8 @@ class StoreProfileService
 {
     /**
      * Public contact block for storefront
+     *
+     * @return array<string, string>
      */
     public function getContactInfo(): array
     {
@@ -32,6 +34,8 @@ class StoreProfileService
 
     /**
      * Public payment gateways availability
+     *
+     * @return array<string, array<string, bool>>
      */
     public function getPaymentGateways(): array
     {
@@ -47,6 +51,8 @@ class StoreProfileService
 
     /**
      * Public shipping configuration (methods + policy + zones)
+     *
+     * @return array<string, mixed>
      */
     public function getShippingConfig(): array
     {
@@ -99,6 +105,8 @@ class StoreProfileService
 
     /**
      * Public config (maintenance mode, etc.)
+     *
+     * @return array<string, mixed>
      */
     public function getStoreConfig(): array
     {

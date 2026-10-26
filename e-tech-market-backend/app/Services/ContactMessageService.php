@@ -5,13 +5,16 @@ namespace App\Services;
 use App\Models\ContactMessage;
 use App\Models\Notification;
 use App\Models\User;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class ContactMessageService
 {
     /**
      * Lấy danh sách Contact Message cho Admin
+     *
+     * @return LengthAwarePaginator<ContactMessage>
      */
-    public function getAdminMessages(?string $handled, int $limit = 20)
+    public function getAdminMessages(?string $handled, int $limit = 20): LengthAwarePaginator
     {
         $query = ContactMessage::query()->with('handledBy');
 
@@ -49,6 +52,8 @@ class ContactMessageService
 
     /**
      * Tạo tin nhắn mới từ Client và thông báo cho Admin
+     *
+     * @param array<string, mixed> $data
      */
     public function createMessage(array $data): ContactMessage
     {

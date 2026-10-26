@@ -99,6 +99,7 @@ class PaymentService
     /**
      * Process a VNPAY callback (return or IPN).
      *
+     * @param array<string, mixed> $queryParams
      * @return array{verified: bool, success: bool, order_code: ?string, order_id: ?int}
      */
     public function handleVnpayCallback(array $queryParams): array
@@ -291,6 +292,7 @@ class PaymentService
     /**
      * Process a MoMo callback (IPN or return redirect).
      *
+     * @param array<string, mixed> $data
      * @return array{verified: bool, success: bool, order_code: ?string, order_id: ?int}
      */
     public function handleMomoCallback(array $data): array
@@ -484,6 +486,9 @@ class PaymentService
         }
     }
 
+    /**
+     * @param array<string, mixed> $inputData
+     */
     private function buildVnpayHashData(array $inputData): string
     {
         $i = 0;

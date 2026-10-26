@@ -20,6 +20,7 @@ use Laravel\Scout\Searchable;
  * @property string|null $main_image_url
  * @property bool $is_active
  * @property bool $is_featured
+ * @property int|null $total_sold
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property \Illuminate\Support\Carbon|null $deleted_at

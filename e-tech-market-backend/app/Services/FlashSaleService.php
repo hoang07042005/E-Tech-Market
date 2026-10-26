@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\FlashSale;
 use App\Models\FlashSaleItem;
 use App\Models\Product;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Cache;
 
@@ -22,8 +23,10 @@ class FlashSaleService
 
     /**
      * Lấy danh sách Flash Sale cho Admin
+     *
+     * @return Collection<int, FlashSale>
      */
-    public function getAdminSales()
+    public function getAdminSales(): Collection
     {
         $this->endExpiredSales();
         return FlashSale::withCount('items')->orderBy('start_at', 'desc')->get();
@@ -31,6 +34,8 @@ class FlashSaleService
 
     /**
      * Tạo mới Flash Sale
+     *
+     * @param array<string, mixed> $data
      */
     public function createSale(array $data): FlashSale
     {
@@ -49,6 +54,8 @@ class FlashSaleService
 
     /**
      * Cập nhật Flash Sale
+     *
+     * @param array<string, mixed> $data
      */
     public function updateSale(FlashSale $flashSale, array $data): FlashSale
     {
@@ -68,6 +75,8 @@ class FlashSaleService
 
     /**
      * Thêm sản phẩm vào Flash Sale
+     *
+     * @param array<string, mixed> $data
      */
     public function addItem(FlashSale $flashSale, array $data): FlashSaleItem
     {

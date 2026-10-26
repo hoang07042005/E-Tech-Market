@@ -21,12 +21,17 @@ use App\Models\OrderReturnRequest;
 use App\Models\OrderStatusHistory;
 use App\Notifications\OrderConfirmationNotification;
 use App\Support\ProductInventorySync;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Notification as NotificationFacade;
 use Illuminate\Validation\ValidationException;
 
 class OrderService
 {
+    /**
+     * @param array<string, mixed> $data
+     * @param array<int, array<string, mixed>> $itemsInput
+     */
     public function createOrder(?User $user, array $data, array $itemsInput, ?Cart $cart = null): Order
     {
         return $this->createOrderInternal($user, $data, $itemsInput, $cart, 'pending');
@@ -35,12 +40,19 @@ class OrderService
     /**
      * Create order for VnPay/MoMo - order is NOT visible until payment succeeds.
      * Payment status starts as 'pending_payment', becomes 'paid' after callback.
+     *
+     * @param array<string, mixed> $data
+     * @param array<int, array<string, mixed>> $itemsInput
      */
     public function createOrderPendingPayment(?User $user, array $data, array $itemsInput, ?Cart $cart = null): Order
     {
         return $this->createOrderInternal($user, $data, $itemsInput, $cart, 'pending_payment');
     }
 
+    /**
+     * @param array<string, mixed> $data
+     * @param array<int, array<string, mixed>> $itemsInput
+     */
     private function createOrderInternal(?User $user, array $data, array $itemsInput, ?Cart $cart = null, string $initialStatus = 'pending'): Order
     {
         return DB::transaction(function () use ($user, $data, $itemsInput, $cart, $initialStatus) {
@@ -393,7 +405,10 @@ class OrderService
         \App\Jobs\InvalidateAdminDashboardCache::dispatch();
     }
 
-    public function getClientOrders(User $user, int $perPage = 12)
+    /**
+     * @return LengthAwarePaginator<Order>
+     */
+    public function getClientOrders(User $user, int $perPage = 12): LengthAwarePaginator
     {
         $this->pruneExpiredUnpaidOrders();
 
@@ -487,7 +502,7 @@ class OrderService
         $eligibleAmount = max(0, $order->subtotal_amount - $order->discount_amount);
         $pointsEarned = (int) floor(($eligibleAmount / 100000) * $multiplier);
         
-        if ($pointsEarned > 0 && $user && $user->is_loyalty_member) {
+        if ($pointsEarned > 0 && $user->is_loyalty_member) {
             $order->points_earned = $pointsEarned;
             
             $user->increment('current_points', $pointsEarned);
@@ -552,6 +567,10 @@ class OrderService
         return $order;
     }
 
+    /**
+     * @param array<string, mixed> $data
+     * @param array<int, mixed> $files
+     */
     public function requestReturn(Order $order, User $user, array $data, array $files): Order
     {
         if ($order->user_id !== $user->id) {
@@ -707,7 +726,7 @@ class OrderService
         return $variant;
     }
 
-    private function getAdminSetting(string $key, $default = null)
+    private function getAdminSetting(string $key, mixed $default = null): mixed
     {
         $s = AdminSetting::query()->where('key', $key)->first();
         if (! $s instanceof AdminSetting) {

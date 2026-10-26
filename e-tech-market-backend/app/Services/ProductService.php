@@ -3,18 +3,20 @@
 namespace App\Services;
 
 use App\Jobs\ProcessProductImage;
+use App\Models\Category;
 use App\Models\Product;
 use App\Models\ProductImage;
 use App\Models\ProductSpec;
 use App\Models\ProductVariant;
+use App\Services\CategoryService;
 use App\Support\HtmlSanitizer;
 use App\Support\ProductInventorySync;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redis;
-use App\Models\Category;
-use App\Services\CategoryService;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class ProductService
@@ -26,7 +28,10 @@ class ProductService
         $this->categoryService = $categoryService;
     }
 
-    public function createProduct(array $data, $request): Product
+    /**
+     * @param array<string, mixed> $data
+     */
+    public function createProduct(array $data, Request $request): Product
     {
         $data = $this->cleanUtf8($data);
 
@@ -46,7 +51,10 @@ class ProductService
         });
     }
 
-    public function updateProduct(Product $product, array $data, $request): Product
+    /**
+     * @param array<string, mixed> $data
+     */
+    public function updateProduct(Product $product, array $data, Request $request): Product
     {
         $data = $this->cleanUtf8($data);
 
@@ -100,8 +108,11 @@ class ProductService
 
     /**
      * Lấy danh sách sản phẩm (Client) với phân trang, lọc, sắp xếp, và cache
+     *
+     * @param array<string, mixed> $filters
+     * @return LengthAwarePaginator<Product>
      */
-    public function getClientProducts(array $filters, int $limit = 12)
+    public function getClientProducts(array $filters, int $limit = 12): LengthAwarePaginator
     {
         $query = Product::query()->where('is_active', true);
 
@@ -232,6 +243,8 @@ class ProductService
 
     /**
      * Lấy danh sách sản phẩm liên quan (Bought together & Similar)
+     *
+     * @return array<string, mixed>
      */
     public function getRelatedProducts(Product $product): array
     {
@@ -307,8 +320,11 @@ class ProductService
 
     /**
      * Lấy danh sách sản phẩm (Admin) với phân trang, lọc, tìm kiếm
+     *
+     * @param array<string, mixed> $filters
+     * @return LengthAwarePaginator<Product>
      */
-    public function getAdminProducts(array $filters, int $perPage = 20)
+    public function getAdminProducts(array $filters, int $perPage = 20): LengthAwarePaginator
     {
         $query = Product::with(['category', 'images', 'specs', 'variants', 'faqs', 'inventoryItems']);
 
@@ -342,13 +358,15 @@ class ProductService
 
     /**
      * Helper - get all descendant category IDs (cached tree lookup)
+     *
+     * @return array<int, int>
      */
-    private function getAllCategoryIds($categoryId): array
+    private function getAllCategoryIds(int $categoryId): array
     {
         return $this->categoryService->getAllCategoryIds($categoryId);
     }
 
-    private function handleImages(Product $product, $request): void
+    private function handleImages(Product $product, Request $request): void
     {
         if ($request->hasFile('images')) {
             foreach ($request->file('images') as $index => $image) {
@@ -370,7 +388,7 @@ class ProductService
         }
     }
 
-    private function handleImagesUpdate(Product $product, $request): void
+    private function handleImagesUpdate(Product $product, Request $request): void
     {
         if ($request->hasFile('images')) {
             if ($request->input('keep_existing_images') !== 'true') {
@@ -401,7 +419,10 @@ class ProductService
         }
     }
 
-    private function handleVariants(Product $product, $request, string $productName): array
+    /**
+     * @return array<int, int>
+     */
+    private function handleVariants(Product $product, Request $request, string $productName): array
     {
         $variantIdsByIndex = [];
         if ($request->filled('variants')) {
@@ -451,7 +472,10 @@ class ProductService
         return $variantIdsByIndex;
     }
 
-    private function handleVariantsUpdate(Product $product, $request, string $productName): array
+    /**
+     * @return array<int, int>
+     */
+    private function handleVariantsUpdate(Product $product, Request $request, string $productName): array
     {
         $variantIdsByIndex = [];
         if ($request->filled('variants')) {
@@ -564,7 +588,10 @@ class ProductService
         return $variantIdsByIndex;
     }
 
-    private function handleSpecs(Product $product, $request, array $variantIdsByIndex): void
+    /**
+     * @param array<int, int> $variantIdsByIndex
+     */
+    private function handleSpecs(Product $product, Request $request, array $variantIdsByIndex): void
     {
         if ($request->filled('specs')) {
             $specs = json_decode($request->specs, true);
@@ -575,7 +602,10 @@ class ProductService
         }
     }
 
-    private function handleSpecsUpdate(Product $product, $request, array $variantIdsByIndex): void
+    /**
+     * @param array<int, int> $variantIdsByIndex
+     */
+    private function handleSpecsUpdate(Product $product, Request $request, array $variantIdsByIndex): void
     {
         if ($request->filled('specs')) {
             $specs = json_decode($request->specs, true);
@@ -586,7 +616,7 @@ class ProductService
         }
     }
 
-    private function handleFaqs(Product $product, $request): void
+    private function handleFaqs(Product $product, Request $request): void
     {
         if ($request->filled('faqs')) {
             $faqs = json_decode($request->faqs, true);
@@ -607,7 +637,7 @@ class ProductService
         }
     }
 
-    private function handleFaqsUpdate(Product $product, $request): void
+    private function handleFaqsUpdate(Product $product, Request $request): void
     {
         if ($request->filled('faqs')) {
             $faqs = json_decode($request->faqs, true);
@@ -629,6 +659,10 @@ class ProductService
         }
     }
 
+    /**
+     * @param array<int, array<string, mixed>> $specs
+     * @param array<int, int> $variantIdsByIndex
+     */
     private function replaceProductSpecsFromPayload(Product $product, array $specs, array $variantIdsByIndex): void
     {
         $product->specs()->delete();

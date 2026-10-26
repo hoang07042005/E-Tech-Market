@@ -18,6 +18,8 @@ use Illuminate\Support\Carbon;
  * @property int|null $max_uses
  * @property int|null $max_uses_per_user
  * @property bool $is_active
+ * @property int|null $user_usage_count
+ * @property bool|null $is_saved
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  */

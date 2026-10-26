@@ -6,13 +6,16 @@ use App\Models\Notification;
 use App\Models\Product;
 use App\Models\ProductShopQna;
 use App\Models\User;
+use Illuminate\Database\Eloquent\Collection;
 
 class ProductShopQnaService
 {
     /**
      * Hộp thư admin: các câu hỏi chưa trả lời.
+     *
+     * @return Collection<int, ProductShopQna>
      */
-    public function getPendingQnas()
+    public function getPendingQnas(): Collection
     {
         return ProductShopQna::query()
             ->with(['product:id,name,slug,is_active'])
@@ -22,7 +25,10 @@ class ProductShopQnaService
             ->get();
     }
 
-    public function getAllQnas()
+    /**
+     * @return Collection<int, ProductShopQna>
+     */
+    public function getAllQnas(): Collection
     {
         return ProductShopQna::query()
             ->with(['product:id,name,slug,is_active'])
@@ -33,8 +39,10 @@ class ProductShopQnaService
 
     /**
      * Lấy toàn bộ Q&A của một sản phẩm (Admin).
+     *
+     * @return Collection<int, ProductShopQna>
      */
-    public function getProductQnasAdmin(Product $product)
+    public function getProductQnasAdmin(Product $product): Collection
     {
         return $product->shopQnas()
             ->orderByRaw('answered_at is null desc')
@@ -44,6 +52,8 @@ class ProductShopQnaService
 
     /**
      * Cập nhật/trả lời Q&A (Admin).
+     *
+     * @param array<string, mixed> $data
      */
     public function replyQna(Product $product, ProductShopQna $shopQna, array $data): ProductShopQna
     {
@@ -68,8 +78,10 @@ class ProductShopQnaService
 
     /**
      * Lấy Q&A hiển thị công khai (Client).
+     *
+     * @return Collection<int, ProductShopQna>
      */
-    public function getVisibleQnasClient(Product $product)
+    public function getVisibleQnasClient(Product $product): Collection
     {
         if (! $product->is_active) {
             throw new \Exception('Sản phẩm đang không hoạt động.', 404);
@@ -85,6 +97,8 @@ class ProductShopQnaService
 
     /**
      * Gửi câu hỏi mới (Client).
+     *
+     * @param array<string, mixed> $data
      */
     public function submitQuestion(Product $product, ?User $user, array $data): ProductShopQna
     {

@@ -24,7 +24,7 @@ class GeminiService
      * @param string $userMessage  The user's chat message
      * @param string $systemPrompt System instruction for the AI
      * @param string $context      Additional context (product data, order info, etc.)
-     * @param array  $history      Previous conversation messages [{role, text}]
+     * @param array<int, array<string, mixed>> $history Previous conversation messages [{role, text}]
      * @return string              The AI's response text
      */
     public function chat(string $userMessage, string $systemPrompt, string $context = '', array $history = []): string

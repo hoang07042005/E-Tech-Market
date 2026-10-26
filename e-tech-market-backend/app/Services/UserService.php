@@ -4,13 +4,16 @@ namespace App\Services;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class UserService
 {
     /**
      * Lấy danh sách người dùng cho Admin, hỗ trợ tìm kiếm và lọc theo role
+     *
+     * @return LengthAwarePaginator<User>
      */
-    public function getAdminUsers(Request $request, int $perPage = 20)
+    public function getAdminUsers(Request $request, int $perPage = 20): LengthAwarePaginator
     {
         $query = User::query()->with('roles')->orderByDesc('created_at');
 
@@ -41,6 +44,8 @@ class UserService
 
     /**
      * Cập nhật thông tin User (is_active, role_ids, rank_id, points)
+     *
+     * @param array<string, mixed> $data
      */
     public function updateUser(User $user, array $data, User $currentUser): User
     {

@@ -3,14 +3,19 @@
 namespace App\Services;
 
 use App\Models\Coupon;
+use App\Models\User;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Collection;
 
 class CouponService
 {
     /**
      * Get paginated coupons for Admin.
+     *
+     * @return LengthAwarePaginator<Coupon>
      */
-    public function getAdminCoupons(int $limit = 20)
+    public function getAdminCoupons(int $limit = 20): LengthAwarePaginator
     {
         return Coupon::query()
             ->with(['categories'])
@@ -21,6 +26,8 @@ class CouponService
 
     /**
      * Create a coupon.
+     *
+     * @param array<string, mixed> $data
      */
     public function createCoupon(array $data): Coupon
     {
@@ -33,6 +40,8 @@ class CouponService
 
     /**
      * Update a coupon.
+     *
+     * @param array<string, mixed> $data
      */
     public function updateCoupon(Coupon $coupon, array $data): Coupon
     {
@@ -53,8 +62,10 @@ class CouponService
 
     /**
      * Get available coupons for a user.
+     *
+     * @return Collection<int, Coupon>
      */
-    public function getAvailableCoupons(?int $userId, bool $excludeSaved)
+    public function getAvailableCoupons(?int $userId, bool $excludeSaved): Collection
     {
         $now = Carbon::now();
         $coupons = Coupon::with(['usages', 'savedByUsers', 'categories'])
@@ -70,6 +81,9 @@ class CouponService
             ->get();
 
         return $coupons->filter(function ($coupon) use ($userId, $excludeSaved) {
+            if ($excludeSaved && $userId && $coupon->savedByUsers->where('id', $userId)->isNotEmpty()) {
+                return false;
+            }
             // Only exclude if per-user usage limit is reached
             if ($userId && $coupon->max_uses_per_user) {
                 if ($coupon->usages->where('user_id', $userId)->count() >= $coupon->max_uses_per_user) {
@@ -95,8 +109,10 @@ class CouponService
 
     /**
      * Get saved coupons for a user.
+     *
+     * @return Collection<int, Coupon>
      */
-    public function getSavedCoupons($user)
+    public function getSavedCoupons(User $user): Collection
     {
         $now = Carbon::now();
         $coupons = $user->savedCoupons()
@@ -126,7 +142,7 @@ class CouponService
     /**
      * Save a coupon for a user.
      */
-    public function saveCouponForUser($user, string $code)
+    public function saveCouponForUser(User $user, string $code): void
     {
         $coupon = Coupon::where('code', $code)->first();
 
@@ -152,6 +168,9 @@ class CouponService
 
     /**
      * Apply a coupon and calculate discount.
+     *
+     * @param array<int|string, mixed> $items
+     * @return array<string, mixed>
      */
     public function applyCoupon(string $code, float $orderAmount, ?int $userId, array $items = []): array
     {

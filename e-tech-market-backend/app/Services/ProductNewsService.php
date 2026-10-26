@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Product;
 use App\Models\ProductNews;
 use App\Support\HtmlSanitizer;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
 
@@ -12,8 +13,10 @@ class ProductNewsService
 {
     /**
      * Get all news for a product (Admin).
+     *
+     * @return Collection<int, ProductNews>
      */
-    public function getAdminProductNews(Product $product)
+    public function getAdminProductNews(Product $product): Collection
     {
         return $product->news()
             ->orderByDesc('published_at')
@@ -23,6 +26,8 @@ class ProductNewsService
 
     /**
      * Store new product news (Admin).
+     *
+     * @param array<string, mixed> $data
      */
     public function createProductNews(Product $product, array $data): ProductNews
     {
@@ -48,6 +53,8 @@ class ProductNewsService
 
     /**
      * Update product news (Admin).
+     *
+     * @param array<string, mixed> $data
      */
     public function updateProductNews(Product $product, ProductNews $news, array $data): ProductNews
     {

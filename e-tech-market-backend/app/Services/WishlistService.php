@@ -5,14 +5,17 @@ namespace App\Services;
 use App\Models\Product;
 use App\Models\User;
 use App\Models\Wishlist;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Validation\ValidationException;
 
 class WishlistService
 {
     /**
      * Get user's wishlist
+     *
+     * @return Collection<int, Wishlist>
      */
-    public function getUserWishlist(User $user, ?string $type = 'product')
+    public function getUserWishlist(User $user, ?string $type = 'product'): Collection
     {
         $query = Wishlist::query()->where('user_id', $user->id);
         

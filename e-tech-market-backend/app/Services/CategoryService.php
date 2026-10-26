@@ -4,6 +4,8 @@ namespace App\Services;
 
 use App\Models\Category;
 use App\Models\Review;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -12,8 +14,10 @@ class CategoryService
 {
     /**
      * Get all categories, optionally filtered by type.
+     *
+     * @return Collection<int, Category>
      */
-    public function getAllCategories(?string $type = null)
+    public function getAllCategories(?string $type = null): Collection
     {
         $query = Category::query();
         if ($type) {
@@ -25,6 +29,8 @@ class CategoryService
     /**
      * Get categories ordered by most reviews (products with most reviews first).
      * Returns flat list of parent categories only (for homepage tabs display).
+     *
+     * @return array<int, Category>
      */
     public function getCategoriesOrderedByReviews(string $type = 'product', ?int $limit = null): array
     {
@@ -52,8 +58,10 @@ class CategoryService
 
     /**
      * Create a new category.
+     *
+     * @param array<string, mixed> $data
      */
-    public function createCategory(array $data, $imageFile = null): Category
+    public function createCategory(array $data, ?UploadedFile $imageFile = null): Category
     {
         if (empty($data['slug'])) {
             $data['slug'] = Str::slug($data['name']);
@@ -69,8 +77,10 @@ class CategoryService
 
     /**
      * Update an existing category.
+     *
+     * @param array<string, mixed> $data
      */
-    public function updateCategory(Category $category, array $data, $imageFile = null): Category
+    public function updateCategory(Category $category, array $data, ?UploadedFile $imageFile = null): Category
     {
         if ($imageFile) {
             if ($category->image && str_starts_with($category->image, '/storage/')) {
@@ -99,6 +109,8 @@ class CategoryService
 
     /**
      * Get active category tree, optionally filtered by type and cached.
+     *
+     * @return array<int, Category>
      */
     public function getActiveCategoryTree(string $type = 'product'): array
     {
@@ -129,6 +141,8 @@ class CategoryService
     /**
      * Get all descendant category IDs for a given category using cached tree lookup.
      * Much faster than recursive queries.
+     *
+     * @return array<int, int>
      */
     public function getAllCategoryIds(int $categoryId, string $type = 'product'): array
     {
@@ -140,6 +154,10 @@ class CategoryService
         return array_values(array_unique($ids));
     }
 
+    /**
+     * @param iterable<int, Category> $nodes
+     * @param array<int, int> $ids
+     */
     private function collectDescendantIds(iterable $nodes, int $targetId, array &$ids, bool $collecting = false): void
     {
         foreach ($nodes as $node) {
@@ -156,7 +174,11 @@ class CategoryService
         }
     }
 
-    private function buildCategoryTree($categories, $parentId = null): array
+    /**
+     * @param iterable<int, Category> $categories
+     * @return array<int, Category>
+     */
+    private function buildCategoryTree(iterable $categories, ?int $parentId = null): array
     {
         $branch = [];
 

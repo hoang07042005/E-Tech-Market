@@ -9,8 +9,10 @@ class NotificationService
 {
     /**
      * Lấy danh sách thông báo của user
+     *
+     * @return array<string, mixed>
      */
-    public function getUserNotifications(User $user, int $perPage = 20, string $status = 'all')
+    public function getUserNotifications(User $user, int $perPage = 20, string $status = 'all'): array
     {
         if ($perPage < 5) {
             $perPage = 5;
