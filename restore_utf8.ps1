@@ -3,7 +3,7 @@ Write-Host "   KHOI PHUC DATABASE ETECH_MARKET (UTF-8)" -ForegroundColor Cyan
 Write-Host "==========================================" -ForegroundColor Cyan
 
 Write-Host "`n[1/3] Copying clean UTF-8 SQL into Docker..." -ForegroundColor Yellow
-docker cp .\etech_clean_utf8.sql e-tech-market-db-1:/tmp/etech_clean_utf8.sql
+docker cp .\etech_clean_utf8.sql etech_db:/tmp/etech_clean_utf8.sql
 
 Write-Host "`n[2/3] Restoring clean UTF-8 schema, products and users..." -ForegroundColor Yellow
 @'
@@ -12,7 +12,7 @@ CREATE SCHEMA public;
 GRANT ALL ON SCHEMA public TO postgres;
 GRANT ALL ON SCHEMA public TO public;
 
-\i /tmp/etech_market_db_utf8.sql
+\i /tmp/etech_clean_utf8.sql
 
 CREATE TABLE IF NOT EXISTS public.category_coupon (
     category_id bigint NOT NULL REFERENCES public.categories(id) ON DELETE CASCADE,
@@ -42,7 +42,7 @@ SELECT 59, 'App\Models\User', id FROM public.users WHERE email IN ('admin@etech.
 ON CONFLICT DO NOTHING;
 
 SELECT id, name, email FROM public.users WHERE email IN ('admin@etech.com', 'doviethoang@gmail.com', 'doviethoang07042005@gmail.com');
-'@ | docker exec -i e-tech-market-db-1 psql -U postgres -d etech_market
+'@ | docker compose exec -T db psql -U postgres -d etech_market
 
 Write-Host "`n[3/3] Restarting backend container..." -ForegroundColor Yellow
 docker compose up -d backend queue_worker

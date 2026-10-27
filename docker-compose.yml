@@ -1,5 +1,6 @@
 services:
   frontend:
+    container_name: etech_frontend
     image: node:20-alpine
     working_dir: /app
     volumes:
@@ -16,11 +17,13 @@ services:
       retries: 3
       start_period: 40s
     depends_on:
-      - backend
+      backend:
+        condition: service_healthy
     networks:
       - etech
 
   backend:
+    container_name: etech_backend
     build:
       context: ./e-tech-market-backend
       dockerfile: Dockerfile
@@ -60,10 +63,13 @@ services:
       - LOG_CHANNEL=stack
       - LOG_LEVEL=debug
     depends_on:
-      - db
-      - redis
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
 
   nginx:
+    container_name: etech_nginx
     image: nginx:alpine
     ports:
       - "8000:8000"
@@ -78,11 +84,13 @@ services:
       retries: 3
       start_period: 10s
     depends_on:
-      - backend
+      backend:
+        condition: service_healthy
     networks:
       - etech
 
   queue_worker:
+    container_name: etech_queue
     build:
       context: ./e-tech-market-backend
       dockerfile: Dockerfile
@@ -112,22 +120,25 @@ services:
       - CACHE_DRIVER=redis
       - SESSION_DRIVER=redis
     depends_on:
-      - backend
-      - db
+      backend:
+        condition: service_healthy
+      db:
+        condition: service_healthy
     networks:
       - etech
 
   db:
+    container_name: etech_db
     image: postgres:15-alpine
     restart: always
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d etech || exit 1"]
+      test: ["CMD-SHELL", "pg_isready -U postgres -d etech_market || exit 1"]
       interval: 10s
       timeout: 5s
       retries: 5
       start_period: 10s
     environment:
-      - POSTGRES_DB=etech
+      - POSTGRES_DB=etech_market
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required. Set it in your .env file.}
     ports:
@@ -138,6 +149,7 @@ services:
       - etech
 
   redis:
+    container_name: etech_redis
     image: redis:alpine
     restart: always
     healthcheck:
@@ -153,6 +165,7 @@ services:
       - etech
 
   meilisearch:
+    container_name: etech_meilisearch
     image: getmeili/meilisearch:v1.6
     restart: always
     healthcheck:
